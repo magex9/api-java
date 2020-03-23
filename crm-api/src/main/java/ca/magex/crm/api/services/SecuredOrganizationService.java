@@ -64,7 +64,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.findOrganization(organizationId);
 	}
 	
-	public Organization findOrganizations(OrganizationsFilter filter) {
+	public List<Organization> findOrganizations(OrganizationsFilter filter) {
 		return delegate.findOrganizations(filter);
 	}
 
@@ -105,7 +105,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.findLocation(locationId);
 	}
 	
-	public Location findLocations(LocationsFilter filter) {
+	public List<Location> findLocations(LocationsFilter filter) {
 		return delegate.findLocations(filter);
 	}
 
@@ -153,7 +153,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.findPerson(personId);
 	}
 	
-	public Person findPersons(PersonsFilter filter) {
+	public List<Person> findPersons(PersonsFilter filter) {
 		return delegate.findPersons(filter);
 	}
 

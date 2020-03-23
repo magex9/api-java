@@ -89,45 +89,67 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 			return false;
 		if (auth.getRoles().contains(CRM_ADMIN))
 			return true;
-		if (auth.getOrganizationId().equals(service.getLocation(locationId).getOrganizationId());
+		if (auth.getOrganizationId().equals(service.findLocation(locationId).getOrganizationId()))
 			return true;
 		return false;
 	}
 
 	public boolean canUpdateLocation(Identifier locationId) {
+		if (auth == null)
+			return false;
+		if (auth.getRoles().contains(CRM_ADMIN))
+			return true;
+		if (auth.getOrganizationId().equals(service.findLocation(locationId).getOrganizationId()))
+			return false;
+		if (auth.getRoles().contains(RE_ADMIN))
+			return true;
 		return false;
 	}
 
 	public boolean canEnableLocation(Identifier locationId) {
-		return false;
+		return canUpdateLocation(locationId);
 	}
 
 	public boolean canDisableLocation(Identifier locationId) {
-		return false;
+		return canUpdateLocation(locationId);
 	}
 
 	public boolean canCreatePersonForOrganization(Identifier organizationId) {
-		return false;
+		return canCreateLocationForOrganization(organizationId);
 	}
 
 	public boolean canViewPerson(Identifier personId) {
+		if (auth == null)
+			return false;
+		if (auth.getRoles().contains(CRM_ADMIN))
+			return true;
+		if (auth.getOrganizationId().equals(service.findPerson(personId).getOrganizationId()))
+			return true;
 		return false;
 	}
 
 	public boolean canUpdatePerson(Identifier personId) {
+		if (auth == null)
+			return false;
+		if (auth.getRoles().contains(CRM_ADMIN))
+			return true;
+		if (auth.getOrganizationId().equals(service.findPerson(personId).getOrganizationId()))
+			return false;
+		if (auth.getRoles().contains(RE_ADMIN))
+			return true;
 		return false;
 	}
 
 	public boolean canEnablePerson(Identifier personId) {
-		return false;
+		return canUpdatePerson(personId);
 	}
 
 	public boolean canDisablePerson(Identifier personId) {
-		return false;
+		return canUpdatePerson(personId);
 	}
 
 	public boolean canUpdateUserRole(Identifier personId) {
-		return false;
+		return canUpdatePerson(personId);
 	}
 
 	public List<Message> validate(Organization organization) {
