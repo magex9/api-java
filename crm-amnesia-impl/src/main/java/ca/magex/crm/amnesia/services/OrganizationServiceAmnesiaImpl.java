@@ -28,6 +28,8 @@ import ca.magex.crm.api.system.Status;
 
 public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	
+	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+	
 	private Map<Identifier, Object> data;
 	
 	public OrganizationServiceAmnesiaImpl() {
@@ -35,7 +37,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 	
 	public Identifier generateId() {
-		return new Identifier(RandomStringUtils.random(10));
+		return new Identifier(RandomStringUtils.random(10, BASE_58));
 	}
 
 	public Organization createOrganization(String organizationName) {
@@ -91,6 +93,15 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		if (!(data.get(organizationId) instanceof Organization))
 			throw new BadRequestException(data.get(organizationId), "fatal", "class", "Class is not Organization: " + organizationId);
 		return ((Organization)data.get(organizationId));
+	}
+	
+	@Override
+	public long countOrganizations(OrganizationsFilter filter) {
+		return data.values().stream()
+			.filter(i -> i instanceof Organization)
+			.map(i -> (Organization)i)
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.count();
 	}
 	
 	public List<Organization> findOrganizations(OrganizationsFilter filter) {
@@ -155,6 +166,14 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		if (!(data.get(locationId) instanceof Location))
 			throw new BadRequestException(data.get(locationId), "fatal", "class", "Class is not Location: " + locationId);
 		return ((Location)data.get(locationId));
+	}
+	
+	public long countLocations(LocationsFilter filter) {
+		return data.values().stream()
+			.filter(i -> i instanceof Location)
+			.map(i -> (Location)i)
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.count();
 	}
 	
 	public List<Location> findLocations(LocationsFilter filter) {
@@ -241,6 +260,15 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		if (!(data.get(personId) instanceof Person))
 			throw new BadRequestException(data.get(personId), "fatal", "class", "Class is not Person: " + personId);
 		return ((Person)data.get(personId));
+	}
+	
+	@Override
+	public long countPersons(PersonsFilter filter) {
+		return data.values().stream()
+			.filter(i -> i instanceof Person)
+			.map(i -> (Person)i)
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.count();
 	}
 	
 	public List<Person> findPersons(PersonsFilter filter) {

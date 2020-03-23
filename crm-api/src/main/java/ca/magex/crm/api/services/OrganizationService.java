@@ -23,6 +23,7 @@ public interface OrganizationService {
     Organization updateOrganizationName(Identifier organizationId, String name);
     Organization updateMainLocation(Identifier organizationId, Identifier locationId);
     Organization findOrganization(Identifier organizationId);
+    long countOrganizations(OrganizationsFilter filter);
     List<Organization> findOrganizations(OrganizationsFilter filter);
 
     Location createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address);
@@ -31,6 +32,7 @@ public interface OrganizationService {
     Location enableLocation(Identifier locationId);
     Location disableLocation(Identifier locationId);
     Location findLocation(Identifier locationId);
+    long countLocations(LocationsFilter filter);
     List<Location> findLocations(LocationsFilter filter);
 
     Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, String email, String jobTitle, Language language, Telephone homePhone, Integer faxNumber);
@@ -42,6 +44,7 @@ public interface OrganizationService {
     Person addUserRole(Identifier personId, Role role);
     Person removeUserRole(Identifier personId, Role role);
     Person findPerson(Identifier personId);
+    long countPersons(PersonsFilter filter);
     List<Person> findPersons(PersonsFilter filter);
     
 }

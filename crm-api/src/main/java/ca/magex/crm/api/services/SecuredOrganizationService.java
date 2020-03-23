@@ -64,6 +64,10 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.findOrganization(organizationId);
 	}
 	
+	public long countOrganizations(OrganizationsFilter filter) {
+		return delegate.countOrganizations(filter);
+	}
+	
 	public List<Organization> findOrganizations(OrganizationsFilter filter) {
 		return delegate.findOrganizations(filter);
 	}
@@ -103,6 +107,10 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		if (!canViewLocation(locationId))
 			throw new PermissionDeniedException("findLocation: " + locationId);
 		return delegate.findLocation(locationId);
+	}
+	
+	public long countLocations(LocationsFilter filter) {
+		return delegate.countLocations(filter);
 	}
 	
 	public List<Location> findLocations(LocationsFilter filter) {
@@ -151,6 +159,10 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		if (!canViewPerson(personId))
 			throw new PermissionDeniedException("findPerson: " + personId);
 		return delegate.findPerson(personId);
+	}
+	
+	public long countPersons(PersonsFilter filter) {
+		return delegate.countPersons(filter);
 	}
 	
 	public List<Person> findPersons(PersonsFilter filter) {
