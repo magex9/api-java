@@ -1,0 +1,19 @@
+mutation {
+	createOrganization(organizationName: "My Organization") {
+		id
+		status
+	}
+}
+
+{
+	findAllOrganizations {
+		id
+		displayName
+		mainLocation {
+			id
+			status
+			displayName
+		}
+	}  
+}
+

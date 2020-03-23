@@ -9,6 +9,7 @@ import ca.magex.crm.api.services.OrganizationService;
 public class OrganizationServiceTestDataPopulator {
 
 	public static OrganizationService populate(OrganizationService organizations) {
+		
 		Organization gotham = organizations.createOrganization("Gotham Bank");
 		Location gothamMain = organizations.createLocation(gotham.getOrganizationId(), "Alta Vista", "ALTAVISTA", new MailingAddress("1000 Alta Vista Drive", "Gotham", "Ontario", new Country("CA", "Canada"), "K1K1K1"));
 		organizations.updateMainLocation(gotham.getOrganizationId(), gothamMain.getLocationId());

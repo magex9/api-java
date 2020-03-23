@@ -1,0 +1,21 @@
+type Organization {
+	id: String!
+	status: String!
+	displayName: String!
+	mainLocation: Location
+}
+
+type Location {
+	id: String!
+	status: String!
+	displayName: String!
+}
+
+type Query {
+	findAllOrganizations: [Organization]!
+	countOrganizations: Long!
+}
+
+type Mutation {
+	createOrganization(organizationName: String!) : Organization!
+}
