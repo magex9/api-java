@@ -8,18 +8,20 @@ import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.Location;
 import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.crm.Person;
-import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.filters.LocationsFilter;
+import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
 
-public class SecuredOrganizationService implements OrganizationService, OrganizationPolicy {
+public final class SecuredOrganizationService implements OrganizationService, OrganizationPolicy {
 
-	private OrganizationService delegate;
+	private final OrganizationService delegate;
 	
-	private OrganizationPolicy policy;
+	private final OrganizationPolicy policy;
 	
 	public SecuredOrganizationService(OrganizationService delegate, OrganizationPolicy policy) {
 		this.delegate = delegate;
@@ -38,10 +40,10 @@ public class SecuredOrganizationService implements OrganizationService, Organiza
 		return delegate.updateOrganizationName(organizationId, name);
 	}
 
-	public Organization updateMainLocation(Identifier organizationId, Location location) {
+	public Organization updateMainLocation(Identifier organizationId, Identifier locationId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
-		return delegate.updateMainLocation(organizationId, location);
+		return delegate.updateMainLocation(organizationId, locationId);
 	}
 
 	public Organization enableOrganization(Identifier organizationId) {
@@ -54,6 +56,16 @@ public class SecuredOrganizationService implements OrganizationService, Organiza
 		if (!canDisableOrganization(organizationId))
 			throw new PermissionDeniedException("disableOrganization: " + organizationId);
 		return delegate.disableOrganization(organizationId);
+	}
+	
+	public Organization findOrganization(Identifier organizationId) {
+		if (!canViewOrganization(organizationId))
+			throw new PermissionDeniedException("findOrganization: " + organizationId);
+		return delegate.findOrganization(organizationId);
+	}
+	
+	public Organization findOrganizations(OrganizationsFilter filter) {
+		return delegate.findOrganizations(filter);
 	}
 
 	public Location createLocation(Identifier organizationId, String locationName, String locationReference,
@@ -87,8 +99,18 @@ public class SecuredOrganizationService implements OrganizationService, Organiza
 		return delegate.disableLocation(locationId);
 	}
 
+	public Location findLocation(Identifier locationId) {
+		if (!canViewLocation(locationId))
+			throw new PermissionDeniedException("findLocation: " + locationId);
+		return delegate.findLocation(locationId);
+	}
+	
+	public Location findLocations(LocationsFilter filter) {
+		return delegate.findLocations(filter);
+	}
+
 	public Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, String email, String jobTitle,
-			Language language, Telephone homePhone, Telephone faxNumber) {
+			Language language, Telephone homePhone, Integer faxNumber) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
 		return delegate.createPerson(organizationId, name, address, email, jobTitle, language, homePhone, faxNumber);
@@ -107,7 +129,7 @@ public class SecuredOrganizationService implements OrganizationService, Organiza
 	}
 
 	public Person updatePersonCommunication(Identifier personId, String email, String jobTitle, Language language,
-			Telephone homePhone, Telephone faxNumber) {
+			Telephone homePhone, Integer faxNumber) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonCommunication: " + personId);
 		return delegate.updatePersonCommunication(personId, email, jobTitle, language, homePhone, faxNumber);
@@ -125,16 +147,26 @@ public class SecuredOrganizationService implements OrganizationService, Organiza
 		return delegate.disablePerson(personId);
 	}
 
-	public User addUserRole(String username, Role role) {
-		if (!canUpdateUserRole(username))
-			throw new PermissionDeniedException("addUserRole: " + username);
-		return delegate.addUserRole(username, role);
+	public Person findPerson(Identifier personId) {
+		if (!canViewPerson(personId))
+			throw new PermissionDeniedException("findPerson: " + personId);
+		return delegate.findPerson(personId);
+	}
+	
+	public Person findPersons(PersonsFilter filter) {
+		return delegate.findPersons(filter);
 	}
 
-	public User removeUserRole(String username, Role role) {
-		if (!canUpdateUserRole(username))
-			throw new PermissionDeniedException("removeUserRole: " + username);
-		return delegate.removeUserRole(username, role);
+	public Person addUserRole(Identifier personId, Role role) {
+		if (!canUpdateUserRole(personId))
+			throw new PermissionDeniedException("addUserRole: " + personId);
+		return delegate.addUserRole(personId, role);
+	}
+
+	public Person removeUserRole(Identifier personId, Role role) {
+		if (!canUpdateUserRole(personId))
+			throw new PermissionDeniedException("removeUserRole: " + personId);
+		return delegate.removeUserRole(personId, role);
 	}
 
 	public boolean canCreateOrganization() {
@@ -197,8 +229,8 @@ public class SecuredOrganizationService implements OrganizationService, Organiza
 		return policy.canDisablePerson(personId);
 	}
 
-	public boolean canUpdateUserRole(String username) {
-		return policy.canUpdateUserRole(username);
+	public boolean canUpdateUserRole(Identifier personId) {
+		return policy.canUpdateUserRole(personId);
 	}
 
 	public List<Message> validate(Organization organization) {

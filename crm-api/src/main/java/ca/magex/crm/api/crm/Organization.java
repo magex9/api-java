@@ -11,9 +11,9 @@ public class Organization {
 	
 	private String displayName;
 	
-	private Location mainLocation;
+	private Identifier mainLocation;
 
-	public Organization(Identifier organizationId, Status status, String displayName, Location mainLocation) {
+	public Organization(Identifier organizationId, Status status, String displayName, Identifier mainLocation) {
 		super();
 		this.organizationId = organizationId;
 		this.status = status;
@@ -28,13 +28,25 @@ public class Organization {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public Organization withStatus(Status status) {
+		return new Organization(organizationId, status, displayName, mainLocation);
+	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
+	
+	public Organization withDisplayName(String displayName) {
+		return new Organization(organizationId, status, displayName, mainLocation);
+	}
 
-	public Location getMainLocation() {
+	public Identifier getMainLocation() {
 		return mainLocation;
+	}
+
+	public Organization withMainLocation(Identifier mainLocation) {
+		return new Organization(organizationId, status, displayName, mainLocation);
 	}
 
 }

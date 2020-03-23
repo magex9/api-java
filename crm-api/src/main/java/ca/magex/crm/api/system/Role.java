@@ -20,4 +20,9 @@ public class Role {
 		return name;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && obj instanceof Role && code.equals(((Role)obj).getCode());
+	}
+	
 }

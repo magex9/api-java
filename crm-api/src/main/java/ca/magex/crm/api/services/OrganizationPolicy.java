@@ -9,7 +9,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
 
-interface OrganizationPolicy {
+public interface OrganizationPolicy {
 	
     boolean canCreateOrganization();
     boolean canViewOrganization(Identifier organizationId);
@@ -28,8 +28,7 @@ interface OrganizationPolicy {
     boolean canUpdatePerson(Identifier personId);
     boolean canEnablePerson(Identifier personId);
     boolean canDisablePerson(Identifier personId);
-
-    boolean canUpdateUserRole(String username);
+    boolean canUpdateUserRole(Identifier personId);
 
     List<Message> validate(Organization organization);
     List<Message> validate(Location location);

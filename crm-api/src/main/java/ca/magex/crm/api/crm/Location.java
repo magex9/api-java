@@ -40,17 +40,33 @@ public class Location {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public Location withStatus(Status status) {
+		return new Location(locationId, organizationId, status, reference, displayName, address);
+	}
 
 	public String getReference() {
 		return reference;
+	}
+	
+	public Location withReference(Status status) {
+		return new Location(locationId, organizationId, status, reference, displayName, address);
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
+	
+	public Location withDisplayName(String displayName) {
+		return new Location(locationId, organizationId, status, displayName, displayName, address);
+	}
 
 	public MailingAddress getAddress() {
 		return address;
+	}
+	
+	public Location withAddress(MailingAddress address) {
+		return new Location(locationId, organizationId, status, reference, displayName, address);
 	}
 	
 }

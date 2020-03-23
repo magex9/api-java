@@ -11,7 +11,7 @@ public class PersonName {
 	private String middleName;
 
 	private String lastName;
-
+	
 	public PersonName(Salutation salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
@@ -35,5 +35,5 @@ public class PersonName {
 	public String getLastName() {
 		return lastName;
 	}
-
+	
 }
