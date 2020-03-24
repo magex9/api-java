@@ -19,15 +19,17 @@ import graphql.ExecutionResult;
 @RequestMapping("/graphql")
 @RestController
 public class OrganizationController {
-    private static Logger logger = LoggerFactory.getLogger(OrganizationController.class);
+	private static Logger logger = LoggerFactory.getLogger(OrganizationController.class);
 
-    @Autowired @Qualifier("graphQLOrganizationService") private GraphQLOrganizationsService graphQLService;
+	@Autowired
+	@Qualifier("graphQLOrganizationService")
+	private GraphQLOrganizationsService graphQLService;
 
-    @PostMapping
-    public ResponseEntity<Object> doQuery(@RequestBody String query) throws JSONException {
-        logger.info("Entering doQuery@" + getClass().getSimpleName());
-        JSONObject request = new JSONObject(query);
-        ExecutionResult result = graphQLService.getGraphQL().execute(request.getString("query"));
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+	@PostMapping
+	public ResponseEntity<Object> doQuery(@RequestBody String query) throws JSONException {
+		logger.info("Entering doQuery@" + getClass().getSimpleName());
+		JSONObject request = new JSONObject(query);
+		ExecutionResult result = graphQLService.getGraphQL().execute(request.getString("query"));
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 }

@@ -14,13 +14,14 @@ import graphql.schema.DataFetcher;
 public class OrganizationDataFetcher {
 
 	private OrganizationService organizations = null;
-	
+
 	public OrganizationDataFetcher(OrganizationService organizations) {
 		this.organizations = organizations;
 	}
 
 	/**
 	 * returns a data fetcher for retrieving a location by it's id
+	 * 
 	 * @return
 	 */
 	public DataFetcher<Organization> byId() {
@@ -29,15 +30,16 @@ public class OrganizationDataFetcher {
 			return organizations.findOrganization(new Identifier(id));
 		};
 	}
-	
+
 	/**
 	 * returns a data fetcher for retrieving an organization by it's id
+	 * 
 	 * @return
 	 */
 	public DataFetcher<List<Organization>> finder() {
 		return (environment) -> {
 			Integer offset = environment.getArgument("offset");
-			Integer pageSize = environment.getArgument("pageSize");				
+			Integer pageSize = environment.getArgument("pageSize");
 			Paging paging = new Paging(offset.longValue(), pageSize, Sort.by("organizationId"));
 			List<Organization> results = organizations.findOrganizations(new OrganizationsFilter(null, paging));
 			return results;

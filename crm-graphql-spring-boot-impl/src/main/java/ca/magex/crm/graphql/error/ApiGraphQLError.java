@@ -14,9 +14,9 @@ import graphql.language.SourceLocation;
  * @author Jonny
  */
 public class ApiGraphQLError implements GraphQLError {
-	
+
 	private ApiException cause = null;
-	
+
 	public ApiGraphQLError(ApiException cause) {
 		this.cause = cause;
 	}
@@ -27,14 +27,14 @@ public class ApiGraphQLError implements GraphQLError {
 	public String getMessage() {
 		return cause.getErrorCode() + ": " + cause.getMessage();
 	}
-	
+
 	@Override
 	public List<SourceLocation> getLocations() {
 		return Collections.emptyList();
 	}
-	
+
 	@Override
 	public ErrorType getErrorType() {
 		return ErrorType.ExecutionAborted;
-	}	
+	}
 }

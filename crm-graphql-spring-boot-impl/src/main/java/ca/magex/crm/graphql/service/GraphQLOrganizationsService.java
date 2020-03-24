@@ -1,6 +1,5 @@
 package ca.magex.crm.graphql.service;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -26,20 +25,19 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
 
 @Service("graphQLOrganizationService")
 public class GraphQLOrganizationsService {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLOrganizationsService.class);
-	
+
 	private OrganizationService organizations = new OrganizationServiceAmnesiaImpl();
 
 	@Value("classpath:organizations.graphql")
 	private Resource resource;
 
 	private GraphQL graphQL;
-	
+
 	public GraphQL getGraphQL() {
 		return graphQL;
 	}
@@ -47,16 +45,17 @@ public class GraphQLOrganizationsService {
 	@PostConstruct
 	private void loadSchema() throws IOException {
 		logger.info("Entering loadSchema@" + getClass().getName());
-		
+
+		/* initialize our dataset */
 		OrganizationServiceTestDataPopulator.populate(organizations);
 
-		File file = resource.getFile();
-
-		TypeDefinitionRegistry typeDefinitionRegistry = new SchemaParser().parse(file);
+		/* parse our schema */
+		GraphQLSchema graphQLSchema = new SchemaGenerator()
+				.makeExecutableSchema(
+						new SchemaParser().parse(resource.getFile()), 
+						buildRuntimeWiring());
 		
-		RuntimeWiring runtimeWiring = buildRuntimeWiring();
-		
-		GraphQLSchema graphQLSchema = new SchemaGenerator().makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
+		/* create our graphQL engine */
 		DataFetcherExceptionHandler defaultFetcherExceptionHandler = new SimpleDataFetcherExceptionHandler();
 		graphQL = GraphQL.newGraphQL(graphQLSchema).queryExecutionStrategy(new AsyncExecutionStrategy((params) -> {
 			/* we want to treat our ApiExceptions specially */
@@ -70,22 +69,19 @@ public class GraphQLOrganizationsService {
 
 	/**
 	 * Construct the runtime wiring for our graphQL engine
+	 * 
 	 * @return
 	 */
-	private RuntimeWiring buildRuntimeWiring() {		
+	private RuntimeWiring buildRuntimeWiring() {
+		// TODO make these autowired
 		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(organizations);
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
-		
+
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.byId()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.finder()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.byId()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.finder()))		
-				/* sub query finders */
-				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
-//				.type("Location", typeWiring -> typeWiring.dataFetcher("address", new AddressDataFetcher()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.finder()))
 				.build();
 	}
-
-	
 }
