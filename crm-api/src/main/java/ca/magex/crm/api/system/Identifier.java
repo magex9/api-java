@@ -13,6 +13,18 @@ public class Identifier {
 	}
 	
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Identifier)
+			return id.equals(((Identifier)obj).id);
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+	
+	@Override
 	public String toString() {
 		return id;
 	}
