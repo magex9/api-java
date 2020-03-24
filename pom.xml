@@ -16,6 +16,7 @@
 		<module>crm-api</module>
 		<module>crm-amnesia-impl</module>
 		<module>crm-graphql-impl</module>
+		<module>crm-graphql-spring-boot-impl</module>
 	</modules>
 
 </project>
