@@ -10,8 +10,7 @@
 
 	<modules>
 		<module>crm-api</module>
-		<module>crm-amnesia-impl</module>
-		<module>crm-graphql-impl</module>
+		<module></module>
 	</modules>
 
 </project>
