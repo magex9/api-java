@@ -1,5 +1,8 @@
 package ca.magex.crm.api.system;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Identifier {
 
 	private String id;
@@ -11,22 +14,19 @@ public class Identifier {
 	public Identifier(Identifier identifier) {
 		this.id = identifier.id;
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Identifier)
-			return id.equals(((Identifier)obj).id);
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
-	
+		
 	@Override
 	public String toString() {
 		return id;
 	}
 	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
 }

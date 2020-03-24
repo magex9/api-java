@@ -1,0 +1,33 @@
+schema{
+	query:Query
+}
+
+type Query{
+	findLocations(offset: Int!, pageSize: Int!): [Location]
+	findOrganization(organizationId: String!): Organization
+	findOrganizations(offset: Int!, pageSize: Int!): [Organization]
+}
+
+type Organization {
+	organizationId: String!
+	status: String!
+	displayName: String!
+	mainLocation: Location
+}
+
+type Location {
+	locationId: String!
+	orgId: String!
+	status: String!
+	reference: String
+	displayName: String
+	address: MailingAddress	
+}
+
+type MailingAddress {
+	street: String
+	city: String
+	province: String
+	country: String
+	postalCode: String
+}

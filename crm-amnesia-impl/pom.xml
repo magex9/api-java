@@ -15,10 +15,11 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ca.magex.crm</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
