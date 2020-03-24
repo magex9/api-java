@@ -15,7 +15,6 @@ import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.OrganizationService;
-import ca.magex.crm.graphql.datafetcher.AddressDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
 import ca.magex.crm.graphql.error.ApiGraphQLError;

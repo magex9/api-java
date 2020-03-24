@@ -25,7 +25,7 @@ public class OrganizationDataFetcher {
 	 */
 	public DataFetcher<Organization> byId() {
 		return (environment) -> {
-			String id = environment.getArgument("id");
+			String id = environment.getArgument("organizationId");
 			return organizations.findOrganization(new Identifier(id));
 		};
 	}

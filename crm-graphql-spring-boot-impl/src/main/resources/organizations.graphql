@@ -4,7 +4,7 @@ schema{
 
 type Query{
 	findLocations(offset: Int!, pageSize: Int!): [Location]
-	findOrganization(id: String!): Organization
+	findOrganization(organizationId: String!): Organization
 	findOrganizations(offset: Int!, pageSize: Int!): [Organization]
 }
 
