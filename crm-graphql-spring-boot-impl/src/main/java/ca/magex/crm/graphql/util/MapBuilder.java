@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql;
+package ca.magex.crm.graphql.util;
 
 import java.util.HashMap;
 import java.util.Map;
