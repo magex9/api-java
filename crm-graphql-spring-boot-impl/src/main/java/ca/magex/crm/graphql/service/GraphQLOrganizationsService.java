@@ -15,11 +15,9 @@ import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.OrganizationService;
-import ca.magex.crm.graphql.datafetcher.LocationAddressDataFetcher;
-import ca.magex.crm.graphql.datafetcher.LocationsDataFetcher;
+import ca.magex.crm.graphql.datafetcher.AddressDataFetcher;
+import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
-import ca.magex.crm.graphql.datafetcher.OrganizationLocationDataFetcher;
-import ca.magex.crm.graphql.datafetcher.OrganizationsDataFetcher;
 import ca.magex.crm.graphql.error.ApiGraphQLError;
 import graphql.GraphQL;
 import graphql.execution.AsyncExecutionStrategy;
@@ -42,6 +40,10 @@ public class GraphQLOrganizationsService {
 	private Resource resource;
 
 	private GraphQL graphQL;
+	
+	public GraphQL getGraphQL() {
+		return graphQL;
+	}
 
 	@PostConstruct
 	private void loadSchema() throws IOException {
@@ -67,17 +69,24 @@ public class GraphQLOrganizationsService {
 		})).build();
 	}
 
-	private RuntimeWiring buildRuntimeWiring() {
+	/**
+	 * Construct the runtime wiring for our graphQL engine
+	 * @return
+	 */
+	private RuntimeWiring buildRuntimeWiring() {		
+		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(organizations);
+		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
+		
 		return RuntimeWiring.newRuntimeWiring()
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", new LocationsDataFetcher(organizations)))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", new OrganizationDataFetcher(organizations)))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", new OrganizationsDataFetcher(organizations)))				
-				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", new OrganizationLocationDataFetcher(organizations)))
-				.type("Location", typeWiring -> typeWiring.dataFetcher("address", new LocationAddressDataFetcher()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.byId()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.finder()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.byId()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.finder()))		
+				/* sub query finders */
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+//				.type("Location", typeWiring -> typeWiring.dataFetcher("address", new AddressDataFetcher()))
 				.build();
 	}
 
-	public GraphQL getGraphQL() {
-		return graphQL;
-	}
+	
 }
