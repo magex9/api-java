@@ -14,7 +14,7 @@ public class Identifier {
 	public Identifier(Identifier identifier) {
 		this.id = identifier.id;
 	}
-	
+		
 	@Override
 	public String toString() {
 		return id;
