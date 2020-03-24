@@ -5,7 +5,7 @@ import java.util.List;
 import ca.magex.crm.api.crm.Location;
 import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.crm.Person;
-import ca.magex.crm.api.services.*;
+import ca.magex.crm.api.services.OrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
@@ -20,9 +20,9 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	
 	private Person auth;
 	
-	private OrganizationService service;
+	private OrganizationServiceAmnesiaImpl service;
 
-	public OrganizationPolicyAmnesiaImpl(OrganizationService service) {
+	public OrganizationPolicyAmnesiaImpl(OrganizationServiceAmnesiaImpl service) {
 		this.service = service;
 	}
 	
