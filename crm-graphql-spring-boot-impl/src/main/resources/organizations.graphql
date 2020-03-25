@@ -1,12 +1,30 @@
-schema{
-	query:Query
+schema {
+	query: Query
+	mutation: Mutation
 }
 
-type Query{
-	findLocations(offset: Int!, pageSize: Int!): [Location]
-	findOrganization(organizationId: String!): Organization
-	findOrganizations(offset: Int!, pageSize: Int!): [Organization]
+enum SortOrder {
+  ASC
+  DESC
 }
+
+input Paging {
+	offset: Int!
+	pageSize: Int!
+	sortField: String!
+	sortOrder: SortOrder!
+}
+
+type Query {	
+	findOrganization(organizationId: String!): Organization	
+	findOrganizations(paging: Paging!): [Organization]	
+	findLocations(paging: Paging!): [Location]
+}
+
+type Mutation {
+	createOrganization(organizationName: String!) : Organization!
+}
+
 
 type Organization {
 	organizationId: String!

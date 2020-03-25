@@ -2,8 +2,6 @@ package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
-
 import ca.magex.crm.api.crm.Location;
 import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -12,12 +10,10 @@ import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import graphql.schema.DataFetcher;
 
-public class LocationDataFetcher {
-
-	private OrganizationService organizations = null;
+public class LocationDataFetcher extends AbstractDataFetcher {
 
 	public LocationDataFetcher(OrganizationService organizations) {
-		this.organizations = organizations;
+		super(organizations);
 	}
 
 	/**
@@ -51,9 +47,7 @@ public class LocationDataFetcher {
 	 */
 	public DataFetcher<List<Location>> finder() {
 		return (environment) -> {
-			Integer offset = environment.getArgument("offset");
-			Integer pageSize = environment.getArgument("pageSize");
-			Paging paging = new Paging(offset.longValue(), pageSize, Sort.by("locationId"));
+			Paging paging = extractPaging(environment);		
 			List<Location> results = organizations.findLocations(new LocationsFilter("", paging));
 			return results;
 		};

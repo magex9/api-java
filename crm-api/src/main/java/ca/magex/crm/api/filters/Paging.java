@@ -4,7 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public class Paging implements Pageable {
-
+	
 	private long offset;
 	
 	private int pageSize;

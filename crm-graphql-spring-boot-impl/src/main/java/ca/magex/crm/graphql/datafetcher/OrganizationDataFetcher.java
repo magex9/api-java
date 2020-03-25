@@ -2,8 +2,6 @@ package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
-
 import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
@@ -11,12 +9,10 @@ import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import graphql.schema.DataFetcher;
 
-public class OrganizationDataFetcher {
-
-	private OrganizationService organizations = null;
+public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	public OrganizationDataFetcher(OrganizationService organizations) {
-		this.organizations = organizations;
+		super(organizations);
 	}
 
 	/**
@@ -37,10 +33,8 @@ public class OrganizationDataFetcher {
 	 * @return
 	 */
 	public DataFetcher<List<Organization>> finder() {
-		return (environment) -> {
-			Integer offset = environment.getArgument("offset");
-			Integer pageSize = environment.getArgument("pageSize");
-			Paging paging = new Paging(offset.longValue(), pageSize, Sort.by("organizationId"));
+		return (environment) -> {		
+			Paging paging = extractPaging(environment);		
 			List<Organization> results = organizations.findOrganizations(new OrganizationsFilter(null, paging));
 			return results;
 		};
