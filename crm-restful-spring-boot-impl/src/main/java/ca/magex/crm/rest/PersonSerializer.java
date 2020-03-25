@@ -23,7 +23,6 @@ public class PersonSerializer extends JsonSerializer<Organization> {
 		gen.writeStringField("organizationId", organization.getOrganizationId().toString());
 		gen.writeStringField("status", organization.getStatus().toString().toLowerCase());
 		gen.writeStringField("displayName", organization.getDisplayName());
-		gen.writeStringField("locationName", organizations.findLocation(organization.getMainLocation()).getDisplayName());
 		gen.writeEndObject();
 	}
 

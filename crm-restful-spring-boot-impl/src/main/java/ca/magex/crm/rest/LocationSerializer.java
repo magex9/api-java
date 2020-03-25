@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.services.SecuredOrganizationService;
 
 public class LocationSerializer extends JsonSerializer<Location> {
@@ -22,10 +21,9 @@ public class LocationSerializer extends JsonSerializer<Location> {
 	public void serialize(Location location, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		gen.writeStartObject();
 		gen.writeStringField("locationId", location.getLocationId().toString());
-		gen.writeStringField("organizationId", organization.getOrganizationId().toString());
-		gen.writeStringField("status", organization.getStatus().toString().toLowerCase());
-		gen.writeStringField("displayName", organization.getDisplayName());
-		gen.writeStringField("locationName", organizations.findLocation(organization.getMainLocation()).getDisplayName());
+		gen.writeStringField("organizationId", location.getOrganizationId().toString());
+		gen.writeStringField("status", location.getStatus().toString().toLowerCase());
+		gen.writeStringField("displayName", location.getDisplayName());
 		gen.writeEndObject();
 	}
 
