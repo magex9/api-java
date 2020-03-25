@@ -40,7 +40,7 @@ public class LocationDataFetcher {
 	public DataFetcher<Location> byOrganization() {
 		return (environment) -> {
 			Organization organization = environment.getSource();
-			return organizations.findLocation(organization.getMainLocation());
+			return organizations.findLocation(organization.getMainLocationId());
 		};
 	}
 
