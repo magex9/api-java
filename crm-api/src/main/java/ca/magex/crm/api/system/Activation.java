@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Enabled {
+public class Activation {
 	
 	private Identifier identifier;
 	
@@ -13,7 +13,7 @@ public class Enabled {
 	
 	private LocalDateTime disabled;
 	
-	public Enabled(Identifier identifier, LocalDateTime enabled, LocalDateTime disabled) {
+	public Activation(Identifier identifier, LocalDateTime enabled, LocalDateTime disabled) {
 		this.identifier = identifier;
 		this.enabled = enabled;
 		this.disabled = disabled;
