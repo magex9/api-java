@@ -193,7 +193,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public Person createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, String email,
-			String jobTitle, Language language, Telephone homePhone, Integer faxNumber) {
+			String jobTitle, Language language, Telephone homePhone, Long faxNumber) {
 		Identifier personId = generateId();
 		StringBuilder displayName = new StringBuilder();
 		if (StringUtils.isNotBlank(legalName.getLastName()))
@@ -232,7 +232,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public Person updatePersonCommunication(Identifier personId, String email, String jobTitle, Language language,
-			Telephone homePhone, Integer faxNumber) {
+			Telephone homePhone, Long faxNumber) {
 		if (!data.containsKey(personId))
 			throw new ItemNotFoundException(personId.toString());
 		if (!(data.get(personId) instanceof Person))

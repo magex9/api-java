@@ -1,5 +1,8 @@
 package ca.magex.crm.api.common;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.magex.crm.api.lookup.Country;
 
 public class MailingAddress {
@@ -41,6 +44,16 @@ public class MailingAddress {
 
 	public String getPostalCode() {
 		return postalCode;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 }
