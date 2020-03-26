@@ -14,6 +14,7 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 	private LocationTransformer locationTransform;
 	
 	public OrganizationTransformer() {
+		this.statusTransformer = new StatusTransformer();
 		this.locationTransform = new LocationTransformer();
 	}
 	
@@ -40,5 +41,4 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 		return new Organization(organizationId, status, displayName, mainLocationId);
 	}
 
-		
 }

@@ -21,7 +21,7 @@ public class LocationTransformer extends AbstractLinkedDataTransformer<Location>
 	}
 	
 	public String getType() {
-		return "organization";
+		return "location";
 	}
 	
 	@Override

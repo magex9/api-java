@@ -1,0 +1,61 @@
+package ca.magex.crm.ld.crm;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import ca.magex.crm.api.crm.Organization;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
+import ca.magex.crm.ld.LinkedDataFormatter;
+import ca.magex.crm.ld.data.DataObject;
+
+public class OrganizationTransformerTest {
+
+	@Test
+	public void testOrganizationLinkedData() throws Exception {
+		Identifier organizationId = new Identifier("abc");
+		Status status = Status.ACTIVE;
+		String displayName = "Junit Test";
+		Identifier mainLocationId = new Identifier("xyz");
+		Organization organization = new Organization(organizationId, status, displayName, mainLocationId);
+		
+		DataObject obj = new OrganizationTransformer().format(organization);
+
+		assertEquals("{\n" + 
+				"  \"@context\": \"http://magex9.github.io/apis/crm\",\n" + 
+				"  \"@type\": \"organization\",\n" + 
+				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
+				"  \"displayName\": \"Junit Test\",\n" + 
+				"  \"status\": active,\n" + 
+				"  \"mainLocation\": {\n" + 
+				"    \"@type\": \"location\",\n" + 
+				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
+				"  }\n" + 
+				"}", obj.stringify(LinkedDataFormatter.basic()));
+		
+		assertEquals("{\n" + 
+				"  \"@context\": \"http://magex9.github.io/apis/crm\",\n" + 
+				"  \"@type\": \"organization\",\n" + 
+				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
+				"  \"displayName\": \"Junit Test\",\n" + 
+				"  \"status\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"    \"@type\": \"status\",\n" + 
+				"    \"@value\": \"active\"\n" + 
+				"  },\n" + 
+				"  \"mainLocation\": {\n" + 
+				"    \"@type\": \"location\",\n" + 
+				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
+				"  }\n" + 
+				"}", obj.formatted());
+		
+		Organization reloaded = new OrganizationTransformer().parse(obj.formatted());
+		
+		assertEquals(organization.getOrganizationId(), reloaded.getOrganizationId());
+		assertEquals(organization.getDisplayName(), reloaded.getDisplayName());
+		assertEquals(organization.getStatus(), reloaded.getStatus());
+		assertEquals(organization.getMainLocationId(), reloaded.getMainLocationId());
+	}
+	
+}

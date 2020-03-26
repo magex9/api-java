@@ -77,7 +77,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 		String jobTitle = data.getString("jobTitle");
 		Language language = languageTransformer.parse(data.get("language"));
 		Telephone homePhone = telephoneTransformer.parse(data.get("homePhone"));
-		Integer faxNumber = data.getInt("faxNumber");
+		Long faxNumber = data.getLong("faxNumber");
 		String userName = data.getString("userName");
 		List<Role> roles = roleTransformer.parse(data.getArray("roles"));
 		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
