@@ -2,6 +2,8 @@ package ca.magex.crm.api.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
@@ -68,7 +70,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.countOrganizations(filter);
 	}
 	
-	public List<Organization> findOrganizations(OrganizationsFilter filter) {
+	public Page<Organization> findOrganizations(OrganizationsFilter filter) {
 		return delegate.findOrganizations(filter);
 	}
 
@@ -113,7 +115,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.countLocations(filter);
 	}
 	
-	public List<Location> findLocations(LocationsFilter filter) {
+	public Page<Location> findLocations(LocationsFilter filter) {
 		return delegate.findLocations(filter);
 	}
 
@@ -165,7 +167,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.countPersons(filter);
 	}
 	
-	public List<Person> findPersons(PersonsFilter filter) {
+	public Page<Person> findPersons(PersonsFilter filter) {
 		return delegate.findPersons(filter);
 	}
 

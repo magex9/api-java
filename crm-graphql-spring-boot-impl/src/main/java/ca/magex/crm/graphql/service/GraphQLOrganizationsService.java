@@ -12,15 +12,12 @@ import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
-import ca.magex.crm.graphql.error.ApiGraphQLError;
+import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
 import graphql.GraphQL;
 import graphql.execution.AsyncExecutionStrategy;
-import graphql.execution.DataFetcherExceptionHandler;
-import graphql.execution.SimpleDataFetcherExceptionHandler;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -56,15 +53,10 @@ public class GraphQLOrganizationsService {
 						buildRuntimeWiring());
 		
 		/* create our graphQL engine */
-		DataFetcherExceptionHandler defaultFetcherExceptionHandler = new SimpleDataFetcherExceptionHandler();
-		graphQL = GraphQL.newGraphQL(graphQLSchema).queryExecutionStrategy(new AsyncExecutionStrategy((params) -> {
-			/* we want to treat our ApiExceptions specially */
-			if (params.getException() instanceof ApiException) {
-				params.getExecutionContext().addError(new ApiGraphQLError((ApiException) params.getException()));
-			} else {
-				defaultFetcherExceptionHandler.accept(params);
-			}
-		})).build();
+		graphQL = GraphQL
+				.newGraphQL(graphQLSchema)
+				.queryExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
+				.build();
 	}
 
 	/**
@@ -73,7 +65,6 @@ public class GraphQLOrganizationsService {
 	 * @return
 	 */
 	private RuntimeWiring buildRuntimeWiring() {
-		// TODO make these autowired
 		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(organizations);
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
 
@@ -82,6 +73,7 @@ public class GraphQLOrganizationsService {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.finder()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.byId()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.finder()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();
 	}
 }

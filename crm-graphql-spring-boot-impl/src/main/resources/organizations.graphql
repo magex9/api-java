@@ -1,11 +1,28 @@
-schema{
-	query:Query
+schema {
+	query: Query
+	mutation: Mutation
 }
 
-type Query{
-	findLocations(offset: Int!, pageSize: Int!): [Location]
-	findOrganization(organizationId: String!): Organization
-	findOrganizations(offset: Int!, pageSize: Int!): [Organization]
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input Paging {
+	pageNumber: Int!
+	pageSize: Int!
+	sortField: String!
+	sortOrder: SortOrder!
+}
+
+type Query {	
+	findOrganization(organizationId: String!): Organization	
+	findOrganizations(paging: Paging!): OrganizationPage
+	findLocations(paging: Paging!): LocationPage
+}
+
+type Mutation {
+	createOrganization(organizationName: String!) : Organization!
 }
 
 type Organization {
@@ -15,6 +32,13 @@ type Organization {
 	mainLocation: Location
 }
 
+type OrganizationPage {
+	totalPages: Int!
+	totalElements: Int!	
+	numberOfElements: Int!
+	content: [Organization]	
+}
+
 type Location {
 	locationId: String!
 	orgId: String!
@@ -22,6 +46,13 @@ type Location {
 	reference: String
 	displayName: String
 	address: MailingAddress	
+}
+
+type LocationPage {
+	totalPages: Int!
+	totalElements: Int!	
+	numberOfElements: Int!
+	content: [Location]	
 }
 
 type MailingAddress {

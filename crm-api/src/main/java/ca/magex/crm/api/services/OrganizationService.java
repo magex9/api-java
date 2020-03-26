@@ -1,6 +1,6 @@
 package ca.magex.crm.api.services;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -24,7 +24,7 @@ public interface OrganizationService {
     Organization updateMainLocation(Identifier organizationId, Identifier locationId);
     Organization findOrganization(Identifier organizationId);
     long countOrganizations(OrganizationsFilter filter);
-    List<Organization> findOrganizations(OrganizationsFilter filter);
+    Page<Organization> findOrganizations(OrganizationsFilter filter);
 
     Location createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address);
     Location updateLocationName(Identifier locationId, String locationName);
@@ -33,7 +33,7 @@ public interface OrganizationService {
     Location disableLocation(Identifier locationId);
     Location findLocation(Identifier locationId);
     long countLocations(LocationsFilter filter);
-    List<Location> findLocations(LocationsFilter filter);
+    Page<Location> findLocations(LocationsFilter filter);
 
     Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, String email, String jobTitle, Language language, Telephone homePhone, Integer faxNumber);
     Person updatePersonName(Identifier personId, PersonName name);
@@ -45,6 +45,6 @@ public interface OrganizationService {
     Person removeUserRole(Identifier personId, Role role);
     Person findPerson(Identifier personId);
     long countPersons(PersonsFilter filter);
-    List<Person> findPersons(PersonsFilter filter);
+    Page<Person> findPersons(PersonsFilter filter);
     
 }

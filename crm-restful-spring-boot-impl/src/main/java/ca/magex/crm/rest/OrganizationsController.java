@@ -26,7 +26,7 @@ public class OrganizationsController {
 	
 	@GetMapping("/organizations")
 	public List<Organization> all() {
-		return organizations.findOrganizations(new OrganizationsFilter());
+		return organizations.findOrganizations(new OrganizationsFilter()).getContent();
 	}
 	
 	@PostMapping("/organizations")
