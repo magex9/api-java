@@ -10,6 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
+import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.services.OrganizationPolicyBasicImpl;
 import ca.magex.crm.api.services.SecuredOrganizationService;
 import ca.magex.crm.api.system.Identifier;
@@ -31,12 +32,13 @@ public class RestfulApiApplication {
 	}
 	
 	@Bean
-	public Jackson2ObjectMapperBuilderCustomizer customizer() {
+	public Jackson2ObjectMapperBuilderCustomizer customizer(SecuredOrganizationService organizations) {
 		return new Jackson2ObjectMapperBuilderCustomizer() {
 			@Override
 			public void customize(Jackson2ObjectMapperBuilder builder) {
 				builder
 					.serializerByType(Identifier.class, new IdentifierSerializer())
+					.serializerByType(Organization.class, new OrganizationSerializer(organizations))
 					.indentOutput(true)
 					.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
 			}
