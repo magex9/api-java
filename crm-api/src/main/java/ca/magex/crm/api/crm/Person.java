@@ -2,6 +2,9 @@ package ca.magex.crm.api.crm;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
@@ -32,7 +35,7 @@ public class Person {
 	
 	private Telephone homePhone;
 	
-	private Integer faxNumber;
+	private Long faxNumber;
 	
 	private String userName;
 	
@@ -40,7 +43,7 @@ public class Person {
 
 	public Person(Identifier personId, Identifier organizationId, Status status, String displayName,
 			PersonName legalName, MailingAddress address, String email, String jobTitle, Language language,
-			Telephone homePhone, Integer faxNumber, String userName, List<Role> roles) {
+			Telephone homePhone, Long faxNumber, String userName, List<Role> roles) {
 		super();
 		this.personId = personId;
 		this.organizationId = organizationId;
@@ -129,11 +132,11 @@ public class Person {
 		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
 	}
 
-	public Integer getFaxNumber() {
+	public Long getFaxNumber() {
 		return faxNumber;
 	}
 	
-	public Person withFaxNumber(Integer faxNumber) {
+	public Person withFaxNumber(Long faxNumber) {
 		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
 	}
 	
@@ -151,6 +154,16 @@ public class Person {
 	
 	public Person withRoles(List<Role> roles) {
 		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 }

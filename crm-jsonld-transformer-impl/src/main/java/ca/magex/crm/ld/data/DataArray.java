@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ca.magex.crm.ld.LinkedDataFormatter;
+
 public final class DataArray extends DataElement {
 	
 	private final List<DataElement> elements;
@@ -31,28 +33,26 @@ public final class DataArray extends DataElement {
 		return elements;
 	}
 	
-	public void stream(OutputStream os, Integer indentation) throws IOException {
-		boolean indented = indentation != null;
-		byte[] prefix = prefix(indentation);
+	public void stream(OutputStream os, LinkedDataFormatter formatter) throws IOException {
 		os.write("[".getBytes());
 		if (elements.size() == 1) {
 			elements.get(0).stream(os, null);
 		} else if (elements.size() > 1) {
-			if (indented)
-				os.write(EOL);
+			if (formatter.isIndented())
+				os.write(LinkedDataFormatter.EOL);
+			formatter.indent();
 			for (int i = 0; i < elements.size(); i++) {
-				if (indented) {
-					os.write(prefix);
-					os.write(INDENT);
-				}
-				elements.get(i).stream(os, indentation == null ? null : indentation + 1);
+				if (formatter.isIndented())
+					os.write(formatter.prefix());
+				elements.get(i).stream(os, formatter);
 				if (i < elements.size() - 1)
 					os.write(",".getBytes());
-				if (indented)
-					os.write(EOL);
+				if (formatter.isIndented())
+					os.write(LinkedDataFormatter.EOL);
 			}
-			if (indented)
-				os.write(prefix);
+			formatter.unindent();
+			if (formatter.isIndented())
+				os.write(formatter.prefix());
 		}
 		os.write("]".getBytes());
 	}

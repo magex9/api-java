@@ -3,6 +3,8 @@ package ca.magex.crm.ld.data;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import ca.magex.crm.ld.LinkedDataFormatter;
+
 public final class DataPair extends DataElement {
 
 	private final String key;
@@ -23,13 +25,13 @@ public final class DataPair extends DataElement {
 		return value;
 	}
 	
-	public void stream(OutputStream os, Integer indentation) throws IOException {
+	public void stream(OutputStream os, LinkedDataFormatter formatter) throws IOException {
 		os.write("\"".getBytes());
 		os.write(key.getBytes());
 		os.write("\":".getBytes());
-		if (indentation != null)
+		if (formatter.isIndented())
 			os.write(" ".getBytes());
-		value.stream(os, indentation);
+		value.stream(os, formatter);
 	}
 	
 }

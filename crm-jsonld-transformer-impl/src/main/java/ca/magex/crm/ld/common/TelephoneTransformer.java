@@ -8,7 +8,7 @@ public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephon
 
 	@Override
 	public String getType() {
-		return "telephone";
+		return "Telephone";
 	}
 	
 	@Override
@@ -22,8 +22,8 @@ public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephon
 	public Telephone parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
-		Integer number = data.getInt("number");
-		Integer extension = data.getInt("extension");
+		Long number = data.getLong("number");
+		Long extension = data.getLong("extension");
 		return new Telephone(number, extension);
 	}
 			

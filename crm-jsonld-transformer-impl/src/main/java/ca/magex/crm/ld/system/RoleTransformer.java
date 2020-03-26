@@ -8,13 +8,13 @@ public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 
 	@Override
 	public String getType() {
-		return "role";
+		return "Role";
 	}
 	
 	@Override
 	public DataObject format(Role role) {
 		return base()
-			.with("code", role.getCode())
+			.with("@value", role.getCode())
 			.with("name", role.getName());
 	}
 
@@ -22,7 +22,7 @@ public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 	public Role parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
-		Integer code = data.getInt("code");
+		Integer code = data.getInt("@value");
 		String name = data.getString("name");
 		return new Role(code, name);
 	}

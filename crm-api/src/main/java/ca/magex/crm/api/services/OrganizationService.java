@@ -35,10 +35,10 @@ public interface OrganizationService {
     long countLocations(LocationsFilter filter);
     Page<Location> findLocations(LocationsFilter filter);
 
-    Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, String email, String jobTitle, Language language, Telephone homePhone, Integer faxNumber);
+    Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, String email, String jobTitle, Language language, Telephone homePhone, Long faxNumber);
     Person updatePersonName(Identifier personId, PersonName name);
     Person updatePersonAddress(Identifier personId, MailingAddress address);
-    Person updatePersonCommunication(Identifier personId, String email, String jobTitle, Language language, Telephone homePhone, Integer faxNumber);
+    Person updatePersonCommunication(Identifier personId, String email, String jobTitle, Language language, Telephone homePhone, Long faxNumber);
     Person enablePerson(Identifier personId);
     Person disablePerson(Identifier personId);
     Person addUserRole(Identifier personId, Role role);

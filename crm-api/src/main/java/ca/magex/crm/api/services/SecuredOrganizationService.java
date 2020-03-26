@@ -120,7 +120,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 	}
 
 	public Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, String email, String jobTitle,
-			Language language, Telephone homePhone, Integer faxNumber) {
+			Language language, Telephone homePhone, Long faxNumber) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
 		return delegate.createPerson(organizationId, name, address, email, jobTitle, language, homePhone, faxNumber);
@@ -139,7 +139,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 	}
 
 	public Person updatePersonCommunication(Identifier personId, String email, String jobTitle, Language language,
-			Telephone homePhone, Integer faxNumber) {
+			Telephone homePhone, Long faxNumber) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonCommunication: " + personId);
 		return delegate.updatePersonCommunication(personId, email, jobTitle, language, homePhone, faxNumber);

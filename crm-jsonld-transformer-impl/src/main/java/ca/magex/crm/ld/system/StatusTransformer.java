@@ -8,7 +8,7 @@ public class StatusTransformer extends AbstractLinkedDataTransformer<Status> {
 
 	@Override
 	public String getType() {
-		return "status";
+		return "Status";
 	}
 	
 	@Override

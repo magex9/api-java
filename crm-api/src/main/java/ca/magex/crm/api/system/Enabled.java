@@ -2,6 +2,9 @@ package ca.magex.crm.api.system;
 
 import java.time.LocalDateTime;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Enabled {
 	
 	private Identifier identifier;
@@ -26,6 +29,16 @@ public class Enabled {
 
 	public LocalDateTime getDisabled() {
 		return disabled;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 }

@@ -96,6 +96,9 @@ public class DataParser {
 			char c = getCurrentChar("parseArray");
 			if (isWhitespace(c) || c == ',') {
 				index++;
+			} else if (isOpenCurlyBracket(c)) {
+				index++;
+				elements.add(parseObject());
 			} else if (isCloseSquareBracket(c)) {
 				index++;
 				return new DataArray(elements);
@@ -138,7 +141,7 @@ public class DataParser {
 				index++;
 			} else if (isQuote(c)) {
 				index++;
-				key = parseString();
+				key = parseKey();
 				break;
 			} else {
 				throw new RuntimeException("Expected a key at index: " + index + " (" + elipse(index) + ")");
@@ -159,20 +162,37 @@ public class DataParser {
 		return new DataPair(key, value);
 	}
 
+	private String parseKey() {
+		StringBuilder sb = new StringBuilder();
+		while (index < length) {
+			char c = getCurrentChar("parseKey");
+			if (isAlphaNumeric(c) || c == '_' || c == '@' ) {
+				sb.append(c);
+				index++;
+			} else if (isQuote(c)) {
+				index++;
+				return sb.toString();
+			} else {
+				throw new RuntimeException("Expected a text at index: " + index + " (" + elipse(index) + ")");
+			}
+		}
+		throw new RuntimeException("String not terminated at: " + index + " (" + elipse(index) + ")");
+	}
+
 	private String parseString() {
 		StringBuilder sb = new StringBuilder();
 		while (index < length) {
 			char c = getCurrentChar("parseString");
-			if (isCharacter(c)) {
-				sb.append(c);
+			if (isQuote(c)) {
 				index++;
+				return sb.toString();
 			} else if (c == '\\' && isExcapeable(text.charAt(index + 1))) {
 				sb.append(c);
 				sb.append(text.charAt(index + 1));
 				index += 1;
-			} else if (isQuote(c)) {
+			} else if (isExtendedCharacter(c)) {
+				sb.append(c);
 				index++;
-				return sb.toString();
 			} else {
 				throw new RuntimeException("Expected a text at index: " + index + " (" + elipse(index) + ")");
 			}
@@ -193,14 +213,33 @@ public class DataParser {
 				index++;
 				decimal = true;
 			} else {
-				return decimal ? Float.parseFloat(sb.toString()) : Integer.parseInt(sb.toString());
+				if (decimal) {
+					try {
+						return Float.valueOf(sb.toString());
+					} catch (NumberFormatException e) {
+						return Double.valueOf(sb.toString());
+					}
+				} else {
+					try {
+						return Integer.valueOf(sb.toString());
+					} catch (NumberFormatException e) {
+						return Long.valueOf(sb.toString());
+					}
+				}
 			}
 		}
 		if (decimal) {
-			return Float.valueOf(sb.toString());
-		}
-		else {
-			return Integer.valueOf(sb.toString());
+			try {
+				return Float.valueOf(sb.toString());
+			} catch (NumberFormatException e) {
+				return Double.valueOf(sb.toString());
+			}
+		} else {
+			try {
+				return Integer.valueOf(sb.toString());
+			} catch (NumberFormatException e) {
+				return Long.valueOf(sb.toString());
+			}
 		}
 	}
 
@@ -240,8 +279,8 @@ public class DataParser {
 		return isDigit(c) || isLowercaseCharacter(c) || isUppercaseCharacter(c);
 	}
 	
-	private boolean isCharacter(char c) {
-		return isAlphaNumeric(c) || isDigit(c) || isSpace(c);
+	private boolean isExtendedCharacter(char c) {
+		return 32 <= (int)c && (int)c <= 255;
 	}
 	
 	private boolean isWhitespace(char c) {
