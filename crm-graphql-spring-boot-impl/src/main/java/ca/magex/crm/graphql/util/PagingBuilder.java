@@ -7,13 +7,13 @@ import ca.magex.crm.api.filters.Paging;
 
 public class PagingBuilder {
 
-	private Integer offset;
+	private Integer pageNumber;
 	private Integer pageSize;
 	private String sortField;
 	private String sortDirection;
 	
-	public PagingBuilder withOffset(Integer offset) {
-		this.offset = offset;
+	public PagingBuilder withPageNumber(Integer pageNumber) {
+		this.pageNumber = pageNumber;
 		return this;
 	}
 	
@@ -42,7 +42,7 @@ public class PagingBuilder {
 		}
 		
 		return new Paging(
-				offset.longValue(), 
+				pageNumber.intValue(), 
 				pageSize.intValue(),
 				sort);
 	}

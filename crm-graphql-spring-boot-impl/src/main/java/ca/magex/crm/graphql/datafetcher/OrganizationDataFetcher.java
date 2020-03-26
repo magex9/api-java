@@ -1,6 +1,6 @@
 package ca.magex.crm.graphql.datafetcher;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.filters.OrganizationsFilter;
@@ -32,11 +32,10 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	 * 
 	 * @return
 	 */
-	public DataFetcher<List<Organization>> finder() {
+	public DataFetcher<Page<Organization>> finder() {
 		return (environment) -> {		
 			Paging paging = extractPaging(environment);		
-			List<Organization> results = organizations.findOrganizations(new OrganizationsFilter(null, paging));
-			return results;
+			return organizations.findOrganizations(new OrganizationsFilter(null, paging));			
 		};
 	}
 }

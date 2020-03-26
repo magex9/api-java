@@ -29,7 +29,7 @@ public abstract class AbstractDataFetcher {
 		Map<String,Object> pagingMap = environment.getArgument("paging");
 		
 		return new PagingBuilder()
-				.withOffset((Integer) pagingMap.get("offset"))
+				.withPageNumber((Integer) pagingMap.get("pageNumber"))
 				.withPageSize((Integer) pagingMap.get("pageSize"))
 				.withSortField((String) pagingMap.get("sortField"))
 				.withSortDirection((String) pagingMap.get("sortOrder"))

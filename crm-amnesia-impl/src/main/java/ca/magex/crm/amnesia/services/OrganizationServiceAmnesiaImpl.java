@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -19,6 +20,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.services.OrganizationService;
@@ -30,7 +32,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	
 	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 	
-	private Map<Identifier, Object> data;
+	private Map<Identifier, Object> data;		
 	
 	public OrganizationServiceAmnesiaImpl() {
 		data = new HashMap<Identifier, Object>();
@@ -104,12 +106,15 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.count();
 	}
 	
-	public List<Organization> findOrganizations(OrganizationsFilter filter) {
-		return data.values().stream()
-			.filter(i -> i instanceof Organization)
-			.map(i -> (Organization)i)
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.collect(Collectors.toList());
+	public Page<Organization> findOrganizations(OrganizationsFilter filter) {
+		List<Organization> allMatchingOrgs = data
+				.values()
+				.stream()
+				.filter(i -> i instanceof Organization)
+				.map(i -> (Organization)i)
+				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+				.collect(Collectors.toList());		
+		return PageBuilder.buildPageFor(allMatchingOrgs, filter.getPaging());
 	}
 
 	public Location createLocation(Identifier organizationId, String locationName, String locationReference,
@@ -176,12 +181,15 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.count();
 	}
 	
-	public List<Location> findLocations(LocationsFilter filter) {
-		return data.values().stream()
-			.filter(i -> i instanceof Location)
-			.map(i -> (Location)i)
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.collect(Collectors.toList());
+	public Page<Location> findLocations(LocationsFilter filter) {
+		List<Location> allMatchingLocations = data
+				.values()
+				.stream()
+				.filter(i -> i instanceof Location)
+				.map(i -> (Location)i)
+				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+				.collect(Collectors.toList());		
+		return PageBuilder.buildPageFor(allMatchingLocations, filter.getPaging());
 	}
 
 	public Person createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, String email,
@@ -271,12 +279,15 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.count();
 	}
 	
-	public List<Person> findPersons(PersonsFilter filter) {
-		return data.values().stream()
-			.filter(i -> i instanceof Person)
-			.map(i -> (Person)i)
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.collect(Collectors.toList());
+	public Page<Person> findPersons(PersonsFilter filter) {
+		List<Person> allMatchingPersons = data
+				.values()
+				.stream()
+				.filter(i -> i instanceof Person)
+				.map(i -> (Person)i)
+				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+				.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(allMatchingPersons, filter.getPaging());
 	}
 
 	public Person addUserRole(Identifier personId, Role role) {

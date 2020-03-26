@@ -12,6 +12,14 @@ public class Paging implements Pageable {
 	private int pageNumber;
 	
 	private Sort sort;
+	
+	public Paging(int pageNumber, int pageSize, Sort sort) {
+		super();
+		this.offset = pageSize * (pageNumber - 1);
+		this.pageSize = pageSize;
+		this.pageNumber = pageNumber;
+		this.sort = sort;
+	}
 
 	public Paging(long offset, int pageSize, Sort sort) {
 		super();

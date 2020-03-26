@@ -15,8 +15,12 @@ public class OrganizationServiceTestDataPopulator {
 		organizations.updateMainLocation(gotham.getOrganizationId(), gothamMain.getLocationId());
 		
 		Organization joker = organizations.createOrganization("Jokers Money");
-		Location jokerMain = organizations.createLocation(gotham.getOrganizationId(), "Alta Vista", "ALTAVISTA", new MailingAddress("234 Main Street", "Gotham", "Ontario", new Country("CA", "Canada"), "K1K4R4"));
+		Location jokerMain = organizations.createLocation(gotham.getOrganizationId(), "Joker Nest", "JOKERNEST", new MailingAddress("234 Main Street", "Gotham", "Ontario", new Country("CA", "Canada"), "K1K4R4"));
 		organizations.updateMainLocation(joker.getOrganizationId(), jokerMain.getLocationId());
+		
+		Organization shield = organizations.createOrganization("Shield");
+		Location shieldMain = organizations.createLocation(shield.getOrganizationId(), "Head Quarters", "HQ", new MailingAddress("99 Blue Jays Way", "Gotham", "Ontario", new Country("CA", "Canada"), "J2N8A4"));
+		organizations.updateMainLocation(shield.getOrganizationId(), shieldMain.getLocationId());
 		
 		return organizations;
 	}

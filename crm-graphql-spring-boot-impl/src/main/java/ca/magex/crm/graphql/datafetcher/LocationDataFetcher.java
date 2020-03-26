@@ -1,6 +1,6 @@
 package ca.magex.crm.graphql.datafetcher;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.Location;
 import ca.magex.crm.api.crm.Organization;
@@ -45,11 +45,10 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	 * 
 	 * @return
 	 */
-	public DataFetcher<List<Location>> finder() {
+	public DataFetcher<Page<Location>> finder() {
 		return (environment) -> {
 			Paging paging = extractPaging(environment);		
-			List<Location> results = organizations.findLocations(new LocationsFilter("", paging));
-			return results;
+			return organizations.findLocations(new LocationsFilter("", paging));
 		};
 	}
 }
