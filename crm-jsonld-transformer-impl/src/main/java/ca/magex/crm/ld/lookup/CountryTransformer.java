@@ -7,8 +7,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 
 	@Override
-	public String getType() {
-		return "Country";
+	public Class<?> getType() {
+		return Country.class;
 	}
 	
 	@Override

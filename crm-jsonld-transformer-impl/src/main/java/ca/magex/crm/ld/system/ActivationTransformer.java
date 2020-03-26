@@ -10,8 +10,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class ActivationTransformer extends AbstractLinkedDataTransformer<Activation> {
 
 	@Override
-	public String getType() {
-		return "Activation";
+	public Class<?> getType() {
+		return Activation.class;
 	}
 	
 	@Override

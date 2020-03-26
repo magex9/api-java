@@ -7,8 +7,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutation> {
 
 	@Override
-	public String getType() {
-		return "Salutation";
+	public Class<?> getType() {
+		return Salutation.class;
 	}
 	
 	@Override

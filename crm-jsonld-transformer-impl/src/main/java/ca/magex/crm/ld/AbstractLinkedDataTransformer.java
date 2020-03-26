@@ -43,7 +43,7 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public DataObject base() {
 		List<DataPair> pairs = new ArrayList<DataPair>();
 		pairs.add(new DataPair("@context", new DataText(getSchemaBase())));
-		pairs.add(new DataPair("@type", new DataText(getType())));
+		pairs.add(new DataPair("@type", new DataText(getType().getSimpleName())));
 		return new DataObject(pairs);
 	}
 	
@@ -96,8 +96,8 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public void validateType(DataObject data) {
 		if (!data.contains("@type"))
 			throw new IllegalArgumentException("dataLD missing @type");
-		if (!data.getString("@type").equals(getType()))
-			throw new IllegalArgumentException("@type does not match, expected " + getType() + " but got " + data.getString("@type"));
+		if (!data.getString("@type").equals(getType().getSimpleName()))
+			throw new IllegalArgumentException("@type does not match, expected " + getType().getSimpleName() + " but got " + data.getString("@type"));
 	}
 	
 }

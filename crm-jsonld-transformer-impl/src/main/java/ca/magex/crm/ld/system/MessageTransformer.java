@@ -8,8 +8,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class MessageTransformer extends AbstractLinkedDataTransformer<Message> {
 
 	@Override
-	public String getType() {
-		return "Message";
+	public Class<?> getType() {
+		return Message.class;
 	}
 	
 	@Override

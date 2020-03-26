@@ -1,49 +1,38 @@
 package ca.magex.crm.api.crm;
 
-import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 public class Person {
 
 	private Identifier personId;
-	
+
 	private Identifier organizationId;
-	
+
 	private Status status;
-	
+
 	private String displayName;
-	
+
 	private PersonName legalName;
-	
+
 	private MailingAddress address;
-	
-	private String email;
-	
-	private String jobTitle;
-	
-	private Language language;
-	
-	private Telephone homePhone;
-	
-	private Long faxNumber;
-	
-	private String userName;
-	
-	private List<Role> roles;
+
+	private Communication communication;
+
+	private BusinessUnit unit;
+
+	private User user;
 
 	public Person(Identifier personId, Identifier organizationId, Status status, String displayName,
-			PersonName legalName, MailingAddress address, String email, String jobTitle, Language language,
-			Telephone homePhone, Long faxNumber, String userName, List<Role> roles) {
+			PersonName legalName, MailingAddress address, Communication communication, BusinessUnit unit, User user) {
 		super();
 		this.personId = personId;
 		this.organizationId = organizationId;
@@ -51,13 +40,9 @@ public class Person {
 		this.displayName = displayName;
 		this.legalName = legalName;
 		this.address = address;
-		this.email = email;
-		this.jobTitle = jobTitle;
-		this.language = language;
-		this.homePhone = homePhone;
-		this.faxNumber = faxNumber;
-		this.userName = userName;
-		this.roles = roles;
+		this.communication = communication;
+		this.unit = unit;
+		this.user = user;
 	}
 
 	public Identifier getPersonId() {
@@ -71,9 +56,9 @@ public class Person {
 	public Status getStatus() {
 		return status;
 	}
-	
+
 	public Person withStatus(Status status) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 
 	public String getDisplayName() {
@@ -81,7 +66,7 @@ public class Person {
 	}
 
 	public Person withDisplayName(String displayName) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 
 	public PersonName getLegalName() {
@@ -89,7 +74,7 @@ public class Person {
 	}
 
 	public Person withLegalName(PersonName legalName) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 
 	public MailingAddress getAddress() {
@@ -97,70 +82,38 @@ public class Person {
 	}
 
 	public Person withAddress(MailingAddress address) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public Person withEmail(String email) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
-	}
-
-	public String getJobTitle() {
-		return jobTitle;
-	}
-
-	public Person withJobTitle(String jobTitle) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
-	}
-
-	public Language getLanguage() {
-		return language;
-	}
-
-	public Person withLanguage(Language language) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
-	}
-
-	public Telephone getHomePhone() {
-		return homePhone;
-	}
-
-	public Person withHomePhone(Telephone homePhone) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
-	}
-
-	public Long getFaxNumber() {
-		return faxNumber;
+	public Communication getCommunication() {
+		return communication;
 	}
 	
-	public Person withFaxNumber(Long faxNumber) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+	public Person withCommunication(Communication communication) {
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+	}
+
+	public BusinessUnit getUnit() {
+		return unit;
 	}
 	
-	public String getUserName() {
-		return userName;
+	public Person withUnit(BusinessUnit unit) {
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 	
-	public Person withUserName(String userName) {
-		return new Person(personId, organizationId, status, userName, legalName, address, userName, userName, language, homePhone, faxNumber, userName, roles);
+	public User getUser() {
+		return user;
 	}
-	
-	public List<Role> getRoles() {
-		return roles;
+
+	public Person withUser(User user) {
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
-	
-	public Person withRoles(List<Role> roles) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
-	}
-	
+
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);

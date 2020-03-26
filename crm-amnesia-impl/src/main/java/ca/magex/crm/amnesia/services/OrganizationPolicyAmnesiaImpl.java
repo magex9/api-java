@@ -1,5 +1,6 @@
 package ca.magex.crm.amnesia.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.magex.crm.api.crm.Location;
@@ -37,7 +38,7 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canCreateOrganization() {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		return false;
 	}
@@ -45,7 +46,7 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canViewOrganization(Identifier organizationId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (auth.getOrganizationId().equals(organizationId))
 			return true;
@@ -55,11 +56,11 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canUpdateOrganization(Identifier organizationId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (!auth.getOrganizationId().equals(organizationId))
 			return false;
-		if (auth.getRoles().contains(RE_ADMIN))
+		if (auth.getUser().getRoles().contains(RE_ADMIN))
 			return true;
 		return false;
 	}
@@ -75,11 +76,11 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (!auth.getOrganizationId().equals(organizationId))
 			return false;
-		if (auth.getRoles().contains(RE_ADMIN))
+		if (auth.getUser().getRoles().contains(RE_ADMIN))
 			return true;
 		return false;
 	}
@@ -87,7 +88,7 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canViewLocation(Identifier locationId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (auth.getOrganizationId().equals(service.findLocation(locationId).getOrganizationId()))
 			return true;
@@ -97,11 +98,11 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canUpdateLocation(Identifier locationId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (auth.getOrganizationId().equals(service.findLocation(locationId).getOrganizationId()))
 			return false;
-		if (auth.getRoles().contains(RE_ADMIN))
+		if (auth.getUser().getRoles().contains(RE_ADMIN))
 			return true;
 		return false;
 	}
@@ -121,7 +122,7 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canViewPerson(Identifier personId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (auth.getOrganizationId().equals(service.findPerson(personId).getOrganizationId()))
 			return true;
@@ -131,11 +132,11 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	public boolean canUpdatePerson(Identifier personId) {
 		if (auth == null)
 			return false;
-		if (auth.getRoles().contains(CRM_ADMIN))
+		if (auth.getUser().getRoles().contains(CRM_ADMIN))
 			return true;
 		if (auth.getOrganizationId().equals(service.findPerson(personId).getOrganizationId()))
 			return false;
-		if (auth.getRoles().contains(RE_ADMIN))
+		if (auth.getUser().getRoles().contains(RE_ADMIN))
 			return true;
 		return false;
 	}
@@ -150,22 +151,6 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 
 	public boolean canUpdateUserRole(Identifier personId) {
 		return canUpdatePerson(personId);
-	}
-
-	public List<Message> validate(Organization organization) {
-		return null;
-	}
-
-	public List<Message> validate(Location location) {
-		return null;
-	}
-
-	public List<Message> validate(Person person) {
-		return null;
-	}
-
-	public List<Message> validate(List<Role> roles) {
-		return null;
 	}
 
 }
