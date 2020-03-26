@@ -23,29 +23,29 @@ public class OrganizationTransformerTest {
 		DataObject obj = new OrganizationTransformer().format(organization);
 
 		assertEquals("{\n" + 
-				"  \"@context\": \"http://magex9.github.io/apis/crm\",\n" + 
-				"  \"@type\": \"organization\",\n" + 
+				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
+				"  \"@type\": \"Organization\",\n" + 
+				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
-				"  \"status\": active,\n" + 
-				"  \"mainLocation\": {\n" + 
-				"    \"@type\": \"location\",\n" + 
-				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
-				"  }\n" + 
+				"  \"status\": \"active\",\n" + 
+				"  \"mainLocation\": \"xyz\"\n" + 
 				"}", obj.stringify(LinkedDataFormatter.basic()));
 		
 		assertEquals("{\n" + 
-				"  \"@context\": \"http://magex9.github.io/apis/crm\",\n" + 
-				"  \"@type\": \"organization\",\n" + 
+				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
+				"  \"@type\": \"Organization\",\n" + 
+				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"status\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
-				"    \"@type\": \"status\",\n" + 
+				"    \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
+				"    \"@type\": \"Status\",\n" + 
 				"    \"@value\": \"active\"\n" + 
 				"  },\n" + 
 				"  \"mainLocation\": {\n" + 
-				"    \"@type\": \"location\",\n" + 
+				"    \"@type\": \"Location\",\n" + 
+				"    \"@value\": \"xyz\",\n" + 
 				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
 				"  }\n" + 
 				"}", obj.formatted());

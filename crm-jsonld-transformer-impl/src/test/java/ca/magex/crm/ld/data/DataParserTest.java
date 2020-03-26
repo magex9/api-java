@@ -120,6 +120,18 @@ public class DataParserTest {
 	}
 	
 	@Test
+	public void testObjectArray() throws Exception {
+		String original = "[{\"a\":1},{\"b\":2.3}]";
+		DataElement el = parse(original);
+		assertEquals(DataArray.class, el.getClass());
+		assertEquals(original, el.compact());
+		assertEquals("[\n" + 
+				"  {\"a\": 1},\n" + 
+				"  {\"b\": 2.3}\n" + 
+				"]", el.formatted());
+	}
+	
+	@Test
 	public void testWidget() throws Exception {
 		String original = "{\"widget\": {\n" + 
 				"    \"null\": null,\n" + 

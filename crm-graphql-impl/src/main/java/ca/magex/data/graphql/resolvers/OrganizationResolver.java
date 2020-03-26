@@ -27,7 +27,7 @@ public class OrganizationResolver implements GraphQLResolver<Organization> {
     
 	public Location getMainLocation(Organization organization) {
 		try {
-			return organizations.findLocation(organization.getMainLocation());
+			return organizations.findLocation(organization.getMainLocationId());
 		} catch (Exception e) {
 			return null;
 		}

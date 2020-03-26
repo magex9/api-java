@@ -96,6 +96,9 @@ public class DataParser {
 			char c = getCurrentChar("parseArray");
 			if (isWhitespace(c) || c == ',') {
 				index++;
+			} else if (isOpenCurlyBracket(c)) {
+				index++;
+				elements.add(parseObject());
 			} else if (isCloseSquareBracket(c)) {
 				index++;
 				return new DataArray(elements);
@@ -211,16 +214,32 @@ public class DataParser {
 				decimal = true;
 			} else {
 				if (decimal) {
-					return Float.valueOf(sb.toString());
+					try {
+						return Float.valueOf(sb.toString());
+					} catch (NumberFormatException e) {
+						return Double.valueOf(sb.toString());
+					}
 				} else {
-					return Integer.valueOf(sb.toString());
+					try {
+						return Integer.valueOf(sb.toString());
+					} catch (NumberFormatException e) {
+						return Long.valueOf(sb.toString());
+					}
 				}
 			}
 		}
 		if (decimal) {
-			return Float.valueOf(sb.toString());
+			try {
+				return Float.valueOf(sb.toString());
+			} catch (NumberFormatException e) {
+				return Double.valueOf(sb.toString());
+			}
 		} else {
-			return Integer.valueOf(sb.toString());
+			try {
+				return Integer.valueOf(sb.toString());
+			} catch (NumberFormatException e) {
+				return Long.valueOf(sb.toString());
+			}
 		}
 	}
 
