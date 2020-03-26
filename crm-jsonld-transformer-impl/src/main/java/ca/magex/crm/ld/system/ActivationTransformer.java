@@ -2,34 +2,34 @@ package ca.magex.crm.ld.system;
 
 import java.time.LocalDateTime;
 
-import ca.magex.crm.api.system.Enabled;
+import ca.magex.crm.api.system.Activation;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
-public class EnabledTransformer extends AbstractLinkedDataTransformer<Enabled> {
+public class ActivationTransformer extends AbstractLinkedDataTransformer<Activation> {
 
 	@Override
 	public String getType() {
-		return "Enabled";
+		return "Activation";
 	}
 	
 	@Override
-	public DataObject format(Enabled enabled) {
+	public DataObject format(Activation activation) {
 		return base()
-			.with("identifer", enabled.getIdentifier())
-			.with("enabled", datetimeToString(enabled.getEnabled()))
-			.with("disabled", datetimeToString(enabled.getDisabled()));
+			.with("identifer", activation.getIdentifier())
+			.with("enabled", datetimeToString(activation.getEnabled()))
+			.with("disabled", datetimeToString(activation.getDisabled()));
 	}
 
 	@Override
-	public Enabled parse(DataObject data) {
+	public Activation parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
 		Identifier identifier = new Identifier(data.getString("identifier"));
 		LocalDateTime enabled = parseDatetime(data.getString("enabled"));
 		LocalDateTime disabled = parseDatetime(data.getString("disabled"));
-		return new Enabled(identifier, enabled, disabled);
+		return new Activation(identifier, enabled, disabled);
 	}
 			
 }
