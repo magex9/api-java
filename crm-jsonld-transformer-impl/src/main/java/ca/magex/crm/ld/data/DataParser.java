@@ -210,13 +210,16 @@ public class DataParser {
 				index++;
 				decimal = true;
 			} else {
-				return decimal ? Float.parseFloat(sb.toString()) : Integer.parseInt(sb.toString());
+				if (decimal) {
+					return Float.valueOf(sb.toString());
+				} else {
+					return Integer.valueOf(sb.toString());
+				}
 			}
 		}
 		if (decimal) {
 			return Float.valueOf(sb.toString());
-		}
-		else {
+		} else {
 			return Integer.valueOf(sb.toString());
 		}
 	}

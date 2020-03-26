@@ -23,7 +23,7 @@ public class DataParserTest {
 		DataElement el = parse(original);
 		assertEquals(DataObject.class, el.getClass());
 		assertEquals("{\"name\":\"Scott\"}", el.compact());
-		assertEquals("{\"name\":\"Scott\"}", el.formatted());
+		assertEquals("{\"name\": \"Scott\"}", el.formatted());
 	}
 	
 	@Test
@@ -45,11 +45,11 @@ public class DataParserTest {
 		String original = "{\"name\":\"Scott\",\"active\":true,\"number\":42}";
 		DataElement el = parse(original);
 		assertEquals(DataObject.class, el.getClass());
-		assertEquals("{\"name\":\"Scott\",\"active\":true,\"number\":42.0}", el.compact());
+		assertEquals("{\"name\":\"Scott\",\"active\":true,\"number\":42}", el.compact());
 		assertEquals("{\n" + 
 			"  \"name\": \"Scott\",\n" + 
 			"  \"active\": true,\n" + 
-			"  \"number\": 42.0\n" + 
+			"  \"number\": 42\n" + 
 			"}", el.formatted());
 	}
 
@@ -93,10 +93,12 @@ public class DataParserTest {
 	public void testParseNumbers() throws Exception {
 		String original = "{\"int\":5,\"float\":5.5}";
 		DataElement el = parse(original);
-		assertEquals(DataNumber.class, el.getClass());
-		assertEquals(Integer.class, ((DataNumber)el).value().getClass());
-		assertEquals(original, el.compact());
-		assertEquals(original, el.formatted());
+		assertEquals(DataObject.class, el.getClass());
+		assertEquals("{\"int\":5,\"float\":5.5}", el.compact());
+		assertEquals("{\n" + 
+				"  \"int\": 5,\n" + 
+				"  \"float\": 5.5\n" + 
+				"}", el.formatted());
 	}
 	
 	@Test
@@ -130,7 +132,7 @@ public class DataParserTest {
 				"}}";
 		DataElement el = parse(original);
 		assertEquals(DataObject.class, el.getClass());
-		assertEquals("{\"widget\":{\"null\":null,\"window\":{\"153\":\"This is string\",\"boolean\":true,\"int\":500.0,\"float\":5.555}}}", el.compact());
+		assertEquals("{\"widget\":{\"null\":null,\"window\":{\"153\":\"This is string\",\"boolean\":true,\"int\":500,\"float\":5.555}}}", el.compact());
 		assertEquals("{\n" + 
 				"  \"widget\": {\n" + 
 				"    \"null\": null,\n" + 

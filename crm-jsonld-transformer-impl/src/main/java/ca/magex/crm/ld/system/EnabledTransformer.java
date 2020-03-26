@@ -11,7 +11,7 @@ public class EnabledTransformer extends AbstractLinkedDataTransformer<Enabled> {
 
 	@Override
 	public String getType() {
-		return "enabled";
+		return "Enabled";
 	}
 	
 	@Override

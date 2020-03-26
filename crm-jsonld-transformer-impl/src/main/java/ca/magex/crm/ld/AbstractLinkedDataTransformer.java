@@ -18,7 +18,7 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public static final String PREFIX = "http://magex9.github.io/data/";
 	
 	public String getSchemaBase() {
-		return this.getClass().getPackageName().replaceAll("ca.magex.crm.ld.", "http://magex9.github.io/apis/");
+		return this.getClass().getPackageName().replaceAll("ca.magex.crm.ld.", "http://magex9.github.io/schema/");
 	}
 	
 	public String getTopicsReference(Object ref) {
@@ -52,7 +52,9 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	}
 	
 	public DataObject format(Identifier identifer) {
-		return base().with("@id", getTopicsReference(identifer.toString()));
+		return base()
+			.with("@value", new DataText(identifer.toString()))
+			.with("@id", getTopicsReference(identifer.toString()));
 	}
 	
 	public DataArray format(List<T> objs) {

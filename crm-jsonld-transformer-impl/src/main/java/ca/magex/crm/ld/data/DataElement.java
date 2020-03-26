@@ -32,6 +32,8 @@ public class DataElement {
 			return (DataElement)el;
 		} else if (el instanceof String) {
 			return new DataText((String)el);
+		} else if (el instanceof Number) {
+			return new DataNumber((Number)el);
 		}
 		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
 	}

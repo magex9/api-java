@@ -45,33 +45,161 @@ public class PersonTransformerTest {
 		Person person = new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
 		
 		DataObject obj = new PersonTransformer().format(person);
+		
+		System.out.println(obj.stringify(LinkedDataFormatter.basic()));
 
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/apis/crm\",\n" + 
-				"  \"@type\": \"organization\",\n" + 
+				"  \"@type\": \"person\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
-				"  \"displayName\": \"Junit Test\",\n" + 
-				"  \"status\": active,\n" + 
-				"  \"mainLocation\": {\n" + 
-				"    \"@type\": \"location\",\n" + 
+				"  \"organization\": {\n" + 
+				"    \"@type\": \"person\",\n" + 
 				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
-				"  }\n" + 
+				"  },\n" + 
+				"  \"status\": pending,\n" + 
+				"  \"displayName\": \"Junit Test\",\n" + 
+				"  \"legalName\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/common\",\n" + 
+				"    \"@type\": \"person_name\",\n" + 
+				"    \"salutation\": {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/lookup\",\n" + 
+				"      \"@type\": \"salutation\",\n" + 
+				"      \"code\": 1,\n" + 
+				"      \"name\": \"Mr\"\n" + 
+				"    },\n" + 
+				"    \"firstName\": \"Chris\",\n" + 
+				"    \"middleName\": \"P\",\n" + 
+				"    \"lastName\": \"Bacon\"\n" + 
+				"  },\n" + 
+				"  \"address\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/common\",\n" + 
+				"    \"@type\": \"mailing_address\",\n" + 
+				"    \"street\": \"123 Main St\",\n" + 
+				"    \"city\": \"Ottawa\",\n" + 
+				"    \"province\": \"Ontario\",\n" + 
+				"    \"country\": {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/lookup\",\n" + 
+				"      \"@type\": \"country\",\n" + 
+				"      \"code\": \"CA\",\n" + 
+				"      \"name\": \"Canada\"\n" + 
+				"    },\n" + 
+				"    \"postalCode\": \"K1K1K1\"\n" + 
+				"  },\n" + 
+				"  \"email\": \"chris@bacon.com\",\n" + 
+				"  \"jobTitle\": \"Tester\",\n" + 
+				"  \"language\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/lookup\",\n" + 
+				"    \"@type\": \"language\",\n" + 
+				"    \"code\": \"en\",\n" + 
+				"    \"name\": \"English\"\n" + 
+				"  },\n" + 
+				"  \"homePhone\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/common\",\n" + 
+				"    \"@type\": \"telephone\",\n" + 
+				"    \"number\": 2342342345,\n" + 
+				"    \"extension\": null\n" + 
+				"  },\n" + 
+				"  \"faxNumber\": 4564564565,\n" + 
+				"  \"userName\": \"chris\",\n" + 
+				"  \"roles\": [\n" + 
+				"    {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"      \"@type\": \"role\",\n" + 
+				"      \"code\": 1,\n" + 
+				"      \"name\": \"A\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"      \"@type\": \"role\",\n" + 
+				"      \"code\": 2,\n" + 
+				"      \"name\": \"B\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"      \"@type\": \"role\",\n" + 
+				"      \"code\": 3,\n" + 
+				"      \"name\": \"C\"\n" + 
+				"    }\n" + 
+				"  ]\n" + 
 				"}", obj.stringify(LinkedDataFormatter.basic()));
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/apis/crm\",\n" + 
-				"  \"@type\": \"organization\",\n" + 
+				"  \"@type\": \"person\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
-				"  \"displayName\": \"Junit Test\",\n" + 
+				"  \"organization\": {\n" + 
+				"    \"@type\": \"person\",\n" + 
+				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
+				"  },\n" + 
 				"  \"status\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
 				"    \"@type\": \"status\",\n" + 
-				"    \"@value\": \"active\"\n" + 
+				"    \"@value\": \"pending\"\n" + 
 				"  },\n" + 
-				"  \"mainLocation\": {\n" + 
-				"    \"@type\": \"location\",\n" + 
-				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
-				"  }\n" + 
+				"  \"displayName\": \"Junit Test\",\n" + 
+				"  \"legalName\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/common\",\n" + 
+				"    \"@type\": \"person_name\",\n" + 
+				"    \"salutation\": {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/lookup\",\n" + 
+				"      \"@type\": \"salutation\",\n" + 
+				"      \"code\": 1,\n" + 
+				"      \"name\": \"Mr\"\n" + 
+				"    },\n" + 
+				"    \"firstName\": \"Chris\",\n" + 
+				"    \"middleName\": \"P\",\n" + 
+				"    \"lastName\": \"Bacon\"\n" + 
+				"  },\n" + 
+				"  \"address\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/common\",\n" + 
+				"    \"@type\": \"mailing_address\",\n" + 
+				"    \"street\": \"123 Main St\",\n" + 
+				"    \"city\": \"Ottawa\",\n" + 
+				"    \"province\": \"Ontario\",\n" + 
+				"    \"country\": {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/lookup\",\n" + 
+				"      \"@type\": \"country\",\n" + 
+				"      \"code\": \"CA\",\n" + 
+				"      \"name\": \"Canada\"\n" + 
+				"    },\n" + 
+				"    \"postalCode\": \"K1K1K1\"\n" + 
+				"  },\n" + 
+				"  \"email\": \"chris@bacon.com\",\n" + 
+				"  \"jobTitle\": \"Tester\",\n" + 
+				"  \"language\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/lookup\",\n" + 
+				"    \"@type\": \"language\",\n" + 
+				"    \"code\": \"en\",\n" + 
+				"    \"name\": \"English\"\n" + 
+				"  },\n" + 
+				"  \"homePhone\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/apis/common\",\n" + 
+				"    \"@type\": \"telephone\",\n" + 
+				"    \"number\": 2342342345,\n" + 
+				"    \"extension\": null\n" + 
+				"  },\n" + 
+				"  \"faxNumber\": 4564564565,\n" + 
+				"  \"userName\": \"chris\",\n" + 
+				"  \"roles\": [\n" + 
+				"    {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"      \"@type\": \"role\",\n" + 
+				"      \"code\": 1,\n" + 
+				"      \"name\": \"A\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"      \"@type\": \"role\",\n" + 
+				"      \"code\": 2,\n" + 
+				"      \"name\": \"B\"\n" + 
+				"    },\n" + 
+				"    {\n" + 
+				"      \"@context\": \"http://magex9.github.io/apis/system\",\n" + 
+				"      \"@type\": \"role\",\n" + 
+				"      \"code\": 3,\n" + 
+				"      \"name\": \"C\"\n" + 
+				"    }\n" + 
+				"  ]\n" + 
 				"}", obj.formatted());
 		
 		Person reloaded = new PersonTransformer().parse(obj.formatted());

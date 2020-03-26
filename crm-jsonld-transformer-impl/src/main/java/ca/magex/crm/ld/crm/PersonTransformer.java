@@ -43,7 +43,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 	}
 	
 	public String getType() {
-		return "person";
+		return "Person";
 	}
 	
 	@Override

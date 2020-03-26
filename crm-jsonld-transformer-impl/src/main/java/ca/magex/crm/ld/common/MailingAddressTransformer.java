@@ -16,7 +16,7 @@ public class MailingAddressTransformer extends AbstractLinkedDataTransformer<Mai
 	
 	@Override
 	public String getType() {
-		return "mailing_address";
+		return "MailingAddress";
 	}
 	
 	@Override

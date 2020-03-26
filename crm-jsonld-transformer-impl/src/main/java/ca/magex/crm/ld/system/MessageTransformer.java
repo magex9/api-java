@@ -9,7 +9,7 @@ public class MessageTransformer extends AbstractLinkedDataTransformer<Message> {
 
 	@Override
 	public String getType() {
-		return "message";
+		return "Message";
 	}
 	
 	@Override

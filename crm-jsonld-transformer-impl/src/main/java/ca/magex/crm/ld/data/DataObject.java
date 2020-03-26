@@ -100,15 +100,15 @@ public final class DataObject extends DataElement {
 	}
 	
 	public void stream(OutputStream os, LinkedDataFormatter formatter) throws IOException {
-		if (!formatter.getContexts().isEmpty() && !formatter.isTyped() && !keys.stream().anyMatch(k -> !k.startsWith("@")) && keys.contains("@value")) {
-			os.write(getString("@value").getBytes());
+		if (!formatter.getContexts().isEmpty() && !formatter.isTyped() && keys.contains("@value")) {
+			os.write(get("@value").toString().getBytes());
 			return;
 		}
 		os.write("{".getBytes());
 		if (pairs.size() == 0) {
 			os.write("".getBytes());
 		} else if (pairs.size() == 1 && !(pairs.get(0).value() instanceof DataObject)) {
-			pairs.get(0).stream(os, null);
+			pairs.get(0).stream(os, formatter);
 		} else {
 			if (formatter.isIndented())
 				os.write(LinkedDataFormatter.EOL);
@@ -117,9 +117,11 @@ public final class DataObject extends DataElement {
 				if (formatter.getContexts().isEmpty() || !pairs.get(i).key().equals("@context") || !((DataText)pairs.get(i).value()).value().equals(formatter.getContexts().peek())) {
 					if (formatter.isIndented())
 						os.write(formatter.prefix());
-					formatter.getContexts().push(getString("@context"));
+					if (contains("@context"))
+						formatter.getContexts().push(getString("@context"));
 					pairs.get(i).stream(os, formatter);
-					formatter.getContexts().pop();
+					if (contains("@context"))
+						formatter.getContexts().pop();
 					if (i < pairs.size() - 1)
 						os.write(",".getBytes());
 					if (formatter.isIndented())

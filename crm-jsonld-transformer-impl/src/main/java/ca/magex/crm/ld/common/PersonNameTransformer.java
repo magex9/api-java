@@ -16,7 +16,7 @@ public class PersonNameTransformer extends AbstractLinkedDataTransformer<PersonN
 	
 	@Override
 	public String getType() {
-		return "person_name";
+		return "PersonName";
 	}
 	
 	@Override

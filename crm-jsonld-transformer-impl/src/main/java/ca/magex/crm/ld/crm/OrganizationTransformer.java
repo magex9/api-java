@@ -19,7 +19,7 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 	}
 	
 	public String getType() {
-		return "organization";
+		return "Organization";
 	}
 	
 	@Override

@@ -8,7 +8,7 @@ public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephon
 
 	@Override
 	public String getType() {
-		return "telephone";
+		return "Telephone";
 	}
 	
 	@Override
