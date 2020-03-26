@@ -11,14 +11,14 @@ public class Organization {
 	
 	private String displayName;
 	
-	private Identifier mainLocation;
+	private Identifier mainLocationId;
 
-	public Organization(Identifier organizationId, Status status, String displayName, Identifier mainLocation) {
+	public Organization(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
 		super();
 		this.organizationId = organizationId;
 		this.status = status;
 		this.displayName = displayName;
-		this.mainLocation = mainLocation;
+		this.mainLocationId = mainLocationId;
 	}
 
 	public Identifier getOrganizationId() {
@@ -30,7 +30,7 @@ public class Organization {
 	}
 	
 	public Organization withStatus(Status status) {
-		return new Organization(organizationId, status, displayName, mainLocation);
+		return new Organization(organizationId, status, displayName, mainLocationId);
 	}
 
 	public String getDisplayName() {
@@ -38,15 +38,15 @@ public class Organization {
 	}
 	
 	public Organization withDisplayName(String displayName) {
-		return new Organization(organizationId, status, displayName, mainLocation);
+		return new Organization(organizationId, status, displayName, mainLocationId);
 	}
 
-	public Identifier getMainLocation() {
-		return mainLocation;
+	public Identifier getMainLocationId() {
+		return mainLocationId;
 	}
 
 	public Organization withMainLocation(Identifier mainLocation) {
-		return new Organization(organizationId, status, displayName, mainLocation);
+		return new Organization(organizationId, status, displayName, mainLocationId);
 	}
 
 }

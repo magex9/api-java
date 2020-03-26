@@ -3,6 +3,7 @@ package ca.magex.crm.api.exceptions;
 import java.util.Arrays;
 import java.util.List;
 
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 
 public class BadRequestException extends ApiException {
@@ -13,7 +14,7 @@ public class BadRequestException extends ApiException {
 		super("Bad Request: " + messages);
 	}
 	
-	public BadRequestException(Object base, String type, String path, String message) {
+	public BadRequestException(Identifier base, String type, String path, String message) {
 		this(Arrays.asList(new Message(base, type, path, message)));
 	}
 
