@@ -4,7 +4,7 @@ import ca.magex.crm.ld.data.DataObject;
 
 public interface Transformer<T extends Object> {
 	
-	public String getType();
+	public Class<?> getType();
 	
 	public DataObject format(T obj);
 	

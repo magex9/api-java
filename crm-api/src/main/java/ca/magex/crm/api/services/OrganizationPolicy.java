@@ -1,13 +1,6 @@
 package ca.magex.crm.api.services;
 
-import java.util.List;
-
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
-import ca.magex.crm.api.crm.Person;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Message;
-import ca.magex.crm.api.system.Role;
 
 public interface OrganizationPolicy {
 	
@@ -29,10 +22,5 @@ public interface OrganizationPolicy {
     boolean canEnablePerson(Identifier personId);
     boolean canDisablePerson(Identifier personId);
     boolean canUpdateUserRole(Identifier personId);
-
-    List<Message> validate(Organization organization);
-    List<Message> validate(Location location);
-    List<Message> validate(Person person);
-    List<Message> validate(List<Role> roles);
     
 }

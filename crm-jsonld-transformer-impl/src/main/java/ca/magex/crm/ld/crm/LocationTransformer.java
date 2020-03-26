@@ -20,8 +20,8 @@ public class LocationTransformer extends AbstractLinkedDataTransformer<Location>
 		this.mailingAddressTransformer = new MailingAddressTransformer();
 	}
 	
-	public String getType() {
-		return "Location";
+	public Class<?> getType() {
+		return Location.class;
 	}
 	
 	@Override

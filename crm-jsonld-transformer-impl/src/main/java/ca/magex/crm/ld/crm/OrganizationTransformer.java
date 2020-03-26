@@ -18,8 +18,8 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 		this.locationTransform = new LocationTransformer();
 	}
 	
-	public String getType() {
-		return "Organization";
+	public Class<?> getType() {
+		return Organization.class;
 	}
 	
 	@Override

@@ -1,22 +1,20 @@
 package ca.magex.crm.ld.crm;
 
-import java.util.List;
-
+import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.Person;
-import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
+import ca.magex.crm.ld.common.BusinessUnitTransformer;
+import ca.magex.crm.ld.common.CommunicationTransformer;
 import ca.magex.crm.ld.common.MailingAddressTransformer;
 import ca.magex.crm.ld.common.PersonNameTransformer;
-import ca.magex.crm.ld.common.TelephoneTransformer;
+import ca.magex.crm.ld.common.UserTransformer;
 import ca.magex.crm.ld.data.DataObject;
-import ca.magex.crm.ld.lookup.LanguageTransformer;
-import ca.magex.crm.ld.system.RoleTransformer;
 import ca.magex.crm.ld.system.StatusTransformer;
 
 public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
@@ -27,23 +25,23 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 	
 	private MailingAddressTransformer mailingAddressTransformer;
 	
-	private LanguageTransformer languageTransformer;
+	private CommunicationTransformer communicationTransformer;
 	
-	private TelephoneTransformer telephoneTransformer;
+	private BusinessUnitTransformer businessUnitTransformer;
 	
-	private RoleTransformer roleTransformer;
+	private UserTransformer userTransformer;
 	
 	public PersonTransformer() {
 		this.statusTransformer = new StatusTransformer();
 		this.personNameTransformer = new PersonNameTransformer();
 		this.mailingAddressTransformer = new MailingAddressTransformer();
-		this.languageTransformer = new LanguageTransformer();
-		this.telephoneTransformer = new TelephoneTransformer();
-		this.roleTransformer = new RoleTransformer();
+		this.communicationTransformer = new CommunicationTransformer();
+		this.businessUnitTransformer = new BusinessUnitTransformer();
+		this.userTransformer = new UserTransformer();
 	}
 	
-	public String getType() {
-		return "Person";
+	public Class<?> getType() {
+		return Person.class;
 	}
 	
 	@Override
@@ -54,13 +52,9 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 			.with("displayName", person.getDisplayName())
 			.with("legalName", personNameTransformer.format(person.getLegalName()))
 			.with("address", mailingAddressTransformer.format(person.getAddress()))
-			.with("email", person.getEmail())
-			.with("jobTitle", person.getJobTitle())
-			.with("language", languageTransformer.format(person.getLanguage()))
-			.with("homePhone", telephoneTransformer.format(person.getHomePhone()))
-			.with("faxNumber", person.getFaxNumber())
-			.with("userName", person.getUserName())
-			.with("roles", roleTransformer.format(person.getRoles()));
+			.with("communication", communicationTransformer.format(person.getCommunication()))
+			.with("unit", businessUnitTransformer.format(person.getUnit()))
+			.with("user", userTransformer.format(person.getUser()));
 	}
 
 	@Override
@@ -73,14 +67,10 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 		String displayName = data.getString("displayName");
 		PersonName legalName = personNameTransformer.parse(data.get("legalName"));
 		MailingAddress address = mailingAddressTransformer.parse(data.get("address"));
-		String email = data.getString("email");
-		String jobTitle = data.getString("jobTitle");
-		Language language = languageTransformer.parse(data.get("language"));
-		Telephone homePhone = telephoneTransformer.parse(data.get("homePhone"));
-		Long faxNumber = data.getLong("faxNumber");
-		String userName = data.getString("userName");
-		List<Role> roles = roleTransformer.parse(data.getArray("roles"));
-		return new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+		Communication communication = communicationTransformer.parse(data.get("communication"));
+		BusinessUnit unit = businessUnitTransformer.parse(data.get("unit"));
+		User user = userTransformer.parse(data.get("user"));
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 
 		

@@ -7,8 +7,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 
 	@Override
-	public String getType() {
-		return "Role";
+	public Class<?> getType() {
+		return Role.class;
 	}
 	
 	@Override

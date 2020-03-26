@@ -8,9 +8,12 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.Person;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
@@ -38,13 +41,16 @@ public class PersonTransformerTest {
 		Language language = new Language("en", "English");
 		Telephone homePhone = new Telephone(2342342345L, null);
 		Long faxNumber = 4564564565L;
+		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
+		BusinessUnit unit = new BusinessUnit(null, null, null);
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
+		User user = new User(userName, roles);
 		roles.add(new Role(1, "A"));
 		roles.add(new Role(2, "B"));
 		roles.add(new Role(3, "C"));
 		
-		Person person = new Person(personId, organizationId, status, displayName, legalName, address, email, jobTitle, language, homePhone, faxNumber, userName, roles);
+		Person person = new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
 		DataObject obj = new PersonTransformer().format(person);
 		
@@ -75,22 +81,36 @@ public class PersonTransformerTest {
 				"    \"country\": \"CA\",\n" + 
 				"    \"postalCode\": \"K1K1K1\"\n" + 
 				"  },\n" + 
-				"  \"email\": \"chris@bacon.com\",\n" + 
-				"  \"jobTitle\": \"Tester\",\n" + 
-				"  \"language\": \"en\",\n" + 
-				"  \"homePhone\": {\n" + 
+				"  \"communication\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"Telephone\",\n" + 
-				"    \"number\": 2342342345,\n" + 
-				"    \"extension\": null\n" + 
+				"    \"@type\": \"Communication\",\n" + 
+				"    \"email\": \"chris@bacon.com\",\n" + 
+				"    \"jobTitle\": \"Tester\",\n" + 
+				"    \"language\": \"en\",\n" + 
+				"    \"homePhone\": {\n" + 
+				"      \"@type\": \"Telephone\",\n" + 
+				"      \"number\": 2342342345,\n" + 
+				"      \"extension\": null\n" + 
+				"    },\n" + 
+				"    \"faxNumber\": 4564564565\n" + 
 				"  },\n" + 
-				"  \"faxNumber\": 4564564565,\n" + 
-				"  \"userName\": \"chris\",\n" + 
-				"  \"roles\": [\n" + 
-				"    1,\n" + 
-				"    2,\n" + 
-				"    3\n" + 
-				"  ]\n" + 
+				"  \"unit\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
+				"    \"@type\": \"BusinessUnit\",\n" + 
+				"    \"sector\": null,\n" + 
+				"    \"unit\": null,\n" + 
+				"    \"level\": null\n" + 
+				"  },\n" + 
+				"  \"user\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
+				"    \"@type\": \"User\",\n" + 
+				"    \"userName\": \"chris\",\n" + 
+				"    \"roles\": [\n" + 
+				"      1,\n" + 
+				"      2,\n" + 
+				"      3\n" + 
+				"    ]\n" + 
+				"  }\n" + 
 				"}", obj.stringify(LinkedDataFormatter.basic()));
 		
 		assertEquals("{\n" + 
@@ -136,42 +156,56 @@ public class PersonTransformerTest {
 				"    },\n" + 
 				"    \"postalCode\": \"K1K1K1\"\n" + 
 				"  },\n" + 
-				"  \"email\": \"chris@bacon.com\",\n" + 
-				"  \"jobTitle\": \"Tester\",\n" + 
-				"  \"language\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/schema/lookup\",\n" + 
-				"    \"@type\": \"Language\",\n" + 
-				"    \"@value\": \"en\",\n" + 
-				"    \"name\": \"English\"\n" + 
-				"  },\n" + 
-				"  \"homePhone\": {\n" + 
+				"  \"communication\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"Telephone\",\n" + 
-				"    \"number\": 2342342345,\n" + 
-				"    \"extension\": null\n" + 
+				"    \"@type\": \"Communication\",\n" + 
+				"    \"email\": \"chris@bacon.com\",\n" + 
+				"    \"jobTitle\": \"Tester\",\n" + 
+				"    \"language\": {\n" + 
+				"      \"@context\": \"http://magex9.github.io/schema/lookup\",\n" + 
+				"      \"@type\": \"Language\",\n" + 
+				"      \"@value\": \"en\",\n" + 
+				"      \"name\": \"English\"\n" + 
+				"    },\n" + 
+				"    \"homePhone\": {\n" + 
+				"      \"@type\": \"Telephone\",\n" + 
+				"      \"number\": 2342342345,\n" + 
+				"      \"extension\": null\n" + 
+				"    },\n" + 
+				"    \"faxNumber\": 4564564565\n" + 
 				"  },\n" + 
-				"  \"faxNumber\": 4564564565,\n" + 
-				"  \"userName\": \"chris\",\n" + 
-				"  \"roles\": [\n" + 
-				"    {\n" + 
-				"      \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
-				"      \"@type\": \"Role\",\n" + 
-				"      \"@value\": 1,\n" + 
-				"      \"name\": \"A\"\n" + 
-				"    },\n" + 
-				"    {\n" + 
-				"      \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
-				"      \"@type\": \"Role\",\n" + 
-				"      \"@value\": 2,\n" + 
-				"      \"name\": \"B\"\n" + 
-				"    },\n" + 
-				"    {\n" + 
-				"      \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
-				"      \"@type\": \"Role\",\n" + 
-				"      \"@value\": 3,\n" + 
-				"      \"name\": \"C\"\n" + 
-				"    }\n" + 
-				"  ]\n" + 
+				"  \"unit\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
+				"    \"@type\": \"BusinessUnit\",\n" + 
+				"    \"sector\": null,\n" + 
+				"    \"unit\": null,\n" + 
+				"    \"level\": null\n" + 
+				"  },\n" + 
+				"  \"user\": {\n" + 
+				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
+				"    \"@type\": \"User\",\n" + 
+				"    \"userName\": \"chris\",\n" + 
+				"    \"roles\": [\n" + 
+				"      {\n" + 
+				"        \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
+				"        \"@type\": \"Role\",\n" + 
+				"        \"@value\": 1,\n" + 
+				"        \"name\": \"A\"\n" + 
+				"      },\n" + 
+				"      {\n" + 
+				"        \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
+				"        \"@type\": \"Role\",\n" + 
+				"        \"@value\": 2,\n" + 
+				"        \"name\": \"B\"\n" + 
+				"      },\n" + 
+				"      {\n" + 
+				"        \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
+				"        \"@type\": \"Role\",\n" + 
+				"        \"@value\": 3,\n" + 
+				"        \"name\": \"C\"\n" + 
+				"      }\n" + 
+				"    ]\n" + 
+				"  }\n" + 
 				"}", obj.formatted());
 		
 		Person reloaded = new PersonTransformer().parse(obj.formatted());
@@ -180,10 +214,9 @@ public class PersonTransformerTest {
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());
 		assertEquals(person.getStatus(), reloaded.getStatus());
 		assertEquals(person.getAddress(), reloaded.getAddress());
-		assertEquals(person.getLanguage(), reloaded.getLanguage());
-		assertEquals(person.getHomePhone(), reloaded.getHomePhone());
-		assertEquals(person.getFaxNumber(), reloaded.getFaxNumber());
-		assertEquals(person.getRoles(), reloaded.getRoles());
+		assertEquals(person.getCommunication(), reloaded.getCommunication());
+		assertEquals(person.getUnit(), reloaded.getUnit());
+		assertEquals(person.getUser(), reloaded.getUser());
 	}
 	
 }

@@ -7,8 +7,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class LanguageTransformer extends AbstractLinkedDataTransformer<Language> {
 
 	@Override
-	public String getType() {
-		return "Language";
+	public Class<?> getType() {
+		return Language.class;
 	}
 	
 	@Override
