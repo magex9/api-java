@@ -23,6 +23,5 @@ public class OrganizationsFilter {
 	
 	public Paging getPaging() {
 		return paging;
-	}
-	
+	}	
 }
