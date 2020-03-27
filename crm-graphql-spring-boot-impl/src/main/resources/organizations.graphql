@@ -8,21 +8,35 @@ enum SortOrder {
   DESC
 }
 
-input Paging {
+input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
 	sortField: String!
 	sortOrder: SortOrder!
 }
 
+input MailingAddressInput {
+	street: String!
+	city: String!
+	province: String!
+	countryCode: String!
+	postalCode: String!
+}
+
 type Query {	
 	findOrganization(organizationId: String!): Organization	
-	findOrganizations(paging: Paging!): OrganizationPage
-	findLocations(paging: Paging!): LocationPage
+	findOrganizations(paging: PagingInput!): OrganizationPage
+	findLocations(paging: PagingInput!): LocationPage
 }
 
 type Mutation {
-	createOrganization(organizationName: String!) : Organization!
+	createOrganization(organizationName: String!): Organization
+	enableOrganization(organizationId: String!): Organization
+	disableOrganization(organizationId: String!): Organization
+	updateOrganizationName(organizationId: String!, organizationName: String!): Organization
+	updateOrganizationMainLocation(organizationId: String!, locationId: String!): Organization
+	
+	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
 }
 
 type Organization {
@@ -41,7 +55,7 @@ type OrganizationPage {
 
 type Location {
 	locationId: String!
-	orgId: String!
+	organizationId: String!
 	status: String!
 	reference: String
 	displayName: String

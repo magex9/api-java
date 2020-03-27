@@ -19,6 +19,8 @@
  		<module>crm-graphql-impl</module>
 		<module>crm-graphql-spring-boot-impl</module>
 		<module>crm-restful-spring-boot-impl</module>
+		
+		<module>crm-graphql-client</module>
 	</modules>
 
 </project>

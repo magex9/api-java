@@ -1,0 +1,3 @@
+createOrganization=mutation { createOrganization(organizationName: "johnnuy.org") { organizationId } }
+createLocation=mutation { createLocation(organizationId: "${0}", locationName: "Johnnuy Head Quarters", locationReference: "HQ", locationAddress: { street: "132 Cheyenne Way", city: "Nepean", province: "ON", countryCode: "CA", postalCode: "K2J 0E9"}) { locationId organizationId status reference displayName address {street city province country postalCode } } }
+updateOrganizationMainLocation=mutation {updateOrganizationMainLocation(organizationId: "${0}", locationId: "${1}") {organizationId, mainLocation { locationId } } }

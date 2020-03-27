@@ -11,7 +11,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
-import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
@@ -43,15 +42,12 @@ public class GraphQLOrganizationsService {
 	private void loadSchema() throws IOException {
 		logger.info("Entering loadSchema@" + getClass().getName());
 
-		/* initialize our dataset */
-		OrganizationServiceTestDataPopulator.populate(organizations);
-
 		/* parse our schema */
 		GraphQLSchema graphQLSchema = new SchemaGenerator()
 				.makeExecutableSchema(
-						new SchemaParser().parse(resource.getFile()), 
+						new SchemaParser().parse(resource.getFile()),
 						buildRuntimeWiring());
-		
+
 		/* create our graphQL engine */
 		graphQL = GraphQL
 				.newGraphQL(graphQLSchema)
@@ -69,10 +65,18 @@ public class GraphQLOrganizationsService {
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
 
 		return RuntimeWiring.newRuntimeWiring()
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.byId()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.finder()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.byId()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.finder()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOrganization", organizationDataFetcher.createOrganization()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableOrganization", organizationDataFetcher.enableOrganization()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableOrganization", organizationDataFetcher.disableOrganization()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganizationName", organizationDataFetcher.updateOrganizationName()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganizationMainLocation", organizationDataFetcher.updateOrganizationMainLocation()))
+
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.byId()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.finder()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
+
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();
 	}
