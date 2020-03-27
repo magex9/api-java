@@ -19,8 +19,8 @@ public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 	}
 
 	@Override
-	public Country parse(DataObject data) {
-		validateContext(data);
+	public Country parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		String code = data.getString("@value");
 		String name = data.getString("name");

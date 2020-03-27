@@ -30,8 +30,8 @@ public class MailingAddressTransformer extends AbstractLinkedDataTransformer<Mai
 	}
 
 	@Override
-	public MailingAddress parse(DataObject data) {
-		validateContext(data);
+	public MailingAddress parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		String street = data.getString("street");
 		String city = data.getString("city");

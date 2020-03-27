@@ -52,11 +52,11 @@ public final class DataObject extends DataElement {
 	}
 	
 	public boolean contains(String key) {
-		return map.containsKey(key);
+		return map.get(key) != null && !map.get(key).getClass().equals(DataElement.class);
 	}
 
 	public boolean contains(String key, Class<?> cls) {
-		return map.containsKey(key) && map.get(key).getClass().equals(cls);
+		return contains(key) && map.get(key).getClass().equals(cls);
 	}
 	
 	public DataElement get(String key) {

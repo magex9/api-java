@@ -19,11 +19,11 @@ public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephon
 	}
 
 	@Override
-	public Telephone parse(DataObject data) {
-		validateContext(data);
+	public Telephone parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
-		Long number = data.getLong("number");
-		Long extension = data.getLong("extension");
+		Long number = data.contains("number") ? data.getLong("number") : null;
+		Long extension = data.contains("extension") ? data.getLong("extension") : null;
 		return new Telephone(number, extension);
 	}
 			

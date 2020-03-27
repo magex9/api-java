@@ -17,8 +17,8 @@ public class StatusTransformer extends AbstractLinkedDataTransformer<Status> {
 	}
 	
 	@Override
-	public Status parse(DataObject data) {
-		validateContext(data);
+	public Status parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		return Status.valueOf(data.getString("@value").toUpperCase());
 	}

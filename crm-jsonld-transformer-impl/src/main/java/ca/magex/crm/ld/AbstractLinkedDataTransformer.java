@@ -68,7 +68,7 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public List<T> parse(DataArray array) {
 		List<T> result = new ArrayList<T>();
 		for (DataElement el : array.values()) {
-			result.add(parse(el));
+			result.add(parse(el, getSchemaBase()));
 		}
 		return result;
 	}
@@ -77,25 +77,31 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 		return parse((DataObject)DataParser.parse(text));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public T parse(Object obj) {
+		return parse(obj, getSchemaBase());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T parse(Object obj, String parentContext) {
 		try {
-			return (T)this.getClass().getMethod("parse", new Class[] { obj.getClass() }).invoke(this, obj);
+			return (T)this.getClass().getMethod("parse", new Class[] { obj.getClass(), String.class }).invoke(this, obj, parentContext);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Unable to find parser for: " + obj.getClass().getCanonicalName());
+			throw new IllegalArgumentException("Unable to find parser for: " + obj.getClass().getCanonicalName(), e);
 		}
 	}
 	
-	public void validateContext(DataObject data) {
-		if (!data.contains("@context"))
-			throw new IllegalArgumentException("dataLD missing @context");
-		if (!data.getString("@context").equals(getSchemaBase()))
+	public void validateContext(DataObject data, String parentContext) {
+		if (!data.contains("@context")) {
+			if (!parentContext.contentEquals(getSchemaBase()))
+				throw new IllegalArgumentException("DataObject missing @context");
+		} else if (!data.getString("@context").equals(getSchemaBase())) {
 			throw new IllegalArgumentException("@context does not match, expected " + getSchemaBase() + " but got " + data.getString("@context"));
+		}
 	}
 	
 	public void validateType(DataObject data) {
 		if (!data.contains("@type"))
-			throw new IllegalArgumentException("dataLD missing @type");
+			throw new IllegalArgumentException("DataObject missing @type");
 		if (!data.getString("@type").equals(getType().getSimpleName()))
 			throw new IllegalArgumentException("@type does not match, expected " + getType().getSimpleName() + " but got " + data.getString("@type"));
 	}

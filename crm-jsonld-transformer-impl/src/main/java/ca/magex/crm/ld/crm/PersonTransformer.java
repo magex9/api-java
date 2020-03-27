@@ -58,8 +58,8 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 	}
 
 	@Override
-	public Person parse(DataObject data) {
-		validateContext(data);
+	public Person parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Identifier personId = getTopicId(data);
 		Identifier organizationId = getTopicId(data.getObject("organization"));
