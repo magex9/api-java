@@ -3,7 +3,7 @@ package ca.magex.crm.api.crm;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -27,12 +27,12 @@ public class Person {
 
 	private Communication communication;
 
-	private BusinessUnit unit;
+	private BusinessPosition position;
 
 	private User user;
 
 	public Person(Identifier personId, Identifier organizationId, Status status, String displayName,
-			PersonName legalName, MailingAddress address, Communication communication, BusinessUnit unit, User user) {
+			PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position, User user) {
 		super();
 		this.personId = personId;
 		this.organizationId = organizationId;
@@ -41,7 +41,7 @@ public class Person {
 		this.legalName = legalName;
 		this.address = address;
 		this.communication = communication;
-		this.unit = unit;
+		this.position = position;
 		this.user = user;
 	}
 
@@ -58,7 +58,7 @@ public class Person {
 	}
 
 	public Person withStatus(Status status) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
 	public String getDisplayName() {
@@ -66,7 +66,7 @@ public class Person {
 	}
 
 	public Person withDisplayName(String displayName) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
 	public PersonName getLegalName() {
@@ -74,7 +74,7 @@ public class Person {
 	}
 
 	public Person withLegalName(PersonName legalName) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
 	public MailingAddress getAddress() {
@@ -82,7 +82,7 @@ public class Person {
 	}
 
 	public Person withAddress(MailingAddress address) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
 	public Communication getCommunication() {
@@ -90,15 +90,15 @@ public class Person {
 	}
 	
 	public Person withCommunication(Communication communication) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
-	public BusinessUnit getUnit() {
-		return unit;
+	public BusinessPosition getPosition() {
+		return position;
 	}
 	
-	public Person withUnit(BusinessUnit unit) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+	public Person withPosition(BusinessPosition position) {
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 	
 	public User getUser() {
@@ -106,7 +106,7 @@ public class Person {
 	}
 
 	public Person withUser(User user) {
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new Person(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
 	@Override

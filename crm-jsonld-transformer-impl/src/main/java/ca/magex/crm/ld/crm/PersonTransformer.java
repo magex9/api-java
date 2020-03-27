@@ -1,6 +1,6 @@
 package ca.magex.crm.ld.crm;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -9,7 +9,7 @@ import ca.magex.crm.api.crm.Person;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
-import ca.magex.crm.ld.common.BusinessUnitTransformer;
+import ca.magex.crm.ld.common.BusinessPositionTransformer;
 import ca.magex.crm.ld.common.CommunicationTransformer;
 import ca.magex.crm.ld.common.MailingAddressTransformer;
 import ca.magex.crm.ld.common.PersonNameTransformer;
@@ -27,7 +27,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 	
 	private CommunicationTransformer communicationTransformer;
 	
-	private BusinessUnitTransformer businessUnitTransformer;
+	private BusinessPositionTransformer businessPositionTransformer;
 	
 	private UserTransformer userTransformer;
 	
@@ -36,7 +36,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 		this.personNameTransformer = new PersonNameTransformer();
 		this.mailingAddressTransformer = new MailingAddressTransformer();
 		this.communicationTransformer = new CommunicationTransformer();
-		this.businessUnitTransformer = new BusinessUnitTransformer();
+		this.businessPositionTransformer = new BusinessPositionTransformer();
 		this.userTransformer = new UserTransformer();
 	}
 	
@@ -53,7 +53,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 			.with("legalName", personNameTransformer.format(person.getLegalName()))
 			.with("address", mailingAddressTransformer.format(person.getAddress()))
 			.with("communication", communicationTransformer.format(person.getCommunication()))
-			.with("unit", businessUnitTransformer.format(person.getUnit()))
+			.with("unit", businessPositionTransformer.format(person.getPosition()))
 			.with("user", userTransformer.format(person.getUser()));
 	}
 
@@ -68,7 +68,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 		PersonName legalName = personNameTransformer.parse(data.get("legalName"));
 		MailingAddress address = mailingAddressTransformer.parse(data.get("address"));
 		Communication communication = communicationTransformer.parse(data.get("communication"));
-		BusinessUnit unit = businessUnitTransformer.parse(data.get("unit"));
+		BusinessPosition unit = businessPositionTransformer.parse(data.get("unit"));
 		User user = userTransformer.parse(data.get("user"));
 		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
