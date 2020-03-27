@@ -1,23 +1,36 @@
 package ca.magex.crm.api.common;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Telephone {
 
-	private Integer number;
+	private Long number;
 
-	private Integer extension;
+	private Long extension;
 
-	public Telephone(Integer number, Integer extension) {
+	public Telephone(Long number, Long extension) {
 		super();
 		this.number = number;
 		this.extension = extension;
 	}
 
-	public Integer getNumber() {
+	public Long getNumber() {
 		return number;
 	}
 
-	public Integer getExtension() {
+	public Long getExtension() {
 		return extension;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 }

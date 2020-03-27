@@ -10,6 +10,7 @@ import ca.magex.crm.ld.data.DataArray;
 import ca.magex.crm.ld.data.DataElement;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.data.DataPair;
+import ca.magex.crm.ld.data.DataParser;
 import ca.magex.crm.ld.data.DataText;
 
 public abstract class AbstractLinkedDataTransformer<T extends Object> implements Transformer<T> {
@@ -17,7 +18,7 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public static final String PREFIX = "http://magex9.github.io/data/";
 	
 	public String getSchemaBase() {
-		return "http://magex9.github.io/apis";
+		return this.getClass().getPackageName().replaceAll("ca.magex.crm.ld.", "http://magex9.github.io/schema/");
 	}
 	
 	public String getTopicsReference(Object ref) {
@@ -42,7 +43,7 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public DataObject base() {
 		List<DataPair> pairs = new ArrayList<DataPair>();
 		pairs.add(new DataPair("@context", new DataText(getSchemaBase())));
-		pairs.add(new DataPair("@type", new DataText(getType())));
+		pairs.add(new DataPair("@type", new DataText(getType().getSimpleName())));
 		return new DataObject(pairs);
 	}
 	
@@ -51,7 +52,9 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	}
 	
 	public DataObject format(Identifier identifer) {
-		return base().with("@id", getTopicsReference(identifer));
+		return base()
+			.with("@value", new DataText(identifer.toString()))
+			.with("@id", getTopicsReference(identifer.toString()));
 	}
 	
 	public DataArray format(List<T> objs) {
@@ -68,6 +71,10 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 			result.add(parse(el));
 		}
 		return result;
+	}
+	
+	public T parse(String text) {
+		return parse((DataObject)DataParser.parse(text));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -89,8 +96,8 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	public void validateType(DataObject data) {
 		if (!data.contains("@type"))
 			throw new IllegalArgumentException("dataLD missing @type");
-		if (!data.getString("@type").equals(getType()))
-			throw new IllegalArgumentException("@type does not match, expected " + getType() + " but got " + data.getString("@type"));
+		if (!data.getString("@type").equals(getType().getSimpleName()))
+			throw new IllegalArgumentException("@type does not match, expected " + getType().getSimpleName() + " but got " + data.getString("@type"));
 	}
 	
 }

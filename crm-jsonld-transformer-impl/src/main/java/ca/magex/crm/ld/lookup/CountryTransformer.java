@@ -7,14 +7,14 @@ import ca.magex.crm.ld.data.DataObject;
 public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 
 	@Override
-	public String getType() {
-		return "country";
+	public Class<?> getType() {
+		return Country.class;
 	}
 	
 	@Override
 	public DataObject format(Country country) {
 		return base()
-			.with("code", country.getCode())
+			.with("@value", country.getCode())
 			.with("name", country.getName());
 	}
 
@@ -22,7 +22,7 @@ public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 	public Country parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
-		String code = data.getString("code");
+		String code = data.getString("@value");
 		String name = data.getString("name");
 		return new Country(code, name);
 	}

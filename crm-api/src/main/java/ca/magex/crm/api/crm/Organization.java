@@ -1,5 +1,8 @@
 package ca.magex.crm.api.crm;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -47,6 +50,16 @@ public class Organization {
 
 	public Organization withMainLocation(Identifier mainLocation) {
 		return new Organization(organizationId, status, displayName, mainLocationId);
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 }

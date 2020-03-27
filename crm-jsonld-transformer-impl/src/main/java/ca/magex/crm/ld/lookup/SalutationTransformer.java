@@ -7,14 +7,14 @@ import ca.magex.crm.ld.data.DataObject;
 public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutation> {
 
 	@Override
-	public String getType() {
-		return "salutation";
+	public Class<?> getType() {
+		return Salutation.class;
 	}
 	
 	@Override
 	public DataObject format(Salutation salutation) {
 		return base()
-			.with("code", salutation.getCode())
+			.with("@value", salutation.getCode())
 			.with("name", salutation.getName());
 	}
 
@@ -22,7 +22,7 @@ public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutat
 	public Salutation parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
-		Integer code = data.getInt("code");
+		Integer code = data.getInt("@value");
 		String name = data.getString("name");
 		return new Salutation(code, name);
 	}

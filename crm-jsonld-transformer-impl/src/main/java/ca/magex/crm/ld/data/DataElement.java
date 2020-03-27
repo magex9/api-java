@@ -4,24 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.codec.digest.DigestUtils;
+
+import ca.magex.crm.ld.LinkedDataFormatter;
 
 public class DataElement {
-	
-	public static final byte[] INDENT = "  ".getBytes();
-	
-	public static final byte[] EOL = "\n".getBytes();
-	
-	public static final byte[] BLANK = new byte[] { };
-	
-	public static final Map<Integer, byte[]> prefixes = new HashMap<Integer, byte[]>();
 	
 	private final String mid;
 
 	public DataElement() {
-		this.mid = digest(stringify(0));
+		this.mid = digest(stringify(new LinkedDataFormatter().setIndentation(0).setTyped(true)));
 	}
 	
 	public DataElement(String mid) {
@@ -35,8 +28,12 @@ public class DataElement {
 	public static DataElement cast(Object el) {
 		if (el == null) {
 			return new DataElement();
+		} else if (el instanceof DataElement) {
+			return (DataElement)el;
 		} else if (el instanceof String) {
 			return new DataText((String)el);
+		} else if (el instanceof Number) {
+			return new DataNumber((Number)el);
 		}
 		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
 	}
@@ -44,49 +41,34 @@ public class DataElement {
 	public static final String digest(Object obj) {
 		if (obj == null || (obj instanceof String && ((String)obj).equals("null")))
 			return "";
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(obj.toString().getBytes());
-			byte[] digest = md.digest();
-			return new String(digest);
-		} catch (Exception e) {
-			throw new RuntimeException("Unable to digest md5 text", e);
-		}
-	}
-	
-	public final byte[] prefix(Integer indentation) {
-		if (indentation == null)
-			return BLANK;
-		if (!prefixes.containsKey(indentation))
-			prefixes.put(indentation, new String(new char[indentation]).replaceAll("\0", new String(INDENT)).getBytes());
-		return prefixes.get(indentation);
+		return DigestUtils.md5Hex(obj.toString());
 	}
 	
 	public final String compact() {
-		return stringify(null);
+		return stringify(LinkedDataFormatter.compact());
 	}
 	
 	public final String formatted() {
-		return stringify(0);
+		return stringify(LinkedDataFormatter.full());
 	}
 	
-	protected final String stringify(Integer indentation) {
+	public final String stringify(LinkedDataFormatter formatter) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
-			stream(baos, indentation);
+			stream(baos, formatter);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem building string", e);
 		}
 		return baos.toString(StandardCharsets.UTF_8);
 	}
 	
-	public void stream(OutputStream os, Integer indentation) throws IOException {
+	public void stream(OutputStream os, LinkedDataFormatter formatter) throws IOException {
 		os.write("null".getBytes());
 	}
 	
 	@Override
 	public final String toString() {
-		return stringify(null);
+		return stringify(new LinkedDataFormatter().setIndentation(null).setTyped(true));
 	}
 
 }

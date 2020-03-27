@@ -1,5 +1,8 @@
 package ca.magex.crm.api.common;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.magex.crm.api.lookup.Salutation;
 
 public class PersonName {
@@ -34,6 +37,16 @@ public class PersonName {
 
 	public String getLastName() {
 		return lastName;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 	
 }

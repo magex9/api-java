@@ -7,8 +7,8 @@ import ca.magex.crm.ld.data.DataObject;
 public class StatusTransformer extends AbstractLinkedDataTransformer<Status> {
 
 	@Override
-	public String getType() {
-		return "status";
+	public Class<?> getType() {
+		return Status.class;
 	}
 	
 	@Override

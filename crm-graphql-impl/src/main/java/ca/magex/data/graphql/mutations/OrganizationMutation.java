@@ -34,7 +34,7 @@ public class OrganizationMutation implements GraphQLMutationResolver {
 	}
 
 	public Organization updateMainLocation(String organizationId, String locationId) {
-		return organizations.updateMainLocation(new Identifier(organizationId), new Identifier(locationId));
+		return organizations.updateOrganizationMainLocation(new Identifier(organizationId), new Identifier(locationId));
 	}
 
 }

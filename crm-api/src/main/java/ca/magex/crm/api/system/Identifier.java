@@ -29,4 +29,5 @@ public class Identifier {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
+	
 }

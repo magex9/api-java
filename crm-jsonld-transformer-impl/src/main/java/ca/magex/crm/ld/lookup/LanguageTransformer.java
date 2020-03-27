@@ -7,14 +7,14 @@ import ca.magex.crm.ld.data.DataObject;
 public class LanguageTransformer extends AbstractLinkedDataTransformer<Language> {
 
 	@Override
-	public String getType() {
-		return "language";
+	public Class<?> getType() {
+		return Language.class;
 	}
 	
 	@Override
 	public DataObject format(Language language) {
 		return base()
-			.with("code", language.getCode())
+			.with("@value", language.getCode())
 			.with("name", language.getName());
 	}
 
@@ -22,7 +22,7 @@ public class LanguageTransformer extends AbstractLinkedDataTransformer<Language>
 	public Language parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
-		String code = data.getString("code");
+		String code = data.getString("@value");
 		String name = data.getString("name");
 		return new Language(code, name);
 	}
