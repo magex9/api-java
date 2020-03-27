@@ -48,7 +48,7 @@ public class Organization {
 		return mainLocationId;
 	}
 
-	public Organization withMainLocation(Identifier mainLocation) {
+	public Organization withMainLocationId(Identifier mainLocationId) {
 		return new Organization(organizationId, status, displayName, mainLocationId);
 	}
 	

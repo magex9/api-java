@@ -51,41 +51,25 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public Organization enableOrganization(Identifier organizationId) {
-		if (!data.containsKey(organizationId))
-			throw new ItemNotFoundException(organizationId.toString());
-		if (!(data.get(organizationId) instanceof Organization))
-			throw new BadRequestException(organizationId, "fatal", "class", "Class is not Organization: " + organizationId);
-		Organization updated = ((Organization)data.get(organizationId)).withStatus(Status.ACTIVE);
+		Organization updated = findOrganization(organizationId).withStatus(Status.ACTIVE);
 		data.put(organizationId, updated);
 		return updated;
 	}
 
 	public Organization disableOrganization(Identifier organizationId) {
-		if (!data.containsKey(organizationId))
-			throw new ItemNotFoundException(organizationId.toString());
-		if (!(data.get(organizationId) instanceof Organization))
-			throw new BadRequestException(organizationId, "fatal", "class", "Class is not Organization: " + organizationId);
-		Organization updated = ((Organization)data.get(organizationId)).withStatus(Status.INACTIVE);
+		Organization updated = findOrganization(organizationId).withStatus(Status.INACTIVE);
 		data.put(organizationId, updated);
 		return updated;
 	}
 
 	public Organization updateOrganizationName(Identifier organizationId, String name) {
-		if (!data.containsKey(organizationId))
-			throw new ItemNotFoundException(organizationId.toString());
-		if (!(data.get(organizationId) instanceof Organization))
-			throw new BadRequestException(organizationId, "fatal", "class", "Class is not Organization: " + organizationId);
-		Organization updated = ((Organization)data.get(organizationId)).withDisplayName(name);
+		Organization updated = findOrganization(organizationId).withDisplayName(name);
 		data.put(organizationId, updated);
 		return updated;
 	}
 
 	public Organization updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		if (!data.containsKey(organizationId))
-			throw new ItemNotFoundException(organizationId.toString());
-		if (!(data.get(organizationId) instanceof Organization))
-			throw new BadRequestException(organizationId, "fatal", "class", "Class is not Organization: " + organizationId);
-		Organization updated = ((Organization)data.get(organizationId)).withMainLocation(locationId);
+		Organization updated = findOrganization(organizationId).withMainLocationId(findLocation(locationId).getLocationId());
 		data.put(organizationId, updated);
 		return updated;
 	}
@@ -118,50 +102,33 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		return PageBuilder.buildPageFor(allMatchingOrgs, filter.getPaging());
 	}
 
-	public Location createLocation(Identifier organizationId, String locationName, String locationReference,
-			MailingAddress address) {
+	public Location createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		Identifier locationId = generateId();
-		Location location = new Location(locationId, organizationId, Status.ACTIVE, locationReference, locationName, address);
+		Location location = new Location(locationId, findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address);
 		data.put(locationId, location);
 		return location;
 	}
 
 	public Location updateLocationName(Identifier locationId, String locationName) {
-		if (!data.containsKey(locationId))
-			throw new ItemNotFoundException(locationId.toString());
-		if (!(data.get(locationId) instanceof Location))
-			throw new BadRequestException(locationId, "fatal", "class", "Class is not Location: " + locationId);
-		Location updated = ((Location)data.get(locationId)).withDisplayName(locationName);
+		Location updated = findLocation(locationId).withDisplayName(locationName);
 		data.put(locationId, updated);
 		return updated;
 	}
 
 	public Location updateLocationAddress(Identifier locationId, MailingAddress address) {
-		if (!data.containsKey(locationId))
-			throw new ItemNotFoundException(locationId.toString());
-		if (!(data.get(locationId) instanceof Location))
-			throw new BadRequestException(locationId, "fatal", "class", "Class is not Location: " + locationId);
-		Location updated = ((Location)data.get(locationId)).withAddress(address);
+		Location updated = findLocation(locationId).withAddress(address);
 		data.put(locationId, updated);
 		return updated;
 	}
 
-	public Location enableLocation(Identifier locationId) {
-		if (!data.containsKey(locationId))
-			throw new ItemNotFoundException(locationId.toString());
-		if (!(data.get(locationId) instanceof Location))
-			throw new BadRequestException(locationId, "fatal", "class", "Class is not Location: " + locationId);
-		Location updated = ((Location)data.get(locationId)).withStatus(Status.ACTIVE);
+	public Location enableLocation(Identifier locationId) {		
+		Location updated = findLocation(locationId).withStatus(Status.ACTIVE);
 		data.put(locationId, updated);
 		return updated;
 	}
 
-	public Location disableLocation(Identifier locationId) {
-		if (!data.containsKey(locationId))
-			throw new ItemNotFoundException(locationId.toString());
-		if (!(data.get(locationId) instanceof Location))
-			throw new BadRequestException(locationId, "fatal", "class", "Class is not Location: " + locationId);
-		Location updated = ((Location)data.get(locationId)).withStatus(Status.INACTIVE);
+	public Location disableLocation(Identifier locationId) {		
+		Location updated = findLocation(locationId).withStatus(Status.INACTIVE);
 		data.put(locationId, updated);
 		return updated;
 	}
@@ -212,62 +179,38 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public Person updatePersonName(Identifier personId, PersonName legalName) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withLegalName(legalName);
+		Person updated = findPerson(personId).withLegalName(legalName);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person updatePersonAddress(Identifier personId, MailingAddress address) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withAddress(address);
+	public Person updatePersonAddress(Identifier personId, MailingAddress address) {		
+		Person updated = findPerson(personId).withAddress(address);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person updatePersonCommunication(Identifier personId, Communication communication) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withCommunication(communication);
+	public Person updatePersonCommunication(Identifier personId, Communication communication) {		
+		Person updated = findPerson(personId).withCommunication(communication);
 		data.put(personId, updated);
 		return updated;
 	}
 	
 	@Override
-	public Person updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withPosition(position);
+	public Person updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {		
+		Person updated = findPerson(personId).withPosition(position);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person enablePerson(Identifier personId) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withStatus(Status.ACTIVE);
+	public Person enablePerson(Identifier personId) {		
+		Person updated = findPerson(personId).withStatus(Status.ACTIVE);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person disablePerson(Identifier personId) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withStatus(Status.ACTIVE);
+	public Person disablePerson(Identifier personId) {		
+		Person updated = findPerson(personId).withStatus(Status.ACTIVE);
 		data.put(personId, updated);
 		return updated;
 	}
@@ -301,23 +244,15 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public Person addUserRole(Identifier personId, Role role) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		List<Role> roles = new ArrayList<Role>(((Person)data.get(personId)).getUser().getRoles());
+		List<Role> roles = new ArrayList<Role>(findPerson(personId).getUser().getRoles());
 		roles.add(role);
 		Person updated = ((Person)data.get(personId)).withUser(((Person)data.get(personId)).getUser().withRoles(roles));
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person removeUserRole(Identifier personId, Role role) {
-		if (!data.containsKey(personId))
-			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
-			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		List<Role> roles = new ArrayList<Role>(((Person)data.get(personId)).getUser().getRoles());
+	public Person removeUserRole(Identifier personId, Role role) {		
+		List<Role> roles = new ArrayList<Role>(findPerson(personId).getUser().getRoles());
 		roles.remove(role);
 		Person updated = ((Person)data.get(personId)).withUser(((Person)data.get(personId)).getUser().withRoles(roles));
 		data.put(personId, updated);
