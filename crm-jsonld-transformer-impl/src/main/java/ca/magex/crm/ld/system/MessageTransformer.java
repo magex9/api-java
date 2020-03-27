@@ -22,8 +22,8 @@ public class MessageTransformer extends AbstractLinkedDataTransformer<Message> {
 	}
 
 	@Override
-	public Message parse(DataObject data) {
-		validateContext(data);
+	public Message parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Identifier identifier = new Identifier(data.getString("identifier"));
 		String type = data.getString("type");

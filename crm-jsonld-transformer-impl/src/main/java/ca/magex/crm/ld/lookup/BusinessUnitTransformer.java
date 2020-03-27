@@ -19,8 +19,8 @@ public class BusinessUnitTransformer extends AbstractLinkedDataTransformer<Busin
 	}
 
 	@Override
-	public BusinessUnit parse(DataObject data) {
-		validateContext(data);
+	public BusinessUnit parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Integer code = data.getInt("@value");
 		String name = data.getString("name");

@@ -29,8 +29,8 @@ public class UserTransformer extends AbstractLinkedDataTransformer<User> {
 	}
 
 	@Override
-	public User parse(DataObject data) {
-		validateContext(data);
+	public User parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		String userName = data.getString("userName");
 		List<Role> roles = roleTransformer.parse(data.getArray("roles"));

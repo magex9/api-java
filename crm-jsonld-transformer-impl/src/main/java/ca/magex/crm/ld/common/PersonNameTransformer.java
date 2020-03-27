@@ -29,8 +29,8 @@ public class PersonNameTransformer extends AbstractLinkedDataTransformer<PersonN
 	}
 
 	@Override
-	public PersonName parse(DataObject data) {
-		validateContext(data);
+	public PersonName parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Salutation salutation = salutationTransformer.parse(data.getObject("salutation"));
 		String firstName = data.getString("firstName");

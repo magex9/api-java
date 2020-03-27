@@ -19,8 +19,8 @@ public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 	}
 
 	@Override
-	public Role parse(DataObject data) {
-		validateContext(data);
+	public Role parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Integer code = data.getInt("@value");
 		String name = data.getString("name");

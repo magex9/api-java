@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -24,7 +23,6 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.LinkedDataFormatter;
 import ca.magex.crm.ld.data.DataObject;
 
-@Ignore
 public class PersonTransformerTest {
 
 	@Test
@@ -54,8 +52,6 @@ public class PersonTransformerTest {
 		
 		DataObject obj = new PersonTransformer().format(person);
 		
-		System.out.println(obj.stringify(LinkedDataFormatter.basic()));
-
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
 				"  \"@type\": \"Person\",\n" + 
@@ -96,10 +92,10 @@ public class PersonTransformerTest {
 				"  },\n" + 
 				"  \"unit\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"BusinessUnit\",\n" + 
+				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": null,\n" + 
 				"    \"unit\": null,\n" + 
-				"    \"level\": null\n" + 
+				"    \"classification\": null\n" + 
 				"  },\n" + 
 				"  \"user\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
@@ -176,10 +172,10 @@ public class PersonTransformerTest {
 				"  },\n" + 
 				"  \"unit\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"BusinessUnit\",\n" + 
+				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": null,\n" + 
 				"    \"unit\": null,\n" + 
-				"    \"level\": null\n" + 
+				"    \"classification\": null\n" + 
 				"  },\n" + 
 				"  \"user\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 

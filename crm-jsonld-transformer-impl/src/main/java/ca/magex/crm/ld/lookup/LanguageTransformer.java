@@ -19,8 +19,8 @@ public class LanguageTransformer extends AbstractLinkedDataTransformer<Language>
 	}
 
 	@Override
-	public Language parse(DataObject data) {
-		validateContext(data);
+	public Language parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		String code = data.getString("@value");
 		String name = data.getString("name");

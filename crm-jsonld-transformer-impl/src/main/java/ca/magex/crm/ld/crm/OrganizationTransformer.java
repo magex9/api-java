@@ -31,8 +31,8 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 	}
 
 	@Override
-	public Organization parse(DataObject data) {
-		validateContext(data);
+	public Organization parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Identifier organizationId = getTopicId(data);
 		Status status = statusTransformer.parse(data.get("status"));

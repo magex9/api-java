@@ -35,8 +35,8 @@ public class LocationTransformer extends AbstractLinkedDataTransformer<Location>
 	}
 
 	@Override
-	public Location parse(DataObject data) {
-		validateContext(data);
+	public Location parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Identifier locationId = getTopicId(data);
 		Identifier organizationId = getTopicId(data.getObject("organization"));
