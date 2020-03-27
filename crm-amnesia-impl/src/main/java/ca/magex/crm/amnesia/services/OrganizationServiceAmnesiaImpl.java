@@ -10,7 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -193,7 +193,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		return PageBuilder.buildPageFor(allMatchingLocations, filter.getPaging());
 	}
 
-	public Person createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessUnit unit) {
+	public Person createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
 		Identifier personId = generateId();
 		StringBuilder displayName = new StringBuilder();
 		if (StringUtils.isNotBlank(legalName.getLastName()))
@@ -242,12 +242,12 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 	
 	@Override
-	public Person updatePersonBusinessUnit(Identifier personId, BusinessUnit unit) {
+	public Person updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {
 		if (!data.containsKey(personId))
 			throw new ItemNotFoundException(personId.toString());
 		if (!(data.get(personId) instanceof Person))
 			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		Person updated = ((Person)data.get(personId)).withUnit(unit);
+		Person updated = ((Person)data.get(personId)).withPosition(position);
 		data.put(personId, updated);
 		return updated;
 	}

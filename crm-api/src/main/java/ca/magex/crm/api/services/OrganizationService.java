@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -38,11 +38,11 @@ public interface OrganizationService {
     long countLocations(LocationsFilter filter);
     Page<Location> findLocations(LocationsFilter filter);
 
-    Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessUnit unit);
+    Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit);
     Person updatePersonName(Identifier personId, PersonName name);
     Person updatePersonAddress(Identifier personId, MailingAddress address);
     Person updatePersonCommunication(Identifier personId, Communication communication);
-    Person updatePersonBusinessUnit(Identifier personId, BusinessUnit unit);
+    Person updatePersonBusinessUnit(Identifier personId, BusinessPosition unit);
     Person enablePerson(Identifier personId);
     Person disablePerson(Identifier personId);
     Person addUserRole(Identifier personId, Role role);

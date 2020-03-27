@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -42,7 +42,7 @@ public class PersonTransformerTest {
 		Telephone homePhone = new Telephone(2342342345L, null);
 		Long faxNumber = 4564564565L;
 		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
-		BusinessUnit unit = new BusinessUnit(null, null, null);
+		BusinessPosition unit = new BusinessPosition(null, null, null);
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
@@ -215,7 +215,7 @@ public class PersonTransformerTest {
 		assertEquals(person.getStatus(), reloaded.getStatus());
 		assertEquals(person.getAddress(), reloaded.getAddress());
 		assertEquals(person.getCommunication(), reloaded.getCommunication());
-		assertEquals(person.getUnit(), reloaded.getUnit());
+		assertEquals(person.getPosition(), reloaded.getPosition());
 		assertEquals(person.getUser(), reloaded.getUser());
 	}
 	

@@ -1,6 +1,6 @@
-package ca.magex.crm.ld.common;
+package ca.magex.crm.ld.lookup;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
@@ -12,21 +12,19 @@ public class BusinessUnitTransformer extends AbstractLinkedDataTransformer<Busin
 	}
 	
 	@Override
-	public DataObject format(BusinessUnit unit) {
+	public DataObject format(BusinessUnit sector) {
 		return base()
-			.with("sector", unit.getSector())
-			.with("unit", unit.getUnit())
-			.with("level", unit.getLevel());
+			.with("@value", sector.getCode())
+			.with("name", sector.getName());
 	}
 
 	@Override
 	public BusinessUnit parse(DataObject data) {
 		validateContext(data);
 		validateType(data);
-		Integer sector = data.getInt("sector");
-		Integer unit = data.getInt("unit");
-		Integer level = data.getInt("level");
-		return new BusinessUnit(sector, unit, level);
+		Integer code = data.getInt("@value");
+		String name = data.getString("name");
+		return new BusinessUnit(code, name);
 	}
 			
 }

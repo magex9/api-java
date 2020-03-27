@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.api.common.BusinessUnit;
+import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -119,7 +119,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.findLocations(filter);
 	}
 
-	public Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessUnit unit) {
+	public Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
 		return delegate.createPerson(organizationId, name, address, communication, unit);
@@ -143,7 +143,7 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.updatePersonCommunication(personId, communication);
 	}
 	
-	public Person updatePersonBusinessUnit(Identifier personId, BusinessUnit unit) {
+	public Person updatePersonBusinessUnit(Identifier personId, BusinessPosition unit) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessUnit: " + personId);
 		return delegate.updatePersonBusinessUnit(personId, unit);
