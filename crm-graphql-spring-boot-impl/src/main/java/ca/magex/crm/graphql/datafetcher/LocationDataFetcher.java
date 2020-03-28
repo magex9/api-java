@@ -3,6 +3,7 @@ package ca.magex.crm.graphql.datafetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import ca.magex.crm.api.crm.Location;
 import ca.magex.crm.api.crm.Organization;
@@ -25,9 +26,9 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		super(organizations);
 	}
 
-	public DataFetcher<Location> byId() {
+	public DataFetcher<Location> findLocation() {
 		return (environment) -> {
-			logger.info("Entering byId@" + LocationDataFetcher.class.getSimpleName());
+			logger.info("Entering findLocation@" + LocationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("id");
 			return organizations.findLocation(new Identifier(id));
 		};
@@ -45,12 +46,22 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			}
 		};
 	}
-
-	public DataFetcher<Page<Location>> finder() {
+	
+	public DataFetcher<Integer> countLocations() {
 		return (environment) -> {
-			logger.info("Entering finder@" + LocationDataFetcher.class.getSimpleName());
-			Paging paging = extractPaging(environment);		
-			return organizations.findLocations(new LocationsFilter("", paging));
+			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
+			return (int) organizations.countLocations(new LocationsFilter(
+					extractFilter(environment), 
+					new Paging(1, Integer.MAX_VALUE, Sort.by("displayName"))));
+		};
+	}
+
+	public DataFetcher<Page<Location>> findLocations() {
+		return (environment) -> {
+			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
+			return organizations.findLocations(new LocationsFilter(
+					extractFilter(environment), 
+					extractPaging(environment)));
 		};
 	}
 	

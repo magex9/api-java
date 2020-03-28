@@ -34,6 +34,15 @@ public abstract class AbstractDataFetcher {
 			throw new RuntimeException("Error loading countries.properties");
 		}
 	}
+	
+	/**
+	 * extracts the filter from the environment
+	 * @param environment
+	 * @return
+	 */
+	protected Map<String,Object> extractFilter(DataFetchingEnvironment environment) {
+		return environment.getArgument("filter");
+	}
 
 	/**
 	 * extracts the paging input from the environment

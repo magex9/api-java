@@ -29,21 +29,44 @@ public class OrganizationServiceSetup {
 		try (InputStream in = OrganizationServiceSetup.class.getResource("/setup-queries.txt").openStream()) {
 			OrganizationServiceSetup.testQueries.load(in);
 		}
-				
+		
+		int orgCount = performGraphQLQuery("countOrganizations").getInt("countOrganizations");
+		LOG.info("Currently " + orgCount + " Orgs");
+		
 		String johnnuyOrgId = performGraphQLQuery("createOrganization")
 				.getJSONObject("createOrganization")
 				.getString("organizationId");
 		LOG.info("Created johnnuy.org with id " + johnnuyOrgId);
+		
+		orgCount = performGraphQLQuery("countOrganizations").getInt("countOrganizations");
+		LOG.info("Now there are " + orgCount + " Orgs");		
 		
 		JSONObject headQuarters = performGraphQLQuery("createLocation", johnnuyOrgId)
 				.getJSONObject("createLocation");		
 		LOG.info("Create johnnuy.org head Quarters: " + headQuarters.toString(3));
 		
 		JSONObject mainLocation = performGraphQLQuery("updateOrganizationMainLocation", johnnuyOrgId, headQuarters.getString("locationId"))
-				.getJSONObject("updateOrganizationMainLocation");
-//				.getJSONObject("mainLocation");
-		LOG.info("Updated johnnuy.org main location to: " + mainLocation.toString(3));
+				.getJSONObject("updateOrganizationMainLocation")
+				.getJSONObject("mainLocation");
+		LOG.info("Updated johnnuy.org main location to: " + mainLocation.getString("displayName"));
 		
+		String displayName = performGraphQLQuery("updateOrganizationName", johnnuyOrgId, "Johnnuy Technologies")
+				.getJSONObject("updateOrganizationName")
+				.getString("displayName");
+		LOG.info("Update johnnuy.org to " + displayName);
+		
+		JSONObject org = performGraphQLQuery("findOrganization", johnnuyOrgId)
+				.getJSONObject("findOrganization");
+		LOG.info("Retrieved Org: " + org.toString(3));
+		
+		org = performGraphQLQuery("disableOrganization", johnnuyOrgId)
+				.getJSONObject("disableOrganization");
+		LOG.info("Disabled Org: " + org.toString(3));
+		
+		org = performGraphQLQuery("enableOrganization", johnnuyOrgId)
+				.getJSONObject("enableOrganization");
+		LOG.info("Enabled Org: " + org.toString(3));
+				
 		
 		httpclient.close();
 	}
