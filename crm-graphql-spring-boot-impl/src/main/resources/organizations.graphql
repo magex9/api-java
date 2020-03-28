@@ -23,10 +23,22 @@ input MailingAddressInput {
 	postalCode: String!
 }
 
+input OrganizationFilter {
+	displayName: String!
+}
+
+input LocationFilter {
+	displayName: String!
+}
+
 type Query {	
 	findOrganization(organizationId: String!): Organization	
-	findOrganizations(paging: PagingInput!): OrganizationPage
-	findLocations(paging: PagingInput!): LocationPage
+	countOrganizations(filter: OrganizationFilter!): Int!
+	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
+	
+	findLocation(locationId: String!): Location
+	countLocations(filter: LocationFilter!): Int!
+	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
 }
 
 type Mutation {
