@@ -24,7 +24,7 @@ public class OrganizationTransformerTest {
 
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"Organization\",\n" + 
+				"  \"@type\": \"OrganizationDetails\",\n" + 
 				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
@@ -34,7 +34,7 @@ public class OrganizationTransformerTest {
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"Organization\",\n" + 
+				"  \"@type\": \"OrganizationDetails\",\n" + 
 				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
@@ -44,7 +44,7 @@ public class OrganizationTransformerTest {
 				"    \"@value\": \"active\"\n" + 
 				"  },\n" + 
 				"  \"mainLocation\": {\n" + 
-				"    \"@type\": \"Location\",\n" + 
+				"    \"@type\": \"LocationDetails\",\n" + 
 				"    \"@value\": \"xyz\",\n" + 
 				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
 				"  }\n" + 
