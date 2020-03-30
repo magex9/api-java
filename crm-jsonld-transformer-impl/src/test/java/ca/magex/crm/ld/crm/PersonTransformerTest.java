@@ -13,7 +13,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.common.User;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
@@ -48,7 +48,7 @@ public class PersonTransformerTest {
 		roles.add(new Role(2, "B"));
 		roles.add(new Role(3, "C"));
 		
-		Person person = new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
 		DataObject obj = new PersonTransformer().format(person);
 		
@@ -204,7 +204,7 @@ public class PersonTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		Person reloaded = new PersonTransformer().parse(obj.formatted());
+		PersonDetails reloaded = new PersonTransformer().parse(obj.formatted());
 		
 		assertEquals(person.getPersonId(), reloaded.getPersonId());
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());

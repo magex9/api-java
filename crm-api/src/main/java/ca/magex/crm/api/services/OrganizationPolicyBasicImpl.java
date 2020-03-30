@@ -3,9 +3,10 @@ package ca.magex.crm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.OrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
@@ -75,22 +76,6 @@ public class OrganizationPolicyBasicImpl implements OrganizationPolicy {
 
 	public boolean canUpdateUserRole(Identifier personId) {
 		return true;
-	}
-
-	public List<Message> validate(Organization organization) {
-		return new ArrayList<Message>();
-	}
-
-	public List<Message> validate(Location location) {
-		return new ArrayList<Message>();
-	}
-
-	public List<Message> validate(Person person) {
-		return new ArrayList<Message>();
-	}
-
-	public List<Message> validate(List<Role> roles) {
-		return new ArrayList<Message>();
 	}
 
 }

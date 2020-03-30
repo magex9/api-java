@@ -5,11 +5,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class Location {
+public class LocationSummary {
 
 	private Identifier locationId;
 	
@@ -21,17 +20,14 @@ public class Location {
 	
 	private String displayName;
 	
-	private MailingAddress address;
-
-	public Location(Identifier locationId, Identifier organizationId, Status status, String reference,
-			String displayName, MailingAddress address) {
+	public LocationSummary(Identifier locationId, Identifier organizationId, Status status, String reference,
+			String displayName) {
 		super();
 		this.locationId = locationId;
 		this.organizationId = organizationId;
 		this.status = status;
 		this.reference = reference;
 		this.displayName = displayName;
-		this.address = address;
 	}
 
 	public Identifier getLocationId() {
@@ -46,32 +42,24 @@ public class Location {
 		return status;
 	}
 	
-	public Location withStatus(Status status) {
-		return new Location(locationId, organizationId, status, reference, displayName, address);
+	public LocationSummary withStatus(Status status) {
+		return new LocationSummary(locationId, organizationId, status, reference, displayName);
 	}
 
 	public String getReference() {
 		return reference;
 	}
 	
-	public Location withReference(Status status) {
-		return new Location(locationId, organizationId, status, reference, displayName, address);
+	public LocationSummary withReference(String reference) {
+		return new LocationSummary(locationId, organizationId, status, reference, displayName);
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 	
-	public Location withDisplayName(String displayName) {
-		return new Location(locationId, organizationId, status, reference, displayName, address);
-	}
-
-	public MailingAddress getAddress() {
-		return address;
-	}
-	
-	public Location withAddress(MailingAddress address) {
-		return new Location(locationId, organizationId, status, reference, displayName, address);
+	public LocationSummary withDisplayName(String displayName) {
+		return new LocationSummary(locationId, organizationId, status, reference, displayName);
 	}
 	
 	@Override

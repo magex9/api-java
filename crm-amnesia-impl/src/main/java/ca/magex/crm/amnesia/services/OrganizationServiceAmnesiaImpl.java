@@ -14,14 +14,18 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
+import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
@@ -43,124 +47,154 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		return new Identifier(RandomStringUtils.random(10, BASE_58));
 	}
 
-	public Organization createOrganization(String organizationName) {
+	public OrganizationDetails createOrganization(String organizationName) {
 		Identifier organizationId = generateId();
-		Organization organization = new Organization(organizationId, Status.ACTIVE, organizationName, null);
+		OrganizationDetails organization = new OrganizationDetails(organizationId, Status.ACTIVE, organizationName, null);
 		data.put(organizationId, organization);
 		return organization;
 	}
 
-	public Organization enableOrganization(Identifier organizationId) {
-		Organization updated = findOrganization(organizationId).withStatus(Status.ACTIVE);
+	public OrganizationSummary enableOrganization(Identifier organizationId) {
+		OrganizationDetails updated = findOrganization(organizationId).withStatus(Status.ACTIVE);
+		data.put(organizationId, updated);
+		return summary(updated);
+	}
+
+	public OrganizationSummary disableOrganization(Identifier organizationId) {
+		OrganizationDetails updated = findOrganization(organizationId).withStatus(Status.INACTIVE);
+		data.put(organizationId, updated);
+		return summary(updated);
+	}
+
+	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
+		OrganizationDetails updated = findOrganization(organizationId).withDisplayName(name);
 		data.put(organizationId, updated);
 		return updated;
 	}
 
-	public Organization disableOrganization(Identifier organizationId) {
-		Organization updated = findOrganization(organizationId).withStatus(Status.INACTIVE);
-		data.put(organizationId, updated);
-		return updated;
-	}
-
-	public Organization updateOrganizationName(Identifier organizationId, String name) {
-		Organization updated = findOrganization(organizationId).withDisplayName(name);
-		data.put(organizationId, updated);
-		return updated;
-	}
-
-	public Organization updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		Organization updated = findOrganization(organizationId).withMainLocationId(findLocation(locationId).getLocationId());
+	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
+		OrganizationDetails updated = findOrganization(organizationId).withMainLocationId(findLocation(locationId).getLocationId());
 		data.put(organizationId, updated);
 		return updated;
 	}
 	
-	public Organization findOrganization(Identifier organizationId) {
+	public OrganizationSummary summary(OrganizationDetails details) {
+		return new OrganizationSummary(details.getOrganizationId(), details.getStatus(), details.getDisplayName());
+	}
+	
+	public OrganizationDetails findOrganization(Identifier organizationId) {
 		if (!data.containsKey(organizationId))
 			throw new ItemNotFoundException(organizationId.toString());
-		if (!(data.get(organizationId) instanceof Organization))
+		if (!(data.get(organizationId) instanceof OrganizationDetails))
 			throw new BadRequestException(organizationId, "fatal", "class", "Class is not Organization: " + organizationId);
-		return ((Organization)data.get(organizationId));
+		return ((OrganizationDetails)data.get(organizationId));
 	}
 	
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
 		return data.values().stream()
-			.filter(i -> i instanceof Organization)
-			.map(i -> (Organization)i)
+			.filter(i -> i instanceof OrganizationDetails)
+			.map(i -> (OrganizationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.count();
 	}
 	
-	public Page<Organization> findOrganizations(OrganizationsFilter filter) {
-		List<Organization> allMatchingOrgs = data
-				.values()
-				.stream()
-				.filter(i -> i instanceof Organization)
-				.map(i -> (Organization)i)
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.collect(Collectors.toList());		
-		return PageBuilder.buildPageFor(allMatchingOrgs, filter.getPaging());
+	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+		List<OrganizationSummary> allMatchingOrgs = data
+			.values()
+			.stream()
+			.filter(i -> i instanceof OrganizationDetails)
+			.map(i -> summary((OrganizationDetails)i))
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.collect(Collectors.toList());		
+		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+	}
+	
+	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
+		List<OrganizationDetails> allMatchingOrgs = data
+			.values()
+			.stream()
+			.filter(i -> i instanceof OrganizationDetails)
+			.map(i -> (OrganizationDetails)i)
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.collect(Collectors.toList());		
+		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
 
-	public Location createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		Identifier locationId = generateId();
-		Location location = new Location(locationId, findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address);
+		LocationDetails location = new LocationDetails(locationId, findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address);
 		data.put(locationId, location);
 		return location;
 	}
 
-	public Location updateLocationName(Identifier locationId, String locationName) {
-		Location updated = findLocation(locationId).withDisplayName(locationName);
+	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
+		LocationDetails updated = findLocation(locationId).withDisplayName(locationName);
 		data.put(locationId, updated);
 		return updated;
 	}
 
-	public Location updateLocationAddress(Identifier locationId, MailingAddress address) {
-		Location updated = findLocation(locationId).withAddress(address);
+	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
+		LocationDetails updated = findLocation(locationId).withAddress(address);
 		data.put(locationId, updated);
 		return updated;
 	}
 
-	public Location enableLocation(Identifier locationId) {		
-		Location updated = findLocation(locationId).withStatus(Status.ACTIVE);
+	public LocationSummary enableLocation(Identifier locationId) {		
+		LocationDetails updated = findLocation(locationId).withStatus(Status.ACTIVE);
 		data.put(locationId, updated);
-		return updated;
+		return summary(updated);
 	}
 
-	public Location disableLocation(Identifier locationId) {		
-		Location updated = findLocation(locationId).withStatus(Status.INACTIVE);
+	public LocationSummary disableLocation(Identifier locationId) {		
+		LocationDetails updated = findLocation(locationId).withStatus(Status.INACTIVE);
 		data.put(locationId, updated);
-		return updated;
+		return summary(updated);
 	}
 	
-	public Location findLocation(Identifier locationId) {
+	public LocationSummary summary(LocationDetails details) {
+		return new LocationSummary(details.getLocationId(), details.getOrganizationId(), details.getStatus(), details.getReference(), details.getDisplayName());
+	}
+	
+	public LocationDetails findLocation(Identifier locationId) {
 		if (!data.containsKey(locationId))
 			throw new ItemNotFoundException(locationId.toString());
-		if (!(data.get(locationId) instanceof Location))
+		if (!(data.get(locationId) instanceof LocationDetails))
 			throw new BadRequestException(locationId, "fatal", "class", "Class is not Location: " + locationId);
-		return ((Location)data.get(locationId));
+		return ((LocationDetails)data.get(locationId));
 	}
 	
 	public long countLocations(LocationsFilter filter) {
 		return data.values().stream()
-			.filter(i -> i instanceof Location)
-			.map(i -> (Location)i)
+			.filter(i -> i instanceof LocationDetails)
+			.map(i -> (LocationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.count();
 	}
 	
-	public Page<Location> findLocations(LocationsFilter filter) {
-		List<Location> allMatchingLocations = data
-				.values()
-				.stream()
-				.filter(i -> i instanceof Location)
-				.map(i -> (Location)i)
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.collect(Collectors.toList());		
-		return PageBuilder.buildPageFor(allMatchingLocations, filter.getPaging());
+	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+		List<LocationSummary> allMatchingLocations = data
+			.values()
+			.stream()
+			.filter(i -> i instanceof LocationDetails)
+			.map(i -> summary((LocationDetails)i))
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.collect(Collectors.toList());		
+		return PageBuilder.buildPageFor(allMatchingLocations, paging);
+	}
+	
+	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+		List<LocationDetails> allMatchingLocations = data
+			.values()
+			.stream()
+			.filter(i -> i instanceof LocationDetails)
+			.map(i -> (LocationDetails)i)
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.collect(Collectors.toList());		
+		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
 
-	public Person createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
+	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
 		Identifier personId = generateId();
 		StringBuilder displayName = new StringBuilder();
 		if (StringUtils.isNotBlank(legalName.getLastName()))
@@ -173,101 +207,116 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			displayName.append(" ");
 		if (StringUtils.isNotBlank(legalName.getMiddleName()))
 			displayName.append(legalName.getMiddleName());
-		Person person = new Person(personId, organizationId, Status.ACTIVE, displayName.toString(), legalName, address, communication, unit, null);
+		PersonDetails person = new PersonDetails(personId, organizationId, Status.ACTIVE, displayName.toString(), legalName, address, communication, unit, null);
 		data.put(personId, person);
 		return person;
 	}
 
-	public Person updatePersonName(Identifier personId, PersonName legalName) {
-		Person updated = findPerson(personId).withLegalName(legalName);
+	public PersonDetails updatePersonName(Identifier personId, PersonName legalName) {
+		PersonDetails updated = findPerson(personId).withLegalName(legalName);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person updatePersonAddress(Identifier personId, MailingAddress address) {		
-		Person updated = findPerson(personId).withAddress(address);
+	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {		
+		PersonDetails updated = findPerson(personId).withAddress(address);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person updatePersonCommunication(Identifier personId, Communication communication) {		
-		Person updated = findPerson(personId).withCommunication(communication);
+	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {		
+		PersonDetails updated = findPerson(personId).withCommunication(communication);
 		data.put(personId, updated);
 		return updated;
 	}
 	
 	@Override
-	public Person updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {		
-		Person updated = findPerson(personId).withPosition(position);
+	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {		
+		PersonDetails updated = findPerson(personId).withPosition(position);
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person enablePerson(Identifier personId) {		
-		Person updated = findPerson(personId).withStatus(Status.ACTIVE);
+	public PersonSummary enablePerson(Identifier personId) {		
+		PersonDetails updated = findPerson(personId).withStatus(Status.ACTIVE);
 		data.put(personId, updated);
-		return updated;
+		return summary(updated);
 	}
 
-	public Person disablePerson(Identifier personId) {		
-		Person updated = findPerson(personId).withStatus(Status.ACTIVE);
+	public PersonSummary disablePerson(Identifier personId) {		
+		PersonDetails updated = findPerson(personId).withStatus(Status.ACTIVE);
 		data.put(personId, updated);
-		return updated;
+		return summary(updated);
 	}
 	
-	public Person findPerson(Identifier personId) {
+	public PersonSummary summary(PersonDetails details) {
+		return new PersonSummary(details.getPersonId(), details.getOrganizationId(), details.getStatus(), details.getDisplayName());
+	}
+	
+	public PersonDetails findPerson(Identifier personId) {
 		if (!data.containsKey(personId))
 			throw new ItemNotFoundException(personId.toString());
-		if (!(data.get(personId) instanceof Person))
+		if (!(data.get(personId) instanceof PersonDetails))
 			throw new BadRequestException(personId, "fatal", "class", "Class is not Person: " + personId);
-		return ((Person)data.get(personId));
+		return ((PersonDetails)data.get(personId));
 	}
 	
 	@Override
 	public long countPersons(PersonsFilter filter) {
 		return data.values().stream()
-			.filter(i -> i instanceof Person)
-			.map(i -> (Person)i)
+			.filter(i -> i instanceof PersonDetails)
+			.map(i -> (PersonDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.count();
 	}
 	
-	public Page<Person> findPersons(PersonsFilter filter) {
-		List<Person> allMatchingPersons = data
+	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+		List<PersonSummary> allMatchingPersons = data
 			.values()
 			.stream()
-			.filter(i -> i instanceof Person)
-			.map(i -> (Person)i)
+			.filter(i -> i instanceof PersonDetails)
+			.map(i -> summary((PersonDetails)i))
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingPersons, filter.getPaging());
+		return PageBuilder.buildPageFor(allMatchingPersons, paging);
+	}
+	
+	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+		List<PersonDetails> allMatchingPersons = data
+			.values()
+			.stream()
+			.filter(i -> i instanceof PersonDetails)
+			.map(i -> (PersonDetails)i)
+			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}
 
-	public Person addUserRole(Identifier personId, Role role) {
+	public PersonDetails addUserRole(Identifier personId, Role role) {
 		List<Role> roles = new ArrayList<Role>(findPerson(personId).getUser().getRoles());
 		roles.add(role);
-		Person updated = ((Person)data.get(personId)).withUser(((Person)data.get(personId)).getUser().withRoles(roles));
+		PersonDetails updated = ((PersonDetails)data.get(personId)).withUser(((PersonDetails)data.get(personId)).getUser().withRoles(roles));
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public Person removeUserRole(Identifier personId, Role role) {		
+	public PersonDetails removeUserRole(Identifier personId, Role role) {		
 		List<Role> roles = new ArrayList<Role>(findPerson(personId).getUser().getRoles());
 		roles.remove(role);
-		Person updated = ((Person)data.get(personId)).withUser(((Person)data.get(personId)).getUser().withRoles(roles));
+		PersonDetails updated = ((PersonDetails)data.get(personId)).withUser(((PersonDetails)data.get(personId)).getUser().withRoles(roles));
 		data.put(personId, updated);
 		return updated;
 	}
 
-	public List<Message> validate(Organization organization) {
+	public List<Message> validate(OrganizationDetails organization) {
 		return new ArrayList<Message>();
 	}
 
-	public List<Message> validate(Location location) {
+	public List<Message> validate(LocationDetails location) {
 		return new ArrayList<Message>();
 	}
 
-	public List<Message> validate(Person person) {
+	public List<Message> validate(PersonDetails person) {
 		return new ArrayList<Message>();
 	}
 

@@ -1,13 +1,13 @@
 package ca.magex.crm.ld.crm;
 
-import ca.magex.crm.api.crm.Organization;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.system.StatusTransformer;
 
-public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organization> {
+public class OrganizationTransformer extends AbstractLinkedDataTransformer<OrganizationDetails> {
 
 	private StatusTransformer statusTransformer;
 	
@@ -19,11 +19,11 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 	}
 	
 	public Class<?> getType() {
-		return Organization.class;
+		return OrganizationDetails.class;
 	}
 	
 	@Override
-	public DataObject format(Organization organization) {
+	public DataObject format(OrganizationDetails organization) {
 		return format(organization.getOrganizationId())
 			.with("displayName", organization.getDisplayName())
 			.with("status", statusTransformer.format(organization.getStatus()))
@@ -31,14 +31,14 @@ public class OrganizationTransformer extends AbstractLinkedDataTransformer<Organ
 	}
 
 	@Override
-	public Organization parse(DataObject data, String parentContext) {
+	public OrganizationDetails parse(DataObject data, String parentContext) {
 		validateContext(data, parentContext);
 		validateType(data);
 		Identifier organizationId = getTopicId(data);
 		Status status = statusTransformer.parse(data.get("status"));
 		String displayName = data.getString("displayName");
 		Identifier mainLocationId = getTopicId(data.getObject("mainLocation"));
-		return new Organization(organizationId, status, displayName, mainLocationId);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 	}
 
 }
