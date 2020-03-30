@@ -11,8 +11,8 @@ enum SortOrder {
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
-	sortField: String!
-	sortOrder: SortOrder!
+	sortField: [String]!
+	sortOrder: [SortOrder]!
 }
 
 input MailingAddressInput {
@@ -52,7 +52,7 @@ type Mutation {
 	enableLocation(locationId: String!): Location
 	disableLocation(locationId: String!): Location
 	updateLocationName(locationId: String!, locationName: String!): Location
-	updateLocationAddress(locationId: String!, address: MailingAddressInput!): Location
+	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): Location
 }
 
 type Organization {
@@ -63,9 +63,11 @@ type Organization {
 }
 
 type OrganizationPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	numberOfElements: Int!
 	content: [Organization]	
 }
 
@@ -79,9 +81,11 @@ type Location {
 }
 
 type LocationPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	numberOfElements: Int!
 	content: [Location]	
 }
 
