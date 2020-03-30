@@ -6,12 +6,15 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.util.StreamUtils;
@@ -19,6 +22,8 @@ import org.springframework.util.StreamUtils;
 import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 
 public abstract class GraphQLClient implements Closeable {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(GraphQLClient.class);
 
 	protected String endpoint;
 	protected Properties queries;
@@ -53,6 +58,7 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected JSONObject performGraphQLQuery(String queryName, Object ... params) {
+		long t1 = System.currentTimeMillis();
 		try {
 			HttpPost httpPost = new HttpPost(endpoint);
 			httpPost.setEntity(constructEntity(queryName, params));
@@ -70,6 +76,11 @@ public abstract class GraphQLClient implements Closeable {
 		catch(Exception e) {
 			throw new GraphQLClientException("Error performing graphql query " + queryName, e);
 		}
+		finally {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("execution of " + queryName + "(" + StringUtils.join(params) + ") took " + (System.currentTimeMillis() - t1) + "ms.");
+			}
+		}
 	}
 	
 	/**
@@ -82,13 +93,18 @@ public abstract class GraphQLClient implements Closeable {
 		JSONObject request = new JSONObject();
 		String query = queries.getProperty(queryName);
 		for (int param=0; param<params.length; param++) {
-			query = query.replace("${" + param + "}", toString(params[param]));
+			query = query.replace("${" + param + "}", toVariableReplacementValue(params[param]));
 		}
 		request.put("query", query);
 		return new StringEntity(request.toString(3));
 	}
 	
-	protected String toString(Object value) {
+	/**
+	 * helper method for converting a value to a variable replacement
+	 * @param value
+	 * @return
+	 */
+	protected String toVariableReplacementValue(Object value) {
 		if (value == null) {
 			return "";
 		}
