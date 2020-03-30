@@ -57,7 +57,7 @@ public class LocationDetails {
 	public LocationDetails withReference(String reference) {
 		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
 	}
-
+	
 	public String getDisplayName() {
 		return displayName;
 	}
