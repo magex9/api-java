@@ -8,21 +8,51 @@ enum SortOrder {
   DESC
 }
 
-input Paging {
+input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
 	sortField: String!
 	sortOrder: SortOrder!
 }
 
+input MailingAddressInput {
+	street: String!
+	city: String!
+	province: String!
+	countryCode: String!
+	postalCode: String!
+}
+
+input OrganizationFilter {
+	displayName: String!
+}
+
+input LocationFilter {
+	displayName: String!
+}
+
 type Query {	
 	findOrganization(organizationId: String!): Organization	
-	findOrganizations(paging: Paging!): OrganizationPage
-	findLocations(paging: Paging!): LocationPage
+	countOrganizations(filter: OrganizationFilter!): Int!
+	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
+	
+	findLocation(locationId: String!): Location
+	countLocations(filter: LocationFilter!): Int!
+	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
 }
 
 type Mutation {
-	createOrganization(organizationName: String!) : Organization!
+	createOrganization(organizationName: String!): Organization
+	enableOrganization(organizationId: String!): Organization
+	disableOrganization(organizationId: String!): Organization
+	updateOrganizationName(organizationId: String!, organizationName: String!): Organization
+	updateOrganizationMainLocation(organizationId: String!, locationId: String!): Organization
+	
+	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
+	enableLocation(locationId: String!): Location
+	disableLocation(locationId: String!): Location
+	updateLocationName(locationId: String!, locationName: String!): Location
+	updateLocationAddress(locationId: String!, address: MailingAddressInput!): Location
 }
 
 type Organization {
@@ -41,7 +71,7 @@ type OrganizationPage {
 
 type Location {
 	locationId: String!
-	orgId: String!
+	organizationId: String!
 	status: String!
 	reference: String
 	displayName: String
@@ -59,6 +89,11 @@ type MailingAddress {
 	street: String
 	city: String
 	province: String
-	country: String
+	country: Country
 	postalCode: String
+}
+
+type Country {
+	code: String
+	name: String
 }
