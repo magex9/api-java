@@ -54,7 +54,7 @@ public class Location {
 		return reference;
 	}
 	
-	public Location withReference(Status status) {
+	public Location withReference(String reference) {
 		return new Location(locationId, organizationId, status, reference, displayName, address);
 	}
 
