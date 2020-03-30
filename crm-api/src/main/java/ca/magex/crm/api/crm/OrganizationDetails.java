@@ -8,40 +8,21 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class OrganizationDetails {
-
-	private Identifier organizationId;
-	
-	private Status status;
-	
-	private String displayName;
-	
+public class OrganizationDetails extends OrganizationSummary {
+		
 	private Identifier mainLocationId;
 
 	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
-		super();
-		this.organizationId = organizationId;
-		this.status = status;
-		this.displayName = displayName;
+		super(organizationId, status, displayName);	
 		this.mainLocationId = mainLocationId;
 	}
 
-	public Identifier getOrganizationId() {
-		return organizationId;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-	
+	@Override
 	public OrganizationDetails withStatus(Status status) {
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
 	
+	@Override
 	public OrganizationDetails withDisplayName(String displayName) {
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 	}
