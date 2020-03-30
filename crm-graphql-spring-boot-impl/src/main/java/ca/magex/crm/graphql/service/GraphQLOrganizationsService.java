@@ -52,6 +52,8 @@ public class GraphQLOrganizationsService {
 		graphQL = GraphQL
 				.newGraphQL(graphQLSchema)
 				.queryExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
+				.mutationExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
+				.subscriptionExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
 				.build();
 	}
 

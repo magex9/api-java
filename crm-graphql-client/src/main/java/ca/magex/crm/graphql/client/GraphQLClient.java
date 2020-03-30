@@ -21,6 +21,12 @@ import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 
+/**
+ * HTTP client that handles executing GraphQL queries and returning the response
+ * 
+ * @author Jonny
+ *
+ */
 public abstract class GraphQLClient implements Closeable {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GraphQLClient.class);
@@ -57,7 +63,8 @@ public abstract class GraphQLClient implements Closeable {
 	 * @param queryName
 	 * @return
 	 */
-	protected JSONObject performGraphQLQuery(String queryName, Object ... params) {
+	@SuppressWarnings("unchecked")
+	protected <T> T performGraphQLQuery(String queryName, Object ... params) {
 		long t1 = System.currentTimeMillis();
 		try {
 			HttpPost httpPost = new HttpPost(endpoint);
@@ -66,7 +73,7 @@ public abstract class GraphQLClient implements Closeable {
 				JSONObject json = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
 				JSONArray errors = json.getJSONArray("errors");
 				if (errors.length() == 0) {
-					return json.getJSONObject("data").getJSONObject(queryName);
+					return (T) json.getJSONObject("data").get(queryName);
 				}
 				else {
 					throw new GraphQLClientException(errors.toString(3));

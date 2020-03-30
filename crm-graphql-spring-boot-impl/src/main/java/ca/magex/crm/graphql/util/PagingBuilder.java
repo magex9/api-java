@@ -1,16 +1,21 @@
 package ca.magex.crm.graphql.util;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Sort;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.Paging;
 
 public class PagingBuilder {
 
 	private Integer pageNumber;
 	private Integer pageSize;
-	private String sortField;
-	private String sortDirection;
+	private List<String> sortFields;
+	private List<String> sortDirections;
 	
 	public PagingBuilder withPageNumber(Integer pageNumber) {
 		this.pageNumber = pageNumber;
@@ -22,28 +27,34 @@ public class PagingBuilder {
 		return this;
 	}
 	
-	public PagingBuilder withSortField(String sortField) {
-		this.sortField = sortField;
+	public PagingBuilder withSortFields(List<String> sortFields) {
+		this.sortFields = sortFields;
 		return this;
 	}
 	
-	public PagingBuilder withSortDirection(String sortDirection) {
-		this.sortDirection = sortDirection;
+	public PagingBuilder withSortDirections(List<String> sortDirections) {
+		this.sortDirections = sortDirections;
 		return this;
 	}
 	
 	public Paging build() {
-		Sort sort = Sort.by(sortField);
-		if (StringUtils.equalsIgnoreCase(sortDirection, "ASC")) {
-			sort = sort.ascending();
+		if (sortFields.size() != sortDirections.size()) {
+			throw new ApiException("sortFields does not match sortDirections");
 		}
-		else {
-			sort = sort.descending();
+		List<Order> ordering = new ArrayList<>();
+		for (int i=0; i<sortFields.size(); i++) {
+			Direction dir = Direction.valueOf(sortDirections.get(i));
+			switch(dir) {
+			case ASC:
+				ordering.add(Order.asc(sortFields.get(i)));
+				break;
+			case DESC:
+				ordering.add(Order.desc(sortFields.get(i)));
+			}
 		}
-		
 		return new Paging(
 				pageNumber.intValue(), 
 				pageSize.intValue(),
-				sort);
+				Sort.by(ordering));
 	}
 }
