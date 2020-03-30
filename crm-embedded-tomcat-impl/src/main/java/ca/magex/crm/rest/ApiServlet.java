@@ -22,6 +22,8 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.OrganizationPolicyBasicImpl;
 import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.LinkedDataFormatter;
 import ca.magex.crm.ld.crm.OrganizationSummaryTransformer;
 import ca.magex.crm.ld.crm.OrganizationDetailsTransformer;
@@ -67,37 +69,49 @@ public class ApiServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		res.setContentType("application/json");
-		String path = req.getPathInfo();
-		if (path.startsWith("/api")) {
-			if (path.equals("/api/organizations")) {
-				if (req.getMethod().equals("GET")) {
-					res.getWriter().print(findOrganizations(req, res));
-				} else if (req.getMethod().equals("POST")) {
-					res.getWriter().print(createOrganization(req, res));
-				} else {
-					res.getWriter().print("{\"type\":\"Method not found: " + req.getMethod() + "\"}");
+		String[] parts = req.getPathInfo().split("/");
+		String method = req.getMethod();
+		if (parts[1].equals("api")) {
+			if (parts[2].equals("organizations")) {
+				if (parts.length == 3) {
+					if (method.equals("GET")) {
+						res.getWriter().print(findOrganizations(req, res));
+					} else if (method.equals("POST")) {
+						res.getWriter().print(createOrganization(req, res));
+					} else {
+						res.getWriter().print("{\"type\":\"Method not found: " + req.getMethod() + "\"}");
+					}
+				} else if (parts.length == 4) {
+					if (method.equals("GET")) {
+						res.getWriter().print(getOrganization(req, res));
+					}
 				}
-			} else if (path.matches("/api/organizations/.*")) {
-				res.getWriter().print("...");
 			} else {
-				res.getWriter().print("{\"type\":\"Path not found: " + path + "\"}");
+				res.getWriter().print("{\"type\":\"Path not found: " + req.getPathInfo() + "\"}");
 			}
-		} else if (path.startsWith("/config")) {
+		} else if (parts[1].equals("config")) {
 			res.getWriter().print(config.formatted());
 		} else {
 			res.getWriter().print("/toc");
 		}
 	}
-
+	
 	private String findOrganizations(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		OrganizationSummaryTransformer transformer = new OrganizationSummaryTransformer();
 		Paging paging = new Paging(1, 10, Sort.by("displayName"));
-		return transformer.format(organizations.findOrganizationSummaries(new OrganizationsFilter(), paging).getContent()).stringify(formatter(req));
+		String displayName = req.getParameter("displayName") == null ? null : req.getParameter("displayName");
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(req.getParameter("status").toUpperCase());
+		OrganizationsFilter filter = new OrganizationsFilter(displayName, status);
+		return transformer.format(organizations.findOrganizationSummaries(filter, paging).getContent()).stringify(formatter(req));
 	}
 
 	private String createOrganization(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		DataObject params = body(req);
 		return new OrganizationDetailsTransformer().format(organizations.createOrganization(params.getString("displayName"))).stringify(formatter(req));
+	}
+	
+	private String getOrganization(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		return new OrganizationDetailsTransformer().format(organizations.findOrganization(new Identifier(req.getPathInfo().split("/")[3]))).stringify(formatter(req));
 	}
 	
 	private DataObject body(HttpServletRequest req) throws IOException {
