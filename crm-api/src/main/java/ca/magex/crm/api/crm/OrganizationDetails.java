@@ -54,6 +54,10 @@ public class OrganizationDetails {
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 	}
 	
+	public OrganizationSummary toSummary() {
+		return new OrganizationSummary(organizationId, status, displayName);
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);

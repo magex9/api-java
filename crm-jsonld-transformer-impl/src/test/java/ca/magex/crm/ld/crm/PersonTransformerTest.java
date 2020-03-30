@@ -54,7 +54,7 @@ public class PersonTransformerTest {
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"Person\",\n" + 
+				"  \"@type\": \"PersonDetails\",\n" + 
 				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"organization\": \"xyz\",\n" + 
@@ -111,11 +111,11 @@ public class PersonTransformerTest {
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"Person\",\n" + 
+				"  \"@type\": \"PersonDetails\",\n" + 
 				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"organization\": {\n" + 
-				"    \"@type\": \"Person\",\n" + 
+				"    \"@type\": \"PersonDetails\",\n" + 
 				"    \"@value\": \"xyz\",\n" + 
 				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
 				"  },\n" + 
