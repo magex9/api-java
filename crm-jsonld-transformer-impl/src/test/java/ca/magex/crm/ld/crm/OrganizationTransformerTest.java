@@ -20,7 +20,7 @@ public class OrganizationTransformerTest {
 		Identifier mainLocationId = new Identifier("xyz");
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 		
-		DataObject obj = new OrganizationTransformer().format(organization);
+		DataObject obj = new OrganizationDetailsTransformer().format(organization);
 
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
@@ -50,7 +50,7 @@ public class OrganizationTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		OrganizationDetails reloaded = new OrganizationTransformer().parse(obj.formatted());
+		OrganizationDetails reloaded = new OrganizationDetailsTransformer().parse(obj.formatted());
 		
 		assertEquals(organization.getOrganizationId(), reloaded.getOrganizationId());
 		assertEquals(organization.getDisplayName(), reloaded.getDisplayName());

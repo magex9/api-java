@@ -7,13 +7,13 @@ import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.system.StatusTransformer;
 
-public class OrganizationTransformer extends AbstractLinkedDataTransformer<OrganizationDetails> {
+public class OrganizationDetailsTransformer extends AbstractLinkedDataTransformer<OrganizationDetails> {
 
 	private StatusTransformer statusTransformer;
 	
 	private LocationTransformer locationTransform;
 	
-	public OrganizationTransformer() {
+	public OrganizationDetailsTransformer() {
 		this.statusTransformer = new StatusTransformer();
 		this.locationTransform = new LocationTransformer();
 	}
