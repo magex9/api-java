@@ -52,6 +52,8 @@ public abstract class AbstractLinkedDataTransformer<T extends Object> implements
 	}
 	
 	public DataObject format(Identifier identifer) {
+		if (identifer == null)
+			return base();
 		return base()
 			.with("@value", new DataText(identifer.toString()))
 			.with("@id", getTopicsReference(identifer.toString()));

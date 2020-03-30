@@ -3,33 +3,24 @@ package ca.magex.crm.api.filters;
 import java.util.Collections;
 import java.util.Map;
 
-import org.springframework.data.domain.Sort;
-
 public class LocationsFilter {
 
 	private String displayName;
 
-	private Paging paging;
-
-	public LocationsFilter(String displayName, Paging paging) {
+	public LocationsFilter(String displayName) {
 		this.displayName = displayName;
-		this.paging = paging;
 	}
 
-	public LocationsFilter(Map<String, Object> filter, Paging paging) {
+	public LocationsFilter(Map<String, Object> filter) {
 		this.displayName = (String) filter.get("displayName");
-		this.paging = paging;
 	}
 
 	public LocationsFilter() {
-		this(Collections.emptyMap(), new Paging(0, 10, Sort.by("displayName")));
+		this(Collections.emptyMap());
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 
-	public Paging getPaging() {
-		return paging;
-	}
 }

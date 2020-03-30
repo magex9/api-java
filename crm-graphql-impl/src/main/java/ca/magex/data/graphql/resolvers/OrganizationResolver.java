@@ -4,12 +4,12 @@ import org.springframework.stereotype.Component;
 
 import com.coxautodev.graphql.tools.GraphQLResolver;
 
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.OrganizationService;
 
 @Component
-public class OrganizationResolver implements GraphQLResolver<Organization> {
+public class OrganizationResolver implements GraphQLResolver<OrganizationDetails> {
 	
 	private OrganizationService organizations;
 
@@ -17,15 +17,15 @@ public class OrganizationResolver implements GraphQLResolver<Organization> {
 		this.organizations = organizations;
 	}
 	
-	public String getId(Organization organization) {
+	public String getId(OrganizationDetails organization) {
 		return organization.getOrganizationId().toString();
 	}
 	
-	public String getStatus(Organization organization) {
+	public String getStatus(OrganizationDetails organization) {
 		return organization.getStatus().toString();
 	}
     
-	public Location getMainLocation(Organization organization) {
+	public LocationDetails getMainLocation(OrganizationDetails organization) {
 		try {
 			return organizations.findLocation(organization.getMainLocationId());
 		} catch (Exception e) {

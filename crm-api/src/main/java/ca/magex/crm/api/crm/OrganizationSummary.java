@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class Organization {
+public class OrganizationSummary {
 
 	private Identifier organizationId;
 	
@@ -16,14 +16,11 @@ public class Organization {
 	
 	private String displayName;
 	
-	private Identifier mainLocationId;
-
-	public Organization(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
+	public OrganizationSummary(Identifier organizationId, Status status, String displayName) {
 		super();
 		this.organizationId = organizationId;
 		this.status = status;
 		this.displayName = displayName;
-		this.mainLocationId = mainLocationId;
 	}
 
 	public Identifier getOrganizationId() {
@@ -34,26 +31,18 @@ public class Organization {
 		return status;
 	}
 	
-	public Organization withStatus(Status status) {
-		return new Organization(organizationId, status, displayName, mainLocationId);
+	public OrganizationSummary withStatus(Status status) {
+		return new OrganizationSummary(organizationId, status, displayName);
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 	
-	public Organization withDisplayName(String displayName) {
-		return new Organization(organizationId, status, displayName, mainLocationId);
+	public OrganizationSummary withDisplayName(String displayName) {
+		return new OrganizationSummary(organizationId, status, displayName);
 	}
 
-	public Identifier getMainLocationId() {
-		return mainLocationId;
-	}
-
-	public Organization withMainLocationId(Identifier mainLocationId) {
-		return new Organization(organizationId, status, displayName, mainLocationId);
-	}
-	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);

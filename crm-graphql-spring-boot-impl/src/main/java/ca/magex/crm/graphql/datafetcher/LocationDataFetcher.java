@@ -3,13 +3,12 @@ package ca.magex.crm.graphql.datafetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
 import ca.magex.crm.api.common.MailingAddress;
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import graphql.schema.DataFetcher;
@@ -27,7 +26,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		super(organizations);
 	}
 
-	public DataFetcher<Location> findLocation() {
+	public DataFetcher<LocationDetails> findLocation() {
 		return (environment) -> {
 			logger.info("Entering findLocation@" + LocationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("id");
@@ -39,24 +38,23 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
 			return (int) organizations.countLocations(new LocationsFilter(
-					extractFilter(environment), 
-					new Paging(1, Integer.MAX_VALUE, Sort.by("displayName"))));
+					extractFilter(environment)));
 		};
 	}
 	
-	public DataFetcher<Page<Location>> findLocations() {
+	public DataFetcher<Page<LocationDetails>> findLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return organizations.findLocations(new LocationsFilter(
-					extractFilter(environment), 
-					extractPaging(environment)));
+			return organizations.findLocationDetails(new LocationsFilter(
+					extractFilter(environment)), 
+					extractPaging(environment));
 		};
 	}
 
-	public DataFetcher<Location> byOrganization() {
+	public DataFetcher<LocationDetails> byOrganization() {
 		return (environment) -> {
 			logger.info("Entering byOrganization@" + LocationDataFetcher.class.getSimpleName());
-			Organization organization = environment.getSource();
+			OrganizationDetails organization = environment.getSource();
 			if (organization.getMainLocationId() != null) {
 				return organizations.findLocation(organization.getMainLocationId());
 			}
@@ -66,7 +64,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Location> createLocation() { 
+	public DataFetcher<LocationDetails> createLocation() { 
 		return (environment) -> {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
 			return organizations.createLocation(
@@ -77,7 +75,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Location> enableLocation() {
+	public DataFetcher<LocationSummary> enableLocation() {
 		return (environment) -> {
 			logger.debug("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
@@ -85,7 +83,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<Location> disableLocation() {
+	public DataFetcher<LocationSummary> disableLocation() {
 		return (environment) -> {
 			logger.debug("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
@@ -93,7 +91,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Location> updateLocationName() {
+	public DataFetcher<LocationDetails> updateLocationName() {
 		return (environment) -> {
 			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
@@ -102,7 +100,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Location> updateLocationAddress() {
+	public DataFetcher<LocationDetails> updateLocationAddress() {
 		return (environment) -> {
 			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");

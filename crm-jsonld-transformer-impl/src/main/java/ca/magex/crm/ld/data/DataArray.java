@@ -36,7 +36,7 @@ public final class DataArray extends DataElement {
 	public void stream(OutputStream os, LinkedDataFormatter formatter) throws IOException {
 		os.write("[".getBytes());
 		if (elements.size() == 1) {
-			elements.get(0).stream(os, null);
+			elements.get(0).stream(os, formatter);
 		} else if (elements.size() > 1) {
 			if (formatter.isIndented())
 				os.write(LinkedDataFormatter.EOL);

@@ -15,6 +15,14 @@ public class DataParser {
 		return new DataParser(text).parse();
 	}
 	
+	public static DataObject parseObject(String text) {
+		return (DataObject)parse(text);
+	}
+	
+	public static DataArray parseArray(String text) {
+		return (DataArray)parse(text);
+	}
+	
 	private int index;
 	
 	private String text;
@@ -166,7 +174,7 @@ public class DataParser {
 		StringBuilder sb = new StringBuilder();
 		while (index < length) {
 			char c = getCurrentChar("parseKey");
-			if (isAlphaNumeric(c) || c == '_' || c == '@' ) {
+			if (isAlphaNumeric(c) || c == '_' || c == '@' || c == '/' || c == '$' || c == '-' || c == '{' || c == '}') {
 				sb.append(c);
 				index++;
 			} else if (isQuote(c)) {

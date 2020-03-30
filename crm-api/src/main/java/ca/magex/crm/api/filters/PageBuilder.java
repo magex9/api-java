@@ -18,6 +18,8 @@ public class PageBuilder {
 		if (toIndex > items.size() - 1) {
 			toIndex = items.size();
 		}
+		if (items.size() >= toIndex)
+			toIndex = items.size() - 1;
 		return new PageImpl<T>(items.subList(fromIndex, toIndex), pageable, items.size());
 	}
 }

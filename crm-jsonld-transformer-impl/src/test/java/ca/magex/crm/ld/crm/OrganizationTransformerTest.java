@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import ca.magex.crm.api.crm.Organization;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.LinkedDataFormatter;
@@ -18,9 +18,9 @@ public class OrganizationTransformerTest {
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
-		Organization organization = new Organization(organizationId, status, displayName, mainLocationId);
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 		
-		DataObject obj = new OrganizationTransformer().format(organization);
+		DataObject obj = new OrganizationDetailsTransformer().format(organization);
 
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
@@ -50,7 +50,7 @@ public class OrganizationTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		Organization reloaded = new OrganizationTransformer().parse(obj.formatted());
+		OrganizationDetails reloaded = new OrganizationDetailsTransformer().parse(obj.formatted());
 		
 		assertEquals(organization.getOrganizationId(), reloaded.getOrganizationId());
 		assertEquals(organization.getDisplayName(), reloaded.getDisplayName());
