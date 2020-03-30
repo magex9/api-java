@@ -1,5 +1,7 @@
 package ca.magex.data.graphql.queries;
 
+import java.util.HashMap;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +22,11 @@ public class OrganizationQuery implements GraphQLQueryResolver {
 	}
 
 	public Iterable<Organization> findAllOrganizations() {
-		return organizations.findOrganizations(new OrganizationsFilter(null, new Paging(Sort.by("displayname"))));
+		return organizations.findOrganizations(new OrganizationsFilter(new HashMap<String, Object>(), new Paging(Sort.by("displayname"))));
 	}
 	
     public long countOrganizations() {
-		return organizations.countOrganizations(new OrganizationsFilter(null, new Paging(Sort.by("displayname"))));
+		return organizations.countOrganizations(new OrganizationsFilter(new HashMap<String, Object>(), new Paging(Sort.by("displayname"))));
     }
     
 }
