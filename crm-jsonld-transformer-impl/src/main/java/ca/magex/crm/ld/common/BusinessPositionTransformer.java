@@ -38,12 +38,12 @@ public class BusinessPositionTransformer extends AbstractLinkedDataTransformer<B
 	}
 
 	@Override
-	public BusinessPosition parse(DataObject data) {
-		validateContext(data);
+	public BusinessPosition parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
-		BusinessSector sector = businessSectorTransformer.parse(data.getInt("sector"));
-		BusinessUnit unit = businessUnitTransformer.parse(data.getInt("unit"));
-		BusinessClassification classification = businessClassificationTransformer.parse(data.getInt("classification"));
+		BusinessSector sector = data.contains("sector") ? businessSectorTransformer.parse(data.getInt("sector")) : null;
+		BusinessUnit unit = data.contains("unit") ? businessUnitTransformer.parse(data.getInt("unit")) : null;
+		BusinessClassification classification = data.contains("classification") ? businessClassificationTransformer.parse(data.getInt("classification")) : null;
 		return new BusinessPosition(sector, unit, classification);
 	}
 			

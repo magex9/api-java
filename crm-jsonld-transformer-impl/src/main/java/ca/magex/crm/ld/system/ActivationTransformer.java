@@ -23,8 +23,8 @@ public class ActivationTransformer extends AbstractLinkedDataTransformer<Activat
 	}
 
 	@Override
-	public Activation parse(DataObject data) {
-		validateContext(data);
+	public Activation parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Identifier identifier = new Identifier(data.getString("identifier"));
 		LocalDateTime enabled = parseDatetime(data.getString("enabled"));

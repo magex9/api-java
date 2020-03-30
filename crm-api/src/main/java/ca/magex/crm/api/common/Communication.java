@@ -1,5 +1,8 @@
 package ca.magex.crm.api.common;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.magex.crm.api.lookup.Language;
 
 public class Communication {
@@ -61,6 +64,16 @@ public class Communication {
 
 	public Communication withFaxNumber(Long faxNumber) {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 	
 }

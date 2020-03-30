@@ -34,8 +34,8 @@ public class CommunicationTransformer extends AbstractLinkedDataTransformer<Comm
 	}
 
 	@Override
-	public Communication parse(DataObject data) {
-		validateContext(data);
+	public Communication parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		String email = data.getString("email");
 		String jobTitle = data.getString("jobTitle");

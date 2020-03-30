@@ -3,6 +3,9 @@ package ca.magex.crm.api.common;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ca.magex.crm.api.system.Role;
 
 public class User {
@@ -31,6 +34,16 @@ public class User {
 
 	public User withRoles(List<Role> roles) {
 		return new User(userName, roles);
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
 }

@@ -18,9 +18,8 @@
 		<module>crm-jsonld-transformer-impl</module>
  		<module>crm-graphql-impl</module>
 		<module>crm-graphql-spring-boot-impl</module>
-		<module>crm-restful-spring-boot-impl</module>
-		
 		<module>crm-graphql-client</module>
+		<module>crm-embedded-tomcat-impl</module>
 	</modules>
 
 </project>

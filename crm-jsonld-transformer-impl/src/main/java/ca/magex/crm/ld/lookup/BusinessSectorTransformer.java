@@ -19,8 +19,8 @@ public class BusinessSectorTransformer extends AbstractLinkedDataTransformer<Bus
 	}
 
 	@Override
-	public BusinessSector parse(DataObject data) {
-		validateContext(data);
+	public BusinessSector parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Integer code = data.getInt("@value");
 		String name = data.getString("name");

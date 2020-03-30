@@ -3,9 +3,9 @@ package ca.magex.crm.amnesia.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.OrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
@@ -19,7 +19,7 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 	
 	public static final Role RE_DEO = new Role(3, "Data Entry Officer");
 	
-	private Person auth;
+	private PersonDetails auth;
 	
 	private OrganizationServiceAmnesiaImpl service;
 
@@ -27,7 +27,7 @@ public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {
 		this.service = service;
 	}
 	
-	public void login(Person auth) {
+	public void login(PersonDetails auth) {
 		this.auth = auth;
 	}
 	

@@ -19,8 +19,8 @@ public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutat
 	}
 
 	@Override
-	public Salutation parse(DataObject data) {
-		validateContext(data);
+	public Salutation parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Integer code = data.getInt("@value");
 		String name = data.getString("name");

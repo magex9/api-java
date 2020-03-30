@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -14,7 +13,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.common.User;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
@@ -24,7 +23,6 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.LinkedDataFormatter;
 import ca.magex.crm.ld.data.DataObject;
 
-@Ignore
 public class PersonTransformerTest {
 
 	@Test
@@ -50,15 +48,13 @@ public class PersonTransformerTest {
 		roles.add(new Role(2, "B"));
 		roles.add(new Role(3, "C"));
 		
-		Person person = new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
 		DataObject obj = new PersonTransformer().format(person);
 		
-		System.out.println(obj.stringify(LinkedDataFormatter.basic()));
-
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"Person\",\n" + 
+				"  \"@type\": \"PersonDetails\",\n" + 
 				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"organization\": \"xyz\",\n" + 
@@ -96,10 +92,10 @@ public class PersonTransformerTest {
 				"  },\n" + 
 				"  \"unit\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"BusinessUnit\",\n" + 
+				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": null,\n" + 
 				"    \"unit\": null,\n" + 
-				"    \"level\": null\n" + 
+				"    \"classification\": null\n" + 
 				"  },\n" + 
 				"  \"user\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
@@ -115,11 +111,11 @@ public class PersonTransformerTest {
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"Person\",\n" + 
+				"  \"@type\": \"PersonDetails\",\n" + 
 				"  \"@value\": \"abc\",\n" + 
 				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"organization\": {\n" + 
-				"    \"@type\": \"Person\",\n" + 
+				"    \"@type\": \"PersonDetails\",\n" + 
 				"    \"@value\": \"xyz\",\n" + 
 				"    \"@id\": \"http://magex9.github.io/data/xyz\"\n" + 
 				"  },\n" + 
@@ -176,10 +172,10 @@ public class PersonTransformerTest {
 				"  },\n" + 
 				"  \"unit\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"BusinessUnit\",\n" + 
+				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": null,\n" + 
 				"    \"unit\": null,\n" + 
-				"    \"level\": null\n" + 
+				"    \"classification\": null\n" + 
 				"  },\n" + 
 				"  \"user\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
@@ -208,7 +204,7 @@ public class PersonTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		Person reloaded = new PersonTransformer().parse(obj.formatted());
+		PersonDetails reloaded = new PersonTransformer().parse(obj.formatted());
 		
 		assertEquals(person.getPersonId(), reloaded.getPersonId());
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());

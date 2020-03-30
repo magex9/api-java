@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class Organization {
+public class OrganizationDetails {
 
 	private Identifier organizationId;
 	
@@ -18,7 +18,7 @@ public class Organization {
 	
 	private Identifier mainLocationId;
 
-	public Organization(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
+	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
 		super();
 		this.organizationId = organizationId;
 		this.status = status;
@@ -34,24 +34,28 @@ public class Organization {
 		return status;
 	}
 	
-	public Organization withStatus(Status status) {
-		return new Organization(organizationId, status, displayName, mainLocationId);
+	public OrganizationDetails withStatus(Status status) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 	
-	public Organization withDisplayName(String displayName) {
-		return new Organization(organizationId, status, displayName, mainLocationId);
+	public OrganizationDetails withDisplayName(String displayName) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
 	}
 
 	public Identifier getMainLocationId() {
 		return mainLocationId;
 	}
 
-	public Organization withMainLocationId(Identifier mainLocationId) {
-		return new Organization(organizationId, status, displayName, mainLocationId);
+	public OrganizationDetails withMainLocationId(Identifier mainLocationId) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
+	}
+	
+	public OrganizationSummary toSummary() {
+		return new OrganizationSummary(organizationId, status, displayName);
 	}
 	
 	@Override

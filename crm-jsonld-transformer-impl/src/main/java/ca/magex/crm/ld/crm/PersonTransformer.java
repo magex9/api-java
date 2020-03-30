@@ -5,7 +5,7 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.User;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -17,7 +17,7 @@ import ca.magex.crm.ld.common.UserTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.system.StatusTransformer;
 
-public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
+public class PersonTransformer extends AbstractLinkedDataTransformer<PersonDetails> {
 
 	private StatusTransformer statusTransformer;
 	
@@ -41,11 +41,11 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 	}
 	
 	public Class<?> getType() {
-		return Person.class;
+		return PersonDetails.class;
 	}
 	
 	@Override
-	public DataObject format(Person person) {
+	public DataObject format(PersonDetails person) {
 		return format(person.getPersonId())
 			.with("organization", format(person.getOrganizationId()))
 			.with("status", statusTransformer.format(person.getStatus()))
@@ -58,8 +58,8 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 	}
 
 	@Override
-	public Person parse(DataObject data) {
-		validateContext(data);
+	public PersonDetails parse(DataObject data, String parentContext) {
+		validateContext(data, parentContext);
 		validateType(data);
 		Identifier personId = getTopicId(data);
 		Identifier organizationId = getTopicId(data.getObject("organization"));
@@ -70,7 +70,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<Person> {
 		Communication communication = communicationTransformer.parse(data.get("communication"));
 		BusinessPosition unit = businessPositionTransformer.parse(data.get("unit"));
 		User user = userTransformer.parse(data.get("user"));
-		return new Person(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 	}
 
 		
