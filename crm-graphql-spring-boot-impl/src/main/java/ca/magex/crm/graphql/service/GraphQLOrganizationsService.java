@@ -78,6 +78,10 @@ public class GraphQLOrganizationsService {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countLocations", locationDataFetcher.countLocations()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableLocation", locationDataFetcher.enableLocation()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableLocation", locationDataFetcher.disableLocation()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationName", locationDataFetcher.updateLocationName()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationAddress", locationDataFetcher.updateLocationAddress()))				
 
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();

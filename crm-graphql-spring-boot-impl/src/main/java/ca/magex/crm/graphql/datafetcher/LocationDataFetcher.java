@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.Location;
 import ca.magex.crm.api.crm.Organization;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -33,6 +34,24 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			return organizations.findLocation(new Identifier(id));
 		};
 	}
+	
+	public DataFetcher<Integer> countLocations() {
+		return (environment) -> {
+			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
+			return (int) organizations.countLocations(new LocationsFilter(
+					extractFilter(environment), 
+					new Paging(1, Integer.MAX_VALUE, Sort.by("displayName"))));
+		};
+	}
+	
+	public DataFetcher<Page<Location>> findLocations() {
+		return (environment) -> {
+			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
+			return organizations.findLocations(new LocationsFilter(
+					extractFilter(environment), 
+					extractPaging(environment)));
+		};
+	}
 
 	public DataFetcher<Location> byOrganization() {
 		return (environment) -> {
@@ -47,24 +66,6 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Integer> countLocations() {
-		return (environment) -> {
-			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return (int) organizations.countLocations(new LocationsFilter(
-					extractFilter(environment), 
-					new Paging(1, Integer.MAX_VALUE, Sort.by("displayName"))));
-		};
-	}
-
-	public DataFetcher<Page<Location>> findLocations() {
-		return (environment) -> {
-			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return organizations.findLocations(new LocationsFilter(
-					extractFilter(environment), 
-					extractPaging(environment)));
-		};
-	}
-	
 	public DataFetcher<Location> createLocation() { 
 		return (environment) -> {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
@@ -73,6 +74,40 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 					environment.getArgument("locationName"), 
 					environment.getArgument("locationReference"), 
 					extractMailingAddress(environment, "locationAddress"));
+		};
+	}
+	
+	public DataFetcher<Location> enableLocation() {
+		return (environment) -> {
+			logger.debug("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
+			String locationId = environment.getArgument("locationId");
+			return organizations.enableLocation(new Identifier(locationId));
+		};
+	}
+
+	public DataFetcher<Location> disableLocation() {
+		return (environment) -> {
+			logger.debug("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
+			String locationId = environment.getArgument("locationId");
+			return organizations.disableLocation(new Identifier(locationId));
+		};
+	}
+	
+	public DataFetcher<Location> updateLocationName() {
+		return (environment) -> {
+			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
+			String locationId = environment.getArgument("locationId");
+			String locationName = environment.getArgument("locationName");
+			return organizations.updateLocationName(new Identifier(locationId), locationName);
+		};
+	}
+	
+	public DataFetcher<Location> updateLocationAddress() {
+		return (environment) -> {
+			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
+			String locationId = environment.getArgument("locationId");
+			MailingAddress address = extractMailingAddress(environment, "address");
+			return organizations.updateLocationAddress(new Identifier(locationId), address);
 		};
 	}
 }

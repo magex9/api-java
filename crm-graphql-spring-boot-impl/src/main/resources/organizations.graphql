@@ -49,6 +49,10 @@ type Mutation {
 	updateOrganizationMainLocation(organizationId: String!, locationId: String!): Organization
 	
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
+	enableLocation(locationId: String!): Location
+	disableLocation(locationId: String!): Location
+	updateLocationName(locationId: String!, locationName: String!): Location
+	updateLocationAddress(locationId: String!, address: MailingAddressInput!): Location
 }
 
 type Organization {
@@ -85,6 +89,11 @@ type MailingAddress {
 	street: String
 	city: String
 	province: String
-	country: String
+	country: Country
 	postalCode: String
+}
+
+type Country {
+	code: String
+	name: String
 }

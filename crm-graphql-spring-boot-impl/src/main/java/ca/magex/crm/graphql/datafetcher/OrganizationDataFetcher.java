@@ -70,7 +70,6 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	}
 
 	public DataFetcher<Organization> disableOrganization() {
-
 		return (environment) -> {
 			logger.debug("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String organizationId = environment.getArgument("organizationId");

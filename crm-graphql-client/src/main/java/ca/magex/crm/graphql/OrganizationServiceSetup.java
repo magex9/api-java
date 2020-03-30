@@ -66,7 +66,11 @@ public class OrganizationServiceSetup {
 		org = performGraphQLQuery("enableOrganization", johnnuyOrgId)
 				.getJSONObject("enableOrganization");
 		LOG.info("Enabled Org: " + org.toString(3));
-				
+		
+		String hqName = performGraphQLQuery("updateLocationName", headQuarters.getString("locationId"), "Johnnuy.org HQ")
+				.getJSONObject("updateLocationName")
+				.getString("displayName");
+		LOG.info("Renamed HQ to: "+ hqName);
 		
 		httpclient.close();
 	}
