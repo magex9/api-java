@@ -3,6 +3,7 @@ package ca.magex.crm.graphql.datafetcher;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -50,19 +51,22 @@ public abstract class AbstractDataFetcher {
 	 * @param environment
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected Paging extractPaging(DataFetchingEnvironment environment) {
 		Map<String, Object> pagingMap = environment.getArgument("paging");
+		List<String> sortFields = (List<String>) pagingMap.get("sortField");
+		List<String> sortOrders = (List<String>) pagingMap.get("sortOrder");
 
 		return new PagingBuilder()
 				.withPageNumber((Integer) pagingMap.get("pageNumber"))
 				.withPageSize((Integer) pagingMap.get("pageSize"))
-				.withSortField((String) pagingMap.get("sortField"))
-				.withSortDirection((String) pagingMap.get("sortOrder"))
+				.withSortFields(sortFields)
+				.withSortDirections(sortOrders)
 				.build();
 	}
 
 	/**
-	 * extrats the mailing address from the environment
+	 * extracts the mailing address from the environment
 	 * @param environment
 	 * @param addressKey
 	 * @return

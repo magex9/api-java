@@ -63,7 +63,7 @@ public class Location {
 	}
 	
 	public Location withDisplayName(String displayName) {
-		return new Location(locationId, organizationId, status, displayName, displayName, address);
+		return new Location(locationId, organizationId, status, reference, displayName, address);
 	}
 
 	public MailingAddress getAddress() {

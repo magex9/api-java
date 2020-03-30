@@ -106,7 +106,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
-			MailingAddress address = extractMailingAddress(environment, "address");
+			MailingAddress address = extractMailingAddress(environment, "locationAddress");
 			return organizations.updateLocationAddress(new Identifier(locationId), address);
 		};
 	}

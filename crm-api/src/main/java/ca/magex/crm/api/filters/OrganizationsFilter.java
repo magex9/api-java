@@ -20,9 +20,14 @@ public class OrganizationsFilter {
 		this.displayName = (String) filter.get("displayName");
 		this.paging = paging;
 	}
+	
+	public OrganizationsFilter(String displayName) {
+		this.displayName = displayName;
+		this.paging = new Paging(1, 10, Sort.by("displayName"));
+	}
 
 	public OrganizationsFilter() {
-		this(Collections.emptyMap(), new Paging(0, 10, Sort.by("displayName")));
+		this(Collections.emptyMap(), new Paging(1, 10, Sort.by("displayName")));
 	}
 
 	public String getDisplayName() {
