@@ -5,12 +5,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.common.MailingAddress;
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
 public class GraphQLClientWalkthrough {
@@ -19,25 +20,23 @@ public class GraphQLClientWalkthrough {
 
 		OrganizationService orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
 		
-		long orgCount = orgService.countOrganizations(new OrganizationsFilter(""));
+		long orgCount = orgService.countOrganizations(new OrganizationsFilter());
 		System.out.println(orgCount);
 		
-		Organization johnnuy = orgService.createOrganization(
+		OrganizationDetails johnnuy = orgService.createOrganization(
 				"johnnuy.org");
 		System.out.println(johnnuy);
 		
 		orgCount = orgService.countOrganizations(new OrganizationsFilter("", null));
 		System.out.println(orgCount);
 		
-		johnnuy = orgService.disableOrganization(
-				johnnuy.getOrganizationId());
-		System.out.println(johnnuy);
+		System.out.println(orgService.disableOrganization(
+				johnnuy.getOrganizationId()));
 		
-		johnnuy = orgService.enableOrganization(
-				johnnuy.getOrganizationId());
-		System.out.println(johnnuy);
+		System.out.println(orgService.enableOrganization(
+				johnnuy.getOrganizationId()));
 		
-		Location hq = orgService.createLocation(
+		LocationDetails hq = orgService.createLocation(
 				johnnuy.getOrganizationId(), 
 				"Head Quarters", 
 				"HQ", 
@@ -64,10 +63,10 @@ public class GraphQLClientWalkthrough {
 				"Johnnuy Technologies");
 		System.out.println(johnnuy);
 		
-		Organization johnnuy2 = orgService.findOrganization(johnnuy.getOrganizationId());
+		OrganizationDetails johnnuy2 = orgService.findOrganization(johnnuy.getOrganizationId());
 		System.out.println(johnnuy2);
 		
-		Page<Organization> page = orgService.findOrganizations(new OrganizationsFilter("Johnnuy", new Paging(1, 5, Sort.by(Order.asc("displayName")))));
+		Page<OrganizationDetails> page = orgService.findOrganizationDetails(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(page + " - " + page.getContent().size() + " of " + page.getTotalElements());
 		
 		

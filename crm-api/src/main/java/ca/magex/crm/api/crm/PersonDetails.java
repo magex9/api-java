@@ -2,6 +2,8 @@ package ca.magex.crm.api.crm;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -109,6 +111,10 @@ public class PersonDetails {
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
+	public PersonSummary toSummary() {
+		return new PersonSummary(personId, organizationId, status, displayName);
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
@@ -117,6 +123,11 @@ public class PersonDetails {
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
 }

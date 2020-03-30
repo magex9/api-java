@@ -3,6 +3,7 @@ package ca.magex.crm.graphql.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -17,11 +18,15 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.Location;
-import ca.magex.crm.api.crm.Organization;
-import ca.magex.crm.api.crm.Person;
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.services.OrganizationService;
@@ -47,39 +52,39 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public Organization createOrganization(String organizationName) {
+	public OrganizationDetails createOrganization(String organizationName) {
 		return toOrganization(performGraphQLQuery("createOrganization", 
 				organizationName));
 	}
 
 	@Override
-	public Organization enableOrganization(Identifier organizationId) {
+	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		return toOrganization(performGraphQLQuery("enableOrganization", 
-				organizationId));
+				organizationId)).toSummary();
 	}
 
 	@Override
-	public Organization disableOrganization(Identifier organizationId) {
+	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		return toOrganization(performGraphQLQuery("disableOrganization", 
-				organizationId));
+				organizationId)).toSummary();
 	}
 
 	@Override
-	public Organization updateOrganizationName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
 		return toOrganization(performGraphQLQuery("updateOrganizationName", 
 				organizationId, 
 				name));
 	}
 
 	@Override
-	public Organization updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
 		return toOrganization(performGraphQLQuery("updateOrganizationMainLocation", 
 				organizationId, 
 				locationId));
 	}
 
 	@Override
-	public Organization findOrganization(Identifier organizationId) {
+	public OrganizationDetails findOrganization(Identifier organizationId) {
 		return toOrganization(performGraphQLQuery("findOrganization",
 				organizationId));
 	}
@@ -89,18 +94,24 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 		return toLong(performGraphQLQuery("countOrganizations",
 				filter.getDisplayName()));
 	}
+	
+	@Override
+	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+		Page<OrganizationDetails> details = findOrganizationDetails(filter, paging);
+		return new PageImpl<OrganizationSummary>(details.getContent().stream().map(i -> i.toSummary()).collect(Collectors.toList()), details.getPageable(), details.getTotalElements());
+	}
 
 	@Override
-	public Page<Organization> findOrganizations(OrganizationsFilter filter) {
+	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		List<String> sortFields = new ArrayList<String>();
 		List<String> sortDirections = new ArrayList<String>();
-		if (filter.getPaging().getSort().isEmpty()) {
+		if (paging.getSort().isEmpty()) {
 			/* default order is displayName ascending */
 			sortFields.add("displayName");
 			sortDirections.add(Direction.ASC.toString());
 		}
 		else {			
-			for (Iterator<Order> iter = filter.getPaging().getSort().iterator(); iter.hasNext();) {
+			for (Iterator<Order> iter = paging.getSort().iterator(); iter.hasNext();) {
 				Order order = iter.next();
 				sortFields.add(order.getProperty());
 				sortDirections.add(order.getDirection().toString());
@@ -109,20 +120,20 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 		
 		JSONObject response = performGraphQLQuery("findOrganizations", 
 				filter.getDisplayName(),
-				filter.getPaging().getPageNumber(),
-				filter.getPaging().getPageSize(),
+				paging.getPageNumber(),
+				paging.getPageSize(),
 				sortFields,
 				sortDirections);
 		
 		try {
-			List<Organization> contents = new ArrayList<>();
+			List<OrganizationDetails> contents = new ArrayList<>();
 			JSONArray content = response.getJSONArray("content");		
 			for (int i=0; i<content.length(); i++) {
 				contents.add(toOrganization(content.getJSONObject(i)));
 			}
-			PageRequest pr = PageRequest.of(response.getInt("number") - 1, response.getInt("size"), filter.getPaging().getSort());
+			PageRequest pr = PageRequest.of(response.getInt("number") - 1, response.getInt("size"), paging.getSort());
 			
-			return new PageImpl<Organization>(contents, pr, response.getInt("totalElements"));
+			return new PageImpl<OrganizationDetails>(contents, pr, response.getInt("totalElements"));
 		}
 		catch(Exception jsone) {
 			throw new RuntimeException("Error constructing OrganizationPage from: " + response.toString(), jsone);
@@ -130,7 +141,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public Location createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		return toLocation(performGraphQLQuery("createLocation", 
 				organizationId, 
 				locationName, 
@@ -143,14 +154,14 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public Location updateLocationName(Identifier locationId, String locationName) {
+	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
 		return toLocation(performGraphQLQuery("updateLocationName", 
 				locationId, 
 				locationName));
 	}
 
 	@Override
-	public Location updateLocationAddress(Identifier locationId, MailingAddress address) {
+	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		return toLocation(performGraphQLQuery("updateLocationAddress",  
 				locationId, 
 				address == null ? null : address.getStreet(),
@@ -161,19 +172,19 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public Location enableLocation(Identifier locationId) {
+	public LocationSummary enableLocation(Identifier locationId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Location disableLocation(Identifier locationId) {
+	public LocationSummary disableLocation(Identifier locationId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Location findLocation(Identifier locationId) {
+	public LocationDetails findLocation(Identifier locationId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -185,67 +196,73 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public Page<Location> findLocations(LocationsFilter filter) {
+	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit) {
+	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person updatePersonName(Identifier personId, PersonName name) {
+	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person updatePersonAddress(Identifier personId, MailingAddress address) {
+	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person updatePersonCommunication(Identifier personId, Communication communication) {
+	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition unit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person updatePersonBusinessUnit(Identifier personId, BusinessPosition unit) {
+	public PersonSummary enablePerson(Identifier personId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person enablePerson(Identifier personId) {
+	public PersonSummary disablePerson(Identifier personId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person disablePerson(Identifier personId) {
+	public PersonDetails addUserRole(Identifier personId, Role role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person addUserRole(Identifier personId, Role role) {
+	public PersonDetails removeUserRole(Identifier personId, Role role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Person removeUserRole(Identifier personId, Role role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Person findPerson(Identifier personId) {
+	public PersonDetails findPerson(Identifier personId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -257,25 +274,31 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public Page<Person> findPersons(PersonsFilter filter) {
+	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Message> validate(OrganizationDetails organization) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Message> validate(Organization organization) {
+	public List<Message> validate(LocationDetails location) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Message> validate(Location location) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Message> validate(Person person) {
+	public List<Message> validate(PersonDetails person) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -290,13 +313,13 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 		return number.longValue();
 	}
 
-	private Organization toOrganization(JSONObject json) {
+	private OrganizationDetails toOrganization(JSONObject json) {
 		try {
 			Identifier locationId = null;
 			if (json.has("mainLocation") && json.get("mainLocation") != JSONObject.NULL) {
 				locationId = new Identifier(json.getJSONObject("mainLocation").getString("locationId"));
 			}
-			return new Organization(
+			return new OrganizationDetails(
 					new Identifier(json.getString("organizationId")),
 					Status.valueOf(json.getString("status")),
 					json.getString("displayName"),
@@ -306,9 +329,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 		}
 	}
 	
-	private Location toLocation(JSONObject json) {
+	private LocationDetails toLocation(JSONObject json) {
 		try {			
-			return new Location(
+			return new LocationDetails(
 					new Identifier(json.getString("locationId")),
 					new Identifier(json.getString("organizationId")),
 					Status.valueOf(json.getString("status")),
