@@ -69,7 +69,8 @@ public class GraphQLOrganizationsService {
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countOrganizations", organizationDataFetcher.countOrganizations()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.findOrganizations()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizationDetails", organizationDataFetcher.findOrganizationDetails()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizationSummaries", organizationDataFetcher.findOrganizationSummaries()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOrganization", organizationDataFetcher.createOrganization()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableOrganization", organizationDataFetcher.enableOrganization()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableOrganization", organizationDataFetcher.disableOrganization()))
@@ -78,14 +79,15 @@ public class GraphQLOrganizationsService {
 
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countLocations", locationDataFetcher.countLocations()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocationDetails", locationDataFetcher.findLocationDetails()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocationSummaries", locationDataFetcher.findLocationSummaries()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableLocation", locationDataFetcher.enableLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableLocation", locationDataFetcher.disableLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationName", locationDataFetcher.updateLocationName()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationAddress", locationDataFetcher.updateLocationAddress()))				
 
-				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("OrganizationDetails", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();
 	}
 }

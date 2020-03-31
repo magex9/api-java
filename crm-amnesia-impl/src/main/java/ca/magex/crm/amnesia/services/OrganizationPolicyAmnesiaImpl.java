@@ -1,14 +1,8 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ca.magex.crm.api.crm.LocationSummary;
-import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.OrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
 
 public class OrganizationPolicyAmnesiaImpl implements OrganizationPolicy {

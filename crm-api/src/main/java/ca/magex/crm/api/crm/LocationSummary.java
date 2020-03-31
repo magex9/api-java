@@ -10,15 +10,15 @@ import ca.magex.crm.api.system.Status;
 
 public class LocationSummary {
 
-	private Identifier locationId;
+	protected Identifier locationId;
 	
-	private Identifier organizationId;
+	protected Identifier organizationId;
 	
-	private Status status;
+	protected Status status;
 	
-	private String reference;
+	protected String reference;
 	
-	private String displayName;
+	protected String displayName;
 	
 	public LocationSummary(Identifier locationId, Identifier organizationId, Status status, String reference,
 			String displayName) {

@@ -4,8 +4,8 @@ schema {
 }
 
 enum SortOrder {
-  ASC
-  DESC
+	ASC
+	DESC
 }
 
 input PagingInput {
@@ -24,54 +24,73 @@ input MailingAddressInput {
 }
 
 input OrganizationFilter {
-	displayName: String!
+	displayName: String
+	status: String
 }
 
 input LocationFilter {
-	displayName: String!
+	displayName: String
+	status: String
 }
 
 type Query {	
-	findOrganization(organizationId: String!): Organization	
+	findOrganization(organizationId: String!): OrganizationDetails	
 	countOrganizations(filter: OrganizationFilter!): Int!
-	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
+	findOrganizationDetails(filter: OrganizationFilter!, paging: PagingInput!): OrganizationDetailsPage!
+	findOrganizationSummaries(filter: OrganizationFilter!, paging: PagingInput!): OrganizationSummaryPage!
 	
-	findLocation(locationId: String!): Location
+	findLocation(locationId: String!): LocationDetails
 	countLocations(filter: LocationFilter!): Int!
-	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
+	findLocationDetails(filter: LocationFilter!, paging: PagingInput!): LocationDetailsPage!
+	findLocationSummaries(filter: LocationFilter!, paging: PagingInput!): LocationSummaryPage!
 }
 
 type Mutation {
-	createOrganization(organizationName: String!): Organization
-	enableOrganization(organizationId: String!): Organization
-	disableOrganization(organizationId: String!): Organization
-	updateOrganizationName(organizationId: String!, organizationName: String!): Organization
-	updateOrganizationMainLocation(organizationId: String!, locationId: String!): Organization
+	createOrganization(organizationName: String!): OrganizationDetails
+	enableOrganization(organizationId: String!): OrganizationSummary
+	disableOrganization(organizationId: String!): OrganizationSummary
+	updateOrganizationName(organizationId: String!, organizationName: String!): OrganizationDetails
+	updateOrganizationMainLocation(organizationId: String!, locationId: String!): OrganizationDetails
 	
-	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
-	enableLocation(locationId: String!): Location
-	disableLocation(locationId: String!): Location
-	updateLocationName(locationId: String!, locationName: String!): Location
-	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): Location
+	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): LocationDetails
+	enableLocation(locationId: String!): LocationSummary
+	disableLocation(locationId: String!): LocationSummary
+	updateLocationName(locationId: String!, locationName: String!): LocationDetails
+	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): LocationDetails
 }
 
-type Organization {
+type OrganizationSummary {
 	organizationId: String!
 	status: String!
 	displayName: String!
-	mainLocation: Location
 }
 
-type OrganizationPage {
+type OrganizationSummaryPage {
 	number: Int!
 	numberOfElements: Int!
 	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	content: [Organization]	
+	content: [OrganizationSummary]	
 }
 
-type Location {
+type OrganizationDetails {
+	organizationId: String!
+	status: String!
+	displayName: String!
+	mainLocation: LocationDetails
+}
+
+type OrganizationDetailsPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [OrganizationDetails]	
+}
+
+type LocationSummary {
 	locationId: String!
 	organizationId: String!
 	status: String!
@@ -80,13 +99,31 @@ type Location {
 	address: MailingAddress	
 }
 
-type LocationPage {
+type LocationSummaryPage {
 	number: Int!
 	numberOfElements: Int!
 	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	content: [Location]	
+	content: [LocationSummary]	
+}
+
+type LocationDetails {
+	locationId: String!
+	organizationId: String!
+	status: String!
+	reference: String
+	displayName: String
+	address: MailingAddress	
+}
+
+type LocationDetailsPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [LocationDetails]	
 }
 
 type MailingAddress {
