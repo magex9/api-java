@@ -25,7 +25,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-amnesia-impl</artifactId>
+			<artifactId>crm-amnesia-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
