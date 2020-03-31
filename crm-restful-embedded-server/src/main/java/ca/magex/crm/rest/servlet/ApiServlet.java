@@ -20,7 +20,9 @@ import ca.magex.crm.api.services.SecuredOrganizationService;
 import ca.magex.crm.rest.endpoint.Endpoint;
 import ca.magex.crm.rest.endpoint.ItemNotFoundEndpoint;
 import ca.magex.crm.rest.endpoint.OpenApiConfigEndpoint;
-import ca.magex.crm.rest.endpoint.organizations.CreateOrganizationsEndpoint;
+import ca.magex.crm.rest.endpoint.locations.CreateLocationEndpoint;
+import ca.magex.crm.rest.endpoint.locations.GetLocationsEndpoint;
+import ca.magex.crm.rest.endpoint.organizations.CreateOrganizationEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.DisableOrganizationsEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.EnableOrganizationsEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.GetOrganizationEndpoint;
@@ -46,13 +48,15 @@ public class ApiServlet extends HttpServlet {
 		this.endpoints = new ArrayList<Endpoint>();
 		this.endpoints.add(new OpenApiConfigEndpoint());
 		this.endpoints.add(new GetOrganizationsEndpoint(service));
-		this.endpoints.add(new CreateOrganizationsEndpoint(service));
+		this.endpoints.add(new CreateOrganizationEndpoint(service));
 		this.endpoints.add(new GetOrganizationEndpoint(service));
 		this.endpoints.add(new GetOrganizationSummaryEndpoint(service));
 		this.endpoints.add(new GetOrganizationMainLocationEndpoint(service));
 		this.endpoints.add(new UpdateOrganizationsEndpoint(service));
 		this.endpoints.add(new EnableOrganizationsEndpoint(service));
 		this.endpoints.add(new DisableOrganizationsEndpoint(service));
+		this.endpoints.add(new GetLocationsEndpoint(service));
+		this.endpoints.add(new CreateLocationEndpoint(service));
 	}
 
 	public SecuredOrganizationService buildService() {

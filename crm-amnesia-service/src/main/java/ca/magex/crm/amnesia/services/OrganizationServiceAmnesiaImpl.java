@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.util.DigestUtils;
 
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -35,23 +35,20 @@ import ca.magex.crm.api.system.Status;
 
 public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	
+	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+	
 	private Map<Identifier, Object> data;		
 	
 	public OrganizationServiceAmnesiaImpl() {
 		data = new HashMap<Identifier, Object>();
 	}
 	
-	public Identifier mid(Object... values) {
-		StringBuilder sb = new StringBuilder();
-		for (Object value : values) {
-			sb.append(value == null ? "null" : value.toString());
-			sb.append("\n");
-		}
-		return new Identifier(DigestUtils.md5DigestAsHex(sb.toString().getBytes()).substring(0, 8));
+	public Identifier generateId() {
+		return new Identifier(RandomStringUtils.random(10, BASE_58));
 	}
 
 	public OrganizationDetails createOrganization(String organizationName) {
-		Identifier organizationId = mid(Status.ACTIVE, organizationName);
+		Identifier organizationId = generateId();
 		OrganizationDetails organization = new OrganizationDetails(organizationId, Status.ACTIVE, organizationName, null);
 		data.put(organizationId, organization);
 		return organization;
@@ -121,7 +118,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
-		Identifier locationId = mid(organizationId, locationName, locationReference, address);
+		Identifier locationId = generateId();
 		LocationDetails location = new LocationDetails(locationId, findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address);
 		data.put(locationId, location);
 		return location;
@@ -190,7 +187,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
-		Identifier personId = mid(organizationId, legalName, address, communication, unit);
+		Identifier personId = generateId();
 		StringBuilder displayName = new StringBuilder();
 		if (StringUtils.isNotBlank(legalName.getLastName()))
 			displayName.append(legalName.getLastName());
