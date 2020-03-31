@@ -20,7 +20,7 @@ paths:
   /organizations:
     get:
       summary: List all organizations
-      operationId: findOrganizations
+      operationId: findOrganizationSummaries
       tags:
         - Organizations
       parameters:
@@ -34,8 +34,43 @@ paths:
           name: status
           description: Find organizations in a certian status
           required: false
+          default: active
           schema:
             $ref: '#/components/schemas/Status'
+        - in: query
+          name: page
+          description: Page number
+          required: false
+          default: 1
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: The number of items on the page
+          required: false
+          default: 10
+          schema:
+            type: integer
+        - in: query
+          name: order
+          description: The proper to order the results by
+          required: false
+          default: displayName
+          schema:
+            type: string
+            enum:
+              - displayName
+              - status
+        - in: query
+          name: direction
+          description: The order to sort the propert by
+          default: asc
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
       responses:
         "200":
           description: A paged array of organizations
@@ -112,8 +147,8 @@ paths:
           description: The identifier of the organization to retrieve
           content:
             application/json:
-              schema:
-                type: string
+               schema:
+                  type: string
       responses:
         "200":
           description: Expected response to a valid request

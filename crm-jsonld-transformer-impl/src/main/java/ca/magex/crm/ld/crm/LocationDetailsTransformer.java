@@ -9,13 +9,13 @@ import ca.magex.crm.ld.common.MailingAddressTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.system.StatusTransformer;
 
-public class LocationTransformer extends AbstractLinkedDataTransformer<LocationDetails> {
+public class LocationDetailsTransformer extends AbstractLinkedDataTransformer<LocationDetails> {
 
 	private StatusTransformer statusTransformer;
 	
 	private MailingAddressTransformer mailingAddressTransformer;
 	
-	public LocationTransformer() {
+	public LocationDetailsTransformer() {
 		this.statusTransformer = new StatusTransformer();
 		this.mailingAddressTransformer = new MailingAddressTransformer();
 	}

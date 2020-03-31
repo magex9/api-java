@@ -17,7 +17,7 @@ import ca.magex.crm.ld.common.UserTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.system.StatusTransformer;
 
-public class PersonTransformer extends AbstractLinkedDataTransformer<PersonDetails> {
+public class PersonDetailsTransformer extends AbstractLinkedDataTransformer<PersonDetails> {
 
 	private StatusTransformer statusTransformer;
 	
@@ -31,7 +31,7 @@ public class PersonTransformer extends AbstractLinkedDataTransformer<PersonDetai
 	
 	private UserTransformer userTransformer;
 	
-	public PersonTransformer() {
+	public PersonDetailsTransformer() {
 		this.statusTransformer = new StatusTransformer();
 		this.personNameTransformer = new PersonNameTransformer();
 		this.mailingAddressTransformer = new MailingAddressTransformer();
