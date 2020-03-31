@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-embedded-tomcat-impl</artifactId>
+	<artifactId>crm-restful-embedded-impl</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<properties>
