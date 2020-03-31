@@ -11,11 +11,11 @@ public class OrganizationDetailsTransformer extends AbstractLinkedDataTransforme
 
 	private StatusTransformer statusTransformer;
 	
-	private LocationTransformer locationTransform;
+	private LocationDetailsTransformer locationTransform;
 	
 	public OrganizationDetailsTransformer() {
 		this.statusTransformer = new StatusTransformer();
-		this.locationTransform = new LocationTransformer();
+		this.locationTransform = new LocationDetailsTransformer();
 	}
 	
 	public Class<?> getType() {

@@ -50,7 +50,7 @@ public class PersonTransformerTest {
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
-		DataObject obj = new PersonTransformer().format(person);
+		DataObject obj = new PersonDetailsTransformer().format(person);
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
@@ -204,7 +204,7 @@ public class PersonTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		PersonDetails reloaded = new PersonTransformer().parse(obj.formatted());
+		PersonDetails reloaded = new PersonDetailsTransformer().parse(obj.formatted());
 		
 		assertEquals(person.getPersonId(), reloaded.getPersonId());
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());
