@@ -190,9 +190,27 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit) {
-		// TODO Auto-generated method stub
-		return null;
+	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
+		return ModelBinder.toPersonDetails(performGraphQLQuery("createPerson",
+				organizationId,
+				name.getFirstName(),
+				name.getMiddleName(),
+				name.getLastName(),
+				name.getSalutation().getCode(),
+				address.getStreet(),
+				address.getCity(),
+				address.getProvince(),
+				address.getCountry().getCode(),
+				address.getPostalCode(),
+				communication.getJobTitle(),
+				communication.getLanguage().getCode(),
+				communication.getEmail(),
+				communication.getHomePhone().getNumber(),
+				communication.getHomePhone().getExtension(),
+				communication.getFaxNumber(),
+				position.getSector().getCode(),
+				position.getUnit().getCode(),
+				position.getClassification().getCode()));		
 	}
 
 	@Override
@@ -245,8 +263,8 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public PersonDetails findPerson(Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery("findPerson",
+				personId));
 	}
 
 	@Override

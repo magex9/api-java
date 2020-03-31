@@ -8,6 +8,7 @@ enum SortOrder {
 	DESC
 }
 
+# Complex Input
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
@@ -23,6 +24,29 @@ input MailingAddressInput {
 	postalCode: String!
 }
 
+input NameInput {
+	firstName: String
+	middleName: String
+	lastName: String
+	salutation: Int
+}
+
+input CommunicationInput {
+	jobTitle: String
+	language: String
+	email: String
+	phoneNumber: String
+	phoneExtension: String
+	faxNumber: String
+}
+
+input BusinessPositionInput {
+	sector: Int
+	unit: Int
+	classification: Int
+}
+
+# Filtering Criteria Input
 input OrganizationFilter {
 	displayName: String
 	status: String
@@ -43,6 +67,8 @@ type Query {
 	countLocations(filter: LocationFilter!): Int!
 	findLocationDetails(filter: LocationFilter!, paging: PagingInput!): LocationDetailsPage!
 	findLocationSummaries(filter: LocationFilter!, paging: PagingInput!): LocationSummaryPage!
+	
+	findPerson(personId: String!): PersonDetails
 }
 
 type Mutation {
@@ -57,21 +83,15 @@ type Mutation {
 	disableLocation(locationId: String!): LocationSummary
 	updateLocationName(locationId: String!, locationName: String!): LocationDetails
 	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): LocationDetails
+	
+	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput, position: BusinessPositionInput): PersonDetails
 }
 
+# Main Types
 type OrganizationSummary {
 	organizationId: String!
 	status: String!
 	displayName: String!
-}
-
-type OrganizationSummaryPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [OrganizationSummary]	
 }
 
 type OrganizationDetails {
@@ -81,31 +101,12 @@ type OrganizationDetails {
 	mainLocation: LocationDetails
 }
 
-type OrganizationDetailsPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [OrganizationDetails]	
-}
-
 type LocationSummary {
 	locationId: String!
 	organizationId: String!
 	status: String!
 	reference: String
 	displayName: String
-	address: MailingAddress	
-}
-
-type LocationSummaryPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [LocationSummary]	
 }
 
 type LocationDetails {
@@ -117,13 +118,50 @@ type LocationDetails {
 	address: MailingAddress	
 }
 
-type LocationDetailsPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [LocationDetails]	
+type PersonSummary {
+	personId: String!
+	organizationId: String!
+	status: String!
+	displayName: String
+}
+
+type PersonDetails {
+	personId: String!
+	organizationId: String!
+	status: String!
+	displayName: String
+	legalName: PersonName
+	address: MailingAddress
+	communication: Communication
+	position: BusinessPosition
+	user: User
+}
+
+# Complex Subtypes
+type Communication {
+	jobTitle: String
+	language: Language
+	email: String
+	homePhone: Telephone
+	faxNumber: String
+}
+
+type PersonName {
+	firstName: String
+	middleName: String
+	lastName: String
+	salutation: Salutation
+}
+
+type BusinessPosition {
+	sector: BusinessSector
+	unit: BusinessUnit
+	classification: BusinessClassification
+}
+
+type User {
+	userName: String
+	roles: [Role]
 }
 
 type MailingAddress {
@@ -134,7 +172,100 @@ type MailingAddress {
 	postalCode: String
 }
 
+# Pagination Types
+type OrganizationSummaryPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [OrganizationSummary]	
+}
+
+type OrganizationDetailsPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [OrganizationDetails]	
+}
+
+type LocationSummaryPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [LocationSummary]	
+}
+
+type LocationDetailsPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [LocationDetails]	
+}
+
+type PersonSummaryPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [PersonSummary]
+}
+
+type PersonDetailsPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [PersonDetails]
+}
+
+# Simple Types
+type Telephone {
+	number: String
+	extension: String
+}
+
+# Numeric Code Values
+type BusinessSector {
+	code: Int
+	name: String
+}
+
+type BusinessUnit {
+	code: Int
+	name: String
+}
+
+type BusinessClassification {
+	code: Int
+	name: String
+}
+
+type Role {
+	code: Int
+	name: String
+}
+
+type Salutation {
+	code: Int
+	name: String
+}
+
+# Alphabetic Code Values
 type Country {
+	code: String
+	name: String
+}
+
+type Language {
 	code: String
 	name: String
 }

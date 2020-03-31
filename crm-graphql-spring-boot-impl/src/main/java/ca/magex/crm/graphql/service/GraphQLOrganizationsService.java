@@ -14,6 +14,7 @@ import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
+import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
 import graphql.GraphQL;
 import graphql.execution.AsyncExecutionStrategy;
@@ -65,6 +66,7 @@ public class GraphQLOrganizationsService {
 	private RuntimeWiring buildRuntimeWiring() {
 		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(organizations);
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
+		PersonDataFetcher personDataFetcher = new PersonDataFetcher(organizations);
 
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
@@ -85,7 +87,10 @@ public class GraphQLOrganizationsService {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableLocation", locationDataFetcher.enableLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableLocation", locationDataFetcher.disableLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationName", locationDataFetcher.updateLocationName()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationAddress", locationDataFetcher.updateLocationAddress()))				
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationAddress", locationDataFetcher.updateLocationAddress()))
+				
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createPerson", personDataFetcher.createPerson()))
 
 				.type("OrganizationDetails", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();

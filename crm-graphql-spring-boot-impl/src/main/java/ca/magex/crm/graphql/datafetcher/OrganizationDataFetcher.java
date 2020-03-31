@@ -13,8 +13,7 @@ import ca.magex.crm.graphql.controller.OrganizationController;
 import graphql.schema.DataFetcher;
 
 /**
- * Contains the data fetcher implementations for each of the organization API
- * methods
+ * Contains the data fetcher implementations for each of the organization API methods
  * 
  * @author Jonny
  */
