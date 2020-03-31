@@ -60,7 +60,7 @@ public abstract class AbstractEndpoint<T extends Object> implements Endpoint {
 	
 	public final Paging parsePaging(HttpServletRequest req) {
 		Integer page = req.getParameter("page") == null ? 1 : Integer.parseInt(req.getParameter("page"));
-		Integer limit = req.getParameter("limit") == null ? 1 : Integer.parseInt(req.getParameter("limit"));
+		Integer limit = req.getParameter("limit") == null ? 10 : Integer.parseInt(req.getParameter("limit"));
 		String order = req.getParameter("order") == null ? "displayName" : req.getParameter("order");
 		String direction = req.getParameter("direction") == null ? "asc" : req.getParameter("direction");
 		return new Paging(page, limit, Sort.by(Direction.fromString(direction), order));

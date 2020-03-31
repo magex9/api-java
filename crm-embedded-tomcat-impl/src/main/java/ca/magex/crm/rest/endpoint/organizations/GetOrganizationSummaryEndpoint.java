@@ -26,7 +26,7 @@ public class GetOrganizationSummaryEndpoint extends AbstractEndpoint<Organizatio
 	}
 
 	public String execute(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		return getTransformer().format(getService().findOrganization(pathIdentifier(req, 3)).toSummary()).stringify(formatter(req));
+		return getTransformer().format(getService().findOrganization(pathIdentifier(req, 3))).stringify(formatter(req));
 	}
 	
 }

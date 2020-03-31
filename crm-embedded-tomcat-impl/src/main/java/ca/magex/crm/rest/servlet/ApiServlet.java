@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
 import ca.magex.crm.api.services.OrganizationPolicyBasicImpl;
@@ -18,6 +21,8 @@ import ca.magex.crm.rest.endpoint.Endpoint;
 import ca.magex.crm.rest.endpoint.ItemNotFoundEndpoint;
 import ca.magex.crm.rest.endpoint.OpenApiConfigEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.CreateOrganizationsEndpoint;
+import ca.magex.crm.rest.endpoint.organizations.DisableOrganizationsEndpoint;
+import ca.magex.crm.rest.endpoint.organizations.EnableOrganizationsEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.GetOrganizationEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.GetOrganizationMainLocationEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.GetOrganizationSummaryEndpoint;
@@ -25,6 +30,8 @@ import ca.magex.crm.rest.endpoint.organizations.GetOrganizationsEndpoint;
 import ca.magex.crm.rest.endpoint.organizations.UpdateOrganizationsEndpoint;
 
 public class ApiServlet extends HttpServlet {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ApiServlet.class);
 
 	private static final long serialVersionUID = 1L;
 	
@@ -44,6 +51,8 @@ public class ApiServlet extends HttpServlet {
 		this.endpoints.add(new GetOrganizationSummaryEndpoint(service));
 		this.endpoints.add(new GetOrganizationMainLocationEndpoint(service));
 		this.endpoints.add(new UpdateOrganizationsEndpoint(service));
+		this.endpoints.add(new EnableOrganizationsEndpoint(service));
+		this.endpoints.add(new DisableOrganizationsEndpoint(service));
 	}
 
 	public SecuredOrganizationService buildService() {
@@ -56,6 +65,7 @@ public class ApiServlet extends HttpServlet {
 	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		logger.info(req.getMethod() + " " + req.getPathInfo() + "?" + req.getQueryString());
 		res.setContentType("application/json");
 		for (Endpoint endpoint : endpoints) {
 			if (endpoint.isInterestedIn(req)) {

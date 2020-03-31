@@ -49,4 +49,5 @@ public class OrganizationDetails extends OrganizationSummary {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
+	
 }
