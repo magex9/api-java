@@ -10,11 +10,11 @@ import ca.magex.crm.api.system.Status;
 
 public class OrganizationSummary {
 
-	private Identifier organizationId;
+	protected Identifier organizationId;
 	
-	private Status status;
+	protected Status status;
 	
-	private String displayName;
+	protected String displayName;
 	
 	public OrganizationSummary(Identifier organizationId, Status status, String displayName) {
 		super();

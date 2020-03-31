@@ -57,13 +57,13 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		OrganizationDetails updated = findOrganization(organizationId).withStatus(Status.ACTIVE);
 		data.put(organizationId, updated);
-		return summary(updated);
+		return updated;
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		OrganizationDetails updated = findOrganization(organizationId).withStatus(Status.INACTIVE);
 		data.put(organizationId, updated);
-		return summary(updated);
+		return updated;
 	}
 
 	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
@@ -76,10 +76,6 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 		OrganizationDetails updated = findOrganization(organizationId).withMainLocationId(findLocation(locationId).getLocationId());
 		data.put(organizationId, updated);
 		return updated;
-	}
-	
-	public OrganizationSummary summary(OrganizationDetails details) {
-		return new OrganizationSummary(details.getOrganizationId(), details.getStatus(), details.getDisplayName());
 	}
 	
 	public OrganizationDetails findOrganization(Identifier organizationId) {
@@ -104,7 +100,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.values()
 			.stream()
 			.filter(i -> i instanceof OrganizationDetails)
-			.map(i -> summary((OrganizationDetails)i))
+			.map(i -> (OrganizationSummary) i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
@@ -143,18 +139,14 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	public LocationSummary enableLocation(Identifier locationId) {		
 		LocationDetails updated = findLocation(locationId).withStatus(Status.ACTIVE);
 		data.put(locationId, updated);
-		return summary(updated);
+		return updated;
 	}
 
 	public LocationSummary disableLocation(Identifier locationId) {		
 		LocationDetails updated = findLocation(locationId).withStatus(Status.INACTIVE);
 		data.put(locationId, updated);
-		return summary(updated);
-	}
-	
-	public LocationSummary summary(LocationDetails details) {
-		return new LocationSummary(details.getLocationId(), details.getOrganizationId(), details.getStatus(), details.getReference(), details.getDisplayName());
-	}
+		return updated;
+	}	
 	
 	public LocationDetails findLocation(Identifier locationId) {
 		if (!data.containsKey(locationId))
@@ -177,7 +169,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.values()
 			.stream()
 			.filter(i -> i instanceof LocationDetails)
-			.map(i -> summary((LocationDetails)i))
+			.map(i -> (LocationSummary) i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingLocations, paging);

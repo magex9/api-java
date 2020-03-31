@@ -29,8 +29,8 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<LocationDetails> findLocation() {
 		return (environment) -> {
 			logger.info("Entering findLocation@" + LocationDataFetcher.class.getSimpleName());
-			String id = environment.getArgument("id");
-			return organizations.findLocation(new Identifier(id));
+			String locationId = environment.getArgument("locationId");
+			return organizations.findLocation(new Identifier(locationId));
 		};
 	}
 	
@@ -42,9 +42,18 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Page<LocationDetails>> findLocations() {
+	public DataFetcher<Page<LocationSummary>> findLocationSummaries() {
 		return (environment) -> {
-			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
+			logger.info("Entering findLocationSummaries@" + LocationDataFetcher.class.getSimpleName());
+			return organizations.findLocationSummaries(new LocationsFilter(
+					extractFilter(environment)), 
+					extractPaging(environment));
+		};
+	}
+	
+	public DataFetcher<Page<LocationDetails>> findLocationDetails() {
+		return (environment) -> {
+			logger.info("Entering findLocationDetails@" + LocationDataFetcher.class.getSimpleName());
 			return organizations.findLocationDetails(new LocationsFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
