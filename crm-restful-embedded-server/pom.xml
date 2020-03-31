@@ -16,12 +16,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-amnesia-impl</artifactId>
+			<artifactId>crm-amnesia-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.magex.crm</groupId>
-			<artifactId>crm-jsonld-transformer-impl</artifactId>
+			<artifactId>crm-restful-jsonld-transformer</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
