@@ -1,6 +1,5 @@
 package ca.magex.crm.ld.crm;
 
-import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -17,7 +16,7 @@ public class OrganizationSummaryTransformer extends AbstractLinkedDataTransforme
 	}
 	
 	public Class<?> getType() {
-		return OrganizationDetails.class;
+		return OrganizationSummary.class;
 	}
 	
 	@Override
