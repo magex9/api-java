@@ -377,13 +377,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: 
-                - displayName
-              properties:
-                displayName:
-                  description: The prefered display name of the location
-                  type: string
+              $ref: '#/components/schemas/Location'
       responses:
         "201":
           description: A forward response to the newly created location
