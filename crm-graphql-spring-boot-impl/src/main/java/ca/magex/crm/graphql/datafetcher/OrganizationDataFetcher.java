@@ -42,10 +42,19 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<Page<OrganizationDetails>> findOrganizations() {
+	public DataFetcher<Page<OrganizationDetails>> findOrganizationDetails() {
 		return (environment) -> {
-			logger.debug("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.debug("Entering findOrganizationDetails@" + OrganizationDataFetcher.class.getSimpleName());
 			return organizations.findOrganizationDetails(new OrganizationsFilter(
+					extractFilter(environment)), 
+					extractPaging(environment));
+		};
+	}
+	
+	public DataFetcher<Page<OrganizationSummary>> findOrganizationSummaries() {
+		return (environment) -> {
+			logger.debug("Entering findOrganizationSummaries@" + OrganizationDataFetcher.class.getSimpleName());
+			return organizations.findOrganizationSummaries(new OrganizationsFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};

@@ -9,59 +9,26 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class LocationDetails {
-
-	private Identifier locationId;
-	
-	private Identifier organizationId;
-	
-	private Status status;
-	
-	private String reference;
-	
-	private String displayName;
+public class LocationDetails extends LocationSummary {
 	
 	private MailingAddress address;
 
-	public LocationDetails(Identifier locationId, Identifier organizationId, Status status, String reference,
-			String displayName, MailingAddress address) {
-		super();
-		this.locationId = locationId;
-		this.organizationId = organizationId;
-		this.status = status;
-		this.reference = reference;
-		this.displayName = displayName;
+	public LocationDetails(Identifier locationId, Identifier organizationId, Status status, String reference, String displayName, MailingAddress address) {
+		super(locationId, organizationId, status, reference, displayName);		
 		this.address = address;
 	}
 
-	public Identifier getLocationId() {
-		return locationId;
-	}
-
-	public Identifier getOrganizationId() {
-		return organizationId;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-	
+	@Override
 	public LocationDetails withStatus(Status status) {
 		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
 	}
 
-	public String getReference() {
-		return reference;
-	}
-	
+	@Override
 	public LocationDetails withReference(String reference) {
 		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
 	}
 	
-	public String getDisplayName() {
-		return displayName;
-	}
-	
+	@Override
 	public LocationDetails withDisplayName(String displayName) {
 		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
 	}

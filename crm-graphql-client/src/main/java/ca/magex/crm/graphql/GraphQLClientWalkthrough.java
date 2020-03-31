@@ -6,7 +6,10 @@ import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.lookup.Country;
@@ -19,22 +22,13 @@ public class GraphQLClientWalkthrough {
 	public static void main(String[] args) throws Exception {
 
 		OrganizationService orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
-		
-		long orgCount = orgService.countOrganizations(new OrganizationsFilter());
-		System.out.println(orgCount);
-		
-		OrganizationDetails johnnuy = orgService.createOrganization(
-				"johnnuy.org");
+						
+		OrganizationDetails johnnuy = orgService.createOrganization("johnnuy.org");
 		System.out.println(johnnuy);
 		
-		orgCount = orgService.countOrganizations(new OrganizationsFilter("", null));
-		System.out.println(orgCount);
+		System.out.println(orgService.disableOrganization(johnnuy.getOrganizationId()));
 		
-		System.out.println(orgService.disableOrganization(
-				johnnuy.getOrganizationId()));
-		
-		System.out.println(orgService.enableOrganization(
-				johnnuy.getOrganizationId()));
+		System.out.println(orgService.enableOrganization(johnnuy.getOrganizationId()));
 		
 		LocationDetails hq = orgService.createLocation(
 				johnnuy.getOrganizationId(), 
@@ -52,6 +46,13 @@ public class GraphQLClientWalkthrough {
 				hq.getLocationId(), 
 				new MailingAddress("132 Cheyenne Way", "Nepean", "ON", new Country("CA", "Canada"), "K2J 0E9"));
 		System.out.println(hq);
+		
+		System.out.println(orgService.disableLocation(hq.getLocationId()));
+		
+		System.out.println(orgService.enableLocation(hq.getLocationId()));
+		
+		hq = orgService.findLocation(hq.getLocationId());
+		System.out.println(hq);
 				
 		johnnuy = orgService.updateOrganizationMainLocation(
 				johnnuy.getOrganizationId(), 
@@ -66,8 +67,24 @@ public class GraphQLClientWalkthrough {
 		OrganizationDetails johnnuy2 = orgService.findOrganization(johnnuy.getOrganizationId());
 		System.out.println(johnnuy2);
 		
-		Page<OrganizationDetails> page = orgService.findOrganizationDetails(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
-		System.out.println(page + " - " + page.getContent().size() + " of " + page.getTotalElements());
+		
+		long orgCount = orgService.countOrganizations(new OrganizationsFilter());
+		System.out.println(orgCount + " organizations");
+		
+		Page<OrganizationDetails> orgDetails = orgService.findOrganizationDetails(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(orgDetails + " - " + orgDetails.getContent().size() + " of " + orgDetails.getTotalElements());
+		
+		Page<OrganizationSummary> orgSummaries = orgService.findOrganizationSummaries(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(orgSummaries + " - " + orgSummaries.getContent().size() + " of " + orgSummaries.getTotalElements());
+		
+		long locCount = orgService.countLocations(new LocationsFilter());
+		System.out.println(locCount + " locations");
+		
+		Page<LocationDetails> locationDetails = orgService.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(locationDetails + " - " + locationDetails.getContent().size() + " of " + locationDetails.getTotalElements());
+		
+		Page<LocationSummary> locationSummaries = orgService.findLocationSummaries(new LocationsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(locationSummaries + " - " + locationSummaries.getContent().size() + " of " + locationSummaries.getTotalElements());
 		
 		
 		((OrganizationServiceGraphQLClient) orgService).close();
