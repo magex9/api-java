@@ -13,16 +13,8 @@ import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class PersonDetails {
-
-	private Identifier personId;
-
-	private Identifier organizationId;
-
-	private Status status;
-
-	private String displayName;
-
+public class PersonDetails extends PersonSummary {
+	
 	private PersonName legalName;
 
 	private MailingAddress address;
@@ -35,11 +27,7 @@ public class PersonDetails {
 
 	public PersonDetails(Identifier personId, Identifier organizationId, Status status, String displayName,
 			PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position, User user) {
-		super();
-		this.personId = personId;
-		this.organizationId = organizationId;
-		this.status = status;
-		this.displayName = displayName;
+		super(personId, organizationId, status, displayName);		
 		this.legalName = legalName;
 		this.address = address;
 		this.communication = communication;
@@ -47,26 +35,12 @@ public class PersonDetails {
 		this.user = user;
 	}
 
-	public Identifier getPersonId() {
-		return personId;
-	}
-
-	public Identifier getOrganizationId() {
-		return organizationId;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
+	@Override
 	public PersonDetails withStatus(Status status) {
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
 
-	public String getDisplayName() {
-		return displayName;
-	}
-
+	@Override
 	public PersonDetails withDisplayName(String displayName) {
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position, user);
 	}
@@ -129,5 +103,4 @@ public class PersonDetails {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
-
 }
