@@ -93,4 +93,29 @@ public class OrganizationsTestSuite {
 		return new JSONObject(body);
 	}
 
+	public static JSONObject createLocation(String displayName) throws Exception {
+		String body = Unirest.post("http://localhost:8080/api/locations")
+		  .body("{\n" + 
+		  		"  \"organizationId\": \"6f4f58d1\",\n" + 
+		  		"  \"reference\": \"Second\",\n" + 
+		  		"  \"displayName\": \"My Bank\",\n" + 
+		  		"  \"address\": {\n" + 
+		  		"	\"street\": \"10 Bank St\",\n" + 
+		  		"	\"city\": \"Ottawa\",\n" + 
+		  		"	\"province\": \"ON\",\n" + 
+		  		"	\"country\": {\n" + 
+		  		"	  \"code\": \"CA\",\n" + 
+		  		"	  \"name\": \"Canada\"\n" + 
+		  		"	},\n" + 
+		  		"	\"postalCode\": \"K1K1K1\"\n" + 
+		  		"  }\n" + 
+		  		"}").asString().getBody();
+		System.out.println("=====================================");
+		System.out.println("== POST http://localhost:8080/api/locations (" + displayName + ")");
+		System.out.println(body);
+		System.out.println("=====================================");
+		System.out.println();
+		return new JSONObject(body);
+	}
+	
 }

@@ -20,7 +20,7 @@ paths:
   /organizations:
     get:
       summary: List all organizations
-      operationId: findOrganizationSummaries
+      operationId: findOrganizations
       tags:
         - Organizations
       parameters:
@@ -355,7 +355,7 @@ paths:
   /locations:
     get:
       summary: List all locations
-      operationId: findLocations
+      operationId: findLocationSummaries
       tags:
         - Locations
       parameters:
@@ -371,6 +371,40 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/Status'
+        - in: query
+          name: page
+          description: Page number
+          required: false
+          default: 1
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: The number of items on the page
+          required: false
+          default: 10
+          schema:
+            type: integer
+        - in: query
+          name: order
+          description: The proper to order the results by
+          required: false
+          default: displayName
+          schema:
+            type: string
+            enum:
+              - displayName
+              - status
+        - in: query
+          name: direction
+          description: The order to sort the propert by
+          default: asc
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
       responses:
         "200":
           description: A paged array of locations
@@ -412,7 +446,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Location'
+              type: object
+              required:
+                - organizationId
+                - reference
+                - displayName
+                - address
+              properties:
+                organizationId:
+                  description: The identifier reference the location belongs to
+                  type: string
+                  format: identifier
+                reference:
+                  description: An organizations external reference number to the location.
+                  type: string
+                  pattern: '^[A-Z0-9]{0,10}$'
+                displayName:
+                  description: The preferred display name of the location
+                  type: string
+                address: 
+                  $ref: '#/components/schemas/MailingAddress'
       responses:
         "201":
           description: A forward response to the newly created location
@@ -608,7 +661,7 @@ paths:
   /persons:
     get:
       summary: List all people
-      operationId: findPersons
+      operationId: findPersonSummaries
       tags:
         - Persons
       parameters:
@@ -624,6 +677,40 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/Status'
+        - in: query
+          name: page
+          description: Page number
+          required: false
+          default: 1
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: The number of items on the page
+          required: false
+          default: 10
+          schema:
+            type: integer
+        - in: query
+          name: order
+          description: The proper to order the results by
+          required: false
+          default: displayName
+          schema:
+            type: string
+            enum:
+              - displayName
+              - status
+        - in: query
+          name: direction
+          description: The order to sort the propert by
+          default: asc
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
       responses:
         "200":
           description: A paged array of people
