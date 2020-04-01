@@ -1,6 +1,7 @@
 package ca.magex.crm.amnesia.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -285,11 +287,20 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		List<Role> roles = new ArrayList<Role>(findPerson(personId).getUser().getRoles());
-		roles.add(role);
-		PersonDetails updated = ((PersonDetails)data.get(personId)).withUser(((PersonDetails)data.get(personId)).getUser().withRoles(roles));
-		data.put(personId, updated);
-		return updated;
+		
+		PersonDetails person = findPerson(personId);		
+		/* first time we add a role we need to generate the user name */
+		if (person.getUser() == null) {
+			String userName = person.getLegalName().getFirstName().substring(0, 1) + "X" + person.getLegalName().getLastName().substring(0, 1) + countPersons(new PersonsFilter());
+			person = person.withUser(new User(userName, Arrays.asList(role)));
+		}
+		else {
+			List<Role> roles = new ArrayList<Role>(person.getUser().getRoles());
+			roles.add(role);
+			person = person.withUser(person.getUser().withRoles(roles));
+		}
+		data.put(personId, person);
+		return person;
 	}
 
 	public PersonDetails removeUserRole(Identifier personId, Role role) {		

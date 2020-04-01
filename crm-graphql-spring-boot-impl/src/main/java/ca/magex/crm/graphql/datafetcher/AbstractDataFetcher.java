@@ -20,6 +20,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.util.PagingBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -37,6 +38,7 @@ public abstract class AbstractDataFetcher {
 	protected Properties sectorsLookup = new Properties();
 	protected Properties unitsLookup = new Properties();
 	protected Properties classificationsLookup = new Properties();
+	protected Properties rolesLookup = new Properties();
 
 	protected OrganizationService organizations = null;
 
@@ -83,6 +85,13 @@ public abstract class AbstractDataFetcher {
 			this.classificationsLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading classifications.properties");
+		}
+		
+		URL roles = getClass().getResource("/codes/roles.properties");
+		try (InputStream c = roles.openStream()) {
+			this.rolesLookup.load(c);
+		} catch (IOException ioe) {
+			throw new RuntimeException("Error loading roles.properties");
 		}
 	}
 	
@@ -189,5 +198,17 @@ public abstract class AbstractDataFetcher {
 				new BusinessClassification(
 						(Integer) businessMap.get("classification"), 
 						classificationsLookup.getProperty(businessMap.get("classification").toString())));
+	}
+	
+	/**
+	 * Extracts the role from the environment
+	 * @param environment
+	 * @param businessKey
+	 * @return
+	 */
+	protected Role extractRole(DataFetchingEnvironment environment, String roleKey) {
+		return new Role(
+				environment.getArgument(roleKey),
+				rolesLookup.getProperty(Integer.toString(environment.getArgument(roleKey))));
 	}
 }

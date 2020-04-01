@@ -26,6 +26,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -131,14 +132,25 @@ public class GraphQLClientWalkthrough {
 		jonathan = orgService.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
 		System.out.println(jonathan);
 		
+		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role(1, ""));
+		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role(5, ""));
+		System.out.println(jonathan);
+		
+		jonathan = orgService.removeUserRole(jonathan.getPersonId(), new Role(1, ""));
+		System.out.println(jonathan);
+		
+		
 		long personCount = orgService.countPersons(new PersonsFilter());
 		System.out.println(personCount + " persons");
 		
 		Page<PersonDetails> personDetails = orgService.findPersonDetails(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(personDetails + " - " + personDetails.getContent().size() + " of " + personDetails.getTotalElements());
 		
-		Page<PersonSummary> personnSummaries = orgService.findPersonSummaries(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
-		System.out.println(personnSummaries + " - " + personnSummaries.getContent().size() + " of " + personnSummaries.getTotalElements());
+		Page<PersonSummary> personSummaries = orgService.findPersonSummaries(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(personSummaries + " - " + personSummaries.getContent().size() + " of " + personSummaries.getTotalElements());
+		
+		
+		
 		
 		((OrganizationServiceGraphQLClient) orgService).close();
 	}

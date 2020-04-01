@@ -319,14 +319,20 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"addUserRole",
+				"addUserRole",
+				personId,
+				role.getCode()));
 	}
 
 	@Override
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"removeUserRole",
+				"removeUserRole",
+				personId,
+				role.getCode()));
 	}
 
 	@Override

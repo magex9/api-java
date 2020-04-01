@@ -215,7 +215,7 @@ public class ModelBinder {
 			if (json == null) {
 				return null;
 			}
-			JSONArray roleArray = json.getJSONArray("Role");
+			JSONArray roleArray = json.getJSONArray("roles");
 			List<Role> roles = new ArrayList<>();
 			for (int i=0; i<roleArray.length(); i++) {
 				JSONObject role = roleArray.getJSONObject(i);
@@ -225,7 +225,7 @@ public class ModelBinder {
 					json.getString("userName"),
 					roles);
 		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing BusinessPosition from: " + json.toString(), jsone);
+			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);
 		}
 	}
 

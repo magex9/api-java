@@ -27,8 +27,8 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<PersonDetails> findPerson() {
 		return (environment) -> {
 			logger.debug("Entering findPerson@" + PersonDataFetcher.class.getSimpleName());
-			String id = environment.getArgument("personId");
-			return organizations.findPerson(new Identifier(id));
+			String personId = environment.getArgument("personId");
+			return organizations.findPerson(new Identifier(personId));
 		};
 	}
 	
@@ -65,18 +65,18 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<PersonDetails> enablePerson() {
 		return (environment) -> {
 			logger.debug("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
-			Identifier id = new Identifier((String) environment.getArgument("personId"));
-			organizations.enablePerson(id);
-			return organizations.findPerson(id);
+			Identifier personId = new Identifier((String) environment.getArgument("personId"));
+			organizations.enablePerson(personId);
+			return organizations.findPerson(personId);
 		};
 	}
 
 	public DataFetcher<PersonDetails> disablePerson() {
 		return (environment) -> {
 			logger.debug("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
-			Identifier id = new Identifier((String) environment.getArgument("personId"));
-			organizations.disablePerson(id);
-			return organizations.findPerson(id);
+			Identifier personId = new Identifier((String) environment.getArgument("personId"));
+			organizations.disablePerson(personId);
+			return organizations.findPerson(personId);
 		};
 	}
 
@@ -105,6 +105,26 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 						extractBusinessPosition(environment, "position"));
 			}
 			return organizations.findPerson(personId);
+		};
+	}
+	
+	public DataFetcher<PersonDetails> addUserRole() {
+		return (environment) -> {
+			logger.debug("Entering addUserRole@" + PersonDataFetcher.class.getSimpleName());
+			Identifier personId = new Identifier((String) environment.getArgument("personId"));
+			return organizations.addUserRole(
+					personId, 
+					extractRole(environment, "role"));
+		};
+	}
+	
+	public DataFetcher<PersonDetails> removeUserRole() {
+		return (environment) -> {
+			logger.debug("Entering removeUserRole@" + PersonDataFetcher.class.getSimpleName());
+			Identifier personId = new Identifier((String) environment.getArgument("personId"));
+			return organizations.removeUserRole(
+					personId, 
+					extractRole(environment, "role"));
 		};
 	}
 }

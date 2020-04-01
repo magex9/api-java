@@ -91,6 +91,10 @@ type Mutation {
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput): Person
 	enablePerson(personId: String!): Person
 	disablePerson(personId: String!): Person
+	
+	addUserRole(personId: String!, role: Int!): Person
+	removeUserRole(personId: String!, role: Int!): Person
+	
 }
 
 # Main Types
