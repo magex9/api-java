@@ -15,6 +15,8 @@ import ca.magex.crm.api.system.Status;
 
 public class PersonDetails extends PersonSummary {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private PersonName legalName;
 
 	private MailingAddress address;
