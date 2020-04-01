@@ -43,42 +43,42 @@ public abstract class AbstractDataFetcher {
 	protected AbstractDataFetcher(OrganizationService organizations) {
 		this.organizations = organizations;
 		
-		URL countries = getClass().getResource("/countries.properties");
+		URL countries = getClass().getResource("/codes/countries.properties");
 		try (InputStream c = countries.openStream()) {
 			this.countryLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading countries.properties");
 		}
 		
-		URL salutations = getClass().getResource("/salutations.properties");
+		URL salutations = getClass().getResource("/codes/salutations.properties");
 		try (InputStream c = salutations.openStream()) {
 			this.salutationLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading salutations.properties");
 		}
 		
-		URL languages = getClass().getResource("/languages.properties");
+		URL languages = getClass().getResource("/codes/languages.properties");
 		try (InputStream c = languages.openStream()) {
 			this.languagesLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading languages.properties");
 		}
 		
-		URL sectors = getClass().getResource("/sectors.properties");
+		URL sectors = getClass().getResource("/codes/sectors.properties");
 		try (InputStream c = sectors.openStream()) {
 			this.sectorsLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading sectors.properties");
 		}
 		
-		URL units = getClass().getResource("/units.properties");
+		URL units = getClass().getResource("/codes/units.properties");
 		try (InputStream c = units.openStream()) {
 			this.unitsLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading units.properties");
 		}
 		
-		URL classifications = getClass().getResource("/classifications.properties");
+		URL classifications = getClass().getResource("/codes/classifications.properties");
 		try (InputStream c = classifications.openStream()) {
 			this.classificationsLookup.load(c);
 		} catch (IOException ioe) {

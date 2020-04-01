@@ -58,58 +58,42 @@ input LocationFilter {
 }
 
 type Query {	
-	findOrganization(organizationId: String!): OrganizationDetails	
+	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
-	findOrganizationDetails(filter: OrganizationFilter!, paging: PagingInput!): OrganizationDetailsPage!
-	findOrganizationSummaries(filter: OrganizationFilter!, paging: PagingInput!): OrganizationSummaryPage!
+	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
 	
-	findLocation(locationId: String!): LocationDetails
+	findLocation(locationId: String!): Location
 	countLocations(filter: LocationFilter!): Int!
-	findLocationDetails(filter: LocationFilter!, paging: PagingInput!): LocationDetailsPage!
-	findLocationSummaries(filter: LocationFilter!, paging: PagingInput!): LocationSummaryPage!
+	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
 	
-	findPerson(personId: String!): PersonDetails
+	findPerson(personId: String!): Person
 }
 
 type Mutation {
-	createOrganization(organizationName: String!): OrganizationDetails
-	enableOrganization(organizationId: String!): OrganizationSummary
-	disableOrganization(organizationId: String!): OrganizationSummary
-	updateOrganizationName(organizationId: String!, organizationName: String!): OrganizationDetails
-	updateOrganizationMainLocation(organizationId: String!, locationId: String!): OrganizationDetails
+	createOrganization(organizationName: String!): Organization
+	enableOrganization(organizationId: String!): Organization
+	disableOrganization(organizationId: String!): Organization
+	updateOrganizationName(organizationId: String!, organizationName: String!): Organization
+	updateOrganizationMainLocation(organizationId: String!, locationId: String!): Organization
 	
-	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): LocationDetails
-	enableLocation(locationId: String!): LocationSummary
-	disableLocation(locationId: String!): LocationSummary
-	updateLocationName(locationId: String!, locationName: String!): LocationDetails
-	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): LocationDetails
+	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
+	enableLocation(locationId: String!): Location
+	disableLocation(locationId: String!): Location
+	updateLocationName(locationId: String!, locationName: String!): Location
+	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): Location
 	
-	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput, position: BusinessPositionInput): PersonDetails
+	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput, position: BusinessPositionInput): Person
 }
 
 # Main Types
-type OrganizationSummary {
+type Organization {
 	organizationId: String!
 	status: String!
 	displayName: String!
+	mainLocation: Location
 }
 
-type OrganizationDetails {
-	organizationId: String!
-	status: String!
-	displayName: String!
-	mainLocation: LocationDetails
-}
-
-type LocationSummary {
-	locationId: String!
-	organizationId: String!
-	status: String!
-	reference: String
-	displayName: String
-}
-
-type LocationDetails {
+type Location {
 	locationId: String!
 	organizationId: String!
 	status: String!
@@ -118,14 +102,7 @@ type LocationDetails {
 	address: MailingAddress	
 }
 
-type PersonSummary {
-	personId: String!
-	organizationId: String!
-	status: String!
-	displayName: String
-}
-
-type PersonDetails {
+type Person {
 	personId: String!
 	organizationId: String!
 	status: String!
@@ -173,58 +150,31 @@ type MailingAddress {
 }
 
 # Pagination Types
-type OrganizationSummaryPage {
+type OrganizationPage {
 	number: Int!
 	numberOfElements: Int!
 	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	content: [OrganizationSummary]	
+	content: [Organization]	
 }
 
-type OrganizationDetailsPage {
+type LocationPage {
 	number: Int!
 	numberOfElements: Int!
 	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	content: [OrganizationDetails]	
+	content: [Location]	
 }
 
-type LocationSummaryPage {
+type PersonPage {
 	number: Int!
 	numberOfElements: Int!
 	size: Int!
 	totalPages: Int!
 	totalElements: Int!	
-	content: [LocationSummary]	
-}
-
-type LocationDetailsPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [LocationDetails]	
-}
-
-type PersonSummaryPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [PersonSummary]
-}
-
-type PersonDetailsPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [PersonDetails]
+	content: [Person]
 }
 
 # Simple Types

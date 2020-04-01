@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
@@ -41,24 +40,15 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<Page<OrganizationDetails>> findOrganizationDetails() {
+	public DataFetcher<Page<OrganizationDetails>> findOrganizations() {
 		return (environment) -> {
-			logger.debug("Entering findOrganizationDetails@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.debug("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
 			return organizations.findOrganizationDetails(new OrganizationsFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};
 	}
 	
-	public DataFetcher<Page<OrganizationSummary>> findOrganizationSummaries() {
-		return (environment) -> {
-			logger.debug("Entering findOrganizationSummaries@" + OrganizationDataFetcher.class.getSimpleName());
-			return organizations.findOrganizationSummaries(new OrganizationsFilter(
-					extractFilter(environment)), 
-					extractPaging(environment));
-		};
-	}
-
 	public DataFetcher<OrganizationDetails> createOrganization() {
 		return (environment) -> {
 			logger.debug("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
@@ -67,19 +57,21 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<OrganizationSummary> enableOrganization() {
+	public DataFetcher<OrganizationDetails> enableOrganization() {
 		return (environment) -> {
 			logger.debug("Entering enableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationId = environment.getArgument("organizationId");
-			return organizations.enableOrganization(new Identifier(organizationId));
+			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
+			organizations.enableOrganization(organizationId);
+			return organizations.findOrganization(organizationId);
 		};
 	}
 
-	public DataFetcher<OrganizationSummary> disableOrganization() {
+	public DataFetcher<OrganizationDetails> disableOrganization() {
 		return (environment) -> {
 			logger.debug("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationId = environment.getArgument("organizationId");
-			return organizations.disableOrganization(new Identifier(organizationId));
+			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
+			organizations.disableOrganization(organizationId);
+			return organizations.findOrganization(organizationId);
 		};
 	}
 
