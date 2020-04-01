@@ -6,9 +6,9 @@ import java.util.Stack;
 
 public class LinkedDataFormatter {
 
-	public static LinkedDataFormatter compact() { return new LinkedDataFormatter(null, true); }
+	public static LinkedDataFormatter compact() { return new LinkedDataFormatter(null, false); }
 	
-	public static LinkedDataFormatter basic() { return new LinkedDataFormatter(0, false); }
+	public static LinkedDataFormatter json() { return new LinkedDataFormatter(0, false); }
 	
 	public static LinkedDataFormatter full() { return new LinkedDataFormatter(0, true); }
 	

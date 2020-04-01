@@ -53,24 +53,16 @@ public class PersonTransformerTest {
 		DataObject obj = new PersonDetailsTransformer().format(person);
 		
 		assertEquals("{\n" + 
-				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"PersonDetails\",\n" + 
-				"  \"@value\": \"abc\",\n" + 
-				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"organization\": \"xyz\",\n" + 
 				"  \"status\": \"pending\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"legalName\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"PersonName\",\n" + 
 				"    \"salutation\": 1,\n" + 
 				"    \"firstName\": \"Chris\",\n" + 
 				"    \"middleName\": \"P\",\n" + 
 				"    \"lastName\": \"Bacon\"\n" + 
 				"  },\n" + 
 				"  \"address\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"MailingAddress\",\n" + 
 				"    \"street\": \"123 Main St\",\n" + 
 				"    \"city\": \"Ottawa\",\n" + 
 				"    \"province\": \"Ontario\",\n" + 
@@ -78,28 +70,21 @@ public class PersonTransformerTest {
 				"    \"postalCode\": \"K1K1K1\"\n" + 
 				"  },\n" + 
 				"  \"communication\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"Communication\",\n" + 
 				"    \"email\": \"chris@bacon.com\",\n" + 
 				"    \"jobTitle\": \"Tester\",\n" + 
 				"    \"language\": \"en\",\n" + 
 				"    \"homePhone\": {\n" + 
-				"      \"@type\": \"Telephone\",\n" + 
 				"      \"number\": 2342342345,\n" + 
 				"      \"extension\": null\n" + 
 				"    },\n" + 
 				"    \"faxNumber\": 4564564565\n" + 
 				"  },\n" + 
 				"  \"unit\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": null,\n" + 
 				"    \"unit\": null,\n" + 
 				"    \"classification\": null\n" + 
 				"  },\n" + 
 				"  \"user\": {\n" + 
-				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
-				"    \"@type\": \"User\",\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
 				"      1,\n" + 
@@ -107,7 +92,7 @@ public class PersonTransformerTest {
 				"      3\n" + 
 				"    ]\n" + 
 				"  }\n" + 
-				"}", obj.stringify(LinkedDataFormatter.basic()));
+				"}", obj.stringify(LinkedDataFormatter.json()));
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
