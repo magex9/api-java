@@ -1,10 +1,14 @@
 package ca.magex.crm.api.system;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Identifier {
+public class Identifier implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String id;
 	
 	public Identifier(String id) {

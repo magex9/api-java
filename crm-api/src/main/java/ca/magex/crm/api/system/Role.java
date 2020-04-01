@@ -5,7 +5,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Role {
+import java.io.Serializable;
+
+public class Role implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Integer code;
 	

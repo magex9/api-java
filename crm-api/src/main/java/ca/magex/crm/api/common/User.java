@@ -1,5 +1,6 @@
 package ca.magex.crm.api.common;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +11,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.system.Role;
 
-public class User {
+public class User implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private String userName;
 
