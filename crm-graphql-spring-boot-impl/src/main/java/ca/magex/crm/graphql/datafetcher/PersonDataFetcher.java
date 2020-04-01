@@ -1,13 +1,18 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.OrganizationController;
 import graphql.schema.DataFetcher;
 
@@ -32,11 +37,25 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
+	public PersonsFilter extractFilter(Map<String, Object> filter) {
+		String displayName = (String) filter.get("displayName");
+		Status status = null;
+		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
+			try {
+				status = Status.valueOf((String) filter.get("status"));
+			}
+			catch(IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
+		return new PersonsFilter(displayName, status);
+	}
+	
 	public DataFetcher<Integer> countPersons() {
 		return (environment) -> {
 			logger.debug("Entering countPersons@" + OrganizationDataFetcher.class.getSimpleName());
 			return (int) organizations.countPersons(
-					new PersonsFilter(extractFilter(environment)));
+					extractFilter(extractFilter(environment)));
 		};
 	}
 
@@ -44,7 +63,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering findPersons@" + OrganizationDataFetcher.class.getSimpleName());
 			return organizations.findPersonDetails(
-					new PersonsFilter(extractFilter(environment)), 
+					extractFilter(extractFilter(environment)), 
 					extractPaging(environment));
 		};
 	}

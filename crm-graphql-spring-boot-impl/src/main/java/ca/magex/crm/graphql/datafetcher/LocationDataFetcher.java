@@ -1,14 +1,19 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 import graphql.schema.DataFetcher;
 
 /**
@@ -31,11 +36,25 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			return organizations.findLocation(new Identifier(locationId));
 		};
 	}
+
+	public LocationsFilter extractFilter(Map<String, Object> filter) {
+		String displayName = (String) filter.get("displayName");
+		Status status = null;
+		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
+			try {
+				status = Status.valueOf((String) filter.get("status"));
+			}
+			catch(IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
+		return new LocationsFilter(displayName, status);
+	}
 	
 	public DataFetcher<Integer> countLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return (int) organizations.countLocations(new LocationsFilter(
+			return (int) organizations.countLocations(extractFilter(
 					extractFilter(environment)));
 		};
 	}
@@ -43,7 +62,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Page<LocationDetails>> findLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return organizations.findLocationDetails(new LocationsFilter(
+			return organizations.findLocationDetails(extractFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};
