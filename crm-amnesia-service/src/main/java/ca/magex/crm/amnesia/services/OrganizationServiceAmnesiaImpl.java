@@ -14,6 +14,8 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
+import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
+import ca.magex.crm.amnesia.generator.IdGenerator;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -39,17 +41,18 @@ import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 public class OrganizationServiceAmnesiaImpl implements OrganizationService {
-	
-	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+
+	private IdGenerator idGenerator;
 	
 	private Map<Identifier, Serializable> data;		
 	
 	public OrganizationServiceAmnesiaImpl() {
+		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
 	}
 	
 	public Identifier generateId() {
-		return new Identifier(RandomStringUtils.random(10, BASE_58));
+		return idGenerator.generate();
 	}
 
 	public OrganizationDetails createOrganization(String organizationName) {
