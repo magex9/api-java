@@ -8,6 +8,7 @@ enum SortOrder {
 	DESC
 }
 
+# Complex Input
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
@@ -23,6 +24,29 @@ input MailingAddressInput {
 	postalCode: String!
 }
 
+input NameInput {
+	firstName: String
+	middleName: String
+	lastName: String
+	salutation: Int
+}
+
+input CommunicationInput {
+	jobTitle: String
+	language: String
+	email: String
+	phoneNumber: String
+	phoneExtension: String
+	faxNumber: String
+}
+
+input BusinessPositionInput {
+	sector: Int
+	unit: Int
+	classification: Int
+}
+
+# Filtering Criteria Input
 input OrganizationFilter {
 	displayName: String
 	status: String
@@ -33,64 +57,55 @@ input LocationFilter {
 	status: String
 }
 
+input PersonFilter {
+	displayName: String
+	status: String
+}
+
 type Query {	
-	findOrganization(organizationId: String!): OrganizationDetails	
+	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
-	findOrganizationDetails(filter: OrganizationFilter!, paging: PagingInput!): OrganizationDetailsPage!
-	findOrganizationSummaries(filter: OrganizationFilter!, paging: PagingInput!): OrganizationSummaryPage!
+	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
 	
-	findLocation(locationId: String!): LocationDetails
+	findLocation(locationId: String!): Location
 	countLocations(filter: LocationFilter!): Int!
-	findLocationDetails(filter: LocationFilter!, paging: PagingInput!): LocationDetailsPage!
-	findLocationSummaries(filter: LocationFilter!, paging: PagingInput!): LocationSummaryPage!
+	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
+	
+	findPerson(personId: String!): Person
+	countPersons(filter: PersonFilter!): Int!
+	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
 }
 
 type Mutation {
-	createOrganization(organizationName: String!): OrganizationDetails
-	enableOrganization(organizationId: String!): OrganizationSummary
-	disableOrganization(organizationId: String!): OrganizationSummary
-	updateOrganizationName(organizationId: String!, organizationName: String!): OrganizationDetails
-	updateOrganizationMainLocation(organizationId: String!, locationId: String!): OrganizationDetails
+	createOrganization(organizationName: String!): Organization
+	updateOrganization(organizationId: String!, organizationName: String, locationId: String): Organization
+	enableOrganization(organizationId: String!): Organization
+	disableOrganization(organizationId: String!): Organization	
 	
-	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): LocationDetails
-	enableLocation(locationId: String!): LocationSummary
-	disableLocation(locationId: String!): LocationSummary
-	updateLocationName(locationId: String!, locationName: String!): LocationDetails
-	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): LocationDetails
+	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
+	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput): Location
+	enableLocation(locationId: String!): Location
+	disableLocation(locationId: String!): Location
+	
+	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
+	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput): Person
+	enablePerson(personId: String!): Person
+	disablePerson(personId: String!): Person
+	
+	addUserRole(personId: String!, role: Int!): Person
+	removeUserRole(personId: String!, role: Int!): Person
+	
 }
 
-type OrganizationSummary {
+# Main Types
+type Organization {
 	organizationId: String!
 	status: String!
 	displayName: String!
+	mainLocation: Location
 }
 
-type OrganizationSummaryPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [OrganizationSummary]	
-}
-
-type OrganizationDetails {
-	organizationId: String!
-	status: String!
-	displayName: String!
-	mainLocation: LocationDetails
-}
-
-type OrganizationDetailsPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [OrganizationDetails]	
-}
-
-type LocationSummary {
+type Location {
 	locationId: String!
 	organizationId: String!
 	status: String!
@@ -99,31 +114,43 @@ type LocationSummary {
 	address: MailingAddress	
 }
 
-type LocationSummaryPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [LocationSummary]	
-}
-
-type LocationDetails {
-	locationId: String!
+type Person {
+	personId: String!
 	organizationId: String!
 	status: String!
-	reference: String
 	displayName: String
-	address: MailingAddress	
+	legalName: PersonName
+	address: MailingAddress
+	communication: Communication
+	position: BusinessPosition
+	user: User
 }
 
-type LocationDetailsPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [LocationDetails]	
+# Complex Subtypes
+type Communication {
+	jobTitle: String
+	language: Language
+	email: String
+	homePhone: Telephone
+	faxNumber: String
+}
+
+type PersonName {
+	firstName: String
+	middleName: String
+	lastName: String
+	salutation: Salutation
+}
+
+type BusinessPosition {
+	sector: BusinessSector
+	unit: BusinessUnit
+	classification: BusinessClassification
+}
+
+type User {
+	userName: String
+	roles: [Role]
 }
 
 type MailingAddress {
@@ -134,7 +161,73 @@ type MailingAddress {
 	postalCode: String
 }
 
+# Pagination Types
+type OrganizationPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Organization]	
+}
+
+type LocationPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Location]	
+}
+
+type PersonPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Person]
+}
+
+# Simple Types
+type Telephone {
+	number: String
+	extension: String
+}
+
+# Numeric Code Values
+type BusinessSector {
+	code: Int
+	name: String
+}
+
+type BusinessUnit {
+	code: Int
+	name: String
+}
+
+type BusinessClassification {
+	code: Int
+	name: String
+}
+
+type Role {
+	code: Int
+	name: String
+}
+
+type Salutation {
+	code: Int
+	name: String
+}
+
+# Alphabetic Code Values
 type Country {
+	code: String
+	name: String
+}
+
+type Language {
 	code: String
 	name: String
 }

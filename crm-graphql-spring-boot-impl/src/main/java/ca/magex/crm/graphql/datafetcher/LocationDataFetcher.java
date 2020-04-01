@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.services.OrganizationService;
@@ -42,23 +40,14 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<Page<LocationSummary>> findLocationSummaries() {
+	public DataFetcher<Page<LocationDetails>> findLocations() {
 		return (environment) -> {
-			logger.info("Entering findLocationSummaries@" + LocationDataFetcher.class.getSimpleName());
-			return organizations.findLocationSummaries(new LocationsFilter(
-					extractFilter(environment)), 
-					extractPaging(environment));
-		};
-	}
-	
-	public DataFetcher<Page<LocationDetails>> findLocationDetails() {
-		return (environment) -> {
-			logger.info("Entering findLocationDetails@" + LocationDataFetcher.class.getSimpleName());
+			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
 			return organizations.findLocationDetails(new LocationsFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};
-	}
+	}	
 
 	public DataFetcher<LocationDetails> byOrganization() {
 		return (environment) -> {
@@ -84,37 +73,39 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<LocationSummary> enableLocation() {
+	public DataFetcher<LocationDetails> enableLocation() {
 		return (environment) -> {
 			logger.debug("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
-			String locationId = environment.getArgument("locationId");
-			return organizations.enableLocation(new Identifier(locationId));
+			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
+			organizations.enableLocation(locationId);
+			return organizations.findLocation(locationId);
 		};
 	}
 
-	public DataFetcher<LocationSummary> disableLocation() {
+	public DataFetcher<LocationDetails> disableLocation() {
 		return (environment) -> {
 			logger.debug("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
-			String locationId = environment.getArgument("locationId");
-			return organizations.disableLocation(new Identifier(locationId));
+			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
+			organizations.disableLocation(locationId);
+			return organizations.findLocation(locationId);
 		};
 	}
 	
-	public DataFetcher<LocationDetails> updateLocationName() {
+	public DataFetcher<LocationDetails> updateLocation() {
 		return (environment) -> {
-			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
-			String locationId = environment.getArgument("locationId");
-			String locationName = environment.getArgument("locationName");
-			return organizations.updateLocationName(new Identifier(locationId), locationName);
+			logger.debug("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
+			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
+			if (environment.getArgument("locationName") != null) {
+				organizations.updateLocationName(
+						locationId,
+						environment.getArgument("locationName"));
+			}
+			if (environment.getArgument("locationAddress") != null) {
+				organizations.updateLocationAddress(
+						locationId,
+						extractMailingAddress(environment, "locationAddress"));
+			}
+			return organizations.findLocation(locationId);
 		};
-	}
-	
-	public DataFetcher<LocationDetails> updateLocationAddress() {
-		return (environment) -> {
-			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
-			String locationId = environment.getArgument("locationId");
-			MailingAddress address = extractMailingAddress(environment, "locationAddress");
-			return organizations.updateLocationAddress(new Identifier(locationId), address);
-		};
-	}
+	}	
 }

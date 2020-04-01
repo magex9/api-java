@@ -14,6 +14,7 @@ import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
+import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
 import graphql.GraphQL;
 import graphql.execution.AsyncExecutionStrategy;
@@ -65,27 +66,35 @@ public class GraphQLOrganizationsService {
 	private RuntimeWiring buildRuntimeWiring() {
 		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(organizations);
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
+		PersonDataFetcher personDataFetcher = new PersonDataFetcher(organizations);
 
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countOrganizations", organizationDataFetcher.countOrganizations()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizationDetails", organizationDataFetcher.findOrganizationDetails()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizationSummaries", organizationDataFetcher.findOrganizationSummaries()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.findOrganizations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOrganization", organizationDataFetcher.createOrganization()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganization", organizationDataFetcher.updateOrganization()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableOrganization", organizationDataFetcher.enableOrganization()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableOrganization", organizationDataFetcher.disableOrganization()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganizationName", organizationDataFetcher.updateOrganizationName()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganizationMainLocation", organizationDataFetcher.updateOrganizationMainLocation()))
 
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countLocations", locationDataFetcher.countLocations()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocationDetails", locationDataFetcher.findLocationDetails()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocationSummaries", locationDataFetcher.findLocationSummaries()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableLocation", locationDataFetcher.enableLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableLocation", locationDataFetcher.disableLocation()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationName", locationDataFetcher.updateLocationName()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocationAddress", locationDataFetcher.updateLocationAddress()))				
+				
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("countPersons", personDataFetcher.countPersons()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findPersons", personDataFetcher.findPersons()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createPerson", personDataFetcher.createPerson()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enablePerson", personDataFetcher.enablePerson()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disablePerson", personDataFetcher.disablePerson()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", personDataFetcher.addUserRole()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
+				
 
 				.type("OrganizationDetails", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();
