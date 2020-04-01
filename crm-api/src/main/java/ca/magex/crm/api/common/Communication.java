@@ -1,5 +1,7 @@
 package ca.magex.crm.api.common;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -7,7 +9,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.lookup.Language;
 
-public class Communication {
+public class Communication implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String jobTitle;
 	
@@ -77,10 +81,9 @@ public class Communication {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
-	
 }

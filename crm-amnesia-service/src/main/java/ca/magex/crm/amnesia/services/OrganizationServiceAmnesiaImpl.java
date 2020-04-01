@@ -1,20 +1,24 @@
 package ca.magex.crm.amnesia.services;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
-import ca.magex.crm.amnesia.generator.IdGenerator;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -35,18 +39,17 @@ import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 public class OrganizationServiceAmnesiaImpl implements OrganizationService {
-
-	private IdGenerator idGenerator;
 	
-	private Map<Identifier, Object> data;		
+	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+	
+	private Map<Identifier, Serializable> data;		
 	
 	public OrganizationServiceAmnesiaImpl() {
-		data = new HashMap<Identifier, Object>();
-		idGenerator = new AmnesiaBase58IdGenerator();
+		data = new HashMap<Identifier, Serializable>();
 	}
 	
 	public Identifier generateId() {
-		return idGenerator.generate();
+		return new Identifier(RandomStringUtils.random(10, BASE_58));
 	}
 
 	public OrganizationDetails createOrganization(String organizationName) {
@@ -85,7 +88,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			throw new ItemNotFoundException(organizationId.toString());
 		if (!(data.get(organizationId) instanceof OrganizationDetails))
 			throw new BadRequestException(organizationId, "fatal", "class", "Class is not Organization: " + organizationId);
-		return ((OrganizationDetails)data.get(organizationId));
+		return ((OrganizationDetails)SerializationUtils.clone(data.get(organizationId)));
 	}
 	
 	@Override
@@ -102,8 +105,10 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.values()
 			.stream()
 			.filter(i -> i instanceof OrganizationDetails)
-			.map(i -> (OrganizationSummary) i)
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.map(i -> (OrganizationSummary)i)
+			.filter(i -> StringUtils.isNotBlank(filter.getDisplayName()) ? i.getDisplayName().contains(filter.getDisplayName()) : true)
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(Comparator.comparing(OrganizationSummary::getDisplayName))
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
@@ -115,7 +120,9 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof OrganizationDetails)
 			.map(i -> (OrganizationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.collect(Collectors.toList());		
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(Comparator.comparing(OrganizationSummary::getDisplayName))
+			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
 
@@ -155,7 +162,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			throw new ItemNotFoundException(locationId.toString());
 		if (!(data.get(locationId) instanceof LocationDetails))
 			throw new BadRequestException(locationId, "fatal", "class", "Class is not Location: " + locationId);
-		return ((LocationDetails)data.get(locationId));
+		return ((LocationDetails)SerializationUtils.clone(data.get(locationId)));
 	}
 	
 	public long countLocations(LocationsFilter filter) {
@@ -173,6 +180,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof LocationDetails)
 			.map(i -> (LocationSummary) i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.map(i -> SerializationUtils.clone(i))
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
@@ -184,6 +192,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof LocationDetails)
 			.map(i -> (LocationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.map(i -> SerializationUtils.clone(i))
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
@@ -238,7 +247,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public PersonSummary disablePerson(Identifier personId) {		
-		PersonDetails updated = findPerson(personId).withStatus(Status.ACTIVE);
+		PersonDetails updated = findPerson(personId).withStatus(Status.INACTIVE);
 		data.put(personId, updated);
 		return summary(updated);
 	}
@@ -271,6 +280,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof PersonDetails)
 			.map(i -> summary((PersonDetails)i))
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.map(i -> SerializationUtils.clone(i))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}
@@ -282,16 +292,26 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof PersonDetails)
 			.map(i -> (PersonDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.map(i -> SerializationUtils.clone(i))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}
 
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		List<Role> roles = new ArrayList<Role>(findPerson(personId).getUser().getRoles());
-		roles.add(role);
-		PersonDetails updated = ((PersonDetails)data.get(personId)).withUser(((PersonDetails)data.get(personId)).getUser().withRoles(roles));
-		data.put(personId, updated);
-		return updated;
+		
+		PersonDetails person = findPerson(personId);		
+		/* first time we add a role we need to generate the user name */
+		if (person.getUser() == null) {
+			String userName = person.getLegalName().getFirstName().substring(0, 1) + "X" + person.getLegalName().getLastName().substring(0, 1) + countPersons(new PersonsFilter());
+			person = person.withUser(new User(userName, Arrays.asList(role)));
+		}
+		else {
+			List<Role> roles = new ArrayList<Role>(person.getUser().getRoles());
+			roles.add(role);
+			person = person.withUser(person.getUser().withRoles(roles));
+		}
+		data.put(personId, person);
+		return person;
 	}
 
 	public PersonDetails removeUserRole(Identifier personId, Role role) {		

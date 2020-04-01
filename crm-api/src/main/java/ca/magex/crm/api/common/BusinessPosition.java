@@ -1,5 +1,7 @@
 package ca.magex.crm.api.common;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,7 +11,9 @@ import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 
-public class BusinessPosition {
+public class BusinessPosition implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private BusinessSector sector;
 	
@@ -57,10 +61,9 @@ public class BusinessPosition {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
-	
 }

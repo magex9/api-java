@@ -1,5 +1,6 @@
 package ca.magex.crm.api.filters;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
@@ -8,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Status;
 
-public class OrganizationsFilter {
+public class OrganizationsFilter implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String displayName;
 	

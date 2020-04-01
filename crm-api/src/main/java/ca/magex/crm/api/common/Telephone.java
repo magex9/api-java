@@ -1,9 +1,15 @@
 package ca.magex.crm.api.common;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Telephone {
+public class Telephone implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Long number;
 
@@ -33,4 +39,8 @@ public class Telephone {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
 }

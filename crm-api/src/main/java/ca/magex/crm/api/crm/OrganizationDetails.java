@@ -10,6 +10,8 @@ import ca.magex.crm.api.system.Status;
 
 public class OrganizationDetails extends OrganizationSummary {
 		
+	private static final long serialVersionUID = 1L;
+	
 	private Identifier mainLocationId;
 
 	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
