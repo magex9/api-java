@@ -37,6 +37,8 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	
 	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 	
+	private static int sequence = 1;
+
 	private Map<Identifier, Object> data;		
 	
 	public OrganizationServiceAmnesiaImpl() {
@@ -44,7 +46,8 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 	
 	public Identifier generateId() {
-		return new Identifier(RandomStringUtils.random(10, BASE_58));
+		//return new Identifier(RandomStringUtils.random(10, BASE_58));
+		return new Identifier(Integer.toString(sequence++));
 	}
 
 	public OrganizationDetails createOrganization(String organizationName) {
