@@ -108,6 +108,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof OrganizationDetails)
 			.map(i -> (OrganizationSummary)i)
 			.filter(i -> StringUtils.isNotBlank(filter.getDisplayName()) ? i.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());		
@@ -121,6 +122,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof OrganizationDetails)
 			.map(i -> (OrganizationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
@@ -181,6 +183,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof LocationDetails)
 			.map(i -> (LocationSummary) i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());		
@@ -194,6 +197,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof LocationDetails)
 			.map(i -> (LocationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());		
@@ -283,6 +287,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof PersonDetails)
 			.map(i -> summary((PersonDetails)i))
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
@@ -296,6 +301,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.filter(i -> i instanceof PersonDetails)
 			.map(i -> (PersonDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
