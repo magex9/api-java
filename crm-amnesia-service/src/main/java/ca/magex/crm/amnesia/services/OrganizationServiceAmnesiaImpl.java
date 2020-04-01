@@ -236,7 +236,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 	}
 
 	public PersonSummary disablePerson(Identifier personId) {		
-		PersonDetails updated = findPerson(personId).withStatus(Status.ACTIVE);
+		PersonDetails updated = findPerson(personId).withStatus(Status.INACTIVE);
 		data.put(personId, updated);
 		return summary(updated);
 	}
