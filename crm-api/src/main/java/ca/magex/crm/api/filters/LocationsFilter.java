@@ -32,8 +32,7 @@ public class LocationsFilter implements Serializable {
 	}	
 	
 	public Comparator<LocationSummary> getComparator(Paging paging) {
-		// TODO make the filtering based on the paging information
-		return Comparator.comparing(LocationSummary::getDisplayName);
+		return paging.new PagingComparator<LocationSummary>();
 	}
 	
 }

@@ -11,7 +11,7 @@ public class OrganizationsFilter implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String displayName;
-	
+
 	private Status status;
 
 	public OrganizationsFilter(String displayName, Status status) {
@@ -22,7 +22,7 @@ public class OrganizationsFilter implements Serializable {
 	public OrganizationsFilter() {
 		this(null, null);
 	}
-	
+
 	public Status getStatus() {
 		return status;
 	}
@@ -30,10 +30,8 @@ public class OrganizationsFilter implements Serializable {
 	public String getDisplayName() {
 		return displayName;
 	}
-	
-	public Comparator<OrganizationSummary> getComparator(Paging paging) {
-		// TODO make the filtering based on the paging information
-		return Comparator.comparing(OrganizationSummary::getDisplayName);
-	}
 
+	public Comparator<OrganizationSummary> getComparator(Paging paging) {
+		return paging.new PagingComparator<OrganizationSummary>();		
+	}
 }
