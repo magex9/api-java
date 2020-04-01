@@ -14,9 +14,11 @@ import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -108,8 +110,35 @@ public class GraphQLClientWalkthrough {
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));
 		System.out.println(jonathan);
 		
+		PersonSummary jonathanSummary = orgService.disablePerson(jonathan.getPersonId());
+		System.out.println(jonathanSummary);
+		
+		jonathanSummary = orgService.enablePerson(jonathan.getPersonId());
+		System.out.println(jonathanSummary);
+		
 		jonathan = orgService.findPerson(jonathan.getPersonId());
 		System.out.println(jonathan);
+		
+		jonathan = orgService.updatePersonName(jonathan.getPersonId(), new PersonName(new Salutation(1, "Mr"), "Jonny", "Alexander", "Trafford"));
+		System.out.println(jonathan);
+		
+		jonathan = orgService.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", new Country("CA", "Canada"), "K2J 0E9"));
+		System.out.println(jonathan);
+		
+		jonathan = orgService.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L));
+		System.out.println(jonathan);
+		
+		jonathan = orgService.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
+		System.out.println(jonathan);
+		
+		long personCount = orgService.countPersons(new PersonsFilter());
+		System.out.println(personCount + " persons");
+		
+		Page<PersonDetails> personDetails = orgService.findPersonDetails(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(personDetails + " - " + personDetails.getContent().size() + " of " + personDetails.getTotalElements());
+		
+		Page<PersonSummary> personnSummaries = orgService.findPersonSummaries(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		System.out.println(personnSummaries + " - " + personnSummaries.getContent().size() + " of " + personnSummaries.getTotalElements());
 		
 		((OrganizationServiceGraphQLClient) orgService).close();
 	}

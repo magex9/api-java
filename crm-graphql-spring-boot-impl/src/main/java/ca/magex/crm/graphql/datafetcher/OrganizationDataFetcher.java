@@ -75,23 +75,21 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<OrganizationDetails> updateOrganizationName() {
+	public DataFetcher<OrganizationDetails> updateOrganization() {
 		return (environment) -> {
-			logger.debug("Entering updateOrganizationName@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationId = environment.getArgument("organizationId");
-			String organizationName = environment.getArgument("organizationName");
-			return organizations.updateOrganizationName(new Identifier(organizationId), organizationName);
-		};
-	}
-
-	public DataFetcher<OrganizationDetails> updateOrganizationMainLocation() {
-		return (environment) -> {
-			logger.debug("Entering updateOrganizationMainLocation@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationId = environment.getArgument("organizationId");
-			String locationId = environment.getArgument("locationId");
-			return organizations.updateOrganizationMainLocation(
-					new Identifier(organizationId),
-					new Identifier(locationId));
+			logger.debug("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
+			if (environment.getArgument("organizationName") != null) {
+				organizations.updateOrganizationName(
+						organizationId,
+						environment.getArgument("organizationName"));
+			}
+			if (environment.getArgument("locationId") != null) {
+				organizations.updateOrganizationMainLocation(
+						organizationId,
+						new Identifier((String) environment.getArgument("locationId")));
+			}
+			return organizations.findOrganization(organizationId);
 		};
 	}
 }

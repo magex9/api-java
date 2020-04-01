@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -92,21 +91,21 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<LocationDetails> updateLocationName() {
+	public DataFetcher<LocationDetails> updateLocation() {
 		return (environment) -> {
-			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
-			String locationId = environment.getArgument("locationId");
-			String locationName = environment.getArgument("locationName");
-			return organizations.updateLocationName(new Identifier(locationId), locationName);
+			logger.debug("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
+			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
+			if (environment.getArgument("locationName") != null) {
+				organizations.updateLocationName(
+						locationId,
+						environment.getArgument("locationName"));
+			}
+			if (environment.getArgument("locationAddress") != null) {
+				organizations.updateLocationAddress(
+						locationId,
+						extractMailingAddress(environment, "locationAddress"));
+			}
+			return organizations.findLocation(locationId);
 		};
-	}
-	
-	public DataFetcher<LocationDetails> updateLocationAddress() {
-		return (environment) -> {
-			logger.debug("Entering updateLocationName@" + LocationDataFetcher.class.getSimpleName());
-			String locationId = environment.getArgument("locationId");
-			MailingAddress address = extractMailingAddress(environment, "locationAddress");
-			return organizations.updateLocationAddress(new Identifier(locationId), address);
-		};
-	}
+	}	
 }

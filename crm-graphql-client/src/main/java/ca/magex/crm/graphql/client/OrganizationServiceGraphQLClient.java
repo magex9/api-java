@@ -68,7 +68,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
 				"updateOrganizationName",
-				"updateOrganizationName",
+				"updateOrganization",
 				organizationId,
 				name));
 	}
@@ -77,7 +77,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
 				"updateOrganizationMainLocation",
-				"updateOrganizationMainLocation",
+				"updateOrganization",
 				organizationId,
 				locationId));
 	}
@@ -146,7 +146,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
 		return ModelBinder.toLocationDetails(performGraphQLQuery(
 				"updateLocationName",
-				"updateLocationName",
+				"updateLocation",
 				locationId,
 				locationName));
 	}
@@ -155,7 +155,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		return ModelBinder.toLocationDetails(performGraphQLQuery(
 				"updateLocationAddress",
-				"updateLocationAddress",
+				"updateLocation",
 				locationId,
 				address == null ? null : address.getStreet(),
 				address == null ? null : address.getCity(),
@@ -166,7 +166,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public LocationSummary enableLocation(Identifier locationId) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery(
+		return ModelBinder.toLocationSummary(performGraphQLQuery(
 				"enableLocation",
 				"enableLocation", 
 				locationId));
@@ -174,7 +174,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public LocationSummary disableLocation(Identifier locationId) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery(
+		return ModelBinder.toLocationSummary(performGraphQLQuery(
 				"disableLocation",
 				"disableLocation",
 				locationId));
@@ -253,38 +253,68 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonName",
+				"updatePerson",
+				personId,
+				name.getFirstName(),
+				name.getMiddleName(),
+				name.getLastName(),
+				name.getSalutation().getCode()));
 	}
 
 	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonAddress",
+				"updatePerson",
+				personId,
+				address.getStreet(),
+				address.getCity(),
+				address.getProvince(),
+				address.getCountry().getCode(),
+				address.getPostalCode()));
 	}
 
 	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonCommunication",
+				"updatePerson",
+				personId,
+				communication.getJobTitle(),
+				communication.getLanguage().getCode(),
+				communication.getEmail(),
+				communication.getHomePhone().getNumber(),
+				communication.getHomePhone().getExtension(),
+				communication.getFaxNumber()));
 	}
 
 	@Override
-	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition unit) {
-		// TODO Auto-generated method stub
-		return null;
+	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonBusinessUnit",
+				"updatePerson",
+				personId,
+				position.getSector().getCode(),
+				position.getUnit().getCode(),
+				position.getClassification().getCode()));
 	}
 
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonSummary(performGraphQLQuery(
+				"enablePerson",
+				"enablePerson", 
+				personId));
 	}
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonSummary(performGraphQLQuery(
+				"disablePerson",
+				"disablePerson", 
+				personId));
 	}
 
 	@Override
@@ -309,20 +339,39 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public long countPersons(PersonsFilter filter) {
-		// TODO Auto-generated method stub
-		return 0;
+		return ModelBinder.toLong(performGraphQLQuery(
+				"countPersons",
+				"countPersons",
+				filter.getDisplayName(),
+				filter.getStatus()));
 	}
 
 	@Override
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		return ModelBinder.toPage(paging, ModelBinder::toPersonSummary, performGraphQLQuery(
+				"findPersonSummaries",
+				"findPersons",
+				filter.getDisplayName(),
+				filter.getStatus(),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
 	}
 
 	@Override
 	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		return ModelBinder.toPage(paging, ModelBinder::toPersonDetails, performGraphQLQuery(
+				"findPersonDetails",
+				"findPersons",
+				filter.getDisplayName(),
+				filter.getStatus(),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
 	}
 
 	@Override

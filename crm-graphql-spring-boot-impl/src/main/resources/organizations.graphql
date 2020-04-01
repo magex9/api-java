@@ -57,6 +57,11 @@ input LocationFilter {
 	status: String
 }
 
+input PersonFilter {
+	displayName: String
+	status: String
+}
+
 type Query {	
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
@@ -67,22 +72,25 @@ type Query {
 	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
 	
 	findPerson(personId: String!): Person
+	countPersons(filter: PersonFilter!): Int!
+	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
 }
 
 type Mutation {
 	createOrganization(organizationName: String!): Organization
+	updateOrganization(organizationId: String!, organizationName: String, locationId: String): Organization
 	enableOrganization(organizationId: String!): Organization
-	disableOrganization(organizationId: String!): Organization
-	updateOrganizationName(organizationId: String!, organizationName: String!): Organization
-	updateOrganizationMainLocation(organizationId: String!, locationId: String!): Organization
+	disableOrganization(organizationId: String!): Organization	
 	
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
+	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput): Location
 	enableLocation(locationId: String!): Location
 	disableLocation(locationId: String!): Location
-	updateLocationName(locationId: String!, locationName: String!): Location
-	updateLocationAddress(locationId: String!, locationAddress: MailingAddressInput!): Location
 	
-	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput, position: BusinessPositionInput): Person
+	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
+	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput): Person
+	enablePerson(personId: String!): Person
+	disablePerson(personId: String!): Person
 }
 
 # Main Types

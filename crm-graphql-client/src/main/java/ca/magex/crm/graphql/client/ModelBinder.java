@@ -26,6 +26,7 @@ import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -119,6 +120,18 @@ public class ModelBinder {
 
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing LocationDetails from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static PersonSummary toPersonSummary(JSONObject json) {
+		try {
+			return new PersonSummary(
+					new Identifier(json.getString("personId")),
+					new Identifier(json.getString("organizationId")),
+					Status.valueOf(json.getString("status")),
+					json.getString("displayName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing PersonDetails from: " + json.toString(), jsone);
 		}
 	}
 
