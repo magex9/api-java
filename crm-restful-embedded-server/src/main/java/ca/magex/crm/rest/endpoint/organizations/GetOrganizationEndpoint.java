@@ -6,15 +6,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.SecuredOrganizationService;
-import ca.magex.crm.ld.crm.OrganizationSummaryTransformer;
+import ca.magex.crm.ld.crm.OrganizationDetailsTransformer;
 import ca.magex.crm.rest.endpoint.AbstractEndpoint;
 
-public class GetOrganizationEndpoint extends AbstractEndpoint<OrganizationSummary> {
+public class GetOrganizationEndpoint extends AbstractEndpoint<OrganizationDetails> {
 	
 	public GetOrganizationEndpoint(SecuredOrganizationService service) {
-		super(service, new OrganizationSummaryTransformer());
+		super(service, new OrganizationDetailsTransformer());
 	}
 	
 	public boolean isExpectedPath(String path) {
