@@ -1,13 +1,18 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.services.OrganizationService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.OrganizationController;
 import graphql.schema.DataFetcher;
 
@@ -32,10 +37,24 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
+	public OrganizationsFilter extractFilter(Map<String, Object> filter) {
+		String displayName = (String) filter.get("displayName");
+		Status status = null;
+		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
+			try {
+				status = Status.valueOf((String) filter.get("status"));
+			}
+			catch(IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
+		return new OrganizationsFilter(displayName, status);
+	}
+	
 	public DataFetcher<Integer> countOrganizations() {
 		return (environment) -> {
 			logger.debug("Entering countOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
-			return (int) organizations.countOrganizations(new OrganizationsFilter(
+			return (int) organizations.countOrganizations(extractFilter(
 					extractFilter(environment)));
 		};
 	}
@@ -43,7 +62,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Page<OrganizationDetails>> findOrganizations() {
 		return (environment) -> {
 			logger.debug("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
-			return organizations.findOrganizationDetails(new OrganizationsFilter(
+			return organizations.findOrganizationDetails(extractFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};
