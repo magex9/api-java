@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
+import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
+import ca.magex.crm.amnesia.generator.IdGenerator;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -34,20 +35,18 @@ import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 public class OrganizationServiceAmnesiaImpl implements OrganizationService {
-	
-	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-	
-	private static int sequence = 1;
 
+	private IdGenerator idGenerator;
+	
 	private Map<Identifier, Object> data;		
 	
 	public OrganizationServiceAmnesiaImpl() {
 		data = new HashMap<Identifier, Object>();
+		idGenerator = new AmnesiaBase58IdGenerator();
 	}
 	
 	public Identifier generateId() {
-		//return new Identifier(RandomStringUtils.random(10, BASE_58));
-		return new Identifier(Integer.toString(sequence++));
+		return idGenerator.generate();
 	}
 
 	public OrganizationDetails createOrganization(String organizationName) {
