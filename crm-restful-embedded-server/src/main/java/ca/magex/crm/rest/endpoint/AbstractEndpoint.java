@@ -76,7 +76,7 @@ public abstract class AbstractEndpoint<T extends Object> implements Endpoint {
 	}
 	
 	public final LinkedDataFormatter formatter(HttpServletRequest req) {
-		return LinkedDataFormatter.basic();
+		return LinkedDataFormatter.json();
 	}
 	
 }
