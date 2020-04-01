@@ -2,22 +2,17 @@ package ca.magex.crm.rest.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,17 +38,6 @@ public class OrganizationsController {
 
 	@Autowired
 	private SecuredOrganizationService service;
-
-	@GetMapping("/api.json")
-	private void getJsonConfig(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		InputStream is = getClass().getClassLoader().getResourceAsStream("crm.yaml");
-		ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
-		Object obj = yamlReader.readValue(is, Object.class);
-		ObjectMapper jsonWriter = new ObjectMapper();
-		String json = jsonWriter.writeValueAsString(obj);
-		res.setStatus(200);
-		res.getWriter().write(((DataObject) DataParser.parse(json)).stringify(LinkedDataFormatter.full()));
-	}
 	
 	@GetMapping("/api/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -61,6 +45,7 @@ public class OrganizationsController {
 		DataElement data = new DataArray(service.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.format(e)).collect(Collectors.toList()));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
 	
@@ -137,6 +122,13 @@ public class OrganizationsController {
 		DataElement data = transformer.format(service.enableOrganization(organizationId).getStatus());
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
+	}
+	
+	public String getContentType(HttpServletRequest req) {
+		if (req.getHeader("Accept").equals("application/json")) {
+			return "application/json";
+		}
+		return "application/json+ld";
 	}
 
 	public LinkedDataFormatter formatter(HttpServletRequest req) {
