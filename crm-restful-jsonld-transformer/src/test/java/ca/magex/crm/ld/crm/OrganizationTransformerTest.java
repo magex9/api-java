@@ -23,14 +23,10 @@ public class OrganizationTransformerTest {
 		DataObject obj = new OrganizationDetailsTransformer().format(organization);
 
 		assertEquals("{\n" + 
-				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 
-				"  \"@type\": \"OrganizationDetails\",\n" + 
-				"  \"@value\": \"abc\",\n" + 
-				"  \"@id\": \"http://magex9.github.io/data/abc\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"status\": \"active\",\n" + 
 				"  \"mainLocation\": \"xyz\"\n" + 
-				"}", obj.stringify(LinkedDataFormatter.basic()));
+				"}", obj.stringify(LinkedDataFormatter.json()));
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 

@@ -115,17 +115,19 @@ public final class DataObject extends DataElement {
 			formatter.indent();
 			for (int i = 0; i < pairs.size(); i++) {
 				if (formatter.getContexts().isEmpty() || !pairs.get(i).key().equals("@context") || !((DataText)pairs.get(i).value()).value().equals(formatter.getContexts().peek())) {
-					if (formatter.isIndented())
-						os.write(formatter.prefix());
-					if (contains("@context"))
-						formatter.getContexts().push(getString("@context"));
-					pairs.get(i).stream(os, formatter);
-					if (contains("@context"))
-						formatter.getContexts().pop();
-					if (i < pairs.size() - 1)
-						os.write(",".getBytes());
-					if (formatter.isIndented())
-						os.write(LinkedDataFormatter.EOL);
+					if (formatter.isTyped() || !pairs.get(i).key().startsWith("@")) {
+						if (formatter.isIndented())
+							os.write(formatter.prefix());
+						if (contains("@context"))
+							formatter.getContexts().push(getString("@context"));
+						pairs.get(i).stream(os, formatter);
+						if (contains("@context"))
+							formatter.getContexts().pop();
+						if (i < pairs.size() - 1)
+							os.write(",".getBytes());
+						if (formatter.isIndented())
+							os.write(LinkedDataFormatter.EOL);
+					}
 				}
 			}
 			formatter.unindent();
