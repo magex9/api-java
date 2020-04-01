@@ -57,18 +57,20 @@ public abstract class GraphQLClient implements Closeable {
 	public void close() throws IOException {
 		httpclient.close();
 	}
-	
+		
 	/**
 	 * Executes the given query and returns the data field
-	 * @param queryName
+	 * @param <T>
+	 * @param query - pair (id, name)
+	 * @param params
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T> T performGraphQLQuery(String queryName, Object ... params) {
+	protected <T> T performGraphQLQuery(String queryId, String queryName, Object ... params) {
 		long t1 = System.currentTimeMillis();
 		try {
 			HttpPost httpPost = new HttpPost(endpoint);
-			httpPost.setEntity(constructEntity(queryName, params));
+			httpPost.setEntity(constructEntity(queryId, params));
 			try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
 				JSONObject json = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
 				JSONArray errors = json.getJSONArray("errors");

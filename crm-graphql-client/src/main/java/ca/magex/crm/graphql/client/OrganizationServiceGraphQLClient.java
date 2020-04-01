@@ -42,45 +42,59 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public OrganizationDetails createOrganization(String organizationName) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery("createOrganization",
+		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+				"createOrganization",
+				"createOrganization",
 				organizationName));
 	}
 
 	@Override
-	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery("enableOrganization",
+	public OrganizationDetails enableOrganization(Identifier organizationId) {
+		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+				"enableOrganization",
+				"enableOrganization",
 				organizationId));
 	}
 
 	@Override
-	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery("disableOrganization",
+	public OrganizationDetails disableOrganization(Identifier organizationId) {
+		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+				"disableOrganization",
+				"disableOrganization",
 				organizationId));
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery("updateOrganizationName",
+		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+				"updateOrganizationName",
+				"updateOrganization",
 				organizationId,
 				name));
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery("updateOrganizationMainLocation",
+		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+				"updateOrganizationMainLocation",
+				"updateOrganization",
 				organizationId,
 				locationId));
 	}
 
 	@Override
 	public OrganizationDetails findOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery("findOrganization",
+		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+				"findOrganization",
+				"findOrganization",
 				organizationId));
 	}
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
-		return ModelBinder.toLong(performGraphQLQuery("countOrganizations",
+		return ModelBinder.toLong(performGraphQLQuery(
+				"countOrganizations",
+				"countOrganizations",
 				filter.getDisplayName(),
 				filter.getStatus()));
 	}
@@ -88,7 +102,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	@Override
 	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toOrganizationSummary, performGraphQLQuery("findOrganizationSummaries",
+		return ModelBinder.toPage(paging, ModelBinder::toOrganizationSummary, performGraphQLQuery( 
+				"findOrganizationSummaries",
+				"findOrganizations",
 				filter.getDisplayName(),
 				filter.getStatus(),
 				paging.getPageNumber(),
@@ -100,7 +116,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	@Override
 	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toOrganizationDetails, performGraphQLQuery("findOrganizationDetails",
+		return ModelBinder.toPage(paging, ModelBinder::toOrganizationDetails, performGraphQLQuery(
+				"findOrganizationDetails",
+				"findOrganizations",
 				filter.getDisplayName(),
 				filter.getStatus(),
 				paging.getPageNumber(),
@@ -111,7 +129,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery("createLocation",
+		return ModelBinder.toLocationDetails(performGraphQLQuery(
+				"createLocation",
+				"createLocation",
 				organizationId,
 				locationName,
 				locationReference,
@@ -124,14 +144,18 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery("updateLocationName",
+		return ModelBinder.toLocationDetails(performGraphQLQuery(
+				"updateLocationName",
+				"updateLocation",
 				locationId,
 				locationName));
 	}
 
 	@Override
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery("updateLocationAddress",
+		return ModelBinder.toLocationDetails(performGraphQLQuery(
+				"updateLocationAddress",
+				"updateLocation",
 				locationId,
 				address == null ? null : address.getStreet(),
 				address == null ? null : address.getCity(),
@@ -142,25 +166,33 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 
 	@Override
 	public LocationSummary enableLocation(Identifier locationId) {
-		return ModelBinder.toLocationSummary(performGraphQLQuery("enableLocation", 
+		return ModelBinder.toLocationSummary(performGraphQLQuery(
+				"enableLocation",
+				"enableLocation", 
 				locationId));
 	}
 
 	@Override
 	public LocationSummary disableLocation(Identifier locationId) {
-		return ModelBinder.toLocationSummary(performGraphQLQuery("disableLocation", 
+		return ModelBinder.toLocationSummary(performGraphQLQuery(
+				"disableLocation",
+				"disableLocation",
 				locationId));
 	}
 
 	@Override
 	public LocationDetails findLocation(Identifier locationId) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery("findLocation",
+		return ModelBinder.toLocationDetails(performGraphQLQuery(
+				"findLocation",
+				"findLocation",
 				locationId));
 	}
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
-		return ModelBinder.toLong(performGraphQLQuery("countLocations",
+		return ModelBinder.toLong(performGraphQLQuery(
+				"countLocations",
+				"countLocations",
 				filter.getDisplayName(),
 				filter.getStatus()));
 	}
@@ -168,7 +200,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	@Override
 	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toLocationDetails, performGraphQLQuery("findLocationDetails",
+		return ModelBinder.toPage(paging, ModelBinder::toLocationDetails, performGraphQLQuery(
+				"findLocationDetails",
+				"findLocations",
 				filter.getDisplayName(),
 				filter.getStatus(),
 				paging.getPageNumber(),
@@ -180,7 +214,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	@Override
 	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toLocationSummary, performGraphQLQuery("findLocationSummaries",
+		return ModelBinder.toPage(paging, ModelBinder::toLocationSummary, performGraphQLQuery(
+				"findLocationSummaries",
+				"findLocations",
 				filter.getDisplayName(),
 				filter.getStatus(),
 				paging.getPageNumber(),
@@ -190,81 +226,158 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit) {
-		// TODO Auto-generated method stub
-		return null;
+	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"createPerson",
+				"createPerson",
+				organizationId,
+				name.getFirstName(),
+				name.getMiddleName(),
+				name.getLastName(),
+				name.getSalutation().getCode(),
+				address.getStreet(),
+				address.getCity(),
+				address.getProvince(),
+				address.getCountry().getCode(),
+				address.getPostalCode(),
+				communication.getJobTitle(),
+				communication.getLanguage().getCode(),
+				communication.getEmail(),
+				communication.getHomePhone().getNumber(),
+				communication.getHomePhone().getExtension(),
+				communication.getFaxNumber(),
+				position.getSector().getCode(),
+				position.getUnit().getCode(),
+				position.getClassification().getCode()));		
 	}
 
 	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonName",
+				"updatePerson",
+				personId,
+				name.getFirstName(),
+				name.getMiddleName(),
+				name.getLastName(),
+				name.getSalutation().getCode()));
 	}
 
 	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonAddress",
+				"updatePerson",
+				personId,
+				address.getStreet(),
+				address.getCity(),
+				address.getProvince(),
+				address.getCountry().getCode(),
+				address.getPostalCode()));
 	}
 
 	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonCommunication",
+				"updatePerson",
+				personId,
+				communication.getJobTitle(),
+				communication.getLanguage().getCode(),
+				communication.getEmail(),
+				communication.getHomePhone().getNumber(),
+				communication.getHomePhone().getExtension(),
+				communication.getFaxNumber()));
 	}
 
 	@Override
-	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition unit) {
-		// TODO Auto-generated method stub
-		return null;
+	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"updatePersonBusinessUnit",
+				"updatePerson",
+				personId,
+				position.getSector().getCode(),
+				position.getUnit().getCode(),
+				position.getClassification().getCode()));
 	}
 
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonSummary(performGraphQLQuery(
+				"enablePerson",
+				"enablePerson", 
+				personId));
 	}
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonSummary(performGraphQLQuery(
+				"disablePerson",
+				"disablePerson", 
+				personId));
 	}
 
 	@Override
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"addUserRole",
+				"addUserRole",
+				personId,
+				role.getCode()));
 	}
 
 	@Override
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"removeUserRole",
+				"removeUserRole",
+				personId,
+				role.getCode()));
 	}
 
 	@Override
 	public PersonDetails findPerson(Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"findPerson",
+				"findPerson",
+				personId));
 	}
 
 	@Override
 	public long countPersons(PersonsFilter filter) {
-		// TODO Auto-generated method stub
-		return 0;
+		return ModelBinder.toLong(performGraphQLQuery(
+				"countPersons",
+				"countPersons",
+				filter.getDisplayName(),
+				filter.getStatus()));
 	}
 
 	@Override
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		return ModelBinder.toPage(paging, ModelBinder::toPersonSummary, performGraphQLQuery(
+				"findPersonSummaries",
+				"findPersons",
+				filter.getDisplayName(),
+				filter.getStatus(),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
 	}
 
 	@Override
 	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		return ModelBinder.toPage(paging, ModelBinder::toPersonDetails, performGraphQLQuery(
+				"findPersonDetails",
+				"findPersons",
+				filter.getDisplayName(),
+				filter.getStatus(),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
 	}
 
 	@Override
