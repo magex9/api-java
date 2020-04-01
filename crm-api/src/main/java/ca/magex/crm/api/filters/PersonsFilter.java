@@ -1,6 +1,10 @@
 package ca.magex.crm.api.filters;
 
-public class PersonsFilter {
+import java.io.Serializable;
+
+public class PersonsFilter implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String displayName;
 	

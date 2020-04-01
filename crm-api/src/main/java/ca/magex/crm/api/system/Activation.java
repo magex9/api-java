@@ -1,11 +1,14 @@
 package ca.magex.crm.api.system;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Activation {
+public class Activation implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private Identifier identifier;
 	

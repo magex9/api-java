@@ -1,9 +1,13 @@
 package ca.magex.crm.api.filters;
 
+import java.io.Serializable;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-public class Paging implements Pageable {
+public class Paging implements Pageable, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private long offset;
 	

@@ -1,9 +1,13 @@
 package ca.magex.crm.api.lookup;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class BusinessClassification {
+public class BusinessClassification implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Integer code;
 	

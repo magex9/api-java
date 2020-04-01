@@ -1,9 +1,13 @@
 package ca.magex.crm.api.lookup;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Language {
+public class Language implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String code;
 	
