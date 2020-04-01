@@ -3,13 +3,11 @@ package ca.magex.crm.amnesia.services;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -111,7 +109,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.map(i -> (OrganizationSummary)i)
 			.filter(i -> StringUtils.isNotBlank(filter.getDisplayName()) ? i.getDisplayName().contains(filter.getDisplayName()) : true)
 			.map(i -> SerializationUtils.clone(i))
-			.sorted(Comparator.comparing(OrganizationSummary::getDisplayName))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
@@ -124,7 +122,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.map(i -> (OrganizationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.map(i -> SerializationUtils.clone(i))
-			.sorted(Comparator.comparing(OrganizationSummary::getDisplayName))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
@@ -184,6 +182,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.map(i -> (LocationSummary) i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
@@ -196,6 +195,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.map(i -> (LocationDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());		
 		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
@@ -284,6 +284,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.map(i -> summary((PersonDetails)i))
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}
@@ -296,6 +297,7 @@ public class OrganizationServiceAmnesiaImpl implements OrganizationService {
 			.map(i -> (PersonDetails)i)
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}

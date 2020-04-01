@@ -2,10 +2,13 @@ package ca.magex.crm.api.filters;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Status;
 
@@ -44,5 +47,11 @@ public class LocationsFilter implements Serializable {
 
 	public String getDisplayName() {
 		return displayName;
+	}	
+	
+	public Comparator<LocationSummary> getComparator(Paging paging) {
+		// TODO make the filtering based on the paging information
+		return Comparator.comparing(LocationSummary::getDisplayName);
 	}
+	
 }
