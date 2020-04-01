@@ -32,8 +32,7 @@ public class PersonsFilter implements Serializable {
 	}	
 	
 	public Comparator<PersonSummary> getComparator(Paging paging) {
-		// TODO make the filtering based on the paging information
-		return Comparator.comparing(PersonSummary::getDisplayName);
+		return paging.new PagingComparator<PersonSummary>();
 	}
 	
 }
