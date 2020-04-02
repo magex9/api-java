@@ -1,6 +1,6 @@
 package ca.magex.crm.ld.system;
 
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -8,7 +8,7 @@ import ca.magex.crm.ld.data.DataObject;
 
 public class StatusTransformer extends AbstractLinkedDataTransformer<Status> {
 
-	public StatusTransformer(SecuredOrganizationService service) {
+	public StatusTransformer(SecuredCrmServices crm) {
 
 	}
 

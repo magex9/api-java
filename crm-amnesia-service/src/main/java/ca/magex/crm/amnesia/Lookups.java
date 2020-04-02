@@ -1,4 +1,4 @@
-package ca.magex.crm.amnesia.services;
+package ca.magex.crm.amnesia;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

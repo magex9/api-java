@@ -3,11 +3,11 @@ package ca.magex.crm.amnesia.services;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 
-public class OrganizationServiceTestDataPopulator {
+public class AmnesiaTestDataPopulator {
 
-	public static OrganizationService populate(OrganizationService service) {
+	public static SecuredCrmServices populate(SecuredCrmServices service) {
 		
 		OrganizationDetails gotham = service.createOrganization("Gotham Bank");
 		LocationDetails gothamMain = service.createLocation(gotham.getOrganizationId(), "Alta Vista", "ALTAVISTA", new MailingAddress("1000 Alta Vista Drive", "Gotham", "Ontario", service.findCountryByCode("CA"), "K1K1K1"));

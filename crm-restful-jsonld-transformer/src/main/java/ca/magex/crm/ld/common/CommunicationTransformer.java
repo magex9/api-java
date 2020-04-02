@@ -3,7 +3,7 @@ package ca.magex.crm.ld.common;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.lookup.LanguageTransformer;
@@ -14,9 +14,9 @@ public class CommunicationTransformer extends AbstractLinkedDataTransformer<Comm
 	
 	private TelephoneTransformer telephoneTransformer;
 	
-	public CommunicationTransformer(SecuredOrganizationService service) {
-		this.languageTransformer = new LanguageTransformer(service);
-		this.telephoneTransformer = new TelephoneTransformer(service);
+	public CommunicationTransformer(SecuredCrmServices crm) {
+		this.languageTransformer = new LanguageTransformer(crm);
+		this.telephoneTransformer = new TelephoneTransformer(crm);
 	}
 
 	@Override

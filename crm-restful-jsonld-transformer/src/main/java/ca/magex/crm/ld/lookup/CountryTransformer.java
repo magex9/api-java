@@ -1,17 +1,17 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 
-	public SecuredOrganizationService service;
+	public SecuredCrmServices crm;
 	
-	public CountryTransformer(SecuredOrganizationService service) {
-		this.service = service;
+	public CountryTransformer(SecuredCrmServices crm) {
+		this.crm = crm;
 	}
 	
 	@Override
@@ -32,7 +32,7 @@ public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 		validateContext(data, parentContext);
 		validateType(data);
 		String code = data.getString("@value");
-		return service.findCountryByCode(code);
+		return crm.findCountryByCode(code);
 	}
 			
 }

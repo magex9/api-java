@@ -1,4 +1,4 @@
-package ca.magex.crm.amnesia.services;
+package ca.magex.crm.amnesia;
 
 import java.util.Arrays;
 import java.util.List;

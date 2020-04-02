@@ -1,13 +1,13 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.BusinessClassification;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class BusinessClassificationTransformer extends AbstractLinkedDataTransformer<BusinessClassification> {
 
-	public BusinessClassificationTransformer(SecuredOrganizationService service) {
+	public BusinessClassificationTransformer(SecuredCrmServices crm) {
 
 	}
 

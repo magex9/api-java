@@ -16,10 +16,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
-import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.util.PagingBuilder;
 import graphql.schema.DataFetchingEnvironment;
@@ -40,10 +38,10 @@ public abstract class AbstractDataFetcher {
 	protected Properties classificationsLookup = new Properties();
 	protected Properties rolesLookup = new Properties();
 
-	protected OrganizationService organizations = null;
+	protected CrmServices crm = null;
 
-	protected AbstractDataFetcher(OrganizationService organizations) {
-		this.organizations = organizations;
+	protected AbstractDataFetcher(CrmServices crm) {
+		this.crm = crm;
 		
 		URL countries = getClass().getResource("/codes/countries.properties");
 		try (InputStream c = countries.openStream()) {
@@ -136,7 +134,7 @@ public abstract class AbstractDataFetcher {
 				(String) addressMap.get("street"), 
 				(String) addressMap.get("city"), 
 				(String) addressMap.get("province"), 
-				organizations.findCountryByCode((String) addressMap.get("countryCode")),
+				crm.findCountryByCode((String) addressMap.get("countryCode")),
 				(String) addressMap.get("postalCode"));
 	}
 	
@@ -149,7 +147,7 @@ public abstract class AbstractDataFetcher {
 	protected PersonName extractPersonName(DataFetchingEnvironment environment, String nameKey) {
 		Map<String,Object> nameMap = environment.getArgument(nameKey);
 		return new PersonName(
-				organizations.findSalutationByCode((Integer) nameMap.get("salutation")),
+				crm.findSalutationByCode((Integer) nameMap.get("salutation")),
 				(String) nameMap.get("firstName"),
 				(String) nameMap.get("middleName"),
 				(String) nameMap.get("lastName"));
@@ -203,6 +201,6 @@ public abstract class AbstractDataFetcher {
 	 * @return
 	 */
 	protected Role extractRole(DataFetchingEnvironment environment, String roleKey) {
-		return organizations.findRoleByCode(environment.getArgument(roleKey));
+		return crm.findRoleByCode(environment.getArgument(roleKey));
 	}
 }

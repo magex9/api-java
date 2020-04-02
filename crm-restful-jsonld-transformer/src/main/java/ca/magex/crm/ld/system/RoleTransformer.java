@@ -1,6 +1,6 @@
 package ca.magex.crm.ld.system;
 
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -8,10 +8,10 @@ import ca.magex.crm.ld.data.DataObject;
 
 public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 
-	public SecuredOrganizationService service;
+	public SecuredCrmServices crm;
 	
-	public RoleTransformer(SecuredOrganizationService service) {
-		this.service = service;
+	public RoleTransformer(SecuredCrmServices crm) {
+		this.crm = crm;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 		validateContext(data, parentContext);
 		validateType(data);
 		String code = data.getString("@value");
-		return service.findRoleByCode(code);
+		return crm.findRoleByCode(code);
 	}
 			
 }

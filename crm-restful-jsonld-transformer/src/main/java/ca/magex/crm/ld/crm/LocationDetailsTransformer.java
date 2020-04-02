@@ -2,7 +2,7 @@ package ca.magex.crm.ld.crm;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -16,9 +16,9 @@ public class LocationDetailsTransformer extends AbstractLinkedDataTransformer<Lo
 	
 	private MailingAddressTransformer mailingAddressTransformer;
 	
-	public LocationDetailsTransformer(SecuredOrganizationService service) {
-		this.statusTransformer = new StatusTransformer(service);
-		this.mailingAddressTransformer = new MailingAddressTransformer(service);
+	public LocationDetailsTransformer(SecuredCrmServices crm) {
+		this.statusTransformer = new StatusTransformer(crm);
+		this.mailingAddressTransformer = new MailingAddressTransformer(crm);
 	}
 	
 	public Class<?> getType() {

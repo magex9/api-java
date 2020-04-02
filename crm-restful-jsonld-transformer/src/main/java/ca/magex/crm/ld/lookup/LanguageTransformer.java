@@ -1,13 +1,13 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class LanguageTransformer extends AbstractLinkedDataTransformer<Language> {
 
-	public LanguageTransformer(SecuredOrganizationService service) {
+	public LanguageTransformer(SecuredCrmServices crm) {
 
 	}
 

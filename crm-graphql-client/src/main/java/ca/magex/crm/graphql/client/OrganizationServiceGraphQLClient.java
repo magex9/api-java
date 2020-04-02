@@ -16,6 +16,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
@@ -23,7 +24,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
@@ -33,7 +35,7 @@ import ca.magex.crm.api.system.Status;
  * 
  * @author Jonny
  */
-public class OrganizationServiceGraphQLClient extends GraphQLClient implements OrganizationService {
+public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmServices {
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
@@ -409,25 +411,37 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public OrganizationDetails validate(OrganizationDetails organization) {
+	public List<Status> findStatuses() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public LocationDetails validate(LocationDetails location) {
+	public Status findStatusByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PersonDetails validate(PersonDetails person) {
+	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Role> validate(List<Role> roles, Identifier personId) {
+	public List<Role> findRoles() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRoleByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -469,39 +483,123 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public List<Role> findRoles() {
+	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
+	public LocationDetails validate(LocationDetails location) throws BadRequestException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public PersonDetails validate(PersonDetails person) throws BadRequestException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Status> findStatuses() {
+	public List<Role> validate(List<Role> roles, Identifier personId) throws BadRequestException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Status findStatusByCode(String code) throws ItemNotFoundException {
+	public boolean canCreateOrganization() {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
-	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public boolean canViewOrganization(Identifier organizationId) {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreateLocationForOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreatePersonForOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewPerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdatePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnablePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisablePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateUserRole(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

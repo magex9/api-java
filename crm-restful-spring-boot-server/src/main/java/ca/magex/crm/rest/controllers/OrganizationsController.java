@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.ld.crm.LocationDetailsTransformer;
 import ca.magex.crm.ld.crm.OrganizationDetailsTransformer;
@@ -37,12 +37,12 @@ import ca.magex.crm.ld.system.StatusTransformer;
 public class OrganizationsController {
 
 	@Autowired
-	private SecuredOrganizationService service;
+	private SecuredCrmServices crm;
 	
 	@GetMapping("/api/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		OrganizationSummaryTransformer transformer = new OrganizationSummaryTransformer(service);
-		DataElement data = new DataArray(service.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req)).getContent().stream()
+		OrganizationSummaryTransformer transformer = new OrganizationSummaryTransformer(crm);
+		DataElement data = new DataArray(crm.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.format(e)).collect(Collectors.toList()));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
@@ -55,10 +55,10 @@ public class OrganizationsController {
 
 	@PostMapping("/api/organizations")
 	public void createOrganization(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(service);
+		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(crm);
 		DataObject body = extractBody(req);
 		String displayName = body.getString("displayName");
-		DataElement data = transformer.format(service.createOrganization(displayName));
+		DataElement data = transformer.format(crm.createOrganization(displayName));
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
@@ -66,9 +66,9 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathParam("organizationId") String id) throws IOException {
-		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(service);
+		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.format(service.findOrganizationDetails(organizationId));
+		DataElement data = transformer.format(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
@@ -76,14 +76,14 @@ public class OrganizationsController {
 	@PatchMapping("/api/organizations/{organizationId}")
 	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathParam("organizationId") String id) throws IOException {
-		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(service);
+		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataObject body = extractBody(req);
 		if (body.contains("displayName"))
-			service.updateOrganizationName(organizationId, body.getString("displayName"));
+			crm.updateOrganizationName(organizationId, body.getString("displayName"));
 		if (body.contains("mainLocationId"))
-			service.updateOrganizationMainLocation(organizationId, new Identifier(body.getString("mainLocationId")));
-		DataElement data = transformer.format(service.findOrganizationDetails(organizationId));
+			crm.updateOrganizationMainLocation(organizationId, new Identifier(body.getString("mainLocationId")));
+		DataElement data = transformer.format(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
@@ -91,9 +91,9 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations/{organizationId}/summary")
 	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathParam("organizationId") String id) throws IOException {
-		OrganizationSummaryTransformer transformer = new OrganizationSummaryTransformer(service);
+		OrganizationSummaryTransformer transformer = new OrganizationSummaryTransformer(crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.format(service.findOrganizationDetails(organizationId));
+		DataElement data = transformer.format(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
@@ -101,9 +101,9 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations/{organizationId}/mainLocation")
 	public void getOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathParam("organizationId") String id) throws IOException {
-		LocationDetailsTransformer transformer = new LocationDetailsTransformer(service);
+		LocationDetailsTransformer transformer = new LocationDetailsTransformer(crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.format(service.findLocationDetails(service.findOrganizationDetails(organizationId).getMainLocationId()));
+		DataElement data = transformer.format(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()));
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
@@ -111,9 +111,9 @@ public class OrganizationsController {
 	@PutMapping("/api/organizations/{organizationId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathParam("organizationId") String id) throws IOException {
-		StatusTransformer transformer = new StatusTransformer(service);
+		StatusTransformer transformer = new StatusTransformer(crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.format(service.enableOrganization(organizationId).getStatus());
+		DataElement data = transformer.format(crm.enableOrganization(organizationId).getStatus());
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}
@@ -121,9 +121,9 @@ public class OrganizationsController {
 	@PutMapping("/api/organizations/{organizationId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathParam("organizationId") String id) throws IOException {
-		StatusTransformer transformer = new StatusTransformer(service);
+		StatusTransformer transformer = new StatusTransformer(crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.format(service.enableOrganization(organizationId).getStatus());
+		DataElement data = transformer.format(crm.enableOrganization(organizationId).getStatus());
 		res.setStatus(200);
 		res.getWriter().write(data.stringify(formatter(req)));
 	}

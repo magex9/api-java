@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
+import ca.magex.crm.amnesia.services.AmnesiaFactory;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -17,8 +17,7 @@ import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.OrganizationPolicyBasicImpl;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
@@ -29,7 +28,7 @@ public class PersonTransformerTest {
 
 	@Test
 	public void testOrganizationLinkedData() throws Exception {
-		SecuredOrganizationService service = new SecuredOrganizationService(new OrganizationServiceAmnesiaImpl(), new OrganizationPolicyBasicImpl());
+		SecuredCrmServices service = AmnesiaFactory.getAnonymousService();
 		Identifier personId = new Identifier("abc");
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
@@ -108,7 +107,9 @@ public class PersonTransformerTest {
 				"  \"status\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
 				"    \"@type\": \"Status\",\n" + 
-				"    \"@value\": \"pending\"\n" + 
+				"    \"@value\": \"pending\",\n" + 
+				"    \"@en\": \"Pending\",\n" + 
+				"    \"@fr\": \"En attente\"\n" + 
 				"  },\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"legalName\": {\n" + 

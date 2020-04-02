@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
+import ca.magex.crm.amnesia.services.AmnesiaFactory;
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.services.OrganizationPolicyBasicImpl;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.LinkedDataFormatter;
@@ -17,7 +16,7 @@ public class OrganizationTransformerTest {
 
 	@Test
 	public void testOrganizationLinkedData() throws Exception {
-		SecuredOrganizationService service = new SecuredOrganizationService(new OrganizationServiceAmnesiaImpl(), new OrganizationPolicyBasicImpl());
+		SecuredCrmServices service = AmnesiaFactory.getAnonymousService();
 		Identifier organizationId = new Identifier("abc");
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
@@ -41,7 +40,9 @@ public class OrganizationTransformerTest {
 				"  \"status\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
 				"    \"@type\": \"Status\",\n" + 
-				"    \"@value\": \"active\"\n" + 
+				"    \"@value\": \"active\",\n" + 
+				"    \"@en\": \"Active\",\n" + 
+				"    \"@fr\": \"Actif\"\n" + 
 				"  },\n" + 
 				"  \"mainLocation\": {\n" + 
 				"    \"@type\": \"LocationDetails\",\n" + 

@@ -1,13 +1,13 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.BusinessUnit;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class BusinessUnitTransformer extends AbstractLinkedDataTransformer<BusinessUnit> {
 
-	public BusinessUnitTransformer(SecuredOrganizationService service) {
+	public BusinessUnitTransformer(SecuredCrmServices crm) {
 
 	}
 

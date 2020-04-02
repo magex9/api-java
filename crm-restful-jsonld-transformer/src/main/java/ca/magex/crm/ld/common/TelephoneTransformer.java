@@ -1,13 +1,13 @@
 package ca.magex.crm.ld.common;
 
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephone> {
 
-	public TelephoneTransformer(SecuredOrganizationService service) {
+	public TelephoneTransformer(SecuredCrmServices crm) {
 
 	}
 

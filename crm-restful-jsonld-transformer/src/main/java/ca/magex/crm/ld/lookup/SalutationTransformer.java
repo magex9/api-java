@@ -1,17 +1,17 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutation> {
 
-	public SecuredOrganizationService service;
+	public SecuredCrmServices crm;
 	
-	public SalutationTransformer(SecuredOrganizationService service) {
-		this.service = service;
+	public SalutationTransformer(SecuredCrmServices crm) {
+		this.crm = crm;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutat
 		validateContext(data, parentContext);
 		validateType(data);
 		Integer code = data.getInt("@value");
-		return service.findSalutationByCode(code);
+		return crm.findSalutationByCode(code);
 	}
 			
 }

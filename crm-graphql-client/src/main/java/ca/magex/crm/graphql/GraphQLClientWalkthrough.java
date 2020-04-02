@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.amnesia.services.AmnesiaLookupService;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -23,7 +24,8 @@ import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -31,125 +33,127 @@ public class GraphQLClientWalkthrough {
 
 	public static void main(String[] args) throws Exception {
 
-		OrganizationService orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		CrmServices crm = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		
+		CrmLookupService lookups = new AmnesiaLookupService();
 						
-		OrganizationDetails johnnuy = orgService.createOrganization("johnnuy.org");
+		OrganizationDetails johnnuy = crm.createOrganization("johnnuy.org");
 		System.out.println(johnnuy);
 		
-		System.out.println(orgService.disableOrganization(johnnuy.getOrganizationId()));
+		System.out.println(crm.disableOrganization(johnnuy.getOrganizationId()));
 		
-		System.out.println(orgService.enableOrganization(johnnuy.getOrganizationId()));
+		System.out.println(crm.enableOrganization(johnnuy.getOrganizationId()));
 		
-		LocationDetails hq = orgService.createLocation(
+		LocationDetails hq = crm.createLocation(
 				johnnuy.getOrganizationId(), 
 				"Head Quarters", 
 				"HQ", 
-				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"));
+				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(hq);
 		
-		hq = orgService.updateLocationName(
+		hq = crm.updateLocationName(
 				hq.getLocationId(), 
 				"Johnnuy HeadQuarters");
 		System.out.println(hq);
 		
-		hq = orgService.updateLocationAddress(
+		hq = crm.updateLocationAddress(
 				hq.getLocationId(), 
-				new MailingAddress("132 Cheyenne Way", "Nepean", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"));
+				new MailingAddress("132 Cheyenne Way", "Nepean", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(hq);
 		
-		System.out.println(orgService.disableLocation(hq.getLocationId()));
+		System.out.println(crm.disableLocation(hq.getLocationId()));
 		
-		System.out.println(orgService.enableLocation(hq.getLocationId()));
+		System.out.println(crm.enableLocation(hq.getLocationId()));
 		
-		hq = orgService.findLocationDetails(hq.getLocationId());
+		hq = crm.findLocationDetails(hq.getLocationId());
 		System.out.println(hq);
 				
-		johnnuy = orgService.updateOrganizationMainLocation(
+		johnnuy = crm.updateOrganizationMainLocation(
 				johnnuy.getOrganizationId(), 
 				hq.getLocationId());
 		System.out.println(johnnuy);
 		
-		johnnuy = orgService.updateOrganizationName(
+		johnnuy = crm.updateOrganizationName(
 				johnnuy.getOrganizationId(),
 				"Johnnuy Technologies");
 		System.out.println(johnnuy);
 		
-		OrganizationDetails johnnuy2 = orgService.findOrganizationDetails(johnnuy.getOrganizationId());
+		OrganizationDetails johnnuy2 = crm.findOrganizationDetails(johnnuy.getOrganizationId());
 		System.out.println(johnnuy2);
 		
-		LocationDetails hq2 = orgService.findLocationDetails(hq.getLocationId());
+		LocationDetails hq2 = crm.findLocationDetails(hq.getLocationId());
 		System.out.println(hq2);
 		
 		
-		long orgCount = orgService.countOrganizations(new OrganizationsFilter());
+		long orgCount = crm.countOrganizations(new OrganizationsFilter());
 		System.out.println(orgCount + " organizations");
 		
-		Page<OrganizationDetails> orgDetails = orgService.findOrganizationDetails(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		Page<OrganizationDetails> orgDetails = crm.findOrganizationDetails(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(orgDetails + " - " + orgDetails.getContent().size() + " of " + orgDetails.getTotalElements());
 		
-		Page<OrganizationSummary> orgSummaries = orgService.findOrganizationSummaries(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		Page<OrganizationSummary> orgSummaries = crm.findOrganizationSummaries(new OrganizationsFilter("Johnnuy", Status.ACTIVE), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(orgSummaries + " - " + orgSummaries.getContent().size() + " of " + orgSummaries.getTotalElements());
 		
-		long locCount = orgService.countLocations(new LocationsFilter());
+		long locCount = crm.countLocations(new LocationsFilter());
 		System.out.println(locCount + " locations");
 		
-		Page<LocationDetails> locationDetails = orgService.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		Page<LocationDetails> locationDetails = crm.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(locationDetails + " - " + locationDetails.getContent().size() + " of " + locationDetails.getTotalElements());
 		
-		Page<LocationSummary> locationSummaries = orgService.findLocationSummaries(new LocationsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		Page<LocationSummary> locationSummaries = crm.findLocationSummaries(new LocationsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(locationSummaries + " - " + locationSummaries.getContent().size() + " of " + locationSummaries.getTotalElements());
 		
 		
-		PersonDetails jonathan = orgService.createPerson(
+		PersonDetails jonathan = crm.createPerson(
 				johnnuy.getOrganizationId(), 
-				new PersonName(orgService.findSalutationByCode(1), "Jonathan", "Alexander", "Trafford"), 
-				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"), 
+				new PersonName(lookups.findSalutationByCode(1), "Jonathan", "Alexander", "Trafford"), 
+				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"), 
 				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));
 		System.out.println(jonathan);
 		
-		PersonSummary jonathanSummary = orgService.disablePerson(jonathan.getPersonId());
+		PersonSummary jonathanSummary = crm.disablePerson(jonathan.getPersonId());
 		System.out.println(jonathanSummary);
 		
-		jonathanSummary = orgService.enablePerson(jonathan.getPersonId());
+		jonathanSummary = crm.enablePerson(jonathan.getPersonId());
 		System.out.println(jonathanSummary);
 		
-		jonathan = orgService.findPersonDetails(jonathan.getPersonId());
+		jonathan = crm.findPersonDetails(jonathan.getPersonId());
 		System.out.println(jonathan);
 		
-		jonathan = orgService.updatePersonName(jonathan.getPersonId(), new PersonName(orgService.findSalutationByCode(1), "Jonny", "Alexander", "Trafford"));
+		jonathan = crm.updatePersonName(jonathan.getPersonId(), new PersonName(lookups.findSalutationByCode(1), "Jonny", "Alexander", "Trafford"));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"));
+		jonathan = crm.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L));
+		jonathan = crm.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
+		jonathan = crm.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.addUserRole(jonathan.getPersonId(), orgService.findRoleByCode("SYS_ADMIN"));
-		jonathan = orgService.addUserRole(jonathan.getPersonId(), orgService.findRoleByCode("RE_ADMIN"));
+		jonathan = crm.addUserRole(jonathan.getPersonId(), lookups.findRoleByCode("SYS_ADMIN"));
+		jonathan = crm.addUserRole(jonathan.getPersonId(), lookups.findRoleByCode("RE_ADMIN"));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.removeUserRole(jonathan.getPersonId(), orgService.findRoleByCode("SYS_ADMIN"));
+		jonathan = crm.removeUserRole(jonathan.getPersonId(), lookups.findRoleByCode("SYS_ADMIN"));
 		System.out.println(jonathan);
 		
 		
-		long personCount = orgService.countPersons(new PersonsFilter());
+		long personCount = crm.countPersons(new PersonsFilter());
 		System.out.println(personCount + " persons");
 		
-		Page<PersonDetails> personDetails = orgService.findPersonDetails(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		Page<PersonDetails> personDetails = crm.findPersonDetails(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(personDetails + " - " + personDetails.getContent().size() + " of " + personDetails.getTotalElements());
 		
-		Page<PersonSummary> personSummaries = orgService.findPersonSummaries(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
+		Page<PersonSummary> personSummaries = crm.findPersonSummaries(new PersonsFilter(), new Paging(1, 5, Sort.by(Order.asc("displayName"))));
 		System.out.println(personSummaries + " - " + personSummaries.getContent().size() + " of " + personSummaries.getTotalElements());
 		
 		
 		
 		
-		((OrganizationServiceGraphQLClient) orgService).close();
+		((OrganizationServiceGraphQLClient) crm).close();
 	}
 	
 }

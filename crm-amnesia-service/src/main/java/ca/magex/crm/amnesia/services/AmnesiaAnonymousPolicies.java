@@ -1,8 +1,9 @@
-package ca.magex.crm.api.services;
+package ca.magex.crm.amnesia.services;
 
+import ca.magex.crm.api.services.CrmPolicies;
 import ca.magex.crm.api.system.Identifier;
 
-public class OrganizationPolicyBasicImpl implements OrganizationPolicy {
+public class AmnesiaAnonymousPolicies implements CrmPolicies {
 	
 	public boolean canCreateOrganization() {
 		return true;
