@@ -4,6 +4,7 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
+import ca.magex.crm.api.services.SecuredOrganizationService;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.lookup.BusinessClassificationTransformer;
@@ -18,10 +19,10 @@ public class BusinessPositionTransformer extends AbstractLinkedDataTransformer<B
 	
 	private BusinessClassificationTransformer businessClassificationTransformer;
 	
-	public BusinessPositionTransformer() {
-		this.businessSectorTransformer = new BusinessSectorTransformer();
-		this.businessUnitTransformer = new BusinessUnitTransformer();
-		this.businessClassificationTransformer = new BusinessClassificationTransformer();
+	public BusinessPositionTransformer(SecuredOrganizationService service) {
+		this.businessSectorTransformer = new BusinessSectorTransformer(service);
+		this.businessUnitTransformer = new BusinessUnitTransformer(service);
+		this.businessClassificationTransformer = new BusinessClassificationTransformer(service);
 	}
 	
 	@Override

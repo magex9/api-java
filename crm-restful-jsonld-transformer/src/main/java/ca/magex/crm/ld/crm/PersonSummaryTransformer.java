@@ -1,6 +1,7 @@
 package ca.magex.crm.ld.crm;
 
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.services.SecuredOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -11,8 +12,8 @@ public class PersonSummaryTransformer extends AbstractLinkedDataTransformer<Pers
 
 	private StatusTransformer statusTransformer;
 	
-	public PersonSummaryTransformer() {
-		this.statusTransformer = new StatusTransformer();
+	public PersonSummaryTransformer(SecuredOrganizationService service) {
+		this.statusTransformer = new StatusTransformer(service);
 	}
 	
 	public Class<?> getType() {

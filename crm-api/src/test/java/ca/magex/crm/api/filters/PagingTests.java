@@ -15,8 +15,9 @@ public class PagingTests {
 	@Test
 	public void testPagingComparator() {
 
-		MailingAddress ma1 = new MailingAddress("125 Stewart St", "Ottawa", "ON", new Country("CA", "Canada"), "K1N 6J3");
-		MailingAddress ma2 = new MailingAddress("125 Stewart St", "Nepean", "Ontario", new Country("CA", "Canada"), "K1N 6J3");
+		Country canada = new Country("CA", "Canada", "French Canada");
+		MailingAddress ma1 = new MailingAddress("125 Stewart St", "Ottawa", "ON", canada, "K1N 6J3");
+		MailingAddress ma2 = new MailingAddress("125 Stewart St", "Nepean", "Ontario", canada, "K1N 6J3");
 		
 		Comparator<MailingAddress> comparator = new Paging(Sort.by(Direction.ASC, "city")).new PagingComparator<MailingAddress>();
 		Assert.assertEquals(1, comparator.compare(ma1, ma2));

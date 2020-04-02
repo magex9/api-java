@@ -33,7 +33,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering findOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("organizationId");
-			return organizations.findOrganization(new Identifier(id));
+			return organizations.findOrganizationDetails(new Identifier(id));
 		};
 	}
 	
@@ -81,7 +81,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering enableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			organizations.enableOrganization(organizationId);
-			return organizations.findOrganization(organizationId);
+			return organizations.findOrganizationDetails(organizationId);
 		};
 	}
 
@@ -90,7 +90,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			organizations.disableOrganization(organizationId);
-			return organizations.findOrganization(organizationId);
+			return organizations.findOrganizationDetails(organizationId);
 		};
 	}
 
@@ -108,7 +108,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 						organizationId,
 						new Identifier((String) environment.getArgument("locationId")));
 			}
-			return organizations.findOrganization(organizationId);
+			return organizations.findOrganizationDetails(organizationId);
 		};
 	}
 }

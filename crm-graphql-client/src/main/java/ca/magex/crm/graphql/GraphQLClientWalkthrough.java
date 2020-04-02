@@ -22,11 +22,8 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
-import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.OrganizationService;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -47,7 +44,7 @@ public class GraphQLClientWalkthrough {
 				johnnuy.getOrganizationId(), 
 				"Head Quarters", 
 				"HQ", 
-				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada"), "K2J 0E9"));
+				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(hq);
 		
 		hq = orgService.updateLocationName(
@@ -57,14 +54,14 @@ public class GraphQLClientWalkthrough {
 		
 		hq = orgService.updateLocationAddress(
 				hq.getLocationId(), 
-				new MailingAddress("132 Cheyenne Way", "Nepean", "ON", new Country("CA", "Canada"), "K2J 0E9"));
+				new MailingAddress("132 Cheyenne Way", "Nepean", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(hq);
 		
 		System.out.println(orgService.disableLocation(hq.getLocationId()));
 		
 		System.out.println(orgService.enableLocation(hq.getLocationId()));
 		
-		hq = orgService.findLocation(hq.getLocationId());
+		hq = orgService.findLocationDetails(hq.getLocationId());
 		System.out.println(hq);
 				
 		johnnuy = orgService.updateOrganizationMainLocation(
@@ -77,10 +74,10 @@ public class GraphQLClientWalkthrough {
 				"Johnnuy Technologies");
 		System.out.println(johnnuy);
 		
-		OrganizationDetails johnnuy2 = orgService.findOrganization(johnnuy.getOrganizationId());
+		OrganizationDetails johnnuy2 = orgService.findOrganizationDetails(johnnuy.getOrganizationId());
 		System.out.println(johnnuy2);
 		
-		LocationDetails hq2 = orgService.findLocation(hq.getLocationId());
+		LocationDetails hq2 = orgService.findLocationDetails(hq.getLocationId());
 		System.out.println(hq2);
 		
 		
@@ -105,8 +102,8 @@ public class GraphQLClientWalkthrough {
 		
 		PersonDetails jonathan = orgService.createPerson(
 				johnnuy.getOrganizationId(), 
-				new PersonName(new Salutation(1, "Mr"), "Jonathan", "Alexander", "Trafford"), 
-				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada"), "K2J 0E9"), 
+				new PersonName(orgService.findSalutationByCode(1), "Jonathan", "Alexander", "Trafford"), 
+				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"), 
 				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));
 		System.out.println(jonathan);
@@ -117,13 +114,13 @@ public class GraphQLClientWalkthrough {
 		jonathanSummary = orgService.enablePerson(jonathan.getPersonId());
 		System.out.println(jonathanSummary);
 		
-		jonathan = orgService.findPerson(jonathan.getPersonId());
+		jonathan = orgService.findPersonDetails(jonathan.getPersonId());
 		System.out.println(jonathan);
 		
-		jonathan = orgService.updatePersonName(jonathan.getPersonId(), new PersonName(new Salutation(1, "Mr"), "Jonny", "Alexander", "Trafford"));
+		jonathan = orgService.updatePersonName(jonathan.getPersonId(), new PersonName(orgService.findSalutationByCode(1), "Jonny", "Alexander", "Trafford"));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", new Country("CA", "Canada"), "K2J 0E9"));
+		jonathan = orgService.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", orgService.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(jonathan);
 		
 		jonathan = orgService.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L));
@@ -132,11 +129,11 @@ public class GraphQLClientWalkthrough {
 		jonathan = orgService.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role(1, ""));
-		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role(5, ""));
+		jonathan = orgService.addUserRole(jonathan.getPersonId(), orgService.findRoleByCode("SYS_ADMIN"));
+		jonathan = orgService.addUserRole(jonathan.getPersonId(), orgService.findRoleByCode("RE_ADMIN"));
 		System.out.println(jonathan);
 		
-		jonathan = orgService.removeUserRole(jonathan.getPersonId(), new Role(1, ""));
+		jonathan = orgService.removeUserRole(jonathan.getPersonId(), orgService.findRoleByCode("SYS_ADMIN"));
 		System.out.println(jonathan);
 		
 		

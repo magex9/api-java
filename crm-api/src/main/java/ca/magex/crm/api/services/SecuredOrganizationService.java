@@ -1,6 +1,7 @@
 package ca.magex.crm.api.services;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.data.domain.Page;
 
@@ -14,14 +15,17 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Status;
 
 public final class SecuredOrganizationService implements OrganizationService, OrganizationPolicy {
 
@@ -33,6 +37,66 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		this.delegate = delegate;
 		this.policy = policy;
 	}
+	
+	@Override
+	public List<Status> findStatuses() {
+		return delegate.findStatuses();
+	}
+	
+	@Override
+	public Status findStatusByCode(String code) throws ItemNotFoundException {
+		return delegate.findStatusByCode(code);
+	}
+	
+	@Override
+	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return delegate.findStatusByLocalizedName(locale, name);
+	}
+	
+	@Override
+	public List<Role> findRoles() {
+		return delegate.findRoles();
+	}
+	
+	@Override
+	public Role findRoleByCode(String code) throws ItemNotFoundException {
+		return delegate.findRoleByCode(code);
+	}
+	
+	@Override
+	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return delegate.findRoleByLocalizedName(locale, name);
+	}
+	
+	@Override
+	public List<Country> findCountries() {
+		return delegate.findCountries();
+	}
+	
+	@Override
+	public Country findCountryByCode(String code) throws ItemNotFoundException {
+		return delegate.findCountryByCode(code);
+	}
+	
+	@Override
+	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return delegate.findCountryByLocalizedName(locale, name);
+	}
+	
+	@Override
+	public List<Salutation> findSalutations() {
+		return delegate.findSalutations();
+	}
+	
+	@Override
+	public Salutation findSalutationByCode(Integer code) throws ItemNotFoundException {
+		return delegate.findSalutationByCode(code);
+	}
+	
+	@Override
+	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return delegate.findSalutationByLocalizedName(locale, name);
+	}	
 	
 	public OrganizationDetails createOrganization(String organizationName) {
 		if (!canCreateOrganization())
@@ -64,10 +128,16 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.disableOrganization(organizationId);
 	}
 	
-	public OrganizationDetails findOrganization(Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		if (!canViewOrganization(organizationId))
 			throw new PermissionDeniedException("findOrganization: " + organizationId);
-		return delegate.findOrganization(organizationId);
+		return delegate.findOrganizationDetails(organizationId);
+	}
+	
+	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
+		if (!canViewOrganization(organizationId))
+			throw new PermissionDeniedException("findOrganization: " + organizationId);
+		return delegate.findOrganizationDetails(organizationId);
 	}
 	
 	public long countOrganizations(OrganizationsFilter filter) {
@@ -113,10 +183,16 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.disableLocation(locationId);
 	}
 
-	public LocationDetails findLocation(Identifier locationId) {
+	public LocationSummary findLocationSummary(Identifier locationId) {
 		if (!canViewLocation(locationId))
 			throw new PermissionDeniedException("findLocation: " + locationId);
-		return delegate.findLocation(locationId);
+		return delegate.findLocationSummary(locationId);
+	}
+	
+	public LocationDetails findLocationDetails(Identifier locationId) {
+		if (!canViewLocation(locationId))
+			throw new PermissionDeniedException("findLocation: " + locationId);
+		return delegate.findLocationDetails(locationId);
 	}
 	
 	public long countLocations(LocationsFilter filter) {
@@ -173,10 +249,16 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.disablePerson(personId);
 	}
 
-	public PersonDetails findPerson(Identifier personId) {
+	public PersonSummary findPersonSummary(Identifier personId) {
 		if (!canViewPerson(personId))
 			throw new PermissionDeniedException("findPerson: " + personId);
-		return delegate.findPerson(personId);
+		return delegate.findPersonSummary(personId);
+	}
+	
+	public PersonDetails findPersonDetails(Identifier personId) {
+		if (!canViewPerson(personId))
+			throw new PermissionDeniedException("findPerson: " + personId);
+		return delegate.findPersonDetails(personId);
 	}
 	
 	public long countPersons(PersonsFilter filter) {
@@ -203,20 +285,20 @@ public final class SecuredOrganizationService implements OrganizationService, Or
 		return delegate.removeUserRole(personId, role);
 	}
 
-	public List<Message> validate(OrganizationDetails organization) {
+	public OrganizationDetails validate(OrganizationDetails organization) {
 		return delegate.validate(organization);
 	}
 
-	public List<Message> validate(LocationDetails location) {
+	public LocationDetails validate(LocationDetails location) {
 		return delegate.validate(location);
 	}
 
-	public List<Message> validate(PersonDetails person) {
+	public PersonDetails validate(PersonDetails person) {
 		return delegate.validate(person);
 	}
 
-	public List<Message> validate(List<Role> roles) {
-		return delegate.validate(roles);
+	public List<Role> validate(List<Role> roles, Identifier personId) {
+		return delegate.validate(roles, personId);
 	}
 
 	public boolean canCreateOrganization() {

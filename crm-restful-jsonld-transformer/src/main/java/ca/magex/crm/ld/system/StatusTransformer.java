@@ -1,10 +1,16 @@
 package ca.magex.crm.ld.system;
 
+import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class StatusTransformer extends AbstractLinkedDataTransformer<Status> {
+
+	public StatusTransformer(SecuredOrganizationService service) {
+
+	}
 
 	@Override
 	public Class<?> getType() {
@@ -13,7 +19,9 @@ public class StatusTransformer extends AbstractLinkedDataTransformer<Status> {
 	
 	@Override
 	public DataObject format(Status status) {
-		return value(status);
+		return value(status)
+			.with("@en", status.getName(Lang.ENGLISH))
+			.with("@fr", status.getName(Lang.FRENCH));
 	}
 	
 	@Override

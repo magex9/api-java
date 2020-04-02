@@ -6,6 +6,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.services.SecuredOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -31,13 +32,13 @@ public class PersonDetailsTransformer extends AbstractLinkedDataTransformer<Pers
 	
 	private UserTransformer userTransformer;
 	
-	public PersonDetailsTransformer() {
-		this.statusTransformer = new StatusTransformer();
-		this.personNameTransformer = new PersonNameTransformer();
-		this.mailingAddressTransformer = new MailingAddressTransformer();
-		this.communicationTransformer = new CommunicationTransformer();
-		this.businessPositionTransformer = new BusinessPositionTransformer();
-		this.userTransformer = new UserTransformer();
+	public PersonDetailsTransformer(SecuredOrganizationService service) {
+		this.statusTransformer = new StatusTransformer(service);
+		this.personNameTransformer = new PersonNameTransformer(service);
+		this.mailingAddressTransformer = new MailingAddressTransformer(service);
+		this.communicationTransformer = new CommunicationTransformer(service);
+		this.businessPositionTransformer = new BusinessPositionTransformer(service);
+		this.userTransformer = new UserTransformer(service);
 	}
 	
 	public Class<?> getType() {

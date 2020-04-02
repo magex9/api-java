@@ -33,7 +33,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering findPerson@" + PersonDataFetcher.class.getSimpleName());
 			String personId = environment.getArgument("personId");
-			return organizations.findPerson(new Identifier(personId));
+			return organizations.findPersonDetails(new Identifier(personId));
 		};
 	}
 	
@@ -86,7 +86,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			organizations.enablePerson(personId);
-			return organizations.findPerson(personId);
+			return organizations.findPersonDetails(personId);
 		};
 	}
 
@@ -95,7 +95,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			organizations.disablePerson(personId);
-			return organizations.findPerson(personId);
+			return organizations.findPersonDetails(personId);
 		};
 	}
 
@@ -123,7 +123,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 						personId,
 						extractBusinessPosition(environment, "position"));
 			}
-			return organizations.findPerson(personId);
+			return organizations.findPersonDetails(personId);
 		};
 	}
 	

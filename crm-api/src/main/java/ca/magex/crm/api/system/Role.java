@@ -6,27 +6,32 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer code;
+	private String code;
 	
-	private String name;
+	private Map<Locale, String> names;
 
-	public Role(Integer code, String name) {
+	public Role(String code, String english, String french) {
 		super();
 		this.code = code;
-		this.name = name;
+		this.names = new HashMap<Locale, String>();
+		this.names.put(Lang.ENGLISH, english);
+		this.names.put(Lang.FRENCH, french);
 	}
 	
-	public Integer getCode() {
+	public String getCode() {
 		return code;
 	}
 	
-	public String getName() {
-		return name;
+	public String getName(Locale locale) {
+		return names.get(locale);
 	}
 	
 	@Override
@@ -43,4 +48,5 @@ public class Role implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
+	
 }

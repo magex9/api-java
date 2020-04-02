@@ -33,7 +33,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findLocation@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
-			return organizations.findLocation(new Identifier(locationId));
+			return organizations.findLocationDetails(new Identifier(locationId));
 		};
 	}
 
@@ -73,7 +73,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering byOrganization@" + LocationDataFetcher.class.getSimpleName());
 			OrganizationDetails organization = environment.getSource();
 			if (organization.getMainLocationId() != null) {
-				return organizations.findLocation(organization.getMainLocationId());
+				return organizations.findLocationDetails(organization.getMainLocationId());
 			}
 			else {
 				return null;
@@ -97,7 +97,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
 			organizations.enableLocation(locationId);
-			return organizations.findLocation(locationId);
+			return organizations.findLocationDetails(locationId);
 		};
 	}
 
@@ -106,7 +106,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
 			organizations.disableLocation(locationId);
-			return organizations.findLocation(locationId);
+			return organizations.findLocationDetails(locationId);
 		};
 	}
 	
@@ -124,7 +124,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 						locationId,
 						extractMailingAddress(environment, "locationAddress"));
 			}
-			return organizations.findLocation(locationId);
+			return organizations.findLocationDetails(locationId);
 		};
 	}	
 }

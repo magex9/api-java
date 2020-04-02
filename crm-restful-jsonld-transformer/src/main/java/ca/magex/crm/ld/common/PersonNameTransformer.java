@@ -2,6 +2,7 @@ package ca.magex.crm.ld.common;
 
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.services.SecuredOrganizationService;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.lookup.SalutationTransformer;
@@ -10,8 +11,8 @@ public class PersonNameTransformer extends AbstractLinkedDataTransformer<PersonN
 
 	private SalutationTransformer salutationTransformer;
 	
-	public PersonNameTransformer() {
-		this.salutationTransformer = new SalutationTransformer();
+	public PersonNameTransformer(SecuredOrganizationService service) {
+		this.salutationTransformer = new SalutationTransformer(service);
 	}
 	
 	@Override

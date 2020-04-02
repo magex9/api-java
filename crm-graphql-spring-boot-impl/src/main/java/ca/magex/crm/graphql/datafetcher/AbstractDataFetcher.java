@@ -136,9 +136,7 @@ public abstract class AbstractDataFetcher {
 				(String) addressMap.get("street"), 
 				(String) addressMap.get("city"), 
 				(String) addressMap.get("province"), 
-				new Country(
-						(String) addressMap.get("countryCode"), 
-						countryLookup.getProperty((String) addressMap.get("countryCode"))), 
+				organizations.findCountryByCode((String) addressMap.get("countryCode")),
 				(String) addressMap.get("postalCode"));
 	}
 	
@@ -151,9 +149,7 @@ public abstract class AbstractDataFetcher {
 	protected PersonName extractPersonName(DataFetchingEnvironment environment, String nameKey) {
 		Map<String,Object> nameMap = environment.getArgument(nameKey);
 		return new PersonName(
-				new Salutation(
-						(Integer) nameMap.get("salutation"),
-						salutationLookup.getProperty(nameMap.get("salutation").toString())),
+				organizations.findSalutationByCode((Integer) nameMap.get("salutation")),
 				(String) nameMap.get("firstName"),
 				(String) nameMap.get("middleName"),
 				(String) nameMap.get("lastName"));
@@ -207,8 +203,6 @@ public abstract class AbstractDataFetcher {
 	 * @return
 	 */
 	protected Role extractRole(DataFetchingEnvironment environment, String roleKey) {
-		return new Role(
-				environment.getArgument(roleKey),
-				rolesLookup.getProperty(Integer.toString(environment.getArgument(roleKey))));
+		return organizations.findRoleByCode(environment.getArgument(roleKey));
 	}
 }
