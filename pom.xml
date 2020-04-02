@@ -18,7 +18,7 @@
 		<module>crm-graphql-spring-boot-impl</module>
 		<module>crm-graphql-client</module>
 		<module>crm-restful-jsonld-transformer</module>
-		<module>crm-restful-embedded-server</module>
+		<module>crm-restful-spring-boot-server</module>
 		<module>crm-restful-test-suite</module>
 	</modules>
 
