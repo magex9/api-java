@@ -2,6 +2,7 @@ package ca.magex.crm.api.common;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -21,12 +22,25 @@ public class PersonName implements Serializable {
 
 	private String lastName;
 	
+	private String displayName;
+	
 	public PersonName(Salutation salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
+		String displayName = "";
+		if (StringUtils.isNotBlank(lastName))
+			displayName += lastName;
+		if (StringUtils.isNotBlank(firstName) && displayName.length() > 0)
+			displayName += ", ";
+		if (StringUtils.isNotBlank(firstName))
+			displayName += firstName;
+		if (StringUtils.isNotBlank(middleName) && displayName.length() > 0)
+			displayName += " ";
+		if (StringUtils.isNotBlank(middleName))
+			displayName += middleName;
 	}
 
 	public Salutation getSalutation() {
@@ -43,6 +57,10 @@ public class PersonName implements Serializable {
 
 	public String getLastName() {
 		return lastName;
+	}
+	
+	public String getDisplayName() {
+		return displayName;
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package ca.magex.crm.ld.crm;
 
 import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -11,8 +12,8 @@ public class LocationSummaryTransformer extends AbstractLinkedDataTransformer<Lo
 
 	private StatusTransformer statusTransformer;
 	
-	public LocationSummaryTransformer() {
-		this.statusTransformer = new StatusTransformer();
+	public LocationSummaryTransformer(SecuredCrmServices crm) {
+		this.statusTransformer = new StatusTransformer(crm);
 	}
 	
 	public Class<?> getType() {

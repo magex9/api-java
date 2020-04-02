@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.OrganizationController;
@@ -25,15 +25,15 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(OrganizationController.class);
 
-	public OrganizationDataFetcher(OrganizationService organizations) {
-		super(organizations);
+	public OrganizationDataFetcher(CrmServices crm) {
+		super(crm);
 	}
 
 	public DataFetcher<OrganizationDetails> findOrganization() {
 		return (environment) -> {
 			logger.debug("Entering findOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("organizationId");
-			return organizations.findOrganization(new Identifier(id));
+			return crm.findOrganizationDetails(new Identifier(id));
 		};
 	}
 	
@@ -54,7 +54,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Integer> countOrganizations() {
 		return (environment) -> {
 			logger.debug("Entering countOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
-			return (int) organizations.countOrganizations(extractFilter(
+			return (int) crm.countOrganizations(extractFilter(
 					extractFilter(environment)));
 		};
 	}
@@ -62,7 +62,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Page<OrganizationDetails>> findOrganizations() {
 		return (environment) -> {
 			logger.debug("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
-			return organizations.findOrganizationDetails(extractFilter(
+			return crm.findOrganizationDetails(extractFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};
@@ -72,7 +72,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String organizationName = environment.getArgument("organizationName");
-			return organizations.createOrganization(organizationName);
+			return crm.createOrganization(organizationName);
 		};
 	}
 
@@ -80,8 +80,8 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering enableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
-			organizations.enableOrganization(organizationId);
-			return organizations.findOrganization(organizationId);
+			crm.enableOrganization(organizationId);
+			return crm.findOrganizationDetails(organizationId);
 		};
 	}
 
@@ -89,8 +89,8 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
-			organizations.disableOrganization(organizationId);
-			return organizations.findOrganization(organizationId);
+			crm.disableOrganization(organizationId);
+			return crm.findOrganizationDetails(organizationId);
 		};
 	}
 
@@ -99,16 +99,16 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			if (environment.getArgument("organizationName") != null) {
-				organizations.updateOrganizationName(
+				crm.updateOrganizationName(
 						organizationId,
 						environment.getArgument("organizationName"));
 			}
 			if (environment.getArgument("locationId") != null) {
-				organizations.updateOrganizationMainLocation(
+				crm.updateOrganizationMainLocation(
 						organizationId,
 						new Identifier((String) environment.getArgument("locationId")));
 			}
-			return organizations.findOrganization(organizationId);
+			return crm.findOrganizationDetails(organizationId);
 		};
 	}
 }

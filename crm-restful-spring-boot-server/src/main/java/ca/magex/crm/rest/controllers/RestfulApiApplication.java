@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
-import ca.magex.crm.amnesia.services.OrganizationServiceTestDataPopulator;
-import ca.magex.crm.api.services.OrganizationPolicyBasicImpl;
-import ca.magex.crm.api.services.SecuredOrganizationService;
+import ca.magex.crm.amnesia.services.AmnesiaFactory;
+import ca.magex.crm.amnesia.services.AmnesiaTestDataPopulator;
+import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
 public class RestfulApiApplication {
@@ -17,12 +16,8 @@ public class RestfulApiApplication {
 	}
 
 	@Bean
-	public SecuredOrganizationService organizations() {
-		OrganizationServiceAmnesiaImpl service = new OrganizationServiceAmnesiaImpl();
-		OrganizationServiceTestDataPopulator.populate(service);
-		//OrganizationPolicyAmnesiaImpl policy = new OrganizationPolicyAmnesiaImpl(service);
-		OrganizationPolicyBasicImpl policy = new OrganizationPolicyBasicImpl();
-		return new SecuredOrganizationService(service, policy);
+	public SecuredCrmServices organizations() {
+		return AmnesiaTestDataPopulator.populate(AmnesiaFactory.getAnonymousService());
 	}
 
 }
