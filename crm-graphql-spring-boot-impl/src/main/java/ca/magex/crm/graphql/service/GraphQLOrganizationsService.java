@@ -96,7 +96,7 @@ public class GraphQLOrganizationsService {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
 				
 
-				.type("OrganizationDetails", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.build();
 	}
 }

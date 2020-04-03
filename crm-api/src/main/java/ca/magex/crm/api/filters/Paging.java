@@ -97,15 +97,17 @@ public class Paging implements Pageable, Serializable {
 			while(iterator.hasNext()) {
 				Order order = iterator.next();
 				Field field = ReflectionUtils.findField(o1.getClass(), order.getProperty());
-				ReflectionUtils.makeAccessible(field);
-				Object val1 = ReflectionUtils.getField(field, o1);
-				Object val2 = ReflectionUtils.getField(field, o2);
-				if (Comparable.class.isAssignableFrom(val1.getClass())) {
-					Comparable<Object> cVal1 = (Comparable<Object>) val1;
-					Comparable<Object> cVal2 = (Comparable<Object>) val2;
-					int compare = cVal1.compareTo(cVal2);
-					if (compare !=0) {
-						return compare;
+				if (field != null) {
+					ReflectionUtils.makeAccessible(field);
+					Object val1 = ReflectionUtils.getField(field, o1);
+					Object val2 = ReflectionUtils.getField(field, o2);
+					if (Comparable.class.isAssignableFrom(val1.getClass())) {
+						Comparable<Object> cVal1 = (Comparable<Object>) val1;
+						Comparable<Object> cVal2 = (Comparable<Object>) val2;
+						int compare = cVal1.compareTo(cVal2);
+						if (compare !=0) {
+							return compare;
+						}
 					}
 				}
 			}

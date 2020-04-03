@@ -93,8 +93,7 @@ type Mutation {
 	disablePerson(personId: String!): Person
 	
 	addUserRole(personId: String!, role: Int!): Person
-	removeUserRole(personId: String!, role: Int!): Person
-	
+	removeUserRole(personId: String!, role: Int!): Person	
 }
 
 # Main Types
