@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.OrganizationController;
@@ -25,15 +25,15 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(OrganizationController.class);
 
-	public PersonDataFetcher(OrganizationService organizations) {
-		super(organizations);
+	public PersonDataFetcher(CrmServices crm) {
+		super(crm);
 	}
 
 	public DataFetcher<PersonDetails> findPerson() {
 		return (environment) -> {
 			logger.debug("Entering findPerson@" + PersonDataFetcher.class.getSimpleName());
 			String personId = environment.getArgument("personId");
-			return organizations.findPerson(new Identifier(personId));
+			return crm.findPersonDetails(new Identifier(personId));
 		};
 	}
 	
@@ -54,7 +54,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Integer> countPersons() {
 		return (environment) -> {
 			logger.debug("Entering countPersons@" + OrganizationDataFetcher.class.getSimpleName());
-			return (int) organizations.countPersons(
+			return (int) crm.countPersons(
 					extractFilter(extractFilter(environment)));
 		};
 	}
@@ -62,7 +62,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Page<PersonDetails>> findPersons() {
 		return (environment) -> {
 			logger.debug("Entering findPersons@" + OrganizationDataFetcher.class.getSimpleName());
-			return organizations.findPersonDetails(
+			return crm.findPersonDetails(
 					extractFilter(extractFilter(environment)), 
 					extractPaging(environment));
 		};
@@ -72,7 +72,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering createPerson@" + PersonDataFetcher.class.getSimpleName());
 
-			return organizations.createPerson(
+			return crm.createPerson(
 					new Identifier((String) environment.getArgument("organizationId")),
 					extractPersonName(environment, "name"),
 					extractMailingAddress(environment, "address"),
@@ -85,8 +85,8 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			organizations.enablePerson(personId);
-			return organizations.findPerson(personId);
+			crm.enablePerson(personId);
+			return crm.findPersonDetails(personId);
 		};
 	}
 
@@ -94,8 +94,8 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			organizations.disablePerson(personId);
-			return organizations.findPerson(personId);
+			crm.disablePerson(personId);
+			return crm.findPersonDetails(personId);
 		};
 	}
 
@@ -104,26 +104,26 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering updatePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			if (environment.getArgument("name") != null) {
-				organizations.updatePersonName(
+				crm.updatePersonName(
 						personId,
 						extractPersonName(environment, "name"));
 			}
 			if (environment.getArgument("address") != null) {
-				organizations.updatePersonAddress(
+				crm.updatePersonAddress(
 						personId,
 						extractMailingAddress(environment, "address"));
 			}
 			if (environment.getArgument("communication") != null) {
-				organizations.updatePersonCommunication(
+				crm.updatePersonCommunication(
 						personId,
 						extractCommunication(environment, "communication"));
 			}
 			if (environment.getArgument("position") != null) {
-				organizations.updatePersonBusinessUnit(
+				crm.updatePersonBusinessUnit(
 						personId,
 						extractBusinessPosition(environment, "position"));
 			}
-			return organizations.findPerson(personId);
+			return crm.findPersonDetails(personId);
 		};
 	}
 	
@@ -131,7 +131,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering addUserRole@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			return organizations.addUserRole(
+			return crm.addUserRole(
 					personId, 
 					extractRole(environment, "role"));
 		};
@@ -141,7 +141,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering removeUserRole@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			return organizations.removeUserRole(
+			return crm.removeUserRole(
 					personId, 
 					extractRole(environment, "role"));
 		};

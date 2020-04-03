@@ -2,6 +2,7 @@ package ca.magex.crm.ld.common;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 import ca.magex.crm.ld.lookup.CountryTransformer;
@@ -10,8 +11,8 @@ public class MailingAddressTransformer extends AbstractLinkedDataTransformer<Mai
 
 	private CountryTransformer countryTransformer;
 	
-	public MailingAddressTransformer() {
-		this.countryTransformer = new CountryTransformer();
+	public MailingAddressTransformer(SecuredCrmServices crm) {
+		this.countryTransformer = new CountryTransformer(crm);
 	}
 	
 	@Override

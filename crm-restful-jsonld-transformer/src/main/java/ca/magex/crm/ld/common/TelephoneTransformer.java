@@ -1,10 +1,15 @@
 package ca.magex.crm.ld.common;
 
 import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephone> {
+
+	public TelephoneTransformer(SecuredCrmServices crm) {
+
+	}
 
 	@Override
 	public Class<?> getType() {

@@ -1,10 +1,15 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.BusinessSector;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class BusinessSectorTransformer extends AbstractLinkedDataTransformer<BusinessSector> {
+
+	public BusinessSectorTransformer(SecuredCrmServices crm) {
+
+	}
 
 	@Override
 	public Class<?> getType() {

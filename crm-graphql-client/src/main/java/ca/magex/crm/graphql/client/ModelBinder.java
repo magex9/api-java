@@ -159,7 +159,7 @@ public class ModelBinder {
 					json.getString("street"),
 					json.getString("city"),
 					json.getString("province"),
-					new Country(country.getString("code"), country.getString("name")),
+					new Country(country.getString("code"), country.getString("name"), country.getString("name")),
 					json.getString("postalCode"));
 
 		} catch (JSONException jsone) {
@@ -171,7 +171,7 @@ public class ModelBinder {
 		try {
 			JSONObject salutation = json.getJSONObject("salutation");
 			return new PersonName(
-					new Salutation(salutation.getInt("code"), salutation.getString("name")),
+					new Salutation(salutation.getInt("code"), salutation.getString("name"), salutation.getString("name")),
 					json.getString("firstName"),
 					json.getString("middleName"),
 					json.getString("lastName"));
@@ -219,7 +219,7 @@ public class ModelBinder {
 			List<Role> roles = new ArrayList<>();
 			for (int i=0; i<roleArray.length(); i++) {
 				JSONObject role = roleArray.getJSONObject(i);
-				roles.add(new Role(role.getInt("code"), role.getString("name")));
+				roles.add(new Role(role.getString("code"), role.getString("name"), role.getString("name")));
 			}
 			return new User(
 					json.getString("userName"),
