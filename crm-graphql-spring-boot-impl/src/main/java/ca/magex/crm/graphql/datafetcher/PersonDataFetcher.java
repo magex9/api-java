@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.OrganizationController;
@@ -25,7 +25,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(OrganizationController.class);
 
-	public PersonDataFetcher(CrmServices crm) {
+	public PersonDataFetcher(Crm crm) {
 		super(crm);
 	}
 
