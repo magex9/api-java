@@ -3,6 +3,7 @@ package ca.magex.crm.ld.common;
 import java.util.List;
 
 import ca.magex.crm.api.common.User;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
@@ -12,8 +13,8 @@ public class UserTransformer extends AbstractLinkedDataTransformer<User> {
 
 	private RoleTransformer roleTransformer;
 	
-	public UserTransformer() {
-		this.roleTransformer = new RoleTransformer();
+	public UserTransformer(SecuredCrmServices crm) {
+		this.roleTransformer = new RoleTransformer(crm);
 	}
 	
 	@Override

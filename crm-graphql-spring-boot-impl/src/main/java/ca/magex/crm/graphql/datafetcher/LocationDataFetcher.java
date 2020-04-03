@@ -11,7 +11,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import graphql.schema.DataFetcher;
@@ -25,15 +25,15 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	
 	private static Logger logger = LoggerFactory.getLogger(LocationDataFetcher.class);
 
-	public LocationDataFetcher(OrganizationService organizations) {
-		super(organizations);
+	public LocationDataFetcher(CrmServices crm) {
+		super(crm);
 	}
 
 	public DataFetcher<LocationDetails> findLocation() {
 		return (environment) -> {
 			logger.info("Entering findLocation@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
-			return organizations.findLocation(new Identifier(locationId));
+			return crm.findLocationDetails(new Identifier(locationId));
 		};
 	}
 
@@ -54,7 +54,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Integer> countLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return (int) organizations.countLocations(extractFilter(
+			return (int) crm.countLocations(extractFilter(
 					extractFilter(environment)));
 		};
 	}
@@ -62,7 +62,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Page<LocationDetails>> findLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
-			return organizations.findLocationDetails(extractFilter(
+			return crm.findLocationDetails(extractFilter(
 					extractFilter(environment)), 
 					extractPaging(environment));
 		};
@@ -73,7 +73,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering byOrganization@" + LocationDataFetcher.class.getSimpleName());
 			OrganizationDetails organization = environment.getSource();
 			if (organization.getMainLocationId() != null) {
-				return organizations.findLocation(organization.getMainLocationId());
+				return crm.findLocationDetails(organization.getMainLocationId());
 			}
 			else {
 				return null;
@@ -84,7 +84,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<LocationDetails> createLocation() { 
 		return (environment) -> {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
-			return organizations.createLocation(
+			return crm.createLocation(
 					new Identifier((String) environment.getArgument("organizationId")), 
 					environment.getArgument("locationName"), 
 					environment.getArgument("locationReference"), 
@@ -96,8 +96,8 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
-			organizations.enableLocation(locationId);
-			return organizations.findLocation(locationId);
+			crm.enableLocation(locationId);
+			return crm.findLocationDetails(locationId);
 		};
 	}
 
@@ -105,8 +105,8 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.debug("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
-			organizations.disableLocation(locationId);
-			return organizations.findLocation(locationId);
+			crm.disableLocation(locationId);
+			return crm.findLocationDetails(locationId);
 		};
 	}
 	
@@ -115,16 +115,16 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
 			if (environment.getArgument("locationName") != null) {
-				organizations.updateLocationName(
+				crm.updateLocationName(
 						locationId,
 						environment.getArgument("locationName"));
 			}
 			if (environment.getArgument("locationAddress") != null) {
-				organizations.updateLocationAddress(
+				crm.updateLocationAddress(
 						locationId,
 						extractMailingAddress(environment, "locationAddress"));
 			}
-			return organizations.findLocation(locationId);
+			return crm.findLocationDetails(locationId);
 		};
 	}	
 }

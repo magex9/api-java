@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import ca.magex.crm.amnesia.services.AmnesiaFactory;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -16,7 +17,7 @@ import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
@@ -27,12 +28,13 @@ public class PersonTransformerTest {
 
 	@Test
 	public void testOrganizationLinkedData() throws Exception {
+		SecuredCrmServices service = AmnesiaFactory.getAnonymousService();
 		Identifier personId = new Identifier("abc");
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(new Salutation(1, "Mr"), "Chris", "P", "Bacon");
-		Country canada = new Country("CA", "Canada");
+		PersonName legalName = new PersonName(service.findSalutationByCode(1), "Chris", "P", "Bacon");
+		Country canada = service.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
@@ -44,13 +46,12 @@ public class PersonTransformerTest {
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(new Role(1, "A"));
-		roles.add(new Role(2, "B"));
-		roles.add(new Role(3, "C"));
+		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
-		DataObject obj = new PersonDetailsTransformer().format(person);
+		DataObject obj = new PersonDetailsTransformer(service).format(person);
 		
 		assertEquals("{\n" + 
 				"  \"organization\": \"xyz\",\n" + 
@@ -87,9 +88,8 @@ public class PersonTransformerTest {
 				"  \"user\": {\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      1,\n" + 
-				"      2,\n" + 
-				"      3\n" + 
+				"      \"SYS_AMDIN\",\n" + 
+				"      \"RE_ADMIN\"\n" + 
 				"    ]\n" + 
 				"  }\n" + 
 				"}", obj.stringify(LinkedDataFormatter.json()));
@@ -107,7 +107,9 @@ public class PersonTransformerTest {
 				"  \"status\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
 				"    \"@type\": \"Status\",\n" + 
-				"    \"@value\": \"pending\"\n" + 
+				"    \"@value\": \"pending\",\n" + 
+				"    \"@en\": \"Pending\",\n" + 
+				"    \"@fr\": \"En attente\"\n" + 
 				"  },\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"legalName\": {\n" + 
@@ -117,7 +119,8 @@ public class PersonTransformerTest {
 				"      \"@context\": \"http://magex9.github.io/schema/lookup\",\n" + 
 				"      \"@type\": \"Salutation\",\n" + 
 				"      \"@value\": 1,\n" + 
-				"      \"name\": \"Mr\"\n" + 
+				"      \"@en\": \"Miss\",\n" + 
+				"      \"@fr\": \"Mlle.\"\n" + 
 				"    },\n" + 
 				"    \"firstName\": \"Chris\",\n" + 
 				"    \"middleName\": \"P\",\n" + 
@@ -133,7 +136,8 @@ public class PersonTransformerTest {
 				"      \"@context\": \"http://magex9.github.io/schema/lookup\",\n" + 
 				"      \"@type\": \"Country\",\n" + 
 				"      \"@value\": \"CA\",\n" + 
-				"      \"name\": \"Canada\"\n" + 
+				"      \"@en\": \"Canada\",\n" + 
+				"      \"@fr\": \"Canada\"\n" + 
 				"    },\n" + 
 				"    \"postalCode\": \"K1K1K1\"\n" + 
 				"  },\n" + 
@@ -170,26 +174,22 @@ public class PersonTransformerTest {
 				"      {\n" + 
 				"        \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
 				"        \"@type\": \"Role\",\n" + 
-				"        \"@value\": 1,\n" + 
-				"        \"name\": \"A\"\n" + 
+				"        \"@value\": \"SYS_AMDIN\",\n" + 
+				"        \"@en\": \"System Admin\",\n" + 
+				"        \"@fr\": \"Administrateur du systeme\"\n" + 
 				"      },\n" + 
 				"      {\n" + 
 				"        \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
 				"        \"@type\": \"Role\",\n" + 
-				"        \"@value\": 2,\n" + 
-				"        \"name\": \"B\"\n" + 
-				"      },\n" + 
-				"      {\n" + 
-				"        \"@context\": \"http://magex9.github.io/schema/system\",\n" + 
-				"        \"@type\": \"Role\",\n" + 
-				"        \"@value\": 3,\n" + 
-				"        \"name\": \"C\"\n" + 
+				"        \"@value\": \"RE_ADMIN\",\n" + 
+				"        \"@en\": \"Reporting Admin\",\n" + 
+				"        \"@fr\": \"Administrateur de rapports\"\n" + 
 				"      }\n" + 
 				"    ]\n" + 
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		PersonDetails reloaded = new PersonDetailsTransformer().parse(obj.formatted());
+		PersonDetails reloaded = new PersonDetailsTransformer(service).parse(obj.formatted());
 		
 		assertEquals(person.getPersonId(), reloaded.getPersonId());
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());

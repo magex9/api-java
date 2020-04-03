@@ -1,10 +1,18 @@
 package ca.magex.crm.ld.system;
 
+import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
+
+	public SecuredCrmServices crm;
+	
+	public RoleTransformer(SecuredCrmServices crm) {
+		this.crm = crm;
+	}
 
 	@Override
 	public Class<?> getType() {
@@ -15,16 +23,16 @@ public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 	public DataObject format(Role role) {
 		return base()
 			.with("@value", role.getCode())
-			.with("name", role.getName());
+			.with("@en", role.getName(Lang.ENGLISH))
+			.with("@fr", role.getName(Lang.FRENCH));
 	}
 
 	@Override
 	public Role parse(DataObject data, String parentContext) {
 		validateContext(data, parentContext);
 		validateType(data);
-		Integer code = data.getInt("@value");
-		String name = data.getString("name");
-		return new Role(code, name);
+		String code = data.getString("@value");
+		return crm.findRoleByCode(code);
 	}
 			
 }

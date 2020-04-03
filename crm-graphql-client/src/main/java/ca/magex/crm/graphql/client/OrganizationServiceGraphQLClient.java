@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.client;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
@@ -15,21 +16,26 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Status;
 
 /**
  * Implementation of the Organization Service that uses a GraphQL Server
  * 
  * @author Jonny
  */
-public class OrganizationServiceGraphQLClient extends GraphQLClient implements OrganizationService {
+public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmServices {
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
@@ -83,7 +89,15 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public OrganizationDetails findOrganization(Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
+		return ModelBinder.toOrganizationSummary(performGraphQLQuery(
+				"findOrganization",
+				"findOrganization",
+				organizationId));
+	}
+
+	@Override
+	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
 				"findOrganization",
 				"findOrganization",
@@ -181,7 +195,15 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public LocationDetails findLocation(Identifier locationId) {
+	public LocationSummary findLocationSummary(Identifier locationId) {
+		return ModelBinder.toLocationSummary(performGraphQLQuery(
+				"findLocation",
+				"findLocation",
+				locationId));
+	}
+
+	@Override
+	public LocationDetails findLocationDetails(Identifier locationId) {
 		return ModelBinder.toLocationDetails(performGraphQLQuery(
 				"findLocation",
 				"findLocation",
@@ -336,7 +358,15 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public PersonDetails findPerson(Identifier personId) {
+	public PersonSummary findPersonSummary(Identifier personId) {
+		return ModelBinder.toPersonSummary(performGraphQLQuery(
+				"findPerson",
+				"findPerson",
+				personId));
+	}
+
+	@Override
+	public PersonDetails findPersonDetails(Identifier personId) {
 		return ModelBinder.toPersonDetails(performGraphQLQuery(
 				"findPerson",
 				"findPerson",
@@ -381,27 +411,195 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements O
 	}
 
 	@Override
-	public List<Message> validate(OrganizationDetails organization) {
+	public List<Status> findStatuses() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Message> validate(LocationDetails location) {
+	public Status findStatusByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Message> validate(PersonDetails person) {
+	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Message> validate(List<Role> roles) {
+	public List<Role> findRoles() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Role findRoleByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Country> findCountries() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Country findCountryByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Salutation> findSalutations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Salutation findSalutationByCode(Integer code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocationDetails validate(LocationDetails location) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PersonDetails validate(PersonDetails person) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Role> validate(List<Role> roles, Identifier personId) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canCreateOrganization() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreateLocationForOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreatePersonForOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewPerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdatePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnablePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisablePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateUserRole(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

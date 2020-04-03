@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.amnesia.services.OrganizationServiceAmnesiaImpl;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.amnesia.services.AmnesiaFactory;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
@@ -28,7 +28,7 @@ public class GraphQLOrganizationsService {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLOrganizationsService.class);
 
-	private OrganizationService organizations = new OrganizationServiceAmnesiaImpl();
+	private CrmServices crm = AmnesiaFactory.getAnonymousService();
 
 	@Value("classpath:organizations.graphql")
 	private Resource resource;
@@ -64,9 +64,9 @@ public class GraphQLOrganizationsService {
 	 * @return
 	 */
 	private RuntimeWiring buildRuntimeWiring() {
-		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(organizations);
-		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(organizations);
-		PersonDataFetcher personDataFetcher = new PersonDataFetcher(organizations);
+		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(crm);
+		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(crm);
+		PersonDataFetcher personDataFetcher = new PersonDataFetcher(crm);
 
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
