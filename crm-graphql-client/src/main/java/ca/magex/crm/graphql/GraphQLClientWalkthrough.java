@@ -108,7 +108,7 @@ public class GraphQLClientWalkthrough {
 				johnnuy.getOrganizationId(), 
 				new PersonName(lookups.findSalutationByCode(1), "Jonathan", "Alexander", "Trafford"), 
 				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"), 
-				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
+				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone("6132629713", null), "6135181067"), 
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));
 		System.out.println(jonathan);
 		
@@ -127,7 +127,7 @@ public class GraphQLClientWalkthrough {
 		jonathan = crm.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(jonathan);
 		
-		jonathan = crm.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L));
+		jonathan = crm.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone("6132629713", null), "6135181067"));
 		System.out.println(jonathan);
 		
 		jonathan = crm.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));

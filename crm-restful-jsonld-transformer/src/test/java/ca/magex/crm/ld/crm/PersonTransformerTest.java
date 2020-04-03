@@ -39,8 +39,8 @@ public class PersonTransformerTest {
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
 		Language language = new Language("en", "English");
-		Telephone homePhone = new Telephone(2342342345L, null);
-		Long faxNumber = 4564564565L;
+		Telephone homePhone = new Telephone("2342342345", null);
+		String faxNumber = "4564564565";
 		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition(null, null, null);
 		String userName = "chris";
@@ -53,46 +53,46 @@ public class PersonTransformerTest {
 		
 		DataObject obj = new PersonDetailsTransformer(service).format(person);
 		
-		assertEquals("{\n" + 
-				"  \"organization\": \"xyz\",\n" + 
-				"  \"status\": \"pending\",\n" + 
-				"  \"displayName\": \"Junit Test\",\n" + 
-				"  \"legalName\": {\n" + 
-				"    \"salutation\": 1,\n" + 
-				"    \"firstName\": \"Chris\",\n" + 
-				"    \"middleName\": \"P\",\n" + 
-				"    \"lastName\": \"Bacon\"\n" + 
-				"  },\n" + 
-				"  \"address\": {\n" + 
-				"    \"street\": \"123 Main St\",\n" + 
-				"    \"city\": \"Ottawa\",\n" + 
-				"    \"province\": \"Ontario\",\n" + 
-				"    \"country\": \"CA\",\n" + 
-				"    \"postalCode\": \"K1K1K1\"\n" + 
-				"  },\n" + 
-				"  \"communication\": {\n" + 
-				"    \"email\": \"chris@bacon.com\",\n" + 
-				"    \"jobTitle\": \"Tester\",\n" + 
-				"    \"language\": \"en\",\n" + 
-				"    \"homePhone\": {\n" + 
-				"      \"number\": 2342342345,\n" + 
-				"      \"extension\": null\n" + 
-				"    },\n" + 
-				"    \"faxNumber\": 4564564565\n" + 
-				"  },\n" + 
-				"  \"unit\": {\n" + 
-				"    \"sector\": null,\n" + 
-				"    \"unit\": null,\n" + 
-				"    \"classification\": null\n" + 
-				"  },\n" + 
-				"  \"user\": {\n" + 
-				"    \"userName\": \"chris\",\n" + 
-				"    \"roles\": [\n" + 
-				"      \"SYS_AMDIN\",\n" + 
-				"      \"RE_ADMIN\"\n" + 
-				"    ]\n" + 
-				"  }\n" + 
-				"}", obj.stringify(LinkedDataFormatter.json()));
+		assertEquals("{\r\n" + 
+				"  \"organization\": \"xyz\",\r\n" + 
+				"  \"status\": \"pending\",\r\n" + 
+				"  \"displayName\": \"Junit Test\",\r\n" + 
+				"  \"legalName\": {\r\n" + 
+				"    \"salutation\": 1,\r\n" + 
+				"    \"firstName\": \"Chris\",\r\n" + 
+				"    \"middleName\": \"P\",\r\n" + 
+				"    \"lastName\": \"Bacon\"\r\n" + 
+				"  },\r\n" + 
+				"  \"address\": {\r\n" + 
+				"    \"street\": \"123 Main St\",\r\n" + 
+				"    \"city\": \"Ottawa\",\r\n" + 
+				"    \"province\": \"Ontario\",\r\n" + 
+				"    \"country\": \"CA\",\r\n" + 
+				"    \"postalCode\": \"K1K1K1\"\r\n" + 
+				"  },\r\n" + 
+				"  \"communication\": {\r\n" + 
+				"    \"email\": \"chris@bacon.com\",\r\n" + 
+				"    \"jobTitle\": \"Tester\",\r\n" + 
+				"    \"language\": \"en\",\r\n" + 
+				"    \"homePhone\": {\r\n" + 
+				"      \"number\": \"2342342345\",\r\n" + 
+				"      \"extension\": null\r\n" + 
+				"    },\r\n" + 
+				"    \"faxNumber\": \"4564564565\"\r\n" + 
+				"  },\r\n" + 
+				"  \"unit\": {\r\n" + 
+				"    \"sector\": null,\r\n" + 
+				"    \"unit\": null,\r\n" + 
+				"    \"classification\": null\r\n" + 
+				"  },\r\n" + 
+				"  \"user\": {\r\n" + 
+				"    \"userName\": \"chris\",\r\n" + 
+				"    \"roles\": [\r\n" + 
+				"      \"SYS_AMDIN\",\r\n" + 
+				"      \"RE_ADMIN\"\r\n" + 
+				"    ]\r\n" + 
+				"  }\r\n" + 
+				"}".replaceAll("\r", ""), obj.stringify(LinkedDataFormatter.json()));
 		
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/schema/crm\",\n" + 

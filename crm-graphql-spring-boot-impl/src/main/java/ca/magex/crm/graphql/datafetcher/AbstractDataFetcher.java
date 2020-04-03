@@ -168,9 +168,9 @@ public abstract class AbstractDataFetcher {
 						languagesLookup.getProperty((String) commsMap.get("language"))),
 				(String) commsMap.get("email"), 
 				new Telephone(
-						Long.valueOf((String) commsMap.get("phoneNumber")),
-						Long.valueOf((String) commsMap.get("phoneExtension"))),
-				Long.valueOf((String) commsMap.get("faxNumber")));
+						(String) commsMap.get("phoneNumber"),
+						(String) commsMap.get("phoneExtension")),
+				(String) commsMap.get("faxNumber"));
 	}
 	
 	/**
