@@ -27,11 +27,11 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
-public final class SecuredCrmServices implements CrmServices {
+public final class SecuredCrmServices implements Crm {
 
 	private final CrmLookupService lookupService;
 	
-	private final CrmValidationService validationService;
+	private final CrmValidation validationService;
 	
 	private final CrmOrganizationService organizationService;
 	
@@ -45,7 +45,7 @@ public final class SecuredCrmServices implements CrmServices {
 	
 	private final CrmPersonPolicy personPolicy;
 	
-	public SecuredCrmServices(CrmLookupService lookupService, CrmValidationService validationService, 
+	public SecuredCrmServices(CrmLookupService lookupService, CrmValidation validationService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy) {

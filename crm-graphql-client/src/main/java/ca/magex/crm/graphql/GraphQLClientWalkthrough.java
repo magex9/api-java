@@ -25,7 +25,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -33,7 +33,7 @@ public class GraphQLClientWalkthrough {
 
 	public static void main(String[] args) throws Exception {
 
-		CrmServices crm = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		Crm crm = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
 		
 		CrmLookupService lookups = new AmnesiaLookupService();
 						

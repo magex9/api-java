@@ -17,7 +17,7 @@ import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.util.PagingBuilder;
 import graphql.schema.DataFetchingEnvironment;
@@ -38,9 +38,9 @@ public abstract class AbstractDataFetcher {
 	protected Properties classificationsLookup = new Properties();
 	protected Properties rolesLookup = new Properties();
 
-	protected CrmServices crm = null;
+	protected Crm crm = null;
 
-	protected AbstractDataFetcher(CrmServices crm) {
+	protected AbstractDataFetcher(Crm crm) {
 		this.crm = crm;
 		
 		URL countries = getClass().getResource("/codes/countries.properties");

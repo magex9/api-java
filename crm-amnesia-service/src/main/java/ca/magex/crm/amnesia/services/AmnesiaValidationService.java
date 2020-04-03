@@ -14,12 +14,12 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmValidationService;
+import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
 
-public class AmnesiaValidationService implements CrmValidationService {
+public class AmnesiaValidationService implements CrmValidation {
 
 	private AmnesiaDB db;
 	
