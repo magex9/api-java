@@ -27,31 +27,31 @@ import ca.magex.crm.ld.data.DataObject;
 public class PersonTransformerTest {
 
 	@Test
-	public void testOrganizationLinkedData() throws Exception {
-		SecuredCrmServices service = AmnesiaFactory.getAnonymousService();
+	public void testPersonLinkedData() throws Exception {
+		SecuredCrmServices crm = AmnesiaFactory.getAnonymousService();
 		Identifier personId = new Identifier("abc");
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode(1), "Chris", "P", "Bacon");
-		Country canada = service.findCountryByCode("CA");
+		PersonName legalName = new PersonName(crm.findSalutationByCode(1), "Chris", "P", "Bacon");
+		Country canada = crm.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
 		Language language = new Language("en", "English");
-		Telephone homePhone = new Telephone(2342342345L, null);
-		Long faxNumber = 4564564565L;
+		Telephone homePhone = new Telephone("2342342345", null);
+		String faxNumber = "4564564565";
 		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition(null, null, null);
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_AMDIN"));
-		roles.add(service.findRoleByCode("RE_ADMIN"));
+		roles.add(crm.findRoleByCode("SYS_AMDIN"));
+		roles.add(crm.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
-		DataObject obj = new PersonDetailsTransformer(service).format(person);
+		DataObject obj = new PersonDetailsTransformer(crm).format(person);
 		
 		assertEquals("{\n" + 
 				"  \"organization\": \"xyz\",\n" + 
@@ -75,10 +75,10 @@ public class PersonTransformerTest {
 				"    \"jobTitle\": \"Tester\",\n" + 
 				"    \"language\": \"en\",\n" + 
 				"    \"homePhone\": {\n" + 
-				"      \"number\": 2342342345,\n" + 
+				"      \"number\": \"2342342345\",\n" + 
 				"      \"extension\": null\n" + 
 				"    },\n" + 
-				"    \"faxNumber\": 4564564565\n" + 
+				"    \"faxNumber\": \"4564564565\"\n" + 
 				"  },\n" + 
 				"  \"unit\": {\n" + 
 				"    \"sector\": null,\n" + 
@@ -154,10 +154,10 @@ public class PersonTransformerTest {
 				"    },\n" + 
 				"    \"homePhone\": {\n" + 
 				"      \"@type\": \"Telephone\",\n" + 
-				"      \"number\": 2342342345,\n" + 
+				"      \"number\": \"2342342345\",\n" + 
 				"      \"extension\": null\n" + 
 				"    },\n" + 
-				"    \"faxNumber\": 4564564565\n" + 
+				"    \"faxNumber\": \"4564564565\"\n" + 
 				"  },\n" + 
 				"  \"unit\": {\n" + 
 				"    \"@context\": \"http://magex9.github.io/schema/common\",\n" + 
@@ -189,7 +189,7 @@ public class PersonTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		PersonDetails reloaded = new PersonDetailsTransformer(service).parse(obj.formatted());
+		PersonDetails reloaded = new PersonDetailsTransformer(crm).parse(obj.formatted());
 		
 		assertEquals(person.getPersonId(), reloaded.getPersonId());
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());

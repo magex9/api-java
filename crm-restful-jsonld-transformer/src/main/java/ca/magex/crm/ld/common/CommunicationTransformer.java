@@ -42,7 +42,7 @@ public class CommunicationTransformer extends AbstractLinkedDataTransformer<Comm
 		String jobTitle = data.getString("jobTitle");
 		Language language = languageTransformer.parse(data.get("language"));
 		Telephone homePhone = telephoneTransformer.parse(data.get("homePhone"));
-		Long faxNumber = data.getLong("faxNumber");
+		String faxNumber = data.getString("faxNumber");
 		return new Communication(jobTitle, language, email, homePhone, faxNumber);
 	}
 			

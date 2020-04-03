@@ -17,7 +17,7 @@ import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.util.PagingBuilder;
 import graphql.schema.DataFetchingEnvironment;
@@ -35,9 +35,9 @@ public abstract class AbstractDataFetcher {
 	protected Properties unitsLookup = new Properties();
 	protected Properties classificationsLookup = new Properties();
 
-	protected CrmServices crm = null;
+	protected Crm crm = null;
 
-	protected AbstractDataFetcher(CrmServices crm) {
+	protected AbstractDataFetcher(Crm crm) {
 		this.crm = crm;
 		
 		URL languages = getClass().getResource("/codes/languages.properties");
@@ -144,9 +144,9 @@ public abstract class AbstractDataFetcher {
 						languagesLookup.getProperty((String) commsMap.get("language"))),
 				(String) commsMap.get("email"), 
 				new Telephone(
-						Long.valueOf((String) commsMap.get("phoneNumber")),
-						Long.valueOf((String) commsMap.get("phoneExtension"))),
-				Long.valueOf((String) commsMap.get("faxNumber")));
+						(String) commsMap.get("phoneNumber"),
+						(String) commsMap.get("phoneExtension")),
+				(String) commsMap.get("faxNumber"));
 	}
 	
 	/**

@@ -11,7 +11,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import graphql.schema.DataFetcher;
@@ -25,7 +25,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	
 	private static Logger logger = LoggerFactory.getLogger(LocationDataFetcher.class);
 
-	public LocationDataFetcher(CrmServices crm) {
+	public LocationDataFetcher(Crm crm) {
 		super(crm);
 	}
 

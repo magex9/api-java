@@ -24,7 +24,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
@@ -34,7 +35,7 @@ import ca.magex.crm.api.system.Status;
  * 
  * @author Jonny
  */
-public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmServices {
+public class OrganizationServiceGraphQLClient extends GraphQLClient implements Crm {
 
 	/**
 	 * constructs a new Service for the given graphql endpoint

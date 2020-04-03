@@ -25,7 +25,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -33,7 +33,7 @@ public class GraphQLClientWalkthrough {
 
 	public static void main(String[] args) throws Exception {
 
-		CrmServices crm = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		Crm crm = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
 		
 		CrmLookupService lookups = new AmnesiaLookupService();
 						
@@ -108,7 +108,7 @@ public class GraphQLClientWalkthrough {
 				johnnuy.getOrganizationId(), 
 				new PersonName(lookups.findSalutationByCode(1), "Jonathan", "Alexander", "Trafford"), 
 				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"), 
-				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
+				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone("6132629713", null), "6135181067"), 
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));
 		System.out.println(jonathan);
 		
@@ -127,7 +127,7 @@ public class GraphQLClientWalkthrough {
 		jonathan = crm.updatePersonAddress(jonathan.getPersonId(), new MailingAddress("132 Cheyenne Way", "Nepean", "ON", lookups.findCountryByCode("CA"), "K2J 0E9"));
 		System.out.println(jonathan);
 		
-		jonathan = crm.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L));
+		jonathan = crm.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone("6132629713", null), "6135181067"));
 		System.out.println(jonathan);
 		
 		jonathan = crm.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));

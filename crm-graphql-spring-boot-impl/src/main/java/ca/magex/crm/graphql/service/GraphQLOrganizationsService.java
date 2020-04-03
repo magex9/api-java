@@ -11,7 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.services.AmnesiaFactory;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
@@ -29,7 +29,7 @@ public class GraphQLOrganizationsService {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLOrganizationsService.class);
 
-	private CrmServices crm = AmnesiaFactory.getAnonymousService();
+	private Crm crm = AmnesiaFactory.getAnonymousService();
 
 	@Value("classpath:organizations.graphql")
 	private Resource resource;

@@ -8,7 +8,7 @@ import ca.magex.crm.api.services.CrmOrganizationPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmValidationService;
+import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 public class AmnesiaFactory {
@@ -20,7 +20,7 @@ public class AmnesiaFactory {
 	private AmnesiaFactory(boolean secured) {
 		this.db = new AmnesiaDB();
 		CrmLookupService lookupService = new AmnesiaLookupService();
-		CrmValidationService validationService = new AmnesiaValidationService(db, lookupService);
+		CrmValidation validationService = new AmnesiaValidationService(db, lookupService);
 		CrmOrganizationService organizationService = new AmnesiaOrganizationService(db);
 		CrmOrganizationPolicy organizationPolicy = secured ? new AmnesiaOrganizationPolicy(db) : new AmnesiaAnonymousPolicies();
 		CrmLocationService locationService = new AmnesiaLocationService(db);

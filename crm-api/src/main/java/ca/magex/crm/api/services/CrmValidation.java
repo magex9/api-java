@@ -9,7 +9,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 
-public interface CrmValidationService {
+public interface CrmValidation {
 
     OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException;
     LocationDetails validate(LocationDetails location) throws BadRequestException;
