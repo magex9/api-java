@@ -92,9 +92,8 @@ type Mutation {
 	enablePerson(personId: String!): Person
 	disablePerson(personId: String!): Person
 	
-	addUserRole(personId: String!, role: Int!): Person
-	removeUserRole(personId: String!, role: Int!): Person
-	
+	addUserRole(personId: String!, role: String!): Person
+	removeUserRole(personId: String!, role: String!): Person	
 }
 
 # Main Types
@@ -212,7 +211,7 @@ type BusinessClassification {
 }
 
 type Role {
-	code: Int
+	code: String
 	name: String
 }
 
