@@ -14,7 +14,7 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.OrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -22,14 +22,14 @@ public class GraphQLClientInitializer {
 
 	public static void main(String[] args) throws Exception {
 
-		OrganizationService orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		CrmServices orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
 						
 		OrganizationDetails johnnuy = orgService.createOrganization("Johnnuy Technologies");		
 		LocationDetails hq = orgService.createLocation(
 				johnnuy.getOrganizationId(), 
 				"Johnnuy HeadQuarters", 
 				"HQ", 
-				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada"), "K2J 0E9"));		
+				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K2J 0E9"));		
 		
 		johnnuy = orgService.updateOrganizationMainLocation(
 				johnnuy.getOrganizationId(), 
@@ -38,12 +38,12 @@ public class GraphQLClientInitializer {
 		
 		PersonDetails jonathan = orgService.createPerson(
 				johnnuy.getOrganizationId(), 
-				new PersonName(new Salutation(1, "Mr"), "Jonathan", "Alexander", "Trafford"), 
-				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada"), "K2J 0E9"), 
+				new PersonName(new Salutation(1, "Mr", "Mr"), "Jonathan", "Alexander", "Trafford"), 
+				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K2J 0E9"), 
 				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));		
 		
-		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role(5, ""));
+		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role("5", "", ""));
 		
 		
 		OrganizationDetails magex = orgService.createOrganization("Magex Technologies");		
@@ -51,7 +51,7 @@ public class GraphQLClientInitializer {
 				johnnuy.getOrganizationId(), 
 				"HeadQuarters", 
 				"HQ", 
-				new MailingAddress("234 Laurier Av", "Ottawa", "ON", new Country("CA", "Canada"), "K2M 6L5"));		
+				new MailingAddress("234 Laurier Av", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K2M 6L5"));		
 		
 		magex = orgService.updateOrganizationMainLocation(
 				magex.getOrganizationId(), 
