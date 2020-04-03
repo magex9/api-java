@@ -229,10 +229,10 @@ public final class SecuredCrmServices implements Crm {
 		return locationService.findLocationSummaries(filter, paging);
 	}
 
-	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition unit) {
+	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
-		return personService.createPerson(organizationId, name, address, communication, unit);
+		return personService.createPerson(organizationId, name, address, communication, position);
 	}
 
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
@@ -253,10 +253,10 @@ public final class SecuredCrmServices implements Crm {
 		return personService.updatePersonCommunication(personId, communication);
 	}
 	
-	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition unit) {
+	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
 		if (!canUpdatePerson(personId))
-			throw new PermissionDeniedException("updatePersonBusinessUnit: " + personId);
-		return personService.updatePersonBusinessUnit(personId, unit);
+			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
+		return personService.updatePersonBusinessPosition(personId, position);
 	}
 
 	public PersonSummary enablePerson(Identifier personId) {
@@ -293,6 +293,13 @@ public final class SecuredCrmServices implements Crm {
 	
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return personService.findPersonSummaries(filter, paging);
+	}
+	
+	@Override
+	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+		if (!canUpdateUserRole(personId))
+			throw new PermissionDeniedException("setUserRoles: " + personId);
+		return personService.setUserRoles(personId, roles);
 	}
 
 	public PersonDetails addUserRole(Identifier personId, Role role) {
