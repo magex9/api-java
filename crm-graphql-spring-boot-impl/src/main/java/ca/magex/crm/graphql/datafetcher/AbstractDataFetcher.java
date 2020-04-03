@@ -30,32 +30,15 @@ import graphql.schema.DataFetchingEnvironment;
  */
 public abstract class AbstractDataFetcher {
 
-	protected Properties countryLookup = new Properties();
-	protected Properties salutationLookup = new Properties();
 	protected Properties languagesLookup = new Properties();
 	protected Properties sectorsLookup = new Properties();
 	protected Properties unitsLookup = new Properties();
 	protected Properties classificationsLookup = new Properties();
-	protected Properties rolesLookup = new Properties();
 
 	protected CrmServices crm = null;
 
 	protected AbstractDataFetcher(CrmServices crm) {
 		this.crm = crm;
-		
-		URL countries = getClass().getResource("/codes/countries.properties");
-		try (InputStream c = countries.openStream()) {
-			this.countryLookup.load(c);
-		} catch (IOException ioe) {
-			throw new RuntimeException("Error loading countries.properties");
-		}
-		
-		URL salutations = getClass().getResource("/codes/salutations.properties");
-		try (InputStream c = salutations.openStream()) {
-			this.salutationLookup.load(c);
-		} catch (IOException ioe) {
-			throw new RuntimeException("Error loading salutations.properties");
-		}
 		
 		URL languages = getClass().getResource("/codes/languages.properties");
 		try (InputStream c = languages.openStream()) {
@@ -83,13 +66,6 @@ public abstract class AbstractDataFetcher {
 			this.classificationsLookup.load(c);
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading classifications.properties");
-		}
-		
-		URL roles = getClass().getResource("/codes/roles.properties");
-		try (InputStream c = roles.openStream()) {
-			this.rolesLookup.load(c);
-		} catch (IOException ioe) {
-			throw new RuntimeException("Error loading roles.properties");
 		}
 	}
 	

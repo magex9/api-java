@@ -43,7 +43,7 @@ public class GraphQLClientInitializer {
 				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));		
 		
-		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role("5", "", ""));
+		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role("SYS_AMDIN", "", ""));
 		
 		
 		OrganizationDetails magex = orgService.createOrganization("Magex Technologies");		

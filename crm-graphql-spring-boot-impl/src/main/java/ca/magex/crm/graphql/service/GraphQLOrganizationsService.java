@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import ca.magex.crm.amnesia.services.AmnesiaFactory;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
+import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
@@ -67,6 +68,7 @@ public class GraphQLOrganizationsService {
 		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(crm);
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(crm);
 		PersonDataFetcher personDataFetcher = new PersonDataFetcher(crm);
+		LookupDataFetcher lookupDataFetcher = new LookupDataFetcher();
 
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
@@ -95,8 +97,11 @@ public class GraphQLOrganizationsService {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", personDataFetcher.addUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
 				
-
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("Country", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
+				.type("Salutation", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
+				.type("Role", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
+				
 				.build();
 	}
 }

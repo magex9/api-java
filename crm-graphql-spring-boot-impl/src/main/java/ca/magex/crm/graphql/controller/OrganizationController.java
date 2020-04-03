@@ -1,5 +1,7 @@
 package ca.magex.crm.graphql.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class OrganizationController {
 	private GraphQLOrganizationsService graphQLService;
 
 	@PostMapping
-	public ResponseEntity<Object> doQuery(@RequestBody String query) throws JSONException {
+	public ResponseEntity<Object> doQuery(@RequestBody String query, HttpServletRequest req) throws JSONException {
 		logger.info("Entering doQuery@" + getClass().getSimpleName());
 		JSONObject request = new JSONObject(query);
 		ExecutionResult result = graphQLService.getGraphQL().execute(request.getString("query"));
