@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -65,7 +66,7 @@ public class OrganizationsController {
 
 	@GetMapping("/api/organizations/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
-			@PathParam("organizationId") String id) throws IOException {
+			@PathVariable("organizationId") String id) throws IOException {
 		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.format(crm.findOrganizationDetails(organizationId));
@@ -75,7 +76,7 @@ public class OrganizationsController {
 
 	@PatchMapping("/api/organizations/{organizationId}")
 	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
-			@PathParam("organizationId") String id) throws IOException {
+			@PathVariable("organizationId") String id) throws IOException {
 		OrganizationDetailsTransformer transformer = new OrganizationDetailsTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataObject body = extractBody(req);
@@ -90,7 +91,7 @@ public class OrganizationsController {
 
 	@GetMapping("/api/organizations/{organizationId}/summary")
 	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
-			@PathParam("organizationId") String id) throws IOException {
+			@PathVariable("organizationId") String id) throws IOException {
 		OrganizationSummaryTransformer transformer = new OrganizationSummaryTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.format(crm.findOrganizationDetails(organizationId));
@@ -100,7 +101,7 @@ public class OrganizationsController {
 
 	@GetMapping("/api/organizations/{organizationId}/mainLocation")
 	public void getOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
-			@PathParam("organizationId") String id) throws IOException {
+			@PathVariable("organizationId") String id) throws IOException {
 		LocationDetailsTransformer transformer = new LocationDetailsTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.format(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()));
@@ -110,7 +111,7 @@ public class OrganizationsController {
 
 	@PutMapping("/api/organizations/{organizationId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
-			@PathParam("organizationId") String id) throws IOException {
+			@PathVariable("organizationId") String id) throws IOException {
 		StatusTransformer transformer = new StatusTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.format(crm.enableOrganization(organizationId).getStatus());
@@ -120,7 +121,7 @@ public class OrganizationsController {
 
 	@PutMapping("/api/organizations/{organizationId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
-			@PathParam("organizationId") String id) throws IOException {
+			@PathVariable("organizationId") String id) throws IOException {
 		StatusTransformer transformer = new StatusTransformer(crm);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.format(crm.enableOrganization(organizationId).getStatus());
