@@ -189,8 +189,8 @@ public class ModelBinder {
 					json.getString("jobTitle"),
 					new Language(language.getString("code"), language.getString("name")),
 					json.getString("email"),
-					new Telephone(Long.valueOf(telephone.getString("number")), Long.valueOf(telephone.getString("extension"))),
-					Long.valueOf(json.getString("faxNumber")));
+					new Telephone(telephone.getString("number"), telephone.getString("extension")),
+					json.getString("faxNumber"));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing Communication from: " + json.toString(), jsone);
 		}

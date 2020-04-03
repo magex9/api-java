@@ -11,21 +11,21 @@ public class Telephone implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long number;
+	private String number;
 
-	private Long extension;
+	private String extension;
 
-	public Telephone(Long number, Long extension) {
+	public Telephone(String number, String extension) {
 		super();
 		this.number = number;
 		this.extension = extension;
 	}
 
-	public Long getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public Long getExtension() {
+	public String getExtension() {
 		return extension;
 	}
 	

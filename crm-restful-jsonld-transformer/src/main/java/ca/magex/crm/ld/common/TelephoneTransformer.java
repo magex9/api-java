@@ -27,8 +27,8 @@ public class TelephoneTransformer extends AbstractLinkedDataTransformer<Telephon
 	public Telephone parse(DataObject data, String parentContext) {
 		validateContext(data, parentContext);
 		validateType(data);
-		Long number = data.contains("number") ? data.getLong("number") : null;
-		Long extension = data.contains("extension") ? data.getLong("extension") : null;
+		String number = data.contains("number") ? data.getString("number") : null;
+		String extension = data.contains("extension") ? data.getString("extension") : null;
 		return new Telephone(number, extension);
 	}
 			

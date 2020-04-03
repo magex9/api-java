@@ -21,9 +21,9 @@ public class Communication implements Serializable {
 	
 	private Telephone homePhone;
 	
-	private Long faxNumber;
+	private String faxNumber;
 
-	public Communication(String jobTitle, Language language, String email, Telephone homePhone, Long faxNumber) {
+	public Communication(String jobTitle, Language language, String email, Telephone homePhone, String faxNumber) {
 		super();
 		this.jobTitle = jobTitle;
 		this.language = language;
@@ -64,11 +64,11 @@ public class Communication implements Serializable {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 
-	public Long getFaxNumber() {
+	public String getFaxNumber() {
 		return faxNumber;
 	}
 
-	public Communication withFaxNumber(Long faxNumber) {
+	public Communication withFaxNumber(String faxNumber) {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 	
