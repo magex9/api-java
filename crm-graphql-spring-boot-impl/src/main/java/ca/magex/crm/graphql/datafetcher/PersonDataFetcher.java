@@ -119,7 +119,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 						extractCommunication(environment, "communication"));
 			}
 			if (environment.getArgument("position") != null) {
-				crm.updatePersonBusinessUnit(
+				crm.updatePersonBusinessPosition(
 						personId,
 						extractBusinessPosition(environment, "position"));
 			}

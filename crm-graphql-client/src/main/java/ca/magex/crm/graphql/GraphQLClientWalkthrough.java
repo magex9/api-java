@@ -130,7 +130,7 @@ public class GraphQLClientWalkthrough {
 		jonathan = crm.updatePersonCommunication(jonathan.getPersonId(), new Communication("Java Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone("6132629713", null), "6135181067"));
 		System.out.println(jonathan);
 		
-		jonathan = crm.updatePersonBusinessUnit(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
+		jonathan = crm.updatePersonBusinessPosition(jonathan.getPersonId(), new BusinessPosition(new BusinessSector(2, ""), new BusinessUnit(2, ""), new BusinessClassification(2, "")));
 		System.out.println(jonathan);
 		
 		jonathan = crm.addUserRole(jonathan.getPersonId(), lookups.findRoleByCode("SYS_ADMIN"));

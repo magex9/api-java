@@ -24,7 +24,6 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
@@ -313,7 +312,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {
+	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
 		return ModelBinder.toPersonDetails(performGraphQLQuery(
 				"updatePersonBusinessUnit",
 				"updatePerson",
@@ -337,6 +336,12 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				"disablePerson",
 				"disablePerson", 
 				personId));
+	}
+	
+	@Override
+	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
