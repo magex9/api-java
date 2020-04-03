@@ -40,7 +40,7 @@ public class GraphQLClientInitializer {
 				johnnuy.getOrganizationId(), 
 				new PersonName(new Salutation(1, "Mr", "Mr"), "Jonathan", "Alexander", "Trafford"), 
 				new MailingAddress("132 Cheyenne Way", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K2J 0E9"), 
-				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone(6132629713L, 0L), 6135181067L), 
+				new Communication("Developer", new Language("EN", "English"), "Jonny.Trafford@gmail.com", new Telephone("6132629713L", "0"), "6135181067"),
 				new BusinessPosition(new BusinessSector(1, ""), new BusinessUnit(1, ""), new BusinessClassification(1, "")));		
 		
 		jonathan = orgService.addUserRole(jonathan.getPersonId(), new Role("SYS_AMDIN", "", ""));
