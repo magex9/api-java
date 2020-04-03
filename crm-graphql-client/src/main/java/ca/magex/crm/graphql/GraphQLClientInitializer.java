@@ -34,7 +34,6 @@ public class GraphQLClientInitializer {
 		johnnuy = orgService.updateOrganizationMainLocation(
 				johnnuy.getOrganizationId(), 
 				hq.getLocationId());
-		System.out.println(johnnuy);
 		
 		PersonDetails jonathan = orgService.createPerson(
 				johnnuy.getOrganizationId(), 
@@ -56,7 +55,6 @@ public class GraphQLClientInitializer {
 		magex = orgService.updateOrganizationMainLocation(
 				magex.getOrganizationId(), 
 				mhq.getLocationId());
-		System.out.println(johnnuy);
 		
 		((OrganizationServiceGraphQLClient) orgService).close();
 	}
