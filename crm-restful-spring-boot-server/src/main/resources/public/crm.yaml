@@ -755,10 +755,21 @@ paths:
               type: object
               required: 
                 - displayName
+                - legalName
+                - address
               properties:
                 displayName:
                   description: The prefered display name of the person
                   type: string
+                legalName:
+                  description: The legal name of the person
+                  $ref: '#/components/schemas/PersonName'
+                address: 
+                  $ref: '#/components/schemas/MailingAddress'
+                communication:
+                  $ref: '#/components/schemas/Communication'
+                position:
+                  $ref: '#/components/schemas/BusinessPosition'
       responses:
         "201":
           description: A forward response to the newly created person
@@ -1134,8 +1145,90 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SystemException'
-  /persons/{personId}/roles/{roleId}:
+  /persons/{personId}/roles:
+    get:
+      summary: Get a set of user roles for a person
+      operationId: getUserRoles
+      tags:
+        - Persons
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          description: The identifier of the person who is granted the role
+          content:
+            application/json:
+              schema:
+                type: string
+                format: identifier
+      responses:
+        "200":
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                   $ref: '#/components/schemas/Role'
+        "403":
+          description: Permission denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionException'
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemException'
     post:
+      summary: Grant a set of user roles to a person
+      operationId: setUserRoles
+      tags:
+        - Persons
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          description: The identifier of the person who is granted the role
+          content:
+            application/json:
+              schema:
+                type: string
+                format: identifier
+        - name: roleId
+          in: path
+          required: true
+          description: The roleId to grant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                   type: string
+      responses:
+        "200":
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                items:
+                   $ref: '#/components/schemas/Role'
+        "403":
+          description: Permission denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionException'
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemException'
+  /persons/{personId}/roles/{roleId}:
+    put:
       summary: Grant a user role to a person
       operationId: addUserRole
       tags:

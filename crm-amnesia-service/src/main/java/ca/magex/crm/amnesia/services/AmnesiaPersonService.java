@@ -1,7 +1,6 @@
 package ca.magex.crm.amnesia.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,7 +50,7 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 	
 	@Override
-	public PersonDetails updatePersonBusinessUnit(Identifier personId, BusinessPosition position) {		
+	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {		
 		return db.savePerson(findPersonDetails(personId).withPosition(position));
 	}
 
@@ -96,27 +95,31 @@ public class AmnesiaPersonService implements CrmPersonService {
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList()), paging);
 	}
-
-	public PersonDetails addUserRole(Identifier personId, Role role) {
+	
+	@Override
+	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
 		PersonDetails person = findPersonDetails(personId);		
 		/* first time we add a role we need to generate the user name */
 		if (person.getUser() == null) {
 			String userName = person.getLegalName().getFirstName().substring(0, 1) + "X" + person.getLegalName().getLastName().substring(0, 1) + countPersons(new PersonsFilter());
-			person = person.withUser(new User(userName, Arrays.asList(role)));
+			person = person.withUser(new User(userName, roles));
 		}
 		else {
-			List<Role> roles = new ArrayList<Role>(person.getUser().getRoles());
-			roles.add(role);
 			person = person.withUser(person.getUser().withRoles(roles));
 		}
 		return db.savePerson(person);
 	}
 
+	public PersonDetails addUserRole(Identifier personId, Role role) {
+		List<Role> roles = new ArrayList<Role>(db.findPerson(personId).getUser().getRoles());
+		roles.add(role);
+		return setUserRoles(personId, roles);
+	}
+
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
-		PersonDetails person = db.findPerson(personId);
-		List<Role> roles = new ArrayList<Role>(person.getUser().getRoles());
+		List<Role> roles = new ArrayList<Role>(db.findPerson(personId).getUser().getRoles());
 		roles.remove(role);
-		return db.savePerson(person.withUser(person.getUser().withRoles(roles)));
+		return setUserRoles(personId, roles);
 	}
 
 }
