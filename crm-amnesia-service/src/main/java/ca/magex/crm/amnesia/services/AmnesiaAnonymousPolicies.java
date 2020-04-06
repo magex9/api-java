@@ -1,8 +1,11 @@
 package ca.magex.crm.amnesia.services;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.services.CrmPolicies;
 import ca.magex.crm.api.system.Identifier;
 
+@Component
 public class AmnesiaAnonymousPolicies implements CrmPolicies {
 	
 	public boolean canCreateOrganization() {

@@ -146,4 +146,14 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 					extractRole(environment, "role"));
 		};
 	}
+	
+	public DataFetcher<PersonDetails> setUserRoles() {
+		return (environment) -> {
+			logger.debug("Entering setUserRoles@" + PersonDataFetcher.class.getSimpleName());
+			Identifier personId = new Identifier((String) environment.getArgument("personId"));			
+			return crm.setUserRoles(
+					personId, 
+					extractRoles(environment, "roles"));
+		};
+	}
 }

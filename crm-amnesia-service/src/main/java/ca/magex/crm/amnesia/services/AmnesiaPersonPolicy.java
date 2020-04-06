@@ -3,13 +3,19 @@ package ca.magex.crm.amnesia.services;
 import static ca.magex.crm.amnesia.AmnesiaDB.CRM_ADMIN;
 import static ca.magex.crm.amnesia.AmnesiaDB.RE_ADMIN;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.services.CrmPersonPolicy;
 import ca.magex.crm.api.system.Identifier;
 
+@Component
 public class AmnesiaPersonPolicy implements CrmPersonPolicy {
 	
-	private AmnesiaDB db;
+	@Autowired private AmnesiaDB db;
+	
+	public AmnesiaPersonPolicy() {}
 
 	public AmnesiaPersonPolicy(AmnesiaDB db) {
 		this.db = db;

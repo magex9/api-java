@@ -6,7 +6,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -18,9 +20,12 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
+@Service
 public class AmnesiaOrganizationService implements CrmOrganizationService {
 
-	private AmnesiaDB db;
+	@Autowired private AmnesiaDB db;
+	
+	public AmnesiaOrganizationService() {}
 	
 	public AmnesiaOrganizationService(AmnesiaDB db) {
 		this.db = db;

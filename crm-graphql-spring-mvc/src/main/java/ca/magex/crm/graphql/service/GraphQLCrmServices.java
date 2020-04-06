@@ -25,9 +25,9 @@ import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 
 @Service("graphQLOrganizationService")
-public class GraphQLOrganizationsService {
+public class GraphQLCrmServices {
 
-	private static Logger logger = LoggerFactory.getLogger(GraphQLOrganizationsService.class);
+	private static Logger logger = LoggerFactory.getLogger(GraphQLCrmServices.class);
 
 	@Autowired(required=true) private Crm crm;
 
@@ -96,6 +96,7 @@ public class GraphQLOrganizationsService {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disablePerson", personDataFetcher.disablePerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", personDataFetcher.addUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", personDataFetcher.setUserRoles()))
 				
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.type("Country", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
