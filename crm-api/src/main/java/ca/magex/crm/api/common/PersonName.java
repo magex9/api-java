@@ -30,7 +30,7 @@ public class PersonName implements Serializable {
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
-		String displayName = "";
+		this.displayName = "";
 		if (StringUtils.isNotBlank(lastName))
 			displayName += lastName;
 		if (StringUtils.isNotBlank(firstName) && displayName.length() > 0)

@@ -1,6 +1,7 @@
 package ca.magex.crm.amnesia.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +44,7 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 
 	public PersonDetails updatePersonName(Identifier personId, PersonName legalName) {
-		return db.savePerson(findPersonDetails(personId).withLegalName(legalName));
+		return db.savePerson(findPersonDetails(personId).withLegalName(legalName).withDisplayName(legalName.getDisplayName()));
 	}
 
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {		
@@ -116,15 +117,24 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		List<Role> roles = new ArrayList<Role>(db.findPerson(personId).getUser().getRoles());
+		List<Role> roles = new ArrayList<Role>(getExistingRoles(findPersonDetails(personId)));
 		roles.add(role);
 		return setUserRoles(personId, roles);
 	}
 
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
-		List<Role> roles = new ArrayList<Role>(db.findPerson(personId).getUser().getRoles());
+		List<Role> roles = new ArrayList<Role>(getExistingRoles(findPersonDetails(personId)));		
 		roles.remove(role);
 		return setUserRoles(personId, roles);
+	}
+	
+	private List<Role> getExistingRoles(PersonDetails personDetails) {
+		if (personDetails.getUser() == null) {
+			return Collections.emptyList();
+		}
+		else {
+			return personDetails.getUser().getRoles();
+		}
 	}
 
 }
