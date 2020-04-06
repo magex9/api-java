@@ -14,7 +14,7 @@ import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("amnesiaLookupService")
 public class AmnesiaLookupService implements CrmLookupService {
 
 	private Lookups<Status, String> statuses;

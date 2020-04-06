@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -26,7 +27,7 @@ public class AmnesiaValidationService implements CrmValidation {
 
 	@Autowired private AmnesiaDB db;
 	
-	@Autowired private CrmLookupService lookups;
+	@Autowired @Qualifier("amnesiaLookupService") private CrmLookupService lookups;
 	
 	public AmnesiaValidationService() {}
 	
