@@ -11,5 +11,5 @@ public class WelcomePageController {
 	@GetMapping
 	public String getWelcomePage() {
 		return "forward:/graphiql";
-	}	
+	}
 }

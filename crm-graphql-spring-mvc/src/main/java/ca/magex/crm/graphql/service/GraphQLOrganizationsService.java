@@ -6,11 +6,11 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.amnesia.services.AmnesiaFactory;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
@@ -29,7 +29,7 @@ public class GraphQLOrganizationsService {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLOrganizationsService.class);
 
-	private Crm crm = AmnesiaFactory.getAnonymousService();
+	@Autowired(required=true) private Crm crm;
 
 	@Value("classpath:organizations.graphql")
 	private Resource resource;
