@@ -20,7 +20,7 @@
 		<module>crm-graphql-spring-mvc</module>
 		<module>crm-graphql-jwt-spring-boot-server</module>
 		<module>crm-graphql-client</module>
-		<module>crm-restful-jsonld-transformer</module>
+		<module>crm-jsonld-transformer</module>
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-jwt-server</module>
 		<module>crm-restful-spring-boot-noauth-server</module>
