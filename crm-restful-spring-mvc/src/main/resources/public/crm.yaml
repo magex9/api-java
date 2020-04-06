@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   version: 1.0.0
   title: API Reporting
+security:
+  - bearerAuth: []
 servers:
 #  - url: https://magex9.github.io/apis/restful/{environment}/v0
 #    description: Test server (uses shared data)
@@ -1313,6 +1315,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/SystemException'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Organization:
       description: Information about a business or company
