@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ca.magex.crm</groupId>
-			<artifactId>crm-restful-jsonld-transformer</artifactId>
+			<artifactId>crm-jsonld-transformer</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
