@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-restful-spring-mvc</artifactId>
+	<artifactId>crm-restful-spring-controllers</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<parent>

@@ -23,7 +23,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-restful-spring-mvc</artifactId>
+			<artifactId>crm-restful-spring-controllers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
