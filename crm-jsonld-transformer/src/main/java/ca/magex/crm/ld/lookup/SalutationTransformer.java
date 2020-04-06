@@ -1,16 +1,16 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class SalutationTransformer extends AbstractLinkedDataTransformer<Salutation> {
 
-	public SecuredCrmServices crm;
+	public CrmServices crm;
 	
-	public SalutationTransformer(SecuredCrmServices crm) {
+	public SalutationTransformer(CrmServices crm) {
 		this.crm = crm;
 	}
 
