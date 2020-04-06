@@ -1,4 +1,4 @@
-package ca.magex.crm.rest.controllers;
+package ca.magex.crm.rest.jwt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,10 +9,10 @@ import ca.magex.crm.amnesia.services.AmnesiaTestDataPopulator;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
-public class RestfulApiApplication {
+public class JwtRestfulApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RestfulApiApplication.class, args);
+		SpringApplication.run(JwtRestfulApiApplication.class, args);
 	}
 
 	@Bean
