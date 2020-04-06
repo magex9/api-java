@@ -14,6 +14,7 @@
 	
 	<modules>
 		<module>crm-api</module>
+		<module>crm-test</module>
 		<module>crm-amnesia-service</module>
 		<module>crm-graphql-spring-mvc</module>
 		<module>crm-graphql-jwt-spring-boot-server</module>
