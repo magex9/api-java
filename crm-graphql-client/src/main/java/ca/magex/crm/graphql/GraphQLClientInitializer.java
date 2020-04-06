@@ -14,7 +14,6 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
 
@@ -22,7 +21,9 @@ public class GraphQLClientInitializer {
 
 	public static void main(String[] args) throws Exception {
 
-		CrmServices orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		OrganizationServiceGraphQLClient orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		
+		orgService.authenticate("http://localhost:9002/crm/authenticate", "admin", "admin");
 						
 		OrganizationDetails johnnuy = orgService.createOrganization("Johnnuy Technologies");		
 		LocationDetails hq = orgService.createLocation(

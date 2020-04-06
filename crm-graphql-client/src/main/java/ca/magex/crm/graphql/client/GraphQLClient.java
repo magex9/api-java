@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -34,6 +35,8 @@ public abstract class GraphQLClient implements Closeable {
 	protected String endpoint;
 	protected Properties queries;
 	protected CloseableHttpClient httpclient;
+
+	private String jwtToken;
 	
 	/**
 	 * constructs a new Service for the given graphql endpoint
@@ -53,6 +56,41 @@ public abstract class GraphQLClient implements Closeable {
 		}
 	}
 	
+	/**
+	 * runs our authentication mechanism
+	 * @param authEndpoint
+	 * @param username
+	 * @param password
+	 */
+	public void authenticate(String authEndpoint, String username, String password) {
+		long t1 = System.currentTimeMillis();
+		try {
+			HttpPost httpPost = new HttpPost(authEndpoint);
+			JSONObject json = new JSONObject();
+			json.put("username", username);
+			json.put("password", password);
+			httpPost.setEntity(new StringEntity(json.toString()));
+			httpPost.setHeader("Content-Type", "application/json");
+			try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					JSONObject token = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
+					this.jwtToken = token.getString("token");
+				}
+				else {
+					throw new GraphQLClientException("Status: " + response.getStatusLine().getStatusCode());
+				}
+			}
+		}
+		catch(Exception e) {
+			throw new GraphQLClientException("Error during authentication", e);
+		}
+		finally {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("execution of authenticate() took " + (System.currentTimeMillis() - t1) + "ms.");
+			}
+		}
+	}
+	
 	@Override
 	public void close() throws IOException {
 		httpclient.close();
@@ -69,16 +107,26 @@ public abstract class GraphQLClient implements Closeable {
 	protected <T> T performGraphQLQuery(String queryId, String queryName, Object ... params) {
 		long t1 = System.currentTimeMillis();
 		try {
-			HttpPost httpPost = new HttpPost(endpoint);
+			if (jwtToken == null) {
+				throw new GraphQLClientException("Not Authenticated");
+			}
+			HttpPost httpPost = new HttpPost(endpoint);			
+			httpPost.addHeader("Authorization", "Bearer " + jwtToken);			
+			httpPost.setHeader("Content-Type", "application/json");
 			httpPost.setEntity(constructEntity(queryId, params));
 			try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
-				JSONObject json = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
-				JSONArray errors = json.getJSONArray("errors");
-				if (errors.length() == 0) {
-					return (T) json.getJSONObject("data").get(queryName);
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					JSONObject json = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
+					JSONArray errors = json.getJSONArray("errors");
+					if (errors.length() == 0) {
+						return (T) json.getJSONObject("data").get(queryName);
+					}
+					else {
+						throw new GraphQLClientException(errors.toString(3));
+					}
 				}
 				else {
-					throw new GraphQLClientException(errors.toString(3));
+					throw new GraphQLClientException("Status: " + response.getStatusLine().getStatusCode());
 				}
 			}
 		}

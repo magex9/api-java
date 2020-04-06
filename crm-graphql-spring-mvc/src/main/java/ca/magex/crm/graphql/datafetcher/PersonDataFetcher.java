@@ -13,7 +13,7 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.graphql.controller.OrganizationController;
+import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
 /**
@@ -23,7 +23,7 @@ import graphql.schema.DataFetcher;
  */
 public class PersonDataFetcher extends AbstractDataFetcher {
 
-	private static Logger logger = LoggerFactory.getLogger(OrganizationController.class);
+	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
 	public PersonDataFetcher(Crm crm) {
 		super(crm);

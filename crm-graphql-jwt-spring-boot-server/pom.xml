@@ -11,10 +11,10 @@
 	</parent>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-graphql-spring-boot-impl</artifactId>
+	<artifactId>crm-graphql-jwt-spring-boot-server</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<description>Demo project for Spring Boot with Graph QL</description>
+	<description>Spring Boot Server using JWT for securing the GraphQL API</description>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -26,6 +26,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-amnesia-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-graphql-spring-mvc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -46,27 +52,25 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphql-spring-boot-starter</artifactId>
-			<version>5.0.2</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphiql-spring-boot-starter</artifactId>
-			<version>5.0.2</version>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphql-java-tools</artifactId>
-			<version>5.2.4</version>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 
 		<!-- Test Dependencies -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>			
+			<artifactId>httpclient</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
