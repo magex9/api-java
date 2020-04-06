@@ -1,7 +1,6 @@
 package ca.magex.crm.graphql.client;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
@@ -16,22 +15,15 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.exceptions.BadRequestException;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
-import ca.magex.crm.api.system.Status;
 
 /**
  * Implementation of the Organization Service that uses a GraphQL Server

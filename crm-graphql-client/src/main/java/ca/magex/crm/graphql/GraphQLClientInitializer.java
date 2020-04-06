@@ -22,6 +22,8 @@ public class GraphQLClientInitializer {
 	public static void main(String[] args) throws Exception {
 
 		OrganizationServiceGraphQLClient orgService = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
+		
+		orgService.authenticate("http://localhost:9002/crm/authenticate", "admin", "admin");
 						
 		OrganizationDetails johnnuy = orgService.createOrganization("Johnnuy Technologies");		
 		LocationDetails hq = orgService.createLocation(
