@@ -1,0 +1,137 @@
+package ca.magex.crm.ld.crm;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import ca.magex.crm.amnesia.Lang;
+import ca.magex.crm.amnesia.services.AmnesiaAnonymousPolicies;
+import ca.magex.crm.api.common.BusinessPosition;
+import ca.magex.crm.api.common.Communication;
+import ca.magex.crm.api.common.MailingAddress;
+import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.common.User;
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmValidation;
+import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Status;
+import ca.magex.crm.mapping.data.DataFormatter;
+import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.mapping.json.JsonTransformer;
+import ca.magex.crm.test.TestConfig;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
+public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
+
+	@Autowired private CrmLookupService lookupService;
+	@Autowired private CrmValidation validationService;
+	@Autowired private CrmOrganizationService organizationService;
+	@Autowired private CrmLocationService locationService;
+	@Autowired private CrmPersonService personService;
+
+	private SecuredCrmServices service = null;
+
+	@Before
+	public void init() {
+		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
+		service = new SecuredCrmServices(
+				lookupService, validationService,
+				organizationService, policies,
+				locationService, policies,
+				personService, policies);
+	}
+	
+	@Test
+	public void testPersonLinkedData() throws Exception {
+		Identifier personId = new Identifier("abc");
+		Identifier organizationId = new Identifier("xyz");
+		Status status = Status.PENDING;
+		String displayName = "Junit Test";
+		PersonName legalName = new PersonName(service.findSalutationByCode(3), "Chris", "P", "Bacon");
+		Country canada = service.findCountryByCode("CA");
+		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
+		String email = "chris@bacon.com";
+		String jobTitle = "Tester";
+		Language language = lookupService.findLanguageByCode("en");
+		Telephone homePhone = new Telephone("2342342345", null);
+		String faxNumber = "4564564565";
+		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
+		BusinessPosition unit = new BusinessPosition(service.findBusinessSectors().get(0), null, null);
+		String userName = "chris";
+		List<Role> roles = new ArrayList<Role>();
+		User user = new User(userName, roles);
+		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("RE_ADMIN"));
+		
+		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		JsonTransformer transformer = new JsonTransformer(service, Lang.ENGLISH);
+		
+		DataObject obj = transformer.formatPersonDetails(person);
+		String json = DataFormatter.formatted(obj);
+		
+		assertEquals("{\n" + 
+				"  \"personId\": \"abc\",\n" + 
+				"  \"organizationId\": \"xyz\",\n" + 
+				"  \"status\": \"Pending\",\n" + 
+				"  \"displayName\": \"Junit Test\",\n" + 
+				"  \"legalName\": {\n" + 
+				"    \"salutation\": \"Mr.\",\n" + 
+				"    \"firstName\": \"Chris\",\n" + 
+				"    \"middleName\": \"P\",\n" + 
+				"    \"lastName\": \"Bacon\"\n" + 
+				"  },\n" + 
+				"  \"address\": {\n" + 
+				"    \"street\": \"123 Main St\",\n" + 
+				"    \"city\": \"Ottawa\",\n" + 
+				"    \"province\": \"Ontario\",\n" + 
+				"    \"country\": \"Canada\",\n" + 
+				"    \"postalCode\": \"K1K1K1\"\n" + 
+				"  },\n" + 
+				"  \"communication\": {\n" + 
+				"    \"email\": \"chris@bacon.com\",\n" + 
+				"    \"jobTitle\": \"Tester\",\n" + 
+				"    \"language\": \"English\",\n" + 
+				"    \"homePhone\": {\"number\": \"2342342345\"},\n" + 
+				"    \"faxNumber\": \"4564564565\"\n" + 
+				"  },\n" + 
+				"  \"position\": {\"sector\": \"External\"},\n" + 
+				"  \"user\": {\n" + 
+				"    \"userName\": \"chris\",\n" + 
+				"    \"roles\": [\n" + 
+				"      \"SYS_AMDIN\",\n" + 
+				"      \"RE_ADMIN\"\n" + 
+				"    ]\n" + 
+				"  }\n" + 
+				"}", json);
+		
+		PersonDetails reloaded = transformer.parsePersonDetails(obj);
+		
+		assertEquals(person.getPersonId(), reloaded.getPersonId());
+		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());
+		assertEquals(person.getStatus(), reloaded.getStatus());
+		assertEquals(person.getAddress(), reloaded.getAddress());
+		assertEquals(person.getCommunication(), reloaded.getCommunication());
+		assertEquals(person.getPosition(), reloaded.getPosition());
+		assertEquals(person.getUser(), reloaded.getUser());
+	}
+	
+}
