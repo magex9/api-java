@@ -15,7 +15,7 @@ import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql"})
+@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql", "ca.magex.crm.spring.jwt"})
 public class CrmGraphqlJwtApplication {
 	
 	public static void main(String[] args) {
