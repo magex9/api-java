@@ -11,26 +11,25 @@ import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.ld.LinkedDataFormatter;
-import ca.magex.crm.ld.data.DataObject;
-import ca.magex.crm.ld.data.DataParser;
+import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.mapping.data.DataParser;
 
 public class ContentExtractor {
 
 	public static String getContentType(HttpServletRequest req) {
-		if (req.getHeader("Content-Type").equals("application/json")) {
-			return "application/json";
-		}
-		return "application/json+ld";
+//		if (req.getHeader("Content-Type").equals("application/json")) {
+//			return "application/json";
+//		}
+		return "application/json";
 	}
 
-	public static LinkedDataFormatter formatter(HttpServletRequest req) {
-		if (req.getHeader("Content-Type").equals("application/json")) {
-			return LinkedDataFormatter.json();
-		} else {
-			return LinkedDataFormatter.full();
-		}
-	}
+//	public static DataFormatter formatter(HttpServletRequest req) {
+//		if (req.getHeader("Content-Type").equals("application/json")) {
+//			return DataFormatter.json();
+//		} else {
+//			return LinkedDataFormatter.full();
+//		}
+//	}
 	
 	public static String extractDisplayName(HttpServletRequest req) throws IllegalArgumentException {
 		String value = req.getParameter("displayName");
