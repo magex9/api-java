@@ -8,6 +8,6 @@ public interface Transformer<T extends Object> {
 	
 	public DataObject format(T obj);
 	
-	public T parse(DataObject data, String parentContext);
+	public T parse(DataObject data);
 	
 }

@@ -12,6 +12,18 @@ public final class DataPair extends DataElement {
 		this.value = value;
 	}
 	
+	public DataPair(String key, String value) {
+		this(key, new DataText(value));
+	}
+	
+	public DataPair(String key, Number value) {
+		this(key, new DataNumber(value));
+	}
+	
+	public DataPair(String key, Boolean value) {
+		this(key, new DataBoolean(value));
+	}
+	
 	public String key() {
 		return key;
 	}

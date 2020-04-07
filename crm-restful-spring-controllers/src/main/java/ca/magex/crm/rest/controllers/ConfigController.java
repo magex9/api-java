@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import ca.magex.crm.ld.LinkedDataFormatter;
-import ca.magex.crm.ld.data.DataObject;
-import ca.magex.crm.ld.data.DataParser;
+import ca.magex.crm.mapping.data.DataFormatter;
+import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.mapping.data.DataParser;
 
 @Controller
 public class ConfigController {
@@ -38,7 +38,7 @@ public class ConfigController {
 			ObjectMapper jsonWriter = new ObjectMapper();
 			String json = jsonWriter.writeValueAsString(obj);
 			res.setStatus(200);
-			res.getWriter().write(((DataObject) DataParser.parse(json)).stringify(LinkedDataFormatter.full()));
+			res.getWriter().write(DataFormatter.formatted((DataObject)DataParser.parse(json)));
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading crm.yaml");
 		}

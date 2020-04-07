@@ -45,7 +45,7 @@ public class DataElement {
 
 	@Override
 	public final String toString() {
-		return new DataFormatter(false).stringify(this);
+		return new DataFormatter(true).stringify(this);
 	}
 
 }
