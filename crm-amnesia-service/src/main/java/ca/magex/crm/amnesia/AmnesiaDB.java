@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
@@ -16,6 +17,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.system.Identifier;
 
+@Repository
 public class AmnesiaDB {
 
 	public static final String CRM_ADMIN = "CRM_ADMIN";

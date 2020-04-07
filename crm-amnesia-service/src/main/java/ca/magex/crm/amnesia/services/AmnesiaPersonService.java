@@ -1,13 +1,16 @@
 package ca.magex.crm.amnesia.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.common.BusinessPosition;
@@ -25,9 +28,12 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
+@Service
 public class AmnesiaPersonService implements CrmPersonService {
 
-	private AmnesiaDB db;
+	@Autowired private AmnesiaDB db;
+	
+	public AmnesiaPersonService() {}
 	
 	public AmnesiaPersonService(AmnesiaDB db) {
 		this.db = db;
@@ -38,7 +44,7 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 
 	public PersonDetails updatePersonName(Identifier personId, PersonName legalName) {
-		return db.savePerson(findPersonDetails(personId).withLegalName(legalName));
+		return db.savePerson(findPersonDetails(personId).withLegalName(legalName).withDisplayName(legalName.getDisplayName()));
 	}
 
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {		
@@ -111,15 +117,24 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		List<Role> roles = new ArrayList<Role>(db.findPerson(personId).getUser().getRoles());
+		List<Role> roles = new ArrayList<Role>(getExistingRoles(findPersonDetails(personId)));
 		roles.add(role);
 		return setUserRoles(personId, roles);
 	}
 
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
-		List<Role> roles = new ArrayList<Role>(db.findPerson(personId).getUser().getRoles());
+		List<Role> roles = new ArrayList<Role>(getExistingRoles(findPersonDetails(personId)));		
 		roles.remove(role);
 		return setUserRoles(personId, roles);
+	}
+	
+	private List<Role> getExistingRoles(PersonDetails personDetails) {
+		if (personDetails.getUser() == null) {
+			return Collections.emptyList();
+		}
+		else {
+			return personDetails.getUser().getRoles();
+		}
 	}
 
 }

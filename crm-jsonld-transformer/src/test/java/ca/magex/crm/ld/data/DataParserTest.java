@@ -1,10 +1,11 @@
 package ca.magex.crm.ld.data;
 
 import static ca.magex.crm.ld.data.DataParser.parse;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.json.JSONObject;
 import org.junit.Test;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 public class DataParserTest {
 
@@ -158,7 +159,7 @@ public class DataParserTest {
 				"}", el.formatted());
 	}
 	
-	public void debug(String text) {
+	public void debug(String text) throws JSONException {
 		System.out.println("== ORIGINAL ===============================");
 		System.out.println(text);
 		System.out.println("== EXPECTED ===============================");

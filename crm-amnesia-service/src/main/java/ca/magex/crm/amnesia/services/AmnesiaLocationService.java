@@ -5,7 +5,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.common.MailingAddress;
@@ -18,13 +20,16 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
+@Service
 public class AmnesiaLocationService implements CrmLocationService {
 
-	private AmnesiaDB db;
+	@Autowired private AmnesiaDB db;
 	
-	public AmnesiaLocationService(AmnesiaDB db) {
-		this.db = db;
-	}
+	public AmnesiaLocationService() {}
+	
+//	public AmnesiaLocationService(AmnesiaDB db) {
+//		this.db = db;
+//	}
 	
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		return db.saveLocation(new LocationDetails(db.generateId(), db.findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address));
