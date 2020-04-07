@@ -1,13 +1,13 @@
 package ca.magex.crm.rest.controllers;
-
+	
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractBody;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractDisplayName;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractPaging;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractStatus;
 import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
+import static ca.magex.crm.rest.controllers.ContentExtractor.getTransformer;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
-import ca.magex.crm.amnesia.Lang;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -39,11 +38,9 @@ public class LocationsController {
 	@Autowired
 	private SecuredCrmServices crm;
 	
-	private Locale locale = Lang.ENGLISH;
-	
 	@GetMapping("/api/locations")
 	public void findLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		DataElement data = new DataArray(crm.findLocationSummaries(extractLocationFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.formatLocationSummary(e)).collect(Collectors.toList()));
 		res.setStatus(200);
@@ -57,31 +54,33 @@ public class LocationsController {
 
 	@PostMapping("/api/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		DataObject body = extractBody(req);
 		Identifier organizationId = new Identifier(body.getString("organizationId"));
-		String locationName = body.getString("locationName");
-		String locationReference = body.getString("locationReference");
+		String displayName = body.getString("displayName");
+		String reference = body.getString("reference");
 		MailingAddress address = transformer.parseMailingAddress("address", body);
-		DataElement data = transformer.formatLocationDetails(crm.createLocation(organizationId, locationName, locationReference, address));
+		DataElement data = transformer.formatLocationDetails(crm.createLocation(organizationId, displayName, reference, address));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/locations/{locationId}")
 	public void getLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 
 	@PatchMapping("/api/locations/{locationId}")
 	public void updateLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
 		DataObject body = extractBody(req);
 		if (body.contains("displayName"))
@@ -90,46 +89,51 @@ public class LocationsController {
 			crm.updateLocationAddress(locationId, transformer.parseMailingAddress("address", body));
 		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/locations/{locationId}/summary")
 	public void getLocationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationSummary(crm.findLocationDetails(locationId));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/locations/{locationId}/address")
 	public void getLocationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId)).getObject("address");
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/locations/{locationId}/enable")
 	public void enableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationSummary(crm.enableLocation(locationId));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/locations/{locationId}/disable")
 	public void disableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
+		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataElement data = transformer.formatLocationSummary(crm.enableLocation(locationId));
+		DataElement data = transformer.formatLocationSummary(crm.disableLocation(locationId));
 		res.setStatus(200);
+		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 

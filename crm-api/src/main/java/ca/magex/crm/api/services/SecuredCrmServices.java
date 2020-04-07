@@ -239,11 +239,11 @@ public final class SecuredCrmServices implements Crm {
 		return organizationService.findOrganizationSummaries(filter, paging);
 	}
 
-	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference,
+	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference,
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
-		return locationService.createLocation(organizationId, locationName, locationReference, address);
+		return locationService.createLocation(organizationId, displayName, reference, address);
 	}
 
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {

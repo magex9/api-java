@@ -2,6 +2,7 @@ package ca.magex.crm.rest.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,27 +11,28 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
+import ca.magex.crm.mapping.json.JsonTransformer;
 
 public class ContentExtractor {
 
 	public static String getContentType(HttpServletRequest req) {
-//		if (req.getHeader("Content-Type").equals("application/json")) {
-//			return "application/json";
+//		if (req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld")) {
+//			return "application/json+ld";
 //		}
 		return "application/json";
 	}
-
-//	public static DataFormatter formatter(HttpServletRequest req) {
-//		if (req.getHeader("Content-Type").equals("application/json")) {
-//			return DataFormatter.json();
-//		} else {
-//			return LinkedDataFormatter.full();
-//		}
-//	}
 	
+	public static JsonTransformer getTransformer(HttpServletRequest req, SecuredCrmServices crm) {
+		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
+		Locale locale = req.getHeader("Locale") != null && req.getHeader("Locale").equals("fr") ? Lang.FRENCH : Lang.ENGLISH;
+		return new JsonTransformer(crm, locale, linked);
+	}
+
 	public static String extractDisplayName(HttpServletRequest req) throws IllegalArgumentException {
 		String value = req.getParameter("displayName");
 		if (value == null)

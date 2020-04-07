@@ -1542,45 +1542,13 @@ components:
         message:
           description: A text the user sees about the message
           type: string
-    Country:
-      description: A common dictionary of ISO countries
-      type: object
-      properties: 
-        code: 
-          description: The iso code of the country
-          type: string
-          pattern: '^[A-Z]{2}$'
-        name:
-          description: The localized name of the country shown to the user
-          type: string
-    Language:
-      description: A common dictionary of ISO languages
-      type: object
-      properties: 
-        code: 
-          description: The iso code of the language
-          type: string
-          pattern: '^[a-z]{2}$'
-        name:
-          description: The localized name of the language shown to the user
-          type: string
-    Salutation:
-      description: A common dictionary of salutations
-      type: object
-      properties: 
-        code: 
-          description: The code definition of the salutation
-          type: integer
-        name:
-          description: The localized name of the salutation shown to the user
-          type: string
     PersonName:
       description: The full name of an individual
       type: object
       properties:
         salutation:
           description: The salutation of the individual
-          $ref: '#/components/schemas/Salutation'
+          type: string
         firstName:
           description: The first name of the individual
           type: string
@@ -1603,7 +1571,7 @@ components:
           type: string
         language:
           description: The preferred language of the person
-          $ref: '#/components/schemas/Language'
+          type: string
         homePhone:
           description: The telephone number where the person can be contacted
           $ref: '#/components/schemas/TelephoneNumber'
@@ -1626,42 +1594,12 @@ components:
       properties: 
         sector: 
           description: The sector of the business the person belongs
-          $ref: '#/components/schemas/BusinessSector'
+          type: string
         unit:
           description: The unit within the sector
-          $ref: '#/components/schemas/BusinessUnit'
+          type: string
         classification:
           description: The classification of the person
-          $ref: '#/components/schemas/BusinessClassification'
-    BusinessSector:
-      description: A business sector within the orgainzation
-      type: object
-      properties: 
-        code: 
-          description: The code definition of the sector
-          type: integer
-        name:
-          description: The localized name of the sector shown to the user
-          type: string
-    BusinessUnit:
-      description: A business unit within a business sector
-      type: object
-      properties: 
-        code: 
-          description: The code definition of the unit
-          type: integer
-        name:
-          description: The localized name of the unit shown to the user
-          type: string
-    BusinessClassification:
-      description: A classification of a person within the organization
-      type: object
-      properties: 
-        code: 
-          description: The code definition of the classification
-          type: integer
-        name:
-          description: The localized name of the classification shown to the user
           type: string
     MailingAddress:
       description: A postal mailing address
@@ -1674,7 +1612,7 @@ components:
         province:
           type: string
         country:
-          $ref: '#/components/schemas/Country'
+          type: string
         postalCode:
           type: string
     ItemNotFoundException:

@@ -11,10 +11,10 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmLocationService {
 
-    LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address);
+    LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address);
     LocationSummary enableLocation(Identifier locationId);
     LocationSummary disableLocation(Identifier locationId);
-    LocationDetails updateLocationName(Identifier locationId, String locationName);
+    LocationDetails updateLocationName(Identifier locationId, String displaysName);
     LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address);
     LocationSummary findLocationSummary(Identifier locationId);
     LocationDetails findLocationDetails(Identifier locationId);
