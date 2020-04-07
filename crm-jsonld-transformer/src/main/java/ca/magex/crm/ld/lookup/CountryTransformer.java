@@ -1,16 +1,16 @@
 package ca.magex.crm.ld.lookup;
 
 import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
 import ca.magex.crm.ld.data.DataObject;
 
 public class CountryTransformer extends AbstractLinkedDataTransformer<Country> {
 
-	public SecuredCrmServices crm;
+	public CrmServices crm;
 	
-	public CountryTransformer(SecuredCrmServices crm) {
+	public CountryTransformer(CrmServices crm) {
 		this.crm = crm;
 	}
 	

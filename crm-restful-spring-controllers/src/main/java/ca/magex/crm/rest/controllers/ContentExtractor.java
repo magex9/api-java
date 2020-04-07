@@ -18,14 +18,14 @@ import ca.magex.crm.ld.data.DataParser;
 public class ContentExtractor {
 
 	public static String getContentType(HttpServletRequest req) {
-		if (req.getHeader("Accept").equals("application/json")) {
+		if (req.getHeader("Content-Type").equals("application/json")) {
 			return "application/json";
 		}
 		return "application/json+ld";
 	}
 
 	public static LinkedDataFormatter formatter(HttpServletRequest req) {
-		if (req.getHeader("Accept").equals("application/json")) {
+		if (req.getHeader("Content-Type").equals("application/json")) {
 			return LinkedDataFormatter.json();
 		} else {
 			return LinkedDataFormatter.full();

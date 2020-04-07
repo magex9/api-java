@@ -1,6 +1,6 @@
 package ca.magex.crm.ld.system;
 
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.ld.AbstractLinkedDataTransformer;
@@ -8,9 +8,9 @@ import ca.magex.crm.ld.data.DataObject;
 
 public class RoleTransformer extends AbstractLinkedDataTransformer<Role> {
 
-	public SecuredCrmServices crm;
+	public CrmServices crm;
 	
-	public RoleTransformer(SecuredCrmServices crm) {
+	public RoleTransformer(CrmServices crm) {
 		this.crm = crm;
 	}
 
