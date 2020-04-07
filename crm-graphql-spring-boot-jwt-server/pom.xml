@@ -31,7 +31,7 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-graphql-spring-mvc</artifactId>
+			<artifactId>crm-graphql-spring-controllers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		

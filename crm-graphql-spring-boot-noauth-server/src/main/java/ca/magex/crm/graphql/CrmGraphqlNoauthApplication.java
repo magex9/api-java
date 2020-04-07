@@ -15,11 +15,11 @@ import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql", "ca.magex.crm.spring.jwt"})
-public class CrmGraphqlJwtApplication {
+@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql"})
+public class CrmGraphqlNoauthApplication {
 	
 	public static void main(String[] args) {
-		SpringApplication.run(CrmGraphqlJwtApplication.class, args);
+		SpringApplication.run(CrmGraphqlNoauthApplication.class, args);
 	}
 		
 	@Autowired private CrmLookupService lookupService;

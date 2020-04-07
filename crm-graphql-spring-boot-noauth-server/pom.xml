@@ -31,7 +31,7 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-graphql-spring-mvc</artifactId>
+			<artifactId>crm-graphql-spring-controllers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -49,22 +49,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 
 		<!-- Test Dependencies -->

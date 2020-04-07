@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-graphql-spring-mvc</artifactId>
+	<artifactId>crm-graphql-spring-controllers</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<description>Spring MVC Graph QL Implementation</description>
