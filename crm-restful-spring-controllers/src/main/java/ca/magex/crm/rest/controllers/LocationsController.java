@@ -43,7 +43,7 @@ public class LocationsController {
 	
 	@GetMapping("/api/locations")
 	public void findLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataElement data = new DataArray(crm.findLocationSummaries(extractLocationFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.formatLocationSummary(e)).collect(Collectors.toList()));
 		res.setStatus(200);
@@ -57,7 +57,7 @@ public class LocationsController {
 
 	@PostMapping("/api/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataObject body = extractBody(req);
 		Identifier organizationId = new Identifier(body.getString("organizationId"));
 		String locationName = body.getString("locationName");
@@ -71,7 +71,7 @@ public class LocationsController {
 	@GetMapping("/api/locations/{locationId}")
 	public void getLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
 		res.setStatus(200);
@@ -81,7 +81,7 @@ public class LocationsController {
 	@PatchMapping("/api/locations/{locationId}")
 	public void updateLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier locationId = new Identifier(id);
 		DataObject body = extractBody(req);
 		if (body.contains("displayName"))
@@ -96,7 +96,7 @@ public class LocationsController {
 	@GetMapping("/api/locations/{locationId}/summary")
 	public void getLocationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationSummary(crm.findLocationDetails(locationId));
 		res.setStatus(200);
@@ -106,7 +106,7 @@ public class LocationsController {
 	@GetMapping("/api/locations/{locationId}/address")
 	public void getLocationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId)).getObject("address");
 		res.setStatus(200);
@@ -116,7 +116,7 @@ public class LocationsController {
 	@PutMapping("/api/locations/{locationId}/enable")
 	public void enableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationSummary(crm.enableLocation(locationId));
 		res.setStatus(200);
@@ -126,7 +126,7 @@ public class LocationsController {
 	@PutMapping("/api/locations/{locationId}/disable")
 	public void disableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier locationId = new Identifier(id);
 		DataElement data = transformer.formatLocationSummary(crm.enableLocation(locationId));
 		res.setStatus(200);

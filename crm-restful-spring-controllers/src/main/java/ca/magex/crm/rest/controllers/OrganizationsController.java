@@ -42,7 +42,7 @@ public class OrganizationsController {
 	
 	@GetMapping("/api/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataElement data = new DataArray(crm.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.formatOrganizationSummary(e)).collect(Collectors.toList()));
 		res.setStatus(200);
@@ -56,7 +56,7 @@ public class OrganizationsController {
 
 	@PostMapping("/api/organizations")
 	public void createOrganization(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataObject body = extractBody(req);
 		String displayName = body.getString("displayName");
 		DataElement data = transformer.formatOrganizationDetails(crm.createOrganization(displayName));
@@ -67,7 +67,7 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
@@ -77,7 +77,7 @@ public class OrganizationsController {
 	@PatchMapping("/api/organizations/{organizationId}")
 	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier organizationId = new Identifier(id);
 		DataObject body = extractBody(req);
 		if (body.contains("displayName"))
@@ -92,7 +92,7 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations/{organizationId}/summary")
 	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
@@ -102,7 +102,7 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations/{organizationId}/mainLocation")
 	public void getOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()));
 		res.setStatus(200);
@@ -112,7 +112,7 @@ public class OrganizationsController {
 	@PutMapping("/api/organizations/{organizationId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.formatOrganizationSummary(crm.enableOrganization(organizationId));
 		res.setStatus(200);
@@ -122,7 +122,7 @@ public class OrganizationsController {
 	@PutMapping("/api/organizations/{organizationId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier organizationId = new Identifier(id);
 		DataElement data = transformer.formatOrganizationSummary(crm.enableOrganization(organizationId));
 		res.setStatus(200);

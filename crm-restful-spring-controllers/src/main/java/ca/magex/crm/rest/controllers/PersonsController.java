@@ -53,28 +53,28 @@ public class PersonsController {
 	}
 	
 	public PersonName extractLegalName(DataObject body) {
-		return new JsonTransformer(crm, locale).parsePersonName("legalName", body);
+		return new JsonTransformer(crm, locale, false).parsePersonName("legalName", body);
 	}
 
 	public MailingAddress extractAddress(DataObject body) {
-		return new JsonTransformer(crm, locale).parseMailingAddress("address", body);
+		return new JsonTransformer(crm, locale, false).parseMailingAddress("address", body);
 	}
 
 	public Communication extractCommunication(DataObject body) {
-		return new JsonTransformer(crm, locale).parseCommunication("communication", body);
+		return new JsonTransformer(crm, locale, false).parseCommunication("communication", body);
 	}
 
 	public BusinessPosition extractPosition(DataObject body) {
-		return new JsonTransformer(crm, locale).parseBusinessPosition("position", body);
+		return new JsonTransformer(crm, locale, false).parseBusinessPosition("position", body);
 	}
 	
 	public User extractUser(DataObject body) {
-		return new JsonTransformer(crm, locale).parseUser("user", body);
+		return new JsonTransformer(crm, locale, false).parseUser("user", body);
 	}
 	
 	@GetMapping("/api/persons")
 	public void findPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataElement data = new DataArray(crm.findPersonSummaries(extractPersonFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.formatPersonSummary(e)).collect(Collectors.toList()));
 		res.setStatus(200);
@@ -84,7 +84,7 @@ public class PersonsController {
 	
 	@PostMapping("/api/persons")
 	public void createPerson(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataObject body = extractBody(req);
 		Identifier organizationId = new Identifier(body.getString("organizationId"));
 		DataElement data = transformer.formatPersonDetails(crm.createPerson(organizationId, 
@@ -96,7 +96,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}")
 	public void getPerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId));
 		res.setStatus(200);
@@ -106,7 +106,7 @@ public class PersonsController {
 	@PatchMapping("/api/persons/{personId}")
 	public void updatePerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataObject body = extractBody(req);
 		if (body.contains("legalName"))
@@ -125,7 +125,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/summary")
 	public void getPersonSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonSummary(crm.findPersonDetails(personId));
 		res.setStatus(200);
@@ -135,7 +135,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/legalName")
 	public void getPersonLegalname(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("legalName");
 		res.setStatus(200);
@@ -145,7 +145,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/address")
 	public void getPersonAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("address");
 		res.setStatus(200);
@@ -155,7 +155,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/communication")
 	public void getPersonCommunication(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("communication");
 		res.setStatus(200);
@@ -165,7 +165,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/position")
 	public void getPersonPosition(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("position");
 		res.setStatus(200);
@@ -175,7 +175,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/user")
 	public void getPersonUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("user");
 		res.setStatus(200);
@@ -185,7 +185,7 @@ public class PersonsController {
 	@PutMapping("/api/persons/{personId}/enable")
 	public void enablePerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonSummary(crm.enablePerson(personId));
 		res.setStatus(200);
@@ -195,7 +195,7 @@ public class PersonsController {
 	@PutMapping("/api/persons/{personId}/disable")
 	public void disablePerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String id) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		Identifier personId = new Identifier(id);
 		DataElement data = transformer.formatPersonSummary(crm.enablePerson(personId));
 		res.setStatus(200);
@@ -205,7 +205,7 @@ public class PersonsController {
 	@GetMapping("/api/persons/{personId}/roles")
 	public void getUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(new Identifier(personId))).getObject("user").getArray("roles");
 		res.setStatus(200);
 		res.getWriter().write(DataFormatter.formatted(data));
@@ -214,7 +214,7 @@ public class PersonsController {
 	@PostMapping("/api/persons/{personId}/roles")
 	public void setUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((DataText)r).value())).collect(Collectors.toList()));
 		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 		res.setStatus(200);
@@ -224,7 +224,7 @@ public class PersonsController {
 	@PostMapping("/api/persons/{personId}/roles/{roleId}")
 	public void addUserRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		PersonDetails details = crm.addUserRole(new Identifier(personId), crm.findRoleByCode(roleId));
 		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 		res.setStatus(200);
@@ -234,7 +234,7 @@ public class PersonsController {
 	@DeleteMapping("/api/persons/{personId}/roles/{roleId}")
 	public void removeUserRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
-		JsonTransformer transformer = new JsonTransformer(crm, locale);
+		JsonTransformer transformer = new JsonTransformer(crm, locale, false);
 		PersonDetails details = crm.removeUserRole(new Identifier(personId), crm.findRoleByCode(roleId));
 		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 		res.setStatus(200);
