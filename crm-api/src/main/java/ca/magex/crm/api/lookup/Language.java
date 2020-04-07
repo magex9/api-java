@@ -1,11 +1,16 @@
 package ca.magex.crm.api.lookup;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import ca.magex.crm.api.system.Lang;
 
 public class Language implements Serializable {
 
@@ -13,20 +18,22 @@ public class Language implements Serializable {
 
 	private String code;
 	
-	private String name;
+	private Map<Locale, String> names;
 
-	public Language(String code, String name) {
+	public Language(String code, String english, String french) {
 		super();
 		this.code = code;
-		this.name = name;
+		this.names = new HashMap<Locale, String>();
+		this.names.put(Lang.ENGLISH, english);
+		this.names.put(Lang.FRENCH, french);
 	}
 	
 	public String getCode() {
 		return code;
 	}
 	
-	public String getName() {
-		return name;
+	public String getName(Locale locale) {
+		return names.get(locale);
 	}
 	
 	@Override

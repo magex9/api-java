@@ -3,8 +3,14 @@ package ca.magex.crm.api.lookup;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import ca.magex.crm.api.system.Lang;
 
 public class BusinessUnit implements Serializable {
 
@@ -12,20 +18,22 @@ public class BusinessUnit implements Serializable {
 
 	private Integer code;
 	
-	private String name;
+	private Map<Locale, String> names;
 
-	public BusinessUnit(Integer code, String name) {
+	public BusinessUnit(Integer code, String english, String french) {
 		super();
 		this.code = code;
-		this.name = name;
+		this.names = new HashMap<Locale, String>();
+		this.names.put(Lang.ENGLISH, english);
+		this.names.put(Lang.FRENCH, french);
 	}
 	
 	public Integer getCode() {
 		return code;
 	}
 	
-	public String getName() {
-		return name;
+	public String getName(Locale locale) {
+		return names.get(locale);
 	}
 	
 	@Override
