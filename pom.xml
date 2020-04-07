@@ -19,7 +19,8 @@
 		<module>crm-spring-jwt-security</module>
 		<module>crm-spring-oauth-security</module>
 		<module>crm-graphql-spring-mvc</module>
-		<module>crm-graphql-jwt-spring-boot-server</module>
+		<module>crm-graphql-spring-boot-jwt-server</module>
+		<module>crm-graphql-spring-boot-noauth-server</module>
 		<module>crm-graphql-client</module>
 		<module>crm-jsonld-transformer</module>
 		<module>crm-restful-spring-controllers</module>

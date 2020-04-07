@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-graphql-jwt-spring-boot-server</artifactId>
+	<artifactId>crm-graphql-spring-boot-jwt-server</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<description>Spring Boot Server using JWT for securing the GraphQL API</description>
@@ -31,7 +31,13 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-graphql-spring-mvc</artifactId>
+			<artifactId>crm-graphql-spring-controllers</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-spring-jwt-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
