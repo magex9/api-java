@@ -40,6 +40,10 @@
 			<version>0.9.1</version>
 		</dependency>
 
-	</dependencies>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
 
+	</dependencies>
 </project>
