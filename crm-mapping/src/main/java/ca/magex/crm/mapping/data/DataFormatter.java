@@ -22,13 +22,21 @@ public class DataFormatter {
 	
 	private Stack<String> contexts;
 	
-	public DataFormatter() {
-		this(null, true);
+	public DataFormatter(boolean indented) {
+		this(indented ? 0 : null);
 	}
 	
-	public DataFormatter(Integer indentation, boolean typed) {
+	private DataFormatter(Integer indentation) {
 		this.indentation = indentation;
 		this.contexts = new Stack<String>();
+	}
+	
+	public static final String compact(DataElement data) {
+		return new DataFormatter(false).stringify(data);
+	}
+	
+	public static final String formatted(DataElement data) {
+		return new DataFormatter(true).stringify(data);
 	}
 	
 	public Integer getIndentation() {
@@ -79,7 +87,16 @@ public class DataFormatter {
 	}
 	
 	public void stream(DataElement data, OutputStream os) throws IOException {
-		os.write("null".getBytes());
+		if (data.getClass().equals(DataElement.class)) { 
+			os.write("null".getBytes());
+		} else {
+			try {
+				getClass().getMethod("stream", new Class[] { data.getClass(), OutputStream.class })
+					.invoke(this, new Object[] { data, os });
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Unable to find stream class for: " + data.getClass(), e);
+			}
+		}
 	}
 	
 	public void stream(DataText data, OutputStream os) throws IOException {

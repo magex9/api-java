@@ -51,7 +51,7 @@ public final class DataObject extends DataElement {
 		return map.get(key) != null && !map.get(key).getClass().equals(DataElement.class);
 	}
 
-	public boolean contains(String key, Class<?> cls) {
+	public boolean contains(String key, Class<? extends DataElement> cls) {
 		return contains(key) && map.get(key).getClass().equals(cls);
 	}
 	

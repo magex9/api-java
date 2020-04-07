@@ -4,10 +4,12 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class DataElement {
 	
+	public static final DataElement UNDEFINED = new DataElement();
+	
 	private final String mid;
 
 	public DataElement() {
-		this.mid = digest(stringify(new DataFormatter()));
+		this.mid = digest(stringify(new DataFormatter(false)));
 	}
 	
 	public DataElement(String mid) {
@@ -43,7 +45,7 @@ public class DataElement {
 
 	@Override
 	public final String toString() {
-		return new DataFormatter().stringify(this);
+		return new DataFormatter(false).stringify(this);
 	}
 
 }
