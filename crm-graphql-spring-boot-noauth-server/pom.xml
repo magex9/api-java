@@ -11,14 +11,12 @@
 	</parent>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-graphql-jwt-spring-boot-server</artifactId>
+	<artifactId>crm-graphql-spring-boot-noauth-server</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<description>Spring Boot Server using JWT for securing the GraphQL API</description>
+	<description>Unauthenticated Spring Boot Server for the GraphQL API</description>
 
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -31,7 +29,7 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-graphql-spring-mvc</artifactId>
+			<artifactId>crm-graphql-spring-controllers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -51,22 +49,6 @@
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-		</dependency>
-
 		<!-- Test Dependencies -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -80,6 +62,35 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>11</source>
+					<target>11</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>
+						--illegal-access=permit
+					</argLine>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<argLine>
+						--illegal-access=permit
+					</argLine>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
