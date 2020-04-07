@@ -3,10 +3,13 @@ package ca.magex.crm.amnesia.services;
 import static ca.magex.crm.amnesia.AmnesiaDB.CRM_ADMIN;
 import static ca.magex.crm.amnesia.AmnesiaDB.RE_ADMIN;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.services.CrmLocationPolicy;
 import ca.magex.crm.api.system.Identifier;
 
+@Component
 public class AmnesiaLocationPolicy implements CrmLocationPolicy {
 	
 	private AmnesiaDB db;

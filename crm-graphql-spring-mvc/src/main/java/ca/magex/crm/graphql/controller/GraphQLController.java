@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.magex.crm.graphql.service.GraphQLOrganizationsService;
+import ca.magex.crm.graphql.service.GraphQLCrmServices;
 import graphql.servlet.internal.GraphQLRequest;
 
 @RequestMapping("/graphql")
@@ -24,7 +24,7 @@ public class GraphQLController {
 
 	@Autowired
 	@Qualifier("graphQLOrganizationService")
-	private GraphQLOrganizationsService graphQLService;
+	private GraphQLCrmServices graphQLService;
 
 	@PostMapping
 	public ResponseEntity<Object> doQuery(@RequestBody GraphQLRequest request, HttpServletRequest req) throws JSONException {

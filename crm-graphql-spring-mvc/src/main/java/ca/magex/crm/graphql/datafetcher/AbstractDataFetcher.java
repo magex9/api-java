@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -178,5 +179,16 @@ public abstract class AbstractDataFetcher {
 	 */
 	protected Role extractRole(DataFetchingEnvironment environment, String roleKey) {
 		return crm.findRoleByCode(environment.getArgument(roleKey));
+	}
+	
+	/**
+	 * Extracts the role from the environment
+	 * @param environment
+	 * @param businessKey
+	 * @return
+	 */
+	protected List<Role> extractRoles(DataFetchingEnvironment environment, String roleKey) {
+		List<String> roles = environment.getArgument(roleKey);
+		return roles.stream().map(crm::findRoleByCode).collect(Collectors.toList());		
 	}
 }

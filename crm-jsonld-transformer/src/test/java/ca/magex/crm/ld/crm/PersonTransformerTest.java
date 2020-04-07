@@ -5,9 +5,15 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.amnesia.services.AmnesiaFactory;
+import ca.magex.crm.amnesia.services.AmnesiaAnonymousPolicies;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -17,24 +23,49 @@ import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.ld.LinkedDataFormatter;
 import ca.magex.crm.ld.data.DataObject;
+import ca.magex.crm.test.TestConfig;
 
-public class PersonTransformerTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
+public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 
+	@Autowired private CrmLookupService lookupService;
+	@Autowired private CrmValidation validationService;
+	@Autowired private CrmOrganizationService organizationService;
+	@Autowired private CrmLocationService locationService;
+	@Autowired private CrmPersonService personService;
+
+	private SecuredCrmServices service = null;
+
+	@Before
+	public void init() {
+		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
+		service = new SecuredCrmServices(
+				lookupService, validationService,
+				organizationService, policies,
+				locationService, policies,
+				personService, policies);
+	}
+	
 	@Test
 	public void testPersonLinkedData() throws Exception {
-		SecuredCrmServices crm = AmnesiaFactory.getAnonymousService();
 		Identifier personId = new Identifier("abc");
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(crm.findSalutationByCode(1), "Chris", "P", "Bacon");
-		Country canada = crm.findCountryByCode("CA");
+		PersonName legalName = new PersonName(service.findSalutationByCode(1), "Chris", "P", "Bacon");
+		Country canada = service.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
@@ -46,12 +77,12 @@ public class PersonTransformerTest {
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(crm.findRoleByCode("SYS_AMDIN"));
-		roles.add(crm.findRoleByCode("RE_ADMIN"));
+		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		
-		DataObject obj = new PersonDetailsTransformer(crm).format(person);
+		DataObject obj = new PersonDetailsTransformer(service).format(person);
 		
 		assertEquals("{\n" + 
 				"  \"organization\": \"xyz\",\n" + 
@@ -189,7 +220,7 @@ public class PersonTransformerTest {
 				"  }\n" + 
 				"}", obj.formatted());
 		
-		PersonDetails reloaded = new PersonDetailsTransformer(crm).parse(obj.formatted());
+		PersonDetails reloaded = new PersonDetailsTransformer(service).parse(obj.formatted());
 		
 		assertEquals(person.getPersonId(), reloaded.getPersonId());
 		assertEquals(person.getOrganizationId(), reloaded.getOrganizationId());

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Service;
+
 import ca.magex.crm.amnesia.Lookups;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.Country;
@@ -12,6 +14,7 @@ import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
+@Service("amnesiaLookupService")
 public class AmnesiaLookupService implements CrmLookupService {
 
 	private Lookups<Status, String> statuses;

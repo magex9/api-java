@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.client;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
@@ -15,22 +16,24 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Status;
 
 /**
  * Implementation of the Organization Service that uses a GraphQL Server
  * 
  * @author Jonny
  */
-public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmOrganizationService, CrmLocationService, CrmPersonService {
+public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmServices {
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
@@ -409,5 +412,77 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				paging.getPageSize(),
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
+	}
+
+	@Override
+	public List<Status> findStatuses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Status findStatusByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Role> findRoles() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRoleByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Country> findCountries() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Country findCountryByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Salutation> findSalutations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Salutation findSalutationByCode(Integer code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

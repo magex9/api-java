@@ -11,7 +11,7 @@
 	</parent>
 
 	<groupId>ca.magex.crm</groupId>
-	<artifactId>crm-spring-noauth-security</artifactId>
+	<artifactId>crm-spring-oauth-security</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<description>Spring Boot Server using OAuth2</description>
