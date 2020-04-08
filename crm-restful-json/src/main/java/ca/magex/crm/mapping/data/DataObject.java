@@ -22,6 +22,10 @@ public final class DataObject extends DataElement {
 		this(new ArrayList<DataPair>());
 	}
 	
+	public DataObject(String text) {
+		this(DataParser.parseObject(text).pairs);
+	}
+	
 	public DataObject(List<DataPair> pairs) {
 		super(digest(pairs.stream().map(e -> e.mid()).collect(Collectors.joining(","))));
 		this.pairs = Collections.unmodifiableList(pairs);

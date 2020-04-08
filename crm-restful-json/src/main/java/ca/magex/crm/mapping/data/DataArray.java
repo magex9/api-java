@@ -10,6 +10,14 @@ public final class DataArray extends DataElement {
 	
 	private final List<DataElement> elements;
 	
+	public DataArray() {
+		this(new ArrayList<DataElement>());
+	}
+	
+	public DataArray(String text) {
+		this(DataParser.parseArray(text).elements);
+	}
+	
 	public DataArray(List<DataElement> elements) {
 		super(digest(elements.stream().map(e -> e.mid()).collect(Collectors.joining(","))));
 		this.elements = Collections.unmodifiableList(elements);
