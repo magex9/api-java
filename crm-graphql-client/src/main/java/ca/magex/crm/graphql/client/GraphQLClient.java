@@ -4,12 +4,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -62,7 +65,7 @@ public abstract class GraphQLClient implements Closeable {
 	 * @param username
 	 * @param password
 	 */
-	public void authenticate(String authEndpoint, String username, String password) {
+	public void authenticateJwt(String authEndpoint, String username, String password) {
 		long t1 = System.currentTimeMillis();
 		try {
 			HttpPost httpPost = new HttpPost(authEndpoint);
@@ -75,6 +78,37 @@ public abstract class GraphQLClient implements Closeable {
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 					JSONObject token = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
 					this.jwtToken = token.getString("token");
+				}
+				else {
+					throw new GraphQLClientException("Status: " + response.getStatusLine().getStatusCode());
+				}
+			}
+		}
+		catch(Exception e) {
+			throw new GraphQLClientException("Error during authentication", e);
+		}
+		finally {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("execution of authenticate() took " + (System.currentTimeMillis() - t1) + "ms.");
+			}
+		}
+	}
+	
+	/**
+	 * runs our authentication mechanism
+	 * @param authEndpoint
+	 * @param username
+	 * @param password
+	 */
+	public void authenticateOauth(String authEndpoint, String username, String password) {
+		long t1 = System.currentTimeMillis();
+		try {
+			HttpGet httpGet = new HttpGet(authEndpoint);			
+			try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					Arrays.asList(response.getAllHeaders()).forEach(System.out::println);
+					String responseString = StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8"));
+					System.out.println(responseString);
 				}
 				else {
 					throw new GraphQLClientException("Status: " + response.getStatusLine().getStatusCode());
@@ -164,6 +198,10 @@ public abstract class GraphQLClient implements Closeable {
 	protected String toVariableReplacementValue(Object value) {
 		if (value == null) {
 			return "";
+		}
+		if (value instanceof List) {
+			List<?> l = (List<?>) value;
+			return "\"" + StringUtils.join(l, "\",\"") + "\"";
 		}
 		else {
 			return value.toString();

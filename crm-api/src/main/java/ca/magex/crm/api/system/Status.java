@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public enum Status {
+import ca.magex.crm.api.lookup.CrmLookupItem;
+
+public enum Status implements CrmLookupItem {
 
 	ACTIVE("Active", "Actif"), 
 	INACTIVE("Inactive", "Inactif"), 
@@ -21,12 +23,13 @@ public enum Status {
 		this.names.put(Lang.FRENCH, french);
 	}
 	
+	@Override
 	public String getCode() {
 		return code;
 	}
 	
+	@Override
 	public String getName(Locale locale) {
 		return names.get(locale);
 	}
-	
 }

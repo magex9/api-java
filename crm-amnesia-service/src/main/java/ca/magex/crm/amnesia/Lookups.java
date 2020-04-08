@@ -3,7 +3,6 @@ package ca.magex.crm.amnesia;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +59,7 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 					.split("\n"))
 				.stream().map(line -> {
 					try {
-						String[] parts = line.split("\t+");
+						String[] parts = line.split("\t+");						
 						Object code = parts[0];
 						if (codeClass.equals(Integer.class)) {
 							code = Integer.parseInt(parts[0]);

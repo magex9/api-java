@@ -32,19 +32,19 @@ public interface CrmLookupService {
 	Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
 	
 	List<Salutation> findSalutations();
-	Salutation findSalutationByCode(Integer code) throws ItemNotFoundException;
+	Salutation findSalutationByCode(String code) throws ItemNotFoundException;
 	Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
     
 	List<BusinessSector> findBusinessSectors();
-	BusinessSector findBusinessSectorByCode(Integer code) throws ItemNotFoundException;
+	BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException;
 	BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
     
 	List<BusinessUnit> findBusinessUnits();
-	BusinessUnit findBusinessUnitByCode(Integer code) throws ItemNotFoundException;
+	BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException;
 	BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
     
 	List<BusinessClassification> findBusinessClassifications();
-	BusinessClassification findBusinessClassificationByCode(Integer code) throws ItemNotFoundException;
+	BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException;
 	BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
     
 }

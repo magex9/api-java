@@ -66,7 +66,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode(3), "Chris", "P", "Bacon");
+		PersonName legalName = new PersonName(service.findSalutationByCode("3"), "Chris", "P", "Bacon");
 		Country canada = service.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
@@ -79,7 +79,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("SYS_ADMIN"));
 		roles.add(service.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
@@ -117,7 +117,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"  \"user\": {\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      \"SYS_AMDIN\",\n" + 
+				"      \"SYS_ADMIN\",\n" + 
 				"      \"RE_ADMIN\"\n" + 
 				"    ]\n" + 
 				"  }\n" + 
@@ -140,7 +140,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode(3), "Chris", "P", "Bacon");
+		PersonName legalName = new PersonName(service.findSalutationByCode("3"), "Chris", "P", "Bacon");
 		Country canada = service.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
@@ -153,7 +153,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("SYS_ADMIN"));
 		roles.add(service.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
@@ -181,7 +181,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"PersonName\",\n" + 
 				"    \"salutation\": {\n" + 
 				"      \"@type\": \"Salutation\",\n" + 
-				"      \"@value\": 3,\n" + 
+				"      \"@value\": \"3\",\n" + 
 				"      \"@en\": \"Mr.\",\n" + 
 				"      \"@fr\": \"M.\"\n" + 
 				"    },\n" + 
@@ -222,7 +222,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": {\n" + 
 				"      \"@type\": \"BusinessSector\",\n" + 
-				"      \"@value\": 1,\n" + 
+				"      \"@value\": \"1\",\n" + 
 				"      \"@en\": \"External\",\n" + 
 				"      \"@fr\": \"External\"\n" + 
 				"    }\n" + 
@@ -231,7 +231,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"User\",\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      \"SYS_AMDIN\",\n" + 
+				"      \"SYS_ADMIN\",\n" + 
 				"      \"RE_ADMIN\"\n" + 
 				"    ]\n" + 
 				"  }\n" + 

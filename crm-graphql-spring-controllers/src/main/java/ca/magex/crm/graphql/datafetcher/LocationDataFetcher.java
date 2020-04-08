@@ -39,6 +39,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 
 	public LocationsFilter extractFilter(Map<String, Object> filter) {
 		String displayName = (String) filter.get("displayName");
+		String organizationId = (String) filter.get("organizationId");
 		Status status = null;
 		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
 			try {
@@ -48,7 +49,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 			}
 		}
-		return new LocationsFilter(displayName, status);
+		return new LocationsFilter(organizationId == null ? null : new Identifier(organizationId), displayName, status);
 	}
 	
 	public DataFetcher<Integer> countLocations() {
