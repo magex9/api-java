@@ -483,7 +483,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public Salutation findSalutationByCode(Integer code) throws ItemNotFoundException {
+	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -519,7 +519,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByCode(Integer code) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -537,7 +537,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByCode(Integer code) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -555,7 +555,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByCode(Integer code) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -30,7 +30,6 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataNumber;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataPair;
 import ca.magex.crm.mapping.data.DataText;
@@ -308,7 +307,7 @@ public class JsonTransformer {
 					}
 				} else if (locale == null) {
 					if (salutation != null && salutation.getCode() != null)
-						parent.add(new DataPair(key, new DataNumber(salutation.getCode())));
+						parent.add(new DataPair(key, new DataText(salutation.getCode())));
 				} else {
 					if (salutation != null && salutation.getName(locale) != null)
 						parent.add(new DataPair(key, new DataText(salutation.getName(locale))));
@@ -398,7 +397,7 @@ public class JsonTransformer {
 					}
 				} else if (locale == null) {
 					if (sector != null && sector.getCode() != null)
-						parent.add(new DataPair(key, new DataNumber(sector.getCode())));
+						parent.add(new DataPair(key, new DataText(sector.getCode())));
 				} else {
 					if (sector != null && sector.getName(locale) != null)
 						parent.add(new DataPair(key, new DataText(sector.getName(locale))));
@@ -428,7 +427,7 @@ public class JsonTransformer {
 					}
 				} else if (locale == null) {
 					if (unit != null && unit.getCode() != null)
-						parent.add(new DataPair(key, new DataNumber(unit.getCode())));
+						parent.add(new DataPair(key, new DataText(unit.getCode())));
 				} else {
 					if (unit != null && unit.getName(locale) != null)
 						parent.add(new DataPair(key, new DataText(unit.getName(locale))));
@@ -458,7 +457,7 @@ public class JsonTransformer {
 					}
 				} else if (locale == null) {
 					if (classification != null && classification.getCode() != null)
-						parent.add(new DataPair(key, new DataNumber(classification.getCode())));
+						parent.add(new DataPair(key, new DataText(classification.getCode())));
 				} else {
 					if (classification != null && classification.getName(locale) != null)
 						parent.add(new DataPair(key, new DataText(classification.getName(locale))));
@@ -646,17 +645,17 @@ public class JsonTransformer {
 	}
 	
 	public Salutation parseSalutation(String key, DataObject data) {
-		if (data.contains(key, DataNumber.class)) {
-			return crm.findSalutationByCode(data.getInt(key));
-		} else if (data.contains(key, DataText.class)) {
-			if (locale == null)
-				throw new IllegalArgumentException("Local cannot be null when looking up by name");
-			return crm.findSalutationByLocalizedName(locale, data.getString(key));
+		if (data.contains(key, DataText.class)) {
+			if (locale == null) {
+				return crm.findSalutationByCode(data.getString(key));
+			} else {
+				return crm.findSalutationByLocalizedName(locale, data.getString(key));
+			}
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Salutation"))
 				throw new IllegalArgumentException("Unexpected link data type for Salutation: " + ld.getString("@type"));
-			return crm.findSalutationByCode(ld.getInt("@value")); 
+			return crm.findSalutationByCode(ld.getString("@value")); 
 		}
 		return null;
 	}
@@ -694,49 +693,49 @@ public class JsonTransformer {
 	}
 	
 	public BusinessSector parseBusinessSector(String key, DataObject data) {
-		if (data.contains(key, DataNumber.class)) {
-			return crm.findBusinessSectorByCode(data.getInt(key));
-		} else if (data.contains(key, DataText.class)) {
-			if (locale == null)
-				throw new IllegalArgumentException("Local cannot be null when looking up by name");
-			return crm.findBusinessSectorByLocalizedName(locale, data.getString(key));
+		if (data.contains(key, DataText.class)) {
+			if (locale == null) {
+				return crm.findBusinessSectorByCode(data.getString(key));
+			} else {
+				return crm.findBusinessSectorByLocalizedName(locale, data.getString(key));
+			}
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessSector"))
 				throw new IllegalArgumentException("Unexpected link data type for BusinessSector: " + ld.getString("@type"));
-			return crm.findBusinessSectorByCode(ld.getInt("@value")); 
+			return crm.findBusinessSectorByCode(ld.getString("@value")); 
 		}
 		return null;
 	}
 	
 	public BusinessUnit parseBusinessUnit(String key, DataObject data) {
-		if (data.contains(key, DataNumber.class)) {
-			return crm.findBusinessUnitByCode(data.getInt(key));
-		} else if (data.contains(key, DataText.class)) {
-			if (locale == null)
-				throw new IllegalArgumentException("Local cannot be null when looking up by name");
-			return crm.findBusinessUnitByLocalizedName(locale, data.getString(key));
+		if (data.contains(key, DataText.class)) {
+			if (locale == null) {
+				return crm.findBusinessUnitByCode(data.getString(key));
+			} else {
+				return crm.findBusinessUnitByLocalizedName(locale, data.getString(key));
+			}
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessUnit"))
 				throw new IllegalArgumentException("Unexpected link data type for BusinessUnit: " + ld.getString("@type"));
-			return crm.findBusinessUnitByCode(ld.getInt("@value")); 
+			return crm.findBusinessUnitByCode(ld.getString("@value")); 
 		}
 		return null;
 	}
 	
 	public BusinessClassification parseBusinessClassification(String key, DataObject data) {
-		if (data.contains(key, DataNumber.class)) {
-			return crm.findBusinessClassificationByCode(data.getInt(key));
-		} else if (data.contains(key, DataText.class)) {
-			if (locale == null)
-				throw new IllegalArgumentException("Local cannot be null when looking up by name");
-			return crm.findBusinessClassificationByLocalizedName(locale, data.getString(key));
+		if (data.contains(key, DataText.class)) {
+			if (locale == null) {
+				return crm.findBusinessClassificationByCode(data.getString(key));
+			} else {
+				return crm.findBusinessClassificationByLocalizedName(locale, data.getString(key));
+			}
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessClassification"))
 				throw new IllegalArgumentException("Unexpected link data type for BusinessClassification: " + ld.getString("@type"));
-			return crm.findBusinessClassificationByCode(ld.getInt("@value")); 
+			return crm.findBusinessClassificationByCode(ld.getString("@value")); 
 		}
 		return null;
 	}

@@ -86,7 +86,7 @@ public abstract class AbstractDataFetcher {
 	protected PersonName extractPersonName(DataFetchingEnvironment environment, String nameKey) {
 		Map<String, Object> nameMap = environment.getArgument(nameKey);
 		return new PersonName(
-				crm.findSalutationByCode((Integer) nameMap.get("salutation")),
+				crm.findSalutationByCode((String) nameMap.get("salutation")),
 				(String) nameMap.get("firstName"),
 				(String) nameMap.get("middleName"),
 				(String) nameMap.get("lastName"));
@@ -121,9 +121,9 @@ public abstract class AbstractDataFetcher {
 	protected BusinessPosition extractBusinessPosition(DataFetchingEnvironment environment, String businessKey) {
 		Map<String, Object> businessMap = environment.getArgument(businessKey);
 		return new BusinessPosition(
-				crm.findBusinessSectorByCode((Integer) businessMap.get("sector")),
-				crm.findBusinessUnitByCode((Integer) businessMap.get("unit")),
-				crm.findBusinessClassificationByCode((Integer) businessMap.get("classification")));
+				crm.findBusinessSectorByCode((String) businessMap.get("sector")),
+				crm.findBusinessUnitByCode((String) businessMap.get("unit")),
+				crm.findBusinessClassificationByCode((String) businessMap.get("classification")));
 	}
 
 	/**

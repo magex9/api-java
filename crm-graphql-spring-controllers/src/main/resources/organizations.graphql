@@ -65,35 +65,43 @@ input PersonFilter {
 }
 
 type Query {	
+	# Organization Service 
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
 	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
 	
+	# Location Service
 	findLocation(locationId: String!): Location
 	countLocations(filter: LocationFilter!): Int!
 	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
 	
+	# Person Service
 	findPerson(personId: String!): Person
 	countPersons(filter: PersonFilter!): Int!
-	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!	
+	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
+	
+	# Lookup Service
+	findLookupValues(category: String!, code: String): [CodeLookup]  
 }
 
 type Mutation {
+	# Organization Service 
 	createOrganization(organizationName: String!): Organization
 	updateOrganization(organizationId: String!, organizationName: String, locationId: String): Organization
 	enableOrganization(organizationId: String!): Organization
 	disableOrganization(organizationId: String!): Organization	
 	
+	# Location Service
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
 	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput): Location
 	enableLocation(locationId: String!): Location
 	disableLocation(locationId: String!): Location
 	
+	# Person Service
 	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput): Person
 	enablePerson(personId: String!): Person
-	disablePerson(personId: String!): Person
-	
+	disablePerson(personId: String!): Person	
 	addUserRole(personId: String!, role: String!): Person
 	removeUserRole(personId: String!, role: String!): Person
 	setUserRoles(personId: String!, roles: [String]): Person
@@ -131,7 +139,7 @@ type Person {
 # Complex Subtypes
 type Communication {
 	jobTitle: String
-	language: Language
+	language: CodeLookup
 	email: String
 	homePhone: Telephone
 	faxNumber: String
@@ -141,18 +149,18 @@ type PersonName {
 	firstName: String
 	middleName: String
 	lastName: String
-	salutation: Salutation
+	salutation: CodeLookup
 }
 
 type BusinessPosition {
-	sector: BusinessSector
-	unit: BusinessUnit
-	classification: BusinessClassification
+	sector: CodeLookup
+	unit: CodeLookup
+	classification: CodeLookup
 }
 
 type User {
 	userName: String
-	roles: [Role]
+	roles: [CodeLookup]
 }
 
 type MailingAddress {
@@ -198,20 +206,26 @@ type Telephone {
 }
 
 # Numeric Code Values
+type CodeLookup {
+	code: String
+	englishName: String
+	frenchName: String
+}
+
 type BusinessSector {
-	code: Int
+	code: String
 	englishName: String
 	frenchName: String
 }
 
 type BusinessUnit {
-	code: Int
+	code: String
 	englishName: String
 	frenchName: String
 }
 
 type BusinessClassification {
-	code: Int
+	code: String
 	englishName: String
 	frenchName: String
 }
@@ -223,7 +237,7 @@ type Role {
 }
 
 type Salutation {
-	code: Int
+	code: String
 	englishName: String
 	frenchName: String
 }

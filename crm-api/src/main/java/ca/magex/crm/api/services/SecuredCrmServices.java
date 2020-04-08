@@ -115,7 +115,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	@Override
-	public Salutation findSalutationByCode(Integer code) throws ItemNotFoundException {
+	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
 		return lookupService.findSalutationByCode(code);
 	}
 	
@@ -145,7 +145,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByCode(Integer code) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
 		return lookupService.findBusinessSectorByCode(code);
 	}
 
@@ -160,7 +160,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByCode(Integer code) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
 		return lookupService.findBusinessUnitByCode(code);
 	}
 
@@ -175,7 +175,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByCode(Integer code) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
 		return lookupService.findBusinessClassificationByCode(code);
 	}
 

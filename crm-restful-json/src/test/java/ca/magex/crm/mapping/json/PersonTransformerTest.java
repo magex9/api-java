@@ -66,7 +66,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode(3), "Chris", "P", "Bacon");
+		PersonName legalName = new PersonName(service.findSalutationByCode("3"), "Chris", "P", "Bacon");
 		Country canada = service.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
@@ -140,7 +140,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode(3), "Chris", "P", "Bacon");
+		PersonName legalName = new PersonName(service.findSalutationByCode("3"), "Chris", "P", "Bacon");
 		Country canada = service.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
 		String email = "chris@bacon.com";
@@ -181,7 +181,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"PersonName\",\n" + 
 				"    \"salutation\": {\n" + 
 				"      \"@type\": \"Salutation\",\n" + 
-				"      \"@value\": 3,\n" + 
+				"      \"@value\": \"3\",\n" + 
 				"      \"@en\": \"Mr.\",\n" + 
 				"      \"@fr\": \"M.\"\n" + 
 				"    },\n" + 
@@ -222,7 +222,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": {\n" + 
 				"      \"@type\": \"BusinessSector\",\n" + 
-				"      \"@value\": 1,\n" + 
+				"      \"@value\": \"1\",\n" + 
 				"      \"@en\": \"External\",\n" + 
 				"      \"@fr\": \"External\"\n" + 
 				"    }\n" + 
