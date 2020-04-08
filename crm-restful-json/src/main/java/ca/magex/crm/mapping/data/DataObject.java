@@ -18,6 +18,10 @@ public final class DataObject extends DataElement {
 	
 	private final List<String> keys;
 	
+	public DataObject() {
+		this(new ArrayList<DataPair>());
+	}
+	
 	public DataObject(List<DataPair> pairs) {
 		super(digest(pairs.stream().map(e -> e.mid()).collect(Collectors.joining(","))));
 		this.pairs = Collections.unmodifiableList(pairs);
@@ -53,6 +57,14 @@ public final class DataObject extends DataElement {
 
 	public boolean contains(String key, Class<? extends DataElement> cls) {
 		return contains(key) && map.get(key).getClass().equals(cls);
+	}
+	
+	public int size() {
+		return map.size();
+	}
+	
+	public boolean isEmpty() {
+		return map.isEmpty();
 	}
 	
 	public DataElement get(String key) {

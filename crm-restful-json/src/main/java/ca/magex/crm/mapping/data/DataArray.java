@@ -28,5 +28,13 @@ public final class DataArray extends DataElement {
 	public List<DataElement> values() {
 		return elements;
 	}
+	
+	public int size() {
+		return elements.size();
+	}
+	
+	public boolean isEmpty() {
+		return elements.isEmpty();
+	}
 
 }
