@@ -53,11 +53,13 @@ input OrganizationFilter {
 }
 
 input LocationFilter {
+	organizationId: String
 	displayName: String
 	status: String
 }
 
 input PersonFilter {
+	organizationId: String
 	displayName: String
 	status: String
 }
