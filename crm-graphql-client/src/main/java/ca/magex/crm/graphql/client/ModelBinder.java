@@ -159,7 +159,7 @@ public class ModelBinder {
 					json.getString("street"),
 					json.getString("city"),
 					json.getString("province"),
-					new Country(country.getString("code"), country.getString("name"), country.getString("name")),
+					new Country(country.getString("code"), country.getString("englishName"), country.getString("frenchName")),
 					json.getString("postalCode"));
 
 		} catch (JSONException jsone) {
@@ -171,7 +171,7 @@ public class ModelBinder {
 		try {
 			JSONObject salutation = json.getJSONObject("salutation");
 			return new PersonName(
-					new Salutation(salutation.getInt("code"), salutation.getString("name"), salutation.getString("name")),
+					new Salutation(salutation.getInt("code"), salutation.getString("englishName"), salutation.getString("frenchName")),
 					json.getString("firstName"),
 					json.getString("middleName"),
 					json.getString("lastName"));
@@ -187,7 +187,7 @@ public class ModelBinder {
 			JSONObject telephone = json.getJSONObject("homePhone");
 			return new Communication(
 					json.getString("jobTitle"),
-					new Language(language.getString("code"), language.getString("name")),
+					new Language(language.getString("code"), language.getString("englishName"), language.getString("frenchName")),
 					json.getString("email"),
 					new Telephone(telephone.getString("number"), telephone.getString("extension")),
 					json.getString("faxNumber"));
@@ -202,9 +202,9 @@ public class ModelBinder {
 			JSONObject unit = json.getJSONObject("unit");
 			JSONObject classification = json.getJSONObject("classification");
 			return new BusinessPosition(
-					new BusinessSector(sector.getInt("code"), sector.getString("name")),
-					new BusinessUnit(unit.getInt("code"), unit.getString("name")),
-					new BusinessClassification(classification.getInt("code"), classification.getString("name")));
+					new BusinessSector(sector.getInt("code"), sector.getString("englishName"), sector.getString("frenchName")),
+					new BusinessUnit(unit.getInt("code"), unit.getString("englishName"), unit.getString("frenchName")),
+					new BusinessClassification(classification.getInt("code"), classification.getString("englishName"), classification.getString("frenchName")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing BusinessPosition from: " + json.toString(), jsone);
 		}
@@ -219,7 +219,7 @@ public class ModelBinder {
 			List<Role> roles = new ArrayList<>();
 			for (int i=0; i<roleArray.length(); i++) {
 				JSONObject role = roleArray.getJSONObject(i);
-				roles.add(new Role(role.getString("code"), role.getString("name"), role.getString("name")));
+				roles.add(new Role(role.getString("code"), role.getString("englishName"), role.getString("frenchName")));
 			}
 			return new User(
 					json.getString("userName"),

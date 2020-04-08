@@ -73,7 +73,7 @@ type Query {
 	
 	findPerson(personId: String!): Person
 	countPersons(filter: PersonFilter!): Int!
-	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
+	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!	
 }
 
 type Mutation {
@@ -198,36 +198,43 @@ type Telephone {
 # Numeric Code Values
 type BusinessSector {
 	code: Int
-	name: String
+	englishName: String
+	frenchName: String
 }
 
 type BusinessUnit {
 	code: Int
-	name: String
+	englishName: String
+	frenchName: String
 }
 
 type BusinessClassification {
 	code: Int
-	name: String
+	englishName: String
+	frenchName: String
 }
 
 type Role {
 	code: String
-	name: String
+	englishName: String
+	frenchName: String
 }
 
 type Salutation {
 	code: Int
-	name: String
+	englishName: String
+	frenchName: String
 }
 
 # Alphabetic Code Values
 type Country {
 	code: String
-	name: String
+	englishName: String
+	frenchName: String
 }
 
 type Language {
 	code: String
-	name: String
+	englishName: String
+	frenchName: String
 }

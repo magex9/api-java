@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.service;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -99,9 +100,20 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", personDataFetcher.setUserRoles()))
 				
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
-				.type("Country", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
-				.type("Salutation", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
-				.type("Role", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
+				.type("Country", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("Country", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("Salutation", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("Salutation", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("Role", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("Role", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("BusinessSector", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("BusinessSector", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("BusinessUnit", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("BusinessUnit", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("BusinessClassification", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("BusinessClassification", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("Language", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("Language", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
 				
 				.build();
 	}
