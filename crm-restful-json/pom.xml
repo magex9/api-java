@@ -7,18 +7,12 @@
 	<artifactId>crm-restful-json</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-<<<<<<< HEAD
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-=======
 	<parent>
 		<groupId>ca.magex.crm</groupId>
 		<artifactId>crm-maven-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../crm-maven-parent/pom.xml</relativePath>
 	</parent>
->>>>>>> 2c1464c33cbfa65c7c2707f3d9e2a7f2bc77c651
 
 	<dependencies>
 		<dependency>
