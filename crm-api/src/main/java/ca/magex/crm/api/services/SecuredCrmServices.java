@@ -21,7 +21,11 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.lookup.BusinessClassification;
+import ca.magex.crm.api.lookup.BusinessSector;
+import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
@@ -120,6 +124,67 @@ public final class SecuredCrmServices implements Crm {
 		return lookupService.findSalutationByLocalizedName(locale, name);
 	}	
 	
+	@Override
+	public List<Language> findLanguages() {
+		return lookupService.findLanguages();
+	}
+
+	@Override
+	public Language findLanguageByCode(String code) throws ItemNotFoundException {
+		return lookupService.findLanguageByCode(code);
+	}
+
+	@Override
+	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return lookupService.findLanguageByLocalizedName(locale, name);
+	}
+
+	@Override
+	public List<BusinessSector> findBusinessSectors() {
+		return lookupService.findBusinessSectors();
+	}
+
+	@Override
+	public BusinessSector findBusinessSectorByCode(Integer code) throws ItemNotFoundException {
+		return lookupService.findBusinessSectorByCode(code);
+	}
+
+	@Override
+	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return lookupService.findBusinessSectorByLocalizedName(locale, name);
+	}
+
+	@Override
+	public List<BusinessUnit> findBusinessUnits() {
+		return lookupService.findBusinessUnits();
+	}
+
+	@Override
+	public BusinessUnit findBusinessUnitByCode(Integer code) throws ItemNotFoundException {
+		return lookupService.findBusinessUnitByCode(code);
+	}
+
+	@Override
+	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return lookupService.findBusinessUnitByLocalizedName(locale, name);
+	}
+
+	@Override
+	public List<BusinessClassification> findBusinessClassifications() {
+		return lookupService.findBusinessClassifications();
+	}
+
+	@Override
+	public BusinessClassification findBusinessClassificationByCode(Integer code) throws ItemNotFoundException {
+		return lookupService.findBusinessClassificationByCode(code);
+	}
+
+	@Override
+	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name)
+			throws ItemNotFoundException {
+		return lookupService.findBusinessClassificationByLocalizedName(locale, name);
+	}
+	
 	public OrganizationDetails createOrganization(String organizationName) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
@@ -174,11 +239,11 @@ public final class SecuredCrmServices implements Crm {
 		return organizationService.findOrganizationSummaries(filter, paging);
 	}
 
-	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference,
+	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference,
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
-		return locationService.createLocation(organizationId, locationName, locationReference, address);
+		return locationService.createLocation(organizationId, displayName, reference, address);
 	}
 
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {

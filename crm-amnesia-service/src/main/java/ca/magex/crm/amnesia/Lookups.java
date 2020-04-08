@@ -3,6 +3,7 @@ package ca.magex.crm.amnesia;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +31,9 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 	
 	public Lookups(List<LOOKUP> options, Class<?> lookupClass, Class<?> codeClass) {
 		try {
-			mapByCode = new HashMap<KEY, LOOKUP>();
-			mapByName = new HashMap<Locale, Map<String, LOOKUP>>();
+			this.options = options;
+			this.mapByCode = new HashMap<KEY, LOOKUP>();
+			this.mapByName = new HashMap<Locale, Map<String, LOOKUP>>();
 			for (Locale locale : Lang.SUPPORTED) {
 				mapByName.put(locale, new HashMap<String, LOOKUP>());
 			}
