@@ -13,16 +13,17 @@
 	</properties>
 	
 	<modules>
+		<module>crm-maven-parent</module>
 		<module>crm-api</module>
 		<module>crm-test</module>
 		<module>crm-amnesia-service</module>
 		<module>crm-spring-jwt-security</module>
 		<module>crm-spring-oauth-security</module>
-		<module>crm-graphql-spring-controllers</module>
+		<!-- <module>crm-graphql-spring-controllers</module>
 		<module>crm-graphql-spring-boot-jwt-server</module>
 		<module>crm-graphql-spring-boot-noauth-server</module>
-		<module>crm-graphql-client</module>
-		<module>crm-jsonld-transformer</module>
+		<module>crm-graphql-client</module> -->
+		<module>crm-restful-json</module>
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-jwt-server</module>
 		<module>crm-restful-spring-boot-noauth-server</module>

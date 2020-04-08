@@ -194,7 +194,7 @@ public class CrmServicesTestSuite {
 		verifyLocationSummary(locSummary, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName);
 		
 		/* validate details paging with 1 match on name filter */
-		Page<LocationDetails> locDetailsPage = locationService.findLocationDetails(new LocationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<LocationDetails> locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locDetailsPage.getNumber());
 		Assert.assertEquals(1, locDetailsPage.getTotalPages());
 		Assert.assertEquals(1, locDetailsPage.getNumberOfElements());
@@ -203,7 +203,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(locDetails, locDetailsPage.getContent().get(0));
 		
 		/* validate details paging with no match on name filter */
-		locDetailsPage = locationService.findLocationDetails(new LocationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locDetailsPage.getNumber());
 		Assert.assertEquals(0, locDetailsPage.getTotalPages());
 		Assert.assertEquals(0, locDetailsPage.getNumberOfElements());
@@ -211,7 +211,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(0, locDetailsPage.getContent().size());
 		
 		/* validate summary paging with 1 match on name filter */
-		Page<LocationSummary> locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<LocationSummary> locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locSummaryPage.getNumber());
 		Assert.assertEquals(1, locSummaryPage.getTotalPages());
 		Assert.assertEquals(1, locSummaryPage.getNumberOfElements());
@@ -220,7 +220,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(locSummary, locSummaryPage.getContent().get(0));
 		
 		/* validate summary paging with no match on name filter */
-		locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locSummaryPage.getNumber());
 		Assert.assertEquals(0, locSummaryPage.getTotalPages());
 		Assert.assertEquals(0, locSummaryPage.getNumberOfElements());
@@ -359,7 +359,7 @@ public class CrmServicesTestSuite {
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, updateUser);
 		
 		/* validate details paging with 1 match on name filter */
-		Page<PersonDetails> personDetailsPage = personService.findPersonDetails(new PersonsFilter(newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<PersonDetails> personDetailsPage = personService.findPersonDetails(new PersonsFilter(orgId, newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personDetailsPage.getNumber());
 		Assert.assertEquals(1, personDetailsPage.getTotalPages());
 		Assert.assertEquals(1, personDetailsPage.getNumberOfElements());
@@ -368,7 +368,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(personDetails, personDetailsPage.getContent().get(0));
 		
 		/* validate details paging with no match on name filter */
-		personDetailsPage = personService.findPersonDetails(new PersonsFilter(newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		personDetailsPage = personService.findPersonDetails(new PersonsFilter(orgId, newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personDetailsPage.getNumber());
 		Assert.assertEquals(0, personDetailsPage.getTotalPages());
 		Assert.assertEquals(0, personDetailsPage.getNumberOfElements());
@@ -376,7 +376,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(0, personDetailsPage.getContent().size());
 		
 		/* validate summary paging with 1 match on name filter */
-		Page<PersonSummary> personSummaryPage = personService.findPersonSummaries(new PersonsFilter(newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<PersonSummary> personSummaryPage = personService.findPersonSummaries(new PersonsFilter(orgId, newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personSummaryPage.getNumber());
 		Assert.assertEquals(1, personSummaryPage.getTotalPages());
 		Assert.assertEquals(1, personSummaryPage.getNumberOfElements());
@@ -385,7 +385,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(personSummary, personSummaryPage.getContent().get(0));
 		
 		/* validate summary paging with no match on name filter */
-		personSummaryPage = personService.findPersonSummaries(new PersonsFilter(newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		personSummaryPage = personService.findPersonSummaries(new PersonsFilter(orgId, newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personSummaryPage.getNumber());
 		Assert.assertEquals(0, personSummaryPage.getTotalPages());
 		Assert.assertEquals(0, personSummaryPage.getNumberOfElements());

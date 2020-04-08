@@ -2,6 +2,7 @@ package ca.magex.crm.rest.controllers;
 	
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractBody;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractDisplayName;
+import static ca.magex.crm.rest.controllers.ContentExtractor.extractOrganizationId;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractPaging;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractStatus;
 import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
@@ -38,6 +39,10 @@ public class LocationsController {
 	@Autowired
 	private SecuredCrmServices crm;
 	
+	public LocationsFilter extractLocationFilter(HttpServletRequest req) throws BadRequestException {
+		return new LocationsFilter(extractOrganizationId(req), extractDisplayName(req), extractStatus(req));
+	}
+
 	@GetMapping("/api/locations")
 	public void findLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
@@ -48,10 +53,6 @@ public class LocationsController {
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 	
-	public LocationsFilter extractLocationFilter(HttpServletRequest req) throws BadRequestException {
-		return new LocationsFilter(extractDisplayName(req), extractStatus(req));
-	}
-
 	@PostMapping("/api/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);

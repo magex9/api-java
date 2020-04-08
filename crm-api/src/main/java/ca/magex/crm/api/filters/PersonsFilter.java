@@ -4,23 +4,31 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public class PersonsFilter implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private Identifier organizationId;
 
 	private String displayName;
 	
 	private Status status;
 	
-	public PersonsFilter(String displayName, Status status) {
+	public PersonsFilter(Identifier organizationId, String displayName, Status status) {
+		this.organizationId = organizationId;
 		this.displayName = displayName;
 		this.status = status;
 	}
 	
 	public PersonsFilter() {
-		this(null, null);
+		this(null, null, null);
+	}
+	
+	public Identifier getOrganizationId() {
+		return organizationId;
 	}
 	
 	public Status getStatus() {

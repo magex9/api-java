@@ -7,14 +7,17 @@
 	<artifactId>crm-restful-client</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+	<parent>
+		<groupId>ca.magex.crm</groupId>
+		<artifactId>crm-maven-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../crm-maven-parent/pom.xml</relativePath>
+	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>ca.magex.crm</groupId>
-			<artifactId>crm-jsonld-transformer</artifactId>
+			<artifactId>crm-restful-json</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -22,44 +25,26 @@
 			<artifactId>unirest-java</artifactId>
 			<version>1.4.9</version>
 		</dependency>
+
+		<!-- Test Dependencies -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.26</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>
-						--illegal-access=permit
-					</argLine>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<configuration>
-					<argLine>
-						--illegal-access=permit
-					</argLine>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataObject;
@@ -31,6 +32,15 @@ public class ContentExtractor {
 		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
 		Locale locale = req.getHeader("Locale") != null && req.getHeader("Locale").equals("fr") ? Lang.FRENCH : Lang.ENGLISH;
 		return new JsonTransformer(crm, locale, linked);
+	}
+	
+	public static Identifier extractOrganizationId(HttpServletRequest req) throws IllegalArgumentException {
+		String value = req.getParameter("organizationId");
+		if (value == null)
+			return null;
+		if (value.length() > 60)
+			throw new IllegalArgumentException("The organizationId name must be under 60 characters");
+		return new Identifier(value);
 	}
 
 	public static String extractDisplayName(HttpServletRequest req) throws IllegalArgumentException {
