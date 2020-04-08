@@ -2,6 +2,7 @@ package ca.magex.crm.rest.controllers;
 
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractBody;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractDisplayName;
+import static ca.magex.crm.rest.controllers.ContentExtractor.extractOrganizationId;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractPaging;
 import static ca.magex.crm.rest.controllers.ContentExtractor.extractStatus;
 import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
@@ -46,7 +47,7 @@ public class PersonsController {
 	private SecuredCrmServices crm;
 	
 	public PersonsFilter extractPersonFilter(HttpServletRequest req) throws BadRequestException {
-		return new PersonsFilter(extractDisplayName(req), extractStatus(req));
+		return new PersonsFilter(extractOrganizationId(req), extractDisplayName(req), extractStatus(req));
 	}
 	
 	public PersonName extractLegalName(HttpServletRequest req, DataObject body) {
