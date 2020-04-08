@@ -646,11 +646,11 @@ public class JsonTransformer {
 	
 	public Salutation parseSalutation(String key, DataObject data) {
 		if (data.contains(key, DataText.class)) {
-			if (locale == null) {
-				return crm.findSalutationByCode(data.getString(key));
-			} else {
-				return crm.findSalutationByLocalizedName(locale, data.getString(key));
-			}
+			return crm.findSalutationByCode(data.getString(key));
+		} else if (data.contains(key, DataText.class)) {
+			if (locale == null)
+				throw new IllegalArgumentException("Local cannot be null when looking up by name");
+			return crm.findSalutationByLocalizedName(locale, data.getString(key));
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Salutation"))
@@ -694,11 +694,11 @@ public class JsonTransformer {
 	
 	public BusinessSector parseBusinessSector(String key, DataObject data) {
 		if (data.contains(key, DataText.class)) {
-			if (locale == null) {
-				return crm.findBusinessSectorByCode(data.getString(key));
-			} else {
-				return crm.findBusinessSectorByLocalizedName(locale, data.getString(key));
-			}
+			return crm.findBusinessSectorByCode(data.getString(key));
+		} else if (data.contains(key, DataText.class)) {
+			if (locale == null)
+				throw new IllegalArgumentException("Local cannot be null when looking up by name");
+			return crm.findBusinessSectorByLocalizedName(locale, data.getString(key));
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessSector"))
@@ -710,11 +710,11 @@ public class JsonTransformer {
 	
 	public BusinessUnit parseBusinessUnit(String key, DataObject data) {
 		if (data.contains(key, DataText.class)) {
-			if (locale == null) {
-				return crm.findBusinessUnitByCode(data.getString(key));
-			} else {
-				return crm.findBusinessUnitByLocalizedName(locale, data.getString(key));
-			}
+			return crm.findBusinessUnitByCode(data.getString(key));
+		} else if (data.contains(key, DataText.class)) {
+			if (locale == null)
+				throw new IllegalArgumentException("Local cannot be null when looking up by name");
+			return crm.findBusinessUnitByLocalizedName(locale, data.getString(key));
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessUnit"))
@@ -726,11 +726,11 @@ public class JsonTransformer {
 	
 	public BusinessClassification parseBusinessClassification(String key, DataObject data) {
 		if (data.contains(key, DataText.class)) {
-			if (locale == null) {
-				return crm.findBusinessClassificationByCode(data.getString(key));
-			} else {
-				return crm.findBusinessClassificationByLocalizedName(locale, data.getString(key));
-			}
+			return crm.findBusinessClassificationByCode(data.getString(key));
+		} else if (data.contains(key, DataText.class)) {
+			if (locale == null)
+				throw new IllegalArgumentException("Local cannot be null when looking up by name");
+			return crm.findBusinessClassificationByLocalizedName(locale, data.getString(key));
 		} else if (data.contains(key, DataObject.class)) {
 			DataObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessClassification"))
