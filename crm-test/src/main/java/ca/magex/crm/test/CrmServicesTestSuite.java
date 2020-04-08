@@ -231,10 +231,10 @@ public class CrmServicesTestSuite {
 	private void runPersonServiceTests(Identifier orgId) {		
 		// TODO - use lookup service to get the values for the lookups
 		long personCount = personService.countPersons(new PersonsFilter());
-		final PersonName originalName = new PersonName(new Salutation(3, "Mr.", "M."), "Mike", "Peter", "Johns");
+		final PersonName originalName = new PersonName(new Salutation("3", "Mr.", "M."), "Mike", "Peter", "Johns");
 		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K4J9O9");
 		final Communication originalComms = new Communication("Engineer", new Language("en", "English", "Anglais"), "Mike.Johns@ABC.ca", new Telephone("6135554545", ""), "6135554545");
-		final BusinessPosition originalPosition = new BusinessPosition(new BusinessSector(1, "External", "External"), new BusinessUnit(2, "Data Management", "Data Management"), new BusinessClassification(3, "Manager", "Manager"));
+		final BusinessPosition originalPosition = new BusinessPosition(new BusinessSector("1", "External", "External"), new BusinessUnit("2", "Data Management", "Data Management"), new BusinessClassification("3", "Manager", "Manager"));
 		
 		/* create a person and verify results */
 		PersonDetails personDetails = personService.createPerson(orgId, 
@@ -266,7 +266,7 @@ public class CrmServicesTestSuite {
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, null);
 		
 		/* update person name and verify */
-		final PersonName newName = new PersonName(new Salutation(2, "Mrs.", "Mme."), "Susan", "Pauline", "Anderson");
+		final PersonName newName = new PersonName(new Salutation("2", "Mrs.", "Mme."), "Susan", "Pauline", "Anderson");
 		personDetails = personService.updatePersonName(personDetails.getPersonId(), newName);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition, null);
 		
@@ -299,7 +299,7 @@ public class CrmServicesTestSuite {
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition, null);
 		
 		/* update person position and verify */
-		final BusinessPosition newPosition = new BusinessPosition(new BusinessSector(3, "Intel", "Intel"), new BusinessUnit(2, "Data Management", "Data Management"), new BusinessClassification(1, "Developer", "Developer"));
+		final BusinessPosition newPosition = new BusinessPosition(new BusinessSector("3", "Intel", "Intel"), new BusinessUnit("2", "Data Management", "Data Management"), new BusinessClassification("1", "Developer", "Developer"));
 		personDetails = personService.updatePersonBusinessPosition(personDetails.getPersonId(), newPosition);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, null);
 		

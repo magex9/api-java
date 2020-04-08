@@ -109,7 +109,7 @@ public class GraphQLCrmServices {
 				.type("BusinessSector", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
 				.type("BusinessSector", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
 				.type("BusinessUnit", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
-				.type("BusinessUnit", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("BusinessUnit", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))				
 				.type("BusinessClassification", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
 				.type("BusinessClassification", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
 				.type("Language", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))

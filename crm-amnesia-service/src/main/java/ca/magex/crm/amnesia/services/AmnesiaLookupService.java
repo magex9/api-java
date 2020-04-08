@@ -27,25 +27,25 @@ public class AmnesiaLookupService implements CrmLookupService {
 	
 	private Lookups<Country, String> countries;
 	
-	private Lookups<Salutation, Integer> salutations;
+	private Lookups<Salutation, String> salutations;
 	
 	private Lookups<Language, String> languages;
 	
-	private Lookups<BusinessSector, Integer> sectors;
+	private Lookups<BusinessSector, String> sectors;
 	
-	private Lookups<BusinessUnit, Integer> units;
+	private Lookups<BusinessUnit, String> units;
 	
-	private Lookups<BusinessClassification, Integer> classifications;
+	private Lookups<BusinessClassification, String> classifications;
 	
 	public AmnesiaLookupService() {
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
 		roles = new Lookups<Role, String>(Role.class, String.class);
 		countries = new Lookups<Country, String>(Country.class, String.class);
-		salutations = new Lookups<Salutation, Integer>(Salutation.class, Integer.class);
+		salutations = new Lookups<Salutation, String>(Salutation.class, String.class);
 		languages = new Lookups<Language, String>(Language.class, String.class);
-		sectors = new Lookups<BusinessSector, Integer>(BusinessSector.class, Integer.class);
-		units = new Lookups<BusinessUnit, Integer>(BusinessUnit.class, Integer.class);
-		classifications = new Lookups<BusinessClassification, Integer>(BusinessClassification.class, Integer.class);
+		sectors = new Lookups<BusinessSector, String>(BusinessSector.class, String.class);
+		units = new Lookups<BusinessUnit, String>(BusinessUnit.class, String.class);
+		classifications = new Lookups<BusinessClassification, String>(BusinessClassification.class, String.class);
 	}
 	
 	public List<Status> findStatuses() {
@@ -88,7 +88,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 		return salutations.getOptions();
 	}
 	
-	public Salutation findSalutationByCode(Integer code) throws ItemNotFoundException {
+	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
 		return salutations.findByCode(code);
 	}
 	
@@ -117,7 +117,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByCode(Integer code) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
 		return sectors.findByCode(code);
 	}
 
@@ -132,7 +132,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByCode(Integer code) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
 		return units.findByCode(code);
 	}
 
@@ -147,7 +147,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByCode(Integer code) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
 		return classifications.findByCode(code);
 	}
 
