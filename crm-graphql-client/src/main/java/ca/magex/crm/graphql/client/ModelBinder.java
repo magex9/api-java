@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.util.Pair;
@@ -146,7 +146,7 @@ public class ModelBinder {
 					toMailingAddress(json.getJSONObject("address")),
 					toCommunication(json.getJSONObject("communication")),
 					toBusinessPosition(json.getJSONObject("position")),
-					toUser(json.get("user") == JSONObject.NULL ? null : json.getJSONObject("user")));
+					json.get("user") == JSONObject.NULL ? null : toUser(json.getJSONObject("user")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing PersonDetails from: " + json.toString(), jsone);
 		}
@@ -154,12 +154,11 @@ public class ModelBinder {
 
 	public static MailingAddress toMailingAddress(JSONObject json) {
 		try {
-			JSONObject country = json.getJSONObject("country");
 			return new MailingAddress(
 					json.getString("street"),
 					json.getString("city"),
 					json.getString("province"),
-					new Country(country.getString("code"), country.getString("englishName"), country.getString("frenchName")),
+					toCountry(json.getJSONObject("country")),
 					json.getString("postalCode"));
 
 		} catch (JSONException jsone) {
@@ -169,9 +168,8 @@ public class ModelBinder {
 
 	public static PersonName toPersonName(JSONObject json) {
 		try {
-			JSONObject salutation = json.getJSONObject("salutation");
 			return new PersonName(
-					new Salutation(salutation.getString("code"), salutation.getString("englishName"), salutation.getString("frenchName")),
+					toSalutation(json.getJSONObject("salutation")),
 					json.getString("firstName"),
 					json.getString("middleName"),
 					json.getString("lastName"));
@@ -183,13 +181,11 @@ public class ModelBinder {
 
 	public static Communication toCommunication(JSONObject json) {
 		try {
-			JSONObject language = json.getJSONObject("language");
-			JSONObject telephone = json.getJSONObject("homePhone");
 			return new Communication(
 					json.getString("jobTitle"),
-					new Language(language.getString("code"), language.getString("englishName"), language.getString("frenchName")),
+					toLanguage(json.getJSONObject("language")),
 					json.getString("email"),
-					new Telephone(telephone.getString("number"), telephone.getString("extension")),
+					toTelephone(json.getJSONObject("homePhone")), 
 					json.getString("faxNumber"));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing Communication from: " + json.toString(), jsone);
@@ -198,13 +194,10 @@ public class ModelBinder {
 	
 	public static BusinessPosition toBusinessPosition(JSONObject json) {
 		try {
-			JSONObject sector = json.getJSONObject("sector");
-			JSONObject unit = json.getJSONObject("unit");
-			JSONObject classification = json.getJSONObject("classification");
 			return new BusinessPosition(
-					new BusinessSector(sector.getString("code"), sector.getString("englishName"), sector.getString("frenchName")),
-					new BusinessUnit(unit.getString("code"), unit.getString("englishName"), unit.getString("frenchName")),
-					new BusinessClassification(classification.getString("code"), classification.getString("englishName"), classification.getString("frenchName")));
+					toBusinessSector(json.getJSONObject("sector")),
+					toBusinessUnit(json.getJSONObject("unit")),
+					toBusinessClassification(json.getJSONObject("classification")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing BusinessPosition from: " + json.toString(), jsone);
 		}
@@ -212,20 +205,95 @@ public class ModelBinder {
 	
 	public static User toUser(JSONObject json) {
 		try {
-			if (json == null) {
-				return null;
-			}
-			JSONArray roleArray = json.getJSONArray("roles");
-			List<Role> roles = new ArrayList<>();
-			for (int i=0; i<roleArray.length(); i++) {
-				JSONObject role = roleArray.getJSONObject(i);
-				roles.add(new Role(role.getString("code"), role.getString("englishName"), role.getString("frenchName")));
-			}
 			return new User(
 					json.getString("userName"),
-					roles);
+					toList(ModelBinder::toRole, json.getJSONArray("roles")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Telephone toTelephone(JSONObject json) {
+		try {
+			return new Telephone(json.getString("number"), json.getString("extension"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Telephone from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Status toStatus(JSONObject json) {
+		try {
+			return Status.valueOf(StringUtils.upperCase(json.getString("code")));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Role from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Role toRole(JSONObject json) {
+		try {
+			return new Role(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Role from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Country toCountry(JSONObject json) {
+		try {
+			return new Country(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Country from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Salutation toSalutation(JSONObject json) {
+		try {
+			return new Salutation(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Salutation from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Language toLanguage(JSONObject json) {
+		try {
+			return new Language(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Language from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static BusinessSector toBusinessSector(JSONObject json) {
+		try {
+			return new BusinessSector(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing BusinessSector from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static BusinessUnit toBusinessUnit(JSONObject json) {
+		try {
+			return new BusinessUnit(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing BusinessUnit from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static BusinessClassification toBusinessClassification(JSONObject json) {
+		try {
+			return new BusinessClassification(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing BusinessClassification from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static <T> List<T> toList(Function<JSONObject, T> constructor, JSONArray jsonArray) {
+		try {
+			List<T> list = new ArrayList<>();
+			for (int i=0; i<jsonArray.length(); i++) {
+				list.add(constructor.apply(jsonArray.getJSONObject(i)));
+			}
+			return list;
+		} catch (Exception jsone) {
+			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
 		}
 	}
 
@@ -236,9 +304,7 @@ public class ModelBinder {
 			for (int i = 0; i < content.length(); i++) {
 				contents.add(constructor.apply(content.getJSONObject(i)));
 			}
-			PageRequest pr = PageRequest.of(json.getInt("number") - 1, json.getInt("size"), paging.getSort());
-
-			return new PageImpl<T>(contents, pr, json.getInt("totalElements"));
+			return new PageImpl<T>(contents, paging, json.getInt("totalElements"));
 		} catch (Exception jsone) {
 			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
 		}

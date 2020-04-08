@@ -3,17 +3,12 @@ schema {
 	mutation: Mutation
 }
 
-enum SortOrder {
-	ASC
-	DESC
-}
-
 # Complex Input
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
 	sortField: [String]!
-	sortOrder: [SortOrder]!
+	sortOrder: [String]!
 }
 
 input MailingAddressInput {
@@ -28,7 +23,7 @@ input NameInput {
 	firstName: String
 	middleName: String
 	lastName: String
-	salutation: Int
+	salutation: String
 }
 
 input CommunicationInput {
@@ -41,9 +36,9 @@ input CommunicationInput {
 }
 
 input BusinessPositionInput {
-	sector: Int
-	unit: Int
-	classification: Int
+	sector: String
+	unit: String
+	classification: String
 }
 
 # Filtering Criteria Input
@@ -81,7 +76,7 @@ type Query {
 	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
 	
 	# Lookup Service
-	findLookupValues(category: String!, code: String): [CodeLookup]  
+	findCodeLookups(category: String!, code: String): [CodeLookup]
 }
 
 type Mutation {
@@ -167,7 +162,7 @@ type MailingAddress {
 	street: String
 	city: String
 	province: String
-	country: Country
+	country: CodeLookup
 	postalCode: String
 }
 
@@ -207,49 +202,6 @@ type Telephone {
 
 # Numeric Code Values
 type CodeLookup {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-type BusinessSector {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-type BusinessUnit {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-type BusinessClassification {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-type Role {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-type Salutation {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-# Alphabetic Code Values
-type Country {
-	code: String
-	englishName: String
-	frenchName: String
-}
-
-type Language {
 	code: String
 	englishName: String
 	frenchName: String
