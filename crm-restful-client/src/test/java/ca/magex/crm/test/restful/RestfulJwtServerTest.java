@@ -21,6 +21,7 @@ import ca.magex.crm.amnesia.services.AmnesiaLookupService;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Identifier;
@@ -147,6 +148,18 @@ public class RestfulJwtServerTest {
 			Status.valueOf(result.getString("status").toUpperCase()),
 			result.getString("displayName"),
 			result.contains("mainLocationId") ? new Identifier(result.getString("mainLocationId")) : null);
+	}
+	
+	private OrganizationSummary getOrganizationSummary(Identifier organzationId) throws Exception {
+		DataObject result = DataParser.parseObject(Unirest.get(server + "/api/organizations/" + organzationId + "/summary")
+			.header("Content-Type", "application/json")
+			.header("Authorization", "Bearer " + getToken())
+			.asString()
+			.getBody());
+		return new OrganizationSummary(
+			new Identifier(result.getString("organizationId")),
+			Status.valueOf(result.getString("status").toUpperCase()),
+			result.getString("displayName"));
 	}
 	
 	private OrganizationDetails updateOrganization(Identifier organizationId, String displayName, Identifier locationId) throws Exception {
