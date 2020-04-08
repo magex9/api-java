@@ -1,13 +1,33 @@
 package ca.magex.crm.test.restful;
 
 import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mashape.unirest.http.Unirest;
 
-public class JwtAuthentication {
+import ca.magex.crm.test.CrmServicesTestSuite;
+import ca.magex.crm.test.TestConfig;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
+public class AmnesiaOrganizationServiceTest extends AbstractJUnit4SpringContextTests {
+
+	@Autowired private CrmServicesTestSuite crmServicesTest;
+	
+	@Test
+	public void testCrmServices() {
+		crmServicesTest.runAllTests();
+	}
+}
 	public static void main(String[] args) throws Exception {
 		String token = getToken("admin", "admin");
+		assertTh
+		assertMatches(token, "[A-Za-z0-9\\.\\-]{50}");
 		System.out.println(token);
 		String config = getConfig(token);
 		System.out.println(config);
@@ -28,5 +48,6 @@ public class JwtAuthentication {
 			.asString()
 			.getBody()).getString("token");
 	}
+	
 	
 }
