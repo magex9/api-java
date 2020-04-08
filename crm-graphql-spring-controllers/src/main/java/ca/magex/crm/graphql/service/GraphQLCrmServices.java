@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.service;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -68,7 +69,7 @@ public class GraphQLCrmServices {
 		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(crm);
 		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(crm);
 		PersonDataFetcher personDataFetcher = new PersonDataFetcher(crm);
-		LookupDataFetcher lookupDataFetcher = new LookupDataFetcher();
+		LookupDataFetcher lookupDataFetcher = new LookupDataFetcher(crm);
 
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
@@ -98,11 +99,11 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", personDataFetcher.setUserRoles()))
 				
-				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
-				.type("Country", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
-				.type("Salutation", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
-				.type("Role", typeWiring -> typeWiring.dataFetcher("name", lookupDataFetcher.getNameByLocale()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
 				
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
+				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))				
 				.build();
 	}
 }

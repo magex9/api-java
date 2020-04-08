@@ -1,6 +1,5 @@
 package ca.magex.crm.api.lookup;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -12,7 +11,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.system.Lang;
 
-public class Country implements Serializable {
+public class Country implements CrmLookupItem {
 
 	private static final long serialVersionUID = 1L;
 
@@ -28,10 +27,12 @@ public class Country implements Serializable {
 		this.names.put(Lang.FRENCH, french);
 	}
 	
+	@Override
 	public String getCode() {
 		return code;
 	}
 	
+	@Override
 	public String getName(Locale locale) {
 		return names.get(locale);
 	}
