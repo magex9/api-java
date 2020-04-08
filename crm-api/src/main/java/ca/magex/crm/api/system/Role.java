@@ -1,16 +1,17 @@
 package ca.magex.crm.api.system;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import ca.magex.crm.api.lookup.CrmLookupItem;
 
-public class Role implements Serializable {
+public class Role implements CrmLookupItem {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,10 +27,12 @@ public class Role implements Serializable {
 		this.names.put(Lang.FRENCH, french);
 	}
 	
+	@Override
 	public String getCode() {
 		return code;
 	}
 	
+	@Override
 	public String getName(Locale locale) {
 		return names.get(locale);
 	}
@@ -47,6 +50,5 @@ public class Role implements Serializable {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
-	
+	}	
 }

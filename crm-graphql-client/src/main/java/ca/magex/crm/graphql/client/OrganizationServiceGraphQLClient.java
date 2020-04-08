@@ -2,8 +2,11 @@ package ca.magex.crm.graphql.client;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 
@@ -26,6 +29,7 @@ import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmServices;
@@ -424,145 +428,200 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<Status> findStatuses() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"Status"));
 	}
 
 	@Override
 	public Status findStatusByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"Status",
+				code)).get(0);
 	}
 
 	@Override
 	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findStatuses);
 	}
 
 	@Override
 	public List<Role> findRoles() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"Role"));
 	}
 
 	@Override
 	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"Role",
+				code)).get(0);
 	}
 
 	@Override
 	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findRoles);
 	}
 
 	@Override
 	public List<Country> findCountries() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"Country"));
 	}
 
 	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"Country",
+				code)).get(0);
 	}
 
 	@Override
 	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findCountries);
 	}
 
 	@Override
 	public List<Salutation> findSalutations() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"Salutation"));
 	}
 
 	@Override
 	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"Salutation",
+				code)).get(0);
 	}
 
 	@Override
 	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findSalutations);
 	}
 
 	@Override
 	public List<Language> findLanguages() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"Language"));
 	}
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"Language",
+				code)).get(0);
 	}
 
 	@Override
 	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findLanguages);
 	}
 
 	@Override
 	public List<BusinessSector> findBusinessSectors() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"BusinessSector"));
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"BusinessSector",
+				code)).get(0);
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findBusinessSectors);
 	}
 
 	@Override
 	public List<BusinessUnit> findBusinessUnits() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"BusinessUnit"));
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"BusinessUnit",
+				code)).get(0);
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findBusinessUnits);
 	}
 
 	@Override
 	public List<BusinessClassification> findBusinessClassifications() {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQuery(
+				"findAllCodeLookups", 
+				"findCodeLookups", 
+				"BusinessClassification"));
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQuery(
+				"findSpecificCodeLookup", 
+				"findCodeLookups", 
+				"BusinessClassification",
+				code)).get(0);
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		return findByLocalizedName(locale, name, this::findBusinessClassifications);
 	}	
+	
+	/**
+	 * helper methods used to look through a list of the given locale/name pair
+	 * @param <T>
+	 * @param locale
+	 * @param name
+	 * @param supplier
+	 * @return
+	 */
+	private <T extends CrmLookupItem> T findByLocalizedName(Locale locale, String name, Supplier<List<T>> supplier) {
+		if (name == null) {
+			throw new IllegalArgumentException("name cannot be null");
+		}
+		Optional<T> optional = supplier
+				.get()
+				.stream()
+				.filter((c) -> StringUtils.equals(c.getName(locale), name))
+				.findFirst();				
+		if (optional.isEmpty()) {
+			throw new ItemNotFoundException("");
+		}
+		return optional.get();
+	}
 }

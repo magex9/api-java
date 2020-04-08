@@ -12,7 +12,8 @@ public class OrganizationServiceGraphQLJwtClientTest {
 		
 		crmServices.authenticateJwt("http://localhost:9002/crm/authenticate", "admin", "admin");
 		
-		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();		
+		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();
+		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);
 		ReflectionTestUtils.setField(testSuite, "organizationService", crmServices);
 		ReflectionTestUtils.setField(testSuite, "locationService", crmServices);
 		ReflectionTestUtils.setField(testSuite, "personService", crmServices);

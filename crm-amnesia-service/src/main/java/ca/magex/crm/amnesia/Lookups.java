@@ -59,7 +59,7 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 					.split("\n"))
 				.stream().map(line -> {
 					try {
-						String[] parts = line.split("\t+");
+						String[] parts = line.split("\t+");						
 						Object code = parts[0];
 						if (codeClass.equals(Integer.class)) {
 							code = Integer.parseInt(parts[0]);

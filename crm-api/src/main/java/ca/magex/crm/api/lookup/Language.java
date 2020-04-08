@@ -11,7 +11,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.system.Lang;
 
-public class Language implements CrmLookup {
+public class Language implements CrmLookupItem {
 
 	private static final long serialVersionUID = 1L;
 
