@@ -13,12 +13,12 @@ public class LookupDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LookupDataFetcher.class);
 	
-	public DataFetcher<String> getNameByLocale() {
+	public DataFetcher<String> getNameByLocale(Locale locale) {
 		return (environment) -> {
 			logger.debug("Entering getNameByLocale@" + LookupDataFetcher.class.getSimpleName());
 			Object source = environment.getSource();
 			Method getName = ReflectionUtils.findMethod(source.getClass(), "getName", Locale.class);
-			return (String) ReflectionUtils.invokeMethod(getName, source, Locale.CANADA);
+			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
 		};
 	}
 }

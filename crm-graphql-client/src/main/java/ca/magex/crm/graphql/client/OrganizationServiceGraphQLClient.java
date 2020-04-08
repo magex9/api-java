@@ -2,6 +2,7 @@ package ca.magex.crm.graphql.client;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
@@ -21,7 +22,11 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.lookup.BusinessClassification;
+import ca.magex.crm.api.lookup.BusinessSector;
+import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
@@ -357,8 +362,11 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	
 	@Override
 	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toPersonDetails(performGraphQLQuery(
+				"setUserRoles",
+				"setUserRoles",
+				personId,
+				roles.stream().map((r) -> r.getCode()).collect(Collectors.toList())));
 	}
 
 	@Override
@@ -482,6 +490,78 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Language> findLanguages() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Language findLanguageByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BusinessSector> findBusinessSectors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessSector findBusinessSectorByCode(Integer code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BusinessUnit> findBusinessUnits() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessUnit findBusinessUnitByCode(Integer code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BusinessClassification> findBusinessClassifications() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessClassification findBusinessClassificationByCode(Integer code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}	

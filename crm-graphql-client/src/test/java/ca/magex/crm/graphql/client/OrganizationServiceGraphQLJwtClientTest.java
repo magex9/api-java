@@ -4,13 +4,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.magex.crm.test.CrmServicesTestSuite;
 
-public class OrganizationServiceGraphQLClientTest {
+public class OrganizationServiceGraphQLJwtClientTest {
 
 	public static void main(String[] args) throws Exception {
 
 		OrganizationServiceGraphQLClient crmServices = new OrganizationServiceGraphQLClient("http://localhost:9002/crm/graphql");
 		
-		crmServices.authenticate("http://localhost:9002/crm/authenticate", "admin", "admin");
+		crmServices.authenticateJwt("http://localhost:9002/crm/authenticate", "admin", "admin");
 		
 		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();		
 		ReflectionTestUtils.setField(testSuite, "organizationService", crmServices);

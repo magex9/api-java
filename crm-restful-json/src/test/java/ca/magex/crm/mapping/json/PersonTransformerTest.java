@@ -79,7 +79,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("SYS_ADMIN"));
 		roles.add(service.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
@@ -117,7 +117,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"  \"user\": {\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      \"SYS_AMDIN\",\n" + 
+				"      \"SYS_ADMIN\",\n" + 
 				"      \"RE_ADMIN\"\n" + 
 				"    ]\n" + 
 				"  }\n" + 
@@ -153,7 +153,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		String userName = "chris";
 		List<Role> roles = new ArrayList<Role>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_AMDIN"));
+		roles.add(service.findRoleByCode("SYS_ADMIN"));
 		roles.add(service.findRoleByCode("RE_ADMIN"));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
@@ -231,7 +231,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"User\",\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      \"SYS_AMDIN\",\n" + 
+				"      \"SYS_ADMIN\",\n" + 
 				"      \"RE_ADMIN\"\n" + 
 				"    ]\n" + 
 				"  }\n" + 

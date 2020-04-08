@@ -3,9 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ca.magex.crm</groupId>
 	<artifactId>crm-spring-jwt-security</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>ca.magex.crm</groupId>
@@ -29,7 +27,6 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
 		</dependency>
 
 		<dependency>
