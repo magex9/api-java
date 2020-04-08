@@ -362,6 +362,12 @@ paths:
         - Locations
       parameters:
         - in: query
+          name: organizationId
+          description: Find a person by their organization
+          required: false
+          schema: 
+            type: string
+        - in: query
           name: displayName
           description: Find a location by its name
           required: false
@@ -667,6 +673,12 @@ paths:
       tags:
         - Persons
       parameters:
+        - in: query
+          name: organizationId
+          description: Find a person by their organization
+          required: false
+          schema: 
+            type: string
         - in: query
           name: displayName
           description: Find a person by their name
