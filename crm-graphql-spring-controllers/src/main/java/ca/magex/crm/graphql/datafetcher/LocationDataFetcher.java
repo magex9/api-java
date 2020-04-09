@@ -17,12 +17,13 @@ import ca.magex.crm.api.system.Status;
 import graphql.schema.DataFetcher;
 
 /**
- * Contains the data fetcher implementations for each of the location API methods
+ * Contains the data fetcher implementations for each of the location API
+ * methods
  * 
  * @author Jonny
  */
 public class LocationDataFetcher extends AbstractDataFetcher {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(LocationDataFetcher.class);
 
 	public LocationDataFetcher(Crm crm) {
@@ -37,21 +38,6 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public LocationsFilter extractFilter(Map<String, Object> filter) {
-		String displayName = (String) filter.get("displayName");
-		String organizationId = (String) filter.get("organizationId");
-		Status status = null;
-		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
-			try {
-				status = Status.valueOf((String) filter.get("status"));
-			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
-		}
-		return new LocationsFilter(organizationId == null ? null : new Identifier(organizationId), displayName, status);
-	}
-	
 	public DataFetcher<Integer> countLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
@@ -59,15 +45,15 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 					extractFilter(environment)));
 		};
 	}
-	
+
 	public DataFetcher<Page<LocationDetails>> findLocations() {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
 			return crm.findLocationDetails(extractFilter(
-					extractFilter(environment)), 
+					extractFilter(environment)),
 					extractPaging(environment));
 		};
-	}	
+	}
 
 	public DataFetcher<LocationDetails> byOrganization() {
 		return (environment) -> {
@@ -75,27 +61,26 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			OrganizationDetails organization = environment.getSource();
 			if (organization.getMainLocationId() != null) {
 				return crm.findLocationDetails(organization.getMainLocationId());
-			}
-			else {
+			} else {
 				return null;
 			}
 		};
 	}
-	
-	public DataFetcher<LocationDetails> createLocation() { 
+
+	public DataFetcher<LocationDetails> createLocation() {
 		return (environment) -> {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
 			return crm.createLocation(
-					new Identifier((String) environment.getArgument("organizationId")), 
-					environment.getArgument("locationName"), 
-					environment.getArgument("locationReference"), 
+					new Identifier((String) environment.getArgument("organizationId")),
+					environment.getArgument("locationName"),
+					environment.getArgument("locationReference"),
 					extractMailingAddress(environment, "locationAddress"));
 		};
 	}
-	
+
 	public DataFetcher<LocationDetails> enableLocation() {
 		return (environment) -> {
-			logger.debug("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
+			logger.info("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
 			crm.enableLocation(locationId);
 			return crm.findLocationDetails(locationId);
@@ -104,16 +89,16 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<LocationDetails> disableLocation() {
 		return (environment) -> {
-			logger.debug("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
+			logger.info("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
 			crm.disableLocation(locationId);
 			return crm.findLocationDetails(locationId);
 		};
 	}
-	
+
 	public DataFetcher<LocationDetails> updateLocation() {
 		return (environment) -> {
-			logger.debug("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
+			logger.info("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
 			if (environment.getArgument("locationName") != null) {
 				crm.updateLocationName(
@@ -127,5 +112,19 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			}
 			return crm.findLocationDetails(locationId);
 		};
-	}	
+	}
+
+	private LocationsFilter extractFilter(Map<String, Object> filter) {
+		String displayName = (String) filter.get("displayName");
+		String organizationId = (String) filter.get("organizationId");
+		Status status = null;
+		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
+			try {
+				status = Status.valueOf((String) filter.get("status"));
+			} catch (IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
+		return new LocationsFilter(organizationId == null ? null : new Identifier(organizationId), displayName, status);
+	}
 }

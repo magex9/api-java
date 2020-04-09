@@ -17,7 +17,8 @@ import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
 /**
- * Contains the data fetcher implementations for each of the organization API methods
+ * Contains the data fetcher implementations for each of the organization API
+ * methods
  * 
  * @author Jonny
  */
@@ -31,29 +32,15 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<OrganizationDetails> findOrganization() {
 		return (environment) -> {
-			logger.debug("Entering findOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering findOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("organizationId");
 			return crm.findOrganizationDetails(new Identifier(id));
 		};
 	}
-	
-	public OrganizationsFilter extractFilter(Map<String, Object> filter) {
-		String displayName = (String) filter.get("displayName");
-		Status status = null;
-		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
-			try {
-				status = Status.valueOf((String) filter.get("status"));
-			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
-		}
-		return new OrganizationsFilter(displayName, status);
-	}
-	
+
 	public DataFetcher<Integer> countOrganizations() {
 		return (environment) -> {
-			logger.debug("Entering countOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering countOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
 			return (int) crm.countOrganizations(extractFilter(
 					extractFilter(environment)));
 		};
@@ -61,16 +48,16 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<Page<OrganizationDetails>> findOrganizations() {
 		return (environment) -> {
-			logger.debug("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
 			return crm.findOrganizationDetails(extractFilter(
-					extractFilter(environment)), 
+					extractFilter(environment)),
 					extractPaging(environment));
 		};
 	}
-	
+
 	public DataFetcher<OrganizationDetails> createOrganization() {
 		return (environment) -> {
-			logger.debug("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String organizationName = environment.getArgument("organizationName");
 			return crm.createOrganization(organizationName);
 		};
@@ -78,7 +65,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<OrganizationDetails> enableOrganization() {
 		return (environment) -> {
-			logger.debug("Entering enableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering enableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			crm.enableOrganization(organizationId);
 			return crm.findOrganizationDetails(organizationId);
@@ -87,7 +74,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<OrganizationDetails> disableOrganization() {
 		return (environment) -> {
-			logger.debug("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			crm.disableOrganization(organizationId);
 			return crm.findOrganizationDetails(organizationId);
@@ -96,7 +83,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<OrganizationDetails> updateOrganization() {
 		return (environment) -> {
-			logger.debug("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			if (environment.getArgument("organizationName") != null) {
 				crm.updateOrganizationName(
@@ -110,5 +97,18 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			}
 			return crm.findOrganizationDetails(organizationId);
 		};
+	}
+
+	private OrganizationsFilter extractFilter(Map<String, Object> filter) {
+		String displayName = (String) filter.get("displayName");
+		Status status = null;
+		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
+			try {
+				status = Status.valueOf((String) filter.get("status"));
+			} catch (IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
+		return new OrganizationsFilter(displayName, status);
 	}
 }
