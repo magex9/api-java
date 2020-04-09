@@ -10,6 +10,6 @@ public class WelcomePageController {
 
 	@GetMapping
 	public String getWelcomePage() {
-		return "forward:/graphiql";
+		return "forward:/index.html";
 	}
 }
