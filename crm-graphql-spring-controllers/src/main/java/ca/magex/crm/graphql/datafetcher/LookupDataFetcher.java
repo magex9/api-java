@@ -9,21 +9,18 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.CrmLookupItem;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Status;
 import graphql.schema.DataFetcher;
 
+@Component
 public class LookupDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LookupDataFetcher.class);
-
-	public LookupDataFetcher(Crm crm) {
-		super(crm);
-	}
 
 	public DataFetcher<String> getNameByLocale(Locale locale) {
 		return (environment) -> {
@@ -33,7 +30,7 @@ public class LookupDataFetcher extends AbstractDataFetcher {
 			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
 		};
 	}
-
+	
 	public DataFetcher<List<CrmLookupItem>> findCodeLookups() {
 		return (environment) -> {
 			logger.info("Entering findCodeLookups@" + LookupDataFetcher.class.getSimpleName());
@@ -87,7 +84,7 @@ public class LookupDataFetcher extends AbstractDataFetcher {
 					return Arrays.asList(Status.values());
 				} else {
 					return Arrays.asList(Status.valueOf(StringUtils.upperCase(code)));
-				}				
+				}
 			default:
 				throw new ItemNotFoundException("invalid category: " + category);
 			}

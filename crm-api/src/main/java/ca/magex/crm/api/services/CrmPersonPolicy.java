@@ -10,5 +10,6 @@ public interface CrmPersonPolicy {
     boolean canEnablePerson(Identifier personId);
     boolean canDisablePerson(Identifier personId);
     boolean canUpdateUserRole(Identifier personId);
+    boolean canUpdateUserPassword(Identifier personId);
     
 }

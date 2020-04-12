@@ -372,6 +372,12 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				personId,
 				roles.stream().map((r) -> r.getCode()).collect(Collectors.toList())));
 	}
+	
+	@Override
+	public PersonDetails setUserPassword(Identifier personId, String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public PersonSummary findPersonSummary(Identifier personId) {
