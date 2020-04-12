@@ -12,6 +12,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
@@ -73,7 +74,7 @@ public class AmnesiaDB implements CrmPasswordService {
 				null, 
 				new User("admin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN"))));
 		savePerson(admin);
-		setPassword(admin.getPersonId(), "$2a$10$Biao2R65p3yHj5/9cp7O/efvmE215IzafvKwoEd9DYxtUnhd1OD.C");
+		setPassword(admin.getPersonId(), "admin");
 	}
 			
 	public Identifier generateId() {
@@ -128,7 +129,8 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	public void setPassword(Identifier personId, String password) {
-		passwords.put(personId, password);
+		/* only store the encoded password */
+		passwords.put(personId, new BCryptPasswordEncoder().encode(password));
 	}
 	
 	@Override
