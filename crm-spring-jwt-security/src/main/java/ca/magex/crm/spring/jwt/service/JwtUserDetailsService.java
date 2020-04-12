@@ -1,52 +1,43 @@
 package ca.magex.crm.spring.jwt.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.services.CrmPasswordService;
+import ca.magex.crm.api.services.CrmPersonService;
+
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-	private Map<String, String> users = new HashMap<>();
-
-	@PostConstruct
-	private void loadUsers() throws IOException {
-		URL usersUrl = getClass().getResource("/users.properties");
-		try (InputStream is = usersUrl.openStream()) {
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				if (line.trim().startsWith("#")) {
-					continue;
-				}
-				if (line.matches("[^=]+=[^=]+")) {
-					String[] components = line.split("=");
-					users.put(components[0], components[1]);
-				}
-			}
-		}
-	}
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Autowired private CrmPersonService personService;
+	@Autowired private CrmPasswordService passwordService;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		if (users.containsKey(username)) {
+		logger.info("finding info for user '" + username + "'");
+		Page<PersonDetails> page = personService.findPersonDetails(new PersonsFilter(null, null, null, username), Paging.singleInstance());
+		if (page.getNumberOfElements() > 0) {			
+			PersonDetails person = page.getContent().get(0);
+			logger.info("found person " + person);
 			return new User(
-					username, 
-					users.get(username),
-					new ArrayList<>());
+					person.getUser().getUserName(), 
+					passwordService.getPassword(person.getPersonId()),
+					person.getUser().getRoles().stream().map((r) -> new SimpleGrantedAuthority("ROLE_" + r)).collect(Collectors.toList()));
 		} else {
 			throw new UsernameNotFoundException("User not found with username: " + username);
 		}

@@ -6,29 +6,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
-/**
- * Contains the data fetcher implementations for each of the organization API
- * methods
- * 
- * @author Jonny
- */
+@Component
 public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
-
-	public OrganizationDataFetcher(Crm crm) {
-		super(crm);
-	}
 
 	public DataFetcher<OrganizationDetails> findOrganization() {
 		return (environment) -> {

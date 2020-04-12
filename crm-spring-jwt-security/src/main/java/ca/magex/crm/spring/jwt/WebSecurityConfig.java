@@ -18,16 +18,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	@Autowired private UserDetailsService jwtUserDetailsService;
 	@Autowired private JwtRequestFilter jwtRequestFilter;
 
-	@Value("${jwt.antMatchers.permitAll}")
-	private String antMatchersPermitAll;
-	
+	@Value("${jwt.antMatchers.permitAll}") private String antMatchersPermitAll;
+
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());

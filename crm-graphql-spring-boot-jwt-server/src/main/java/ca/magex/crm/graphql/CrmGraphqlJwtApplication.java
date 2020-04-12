@@ -6,10 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import ca.magex.crm.amnesia.services.AmnesiaAnonymousPolicies;
+import ca.magex.crm.api.services.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmOrganizationPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPersonPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
@@ -27,15 +29,17 @@ public class CrmGraphqlJwtApplication {
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
+	@Autowired private CrmOrganizationPolicy organizationPolicy;
+	@Autowired private CrmLocationPolicy locationPolicy;
+	@Autowired private CrmPersonPolicy personPolicy;
 	
 	@Bean
 	public SecuredCrmServices organizations() {
 		/* use anonymous policies */
-		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
 		return new SecuredCrmServices(
 				lookupService, validationService, 
-				organizationService, policies, 
-				locationService, policies,
-				personService, policies);
+				organizationService, organizationPolicy, 
+				locationService, locationPolicy,
+				personService, personPolicy);
 	}
 }

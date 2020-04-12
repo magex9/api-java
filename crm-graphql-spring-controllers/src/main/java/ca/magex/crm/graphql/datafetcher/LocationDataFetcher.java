@@ -6,29 +6,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import graphql.schema.DataFetcher;
 
-/**
- * Contains the data fetcher implementations for each of the location API
- * methods
- * 
- * @author Jonny
- */
+@Component
 public class LocationDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LocationDataFetcher.class);
-
-	public LocationDataFetcher(Crm crm) {
-		super(crm);
-	}
 
 	public DataFetcher<LocationDetails> findLocation() {
 		return (environment) -> {

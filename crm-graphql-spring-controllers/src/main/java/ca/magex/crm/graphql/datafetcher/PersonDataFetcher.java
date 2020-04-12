@@ -6,11 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.GraphQLController;
@@ -21,13 +21,10 @@ import graphql.schema.DataFetcher;
  * 
  * @author Jonny
  */
+@Component
 public class PersonDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
-
-	public PersonDataFetcher(Crm crm) {
-		super(crm);
-	}
 
 	public DataFetcher<PersonDetails> findPerson() {
 		return (environment) -> {

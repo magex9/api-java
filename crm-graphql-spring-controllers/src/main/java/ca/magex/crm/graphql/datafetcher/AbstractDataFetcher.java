@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -23,11 +25,7 @@ import graphql.schema.DataFetchingEnvironment;
  */
 public abstract class AbstractDataFetcher {	
 
-	protected Crm crm = null;
-
-	protected AbstractDataFetcher(Crm crm) {
-		this.crm = crm;
-	}
+	@Autowired protected Crm crm;
 
 	/**
 	 * extracts the filter from the environment
