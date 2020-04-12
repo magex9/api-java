@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.Lookups;
@@ -19,6 +20,7 @@ import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 @Service("amnesiaLookupService")
+@Primary
 public class AmnesiaLookupService implements CrmLookupService {
 
 	private Lookups<Status, String> statuses;

@@ -1,5 +1,7 @@
 package ca.magex.crm.graphql.controller;
 
+import java.security.Principal;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
+import graphql.ExecutionInput;
 import graphql.servlet.internal.GraphQLRequest;
 
 @RequestMapping("/graphql")
@@ -22,13 +25,19 @@ import graphql.servlet.internal.GraphQLRequest;
 public class GraphQLController {
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
-	@Autowired
-	@Qualifier("graphQLOrganizationService")
-	private GraphQLCrmServices graphQLService;
+	@Autowired @Qualifier("graphQLOrganizationService") private GraphQLCrmServices graphQLService;
 
 	@PostMapping
 	public ResponseEntity<Object> doQuery(@RequestBody GraphQLRequest request, HttpServletRequest req) throws JSONException {
-		logger.info("Entering doQuery@" + getClass().getSimpleName());
-		return new ResponseEntity<>(graphQLService.getGraphQL().execute(request.getQuery()), HttpStatus.OK);
+		Principal principal = req.getUserPrincipal();
+		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + principal);
+
+		ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+				.query(request.getQuery())
+				.variables(request.getVariables())
+				.context(req)
+				.build();
+
+		return new ResponseEntity<>(graphQLService.getGraphQL().execute(executionInput), HttpStatus.OK);
 	}
 }

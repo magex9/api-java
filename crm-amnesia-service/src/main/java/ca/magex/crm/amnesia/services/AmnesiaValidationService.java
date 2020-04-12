@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -23,18 +23,14 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Role;
 
 @Service
+@Primary
 public class AmnesiaValidationService implements CrmValidation {
 
 	@Autowired private AmnesiaDB db;
 	
-	@Autowired @Qualifier("amnesiaLookupService") private CrmLookupService lookups;
+	@Autowired private CrmLookupService lookups;
 	
 	public AmnesiaValidationService() {}
-	
-	public AmnesiaValidationService(AmnesiaDB db, CrmLookupService lookups) {
-		this.db = db;
-		this.lookups = lookups;
-	}
 
 	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();

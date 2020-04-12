@@ -69,4 +69,9 @@ public class AmnesiaAnonymousPolicies implements CrmPolicies {
 		return true;
 	}
 
+	@Override
+	public boolean canUpdateUserPassword(Identifier personId) {
+		return true;
+	}
+	
 }

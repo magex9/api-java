@@ -6,11 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.GraphQLController;
@@ -21,40 +21,22 @@ import graphql.schema.DataFetcher;
  * 
  * @author Jonny
  */
+@Component
 public class PersonDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
-	public PersonDataFetcher(Crm crm) {
-		super(crm);
-	}
-
 	public DataFetcher<PersonDetails> findPerson() {
 		return (environment) -> {
-			logger.debug("Entering findPerson@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering findPerson@" + PersonDataFetcher.class.getSimpleName());
 			String personId = environment.getArgument("personId");
 			return crm.findPersonDetails(new Identifier(personId));
 		};
 	}
 	
-	public PersonsFilter extractFilter(Map<String, Object> filter) {
-		String displayName = (String) filter.get("displayName");
-		String organizationId = (String) filter.get("organizationId");
-		Status status = null;
-		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
-			try {
-				status = Status.valueOf((String) filter.get("status"));
-			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
-		}
-		return new PersonsFilter(organizationId == null ? null : new Identifier(organizationId), displayName, status);
-	}
-	
 	public DataFetcher<Integer> countPersons() {
 		return (environment) -> {
-			logger.debug("Entering countPersons@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering countPersons@" + OrganizationDataFetcher.class.getSimpleName());
 			return (int) crm.countPersons(
 					extractFilter(extractFilter(environment)));
 		};
@@ -62,7 +44,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<Page<PersonDetails>> findPersons() {
 		return (environment) -> {
-			logger.debug("Entering findPersons@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering findPersons@" + OrganizationDataFetcher.class.getSimpleName());
 			return crm.findPersonDetails(
 					extractFilter(extractFilter(environment)), 
 					extractPaging(environment));
@@ -71,7 +53,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<PersonDetails> createPerson() {
 		return (environment) -> {
-			logger.debug("Entering createPerson@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering createPerson@" + PersonDataFetcher.class.getSimpleName());
 
 			return crm.createPerson(
 					new Identifier((String) environment.getArgument("organizationId")),
@@ -84,7 +66,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<PersonDetails> enablePerson() {
 		return (environment) -> {
-			logger.debug("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			crm.enablePerson(personId);
 			return crm.findPersonDetails(personId);
@@ -93,7 +75,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<PersonDetails> disablePerson() {
 		return (environment) -> {
-			logger.debug("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			crm.disablePerson(personId);
 			return crm.findPersonDetails(personId);
@@ -102,7 +84,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<PersonDetails> updatePerson() {
 		return (environment) -> {
-			logger.debug("Entering updatePerson@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering updatePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			if (environment.getArgument("name") != null) {
 				crm.updatePersonName(
@@ -130,7 +112,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	
 	public DataFetcher<PersonDetails> addUserRole() {
 		return (environment) -> {
-			logger.debug("Entering addUserRole@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering addUserRole@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			return crm.addUserRole(
 					personId, 
@@ -140,7 +122,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	
 	public DataFetcher<PersonDetails> removeUserRole() {
 		return (environment) -> {
-			logger.debug("Entering removeUserRole@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering removeUserRole@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			return crm.removeUserRole(
 					personId, 
@@ -150,11 +132,26 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	
 	public DataFetcher<PersonDetails> setUserRoles() {
 		return (environment) -> {
-			logger.debug("Entering setUserRoles@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering setUserRoles@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));			
 			return crm.setUserRoles(
 					personId, 
 					extractRoles(environment, "roles"));
 		};
+	}
+	
+	private PersonsFilter extractFilter(Map<String, Object> filter) {
+		String displayName = (String) filter.get("displayName");
+		String organizationId = (String) filter.get("organizationId");
+		Status status = null;
+		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
+			try {
+				status = Status.valueOf((String) filter.get("status"));
+			}
+			catch(IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
+		return new PersonsFilter(organizationId == null ? null : new Identifier(organizationId), displayName, status);
 	}
 }

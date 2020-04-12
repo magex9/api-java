@@ -22,6 +22,10 @@ public class Paging implements Pageable, Serializable {
 	
 	private Sort sort;
 	
+	public static Paging singleInstance() {
+		return new Paging(1, 1, Sort.unsorted());
+	}
+	
 	public Paging(int pageNumber, int pageSize, Sort sort) {
 		super();
 		this.offset = pageSize * (pageNumber - 1);

@@ -26,6 +26,7 @@ public interface CrmPersonService {
     PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position);
     PersonDetails addUserRole(Identifier personId, Role role);
     PersonDetails removeUserRole(Identifier personId, Role role);
+    PersonDetails setUserPassword(Identifier personId, String password);
     PersonDetails setUserRoles(Identifier personId, List<Role> roles);
     PersonSummary findPersonSummary(Identifier personId);
     PersonDetails findPersonDetails(Identifier personId);

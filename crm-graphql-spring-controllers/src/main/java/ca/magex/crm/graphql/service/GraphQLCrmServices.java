@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
@@ -29,8 +28,11 @@ import graphql.schema.idl.SchemaParser;
 public class GraphQLCrmServices {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLCrmServices.class);
-
-	@Autowired(required=true) private Crm crm;
+	
+	@Autowired LocationDataFetcher locationDataFetcher;
+	@Autowired OrganizationDataFetcher organizationDataFetcher;
+	@Autowired PersonDataFetcher personDataFetcher;
+	@Autowired LookupDataFetcher lookupDataFetcher;
 
 	@Value("classpath:organizations.graphql")
 	private Resource resource;
@@ -43,7 +45,7 @@ public class GraphQLCrmServices {
 
 	@PostConstruct
 	private void loadSchema() throws IOException {
-		logger.info("Entering loadSchema@" + getClass().getName());
+		logger.info("Loading GraphQL Schema " + resource.getFilename());
 
 		/* parse our schema */
 		GraphQLSchema graphQLSchema = new SchemaGenerator()
@@ -66,11 +68,7 @@ public class GraphQLCrmServices {
 	 * @return
 	 */
 	private RuntimeWiring buildRuntimeWiring() {
-		LocationDataFetcher locationDataFetcher = new LocationDataFetcher(crm);
-		OrganizationDataFetcher organizationDataFetcher = new OrganizationDataFetcher(crm);
-		PersonDataFetcher personDataFetcher = new PersonDataFetcher(crm);
-		LookupDataFetcher lookupDataFetcher = new LookupDataFetcher(crm);
-
+		logger.info("Building GraphQL runtime wiring");
 		return RuntimeWiring.newRuntimeWiring()
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countOrganizations", organizationDataFetcher.countOrganizations()))

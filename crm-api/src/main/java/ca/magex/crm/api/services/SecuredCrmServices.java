@@ -372,6 +372,13 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("addUserRole: " + personId);
 		return personService.addUserRole(personId, role);
 	}
+	
+	@Override
+	public PersonDetails setUserPassword(Identifier personId, String password) {
+		if (!canUpdateUserPassword(personId))
+			throw new PermissionDeniedException("setUserPassword: " + personId);
+		return personService.setUserPassword(personId, password);
+	}
 
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
 		if (!canUpdateUserRole(personId))
@@ -459,4 +466,8 @@ public final class SecuredCrmServices implements Crm {
 		return personPolicy.canUpdateUserRole(personId);
 	}
 
+	@Override
+	public boolean canUpdateUserPassword(Identifier personId) {
+		return personPolicy.canUpdateUserPassword(personId);
+	}
 }

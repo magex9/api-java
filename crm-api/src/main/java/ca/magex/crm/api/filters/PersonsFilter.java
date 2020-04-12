@@ -17,14 +17,21 @@ public class PersonsFilter implements Serializable {
 	
 	private Status status;
 	
+	private String userName;
+	
 	public PersonsFilter(Identifier organizationId, String displayName, Status status) {
+		this(organizationId, displayName, status, null);
+	}
+	
+	public PersonsFilter(Identifier organizationId, String displayName, Status status, String userName) {
 		this.organizationId = organizationId;
 		this.displayName = displayName;
 		this.status = status;
+		this.userName = userName;
 	}
 	
 	public PersonsFilter() {
-		this(null, null, null);
+		this(null, null, null, null);
 	}
 	
 	public Identifier getOrganizationId() {
@@ -38,6 +45,10 @@ public class PersonsFilter implements Serializable {
 	public String getDisplayName() {
 		return displayName;
 	}	
+	
+	public String getUserName() {
+		return userName;
+	}
 	
 	public Comparator<PersonSummary> getComparator(Paging paging) {
 		return paging.new PagingComparator<PersonSummary>();
