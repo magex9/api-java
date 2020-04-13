@@ -45,7 +45,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	@Autowired CrmLookupService lookupService;
 	
-	@Autowired PasswordEncoder passwordEncoder;
+	@Autowired(required=false) PasswordEncoder passwordEncoder;
 		
 	public AmnesiaDB() {
 		idGenerator = new AmnesiaBase58IdGenerator();
@@ -76,7 +76,7 @@ public class AmnesiaDB implements CrmPasswordService {
 				null, 
 				new User("admin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN"))));
 		savePerson(admin);
-		setPassword(admin.getPersonId(), passwordEncoder.encode("admin"));
+		setPassword(admin.getPersonId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
 	}
 			
 	public Identifier generateId() {

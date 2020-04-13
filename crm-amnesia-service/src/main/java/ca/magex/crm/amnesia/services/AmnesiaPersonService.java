@@ -35,7 +35,7 @@ import ca.magex.crm.api.system.Status;
 public class AmnesiaPersonService implements CrmPersonService {
 
 	@Autowired private AmnesiaDB db;
-	@Autowired private PasswordEncoder passwordEncoder;
+	@Autowired(required=false) private PasswordEncoder passwordEncoder;
 	
 	public AmnesiaPersonService() {}
 
@@ -128,7 +128,7 @@ public class AmnesiaPersonService implements CrmPersonService {
 			person = person.withUser(new User(userName, Collections.emptyList()));
 		}
 		else {
-			db.setPassword(personId, passwordEncoder.encode(password));
+			db.setPassword(personId, passwordEncoder == null ? password : passwordEncoder.encode(password));
 		}
 		return person;
 	}
