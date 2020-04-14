@@ -151,7 +151,7 @@ public class CrmServicesTestSuite {
 		/* update and verify organization name */ 
 		logger.info("Updating Organization name");
 		String newName = "ABC" + System.currentTimeMillis();
-		orgDetails = organizationService.updateOrganizationName(orgDetails.getOrganizationId(), newName);		
+		orgDetails = organizationService.updateOrganizationDisplayName(orgDetails.getOrganizationId(), newName);		
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId);		
 		
 		/* disable and verify organization */

@@ -1,9 +1,9 @@
 countOrganizations={ countOrganizations(filter: {displayName: ""}) }
 findOrganization={ findOrganization(organizationId: "${0}") { displayName status mainLocation { displayName address {street city province country postalCode } } } }
-createOrganization=mutation { createOrganization(organizationName: "johnnuy.org") { organizationId } }
+createOrganization=mutation { createOrganization(organizationDisplayName: "johnnuy.org") { organizationId } }
 createLocation=mutation { createLocation(organizationId: "${0}", locationName: "Johnnuy Head Quarters", locationReference: "HQ", locationAddress: { street: "132 Cheyenne Way", city: "Nepean", province: "ON", countryCode: "CA", postalCode: "K2J 0E9"}) { locationId organizationId status reference displayName address {street city province country postalCode } } }
 updateOrganizationMainLocation=mutation { updateOrganizationMainLocation(organizationId: "${0}", locationId: "${1}") { organizationId, mainLocation { displayName } } }
-updateOrganizationName=mutation { updateOrganizationName(organizationId: "${0}", organizationName: "${1}") { organizationId, displayName } }
+updateOrganizationDisplayName=mutation { updateOrganizationDisplayName(organizationId: "${0}", organizationDisplayName: "${1}") { organizationId, displayName } }
 enableOrganization=mutation { enableOrganization(organizationId: "${0}") { organizationId, displayName, status } }
 disableOrganization=mutation { disableOrganization(organizationId: "${0}") { organizationId, displayName, status } }
 

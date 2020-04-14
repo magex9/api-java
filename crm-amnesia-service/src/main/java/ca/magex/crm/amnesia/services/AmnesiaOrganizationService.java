@@ -29,8 +29,8 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	
 	public AmnesiaOrganizationService() {}
 	
-	public OrganizationDetails createOrganization(String organizationName) {
-		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationName, null));
+	public OrganizationDetails createOrganization(String organizationDisplayName) {
+		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
@@ -41,7 +41,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 		return db.saveOrganization(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE));
 	}
 
-	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		return db.saveOrganization(findOrganizationDetails(organizationId).withDisplayName(name));
 	}
 

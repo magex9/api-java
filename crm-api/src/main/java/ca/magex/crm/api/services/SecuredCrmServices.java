@@ -185,16 +185,16 @@ public final class SecuredCrmServices implements Crm {
 		return lookupService.findBusinessClassificationByLocalizedName(locale, name);
 	}
 	
-	public OrganizationDetails createOrganization(String organizationName) {
+	public OrganizationDetails createOrganization(String organizationDisplayName) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
-		return organizationService.createOrganization(organizationName);
+		return organizationService.createOrganization(organizationDisplayName);
 	}
 
-	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("updateOrganizationName: " + organizationId);
-		return organizationService.updateOrganizationName(organizationId, name);
+			throw new PermissionDeniedException("updateOrganizationDisplayName: " + organizationId);
+		return organizationService.updateOrganizationDisplayName(organizationId, name);
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
