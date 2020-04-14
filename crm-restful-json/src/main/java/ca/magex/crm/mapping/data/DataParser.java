@@ -196,9 +196,8 @@ public class DataParser {
 				index++;
 				return sb.toString();
 			} else if (c == '\\' && isExcapeable(text.charAt(index + 1))) {
-				sb.append(c);
 				sb.append(text.charAt(index + 1));
-				index += 1;
+				index += 2;
 			} else if (isExtendedCharacter(c)) {
 				sb.append(c);
 				index++;
@@ -309,7 +308,7 @@ public class DataParser {
 	}
 	
 	private boolean isExcapeable(char c) {
-		return c == '"' || c == '\\' || c == '/' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't';
+		return c == '"' || c == '\'' || c == '\\' || c == '/' || c == 'b' || c == 'f' || c == 'n' || c == 'r' || c == 't';
 	}
 	
 	private char getCurrentChar(String function) {

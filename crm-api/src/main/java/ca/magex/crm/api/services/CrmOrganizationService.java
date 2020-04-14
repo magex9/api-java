@@ -10,10 +10,10 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmOrganizationService {
 	
-    OrganizationDetails createOrganization(String organizationName);
+    OrganizationDetails createOrganization(String organizationDisplayName);
     OrganizationSummary enableOrganization(Identifier organizationId);
     OrganizationSummary disableOrganization(Identifier organizationId);
-    OrganizationDetails updateOrganizationName(Identifier organizationId, String name);
+    OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name);
     OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId);
     OrganizationSummary findOrganizationSummary(Identifier organizationId);
     OrganizationDetails findOrganizationDetails(Identifier organizationId);

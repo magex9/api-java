@@ -29,8 +29,23 @@ public class DataElement {
 			return new DataText((String)el);
 		} else if (el instanceof Number) {
 			return new DataNumber((Number)el);
+		} else if (el instanceof Boolean) {
+			return new DataBoolean((Boolean)el);
 		}
 		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
+	}
+	
+	public static Object unwrap(Object el) {
+		if (el == null) {
+			return null;
+		} else if (el instanceof DataText) {
+			return ((DataText)el).value();
+		} else if (el instanceof DataNumber) {
+			return ((DataNumber)el).value();
+		} else if (el instanceof DataBoolean) {
+			return ((DataBoolean)el).value();
+		}
+		throw new IllegalArgumentException("Unsupported type of element to unwrap: " + el.getClass());
 	}
 
 	public static final String digest(Object obj) {

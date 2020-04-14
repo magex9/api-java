@@ -8,12 +8,14 @@ import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
 import static ca.magex.crm.rest.controllers.ContentExtractor.getTransformer;
 
 import java.io.IOException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.services.SecuredCrmServices;
@@ -40,11 +43,20 @@ public class OrganizationsController {
 	@GetMapping("/api/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataElement data = new DataArray(crm.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req)).getContent().stream()
-				.map(e -> transformer.formatOrganizationSummary(e)).collect(Collectors.toList()));
+		Page<OrganizationSummary> page = crm.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req));
+		DataObject data = createPage(page, e -> transformer.formatOrganizationSummary(e));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
+	}
+	
+	public <T> DataObject createPage(Page<T> page, Function<T, DataElement> mapper) {
+		return new DataObject()
+			.with("page", page.getNumber())
+			.with("total", page.getTotalElements())
+			.with("hasNext", page.hasNext())
+			.with("hasPrevious", !page.isFirst())
+			.with("content", new DataArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
 	}
 	
 	public OrganizationsFilter extractOrganizationFilter(HttpServletRequest req) throws BadRequestException {
@@ -80,7 +92,7 @@ public class OrganizationsController {
 		Identifier organizationId = new Identifier(id);
 		DataObject body = extractBody(req);
 		if (body.contains("displayName"))
-			crm.updateOrganizationName(organizationId, body.getString("displayName"));
+			crm.updateOrganizationDisplayName(organizationId, body.getString("displayName"));
 		if (body.contains("mainLocationId"))
 			crm.updateOrganizationMainLocation(organizationId, new Identifier(body.getString("mainLocationId")));
 		DataElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));

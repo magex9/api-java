@@ -54,11 +54,11 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public OrganizationDetails createOrganization(String organizationName) {
+	public OrganizationDetails createOrganization(String organizationDisplayName) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
 				"createOrganization",
 				"createOrganization",
-				organizationName));
+				organizationDisplayName));
 	}
 
 	@Override
@@ -78,9 +78,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
-				"updateOrganizationName",
+				"updateOrganizationDisplayName",
 				"updateOrganization",
 				organizationId,
 				name));

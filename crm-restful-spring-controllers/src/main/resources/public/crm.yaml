@@ -136,6 +136,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SystemException'
+  /organizations/count:
+    get:
+      summary: Get a count of organizations
+      operationId: countOrganizations
+      tags:
+        - Organizations
+      parameters:
+        - in: query
+          name: displayName
+          description: Find an organization by its name
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: status
+          description: Find organizations in a certian status
+          required: false
+          default: active
+          schema:
+            $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: A the amount of organizations in the filter
+          content:
+            application/json:
+              schema:
+                type: int
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemException'
   /organizations/{organizationId}:
     get:
       summary: Get information about a specific organization
@@ -377,6 +410,7 @@ paths:
           name: status
           description: Find locations in a certian status
           required: false
+          default: active
           schema:
             $ref: '#/components/schemas/Status'
         - in: query
@@ -483,6 +517,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionException'
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemException'
+  /locations/count:
+    get:
+      summary: Get a count of organizations
+      operationId: countLocations
+      tags:
+        - Locations
+      parameters:
+        - in: query
+          name: organizationId
+          description: Find a person by their organization
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: displayName
+          description: Find a location by its name
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: status
+          description: Find locations in a certian status
+          required: false
+          default: active
+          schema:
+            $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: Get a count of organizations
+          content:
+            application/json:
+              schema:
+                type: int
         default:
           description: System error
           content:
@@ -689,6 +762,7 @@ paths:
           name: status
           description: Find people in a certian status
           required: false
+          default: active
           schema:
             $ref: '#/components/schemas/Status'
         - in: query
@@ -793,6 +867,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionException'
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemException'
+  /persons/count:
+    get:
+      summary: Get the count of people in the filter
+      operationId: countPersons
+      tags:
+        - Persons
+      parameters:
+        - in: query
+          name: organizationId
+          description: Find a person by their organization
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: displayName
+          description: Find a person by their name
+          required: false
+          schema: 
+            type: string
+        - in: query
+          name: status
+          description: Find people in a certian status
+          required: false
+          default: active
+          schema:
+            $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: A count of people
+          content:
+            application/json:
+              schema:
+                type: int
         default:
           description: System error
           content:
@@ -1314,6 +1427,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
+        "403":
+          description: Permission denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionException'
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemException'
+  /lookups/{lookupId}/{locale}:
+    get:
+      summary: Get a list of lookup values
+      operationId: getLookup
+      tags:
+        - Lookup
+      parameters:
+        - name: lookupId
+          in: path
+          required: true
+          description: The type of lookup to find the values for
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: type
+          in: path
+          required: false
+          description: The desired locale
+          content:
+            application/json:
+              schema:
+                type: string
+      responses:
+        "200":
+          description: A list of the lookups
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  name:
+                    type: string
         "403":
           description: Permission denied
           content:
