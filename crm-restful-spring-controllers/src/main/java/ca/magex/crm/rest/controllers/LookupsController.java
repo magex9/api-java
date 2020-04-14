@@ -62,7 +62,7 @@ public class LookupsController {
 			return null;
 		try {
 			return new DataObject()
-				.with("code", obj.getClass().getMethod("getCode", new Class[] { }).invoke(obj, new Object[] { }))
+				.with("@value", obj.getClass().getMethod("getCode", new Class[] { }).invoke(obj, new Object[] { }))
 				.with("@en", obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { Lang.ENGLISH }))
 				.with("@fr", obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { Lang.FRENCH }));
 		} catch (Exception e) {
