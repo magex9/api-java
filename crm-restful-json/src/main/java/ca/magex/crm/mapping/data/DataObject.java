@@ -88,15 +88,15 @@ public final class DataObject extends DataElement {
 	}
 	
 	public Integer getInt(String key) {
-		return (Integer)((DataNumber)map.get(key)).value();
+		return ((DataNumber)map.get(key)).value().intValue();
 	}
 	
 	public Long getLong(String key) {
-		return (Long)((DataNumber)map.get(key)).value();
+		return ((DataNumber)map.get(key)).value().longValue();
 	}
 	
 	public Float getFloat(String key) {
-		return (Float)((DataNumber)map.get(key)).value();
+		return ((DataNumber)map.get(key)).value().floatValue();
 	}
 	
 	public Boolean getBoolean(String key) {
