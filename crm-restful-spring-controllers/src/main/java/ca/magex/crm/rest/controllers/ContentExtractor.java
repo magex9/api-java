@@ -30,8 +30,13 @@ public class ContentExtractor {
 	
 	public static JsonTransformer getTransformer(HttpServletRequest req, SecuredCrmServices crm) {
 		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
-		Locale locale = req.getHeader("Locale") != null && req.getHeader("Locale").equals("fr") ? Lang.FRENCH : Lang.ENGLISH;
-		return new JsonTransformer(crm, locale, linked);
+		return new JsonTransformer(crm, extractLocale(req), linked);
+	}
+	
+	public static Locale extractLocale(HttpServletRequest req) {
+		if (req.getHeader("Locale") == null)
+			return null;
+		return req.getHeader("Locale").equals("fr") ? Lang.FRENCH : Lang.ENGLISH;	
 	}
 	
 	public static Identifier extractOrganizationId(HttpServletRequest req) throws IllegalArgumentException {
