@@ -15,27 +15,26 @@ import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql"})
+@ComponentScan(basePackages = { "ca.magex.crm.amnesia", "ca.magex.crm.graphql" })
 public class CrmGraphqlOauth2Application {
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(CrmGraphqlOauth2Application.class, args);
 	}
-		
-		
+
 	@Autowired private CrmLookupService lookupService;
 	@Autowired private CrmValidation validationService;
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
-	
+
 	@Bean
 	public SecuredCrmServices organizations() {
 		/* use anonymous policies */
 		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
 		return new SecuredCrmServices(
-				lookupService, validationService, 
-				organizationService, policies, 
+				lookupService, validationService,
+				organizationService, policies,
 				locationService, policies,
 				personService, policies);
 	}

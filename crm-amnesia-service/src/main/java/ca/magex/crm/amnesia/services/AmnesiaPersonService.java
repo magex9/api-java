@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -34,6 +35,7 @@ import ca.magex.crm.api.system.Status;
 public class AmnesiaPersonService implements CrmPersonService {
 
 	@Autowired private AmnesiaDB db;
+	@Autowired(required=false) private PasswordEncoder passwordEncoder;
 	
 	public AmnesiaPersonService() {}
 
@@ -126,7 +128,7 @@ public class AmnesiaPersonService implements CrmPersonService {
 			person = person.withUser(new User(userName, Collections.emptyList()));
 		}
 		else {
-			db.setPassword(personId, password);
+			db.setPassword(personId, passwordEncoder == null ? password : passwordEncoder.encode(password));
 		}
 		return person;
 	}

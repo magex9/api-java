@@ -1,17 +1,13 @@
 package ca.magex.crm.spring.jwt.policy;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.CrmPersonPolicy;
-import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
 public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy implements CrmPersonPolicy {
-
-	@Autowired private CrmPersonService personService;
 
 	@Override
 	public boolean canCreatePersonForOrganization(Identifier organizationId) {
