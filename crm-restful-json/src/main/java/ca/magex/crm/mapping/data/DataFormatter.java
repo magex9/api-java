@@ -100,7 +100,7 @@ public class DataFormatter {
 	}
 	
 	public void stream(DataText data, OutputStream os) throws IOException {
-		os.write((data.value() == null ? "null" : "\"" + data.value().replaceAll("\"", "\\\"") + "\"").getBytes());
+		os.write((data.value() == null ? "null" : "\"" + data.value().replaceAll("\"", "\\\\\"").replaceAll("'", "\\\\'") + "\"").getBytes());
 	}
 	
 	public void stream(DataNumber data, OutputStream os) throws IOException {

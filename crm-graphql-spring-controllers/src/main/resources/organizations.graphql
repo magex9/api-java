@@ -81,8 +81,8 @@ type Query {
 
 type Mutation {
 	# Organization Service 
-	createOrganization(organizationName: String!): Organization
-	updateOrganization(organizationId: String!, organizationName: String, locationId: String): Organization
+	createOrganization(organizationDisplayName: String!): Organization
+	updateOrganization(organizationId: String!, organizationDisplayName: String, locationId: String): Organization
 	enableOrganization(organizationId: String!): Organization
 	disableOrganization(organizationId: String!): Organization	
 	

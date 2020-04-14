@@ -49,8 +49,8 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<OrganizationDetails> createOrganization() {
 		return (environment) -> {
 			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationName = environment.getArgument("organizationName");
-			return crm.createOrganization(organizationName);
+			String organizationDisplayName = environment.getArgument("organizationDisplayName");
+			return crm.createOrganization(organizationDisplayName);
 		};
 	}
 
@@ -76,10 +76,10 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
-			if (environment.getArgument("organizationName") != null) {
-				crm.updateOrganizationName(
+			if (environment.getArgument("organizationDisplayName") != null) {
+				crm.updateOrganizationDisplayName(
 						organizationId,
-						environment.getArgument("organizationName"));
+						environment.getArgument("organizationDisplayName"));
 			}
 			if (environment.getArgument("locationId") != null) {
 				crm.updateOrganizationMainLocation(
