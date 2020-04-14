@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 
 import ca.magex.crm.api.services.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
@@ -16,8 +15,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
-@SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql", "ca.magex.crm.spring.jwt"})
+@SpringBootApplication(scanBasePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql", "ca.magex.crm.spring.jwt"})
 public class CrmGraphqlJwtApplication {
 	
 	public static void main(String[] args) {

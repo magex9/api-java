@@ -1,6 +1,8 @@
 package ca.magex.crm.graphql.service;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
@@ -28,14 +30,13 @@ import graphql.schema.idl.SchemaParser;
 public class GraphQLCrmServices {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLCrmServices.class);
-	
+
 	@Autowired LocationDataFetcher locationDataFetcher;
 	@Autowired OrganizationDataFetcher organizationDataFetcher;
 	@Autowired PersonDataFetcher personDataFetcher;
 	@Autowired LookupDataFetcher lookupDataFetcher;
 
-	@Value("classpath:organizations.graphql")
-	private Resource resource;
+	@Value("classpath:organizations.graphql") private Resource resource;
 
 	private GraphQL graphQL;
 
@@ -48,10 +49,13 @@ public class GraphQLCrmServices {
 		logger.info("Loading GraphQL Schema " + resource.getFilename());
 
 		/* parse our schema */
-		GraphQLSchema graphQLSchema = new SchemaGenerator()
-				.makeExecutableSchema(
-						new SchemaParser().parse(resource.getFile()),
-						buildRuntimeWiring());
+		GraphQLSchema graphQLSchema = null;
+		try (Reader reader = new InputStreamReader(resource.getInputStream(), "UTF8")) {
+			graphQLSchema = new SchemaGenerator()
+					.makeExecutableSchema(
+							new SchemaParser().parse(reader),
+							buildRuntimeWiring());
+		}
 
 		/* create our graphQL engine */
 		graphQL = GraphQL
@@ -85,7 +89,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableLocation", locationDataFetcher.enableLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableLocation", locationDataFetcher.disableLocation()))
-				
+
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countPersons", personDataFetcher.countPersons()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPersons", personDataFetcher.findPersons()))
@@ -96,12 +100,12 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", personDataFetcher.addUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", personDataFetcher.setUserRoles()))
-				
+
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
-				
+
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
-				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))				
+				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
 				.build();
 	}
 }
