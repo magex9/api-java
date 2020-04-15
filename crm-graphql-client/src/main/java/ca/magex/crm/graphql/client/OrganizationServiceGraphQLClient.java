@@ -55,7 +55,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"createOrganization",
 				"createOrganization",
 				organizationDisplayName));
@@ -63,7 +63,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public OrganizationDetails enableOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"enableOrganization",
 				"enableOrganization",
 				organizationId));
@@ -71,7 +71,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public OrganizationDetails disableOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"disableOrganization",
 				"disableOrganization",
 				organizationId));
@@ -79,7 +79,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"updateOrganizationDisplayName",
 				"updateOrganization",
 				organizationId,
@@ -88,7 +88,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"updateOrganizationMainLocation",
 				"updateOrganization",
 				organizationId,
@@ -96,24 +96,24 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
-		return ModelBinder.toOrganizationSummary(performGraphQLQuery(
+	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {		
+		return ModelBinder.toOrganizationSummary(performGraphQLQueryWithVariables(
+				"findOrganizationSummary",
 				"findOrganization",
-				"findOrganization",
-				organizationId));
+				new MapBuilder().withEntry("id", organizationId.toString()).build()));
 	}
 
 	@Override
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQuery(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
 				"findOrganization",
 				"findOrganization",
-				organizationId));
+				new MapBuilder().withEntry("id", organizationId.toString()).build()));
 	}
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
-		return ModelBinder.toLong(performGraphQLQuery(
+		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countOrganizations",
 				"countOrganizations",
 				filter.getDisplayName(),
@@ -123,7 +123,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	@Override
 	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toOrganizationSummary, performGraphQLQuery(
+		return ModelBinder.toPage(paging, ModelBinder::toOrganizationSummary, performGraphQLQueryWithSubstitution(
 				"findOrganizationSummaries",
 				"findOrganizations",
 				filter.getDisplayName(),
@@ -137,7 +137,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	@Override
 	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toOrganizationDetails, performGraphQLQuery(
+		return ModelBinder.toPage(paging, ModelBinder::toOrganizationDetails, performGraphQLQueryWithSubstitution(
 				"findOrganizationDetails",
 				"findOrganizations",
 				filter.getDisplayName(),
@@ -150,7 +150,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery(
+		return ModelBinder.toLocationDetails(performGraphQLQueryWithSubstitution(
 				"createLocation",
 				"createLocation",
 				organizationId,
@@ -165,7 +165,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery(
+		return ModelBinder.toLocationDetails(performGraphQLQueryWithSubstitution(
 				"updateLocationName",
 				"updateLocation",
 				locationId,
@@ -174,7 +174,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery(
+		return ModelBinder.toLocationDetails(performGraphQLQueryWithSubstitution(
 				"updateLocationAddress",
 				"updateLocation",
 				locationId,
@@ -187,7 +187,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public LocationSummary enableLocation(Identifier locationId) {
-		return ModelBinder.toLocationSummary(performGraphQLQuery(
+		return ModelBinder.toLocationSummary(performGraphQLQueryWithSubstitution(
 				"enableLocation",
 				"enableLocation",
 				locationId));
@@ -195,7 +195,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public LocationSummary disableLocation(Identifier locationId) {
-		return ModelBinder.toLocationSummary(performGraphQLQuery(
+		return ModelBinder.toLocationSummary(performGraphQLQueryWithSubstitution(
 				"disableLocation",
 				"disableLocation",
 				locationId));
@@ -203,23 +203,23 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public LocationSummary findLocationSummary(Identifier locationId) {
-		return ModelBinder.toLocationSummary(performGraphQLQuery(
+		return ModelBinder.toLocationSummary(performGraphQLQueryWithVariables(
+				"findLocationSummary",
 				"findLocation",
-				"findLocation",
-				locationId));
+				new MapBuilder().withEntry("id", locationId.toString()).build()));
 	}
 
 	@Override
 	public LocationDetails findLocationDetails(Identifier locationId) {
-		return ModelBinder.toLocationDetails(performGraphQLQuery(
+		return ModelBinder.toLocationDetails(performGraphQLQueryWithVariables(
 				"findLocation",
 				"findLocation",
-				locationId));
+				new MapBuilder().withEntry("id", locationId.toString()).build()));
 	}
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
-		return ModelBinder.toLong(performGraphQLQuery(
+		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countLocations",
 				"countLocations",
 				filter.getDisplayName(),
@@ -229,7 +229,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	@Override
 	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toLocationDetails, performGraphQLQuery(
+		return ModelBinder.toPage(paging, ModelBinder::toLocationDetails, performGraphQLQueryWithSubstitution(
 				"findLocationDetails",
 				"findLocations",
 				filter.getDisplayName(),
@@ -243,7 +243,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	@Override
 	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toLocationSummary, performGraphQLQuery(
+		return ModelBinder.toPage(paging, ModelBinder::toLocationSummary, performGraphQLQueryWithSubstitution(
 				"findLocationSummaries",
 				"findLocations",
 				filter.getDisplayName(),
@@ -256,7 +256,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"createPerson",
 				"createPerson",
 				organizationId,
@@ -282,7 +282,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"updatePersonName",
 				"updatePerson",
 				personId,
@@ -294,7 +294,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"updatePersonAddress",
 				"updatePerson",
 				personId,
@@ -307,7 +307,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"updatePersonCommunication",
 				"updatePerson",
 				personId,
@@ -321,7 +321,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"updatePersonBusinessUnit",
 				"updatePerson",
 				personId,
@@ -332,7 +332,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
-		return ModelBinder.toPersonSummary(performGraphQLQuery(
+		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
 				"enablePerson",
 				"enablePerson",
 				personId));
@@ -340,7 +340,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		return ModelBinder.toPersonSummary(performGraphQLQuery(
+		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
 				"disablePerson",
 				"disablePerson",
 				personId));
@@ -348,7 +348,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails addUserRole(Identifier personId, Role role) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"addUserRole",
 				"addUserRole",
 				personId,
@@ -357,7 +357,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonDetails removeUserRole(Identifier personId, Role role) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"removeUserRole",
 				"removeUserRole",
 				personId,
@@ -366,7 +366,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	
 	@Override
 	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"setUserRoles",
 				"setUserRoles",
 				personId,
@@ -381,23 +381,23 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public PersonSummary findPersonSummary(Identifier personId) {
-		return ModelBinder.toPersonSummary(performGraphQLQuery(
+		return ModelBinder.toPersonSummary(performGraphQLQueryWithVariables(
+				"findPersonSummary",
 				"findPerson",
-				"findPerson",
-				personId));
+				new MapBuilder().withEntry("id", personId.toString()).build()));
 	}
 
 	@Override
 	public PersonDetails findPersonDetails(Identifier personId) {
-		return ModelBinder.toPersonDetails(performGraphQLQuery(
+		return ModelBinder.toPersonDetails(performGraphQLQueryWithVariables(
 				"findPerson",
 				"findPerson",
-				personId));
+				new MapBuilder().withEntry("id", personId.toString()).build()));
 	}
 
 	@Override
 	public long countPersons(PersonsFilter filter) {
-		return ModelBinder.toLong(performGraphQLQuery(
+		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countPersons",
 				"countPersons",
 				filter.getDisplayName(),
@@ -407,7 +407,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	@Override
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toPersonSummary, performGraphQLQuery(
+		return ModelBinder.toPage(paging, ModelBinder::toPersonSummary, performGraphQLQueryWithSubstitution(
 				"findPersonSummaries",
 				"findPersons",
 				filter.getDisplayName(),
@@ -421,7 +421,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	@Override
 	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toPersonDetails, performGraphQLQuery(
+		return ModelBinder.toPage(paging, ModelBinder::toPersonDetails, performGraphQLQueryWithSubstitution(
 				"findPersonDetails",
 				"findPersons",
 				filter.getDisplayName(),
@@ -434,7 +434,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<Status> findStatuses() {
-		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"Status"));
@@ -442,7 +442,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public Status findStatusByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"Status",
@@ -456,7 +456,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<Role> findRoles() {
-		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"Role"));
@@ -464,7 +464,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"Role",
@@ -478,7 +478,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<Country> findCountries() {
-		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"Country"));
@@ -486,7 +486,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"Country",
@@ -500,7 +500,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<Salutation> findSalutations() {
-		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"Salutation"));
@@ -508,7 +508,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"Salutation",
@@ -522,7 +522,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<Language> findLanguages() {
-		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"Language"));
@@ -530,7 +530,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"Language",
@@ -544,7 +544,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<BusinessSector> findBusinessSectors() {
-		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"BusinessSector"));
@@ -552,7 +552,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"BusinessSector",
@@ -566,7 +566,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<BusinessUnit> findBusinessUnits() {
-		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"BusinessUnit"));
@@ -574,7 +574,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"BusinessUnit",
@@ -588,7 +588,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public List<BusinessClassification> findBusinessClassifications() {
-		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups", 
 				"findCodeLookups", 
 				"BusinessClassification"));
@@ -596,7 +596,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 
 	@Override
 	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQuery(
+		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup", 
 				"findCodeLookups", 
 				"BusinessClassification",
