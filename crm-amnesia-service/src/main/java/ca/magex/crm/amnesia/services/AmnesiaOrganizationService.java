@@ -73,7 +73,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 		List<OrganizationSummary> allMatchingOrgs = apply(filter)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList());		
+			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
 	
@@ -84,5 +84,4 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
-
 }

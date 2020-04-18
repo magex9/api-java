@@ -1,7 +1,6 @@
 package ca.magex.crm.amnesia;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -9,15 +8,11 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
@@ -26,16 +21,15 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Status;
 
 @Repository
 public class AmnesiaDB implements CrmPasswordService {
 
+	public static final String SYSTEM_ADMIN = "SYS_ADMIN";
+	
 	public static final String CRM_ADMIN = "CRM_ADMIN";
 
 	public static final String RE_ADMIN = "RE_ADMIN";
-
-	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private IdGenerator idGenerator;
 	
@@ -44,8 +38,6 @@ public class AmnesiaDB implements CrmPasswordService {
 	private Map<Identifier, String> passwords;
 	
 	@Autowired CrmLookupService lookupService;
-	
-	@Autowired(required=false) PasswordEncoder passwordEncoder;
 		
 	public AmnesiaDB() {
 		idGenerator = new AmnesiaBase58IdGenerator();
@@ -54,29 +46,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	@PostConstruct
-	public void initialize() {
-		logger.info("Creating Magex Organization");
-		/* create the default organization */
-		OrganizationDetails magex = new OrganizationDetails(
-				idGenerator.generate(), 
-				Status.ACTIVE, 
-				"Magex", 
-				null);
-		saveOrganization(magex);
-		
-		logger.info("Creating Magex Administrator");
-		PersonDetails admin = new PersonDetails(
-				idGenerator.generate(), 
-				magex.getOrganizationId(), 
-				Status.ACTIVE, 
-				"Magex Admin", 
-				null, 
-				null, 
-				null, 
-				null, 
-				new User("admin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN"))));
-		savePerson(admin);
-		setPassword(admin.getPersonId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
+	public void initialize() {		
 	}
 			
 	public Identifier generateId() {
