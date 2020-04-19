@@ -18,6 +18,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-amnesia-service</artifactId>
+<!-- 			<artifactId>crm-hazelcast-service</artifactId> -->
 			<version>${project.version}</version>
 		</dependency>
 
@@ -55,9 +56,21 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
+
+<!-- 		<dependency> -->
+<!-- 			<groupId>net.logstash.logback</groupId> -->
+<!-- 			<artifactId>logstash-logback-encoder</artifactId> -->
+<!-- 			<version>6.3</version> -->
+<!-- 			<scope>runtime</scope> -->
+<!-- 		</dependency> -->
 
 		<!-- Test Dependencies -->
 		<dependency>
