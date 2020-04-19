@@ -20,7 +20,7 @@ public class OrganizationServiceGraphQLJwtClientTest {
 	public void runTests() {
 		OrganizationServiceGraphQLClient crmServices = new OrganizationServiceGraphQLClient("http://localhost:" + randomPort + "/crm/graphql");
 
-		crmServices.authenticateJwt("http://localhost:" + randomPort + "/crm/authenticate", "CXA1", "admin");
+		crmServices.authenticateJwt("http://localhost:" + randomPort + "/crm/authenticate", "CXA0", "admin");
 
 		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();
 		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);

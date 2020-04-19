@@ -40,7 +40,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				organizationDisplayName, 
 				null);
 		organizations.put(orgDetails.getOrganizationId(), orgDetails);
-		return orgDetails;
+		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
@@ -48,14 +48,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find: " + organizationId);
+			throw new ItemNotFoundException("Unable to find organization " + organizationId);
 		}
 		if (orgDetails.getStatus() == Status.ACTIVE) {
 			return orgDetails;
 		}
 		orgDetails = orgDetails.withStatus(Status.ACTIVE);
 		organizations.put(organizationId, orgDetails);
-		return orgDetails;
+		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
@@ -63,14 +63,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find: " + organizationId);
+			throw new ItemNotFoundException("Unable to find organization " + organizationId);
 		}
 		if (orgDetails.getStatus() == Status.INACTIVE) {
 			return orgDetails;
 		}
 		orgDetails = orgDetails.withStatus(Status.INACTIVE);
 		organizations.put(organizationId, orgDetails);
-		return orgDetails;
+		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
@@ -78,14 +78,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find: " + organizationId);
+			throw new ItemNotFoundException("Unable to find organization " + organizationId);
 		}
 		if (StringUtils.equals(orgDetails.getDisplayName(), name)) {
 			return orgDetails;
 		}
 		orgDetails = orgDetails.withDisplayName(name);
 		organizations.put(organizationId, orgDetails);
-		return orgDetails;
+		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find: " + organizationId);
+			throw new ItemNotFoundException("Unable to find organization " + organizationId);
 		}
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
 			return orgDetails;
@@ -103,7 +103,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		}
 		orgDetails = orgDetails.withMainLocationId(locationId);
 		organizations.put(organizationId, orgDetails);
-		return orgDetails;
+		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
@@ -116,9 +116,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find: " + organizationId);
+			throw new ItemNotFoundException("Unable to find organization " + organizationId);
 		}
-		return orgDetails;
+		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
