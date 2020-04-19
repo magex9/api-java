@@ -138,7 +138,7 @@ public class HazelcastLocationService implements CrmLocationService {
 	@Override
 	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap("locations");
-		List<LocationDetails> allMatchingOrgs = locations.values()
+		List<LocationDetails> allMatchingLocations = locations.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
@@ -146,13 +146,13 @@ public class HazelcastLocationService implements CrmLocationService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
 
 	@Override
 	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap("locations");
-		List<LocationSummary> allMatchingOrgs = locations.values()
+		List<LocationSummary> allMatchingLocations = locations.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
@@ -160,6 +160,6 @@ public class HazelcastLocationService implements CrmLocationService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(allMatchingLocations, paging);
 	}
 }
