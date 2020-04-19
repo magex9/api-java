@@ -252,7 +252,7 @@ public class HazelcastPersonService implements CrmPersonService {
 	@Override
 	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
-		List<PersonDetails> allMatchingOrgs = persons.values()
+		List<PersonDetails> allMatchingPersons = persons.values()
 			.stream()
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
@@ -260,13 +260,13 @@ public class HazelcastPersonService implements CrmPersonService {
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}
 
 	@Override
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		Map<Identifier, PersonSummary> persons = hzInstance.getMap("persons");
-		List<PersonSummary> allMatchingOrgs = persons.values()
+		List<PersonSummary> allMatchingPersons = persons.values()
 			.stream()
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
@@ -274,6 +274,6 @@ public class HazelcastPersonService implements CrmPersonService {
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(allMatchingPersons, paging);
 	}
 }
