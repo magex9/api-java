@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,13 @@ import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.resource.CrmLookupLoader;
 
 @Service("amnesiaLookupService")
 @Primary
 public class AmnesiaLookupService implements CrmLookupService {
+	
+	@Autowired private CrmLookupLoader lookupLoader;
 
 	private Lookups<Status, String> statuses;
 	
@@ -38,16 +44,17 @@ public class AmnesiaLookupService implements CrmLookupService {
 	private Lookups<BusinessUnit, String> units;
 	
 	private Lookups<BusinessClassification, String> classifications;
-	
-	public AmnesiaLookupService() {
+
+	@PostConstruct
+	public void initialize() {
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
-		roles = new Lookups<Role, String>(Role.class, String.class);
-		countries = new Lookups<Country, String>(Country.class, String.class);
-		salutations = new Lookups<Salutation, String>(Salutation.class, String.class);
-		languages = new Lookups<Language, String>(Language.class, String.class);
-		sectors = new Lookups<BusinessSector, String>(BusinessSector.class, String.class);
-		units = new Lookups<BusinessUnit, String>(BusinessUnit.class, String.class);
-		classifications = new Lookups<BusinessClassification, String>(BusinessClassification.class, String.class);
+		roles = new Lookups<Role, String>(lookupLoader.loadLookup(Role.class, "Role.csv"), Role.class, String.class);
+		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
+		salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
+		languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);
+		sectors = new Lookups<BusinessSector, String>(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"), BusinessSector.class, String.class);
+		units = new Lookups<BusinessUnit, String>(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"), BusinessUnit.class, String.class);
+		classifications = new Lookups<BusinessClassification, String>(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"), BusinessClassification.class, String.class);
 	}
 	
 	public List<Status> findStatuses() {

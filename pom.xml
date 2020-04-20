@@ -15,6 +15,7 @@
 	<modules>
 		<module>crm-maven-parent</module>
 		<module>crm-api</module>
+		<module>crm-resources</module>		
 		<module>crm-test</module>
 		<module>crm-amnesia-service</module>
 		<module>crm-hazelcast-service</module>

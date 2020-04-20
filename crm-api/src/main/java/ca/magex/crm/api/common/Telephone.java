@@ -20,6 +20,12 @@ public class Telephone implements Serializable {
 		this.number = number;
 		this.extension = extension;
 	}
+	
+	public Telephone(String number) {
+		super();
+		this.number = number;
+		this.extension = "";
+	}
 
 	public String getNumber() {
 		return number;

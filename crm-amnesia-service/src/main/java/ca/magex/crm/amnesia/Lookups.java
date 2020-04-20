@@ -1,17 +1,12 @@
 package ca.magex.crm.amnesia;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.io.IOUtils;
 
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
@@ -22,11 +17,6 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 	private Map<KEY, LOOKUP> mapByCode;
 	
 	private Map<Locale, Map<String, LOOKUP>> mapByName;
-
-	@SuppressWarnings("unchecked")
-	public Lookups(Class<?> lookupClass, Class<?> codeClass) {
-		this(loadLookup(lookupClass, codeClass).stream().map(o -> (LOOKUP)o).collect(Collectors.toList()), lookupClass, codeClass);
-	}
 	
 	public Lookups(List<LOOKUP> options, Class<?> lookupClass, Class<?> codeClass) {
 		try {
@@ -47,30 +37,6 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Problem building lookup: " + lookupClass, e);
-		}
-	}
-	
-	private static List<?> loadLookup(Class<?> lookupClass, Class<?> codeClass) {
-		try {
-			Constructor<?> constructor = (Constructor<?>)lookupClass.getConstructor(codeClass, String.class, String.class);
-			return Arrays.asList(IOUtils.toString(Lookups.class.getClassLoader()
-					.getResourceAsStream("lookups/" + lookupClass.getSimpleName() + ".csv"), StandardCharsets.UTF_8)
-					.replaceAll("\r", "")
-					.split("\n"))
-				.stream().map(line -> {
-					try {
-						String[] parts = line.split("\t+");						
-						Object code = parts[0];
-						if (codeClass.equals(Integer.class)) {
-							code = Integer.parseInt(parts[0]);
-						}
-						return constructor.newInstance(code, parts[1], parts[2]);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				}).collect(Collectors.toList());
-		} catch (Exception e) {
-			throw new RuntimeException("Unable to create list: " + lookupClass, e);
 		}
 	}
 	
