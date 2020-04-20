@@ -1,6 +1,7 @@
 package ca.magex.crm.amnesia;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -8,22 +9,30 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
+import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Status;
 
 @Repository
 public class AmnesiaDB implements CrmPasswordService {
+	
+	private static Logger LOG = LoggerFactory.getLogger(AmnesiaDB.class);
 
 	public static final String SYSTEM_ADMIN = "SYS_ADMIN";
 	
@@ -37,7 +46,8 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<Identifier, String> passwords;
 	
-	@Autowired CrmLookupService lookupService;
+	@Autowired(required=false) private PasswordEncoder passwordEncoder;
+	
 		
 	public AmnesiaDB() {
 		idGenerator = new AmnesiaBase58IdGenerator();
@@ -46,7 +56,41 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	@PostConstruct
-	public void initialize() {		
+	public void initialize() {
+		LOG.info("Creating Magex Organization");
+		
+		/* create the default organization */
+		OrganizationDetails magex = saveOrganization(new OrganizationDetails(generateId(), Status.ACTIVE, "Magex", null));				
+
+		LOG.info("Creating CRM Admin");
+		PersonDetails admin = savePerson(
+				new PersonDetails(
+						generateId(), 
+						magex.getOrganizationId(), 
+						Status.ACTIVE, 
+						"Crm Admin", 
+						new PersonName(null, "Crm", "", "Admin"), 
+						null, 
+						null, 
+						null, 
+						new User("CXA0", Arrays.asList(new Role("CRM_ADMIN", "admin", "admin")))));
+		setPassword(admin.getPersonId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
+		LOG.info("CRM Admin: " + admin.getUser().getUserName());
+
+		LOG.info("Creating System Admin");
+		PersonDetails sysadmin = savePerson(
+				new PersonDetails(
+						generateId(), 
+						magex.getOrganizationId(), 
+						Status.ACTIVE, 
+						"System Admin", 
+						new PersonName(null, "Crm", "", "Admin"), 
+						null, 
+						null, 
+						null, 
+						new User("SXA1", Arrays.asList(new Role("SYSTEM_ADMIN", "admin", "admin")))));
+		setPassword(sysadmin.getPersonId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
+		LOG.info("System Admin: " + sysadmin.getUser().getUserName());
 	}
 			
 	public Identifier generateId() {
