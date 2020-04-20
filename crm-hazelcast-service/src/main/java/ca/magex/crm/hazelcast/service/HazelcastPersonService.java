@@ -257,6 +257,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
+			.filter(k -> filter.getUserName() != null ? k.getUser().getUserName().equals(filter.getUserName()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());

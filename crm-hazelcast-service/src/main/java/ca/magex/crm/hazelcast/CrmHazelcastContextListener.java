@@ -93,8 +93,8 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 				new PersonName(null, "Crm", "", "Admin") ,
 				new MailingAddress("123 Main Street", "Ottawa", "Ontario", lookupService.findCountryByCode("CA"), "K1S 1B9"),
 				new Communication("Crm Administrator", lookupService.findLanguageByCode("EN"), "crmadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"), 
-				new BusinessPosition(lookupService.findBusinessSectorByCode("4"), lookupService.findBusinessUnitByCode("4"), lookupService.findBusinessClassificationByCode("4")));
-		
+				new BusinessPosition(lookupService.findBusinessSectorByCode("4"), lookupService.findBusinessUnitByCode("4"), lookupService.findBusinessClassificationByCode("4")));		
+		personService.addUserRole(crmAdmin.getPersonId(), lookupService.findRoleByCode("CRM_ADMIN"));		
 		passwordService.setPassword(crmAdmin.getPersonId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
 		
 		PersonDetails sysAdmin = personService.createPerson(
@@ -103,8 +103,9 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 				new MailingAddress("123 Main Street", "Ottawa", "Ontario", lookupService.findCountryByCode("CA"), "K1S 1B9"),
 				new Communication("System Administrator", lookupService.findLanguageByCode("EN"), "sysadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"), 
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4"), lookupService.findBusinessUnitByCode("4"), lookupService.findBusinessClassificationByCode("4")));
-		
+		personService.addUserRole(sysAdmin.getPersonId(), lookupService.findRoleByCode("SYS_ADMIN"));		
 		passwordService.setPassword(sysAdmin.getPersonId(), passwordEncoder == null ? "sysadmin" : passwordEncoder.encode("sysadmin"));
+		
 		initMap.put("timestamp", System.currentTimeMillis());
 	}		
 }
