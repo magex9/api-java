@@ -21,5 +21,4 @@ public class Lang {
 			return false;
 		throw new IllegalArgumentException("Local is not english or french");
 	}
-	
 }

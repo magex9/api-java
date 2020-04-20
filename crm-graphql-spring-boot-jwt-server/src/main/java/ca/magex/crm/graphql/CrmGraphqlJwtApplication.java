@@ -18,9 +18,10 @@ import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication(scanBasePackages = { 
 		"ca.magex.crm.amnesia", 
+		"ca.magex.crm.resource", 
 		"ca.magex.crm.hazelcast", 
 		"ca.magex.crm.graphql", 
-		"ca.magex.crm.spring.jwt" 
+		"ca.magex.crm.spring.jwt", 
 })
 public class CrmGraphqlJwtApplication {
 

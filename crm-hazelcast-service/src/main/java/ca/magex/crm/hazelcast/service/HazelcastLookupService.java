@@ -3,6 +3,7 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ import ca.magex.crm.api.system.Status;
 public class HazelcastLookupService implements CrmLookupService {
 
 	@Autowired private HazelcastInstance hzInstance;
-
+	
 	@Override
 	public List<Status> findStatuses() {
 		return hzInstance.getList("statuses");
@@ -36,7 +37,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("statuses")
 				.stream()
 				.map((s) -> (Status) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -46,7 +47,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("statuses")
 				.stream()
 				.map((s) -> (Status) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -61,7 +62,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("roles")
 				.stream()
 				.map((s) -> (Role) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -71,7 +72,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("roles")
 				.stream()
 				.map((s) -> (Role) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -86,7 +87,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("countries")
 				.stream()
 				.map((s) -> (Country) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -96,7 +97,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("countries")
 				.stream()
 				.map((s) -> (Country) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -111,7 +112,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("languages")
 				.stream()
 				.map((s) -> (Language) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -121,7 +122,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("languages")
 				.stream()
 				.map((s) -> (Language) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -136,7 +137,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("salutations")
 				.stream()
 				.map((s) -> (Salutation) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -146,7 +147,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("salutations")
 				.stream()
 				.map((s) -> (Salutation) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -161,7 +162,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("sectors")
 				.stream()
 				.map((s) -> (BusinessSector) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -171,7 +172,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("sectors")
 				.stream()
 				.map((s) -> (BusinessSector) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -186,7 +187,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("units")
 				.stream()
 				.map((s) -> (BusinessUnit) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -196,7 +197,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("units")
 				.stream()
 				.map((s) -> (BusinessUnit) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
@@ -211,7 +212,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("classifications")
 				.stream()
 				.map((s) -> (BusinessClassification) s)
-				.filter((s) -> s.getCode().equals(code))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(code));
 	}
@@ -221,7 +222,7 @@ public class HazelcastLookupService implements CrmLookupService {
 		return hzInstance.getList("classifications")
 				.stream()
 				.map((s) -> (BusinessClassification) s)
-				.filter((s) -> s.getName(locale).equals(name))
+				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
 	}
