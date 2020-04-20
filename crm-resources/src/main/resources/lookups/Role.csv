@@ -1,0 +1,9 @@
+SYS_ADMIN,		System Admin,					Administrateur du systeme
+UMA_ADMIN,		User Management Admin,			Administrateur de gestion des utilisateurs
+UMA_VIEWER,		User Management Viewer,			Visionneuse de gestion des utilisateurs
+CRM_ADMIN,		CRM Admin,						Administrateur GRC
+CRM_VIEWER,		CRM Viewer,						Visionneuse GRC
+RE_ADMIN,		Reporting Admin,				Administrateur de rapports
+RE_ASSISTANT,	Reporting Admin Assistant,		Assistant administrateur de rapports
+RE_DEO,			Reporting Data Entry Officer,	Responsable de la saisie des rapports
+RE_VSO,			Reporting Verification Officer,	Agent de verification des rapports

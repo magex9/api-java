@@ -1,9 +1,10 @@
 package ca.magex.crm.graphql.error;
 
 import ca.magex.crm.api.exceptions.ApiException;
+import graphql.GraphQLError;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
-import graphql.execution.SimpleDataFetcherExceptionHandler;
+import graphql.execution.DataFetcherExceptionHandlerResult;
 
 /**
  * DataFetcher Exception Handler which translates the ApiExceptions into GraphQLError
@@ -12,16 +13,15 @@ import graphql.execution.SimpleDataFetcherExceptionHandler;
  *
  */
 public class ApiDataFetcherExceptionHandler implements DataFetcherExceptionHandler {
-	
-	private DataFetcherExceptionHandler defaultFetcherExceptionHandler = new SimpleDataFetcherExceptionHandler();
-	
+
 	@Override
-	public void accept(DataFetcherExceptionHandlerParameters handlerParameters) {
+	public DataFetcherExceptionHandlerResult onException(DataFetcherExceptionHandlerParameters handlerParameters) {
 		/* we want to treat our ApiExceptions specially */
 		if (handlerParameters.getException() instanceof ApiException) {
-			handlerParameters.getExecutionContext().addError(new ApiGraphQLError((ApiException) handlerParameters.getException()));
+			GraphQLError error = new ApiGraphQLError((ApiException) handlerParameters.getException());
+			return DataFetcherExceptionHandlerResult.newResult(error).build();
 		} else {
-			defaultFetcherExceptionHandler.accept(handlerParameters);
+			return DataFetcherExceptionHandlerResult.newResult().build();
 		}
 	}	
 }

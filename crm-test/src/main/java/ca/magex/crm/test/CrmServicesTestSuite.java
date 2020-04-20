@@ -2,6 +2,7 @@ package ca.magex.crm.test;
 
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
@@ -310,12 +311,11 @@ public class CrmServicesTestSuite {
 		logger.info("----------------------------");
 		logger.info("Running Person Service Tests");
 		logger.info("----------------------------");
-		// TODO - use lookup service to get the values for the lookups
 		long personCount = personService.countPersons(new PersonsFilter());
-		final PersonName originalName = new PersonName(new Salutation("3", "Mr.", "M."), "Mike", "Peter", "Johns");
+		final PersonName originalName = new PersonName(lookupService.findSalutationByCode("1"), "Mike", "Peter", "Johns");
 		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K4J9O9");
-		final Communication originalComms = new Communication("Engineer", new Language("en", "English", "Anglais"), "Mike.Johns@ABC.ca", new Telephone("6135554545", ""), "6135554545");
-		final BusinessPosition originalPosition = new BusinessPosition(new BusinessSector("1", "External", "External"), new BusinessUnit("2", "Data Management", "Data Management"), new BusinessClassification("3", "Manager", "Manager"));
+		final Communication originalComms = new Communication("Engineer", lookupService.findLanguageByCode("en"), "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
+		final BusinessPosition originalPosition = new BusinessPosition(lookupService.findBusinessSectorByCode("1"), lookupService.findBusinessUnitByCode("2"), lookupService.findBusinessClassificationByCode("3"));
 		
 		/* create a person and verify results */
 		logger.info("Creating new Person");
@@ -325,7 +325,8 @@ public class CrmServicesTestSuite {
 				originalComms, 
 				originalPosition);
 		Assert.assertEquals(personCount + 1, personService.countPersons(new PersonsFilter()));
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, null);
+		String userName = personDetails.getUser().getUserName();
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		/* disable and verify the results */
 		logger.info("Disabling Person");
@@ -336,7 +337,7 @@ public class CrmServicesTestSuite {
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.INACTIVE, originalName.getDisplayName());
 		
 		personDetails = personService.findPersonDetails(personDetails.getPersonId());
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.INACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.INACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 
 		/* enable and verify the results */
 		logger.info("Enabling Person");
@@ -347,61 +348,60 @@ public class CrmServicesTestSuite {
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName());
 		
 		personDetails = personService.findPersonDetails(personDetails.getPersonId());
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		/* update person name and verify */
 		logger.info("Updating Person Name");
-		final PersonName newName = new PersonName(new Salutation("2", "Mrs.", "Mme."), "Susan", System.currentTimeMillis() + "", "Anderson");
+		final PersonName newName = new PersonName(lookupService.findSalutationByCode("2"), "Susan", System.currentTimeMillis() + "", "Anderson");
 		personDetails = personService.updatePersonName(personDetails.getPersonId(), newName);
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		personSummary = personService.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 		
 		personDetails = personService.findPersonDetails(personDetails.getPersonId());
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		/* update person address and verify */
 		logger.info("Updating Person Address");
 		final MailingAddress newAddress = new MailingAddress("15 fourth street", "Ottawa", "ON", new Country("CA", "Canada", "Canada"), "K4J9O9");
 		personDetails = personService.updatePersonAddress(personDetails.getPersonId(), newAddress);
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		personSummary = personService.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 		
 		personDetails = personService.findPersonDetails(personDetails.getPersonId());
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		/* update person communications and verify */
 		logger.info("Updating Person Communiation");
-		final Communication newComms = new Communication("Supervisor", new Language("en", "English", "Anglais"), "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
+		final Communication newComms = new Communication("Supervisor", lookupService.findLanguageByCode("en"), "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
 		personDetails = personService.updatePersonCommunication(personDetails.getPersonId(), newComms);
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		personSummary = personService.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 		
 		personDetails = personService.findPersonDetails(personDetails.getPersonId());
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition, new User(userName, Collections.emptyList()));
 		
 		/* update person position and verify */
 		logger.info("Updating Person Business Position");
-		final BusinessPosition newPosition = new BusinessPosition(new BusinessSector("3", "Intel", "Intel"), new BusinessUnit("2", "Data Management", "Data Management"), new BusinessClassification("1", "Developer", "Developer"));
+		final BusinessPosition newPosition = new BusinessPosition(lookupService.findBusinessSectorByCode("2"), lookupService.findBusinessUnitByCode("3"), lookupService.findBusinessClassificationByCode("4"));
 		personDetails = personService.updatePersonBusinessPosition(personDetails.getPersonId(), newPosition);
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, new User(userName, Collections.emptyList()));
 		
 		personSummary = personService.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 		
 		personDetails = personService.findPersonDetails(personDetails.getPersonId());
-		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, null);
+		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, new User(userName, Collections.emptyList()));
 		
 		/* add user role (first time we add a role it will generate a user name for us) */
 		logger.info("Adding User Role");
-		Role r1 = new Role("CRM_ADMIN", "CRM Admin", "Administrateur GRC");
+		Role r1 = lookupService.findRoleByCode("CRM_ADMIN");
 		personDetails = personService.addUserRole(personDetails.getPersonId(), r1);		
-		String userName = personDetails.getUser().getUserName();
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, new User(userName, Arrays.asList(r1)));
 		
 		final User originalUser = personDetails.getUser();
@@ -414,7 +414,7 @@ public class CrmServicesTestSuite {
 		
 		/* add another role and verify */
 		logger.info("Adding User Role");
-		Role r2 = new Role("SYS_ADMIN", "System Admin", "Administrateur du systeme");
+		Role r2 = lookupService.findRoleByCode("SYS_ADMIN");
 		personDetails = personService.addUserRole(personDetails.getPersonId(), r2);		
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition, new User(userName, Arrays.asList(r1, r2)));
 		

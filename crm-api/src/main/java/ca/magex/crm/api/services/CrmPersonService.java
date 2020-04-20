@@ -17,6 +17,15 @@ import ca.magex.crm.api.system.Role;
 
 public interface CrmPersonService {
 	
+	default String generateUserName(PersonName legalName) {
+		if (legalName == null) {
+			return "XXX" + countPersons(new PersonsFilter());
+		}		
+		return legalName.getFirstName().substring(0, 1) + 
+				"X" + 
+				legalName.getLastName().substring(0, 1) + countPersons(new PersonsFilter());
+	}
+	
 	PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position);
     PersonSummary enablePerson(Identifier personId);
     PersonSummary disablePerson(Identifier personId);
