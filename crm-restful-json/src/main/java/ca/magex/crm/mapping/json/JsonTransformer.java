@@ -30,6 +30,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataArray;
+import ca.magex.crm.mapping.data.DataElement;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataPair;
 import ca.magex.crm.mapping.data.DataText;
@@ -292,9 +293,9 @@ public class JsonTransformer {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(Salutation.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected Salutation but got: " + m.getReturnType().getName());
-				Salutation salutation = (Salutation)m.invoke(obj, new Object[] { });
+				if (!m.getReturnType().equals(String.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
+				Salutation salutation = crm.findSalutationByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (salutation != null) {
 						List<DataPair> pairs = new ArrayList<DataPair>();
@@ -322,9 +323,9 @@ public class JsonTransformer {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(Country.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected Country but got: " + m.getReturnType().getName());
-				Country country = (Country)m.invoke(obj, new Object[] { });
+				if (!m.getReturnType().equals(String.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
+				Country country = crm.findCountryByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (country != null) {
 						List<DataPair> pairs = new ArrayList<DataPair>();
@@ -352,9 +353,9 @@ public class JsonTransformer {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(Language.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected Language but got: " + m.getReturnType().getName());
-				Language language = (Language)m.invoke(obj, new Object[] { });
+				if (!m.getReturnType().equals(String.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
+				Language language = crm.findLanguageByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (language != null) {
 						List<DataPair> pairs = new ArrayList<DataPair>();
@@ -382,9 +383,9 @@ public class JsonTransformer {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(BusinessSector.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected BusinessSector but got: " + m.getReturnType().getName());
-				BusinessSector sector = (BusinessSector)m.invoke(obj, new Object[] { });
+				if (!m.getReturnType().equals(String.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
+				BusinessSector sector = crm.findBusinessSectorByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (sector != null) {
 						List<DataPair> pairs = new ArrayList<DataPair>();
@@ -412,8 +413,8 @@ public class JsonTransformer {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(BusinessUnit.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected BusinessUnit but got: " + m.getReturnType().getName());
+				if (!m.getReturnType().equals(String.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
 				BusinessUnit unit = (BusinessUnit)m.invoke(obj, new Object[] { });
 				if (linked) {
 					if (unit != null) {
@@ -442,8 +443,8 @@ public class JsonTransformer {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(BusinessClassification.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected BusinessClassification but got: " + m.getReturnType().getName());
+				if (!m.getReturnType().equals(String.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
 				BusinessClassification classification = (BusinessClassification)m.invoke(obj, new Object[] { });
 				if (linked) {
 					if (classification != null) {
@@ -602,8 +603,24 @@ public class JsonTransformer {
 				}
 				formatText(pairs, "userName", user);
 				if (user.getRoles() != null) {
-					pairs.add(new DataPair("roles", new DataArray(user.getRoles().stream()
-							.map(r -> new DataText(r.getCode())).collect(Collectors.toList()))));
+					if (linked) {
+						pairs.add(new DataPair("roles", new DataArray(user.getRoles().stream()
+							.map(r -> {
+								Role role = crm.findRoleByLocalizedName(locale, r);
+								List<DataPair> elements = new ArrayList<DataPair>();
+								elements.add(new DataPair("@context", getContext(Role.class)));
+								elements.add(new DataPair("@type", getType(Role.class)));
+								elements.add(new DataPair("@value", role.getCode()));
+								elements.add(new DataPair("@en", role.getName(Lang.ENGLISH)));
+								elements.add(new DataPair("@fr", role.getName(Lang.FRENCH)));
+								return new DataObject(elements);	
+							}).collect(Collectors.toList()))));
+					} else {
+						pairs.add(new DataPair("roles", new DataArray(user.getRoles().stream()
+							.map(r -> new DataText(crm.findRoleByLocalizedName(locale, r).getName(locale)))
+							.collect(Collectors.toList())
+						)));
+					}
 				}
 				if (!pairs.isEmpty())
 					parent.add(new DataPair(key, new DataObject(pairs)));
@@ -736,7 +753,7 @@ public class JsonTransformer {
 		String firstName = parseText("firstName", data);
 		String middleName = parseText("middleName", data);
 		String lastName = parseText("lastName", data);
-		return new PersonName(salutation, firstName, middleName, lastName);
+		return new PersonName(salutation.getName(locale), firstName, middleName, lastName);
 	}
 	
 	public Telephone parseTelephone(String key, DataObject parent) {
@@ -757,7 +774,7 @@ public class JsonTransformer {
 		String province = parseText("province", data);
 		Country country = parseCountry("country", data);
 		String postalCode = parseText("postalCode", data);
-		return new MailingAddress(street, city, province, country, postalCode);	
+		return new MailingAddress(street, city, province, country.getName(locale), postalCode);	
 	}
 	
 	public Communication parseCommunication(String key, DataObject parent) {
@@ -769,7 +786,7 @@ public class JsonTransformer {
 		Language language = parseLanguage("language", data);
 		Telephone homePhone = parseTelephone("homePhone", data);
 		String faxNumber = parseText("faxNumber", data);
-		return new Communication(jobTitle, language, email, homePhone, faxNumber);
+		return new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
 	}
 	
 	public BusinessPosition parseBusinessPosition(String key, DataObject parent) {
@@ -779,7 +796,7 @@ public class JsonTransformer {
 		BusinessSector sector = parseBusinessSector("sector", data);
 		BusinessUnit unit = parseBusinessUnit("unit", data);
 		BusinessClassification classification = parseBusinessClassification("classification", data);
-		return new BusinessPosition(sector, unit, classification);
+		return new BusinessPosition(sector == null ? null : sector.getName(locale), unit == null ? null : unit.getName(locale), classification == null ? null : classification.getName(locale));
 	}
 	
 	public User parseUser(String key, DataObject parent) {
@@ -787,12 +804,24 @@ public class JsonTransformer {
 		if (data == null)
 			return null;
 		String userName = parseText("userName", data);
-		List<Role> roles = data.contains("roles") ? 
+		List<String> roles = data.contains("roles") ? 
 			data.getArray("roles").stream()
-				.map(r -> crm.findRoleByCode(((DataText)r).value()))
+				.map(r -> parseRole(r).getName(locale))
 				.collect(Collectors.toList()) :
-			new ArrayList<Role>();
+			new ArrayList<String>();
 		return new User(userName, roles);
+	}
+	
+	public Role parseRole(DataElement data) {
+		if (data instanceof DataText) {
+			return crm.findRoleByLocalizedName(locale, ((DataText)data).value());
+		} else if (data instanceof DataObject) {
+			DataObject ld = (DataObject)data;
+			if (!ld.getString("@type").equals("Role"))
+				throw new IllegalArgumentException("Unexpected link data type for Role: " + ld.getString("@type"));
+			return crm.findRoleByCode(ld.getString("@value")); 
+		}
+		return null;
 	}
 
 }

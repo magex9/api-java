@@ -13,7 +13,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 	public boolean canCreatePersonForOrganization(Identifier organizationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -21,7 +21,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 		 * false otherwise
 		 */
 		if (personDetails.getOrganizationId().equals(organizationId)) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.equals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -35,7 +35,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 			return true;
 		}
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		PersonDetails person = personService.findPersonDetails(personId);
@@ -51,7 +51,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 			return true;
 		}
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -60,7 +60,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 		 */
 		PersonDetails person = personService.findPersonDetails(personId);
 		if (personDetails.getOrganizationId().equals(person.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.equals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -70,7 +70,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 	public boolean canEnablePerson(Identifier personId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -79,7 +79,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 		 */
 		PersonDetails person = personService.findPersonDetails(personId);
 		if (personDetails.getOrganizationId().equals(person.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.equals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -89,7 +89,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 	public boolean canDisablePerson(Identifier personId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -98,7 +98,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 		 */
 		PersonDetails person = personService.findPersonDetails(personId);
 		if (personDetails.getOrganizationId().equals(person.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.equals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -108,7 +108,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 	public boolean canUpdateUserRole(Identifier personId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -117,7 +117,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 		 */
 		PersonDetails person = personService.findPersonDetails(personId);
 		if (personDetails.getOrganizationId().equals(person.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.equals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -131,7 +131,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 			return true;
 		}
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.equals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -140,7 +140,7 @@ public class SpringSecurityPersonPolicy extends AbstractSpringSecurityPolicy imp
 		 */
 		PersonDetails person = personService.findPersonDetails(personId);
 		if (personDetails.getOrganizationId().equals(person.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.equals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;

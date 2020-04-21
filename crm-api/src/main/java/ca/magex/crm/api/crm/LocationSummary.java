@@ -13,7 +13,7 @@ import ca.magex.crm.api.system.Status;
 public class LocationSummary implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	protected Identifier locationId;
 	
 	protected Identifier organizationId;

@@ -18,7 +18,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -26,7 +26,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 		 * false otherwise
 		 */
 		if (personDetails.getOrganizationId().equals(organizationId)) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -36,7 +36,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 	public boolean canViewLocation(Identifier locationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		LocationDetails location = locationService.findLocationDetails(locationId);		
@@ -48,7 +48,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 	public boolean canUpdateLocation(Identifier locationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -57,7 +57,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 		 */
 		LocationDetails location = locationService.findLocationDetails(locationId);
 		if (personDetails.getOrganizationId().equals(location.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -67,7 +67,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 	public boolean canEnableLocation(Identifier locationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -76,7 +76,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 		 */
 		LocationDetails location = locationService.findLocationDetails(locationId);
 		if (personDetails.getOrganizationId().equals(location.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -86,7 +86,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 	public boolean canDisableLocation(Identifier locationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/*
@@ -95,7 +95,7 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 		 */
 		LocationDetails location = locationService.findLocationDetails(locationId);
 		if (personDetails.getOrganizationId().equals(location.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
 		}
 		/* if the person doesn't belong to the org, then return false */
 		return false;

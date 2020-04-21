@@ -11,11 +11,10 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.rest"})
+@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.rest", "ca.magex.crm.resource"})
 public class NoAuthRestfulApiServer {
 
 	public static void main(String[] args) {
@@ -23,7 +22,6 @@ public class NoAuthRestfulApiServer {
 	}
 
 	@Autowired private CrmLookupService lookupService;
-	@Autowired private CrmValidation validationService;
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
@@ -33,7 +31,7 @@ public class NoAuthRestfulApiServer {
 		/* use anonymous policies */
 		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
 		return new SecuredCrmServices(
-				lookupService, validationService, 
+				lookupService, 
 				organizationService, policies, 
 				locationService, policies,
 				personService, policies);

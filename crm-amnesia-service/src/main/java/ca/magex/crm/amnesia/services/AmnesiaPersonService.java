@@ -28,7 +28,6 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 @Service
@@ -106,7 +105,7 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
 		PersonDetails person = findPersonDetails(personId);
 		person = person.withUser(person.getUser().withRoles(roles));
 		return db.savePerson(person);
@@ -124,17 +123,17 @@ public class AmnesiaPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails addUserRole(Identifier personId, Role role) {
+	public PersonDetails addUserRole(Identifier personId, String role) {
 		PersonDetails person = findPersonDetails(personId);
-		List<Role> roles = new ArrayList<Role>(person.getUser().getRoles());
+		List<String> roles = new ArrayList<String>(person.getUser().getRoles());
 		roles.add(role);
 		return setUserRoles(personId, roles);
 	}
 
 	@Override
-	public PersonDetails removeUserRole(Identifier personId, Role role) {
+	public PersonDetails removeUserRole(Identifier personId, String role) {
 		PersonDetails person = findPersonDetails(personId);
-		List<Role> roles = new ArrayList<Role>(person.getUser().getRoles());
+		List<String> roles = new ArrayList<String>(person.getUser().getRoles());
 		roles.remove(role);
 		return setUserRoles(personId, roles);
 	}

@@ -7,8 +7,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.lookup.Country;
-
 public class MailingAddress implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -19,11 +17,11 @@ public class MailingAddress implements Serializable {
 
 	private String province;
 
-	private Country country;
+	private String country;
 
 	private String postalCode;
 
-	public MailingAddress(String street, String city, String province, Country country, String postalCode) {
+	public MailingAddress(String street, String city, String province, String country, String postalCode) {
 		super();
 		this.street = street;
 		this.city = city;
@@ -44,7 +42,7 @@ public class MailingAddress implements Serializable {
 		return province;
 	}
 
-	public Country getCountry() {
+	public String getCountry() {
 		return country;
 	}
 

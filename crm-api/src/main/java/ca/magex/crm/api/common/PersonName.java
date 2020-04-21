@@ -8,13 +8,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.lookup.Salutation;
-
 public class PersonName implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Salutation salutation;
+	private String salutation;
 
 	private String firstName;
 
@@ -24,7 +22,7 @@ public class PersonName implements Serializable {
 	
 	private String displayName;
 	
-	public PersonName(Salutation salutation, String firstName, String middleName, String lastName) {
+	public PersonName(String salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
 		this.firstName = firstName;
@@ -43,7 +41,7 @@ public class PersonName implements Serializable {
 			displayName += middleName;
 	}
 
-	public Salutation getSalutation() {
+	public String getSalutation() {
 		return salutation;
 	}
 

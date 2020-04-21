@@ -37,7 +37,6 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataArray;
 import ca.magex.crm.mapping.data.DataElement;
 import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataPair;
 import ca.magex.crm.mapping.data.DataParser;
 
 public class RestfulCrmServices implements CrmServices {
@@ -513,7 +512,7 @@ public class RestfulCrmServices implements CrmServices {
 				.with("street", address.getStreet())
 				.with("city", address.getCity())
 				.with("province", address.getProvince())
-				.with("country", address.getCountry().getName(locale))
+				.with("country", address.getCountry())
 				.with("postalCode", address.getPostalCode())));
 		return new LocationDetails(new Identifier(result.getString("locationId")), 
 			new Identifier(result.getString("organizationId")),
@@ -524,7 +523,7 @@ public class RestfulCrmServices implements CrmServices {
 				result.getObject("address").getString("street"),
 				result.getObject("address").getString("city"),
 				result.getObject("address").getString("province"),
-				findCountryByLocalizedName(locale, result.getObject("address").getString("country")),
+				findCountryByLocalizedName(locale, result.getObject("address").getString("country")).getCode(),
 				result.getObject("address").getString("postalCode")));
 	}
 
@@ -626,19 +625,19 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public PersonDetails addUserRole(Identifier personId, Role role) {
+	public PersonDetails addUserRole(Identifier personId, String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PersonDetails removeUserRole(Identifier personId, Role role) {
+	public PersonDetails removeUserRole(Identifier personId, String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
 		// TODO Auto-generated method stub
 		return null;
 	}

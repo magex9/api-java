@@ -11,7 +11,6 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
@@ -23,7 +22,6 @@ public class JwtRestfulApiServer {
 	}
 
 	@Autowired private CrmLookupService lookupService;
-	@Autowired private CrmValidation validationService;
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
@@ -33,7 +31,7 @@ public class JwtRestfulApiServer {
 		/* use anonymous policies */
 		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
 		return new SecuredCrmServices(
-				lookupService, validationService, 
+				lookupService, 
 				organizationService, policies, 
 				locationService, policies,
 				personService, policies);

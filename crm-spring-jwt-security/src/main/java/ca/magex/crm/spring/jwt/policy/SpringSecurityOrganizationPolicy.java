@@ -11,14 +11,14 @@ public class SpringSecurityOrganizationPolicy extends AbstractSpringSecurityPoli
 
 	@Override
 	public boolean canCreateOrganization() {
-		return getCurrentUser().getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent();
+		return getCurrentUser().getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent();
 	}
 
 	@Override
 	public boolean canViewOrganization(Identifier organizationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/* return true if the person belongs to the org */
@@ -29,12 +29,12 @@ public class SpringSecurityOrganizationPolicy extends AbstractSpringSecurityPoli
 	public boolean canUpdateOrganization(Identifier organizationId) {
 		PersonDetails personDetails = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
 			return true;
 		}
 		/* if the person belongs to the org, then return true if they are an RE_ADMIN, false otherwise */
 		if (personDetails.getOrganizationId().equals(organizationId)) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("RE_ADMIN")).findAny().isPresent();
+			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
 		}				
 		/* if the person doesn't belong to the org, then return false */
 		return false;
@@ -43,12 +43,12 @@ public class SpringSecurityOrganizationPolicy extends AbstractSpringSecurityPoli
 	@Override
 	public boolean canEnableOrganization(Identifier organizationId) {
 		/* only CRM_ADMIN can enable an org */ 
-		return getCurrentUser().getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent();
+		return getCurrentUser().getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent();
 	}
 
 	@Override
 	public boolean canDisableOrganization(Identifier organizationId) {
 		/* only CRM_ADMIN can disable an org */ 
-		return getCurrentUser().getUser().getRoles().stream().filter((r) -> r.getCode().contentEquals("CRM_ADMIN")).findAny().isPresent();
+		return getCurrentUser().getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent();
 	}
 }
