@@ -7,15 +7,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.lookup.Language;
-
 public class Communication implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String jobTitle;
 	
-	private Language language;
+	private String language;
 	
 	private String email;
 	
@@ -23,7 +21,7 @@ public class Communication implements Serializable {
 	
 	private String faxNumber;
 
-	public Communication(String jobTitle, Language language, String email, Telephone homePhone, String faxNumber) {
+	public Communication(String jobTitle, String language, String email, Telephone homePhone, String faxNumber) {
 		super();
 		this.jobTitle = jobTitle;
 		this.language = language;
@@ -40,11 +38,11 @@ public class Communication implements Serializable {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 
-	public Language getLanguage() {
+	public String getLanguage() {
 		return language;
 	}
 
-	public Communication withLanguage(Language language) {
+	public Communication withLanguage(String language) {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 

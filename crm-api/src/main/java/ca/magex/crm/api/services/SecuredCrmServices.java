@@ -49,13 +49,13 @@ public final class SecuredCrmServices implements Crm {
 	
 	private final CrmPersonPolicy personPolicy;
 	
-	public SecuredCrmServices(CrmLookupService lookupService, CrmValidation validationService, 
+	public SecuredCrmServices(CrmLookupService lookupService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy) {
 		super();
+		this.validationService = new StructureValidationService(lookupService, organizationService, locationService);
 		this.lookupService = lookupService;
-		this.validationService = validationService;
 		this.organizationService = organizationService;
 		this.organizationPolicy = organizationPolicy;
 		this.locationService = locationService;
@@ -361,13 +361,13 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
 		if (!canUpdateUserRole(personId))
 			throw new PermissionDeniedException("setUserRoles: " + personId);
 		return personService.setUserRoles(personId, roles);
 	}
 
-	public PersonDetails addUserRole(Identifier personId, Role role) {
+	public PersonDetails addUserRole(Identifier personId, String role) {
 		if (!canUpdateUserRole(personId))
 			throw new PermissionDeniedException("addUserRole: " + personId);
 		return personService.addUserRole(personId, role);
@@ -380,7 +380,7 @@ public final class SecuredCrmServices implements Crm {
 		return personService.setUserPassword(personId, password);
 	}
 
-	public PersonDetails removeUserRole(Identifier personId, Role role) {
+	public PersonDetails removeUserRole(Identifier personId, String role) {
 		if (!canUpdateUserRole(personId))
 			throw new PermissionDeniedException("removeUserRole: " + personId);
 		return personService.removeUserRole(personId, role);
@@ -398,7 +398,7 @@ public final class SecuredCrmServices implements Crm {
 		return validationService.validate(person);
 	}
 
-	public List<Role> validate(List<Role> roles, Identifier personId) {
+	public List<String> validate(List<String> roles, Identifier personId) {
 		return validationService.validate(roles, personId);
 	}
 

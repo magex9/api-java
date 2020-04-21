@@ -32,7 +32,6 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 @Service
@@ -168,13 +167,13 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails addUserRole(Identifier personId, Role role) {
+	public PersonDetails addUserRole(Identifier personId, String role) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Unable to find person " + personId);
 		}
-		List<Role> roles = new ArrayList<Role>(personDetails.getUser().getRoles());
+		List<String> roles = new ArrayList<String>(personDetails.getUser().getRoles());
 		if (roles.contains(role)) {
 			return SerializationUtils.clone(personDetails);
 		}
@@ -185,13 +184,13 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails removeUserRole(Identifier personId, Role role) {
+	public PersonDetails removeUserRole(Identifier personId, String role) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Unable to find person " + personId);
 		}
-		List<Role> roles = new ArrayList<Role>(personDetails.getUser().getRoles());
+		List<String> roles = new ArrayList<String>(personDetails.getUser().getRoles());
 		if (!roles.contains(role)) {
 			return SerializationUtils.clone(personDetails);
 		}
@@ -202,7 +201,7 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.amnesia.Lang;
 import ca.magex.crm.amnesia.services.AmnesiaAnonymousPolicies;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -28,14 +28,12 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.json.JsonTransformer;
 import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +41,6 @@ import ca.magex.crm.test.TestConfig;
 public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 
 	@Autowired private CrmLookupService lookupService;
-	@Autowired private CrmValidation validationService;
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
@@ -54,7 +51,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 	public void init() {
 		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
 		service = new SecuredCrmServices(
-				lookupService, validationService,
+				lookupService,
 				organizationService, policies,
 				locationService, policies,
 				personService, policies);
@@ -62,25 +59,26 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void testPersonJson() throws Exception {
+		Locale locale = Lang.ENGLISH;
 		Identifier personId = new Identifier("abc");
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode("3"), "Chris", "P", "Bacon");
+		PersonName legalName = new PersonName(service.findSalutationByCode("3").getName(locale), "Chris", "P", "Bacon");
 		Country canada = service.findCountryByCode("CA");
-		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
+		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada.getName(locale), "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
 		Language language = lookupService.findLanguageByCode("en");
 		Telephone homePhone = new Telephone("2342342345", null);
 		String faxNumber = "4564564565";
-		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
-		BusinessPosition unit = new BusinessPosition(service.findBusinessSectors().get(0), null, null);
+		Communication communication = new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
+		BusinessPosition unit = new BusinessPosition(service.findBusinessSectors().get(0).getName(locale), null, null);
 		String userName = "chris";
-		List<Role> roles = new ArrayList<Role>();
+		List<String> roles = new ArrayList<String>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_ADMIN"));
-		roles.add(service.findRoleByCode("RE_ADMIN"));
+		roles.add(service.findRoleByCode("SYS_ADMIN").getName(locale));
+		roles.add(service.findRoleByCode("RE_ADMIN").getName(locale));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		JsonTransformer transformer = new JsonTransformer(service, Lang.ENGLISH, false);
@@ -117,8 +115,8 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"  \"user\": {\n" + 
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      \"SYS_ADMIN\",\n" + 
-				"      \"RE_ADMIN\"\n" + 
+				"      \"System Admin\",\n" + 
+				"      \"Reporting Admin\"\n" + 
 				"    ]\n" + 
 				"  }\n" + 
 				"}", json);
@@ -133,28 +131,27 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		assertEquals(person.getPosition(), reloaded.getPosition());
 		assertEquals(person.getUser(), reloaded.getUser());
 	}
-
+	
 	@Test
 	public void testPersonLinkedData() throws Exception {
+		Locale locale = Lang.ENGLISH;
 		Identifier personId = new Identifier("abc");
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(service.findSalutationByCode("3"), "Chris", "P", "Bacon");
-		Country canada = service.findCountryByCode("CA");
-		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada, "K1K1K1");
+		PersonName legalName = new PersonName("Mr.", "Chris", "P", "Bacon");
+		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", "Canada", "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
-		Language language = lookupService.findLanguageByCode("en");
 		Telephone homePhone = new Telephone("2342342345", null);
 		String faxNumber = "4564564565";
-		Communication communication = new Communication(jobTitle, language, email, homePhone, faxNumber);
-		BusinessPosition unit = new BusinessPosition(service.findBusinessSectors().get(0), null, null);
+		Communication communication = new Communication(jobTitle, "English", email, homePhone, faxNumber);
+		BusinessPosition unit = new BusinessPosition("Information Technology", null, null);
 		String userName = "chris";
-		List<Role> roles = new ArrayList<Role>();
+		List<String> roles = new ArrayList<String>();
 		User user = new User(userName, roles);
-		roles.add(service.findRoleByCode("SYS_ADMIN"));
-		roles.add(service.findRoleByCode("RE_ADMIN"));
+		roles.add(service.findRoleByCode("SYS_ADMIN").getName(locale));
+		roles.add(service.findRoleByCode("RE_ADMIN").getName(locale));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
 		JsonTransformer transformer = new JsonTransformer(service, Lang.ENGLISH, true);
@@ -222,17 +219,27 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 				"    \"@type\": \"BusinessPosition\",\n" + 
 				"    \"sector\": {\n" + 
 				"      \"@type\": \"BusinessSector\",\n" + 
-				"      \"@value\": \"1\",\n" + 
-				"      \"@en\": \"External\",\n" + 
-				"      \"@fr\": \"External\"\n" + 
+				"      \"@value\": \"4\",\n" + 
+				"      \"@en\": \"Information Technology\",\n" + 
+				"      \"@fr\": \"Technologie Informatique\"\n" + 
 				"    }\n" + 
 				"  },\n" + 
 				"  \"user\": {\n" + 
-				"    \"@type\": \"User\",\n" + 
+			    "    \"@type\": \"User\",\n" +
 				"    \"userName\": \"chris\",\n" + 
 				"    \"roles\": [\n" + 
-				"      \"SYS_ADMIN\",\n" + 
-				"      \"RE_ADMIN\"\n" + 
+				"      {\n" + 
+				"        \"@type\": \"Role\",\n" + 
+				"        \"@value\": \"SYS_ADMIN\",\n" + 
+				"        \"@en\": \"System Admin\",\n" + 
+				"        \"@fr\": \"Administrateur du systeme\"\n" + 
+				"      },\n" + 
+				"      {\n" + 
+				"        \"@type\": \"Role\",\n" + 
+				"        \"@value\": \"RE_ADMIN\",\n" + 
+				"        \"@en\": \"Reporting Admin\",\n" + 
+				"        \"@fr\": \"Administrateur de rapports\"\n" + 
+				"      }\n" + 
 				"    ]\n" + 
 				"  }\n" + 
 				"}", json);

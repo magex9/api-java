@@ -37,7 +37,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 			return new User(
 					person.getUser().getUserName(), 
 					passwordService.getPassword(person.getPersonId()),
-					person.getUser().getRoles().stream().map((r) -> new SimpleGrantedAuthority("ROLE_" + r.getCode())).collect(Collectors.toList()));
+					person.getUser().getRoles().stream().map((r) -> new SimpleGrantedAuthority("ROLE_" + r)).collect(Collectors.toList()));
 		} else {
 			throw new UsernameNotFoundException("User not found with username: " + username);
 		}

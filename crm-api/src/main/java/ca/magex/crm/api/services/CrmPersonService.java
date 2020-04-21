@@ -33,10 +33,10 @@ public interface CrmPersonService {
     PersonDetails updatePersonAddress(Identifier personId, MailingAddress address);
     PersonDetails updatePersonCommunication(Identifier personId, Communication communication);
     PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position);
-    PersonDetails addUserRole(Identifier personId, Role role);
-    PersonDetails removeUserRole(Identifier personId, Role role);
+    PersonDetails addUserRole(Identifier personId, String role);
+    PersonDetails removeUserRole(Identifier personId, String role);
+    PersonDetails setUserRoles(Identifier personId, List<String> roles);
     PersonDetails setUserPassword(Identifier personId, String password);
-    PersonDetails setUserRoles(Identifier personId, List<Role> roles);
     PersonSummary findPersonSummary(Identifier personId);
     PersonDetails findPersonDetails(Identifier personId);
     long countPersons(PersonsFilter filter);

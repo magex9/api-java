@@ -225,7 +225,7 @@ public class PersonsController {
 	public void setUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((DataText)r).value())).collect(Collectors.toList()));
+		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((DataText)r).value()).getCode()).collect(Collectors.toList()));
 		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
@@ -236,7 +236,7 @@ public class PersonsController {
 	public void addUserRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		PersonDetails details = crm.addUserRole(new Identifier(personId), crm.findRoleByCode(roleId));
+		PersonDetails details = crm.addUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
 		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
@@ -247,7 +247,7 @@ public class PersonsController {
 	public void removeUserRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		PersonDetails details = crm.removeUserRole(new Identifier(personId), crm.findRoleByCode(roleId));
+		PersonDetails details = crm.removeUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
 		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
