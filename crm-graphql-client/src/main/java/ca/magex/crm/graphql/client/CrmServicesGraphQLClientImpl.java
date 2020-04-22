@@ -42,14 +42,14 @@ import ca.magex.crm.api.system.Status;
  * 
  * @author Jonny
  */
-public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmServices {
+public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmServices {
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
 	 * 
 	 * @param endpoint
 	 */
-	public OrganizationServiceGraphQLClient(String endpoint) {
+	public CrmServicesGraphQLClientImpl(String endpoint) {
 		super(endpoint, "/organization-service-queries.properties");
 	}
 

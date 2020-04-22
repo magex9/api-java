@@ -1,7 +1,7 @@
 package ca.magex.crm.hazelcast;
 
-import java.sql.Date;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -71,10 +71,11 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 					break;
 				}
 			}
-			LOG.info("Previously Initialized on: " + new Date(initTimeStamp));
+			LOG.info("Hazelcast CRM Previously Initialized on: " + new Date(initTimeStamp));
 			return;
 		}			
 		
+		LOG.info("Initializing Hazelcast CRM");
 		LOG.info("Initializing Lookups");
 		hzInstance.getList("statuses").addAll(Arrays.asList(Status.values()));
 		hzInstance.getList("roles").addAll(lookupLoader.loadLookup(Role.class, "Role.csv"));
@@ -88,6 +89,7 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 		LOG.info("Creating Magex Organization");
 		OrganizationDetails magex = organizationService.createOrganization("Magex");
 
+		LOG.info("Creating CRM Admin");
 		PersonDetails crmAdmin = personService.createPerson(
 				magex.getOrganizationId(), 
 				new PersonName(null, "Crm", "", "Admin") ,
@@ -96,7 +98,9 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4"), lookupService.findBusinessUnitByCode("4"), lookupService.findBusinessClassificationByCode("4")));		
 		personService.addUserRole(crmAdmin.getPersonId(), lookupService.findRoleByCode("CRM_ADMIN"));		
 		passwordService.setPassword(crmAdmin.getPersonId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
+		LOG.info("CRM Admin created as user: " + crmAdmin.getUser().getUserName());
 		
+		LOG.info("Creating System Admin");
 		PersonDetails sysAdmin = personService.createPerson(
 				magex.getOrganizationId(), 
 				new PersonName(null, "System", "", "Admin") ,
@@ -105,7 +109,9 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4"), lookupService.findBusinessUnitByCode("4"), lookupService.findBusinessClassificationByCode("4")));
 		personService.addUserRole(sysAdmin.getPersonId(), lookupService.findRoleByCode("SYS_ADMIN"));		
 		passwordService.setPassword(sysAdmin.getPersonId(), passwordEncoder == null ? "sysadmin" : passwordEncoder.encode("sysadmin"));
+		LOG.info("System Admin created as user: " + sysAdmin.getUser().getUserName());
 		
 		initMap.put("timestamp", System.currentTimeMillis());
+		LOG.info("Hazelcast Initialized at " + new Date((Long) initMap.get("timestamp")));
 	}		
 }

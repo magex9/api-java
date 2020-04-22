@@ -1,8 +1,8 @@
 package ca.magex.crm.graphql;
 
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import ca.magex.crm.api.services.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
@@ -14,8 +14,8 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
-@Component
-public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServices> {
+@Configuration
+public class SecuredCrmServicesFactoryBean {
 
 	@Autowired private CrmLookupService lookupService;
 	@Autowired private CrmValidation validationService;
@@ -26,17 +26,12 @@ public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServ
 	@Autowired private CrmLocationPolicy locationPolicy;
 	@Autowired private CrmPersonPolicy personPolicy;
 	
-	@Override
-	public SecuredCrmServices getObject() throws Exception {
+	@Bean
+	public SecuredCrmServices securedCrmServices() throws Exception {
 		return new SecuredCrmServices(
 				lookupService, validationService,
 				organizationService, organizationPolicy,
 				locationService, locationPolicy,
 				personService, personPolicy);
-	}
-
-	@Override
-	public Class<?> getObjectType() {
-		return SecuredCrmServices.class;
 	}
 }
