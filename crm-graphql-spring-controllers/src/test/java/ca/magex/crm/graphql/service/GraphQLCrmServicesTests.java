@@ -47,7 +47,7 @@ public class GraphQLCrmServicesTests extends AbstractJUnit4SpringContextTests {
 				new User("user1", Collections.emptyList()));		
 		BDDMockito.willReturn(pd).given(crm).findPersonDetails(pd.getPersonId());
 		BDDMockito.willAnswer((invocation) -> {
-			List<Role> roles = invocation.getArgument(1);
+			List<String> roles = invocation.getArgument(1);
 			return pd.withUser(pd.getUser().withRoles(roles));
 		}).given(crm).setUserRoles(Mockito.eq(pd.getPersonId()), Mockito.any());
 	}
@@ -57,7 +57,7 @@ public class GraphQLCrmServicesTests extends AbstractJUnit4SpringContextTests {
 		BDDMockito.willReturn(new Role("A", "A_en", "A_fr")).given(crm).findRoleByCode("A");
 		BDDMockito.willReturn(new Role("B", "B_en", "B_fr")).given(crm).findRoleByCode("B");
 
-		ExecutionResult result = graphQl.getGraphQL().execute("mutation { setUserRoles(personId: \"ABC\", roles: [\"A\", \"B\"]) { personId user { roles { code } } } }");
+		ExecutionResult result = graphQl.getGraphQL().execute("mutation { setUserRoles(personId: \"ABC\", roles: [\"A\", \"B\"]) { personId user { roles } } }");
 		Assert.assertEquals(result.getErrors().toString(), 0, result.getErrors().size());
 		JSONObject json = new JSONObject(result.getData().toString());
 		Assert.assertEquals(json.toString(3), 2, json.getJSONObject("setUserRoles").getJSONObject("user").getJSONArray("roles").length());

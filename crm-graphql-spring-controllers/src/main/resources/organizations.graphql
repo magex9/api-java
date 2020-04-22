@@ -134,7 +134,7 @@ type Person {
 # Complex Subtypes
 type Communication {
 	jobTitle: String
-	language: CodeLookup
+	language: String
 	email: String
 	homePhone: Telephone
 	faxNumber: String
@@ -144,25 +144,25 @@ type PersonName {
 	firstName: String
 	middleName: String
 	lastName: String
-	salutation: CodeLookup
+	salutation: String
 }
 
 type BusinessPosition {
-	sector: CodeLookup
-	unit: CodeLookup
-	classification: CodeLookup
+	sector: String
+	unit: String
+	classification: String
 }
 
 type User {
 	userName: String
-	roles: [CodeLookup]
+	roles: [String]
 }
 
 type MailingAddress {
 	street: String
 	city: String
 	province: String
-	country: CodeLookup
+	country: String
 	postalCode: String
 }
 
@@ -200,7 +200,6 @@ type Telephone {
 	extension: String
 }
 
-# Numeric Code Values
 type CodeLookup {
 	code: String
 	englishName: String

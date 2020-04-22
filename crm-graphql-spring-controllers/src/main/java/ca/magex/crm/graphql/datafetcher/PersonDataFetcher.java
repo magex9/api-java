@@ -116,7 +116,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			return crm.addUserRole(
 					personId, 
-					extractRole(environment, "role"));
+					environment.getArgument("role"));
 		};
 	}
 	
@@ -126,7 +126,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
 			return crm.removeUserRole(
 					personId, 
-					extractRole(environment, "role"));
+					environment.getArgument("role"));
 		};
 	}
 	
@@ -136,7 +136,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));			
 			return crm.setUserRoles(
 					personId, 
-					extractRoles(environment, "roles"));
+					environment.getArgument("roles"));
 		};
 	}
 	

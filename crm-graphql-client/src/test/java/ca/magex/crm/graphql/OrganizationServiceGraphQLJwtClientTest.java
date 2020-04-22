@@ -7,7 +7,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import ca.magex.crm.graphql.client.OrganizationServiceGraphQLClient;
+import ca.magex.crm.graphql.client.CrmServicesGraphQLClientImpl;
 import ca.magex.crm.test.CrmServicesTestSuite;
 
 @RunWith(SpringRunner.class)
@@ -18,7 +18,7 @@ public class OrganizationServiceGraphQLJwtClientTest {
 
 	@Test
 	public void runTests() {
-		OrganizationServiceGraphQLClient crmServices = new OrganizationServiceGraphQLClient("http://localhost:" + randomPort + "/crm/graphql");
+		CrmServicesGraphQLClientImpl crmServices = new CrmServicesGraphQLClientImpl("http://localhost:" + randomPort + "/crm/graphql");
 
 		crmServices.authenticateJwt("http://localhost:" + randomPort + "/crm/authenticate", "CXA0", "admin");
 

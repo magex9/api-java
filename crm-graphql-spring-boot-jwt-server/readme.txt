@@ -15,3 +15,19 @@ eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU4Njk4NDkxNiwiaWF0IjoxNTg2OTY
 
 To shutdown the application we use the actuator end point with a POST call
 curl -X POST -H "Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTWEEyIiwiZXhwIjoxNTg3MDAyNTgwLCJpYXQiOjE1ODY5ODQ1ODB9.-r2P97l_MwA1NKodBGl8PMrDYl8E0vcDCqL-6AmCCyTPF-3XLhlnLevQ_mZ8JeMIGKyinjDpUPZ507POM-YnNg" localhost:9003/actuator/shutdown
+
+
+
+Run server from windows command
+switch to power shell
+
+Start-Job -ScriptBlock {
+  & java -jar crm-graphql-spring-boot-jwt-server-1.0.0-SNAPSHOT-bootable.jar >logs\node1.out 2>logs\node1.err
+}
+
+redirect stdout, stderr to a file 
+1> file.log 2>&1
+
+tail file in windows power shell
+Get-Content <file> -Wait
+

@@ -2,6 +2,7 @@
 ## Spring Boot
 ##############################
 application.pid
+activemq-data/
 
 ##############################
 ## Java
