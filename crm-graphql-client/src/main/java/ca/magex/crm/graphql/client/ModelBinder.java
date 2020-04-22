@@ -3,6 +3,7 @@ package ca.magex.crm.graphql.client;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -158,7 +159,7 @@ public class ModelBinder {
 					json.getString("street"),
 					json.getString("city"),
 					json.getString("province"),
-					toCountry(json.getJSONObject("country")),
+					json.getString("country"),
 					json.getString("postalCode"));
 
 		} catch (JSONException jsone) {
@@ -169,7 +170,7 @@ public class ModelBinder {
 	public static PersonName toPersonName(JSONObject json) {
 		try {
 			return new PersonName(
-					toSalutation(json.getJSONObject("salutation")),
+					json.getString("salutation"),
 					json.getString("firstName"),
 					json.getString("middleName"),
 					json.getString("lastName"));
@@ -183,7 +184,7 @@ public class ModelBinder {
 		try {
 			return new Communication(
 					json.getString("jobTitle"),
-					toLanguage(json.getJSONObject("language")),
+					json.getString("language"),
 					json.getString("email"),
 					toTelephone(json.getJSONObject("homePhone")), 
 					json.getString("faxNumber"));
@@ -195,9 +196,9 @@ public class ModelBinder {
 	public static BusinessPosition toBusinessPosition(JSONObject json) {
 		try {
 			return new BusinessPosition(
-					toBusinessSector(json.getJSONObject("sector")),
-					toBusinessUnit(json.getJSONObject("unit")),
-					toBusinessClassification(json.getJSONObject("classification")));
+					json.getString("sector"),
+					json.getString("unit"),
+					json.getString("classification"));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing BusinessPosition from: " + json.toString(), jsone);
 		}
@@ -207,7 +208,7 @@ public class ModelBinder {
 		try {
 			return new User(
 					json.getString("userName"),
-					toList(ModelBinder::toRole, json.getJSONArray("roles")));
+					toSimpleList(Objects::toString, json.getJSONArray("roles")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);
 		}
@@ -290,6 +291,18 @@ public class ModelBinder {
 			List<T> list = new ArrayList<>();
 			for (int i=0; i<jsonArray.length(); i++) {
 				list.add(constructor.apply(jsonArray.getJSONObject(i)));
+			}
+			return list;
+		} catch (Exception jsone) {
+			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
+		}
+	}
+	
+	public static <T> List<T> toSimpleList(Function<Object, T> constructor, JSONArray jsonArray) {
+		try {
+			List<T> list = new ArrayList<>();
+			for (int i=0; i<jsonArray.length(); i++) {
+				list.add(constructor.apply(jsonArray.get(i)));
 			}
 			return list;
 		} catch (Exception jsone) {
