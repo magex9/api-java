@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.system.Lang;
 
 public class Lookups<LOOKUP extends Object, KEY extends Object> {
 

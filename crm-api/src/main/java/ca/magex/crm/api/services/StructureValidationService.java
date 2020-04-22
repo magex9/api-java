@@ -1,4 +1,4 @@
-package ca.magex.crm.amnesia.services;
+package ca.magex.crm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,10 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 
-public class AmnesiaValidationService implements CrmValidation {
+public class StructureValidationService implements CrmValidation {
 
 	private CrmLookupService lookups;
 	
@@ -27,7 +23,7 @@ public class AmnesiaValidationService implements CrmValidation {
 	
 	private CrmLocationService locations;
 
-	public AmnesiaValidationService(CrmLookupService lookups, CrmOrganizationService organizations,
+	public StructureValidationService(CrmLookupService lookups, CrmOrganizationService organizations,
 			CrmLocationService locations) {
 		super();
 		this.lookups = lookups;

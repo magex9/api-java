@@ -7,48 +7,44 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.lookup.BusinessClassification;
-import ca.magex.crm.api.lookup.BusinessSector;
-import ca.magex.crm.api.lookup.BusinessUnit;
-
 public class BusinessPosition implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private BusinessSector sector;
+	private String sector;
 	
-	private BusinessUnit unit;
+	private String unit;
 	
-	private BusinessClassification classification;
+	private String classification;
 
-	public BusinessPosition(BusinessSector sector, BusinessUnit unit, BusinessClassification classification) {
+	public BusinessPosition(String sector, String unit, String classification) {
 		super();
 		this.sector = sector;
 		this.unit = unit;
 		this.classification = classification;
 	}
 
-	public BusinessSector getSector() {
+	public String getSector() {
 		return sector;
 	}
 
-	public BusinessPosition withSector(BusinessSector sector) {
+	public BusinessPosition withSector(String sector) {
 		return new BusinessPosition(sector, unit, classification);
 	}
 
-	public BusinessUnit getUnit() {
+	public String getUnit() {
 		return unit;
 	}
 
-	public BusinessPosition withUnit(BusinessUnit unit) {
+	public BusinessPosition withUnit(String unit) {
 		return new BusinessPosition(sector, unit, classification);
 	}
 
-	public BusinessClassification getClassification() {
+	public String getClassification() {
 		return classification;
 	}
 
-	public BusinessPosition withClassification(BusinessClassification classification) {
+	public BusinessPosition withClassification(String classification) {
 		return new BusinessPosition(sector, unit, classification);
 	}
 	

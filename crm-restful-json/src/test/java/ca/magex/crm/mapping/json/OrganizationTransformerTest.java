@@ -10,20 +10,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.amnesia.Lang;
 import ca.magex.crm.amnesia.services.AmnesiaAnonymousPolicies;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.json.JsonTransformer;
 import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,7 +29,6 @@ import ca.magex.crm.test.TestConfig;
 public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTests {
 
 	@Autowired private CrmLookupService lookupService;
-	@Autowired private CrmValidation validationService;
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
@@ -42,7 +39,7 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 	public void init() {
 		AmnesiaAnonymousPolicies policies = new AmnesiaAnonymousPolicies();
 		service = new SecuredCrmServices(
-				lookupService, validationService,
+				lookupService,
 				organizationService, policies,
 				locationService, policies,
 				personService, policies);
