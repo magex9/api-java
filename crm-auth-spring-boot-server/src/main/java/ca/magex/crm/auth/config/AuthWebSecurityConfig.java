@@ -12,10 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import ca.magex.crm.auth.filter.JwtRequestFilter;
 import ca.magex.crm.auth.jwt.JwtAuthenticationEntryPoint;
 
 @Configuration
@@ -27,17 +27,13 @@ public class AuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired private UserDetailsService jwtUserDetailsService;
 	@Autowired private UserDetailsPasswordService jwtUserDetailsPasswordService;
 	@Autowired private JwtRequestFilter jwtRequestFilter;
+	@Autowired private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(jwtUserDetailsService)
-			.passwordEncoder(passwordEncoder())
+			.passwordEncoder(passwordEncoder)
 			.userDetailsPasswordManager(jwtUserDetailsPasswordService);
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 
 	@Bean

@@ -11,6 +11,7 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
@@ -25,29 +26,29 @@ public class CrmAuthApplication {
 	}
 	
 	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
 	public InMemoryUserDetailsManager userDetailsManager() {
-						
 		return new InMemoryUserDetailsManager() {
 			
-			@Autowired private PasswordEncoder passwordEncoder;
+			@Autowired
+			private PasswordEncoder passwordEncoder;
 			
 			@PostConstruct
-			public void init() {
-				
+			public void init() {				
 				this.createUser(new User(
-						"admin", 
-						passwordEncoder.encode("admin"), 
-						Set.of(new SimpleGrantedAuthority("CRM_ADMIN"))
-				));
-				
-				
+						"admin",
+						passwordEncoder.encode("admin"),
+						Set.of(new SimpleGrantedAuthority("CRM_ADMIN"))));
 				this.createUser(new User(
-						"sysadmin", 
-						passwordEncoder.encode("sysadmin"), 
+						"sysadmin",
+						passwordEncoder.encode("sysadmin"),
 						Set.of(
-								new SimpleGrantedAuthority("CRM_ADMIN"), 
-								new SimpleGrantedAuthority("SYS_ADMIN"))
-				));
+								new SimpleGrantedAuthority("CRM_ADMIN"),
+								new SimpleGrantedAuthority("SYS_ADMIN"))));
 			}
 		};
 	}

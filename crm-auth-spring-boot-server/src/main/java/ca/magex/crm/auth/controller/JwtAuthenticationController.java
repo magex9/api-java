@@ -30,7 +30,6 @@ public class JwtAuthenticationController {
 				.authenticate(new UsernamePasswordAuthenticationToken(
 						authenticationRequest.getUsername(), 
 						authenticationRequest.getPassword()));
-		String token = jwtTokenUtil.generateToken(authentication);
-		return ResponseEntity.ok(new JwtResponse(token));
+		return ResponseEntity.ok(new JwtResponse(jwtTokenUtil.generateToken(authentication)));
 	}
 }
