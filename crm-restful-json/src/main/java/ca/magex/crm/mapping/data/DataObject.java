@@ -84,7 +84,11 @@ public final class DataObject extends DataElement {
 	}
 
 	public String getString(String key) {
-		return ((DataText)map.get(key)).value();
+		try {
+			return ((DataText)map.get(key)).value();
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
 	
 	public Integer getInt(String key) {

@@ -36,7 +36,7 @@ public class ContentExtractor {
 	public static Locale extractLocale(HttpServletRequest req) {
 		if (req.getHeader("Locale") == null)
 			return null;
-		return req.getHeader("Locale").equals("fr") ? Lang.FRENCH : Lang.ENGLISH;	
+		return Lang.parse(req.getHeader("Locale"));
 	}
 	
 	public static Identifier extractOrganizationId(HttpServletRequest req) throws IllegalArgumentException {

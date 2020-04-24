@@ -158,10 +158,10 @@ public class DataFormatter {
 				if (getContexts().isEmpty() || !data.pairs().get(i).key().equals("@context") || !((DataText)data.pairs().get(i).value()).value().equals(getContexts().peek())) {
 					if (isIndented())
 						os.write(prefix());
-					if (data.contains("@context"))
+					if (data.contains("@context", DataText.class))
 						getContexts().push(data.getString("@context"));
 					stream(data.pairs().get(i), os);
-					if (data.contains("@context"))
+					if (data.contains("@context", DataText.class))
 						getContexts().pop();
 					if (i < data.pairs().size() - 1)
 						os.write(",".getBytes());
