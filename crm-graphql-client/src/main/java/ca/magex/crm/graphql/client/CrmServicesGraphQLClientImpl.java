@@ -42,14 +42,14 @@ import ca.magex.crm.api.system.Status;
  * 
  * @author Jonny
  */
-public class OrganizationServiceGraphQLClient extends GraphQLClient implements CrmServices {
+public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmServices {
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
 	 * 
 	 * @param endpoint
 	 */
-	public OrganizationServiceGraphQLClient(String endpoint) {
+	public CrmServicesGraphQLClientImpl(String endpoint) {
 		super(endpoint, "/organization-service-queries.properties");
 	}
 
@@ -159,7 +159,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				address == null ? null : address.getStreet(),
 				address == null ? null : address.getCity(),
 				address == null ? null : address.getProvince(),
-				address == null ? null : address.getCountry().getCode(),
+				address == null ? null : address.getCountry(),
 				address == null ? null : address.getPostalCode()));
 	}
 
@@ -181,7 +181,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				address == null ? null : address.getStreet(),
 				address == null ? null : address.getCity(),
 				address == null ? null : address.getProvince(),
-				address == null ? null : address.getCountry().getCode(),
+				address == null ? null : address.getCountry(),
 				address == null ? null : address.getPostalCode()));
 	}
 
@@ -263,21 +263,21 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				name.getFirstName(),
 				name.getMiddleName(),
 				name.getLastName(),
-				name.getSalutation().getCode(),
+				name.getSalutation(),
 				address.getStreet(),
 				address.getCity(),
 				address.getProvince(),
-				address.getCountry().getCode(),
+				address.getCountry(),
 				address.getPostalCode(),
 				communication.getJobTitle(),
-				communication.getLanguage().getCode(),
+				communication.getLanguage(),
 				communication.getEmail(),
 				communication.getHomePhone().getNumber(),
 				communication.getHomePhone().getExtension(),
 				communication.getFaxNumber(),
-				position.getSector().getCode(),
-				position.getUnit().getCode(),
-				position.getClassification().getCode()));
+				position.getSector(),
+				position.getUnit(),
+				position.getClassification()));
 	}
 
 	@Override
@@ -289,7 +289,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				name.getFirstName(),
 				name.getMiddleName(),
 				name.getLastName(),
-				name.getSalutation().getCode()));
+				name.getSalutation()));
 	}
 
 	@Override
@@ -301,7 +301,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				address.getStreet(),
 				address.getCity(),
 				address.getProvince(),
-				address.getCountry().getCode(),
+				address.getCountry(),
 				address.getPostalCode()));
 	}
 
@@ -312,7 +312,7 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				"updatePerson",
 				personId,
 				communication.getJobTitle(),
-				communication.getLanguage().getCode(),
+				communication.getLanguage(),
 				communication.getEmail(),
 				communication.getHomePhone().getNumber(),
 				communication.getHomePhone().getExtension(),
@@ -325,9 +325,9 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 				"updatePersonBusinessUnit",
 				"updatePerson",
 				personId,
-				position.getSector().getCode(),
-				position.getUnit().getCode(),
-				position.getClassification().getCode()));
+				position.getSector(),
+				position.getUnit(),
+				position.getClassification()));
 	}
 
 	@Override
@@ -347,30 +347,30 @@ public class OrganizationServiceGraphQLClient extends GraphQLClient implements C
 	}
 
 	@Override
-	public PersonDetails addUserRole(Identifier personId, Role role) {
+	public PersonDetails addUserRole(Identifier personId, String role) {
 		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"addUserRole",
 				"addUserRole",
 				personId,
-				role.getCode()));
+				role));
 	}
 
 	@Override
-	public PersonDetails removeUserRole(Identifier personId, Role role) {
+	public PersonDetails removeUserRole(Identifier personId, String role) {
 		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"removeUserRole",
 				"removeUserRole",
 				personId,
-				role.getCode()));
+				role));
 	}
 	
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<Role> roles) {
+	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
 		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
 				"setUserRoles",
 				"setUserRoles",
 				personId,
-				roles.stream().map((r) -> r.getCode()).collect(Collectors.toList())));
+				roles));
 	}
 	
 	@Override

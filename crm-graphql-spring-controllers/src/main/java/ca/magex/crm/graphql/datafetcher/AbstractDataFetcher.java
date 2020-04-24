@@ -70,7 +70,7 @@ public abstract class AbstractDataFetcher {
 				(String) addressMap.get("street"),
 				(String) addressMap.get("city"),
 				(String) addressMap.get("province"),
-				crm.findCountryByCode((String) addressMap.get("countryCode")),
+				(String) addressMap.get("countryCode"),
 				(String) addressMap.get("postalCode"));
 	}
 
@@ -84,7 +84,7 @@ public abstract class AbstractDataFetcher {
 	protected PersonName extractPersonName(DataFetchingEnvironment environment, String nameKey) {
 		Map<String, Object> nameMap = environment.getArgument(nameKey);
 		return new PersonName(
-				crm.findSalutationByCode((String) nameMap.get("salutation")),
+				(String) nameMap.get("salutation"),
 				(String) nameMap.get("firstName"),
 				(String) nameMap.get("middleName"),
 				(String) nameMap.get("lastName"));
@@ -101,7 +101,7 @@ public abstract class AbstractDataFetcher {
 		Map<String, Object> commsMap = environment.getArgument(commsKey);
 		return new Communication(
 				(String) commsMap.get("jobTitle"),
-				crm.findLanguageByCode((String) commsMap.get("language")),
+				(String) commsMap.get("language"),
 				(String) commsMap.get("email"),
 				new Telephone(
 						(String) commsMap.get("phoneNumber"),
@@ -119,20 +119,9 @@ public abstract class AbstractDataFetcher {
 	protected BusinessPosition extractBusinessPosition(DataFetchingEnvironment environment, String businessKey) {
 		Map<String, Object> businessMap = environment.getArgument(businessKey);
 		return new BusinessPosition(
-				crm.findBusinessSectorByCode((String) businessMap.get("sector")),
-				crm.findBusinessUnitByCode((String) businessMap.get("unit")),
-				crm.findBusinessClassificationByCode((String) businessMap.get("classification")));
-	}
-
-	/**
-	 * Extracts the role from the environment
-	 * 
-	 * @param environment
-	 * @param businessKey
-	 * @return
-	 */
-	protected Role extractRole(DataFetchingEnvironment environment, String roleKey) {
-		return crm.findRoleByCode(environment.getArgument(roleKey));
+				(String) businessMap.get("sector"),
+				(String) businessMap.get("unit"),
+				(String) businessMap.get("classification"));
 	}
 
 	/**

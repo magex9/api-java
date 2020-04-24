@@ -50,7 +50,7 @@ public abstract class GraphQLClient implements Closeable {
 		this.httpclient = HttpClients.createDefault();
 		this.queries = new Properties();
 		try {
-			try (InputStream in = OrganizationServiceGraphQLClient.class.getResource(queryResource).openStream()) {
+			try (InputStream in = CrmServicesGraphQLClientImpl.class.getResource(queryResource).openStream()) {
 				this.queries.load(in);
 			}
 		} catch (Exception e) {

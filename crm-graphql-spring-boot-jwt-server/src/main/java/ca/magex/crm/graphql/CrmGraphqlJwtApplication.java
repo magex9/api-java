@@ -4,11 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 
-@SpringBootApplication(scanBasePackages = { 
-		
-		"ca.magex.crm.resource", 
-		"ca.magex.crm.hazelcast", 
-		"ca.magex.crm.graphql", 
+@SpringBootApplication(scanBasePackages = {
+		"ca.magex.crm.resource",
+		"ca.magex.crm.hazelcast",
+		"ca.magex.crm.graphql",
 		"ca.magex.crm.spring.jwt"
 })
 public class CrmGraphqlJwtApplication {
