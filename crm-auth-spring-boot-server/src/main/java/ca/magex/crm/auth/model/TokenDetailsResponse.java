@@ -1,4 +1,4 @@
-package ca.magex.crm.auth.jwt;
+package ca.magex.crm.auth.model;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.magex.crm.auth.jwt.JwtRequest;
-import ca.magex.crm.auth.jwt.JwtResponse;
-import ca.magex.crm.auth.jwt.TokenDetailsRequest;
-import ca.magex.crm.auth.jwt.TokenDetailsResponse;
-import ca.magex.crm.auth.jwt.UserDetailsRequest;
-import ca.magex.crm.auth.jwt.UserDetailsResponse;
+import ca.magex.crm.auth.model.JwtRequest;
+import ca.magex.crm.auth.model.JwtResponse;
+import ca.magex.crm.auth.model.TokenDetailsRequest;
+import ca.magex.crm.auth.model.TokenDetailsResponse;
+import ca.magex.crm.auth.model.UserDetailsRequest;
+import ca.magex.crm.auth.model.UserDetailsResponse;
 import ca.magex.crm.spring.security.jwt.JwtTokenService;
 
 @RestController
@@ -30,7 +30,6 @@ public class JwtAuthenticationController {
 	@Autowired private AuthenticationManager authenticationManager;
 	@Autowired private JwtTokenService jwtTokenService;
 	
-
 	@PostMapping(value = "/authenticate")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
 		Authentication authentication = authenticationManager
