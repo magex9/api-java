@@ -26,8 +26,7 @@
 		<module>crm-hazelcast-service</module>
 		
 		<!-- Security Implementations -->
-		<module>crm-spring-jwt-security</module>
-		<module>crm-spring-oauth-security</module>
+		<module>crm-spring-security</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
 		<module>crm-graphql-spring-controllers</module>				

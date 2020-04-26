@@ -17,7 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
+import ca.magex.crm.spring.security.jwt.impl.JwtAuthDetailsUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -41,6 +43,11 @@ public class AuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
+	
+	@Bean
+	public JwtAuthDetailsService authDetailsService() {
+		return new JwtAuthDetailsUserDetailsService();
+	}
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -48,7 +55,7 @@ public class AuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				/* authenticate should be public */
 				.authorizeRequests().antMatchers("/authenticate").permitAll()
 				/* user details needs to be protected */
-				.and().authorizeRequests().antMatchers("/userDetails").hasRole("AUTH_REQUEST")
+				.and().authorizeRequests().antMatchers("/userDetails,/validateToken").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
 				.and().authorizeRequests()
 					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")

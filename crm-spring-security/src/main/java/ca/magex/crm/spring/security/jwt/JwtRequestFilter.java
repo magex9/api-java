@@ -7,30 +7,30 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-	
-	@Autowired private UserDetailsService userDetailsService;
-	@Autowired private JwtTokenService jwtTokenService;
 
-	@Value("${jwt.request.filter.ignore}")
-	private String ignoreFilter;
+	@Autowired private JwtAuthDetailsService jwtAuthDetailsService;
+
+	@Value("${jwt.request.filter.ignore:}") private String ignoreFilter;
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		/* don't apply this filter to the authenticate method */
-		return new AntPathRequestMatcher(ignoreFilter).matcher(request).isMatch();
+		if (StringUtils.isNotBlank(ignoreFilter)) {
+			return new AntPathRequestMatcher(ignoreFilter).matcher(request).isMatch();
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
@@ -40,32 +40,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			/* check for an Authorization Header */
 			final String requestTokenHeader = request.getHeader("Authorization");
 
-			String username = null;
 			String jwtToken = null;
 
-			/*
-			 * JWT Token uses format "Bearer <token>" so we need to extract the token from
-			 * the header
-			 */
+			/* check if we have a Bearer token in the Authorization Header */
 			if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 				jwtToken = requestTokenHeader.substring(7);
 				try {
-					username = jwtTokenService.validateToken(jwtToken);
-					if (username != null) {
-						/* get the user details for the username provided */
-						UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-						UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(								
-								userDetails,
-								null,
-								userDetails.getAuthorities());
-						usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-						/* set the authentication for spring */
-												
-						SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-					}
+					JwtAuthenticationToken authenticationToken = jwtAuthDetailsService.getJwtAuthenticationTokenForUsername(jwtToken);
+					/* set the authentication for spring */
+					SecurityContextHolder.getContext().setAuthentication(authenticationToken);					
 				} catch (Exception e) {
-					logger.debug("Cannot parse jwt token");
+					logger.warn("Cannot parse jwt token: " + jwtToken, e);
 				}
 			} else {
 				logger.debug("Authorization is not JWT");

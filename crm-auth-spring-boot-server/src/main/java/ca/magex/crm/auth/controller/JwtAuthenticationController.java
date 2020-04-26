@@ -1,5 +1,7 @@
 package ca.magex.crm.auth.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ca.magex.crm.auth.jwt.JwtRequest;
 import ca.magex.crm.auth.jwt.JwtResponse;
+import ca.magex.crm.auth.jwt.TokenDetailsRequest;
+import ca.magex.crm.auth.jwt.TokenDetailsResponse;
 import ca.magex.crm.auth.jwt.UserDetailsRequest;
 import ca.magex.crm.auth.jwt.UserDetailsResponse;
 import ca.magex.crm.spring.security.jwt.JwtTokenService;
@@ -40,5 +44,12 @@ public class JwtAuthenticationController {
 	public UserDetailsResponse getUserDetails(@RequestBody UserDetailsRequest userDetailsRequest) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(userDetailsRequest.getUsername());		
 		return new UserDetailsResponse(userDetails);
+	}
+	
+	@PostMapping(value = "/validateToken")
+	public TokenDetailsResponse validateToken(@RequestBody TokenDetailsRequest tokenDetailsRequest) {
+		String username = jwtTokenService.validateToken(tokenDetailsRequest.getToken());
+		Date expiration = jwtTokenService.getExpiration(tokenDetailsRequest.getToken());
+		return new TokenDetailsResponse(username, expiration);
 	}
 }

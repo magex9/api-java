@@ -45,7 +45,7 @@
 		
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-spring-jwt-security</artifactId>
+			<artifactId>crm-spring-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

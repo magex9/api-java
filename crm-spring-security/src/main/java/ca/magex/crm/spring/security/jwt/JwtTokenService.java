@@ -22,7 +22,7 @@ public class JwtTokenService implements Serializable {
 
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
-	@Value("${jwt.expiration.hours}") private Long expiration;
+	@Value("${jwt.expiration.hours:5}") private Long expiration;
 	@Value("${jwt.secret}") private String secret;
 
 	/**
@@ -57,5 +57,20 @@ public class JwtTokenService implements Serializable {
 		} else {
 			return jws.getBody().getSubject();
 		}
+	}
+	
+	/**
+	 * validates the token and returns the user
+	 * 
+	 * @param token
+	 * @return
+	 */
+	public Date getExpiration(String token) {
+		Jws<Claims> jws = Jwts.parser()
+				.setSigningKey(secret)
+				.parseClaimsJws(token);
+
+		/* if we have an expiration which is before now then return null */
+		return jws.getBody().getExpiration();
 	}
 }
