@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.jwt.policy;
+package ca.magex.crm.spring.security.policy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

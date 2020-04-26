@@ -1,9 +1,10 @@
-package ca.magex.crm.spring.jwt;
+package ca.magex.crm.graphql.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,14 +16,16 @@ import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	@Autowired private UserDetailsService jwtUserDetailsService;
 	@Autowired private UserDetailsPasswordService jwtUserDetailsPasswordService;
 	@Autowired private JwtRequestFilter jwtRequestFilter;
@@ -55,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
 					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
 					.anyRequest().authenticated()
-				.and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
