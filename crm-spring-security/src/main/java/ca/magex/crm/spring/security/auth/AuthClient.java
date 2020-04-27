@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.security;
+package ca.magex.crm.spring.security.auth;
 
 import java.io.Closeable;
 import java.io.IOException;

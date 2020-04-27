@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.magex.crm.spring.security.AuthDetails;
 import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.crm.spring.security.jwt.internal.JwtTokenService;

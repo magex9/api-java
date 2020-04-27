@@ -15,9 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
-import ca.magex.crm.spring.security.jwt.impl.JwtAuthDetailsRemoteService;
 
 @Configuration
 @EnableWebSecurity
@@ -34,15 +32,12 @@ public class RemoteAuthenticatedWebSecurityConfig extends WebSecurityConfigurerA
 //			.userDetailsPasswordManager(jwtUserDetailsPasswordService);
 //	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 	
-	@Bean
-	public JwtAuthDetailsService authDetailsService() {
-		return new JwtAuthDetailsRemoteService();
-	}
+	
+//	@Bean
+//	public JwtAuthDetailsService authDetailsService() {
+//		return new JwtAuthDetailsRemoteService();
+//	}
 
 //	@Bean
 //	@Override

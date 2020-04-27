@@ -21,7 +21,7 @@ import io.jsonwebtoken.JwtException;
  */
 @Service
 @Profile(MagexSecurityProfile.EMBEDDED)
-public class JwtAuthDetailsUserDetailsService implements JwtAuthDetailsService {
+public class EmbeddedJwtAuthDetailsService implements JwtAuthDetailsService {
 
 	@Autowired private UserDetailsService userDetailsService;
 	@Autowired private JwtTokenService jwtTokenService;

@@ -11,13 +11,13 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.magex.crm.spring.security.AuthClient;
-import ca.magex.crm.spring.security.AuthDetails;
+import ca.magex.crm.spring.security.auth.AuthClient;
+import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationTests {
+public class AuthenticationServerJwtTests {
 
 	@LocalServerPort private int randomPort;
 	
