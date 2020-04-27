@@ -19,5 +19,5 @@ public class CrmGraphqlJwtApplication {
 		/* generate a file called application.pid, used to track the running process */
 		app.addListeners(new ApplicationPidFileWriter());
 		app.run(args);
-	}
+	}	
 }

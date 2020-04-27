@@ -25,7 +25,7 @@ import ca.magex.crm.spring.security.jwt.internal.JwtTokenService;
 
 @RestController
 @CrossOrigin
-@Profile(MagexSecurityProfile.EMBEDDED)
+@Profile(MagexSecurityProfile.EMBEDDED_JWT)
 public class JwtAuthenticationController {
 
 	@Autowired private UserDetailsService userDetailsService;

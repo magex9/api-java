@@ -23,7 +23,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
  * @author Jonny
  */
 @Component
-@Profile(MagexSecurityProfile.EMBEDDED)
+@Profile(MagexSecurityProfile.EMBEDDED_JWT)
 public class JwtTokenService implements Serializable {
 
 	private static final long serialVersionUID = -3887579290326971481L;

@@ -28,7 +28,7 @@ import ca.magex.crm.spring.security.jwt.internal.JwtAuthenticationToken;
  * @author Jonny
  */
 @Service
-@Profile(MagexSecurityProfile.REMOTE)
+@Profile(MagexSecurityProfile.REMOTE_JWT)
 public class RemoteJwtAuthDetailsService implements JwtAuthDetailsService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());

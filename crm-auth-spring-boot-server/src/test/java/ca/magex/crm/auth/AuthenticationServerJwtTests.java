@@ -36,7 +36,5 @@ public class AuthenticationServerJwtTests {
 		ResponseEntity<AuthDetails> authDetails = authClient.validateJwtToken(jwtToken.getBody().getToken(), jwtToken.getBody().getToken());
 		Assert.assertTrue(authDetails.toString(), authDetails.getStatusCode().is2xxSuccessful());
 		logger.info("Token Details : " + authDetails.getBody());
-
-		authClient.close();
 	}
 }

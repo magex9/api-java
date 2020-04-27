@@ -1,13 +1,7 @@
 package ca.magex.crm.spring.security.auth;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
 
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -17,10 +11,8 @@ import org.springframework.web.client.RestTemplate;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 
-public class AuthClient implements Closeable {
+public class AuthClient {
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
-	private CloseableHttpClient httpclient;
 	private String protocol;
 	private String host;
 	private Integer port;
@@ -36,13 +28,6 @@ public class AuthClient implements Closeable {
 		this.host = host;
 		this.port = port;
 		this.context = context;
-		this.httpclient = HttpClients.createDefault();
-	}
-	
-	@Override
-	public void close() throws IOException {
-		logger.debug("Closing http client");
-		httpclient.close();
 	}
 	
 	/**

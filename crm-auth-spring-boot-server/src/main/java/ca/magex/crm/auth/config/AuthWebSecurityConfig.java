@@ -48,7 +48,7 @@ public class AuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				/* authenticate should be public */
 				.authorizeRequests().antMatchers("/authenticate").permitAll()
 				/* user details needs to be protected */
-				.and().authorizeRequests().antMatchers("/userDetails,/validateToken").hasRole("AUTH_REQUEST")
+				.and().authorizeRequests().antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
 				.and().authorizeRequests()
 				.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
