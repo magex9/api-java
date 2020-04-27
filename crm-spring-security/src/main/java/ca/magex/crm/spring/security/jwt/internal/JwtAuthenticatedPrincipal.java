@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.security.jwt;
+package ca.magex.crm.spring.security.jwt.internal;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

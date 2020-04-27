@@ -15,6 +15,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import ca.magex.crm.spring.security.jwt.internal.JwtAuthenticationToken;
+
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 

@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.security.jwt;
+package ca.magex.crm.spring.security.jwt.internal;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,16 +6,24 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.spring.security.MagexSecurityProfile;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * Wraps the JWT libraries into a spring component to be used by the Authentication ServerThen 
+ * 
+ * @author Jonny
+ */
 @Component
+@Profile(MagexSecurityProfile.EMBEDDED)
 public class JwtTokenService implements Serializable {
 
 	private static final long serialVersionUID = -3887579290326971481L;
@@ -69,7 +77,6 @@ public class JwtTokenService implements Serializable {
 		Jws<Claims> jws = Jwts.parser()
 				.setSigningKey(secret)
 				.parseClaimsJws(token);
-
 		/* if we have an expiration which is before now then return null */
 		return jws.getBody().getExpiration();
 	}

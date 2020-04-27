@@ -1,9 +1,9 @@
 package ca.magex.crm.graphql.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,11 +22,10 @@ import ca.magex.crm.spring.security.jwt.impl.JwtAuthDetailsRemoteService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@Profile("RemoteAuthentication")
+public class RemoteAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private JwtRequestFilter jwtRequestFilter;
-
-	@Value("${jwt.antMatchers.permitAll}") private String antMatchersPermitAll;
 
 //	@Autowired
 //	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -54,11 +53,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
-				.authorizeRequests()
-					.antMatchers(antMatchersPermitAll.split(",")).permitAll()
+				/* get the list of public resources */
+				.authorizeRequests().antMatchers("/,/favicon.ico,/images/**").permitAll()
+				/* actuator needs to be protected */
+				.and().authorizeRequests()	
 					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
 					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
-					.anyRequest().authenticated()
+				/* any other requests require authentication */
+				.and().authorizeRequests().anyRequest().authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

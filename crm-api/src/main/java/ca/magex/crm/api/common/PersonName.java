@@ -19,9 +19,9 @@ public class PersonName implements Serializable {
 	private String middleName;
 
 	private String lastName;
-	
+
 	private String displayName;
-	
+
 	public PersonName(String salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
@@ -56,23 +56,23 @@ public class PersonName implements Serializable {
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public String getDisplayName() {
 		return displayName;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}	
+	}
 }
