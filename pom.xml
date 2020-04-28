@@ -33,8 +33,7 @@
 		
 		<!-- GraphQL Endpoint Implementation -->
 		<module>crm-graphql-spring-controllers</module>				
-		<module>crm-graphql-spring-boot-jwt-server</module>
-		<module>crm-graphql-spring-boot-noauth-server</module>		
+		<module>crm-graphql-spring-boot-server</module>		
 		<module>crm-graphql-client</module>
 		
 		<!-- REST Endpoint Implementation -->
