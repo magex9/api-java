@@ -12,13 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-@Profile(MagexSecurityProfile.REMOTE_JWT)
+@Profile(MagexCrmProfiles.CRM_AUTH_REMOTE)
 public class RemoteAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private JwtRequestFilter jwtRequestFilter;

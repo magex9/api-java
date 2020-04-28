@@ -1,16 +1,19 @@
-package ca.magex.crm.spring.security.policy;
+package ca.magex.crm.policy.secure;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.spring.security.MagexSecurityProfile;
 
 @Component
-@Profile({MagexSecurityProfile.EMBEDDED_JWT, MagexSecurityProfile.REMOTE_JWT})
-public class SpringSecurityOrganizationPolicy extends AbstractSpringSecurityPolicy implements CrmOrganizationPolicy {
+@Profile(value = {
+		MagexCrmProfiles.CRM_AUTH_EMBEDDED,
+		MagexCrmProfiles.CRM_AUTH_REMOTE
+})
+public class SecureCrmOrganizationPolicy extends AbstractSecureCrmPolicy implements CrmOrganizationPolicy {
 
 	@Override
 	public boolean canCreateOrganization() {

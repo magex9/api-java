@@ -18,13 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-@Profile(MagexSecurityProfile.EMBEDDED_JWT)
+@Profile(MagexCrmProfiles.CRM_AUTH_EMBEDDED)
 public class EmbeddedAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private UserDetailsService jwtUserDetailsService;
@@ -53,9 +53,9 @@ public class EmbeddedAuthenticatedWebSecurityConfig extends WebSecurityConfigure
 				/* user details needs to be protected */
 				.and().authorizeRequests().antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
-				.and().authorizeRequests()	
-					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
+				.and().authorizeRequests()
+				.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
+				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
 				/* any other requests require authentication */
 				.and().authorizeRequests().anyRequest().authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

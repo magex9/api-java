@@ -453,7 +453,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	public boolean canEnableOrganization(Identifier organizationId) {
-		return organizationPolicy.canDisableOrganization(organizationId);
+		return organizationPolicy.canEnableOrganization(organizationId);
 	}
 
 	public boolean canDisableOrganization(Identifier organizationId) {

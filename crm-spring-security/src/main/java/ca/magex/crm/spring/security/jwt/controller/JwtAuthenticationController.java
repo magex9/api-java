@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
@@ -25,7 +25,7 @@ import ca.magex.crm.spring.security.jwt.JwtTokenService;
 
 @RestController
 @CrossOrigin
-@Profile(MagexSecurityProfile.EMBEDDED_JWT)
+@Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
 public class JwtAuthenticationController {
 
 	@Autowired private UserDetailsService userDetailsService;

@@ -13,7 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.auth.AuthClient;
 import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
@@ -28,7 +28,7 @@ import ca.magex.crm.spring.security.jwt.JwtToken;
  * @author Jonny
  */
 @Service
-@Profile(MagexSecurityProfile.REMOTE_JWT)
+@Profile(MagexCrmProfiles.AUTH_REMOTE_JWT)
 public class RemoteJwtAuthDetailsService implements JwtAuthDetailsService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());

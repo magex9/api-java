@@ -1,19 +1,22 @@
-package ca.magex.crm.spring.security.policy;
+package ca.magex.crm.policy.secure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.spring.security.MagexSecurityProfile;
 
 @Component
-@Profile({MagexSecurityProfile.EMBEDDED_JWT, MagexSecurityProfile.REMOTE_JWT})
-public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy implements CrmLocationPolicy {
+@Profile(value = {
+		MagexCrmProfiles.CRM_AUTH_EMBEDDED,
+		MagexCrmProfiles.CRM_AUTH_REMOTE
+})
+public class SecureCrmLocationPolicy extends AbstractSecureCrmPolicy implements CrmLocationPolicy {
 
 	@Autowired private CrmLocationService locationService;
 

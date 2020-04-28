@@ -57,7 +57,7 @@ public class CrmLookupLoaderTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void testLoadRoles() {
 		List<Role> roles = crmLookupLoader.loadLookup(Role.class, "Role.csv");
-		Assert.assertEquals(roles.toString(), 9, roles.size());
+		Assert.assertEquals(roles.toString(), 10, roles.size());
 	}
 	
 	@Test

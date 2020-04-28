@@ -8,12 +8,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.graphql.client.CrmServicesGraphQLClientImpl;
 import ca.magex.crm.test.CrmServicesTestSuite;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("NOAUTH")
+@ActiveProfiles(profiles = {
+		MagexCrmProfiles.AUTH_EMBEDDED_JWT,
+		MagexCrmProfiles.CRM_NO_AUTH
+	})
 public class OrganizationServiceGraphQLNoauthClientTest {
 
 	@LocalServerPort private int randomPort;

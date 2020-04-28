@@ -16,10 +16,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 
 @Component
-@Profile({MagexSecurityProfile.EMBEDDED_JWT, MagexSecurityProfile.REMOTE_JWT})
+@Profile({MagexCrmProfiles.AUTH_EMBEDDED_JWT, MagexCrmProfiles.AUTH_REMOTE_JWT})
 public class JwtRequestFilter extends OncePerRequestFilter {
 
 	@Autowired private JwtAuthDetailsService jwtAuthDetailsService;

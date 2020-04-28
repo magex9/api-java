@@ -106,7 +106,7 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected <T> T performGraphQLQueryWithVariables(String queryId, String queryName, Map<String, Object> variables) {
-		return performGraphQLQueryd(queryName, constructEntityWithVariables(queryId, variables));
+		return performGraphQLQuery(queryName, constructEntityWithVariables(queryId, variables));
 	}
 
 	/**
@@ -119,11 +119,11 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected <T> T performGraphQLQueryWithSubstitution(String queryId, String queryName, Object... params) {
-		return performGraphQLQueryd(queryName, constructEntityWithSubstitution(queryId, params));
+		return performGraphQLQuery(queryName, constructEntityWithSubstitution(queryId, params));
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T performGraphQLQueryd(String queryName, HttpEntity entity) {
+	private <T> T performGraphQLQuery(String queryName, HttpEntity entity) {
 		long t1 = System.currentTimeMillis();
 		try {
 			HttpPost httpPost = new HttpPost(endpoint);

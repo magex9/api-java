@@ -1,8 +1,10 @@
-package ca.magex.crm.graphql.policy;
+package ca.magex.crm.policy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -10,7 +12,8 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
-public class DefaultUserPolicy implements CrmUserPolicy {
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class DefaultCrmUserPolicy implements CrmUserPolicy {
 
 	@Autowired private CrmUserService userService;
 	@Autowired private CrmPersonService personService;

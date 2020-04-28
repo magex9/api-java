@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
 import ca.magex.crm.spring.security.jwt.JwtAuthenticatedPrincipal;
 import ca.magex.crm.spring.security.jwt.JwtAuthenticationToken;
@@ -20,7 +20,7 @@ import io.jsonwebtoken.JwtException;
  * @author Jonny
  */
 @Service
-@Profile(MagexSecurityProfile.EMBEDDED_JWT)
+@Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
 public class EmbeddedJwtAuthDetailsService implements JwtAuthDetailsService {
 
 	@Autowired private UserDetailsService userDetailsService;

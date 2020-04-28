@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.security.policy;
+package ca.magex.crm.policy.secure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.services.CrmUserService;
 
-public class AbstractSpringSecurityPolicy {
+public class AbstractSecureCrmPolicy {
 
 	@Autowired CrmUserService userService;
 	

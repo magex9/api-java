@@ -1,20 +1,23 @@
-package ca.magex.crm.spring.security.policy;
+package ca.magex.crm.policy.secure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.spring.security.MagexSecurityProfile;
 
 @Component
-@Profile({MagexSecurityProfile.EMBEDDED_JWT, MagexSecurityProfile.REMOTE_JWT})
-public class SpringSecurityUserPolicy extends AbstractSpringSecurityPolicy implements CrmUserPolicy {
+@Profile(value = {
+		MagexCrmProfiles.CRM_AUTH_EMBEDDED,
+		MagexCrmProfiles.CRM_AUTH_REMOTE
+})
+public class SecureCrmUserPolicy extends AbstractSecureCrmPolicy implements CrmUserPolicy {
 
 	@Autowired private CrmUserService userService;
 	@Autowired private CrmPersonService personService;

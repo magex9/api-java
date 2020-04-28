@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import ca.magex.crm.spring.security.MagexSecurityProfile;
+import ca.magex.crm.api.MagexCrmProfiles;
 
 @Configuration
-@Profile(MagexSecurityProfile.EMBEDDED_JWT)
+@Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
 public class JwtConfiguration {
 
 	@Bean

@@ -9,8 +9,9 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 		//"ca.magex.crm.hazelcast",
 		"ca.magex.crm.amnesia",
 		"ca.magex.crm.graphql",
+		"ca.magex.crm.spring.security",
 		"ca.magex.crm.spring.security.jwt",
-		"ca.magex.crm.spring.security.policy"
+		"ca.magex.crm.policy"
 })
 public class CrmGraphqlJwtApplication {
 
