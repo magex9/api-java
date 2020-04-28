@@ -20,11 +20,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.lookup.Country;
+import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.mapping.data.DataArray;
+import ca.magex.crm.mapping.data.DataElement;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.mapping.data.DataText;
 
 @Controller
 public class LookupsController {
@@ -38,29 +41,34 @@ public class LookupsController {
 
 	@GetMapping("/api/lookup/countries")
 	public void findCountries(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String code = req.getParameter("code");
-		String name = req.getParameter("name");
 		Locale locale = extractLocale(req);
-		DataObject data = null;
-		if (code != null) {
-			data = transformLookup(crm.findCountryByCode(code));
-		} else if (name != null && locale != null) {
-			data = transformLookup(crm.findCountryByLocalizedName(locale, name));
-		} else {
-			List<Country> countries = crm.findCountries();
-			data = new DataObject()
-				.with("total", countries.size())
-				.with("content", new DataArray(countries.stream().map(c -> transformLookup(c)).collect(Collectors.toList())));
-		}
+		List<Country> countries = crm.findCountries();
+		DataObject data = new DataObject()
+			.with("total", countries.size())
+			.with("content", new DataArray(countries.stream().map(c -> transformLookup(c, locale)).collect(Collectors.toList())));
+		res.setStatus(200);
+		res.setContentType(getContentType(req));
+		res.getWriter().write(DataFormatter.formatted(data));
+	}
+
+	@GetMapping("/api/lookup/salutations")
+	public void findSalutations(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		Locale locale = extractLocale(req);
+		List<Salutation> salutations = crm.findSalutations();
+		DataObject data = new DataObject()
+			.with("total", salutations.size())
+			.with("content", new DataArray(salutations.stream().map(c -> transformLookup(c, locale)).collect(Collectors.toList())));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 	
-	public DataObject transformLookup(Object obj) {
+	public DataElement transformLookup(Object obj, Locale locale) {
 		if (obj == null)
 			return null;
 		try {
+			if (locale != null)
+				return new DataText((String)obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { locale }));
 			return new DataObject()
 				.with("@value", obj.getClass().getMethod("getCode", new Class[] { }).invoke(obj, new Object[] { }))
 				.with("@en", obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { Lang.ENGLISH }))

@@ -2,11 +2,16 @@ package ca.magex.crm.rest.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
@@ -15,7 +20,10 @@ import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.mapping.data.DataArray;
+import ca.magex.crm.mapping.data.DataElement;
 import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.mapping.data.DataPair;
 import ca.magex.crm.mapping.data.DataParser;
 import ca.magex.crm.mapping.json.JsonTransformer;
 
@@ -36,7 +44,7 @@ public class ContentExtractor {
 	public static Locale extractLocale(HttpServletRequest req) {
 		if (req.getHeader("Locale") == null)
 			return null;
-		return req.getHeader("Locale").equals("fr") ? Lang.FRENCH : Lang.ENGLISH;	
+		return Lang.parse(req.getHeader("Locale"));
 	}
 	
 	public static Identifier extractOrganizationId(HttpServletRequest req) throws IllegalArgumentException {
@@ -82,4 +90,22 @@ public class ContentExtractor {
 		return DataParser.parseObject(new String(baos.toByteArray()));
 	}
 
+	public static DataObject action(String name, String title, String method, String href) {
+		List<DataPair> pairs = new ArrayList<DataPair>();
+		pairs.add(new DataPair("name", name));
+		pairs.add(new DataPair("title", title));
+		pairs.add(new DataPair("method", method));
+		pairs.add(new DataPair("href", href));
+		return new DataObject(pairs);
+	}
+	
+	public static <T> DataObject createPage(Page<T> page, Function<T, DataElement> mapper) {
+		return new DataObject()
+			.with("page", page.getNumber())
+			.with("total", page.getTotalElements())
+			.with("hasNext", page.hasNext())
+			.with("hasPrevious", page.getNumber() > 1)
+			.with("content", new DataArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
+	}
+	
 }

@@ -278,7 +278,7 @@ public class JsonTransformer {
 						pairs.add(new DataPair("@fr", status.getName(Lang.FRENCH)));
 						parent.add(new DataPair(key, new DataObject(pairs)));
 					} else if (locale == null) {
-						parent.add(new DataPair(key, new DataText(status.toString().toLowerCase())));
+						parent.add(new DataPair(key, new DataText(status.getCode())));
 					} else {
 						parent.add(new DataPair(key, new DataText(status.getName(locale))));
 					}
