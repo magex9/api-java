@@ -34,8 +34,12 @@ public final class DataObject extends DataElement {
 	}
 	
 	public DataObject with(String key, Object value) {
+		return with(new DataPair(key, cast(value)));
+	}
+	
+	public DataObject with(DataPair pair) {
 		List<DataPair> values = new ArrayList<DataPair>(pairs);
-		values.add(new DataPair(key, cast(value)));
+		values.add(pair);
 		return new DataObject(values);
 	}
 	
