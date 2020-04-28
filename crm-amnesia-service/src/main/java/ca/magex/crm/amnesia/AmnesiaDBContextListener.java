@@ -39,8 +39,8 @@ public class AmnesiaDBContextListener implements ApplicationListener<ContextRefr
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		LOG.info("Creating Magex Organization");
-		OrganizationDetails magex = organizationService.createOrganization("Magex");
+		LOG.info("Creating MageX Organization");
+		OrganizationDetails magex = organizationService.createOrganization("MageX");
 		Locale locale = Lang.ENGLISH;
 		
 		for (int i = 1; i < 25; i++) {
@@ -67,6 +67,37 @@ public class AmnesiaDBContextListener implements ApplicationListener<ContextRefr
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
 		personService.addUserRole(sysAdmin.getPersonId(), lookupService.findRoleByCode("SYS_ADMIN").getCode());
 		passwordService.setPassword(sysAdmin.getPersonId(), passwordEncoder == null ? "sysadmin" : passwordEncoder.encode("sysadmin"));
+	}
+	
+	public void createJedi() {
+		OrganizationDetails org = organizationService.createOrganization("Jedi Order");
+		
+		
+		
+	}
+	
+	public void createSith() {
+		OrganizationDetails org = organizationService.createOrganization("Sith");
+		
+//		MailingAddress address = new MailingAddress("3197 Chandler Drive", "Lamar", "Ontario", "Canada", "T8S 1V9");
+//		
+//		PersonDetails admin = personService.createPerson(org.getOrganizationId(), person("Mr.", "Sheev", "Sidious", "Palpatine"), address, communication, position)
+		
+	}
+	
+	public void createGalaticSenate() {
+		OrganizationDetails org = organizationService.createOrganization("Galatic Senate");
+		
+	}
+	
+	public void createRebelLegion() {
+		OrganizationDetails org = organizationService.createOrganization("Rebel Alliance");
+		
+	}
+	
+	public void create501stLegion() {
+		OrganizationDetails org = organizationService.createOrganization("501st Legion");
+		
 	}
 	
 }
