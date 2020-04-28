@@ -106,7 +106,7 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected <T> T performGraphQLQueryWithVariables(String queryId, String queryName, Map<String, Object> variables) {
-		return performGraphQLQueryd(queryName, constructEntityWithVariables(queryId, variables));
+		return performGraphQLQuery(queryName, constructEntityWithVariables(queryId, variables));
 	}
 
 	/**
@@ -119,18 +119,17 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected <T> T performGraphQLQueryWithSubstitution(String queryId, String queryName, Object... params) {
-		return performGraphQLQueryd(queryName, constructEntityWithSubstitution(queryId, params));
+		return performGraphQLQuery(queryName, constructEntityWithSubstitution(queryId, params));
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T performGraphQLQueryd(String queryName, HttpEntity entity) {
+	private <T> T performGraphQLQuery(String queryName, HttpEntity entity) {
 		long t1 = System.currentTimeMillis();
 		try {
-			if (jwtToken == null) {
-				throw new GraphQLClientException("Not Authenticated");
-			}
 			HttpPost httpPost = new HttpPost(endpoint);
-			httpPost.addHeader("Authorization", "Bearer " + jwtToken);
+			if (jwtToken != null) {
+				httpPost.addHeader("Authorization", "Bearer " + jwtToken);
+			}
 			httpPost.setHeader("Content-Type", "application/json");
 			httpPost.setEntity(entity);
 			try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
@@ -138,7 +137,11 @@ public abstract class GraphQLClient implements Closeable {
 					JSONObject json = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
 					JSONArray errors = json.getJSONArray("errors");
 					if (errors.length() == 0) {
-						return (T) json.getJSONObject("data").get(queryName);
+						JSONObject data = json.getJSONObject("data");
+						if (data.get(queryName) == JSONObject.NULL) {
+							throw new GraphQLClientException("Null data returned without Error");
+						}
+						return (T) data.get(queryName);
 					} else {
 						throw new GraphQLClientException(errors.toString(3));
 					}
@@ -207,7 +210,12 @@ public abstract class GraphQLClient implements Closeable {
 		}
 		if (value instanceof List) {
 			List<?> l = (List<?>) value;
-			return "\"" + StringUtils.join(l, "\",\"") + "\"";
+			if (l.isEmpty()) {
+				return "";
+			}
+			else {
+				return "\"" + StringUtils.join(l, "\",\"") + "\"";
+			}
 		} else {
 			return value.toString();
 		}

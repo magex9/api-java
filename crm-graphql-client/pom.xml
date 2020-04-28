@@ -44,7 +44,7 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-graphql-spring-boot-jwt-server</artifactId>
+			<artifactId>crm-graphql-spring-boot-server</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

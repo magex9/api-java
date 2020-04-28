@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
@@ -90,13 +91,26 @@ public class AmnesiaDB implements CrmPasswordService {
 		return person;
 	}
 	
-	public void setPassword(Identifier personId, String password) {
-		/* only store the encoded password */
-		passwords.put(personId, password);
+	public User saveUser(User user) {
+		data.put(user.getUserId(), user);
+		return user;
 	}
 	
-	@Override
-	public String getPassword(Identifier personId) {
-		return passwords.get(personId);
+	public User findUser(Identifier userId) {
+		Serializable obj = data.get(userId);
+		if (obj == null)
+			throw new ItemNotFoundException("Unable to find: " + userId);
+		if (!(obj instanceof User))
+			throw new BadRequestException(userId, "error", "class", "Expected User but got: " + obj.getClass().getName());
+		return (User)SerializationUtils.clone(obj);
+	}	
+	
+	public void setPassword(Identifier userId, String password) {
+		/* only store the encoded password */
+		passwords.put(userId, password);
+	}
+	
+	public String getPassword(Identifier userId) {
+		return passwords.get(userId);
 	}
 }

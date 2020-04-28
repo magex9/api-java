@@ -1,6 +1,6 @@
 package ca.magex.crm.graphql.service;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -15,13 +15,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.User;
-import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.TestConfig;
 import graphql.ExecutionResult;
 
@@ -35,21 +32,12 @@ public class GraphQLCrmServicesTests extends AbstractJUnit4SpringContextTests {
 	@Before
 	public void reset() {
 		Mockito.reset(crm);		
-		PersonDetails pd = new PersonDetails(
-				new Identifier("ABC"), 
-				new Identifier("Org1"), 
-				Status.ACTIVE, 
-				"User", 
-				new PersonName(null, "a", "b", "c"), 
-				null, 
-				null, 
-				null, 
-				new User("user1", Collections.emptyList()));		
-		BDDMockito.willReturn(pd).given(crm).findPersonDetails(pd.getPersonId());
+		User user = new User(new Identifier("ABC"), new Identifier("O1"), new Identifier("P1"), "user", Arrays.asList());		
+		BDDMockito.willReturn(user).given(crm).findUserById(user.getUserId());
 		BDDMockito.willAnswer((invocation) -> {
 			List<String> roles = invocation.getArgument(1);
-			return pd.withUser(pd.getUser().withRoles(roles));
-		}).given(crm).setUserRoles(Mockito.eq(pd.getPersonId()), Mockito.any());
+			return user.withRoles(roles);
+		}).given(crm).setUserRoles(Mockito.eq(user.getUserId()), Mockito.any());
 	}
 
 	@Test
@@ -57,10 +45,10 @@ public class GraphQLCrmServicesTests extends AbstractJUnit4SpringContextTests {
 		BDDMockito.willReturn(new Role("A", "A_en", "A_fr")).given(crm).findRoleByCode("A");
 		BDDMockito.willReturn(new Role("B", "B_en", "B_fr")).given(crm).findRoleByCode("B");
 
-		ExecutionResult result = graphQl.getGraphQL().execute("mutation { setUserRoles(personId: \"ABC\", roles: [\"A\", \"B\"]) { personId user { roles } } }");
+		ExecutionResult result = graphQl.getGraphQL().execute("mutation { setUserRoles(userId: \"ABC\", roles: [\"A\", \"B\"]) { userId personId username roles } }");
 		Assert.assertEquals(result.getErrors().toString(), 0, result.getErrors().size());
 		JSONObject json = new JSONObject(result.getData().toString());
-		Assert.assertEquals(json.toString(3), 2, json.getJSONObject("setUserRoles").getJSONObject("user").getJSONArray("roles").length());
+		Assert.assertEquals(json.toString(3), 2, json.getJSONObject("setUserRoles").getJSONArray("roles").length());
 		
 	}
 }
