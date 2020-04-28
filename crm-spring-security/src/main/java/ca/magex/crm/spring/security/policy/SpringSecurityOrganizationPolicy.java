@@ -1,12 +1,15 @@
 package ca.magex.crm.spring.security.policy;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.spring.security.MagexSecurityProfile;
 
 @Component
+@Profile({MagexSecurityProfile.EMBEDDED_JWT, MagexSecurityProfile.REMOTE_JWT})
 public class SpringSecurityOrganizationPolicy extends AbstractSpringSecurityPolicy implements CrmOrganizationPolicy {
 
 	@Override

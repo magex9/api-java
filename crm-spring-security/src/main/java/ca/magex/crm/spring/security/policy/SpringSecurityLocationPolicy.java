@@ -1,6 +1,7 @@
 package ca.magex.crm.spring.security.policy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.User;
@@ -8,8 +9,10 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.spring.security.MagexSecurityProfile;
 
 @Component
+@Profile({MagexSecurityProfile.EMBEDDED_JWT, MagexSecurityProfile.REMOTE_JWT})
 public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy implements CrmLocationPolicy {
 
 	@Autowired private CrmLocationService locationService;
