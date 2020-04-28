@@ -1,33 +1,35 @@
-package ca.magex.crm.spring.security.jwt.internal;
+package ca.magex.crm.spring.security.jwt.userdetails;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class MutableUser implements UserDetails {
+import ca.magex.crm.api.common.User;
+
+/**
+ */
+public class CrmUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
-	private String password;
-	private final UserDetails delegate;
+	private final String password;
+	private final User delegate;
 
-	public MutableUser(UserDetails user) {
+	public CrmUserDetails(User user, String password) {
 		this.delegate = user;
-		this.password = user.getPassword();
+		this.password = password;
 	}
 
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return delegate.getAuthorities();
+		return delegate.getRoles().stream().map(r -> "ROLE_" + r).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	}
 
 	public String getUsername() {
@@ -35,19 +37,18 @@ public class MutableUser implements UserDetails {
 	}
 
 	public boolean isAccountNonExpired() {
-		return delegate.isAccountNonExpired();
+		return true;
 	}
 
 	public boolean isAccountNonLocked() {
-		return delegate.isAccountNonLocked();
+		return true;
 	}
 
 	public boolean isCredentialsNonExpired() {
-		return delegate.isCredentialsNonExpired();
+		return true;
 	}
 
 	public boolean isEnabled() {
-		return delegate.isEnabled();
+		return true;
 	}
-
 }

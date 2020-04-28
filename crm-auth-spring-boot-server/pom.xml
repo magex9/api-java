@@ -11,7 +11,6 @@
 	</parent>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -43,6 +42,12 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-hazelcast-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-spring-security</artifactId>

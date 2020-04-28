@@ -7,3 +7,4 @@ RE_ADMIN,		Reporting Admin,				Administrateur de rapports
 RE_ASSISTANT,	Reporting Admin Assistant,		Assistant administrateur de rapports
 RE_DEO,			Reporting Data Entry Officer,	Responsable de la saisie des rapports
 RE_VSO,			Reporting Verification Officer,	Agent de verification des rapports
+AUTH_REQUEST,	Authorization Requestor,		Demandeur d'Autorisation

@@ -16,10 +16,11 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.system.Identifier;
 
 @Repository
-public class AmnesiaDB {
+public class AmnesiaDB implements CrmPasswordService {
 	
 	public static final String SYSTEM_ADMIN = "SYS_ADMIN";
 	

@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -21,13 +20,12 @@ import ca.magex.crm.api.system.Identifier;
 public class AmnesiaUserService implements CrmUserService {
 
 	@Autowired private AmnesiaDB db;
-	@Autowired(required=false) private PasswordEncoder passwordEncoder;
-	
+
 	@Override
 	public User findUserById(Identifier userId) {
 		return db.findUser(userId);
 	}
-	
+
 	@Override
 	public User findUserByUsername(String username) {
 		return db.findByType(User.class)
@@ -37,13 +35,13 @@ public class AmnesiaUserService implements CrmUserService {
 					return new ItemNotFoundException("Unable to find user with username " + username);
 				});
 	}
-	
+
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		PersonDetails pd = db.findPerson(personId);
 		return db.saveUser(new User(db.generateId(), pd.getOrganizationId(), personId, username, roles));
 	}
-	
+
 	@Override
 	public User setUserRoles(Identifier userId, List<String> roles) {
 		User user = findUserById(userId);
@@ -54,11 +52,7 @@ public class AmnesiaUserService implements CrmUserService {
 	@Override
 	public User setUserPassword(Identifier userId, String password) {
 		User user = findUserById(userId);
-		if (passwordEncoder == null) {
-			db.setPassword(userId, password);
-		} else {
-			db.setPassword(userId, passwordEncoder.encode(password));
-		}
+		db.setPassword(userId, password);
 		return user;
 	}
 

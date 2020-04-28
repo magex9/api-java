@@ -48,18 +48,18 @@ public class AmnesiaDBContextListener implements ApplicationListener<ContextRefr
 				new MailingAddress("123 Main Street", "Ottawa", "Ontario", lookupService.findCountryByCode("CA").getName(locale), "K1S 1B9"),
 				new Communication("Crm Administrator", lookupService.findLanguageByCode("en").getName(locale), "crmadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"),
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
-		
+
 		/* create crm user with admin/admin */
 		User crmAdminUser = userService.createUser(crmAdmin.getPersonId(), "admin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN").getCode()));
 		userService.setUserPassword(crmAdminUser.getUserId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
-			
+
 		PersonDetails sysAdmin = personService.createPerson(
 				magex.getOrganizationId(),
 				new PersonName(null, "System", "", "Admin"),
 				new MailingAddress("123 Main Street", "Ottawa", "Ontario", lookupService.findCountryByCode("CA").getName(locale), "K1S 1B9"),
 				new Communication("System Administrator", lookupService.findLanguageByCode("en").getName(locale), "sysadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"),
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
-		
+
 		/* create system user with sysadmin/sysadmin */
 		User sysAdminUser = userService.createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN").getCode()));
 		userService.setUserPassword(sysAdminUser.getUserId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("sysadmin"));
