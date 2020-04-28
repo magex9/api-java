@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.security.jwt.internal;
+package ca.magex.crm.spring.security.jwt;
 
 import java.util.Collection;
 

@@ -17,9 +17,9 @@ import ca.magex.crm.spring.security.MagexSecurityProfile;
 import ca.magex.crm.spring.security.auth.AuthClient;
 import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
+import ca.magex.crm.spring.security.jwt.JwtAuthenticatedPrincipal;
+import ca.magex.crm.spring.security.jwt.JwtAuthenticationToken;
 import ca.magex.crm.spring.security.jwt.JwtToken;
-import ca.magex.crm.spring.security.jwt.internal.JwtAuthenticatedPrincipal;
-import ca.magex.crm.spring.security.jwt.internal.JwtAuthenticationToken;
 
 /**
  * An implementation of the JwtAuthDetailsService that uses a remote
