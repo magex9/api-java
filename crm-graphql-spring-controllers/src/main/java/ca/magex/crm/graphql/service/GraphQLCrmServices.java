@@ -18,6 +18,7 @@ import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
+import ca.magex.crm.graphql.datafetcher.UserDataFetcher;
 import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
 import graphql.GraphQL;
 import graphql.execution.AsyncExecutionStrategy;
@@ -35,6 +36,7 @@ public class GraphQLCrmServices {
 	@Autowired OrganizationDataFetcher organizationDataFetcher;
 	@Autowired PersonDataFetcher personDataFetcher;
 	@Autowired LookupDataFetcher lookupDataFetcher;
+	@Autowired UserDataFetcher userDataFetcher;
 
 	@Value("classpath:organizations.graphql") private Resource resource;
 
@@ -97,9 +99,13 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enablePerson", personDataFetcher.enablePerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disablePerson", personDataFetcher.disablePerson()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", personDataFetcher.addUserRole()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", personDataFetcher.removeUserRole()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", personDataFetcher.setUserRoles()))
+		
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUserById()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findUserByUsername", userDataFetcher.findUserByUsername()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createUser", userDataFetcher.createUser()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", userDataFetcher.addUserRole()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", userDataFetcher.removeUserRole()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", userDataFetcher.setUserRoles()))
 
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
 

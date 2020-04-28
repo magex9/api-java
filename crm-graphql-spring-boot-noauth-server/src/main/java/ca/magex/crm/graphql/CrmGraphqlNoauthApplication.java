@@ -6,7 +6,11 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.graphql"})
+@ComponentScan(basePackages = {
+		"ca.magex.crm.amnesia", 
+		"ca.magex.crm.graphql",
+		"ca.magex.crm.resource"
+})
 public class CrmGraphqlNoauthApplication {
 	
 	public static void main(String[] args) {

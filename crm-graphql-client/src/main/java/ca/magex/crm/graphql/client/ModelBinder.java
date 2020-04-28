@@ -146,8 +146,7 @@ public class ModelBinder {
 					toPersonName(json.getJSONObject("legalName")),
 					toMailingAddress(json.getJSONObject("address")),
 					toCommunication(json.getJSONObject("communication")),
-					toBusinessPosition(json.getJSONObject("position")),
-					json.get("user") == JSONObject.NULL ? null : toUser(json.getJSONObject("user")));
+					toBusinessPosition(json.getJSONObject("position")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing PersonDetails from: " + json.toString(), jsone);
 		}
@@ -207,7 +206,10 @@ public class ModelBinder {
 	public static User toUser(JSONObject json) {
 		try {
 			return new User(
-					json.getString("userName"),
+					new Identifier(json.getString("userId")),
+					new Identifier(json.getString("organizationId")),
+					new Identifier(json.getString("personId")),
+					json.getString("username"),
 					toSimpleList(Objects::toString, json.getJSONArray("roles")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);

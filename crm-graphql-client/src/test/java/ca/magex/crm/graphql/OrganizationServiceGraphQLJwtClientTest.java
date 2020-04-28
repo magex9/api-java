@@ -28,29 +28,33 @@ public class OrganizationServiceGraphQLJwtClientTest {
 
 	@LocalServerPort private int randomPort;
 	
-	@Autowired private JwtTokenService tokenService;
+//	@Autowired private JwtTokenService tokenService;
 
-	@MockBean private JwtAuthDetailsService authDetailsService;
+//	@MockBean private JwtAuthDetailsService authDetailsService;
 	
 	@Test
 	public void runTests() {
 		CrmServicesGraphQLClientImpl crmServices = new CrmServicesGraphQLClientImpl("http://localhost:" + randomPort + "/crm/graphql");
+		crmServices.authenticateJwt("http://localhost:" + randomPort + "/crm/authenticate", "admin", "admin");
 		
-		/* generate a fake token to use with our mocked details service and set the token in the client */
-		Authentication auth = Mockito.mock(Authentication.class);
-		BDDMockito.willReturn("CXA0").given(auth).getName();
-		String jwtToken = tokenService.generateToken(auth);		
-		ReflectionTestUtils.setField(crmServices, "jwtToken", jwtToken);
+//		/* generate a fake token to use with our mocked details service and set the token in the client */
+//		Authentication auth = Mockito.mock(Authentication.class);
+//		BDDMockito.willReturn("CXA0").given(auth).getName();
+//		String jwtToken = tokenService.generateToken(auth);		
+//		ReflectionTestUtils.setField(crmServices, "jwtToken", jwtToken);
+//		
+//		/* mock out the auth details to recognize the fake token */
+//		JwtAuthenticationToken authentication = new JwtAuthenticationToken(new JwtAuthenticatedPrincipal("CXA0"), null, Set.of(new SimpleGrantedAuthority("CRM_ADMIN")));
+//		Mockito.when(authDetailsService.getJwtAuthenticationTokenForUsername(jwtToken)).thenReturn(authentication);
 		
-		/* mock out the auth details to recognize the fake token */
-		JwtAuthenticationToken authentication = new JwtAuthenticationToken(new JwtAuthenticatedPrincipal("CXA0"), null, Set.of(new SimpleGrantedAuthority("CRM_ADMIN")));
-		Mockito.when(authDetailsService.getJwtAuthenticationTokenForUsername(jwtToken)).thenReturn(authentication);		
+		
 
 		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();
 		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);
 		ReflectionTestUtils.setField(testSuite, "organizationService", crmServices);
 		ReflectionTestUtils.setField(testSuite, "locationService", crmServices);
 		ReflectionTestUtils.setField(testSuite, "personService", crmServices);
+		ReflectionTestUtils.setField(testSuite, "userService", crmServices);
 
 		testSuite.runAllTests();
 	}

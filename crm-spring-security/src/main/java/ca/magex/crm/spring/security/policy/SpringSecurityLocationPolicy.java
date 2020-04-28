@@ -3,9 +3,9 @@ package ca.magex.crm.spring.security.policy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.services.CrmLocationPolicy;
+import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.Identifier;
 
@@ -16,88 +16,79 @@ public class SpringSecurityLocationPolicy extends AbstractSpringSecurityPolicy i
 
 	@Override
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
-		PersonDetails personDetails = getCurrentUser();
-		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		User currentUser = getCurrentUser();
+		/* if the user is a CRM Admin then return true */
+		if (isCrmAdmin(currentUser)) {
 			return true;
 		}
 		/*
-		 * if the person belongs to the org, then return true if they are an RE_ADMIN,
-		 * false otherwise
+		 * if the person belongs to the organization, then return true if they are an RE
+		 * Admin
 		 */
-		if (personDetails.getOrganizationId().equals(organizationId)) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
+		if (currentUser.getOrganizationId().equals(organizationId)) {
+			return isReAdmin(currentUser);
 		}
-		/* if the person doesn't belong to the org, then return false */
+		/* the person doesn't belong to the organization that owns this location */
 		return false;
 	}
 
 	@Override
 	public boolean canViewLocation(Identifier locationId) {
-		PersonDetails personDetails = getCurrentUser();
+		User currentUser = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (isCrmAdmin(currentUser)) {
 			return true;
 		}
-		LocationDetails location = locationService.findLocationDetails(locationId);		
-		/* return true if the person belongs to the org */
-		return personDetails.getOrganizationId().equals(location.getOrganizationId());
+		/* ensure this location belongs to the same organization as the current user */
+		LocationDetails location = locationService.findLocationDetails(locationId);
+		return currentUser.getOrganizationId().equals(location.getOrganizationId());
 	}
 
 	@Override
 	public boolean canUpdateLocation(Identifier locationId) {
-		PersonDetails personDetails = getCurrentUser();
+		User currentUser = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (isCrmAdmin(currentUser)) {
 			return true;
 		}
-		/*
-		 * if the person belongs to the org, then return true if they are an RE_ADMIN,
-		 * false otherwise
-		 */
+		/* ensure this location belongs to the same organization as the current user */
 		LocationDetails location = locationService.findLocationDetails(locationId);
-		if (personDetails.getOrganizationId().equals(location.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
+		if (currentUser.getOrganizationId().equals(location.getOrganizationId())) {
+			return isReAdmin(currentUser);
 		}
-		/* if the person doesn't belong to the org, then return false */
+		/* the person doesn't belong to the organization that owns this location */
 		return false;
 	}
 
 	@Override
 	public boolean canEnableLocation(Identifier locationId) {
-		PersonDetails personDetails = getCurrentUser();
+		User currentUser = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (isCrmAdmin(currentUser)) {
 			return true;
 		}
-		/*
-		 * if the person belongs to the org, then return true if they are an RE_ADMIN,
-		 * false otherwise
-		 */
+		/* ensure this location belongs to the same organization as the current user */
 		LocationDetails location = locationService.findLocationDetails(locationId);
-		if (personDetails.getOrganizationId().equals(location.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
+		if (currentUser.getOrganizationId().equals(location.getOrganizationId())) {
+			return isReAdmin(currentUser);
 		}
-		/* if the person doesn't belong to the org, then return false */
+		/* the person doesn't belong to the organization that owns this location */
 		return false;
 	}
 
 	@Override
 	public boolean canDisableLocation(Identifier locationId) {
-		PersonDetails personDetails = getCurrentUser();
+		User currentUser = getCurrentUser();
 		/* if the user is a CRM_ADMIN then return true */
-		if (personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("CRM_ADMIN")).findAny().isPresent()) {
+		if (isCrmAdmin(currentUser)) {
 			return true;
 		}
-		/*
-		 * if the person belongs to the org, then return true if they are an RE_ADMIN,
-		 * false otherwise
-		 */
+		/* ensure this location belongs to the same organization as the current user */
 		LocationDetails location = locationService.findLocationDetails(locationId);
-		if (personDetails.getOrganizationId().equals(location.getOrganizationId())) {
-			return personDetails.getUser().getRoles().stream().filter((r) -> r.contentEquals("RE_ADMIN")).findAny().isPresent();
+		if (currentUser.getOrganizationId().equals(location.getOrganizationId())) {
+			return isReAdmin(currentUser);
 		}
-		/* if the person doesn't belong to the org, then return false */
+		/* the person doesn't belong to the organization that owns this location */
 		return false;
 	}
 }

@@ -9,6 +9,7 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @Configuration
@@ -18,6 +19,7 @@ public class SecuredCrmServicesFactoryBean {
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
+	@Autowired private CrmUserService userService;
 	
 	@Bean
 	public SecuredCrmServices securedCrmServices() throws Exception {
@@ -27,6 +29,7 @@ public class SecuredCrmServicesFactoryBean {
 				lookupService, 
 				organizationService, policies,
 				locationService, policies,
-				personService, policies);
+				personService, policies,
+				userService, policies);
 	}
 }

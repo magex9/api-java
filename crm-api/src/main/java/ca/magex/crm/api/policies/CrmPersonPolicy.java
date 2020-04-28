@@ -1,4 +1,4 @@
-package ca.magex.crm.api.services;
+package ca.magex.crm.api.policies;
 
 import ca.magex.crm.api.system.Identifier;
 
@@ -8,8 +8,5 @@ public interface CrmPersonPolicy {
     boolean canViewPerson(Identifier personId);
     boolean canUpdatePerson(Identifier personId);
     boolean canEnablePerson(Identifier personId);
-    boolean canDisablePerson(Identifier personId);
-    boolean canUpdateUserRole(Identifier personId);
-    boolean canUpdateUserPassword(Identifier personId);
-    
+    boolean canDisablePerson(Identifier personId);        
 }

@@ -1,4 +1,4 @@
-package ca.magex.crm.api.services;
+package ca.magex.crm.api.policies;
 
 import ca.magex.crm.api.system.Identifier;
 

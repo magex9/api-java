@@ -13,6 +13,7 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -346,36 +347,65 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public PersonDetails addUserRole(Identifier personId, String role) {
-		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
-				"addUserRole",
-				"addUserRole",
-				personId,
-				role));
-	}
-
-	@Override
-	public PersonDetails removeUserRole(Identifier personId, String role) {
-		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
-				"removeUserRole",
-				"removeUserRole",
-				personId,
-				role));
+	public User findUserById(Identifier userId) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"findUser",
+				"findUser",
+				userId));
 	}
 	
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
-		return ModelBinder.toPersonDetails(performGraphQLQueryWithSubstitution(
-				"setUserRoles",
-				"setUserRoles",
+	public User findUserByUsername(String username) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"findUserByUsername",
+				"findUserByUsername",
+				username));
+	}
+	
+	@Override
+	public User createUser(Identifier personId, String username, List<String> roles) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"createUser",
+				"createUser",
 				personId,
+				username,
 				roles));
 	}
 	
 	@Override
-	public PersonDetails setUserPassword(Identifier personId, String password) {
-		// TODO Auto-generated method stub
-		return null;
+	public User addUserRole(Identifier userId, String role) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"addUserRole",
+				"addUserRole",
+				userId,
+				role));
+	}
+
+	@Override
+	public User removeUserRole(Identifier userId, String role) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"removeUserRole",
+				"removeUserRole",
+				userId,
+				role));
+	}
+	
+	@Override
+	public User setUserRoles(Identifier userId, List<String> roles) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"setUserRoles",
+				"setUserRoles",
+				userId,
+				roles));
+	}
+	
+	@Override
+	public User setUserPassword(Identifier userId, String password) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"setUserPassword",
+				"setUserPassword",
+				userId,
+				password));
 	}
 
 	@Override

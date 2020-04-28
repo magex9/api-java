@@ -75,6 +75,10 @@ type Query {
 	countPersons(filter: PersonFilter!): Int!
 	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
 	
+	# User Service
+	findUser(userId: String!): User
+	findUserByUsername(username: String!): User
+	
 	# Lookup Service
 	findCodeLookups(category: String!, code: String): [CodeLookup]
 }
@@ -97,9 +101,13 @@ type Mutation {
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput): Person
 	enablePerson(personId: String!): Person
 	disablePerson(personId: String!): Person	
-	addUserRole(personId: String!, role: String!): Person
-	removeUserRole(personId: String!, role: String!): Person
-	setUserRoles(personId: String!, roles: [String]): Person
+		
+	# User Service
+	createUser(personId: String!, username: String!, roles: [String]): User
+	addUserRole(userId: String!, role: String!): User
+	removeUserRole(userId: String!, role: String!): User
+	setUserRoles(userId: String!, roles: [String]): User
+	setUserPassword(userId: String!, password: String!): User
 }
 
 # Main Types
@@ -128,7 +136,6 @@ type Person {
 	address: MailingAddress
 	communication: Communication
 	position: BusinessPosition
-	user: User
 }
 
 # Complex Subtypes
@@ -154,7 +161,10 @@ type BusinessPosition {
 }
 
 type User {
-	userName: String
+	userId: String
+	organizationId: String
+	personId: String
+	username: String
 	roles: [String]
 }
 
