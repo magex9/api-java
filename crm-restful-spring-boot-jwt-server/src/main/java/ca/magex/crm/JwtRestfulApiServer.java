@@ -14,7 +14,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.SecuredCrmServices;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.rest", "ca.magex.crm.spring.jwt"})
+@ComponentScan(basePackages = {"ca.magex.crm.amnesia", "ca.magex.crm.rest", "ca.magex.crm.spring.jwt", "ca.magex.crm.resource"})
 public class JwtRestfulApiServer {
 
 	public static void main(String[] args) {

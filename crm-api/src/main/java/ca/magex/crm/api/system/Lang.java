@@ -19,7 +19,17 @@ public class Lang {
 			return true;
 		if (locale == FRENCH)
 			return false;
-		throw new IllegalArgumentException("Local is not english or french");
+		throw new IllegalArgumentException("Locale is not english or french");
+	}
+	
+	public static Locale parse(String lang) {
+		if (lang == null)
+			return null;
+		if (lang.equals("en") || lang.equals("eng") || lang.equals(ENGLISH.toString()))
+			return ENGLISH;
+		if (lang.equals("fr") || lang.equals("fra") || lang.equals(FRENCH.toString()))
+			return FRENCH;
+		throw new IllegalArgumentException("Locale is not english or french");
 	}
 	
 }
