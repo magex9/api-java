@@ -19,10 +19,15 @@ import ca.magex.crm.api.system.Identifier;
 @Primary
 public class AmnesiaUserService implements CrmUserService {
 
-	@Autowired private AmnesiaDB db;
+	private AmnesiaDB db;
 	
-	@Autowired private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
+	public AmnesiaUserService(AmnesiaDB db, PasswordEncoder passwordEncoder) {
+		this.db = db;
+		this.passwordEncoder = passwordEncoder;
+	}
+	
 	@Override
 	public User findUserById(Identifier userId) {
 		return db.findUser(userId);
