@@ -6,27 +6,19 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
-import ca.magex.crm.amnesia.services.AmnesiaAnonymousPolicies;
-import ca.magex.crm.amnesia.services.AmnesiaLocationService;
-import ca.magex.crm.amnesia.services.AmnesiaLookupService;
-import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
-import ca.magex.crm.amnesia.services.AmnesiaPersonService;
-import ca.magex.crm.amnesia.services.AmnesiaUserService;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.services.CrmPasswordService;
-import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.resource.CrmLookupLoader;
 
 @Repository
 public class AmnesiaDB implements CrmPasswordService {
@@ -43,33 +35,14 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<Identifier, String> passwords;
 	
-	private CrmPolicies policies;
-	
-	private SecuredCrmServices api;
-	
-	public AmnesiaDB() {
+	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
 		passwords = new HashMap<Identifier, String>();
-		policies = new AmnesiaAnonymousPolicies(this);
-		api = new SecuredCrmServices(
-				new AmnesiaLookupService(new CrmLookupLoader()).initialize(), 
-				new AmnesiaOrganizationService(this), policies, 
-				new AmnesiaLocationService(this), policies, 
-				new AmnesiaPersonService(this), policies, 
-				new AmnesiaUserService(this), policies);
 	}
 	
 	public Identifier generateId() {
 		return idGenerator.generate();
-	}
-	
-	public CrmPolicies policies() {
-		return policies;
-	}
-	
-	public SecuredCrmServices api() {
-		return api;
 	}
 	
 	@SuppressWarnings("unchecked")
