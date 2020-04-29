@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
@@ -47,7 +48,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private SecuredCrmServices api;
 	
-	public AmnesiaDB() {
+	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
 		passwords = new HashMap<Identifier, String>();
@@ -57,7 +58,7 @@ public class AmnesiaDB implements CrmPasswordService {
 				new AmnesiaOrganizationService(this), policies, 
 				new AmnesiaLocationService(this), policies, 
 				new AmnesiaPersonService(this), policies, 
-				new AmnesiaUserService(this), policies);
+				new AmnesiaUserService(this, passwordEncoder), policies);
 	}
 	
 	public Identifier generateId() {

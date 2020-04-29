@@ -20,4 +20,5 @@ public class AmnesiaOrganizationServiceTest extends AbstractJUnit4SpringContextT
 	public void testCrmServices() {
 		crmServicesTest.runAllTests();
 	}
+	
 }
