@@ -50,12 +50,14 @@ public class EmbeddedAuthenticatedWebSecurityConfig extends WebSecurityConfigure
 		httpSecurity.csrf().disable()
 				/* get the list of public resources */
 				.authorizeRequests().antMatchers("/authenticate").permitAll()
+				.and().authorizeRequests().antMatchers("/public/*").permitAll()
+				.and().authorizeRequests().antMatchers("/secure/*").authenticated()
 				/* user details needs to be protected */
 				.and().authorizeRequests().antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
 				.and().authorizeRequests()
-				.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
+					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
+					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
 				/* any other requests require authentication */
 				.and().authorizeRequests().anyRequest().authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

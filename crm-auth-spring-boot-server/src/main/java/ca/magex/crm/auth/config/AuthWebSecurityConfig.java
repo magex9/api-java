@@ -51,8 +51,8 @@ public class AuthWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().authorizeRequests().antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
 				.and().authorizeRequests()
-				.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
+					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
+					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
 				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

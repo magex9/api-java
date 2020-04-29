@@ -400,7 +400,8 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 	
 	@Override
-	public User setUserPassword(Identifier userId, String password) {
+	public User setUserPassword(Identifier userId, String password, boolean encoded) {
+		// TODO pass encoded flag over to graphql server
 		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
 				"setUserPassword",
 				"setUserPassword",

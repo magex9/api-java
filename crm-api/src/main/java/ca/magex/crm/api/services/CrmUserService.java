@@ -13,5 +13,5 @@ public interface CrmUserService {
 	User addUserRole(Identifier userId, String role);
 	User removeUserRole(Identifier userId, String role);
 	User setUserRoles(Identifier userId, List<String> roles);
-	User setUserPassword(Identifier userId, String password);
+	User setUserPassword(Identifier userId, String password, boolean encoded);
 }
