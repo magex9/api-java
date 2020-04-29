@@ -33,7 +33,7 @@ public class CrmUserDetails implements UserDetails {
 	}
 
 	public String getUsername() {
-		return delegate.getUserName();
+		return delegate.getUsername();
 	}
 
 	public boolean isAccountNonExpired() {

@@ -49,9 +49,8 @@ public class EmbeddedAuthenticatedWebSecurityConfig extends WebSecurityConfigure
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
 				/* get the list of public resources */
-				.authorizeRequests().antMatchers("/authenticate").permitAll()
-				.and().authorizeRequests().antMatchers("/public/*").permitAll()
-				.and().authorizeRequests().antMatchers("/secure/*").authenticated()
+				.authorizeRequests()
+					.antMatchers("/authenticate").permitAll()
 				/* user details needs to be protected */
 				.and().authorizeRequests().antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
