@@ -50,7 +50,6 @@ public class JsonTransformer {
 	}
 	
 	public String getContext(Class<?> cls) {
-		//return cls.getPackageName().replaceAll("ca.magex.crm.api.", "http://magex9.github.io/schema/");
 		return "http://magex9.github.io/api/";
 	}
 	
@@ -193,8 +192,7 @@ public class JsonTransformer {
 		MailingAddress address = parseMailingAddress("address", data);
 		Communication communication = parseCommunication("communication", data);
 		BusinessPosition unit = parseBusinessPosition("position", data);
-		User user = parseUser("user", data);
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit, user);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
 	}
 	
 	public DataObject formatPersonSummary(PersonSummary person) {
@@ -220,6 +218,22 @@ public class JsonTransformer {
 		Status status = parseStatus("status", data);
 		String displayName = parseText("displayName", data);
 		return new PersonSummary(personId, organizationId, status, displayName);
+	}
+	
+	public User parseUser(String key, DataObject parent) {
+		DataObject data = parent.getObject(key);
+		if (data == null)
+			return null;
+		Identifier userId = parseIdentifier("userId", data);
+		Identifier personId = parseIdentifier("personId", data);
+		Identifier organizationId = parseIdentifier("organizationId", data);
+		String userName = parseText("userName", data);
+		List<String> roles = data.contains("roles") ? 
+			data.getArray("roles").stream()
+				.map(r -> parseRole(r).getName(locale))
+				.collect(Collectors.toList()) :
+			new ArrayList<String>();
+		return new User(userId, organizationId, personId, userName, roles);
 	}	
 
 	public void formatText(List<DataPair> parent, String key, Object obj) {
@@ -797,19 +811,6 @@ public class JsonTransformer {
 		BusinessUnit unit = parseBusinessUnit("unit", data);
 		BusinessClassification classification = parseBusinessClassification("classification", data);
 		return new BusinessPosition(sector == null ? null : sector.getName(locale), unit == null ? null : unit.getName(locale), classification == null ? null : classification.getName(locale));
-	}
-	
-	public User parseUser(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
-		if (data == null)
-			return null;
-		String userName = parseText("userName", data);
-		List<String> roles = data.contains("roles") ? 
-			data.getArray("roles").stream()
-				.map(r -> parseRole(r).getName(locale))
-				.collect(Collectors.toList()) :
-			new ArrayList<String>();
-		return new User(userName, roles);
 	}
 	
 	public Role parseRole(DataElement data) {

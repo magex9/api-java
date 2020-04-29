@@ -62,7 +62,7 @@ public class HazelcastUserService implements CrmUserService {
 	public User findUserByUsername(String username) {
 		Map<Identifier, User> users = hzInstance.getMap("users");
 		User user = users.values().stream()
-			.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
+			.filter(u -> StringUtils.equalsIgnoreCase(u.getUserName(), username))
 			.findFirst()
 			.orElseThrow(() -> {
 				return new ItemNotFoundException("Unable to find user with username " + username);

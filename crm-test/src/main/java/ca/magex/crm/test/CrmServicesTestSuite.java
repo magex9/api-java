@@ -455,7 +455,7 @@ public class CrmServicesTestSuite {
 		user = userService.findUserById(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
 		
-		user = userService.findUserByUsername(user.getUsername());
+		user = userService.findUserByUsername(user.getUserName());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
 
 		/* add another role and verify */
@@ -467,7 +467,7 @@ public class CrmServicesTestSuite {
 		user = userService.findUserById(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
 		
-		user = userService.findUserByUsername(user.getUsername());
+		user = userService.findUserByUsername(user.getUserName());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
 	
 		/* remove a role and verify */
@@ -478,7 +478,7 @@ public class CrmServicesTestSuite {
 		user = userService.findUserById(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
 		
-		user = userService.findUserByUsername(user.getUsername());
+		user = userService.findUserByUsername(user.getUserName());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
 
 		/* set roles and verify */
@@ -556,7 +556,7 @@ public class CrmServicesTestSuite {
 		Assert.assertNotNull(user.getUserId());
 		Assert.assertEquals(personId, user.getPersonId());
 		Assert.assertEquals(userId, user.getUserId());
-		Assert.assertEquals(username, user.getUsername());
+		Assert.assertEquals(username, user.getUserName());
 		Assert.assertTrue("user roles: " + user.getRoles() + ", expected roles: " + roles, 
 				user.getRoles().size() == roles.size() && user.getRoles().containsAll(roles) && roles.containsAll(user.getRoles()));
 		logger.info("Verifying User " + userId + " Passed");

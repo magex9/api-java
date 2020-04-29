@@ -21,7 +21,7 @@ public class User implements Serializable {
 	
 	private Identifier personId;
 	
-	private String username;
+	private String userName;
 
 	private List<String> roles;
 
@@ -30,7 +30,7 @@ public class User implements Serializable {
 		this.userId = userId;
 		this.organizationId = organizationId;
 		this.personId = personId;
-		this.username = username;
+		this.userName = username;
 		this.roles = Collections.unmodifiableList(roles);
 	}
 	
@@ -46,8 +46,8 @@ public class User implements Serializable {
 		return personId;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getUserName() {
+		return userName;
 	}
 
 	public List<String> getRoles() {
@@ -55,7 +55,7 @@ public class User implements Serializable {
 	}
 
 	public User withRoles(List<String> roles) {
-		return new User(userId, organizationId, personId, username, roles);
+		return new User(userId, organizationId, personId, userName, roles);
 	}
 	
 	@Override

@@ -58,7 +58,6 @@ public final class SecuredCrmServices implements Crm {
 	
 	private final CrmUserPolicy userPolicy;
 	
-	
 	public SecuredCrmServices(CrmLookupService lookupService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 

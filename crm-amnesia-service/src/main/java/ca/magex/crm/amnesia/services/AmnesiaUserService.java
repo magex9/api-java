@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,19 +29,19 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public User findUserByUsername(String username) {
+	public User findUserByUsername(String userName) {
 		return db.findByType(User.class)
-				.filter((u) -> StringUtils.equals(u.getUsername(), username))
+				.filter((u) -> StringUtils.equals(u.getUserName(), userName))
 				.findFirst()
 				.orElseThrow(() -> {
-					return new ItemNotFoundException("Unable to find user with username " + username);
+					return new ItemNotFoundException("Unable to find user with userName " + userName);
 				});
 	}
 
 	@Override
-	public User createUser(Identifier personId, String username, List<String> roles) {
+	public User createUser(Identifier personId, String userName, List<String> roles) {
 		PersonDetails pd = db.findPerson(personId);
-		return db.saveUser(new User(db.generateId(), pd.getOrganizationId(), personId, username, roles));
+		return db.saveUser(new User(db.generateId(), pd.getOrganizationId(), personId, userName, roles));
 	}
 
 	@Override
