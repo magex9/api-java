@@ -29,7 +29,7 @@ public class HazelcastUserService implements CrmUserService {
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmPasswordService passwordService;
 	@Autowired private CrmPersonService personService;
-	@Autowired(required=false) private PasswordEncoder passwordEncoder;
+	@Autowired private PasswordEncoder passwordEncoder;
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
@@ -120,13 +120,14 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User setUserPassword(Identifier userId, String password) {
+	public User setUserPassword(Identifier userId, String encodedPassword, boolean encoded) {
 		/* ensure the user exists first */
 		User user = findUserById(userId);
-		if (passwordEncoder == null) {
-			passwordService.setPassword(userId, password);
-		} else {
-			passwordService.setPassword(userId, passwordEncoder.encode(password));
+		if (encoded) {
+			passwordService.setPassword(userId, encodedPassword);
+		}
+		else {
+			passwordService.setPassword(userId, passwordEncoder.encode(encodedPassword));
 		}
 		return user;
 	}

@@ -411,10 +411,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	@Override
-	public User setUserPassword(Identifier userId, String password) {
+	public User setUserPassword(Identifier userId, String password, boolean encoded) {
 		if (!canUpdateUserPassword(userId))
 			throw new PermissionDeniedException("setUserPassword: " + userId);
-		return userService.setUserPassword(userId, password);
+		return userService.setUserPassword(userId, password, encoded);
 	}
 
 	@Override

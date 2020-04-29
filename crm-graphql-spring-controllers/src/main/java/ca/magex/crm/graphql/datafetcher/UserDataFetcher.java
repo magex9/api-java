@@ -84,7 +84,8 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			String password = environment.getArgument("password");
 			return crm.setUserPassword(
 					userId, 
-					password);
+					password,
+					false);
 		};
 	}
 }
