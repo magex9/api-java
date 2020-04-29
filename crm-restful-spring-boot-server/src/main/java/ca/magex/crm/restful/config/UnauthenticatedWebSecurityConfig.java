@@ -52,6 +52,7 @@ public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapt
 				.authorizeRequests().antMatchers(
 						"/authenticate",
 						"/",
+						"/api/**",
 						"/crm.yaml",
 						"/swagger-ui-bundle.js",
 						"/swagger-ui.css",
@@ -60,7 +61,7 @@ public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapt
 					.antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
 					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
+					.antMatchers("/actuator/**").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
 					/* any other requests require authentication */
 					.anyRequest().authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
