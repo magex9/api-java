@@ -25,7 +25,7 @@ public class ServerShutdown {
 	public static void main(String[] args) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		
-		String jwt = authenticateJwt(httpclient, "http://localhost:" + applicationPort + "/crm/authenticate", "SXA2", "admin");
+		String jwt = authenticateJwt(httpclient, "http://localhost:" + applicationPort + "/crm/authenticate", "SXA1", "sysadmin");
 		LOG.info("Obtained token: " + jwt);
 		
 		for (int managementPort : managmentPorts) {

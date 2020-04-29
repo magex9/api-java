@@ -1,8 +1,5 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -19,13 +15,11 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -35,12 +29,10 @@ import ca.magex.crm.api.system.Status;
 public class AmnesiaPersonService implements CrmPersonService {
 
 	@Autowired private AmnesiaDB db;
-	@Autowired private CrmPasswordService passwordService;
-	@Autowired(required=false) private PasswordEncoder passwordEncoder;
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
-		return db.savePerson(new PersonDetails(db.generateId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, unit, new User(generateUserName(legalName), Collections.emptyList())));
+		return db.savePerson(new PersonDetails(db.generateId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, unit));
 	}
 
 	@Override
@@ -104,44 +96,10 @@ public class AmnesiaPersonService implements CrmPersonService {
 				.collect(Collectors.toList()), paging);
 	}
 
-	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
-		PersonDetails person = findPersonDetails(personId);
-		person = person.withUser(person.getUser().withRoles(roles));
-		return db.savePerson(person);
-	}
-
-	@Override
-	public PersonDetails setUserPassword(Identifier personId, String password) {
-		PersonDetails person = findPersonDetails(personId);
-		if (passwordEncoder == null) {
-			passwordService.setPassword(personId, password);
-		} else {
-			passwordService.setPassword(personId, passwordEncoder.encode(password));
-		}
-		return person;
-	}
-
-	@Override
-	public PersonDetails addUserRole(Identifier personId, String role) {
-		PersonDetails person = findPersonDetails(personId);
-		List<String> roles = new ArrayList<String>(person.getUser().getRoles());
-		roles.add(role);
-		return setUserRoles(personId, roles);
-	}
-
-	@Override
-	public PersonDetails removeUserRole(Identifier personId, String role) {
-		PersonDetails person = findPersonDetails(personId);
-		List<String> roles = new ArrayList<String>(person.getUser().getRoles());
-		roles.remove(role);
-		return setUserRoles(personId, roles);
-	}
-
 	private Stream<PersonDetails> applyFilter(PersonsFilter filter) {
 		return db.findByType(PersonDetails.class)
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(p -> filter.getStatus() != null ? filter.getStatus().equals(p.getStatus()) : true)
-				.filter(p -> filter.getUserName() != null ? p.getUser() != null && StringUtils.equals(p.getUser().getUserName(), filter.getUserName()) : true);
+				.filter(person -> StringUtils.isNotBlank(filter.getDisplayName()) ? person.getDisplayName().contains(filter.getDisplayName()) : true)
+				.filter(person -> filter.getStatus() != null ? filter.getStatus().equals(person.getStatus()) : true)
+				.filter(person -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(person.getOrganizationId()) : true);
 	}
 }

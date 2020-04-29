@@ -9,6 +9,7 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -27,6 +28,10 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.policies.CrmLocationPolicy;
+import ca.magex.crm.api.policies.CrmOrganizationPolicy;
+import ca.magex.crm.api.policies.CrmPersonPolicy;
+import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
@@ -49,10 +54,16 @@ public final class SecuredCrmServices implements Crm {
 	
 	private final CrmPersonPolicy personPolicy;
 	
+	private final CrmUserService userService;
+	
+	private final CrmUserPolicy userPolicy;
+	
+	
 	public SecuredCrmServices(CrmLookupService lookupService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
-			CrmPersonService personService, CrmPersonPolicy personPolicy) {
+			CrmPersonService personService, CrmPersonPolicy personPolicy,
+			CrmUserService userService, CrmUserPolicy userPolicy) {
 		super();
 		this.validationService = new StructureValidationService(lookupService, organizationService, locationService);
 		this.lookupService = lookupService;
@@ -62,6 +73,8 @@ public final class SecuredCrmServices implements Crm {
 		this.locationPolicy = locationPolicy;
 		this.personService = personService;
 		this.personPolicy = personPolicy;
+		this.userService = userService;
+		this.userPolicy = userPolicy;
 	}
 	
 	@Override
@@ -353,6 +366,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+		// TODO filter results of the find based on the policy
 		return personService.findPersonDetails(filter, paging);
 	}
 	
@@ -361,29 +375,53 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
-		if (!canUpdateUserRole(personId))
-			throw new PermissionDeniedException("setUserRoles: " + personId);
-		return personService.setUserRoles(personId, roles);
-	}
-
-	public PersonDetails addUserRole(Identifier personId, String role) {
-		if (!canUpdateUserRole(personId))
-			throw new PermissionDeniedException("addUserRole: " + personId);
-		return personService.addUserRole(personId, role);
+	public User createUser(Identifier personId, String username, List<String> roles) {
+		if (!canCreateUserForPerson(personId))
+			throw new PermissionDeniedException("createUser: " + personId);
+		return userService.createUser(personId, username, roles);
 	}
 	
 	@Override
-	public PersonDetails setUserPassword(Identifier personId, String password) {
-		if (!canUpdateUserPassword(personId))
-			throw new PermissionDeniedException("setUserPassword: " + personId);
-		return personService.setUserPassword(personId, password);
+	public User findUserById(Identifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("findUserById: " + userId);
+		return userService.findUserById(userId);
+	}
+	
+	@Override
+	public User findUserByUsername(String username) {		
+		User user = userService.findUserByUsername(username);
+		if (!canViewUser(user.getUserId()))
+			throw new PermissionDeniedException("findUserByUsername: " + username);
+		return user;
+	}
+	
+	@Override
+	public User setUserRoles(Identifier userId, List<String> roles) {
+		if (!canUpdateUserRole(userId))
+			throw new PermissionDeniedException("setUserRoles: " + userId);
+		return userService.setUserRoles(userId, roles);
 	}
 
-	public PersonDetails removeUserRole(Identifier personId, String role) {
-		if (!canUpdateUserRole(personId))
-			throw new PermissionDeniedException("removeUserRole: " + personId);
-		return personService.removeUserRole(personId, role);
+	@Override
+	public User addUserRole(Identifier userId, String role) {
+		if (!canUpdateUserRole(userId))
+			throw new PermissionDeniedException("addUserRole: " + userId);
+		return userService.addUserRole(userId, role);
+	}
+	
+	@Override
+	public User setUserPassword(Identifier userId, String password) {
+		if (!canUpdateUserPassword(userId))
+			throw new PermissionDeniedException("setUserPassword: " + userId);
+		return userService.setUserPassword(userId, password);
+	}
+
+	@Override
+	public User removeUserRole(Identifier userId, String role) {
+		if (!canUpdateUserRole(userId))
+			throw new PermissionDeniedException("removeUserRole: " + userId);
+		return userService.removeUserRole(userId, role);
 	}
 
 	public OrganizationDetails validate(OrganizationDetails organization) {
@@ -415,7 +453,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	public boolean canEnableOrganization(Identifier organizationId) {
-		return organizationPolicy.canDisableOrganization(organizationId);
+		return organizationPolicy.canEnableOrganization(organizationId);
 	}
 
 	public boolean canDisableOrganization(Identifier organizationId) {
@@ -461,13 +499,24 @@ public final class SecuredCrmServices implements Crm {
 	public boolean canDisablePerson(Identifier personId) {
 		return personPolicy.canDisablePerson(personId);
 	}
-
-	public boolean canUpdateUserRole(Identifier personId) {
-		return personPolicy.canUpdateUserRole(personId);
+	
+	@Override
+	public boolean canCreateUserForPerson(Identifier personId) {
+		return userPolicy.canCreateUserForPerson(personId);
+	}
+	
+	@Override
+	public boolean canViewUser(Identifier userId) {
+		return userPolicy.canViewUser(userId);
 	}
 
 	@Override
-	public boolean canUpdateUserPassword(Identifier personId) {
-		return personPolicy.canUpdateUserPassword(personId);
+	public boolean canUpdateUserRole(Identifier userId) {
+		return userPolicy.canUpdateUserRole(userId);
+	}
+
+	@Override
+	public boolean canUpdateUserPassword(Identifier userId) {
+		return userPolicy.canUpdateUserPassword(userId);
 	}
 }

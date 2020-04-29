@@ -25,22 +25,25 @@
 		<module>crm-amnesia-service</module>
 		<module>crm-hazelcast-service</module>
 		
+		<!-- Policy Implementations -->
+		<module>crm-policies</module>		
+		
 		<!-- Security Implementations -->
-		<module>crm-spring-jwt-security</module>
-		<module>crm-spring-oauth-security</module>
+		<module>crm-spring-security</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
 		<module>crm-graphql-spring-controllers</module>				
-		<module>crm-graphql-spring-boot-jwt-server</module>
-		<module>crm-graphql-spring-boot-noauth-server</module>		
+		<module>crm-graphql-spring-boot-server</module>		
 		<module>crm-graphql-client</module>
 		
 		<!-- REST Endpoint Implementation -->
-		<module>crm-restful-json</module>
+		<!-- 		
+		<module>crm-restful-json</module>		
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-jwt-server</module>
 		<module>crm-restful-spring-boot-noauth-server</module>
 		<module>crm-restful-client</module>
+		 -->
 	</modules>
 
 </project>

@@ -9,26 +9,45 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import ca.magex.crm.api.system.Identifier;
+
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String userName;
+	private Identifier userId;
+	
+	private Identifier organizationId;
+	
+	private Identifier personId;
+	
+	private String username;
 
 	private List<String> roles;
 
-	public User(String userName, List<String> roles) {
+	public User(Identifier userId, Identifier organizationId, Identifier personId, String username, List<String> roles) {
 		super();
-		this.userName = userName;
+		this.userId = userId;
+		this.organizationId = organizationId;
+		this.personId = personId;
+		this.username = username;
 		this.roles = Collections.unmodifiableList(roles);
 	}
-
-	public String getUserName() {
-		return userName;
+	
+	public Identifier getUserId() {
+		return userId;
+	}
+	
+	public Identifier getOrganizationId() {
+		return organizationId;
+	}
+	
+	public Identifier getPersonId() {
+		return personId;
 	}
 
-	public User withUserName(String userName) {
-		return new User(userName, roles);
+	public String getUsername() {
+		return username;
 	}
 
 	public List<String> getRoles() {
@@ -36,7 +55,7 @@ public class User implements Serializable {
 	}
 
 	public User withRoles(List<String> roles) {
-		return new User(userName, roles);
+		return new User(userId, organizationId, personId, username, roles);
 	}
 	
 	@Override

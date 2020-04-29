@@ -109,37 +109,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			return crm.findPersonDetails(personId);
 		};
 	}
-	
-	public DataFetcher<PersonDetails> addUserRole() {
-		return (environment) -> {
-			logger.info("Entering addUserRole@" + PersonDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			return crm.addUserRole(
-					personId, 
-					environment.getArgument("role"));
-		};
-	}
-	
-	public DataFetcher<PersonDetails> removeUserRole() {
-		return (environment) -> {
-			logger.info("Entering removeUserRole@" + PersonDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			return crm.removeUserRole(
-					personId, 
-					environment.getArgument("role"));
-		};
-	}
-	
-	public DataFetcher<PersonDetails> setUserRoles() {
-		return (environment) -> {
-			logger.info("Entering setUserRoles@" + PersonDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));			
-			return crm.setUserRoles(
-					personId, 
-					environment.getArgument("roles"));
-		};
-	}
-	
+
 	private PersonsFilter extractFilter(Map<String, Object> filter) {
 		String displayName = (String) filter.get("displayName");
 		String organizationId = (String) filter.get("organizationId");

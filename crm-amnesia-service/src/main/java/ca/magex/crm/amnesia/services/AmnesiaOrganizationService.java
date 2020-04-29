@@ -60,8 +60,8 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	
 	public Stream<OrganizationDetails> apply(OrganizationsFilter filter) {
 		return db.findByType(OrganizationDetails.class)
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true);		
+			.filter(org -> StringUtils.isNotBlank(filter.getDisplayName()) ? org.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(org -> filter.getStatus() != null ? org.getStatus().equals(filter.getStatus()) : true);		
 	}
 	
 	@Override

@@ -33,7 +33,7 @@ public class GraphQLController {
 	@PostMapping
 	public ResponseEntity<Object> doQuery(@RequestBody String request, HttpServletRequest req, HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
-		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + principal.getName());
+		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
 		
 		/* 
 		 * we need to parse the request ourselves because mapping to the GraphQLRequest object is broken for variables, 

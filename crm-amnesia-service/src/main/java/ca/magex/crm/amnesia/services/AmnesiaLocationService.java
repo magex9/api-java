@@ -59,8 +59,10 @@ public class AmnesiaLocationService implements CrmLocationService {
 	
 	public Stream<LocationDetails> apply(LocationsFilter filter) {
 		return db.findByType(LocationDetails.class)
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true);		
+			.filter(loc -> StringUtils.isNotBlank(filter.getDisplayName()) ? loc.getDisplayName().contains(filter.getDisplayName()) : true)
+			.filter(loc -> filter.getStatus() != null ? loc.getStatus().equals(filter.getStatus()) : true)
+			.filter(loc -> filter.getOrganizationId() != null ? loc.getOrganizationId().equals(filter.getOrganizationId()) : true);
+		
 	}
 	
 	public long countLocations(LocationsFilter filter) {

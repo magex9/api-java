@@ -1,7 +1,5 @@
 package ca.magex.crm.hazelcast.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -21,7 +18,6 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
@@ -29,7 +25,6 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -40,8 +35,6 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmOrganizationService organizationService;
-	@Autowired private CrmPasswordService passwordService;
-	@Autowired(required=false) private PasswordEncoder passwordEncoder;
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position) {
@@ -58,8 +51,7 @@ public class HazelcastPersonService implements CrmPersonService {
 				legalName,
 				address,
 				communication,
-				position,
-				new User(generateUserName(legalName), Collections.emptyList()));
+				position);
 		persons.put(personDetails.getPersonId(), personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
@@ -166,66 +158,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		return SerializationUtils.clone(personDetails);
 	}
 
-	@Override
-	public PersonDetails addUserRole(Identifier personId, String role) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
-		PersonDetails personDetails = persons.get(personId);
-		if (personDetails == null) {
-			throw new ItemNotFoundException("Unable to find person " + personId);
-		}
-		List<String> roles = new ArrayList<String>(personDetails.getUser().getRoles());
-		if (roles.contains(role)) {
-			return SerializationUtils.clone(personDetails);
-		}
-		roles.add(role);
-		personDetails = personDetails.withUser(personDetails.getUser().withRoles(roles));
-		persons.put(personId, personDetails);
-		return SerializationUtils.clone(personDetails);
-	}
-
-	@Override
-	public PersonDetails removeUserRole(Identifier personId, String role) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
-		PersonDetails personDetails = persons.get(personId);
-		if (personDetails == null) {
-			throw new ItemNotFoundException("Unable to find person " + personId);
-		}
-		List<String> roles = new ArrayList<String>(personDetails.getUser().getRoles());
-		if (!roles.contains(role)) {
-			return SerializationUtils.clone(personDetails);
-		}
-		roles.remove(role);
-		personDetails = personDetails.withUser(personDetails.getUser().withRoles(roles));
-		persons.put(personId, personDetails);
-		return SerializationUtils.clone(personDetails);
-	}
-
-	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap("persons");
-		PersonDetails personDetails = persons.get(personId);
-		if (personDetails == null) {
-			throw new ItemNotFoundException("Unable to find person " + personId);
-		}
-		if (personDetails.getUser().getRoles().containsAll(roles) && roles.containsAll(personDetails.getUser().getRoles())) {
-			return SerializationUtils.clone(personDetails);
-		}
-		personDetails = personDetails.withUser(personDetails.getUser().withRoles(roles));
-		persons.put(personId, personDetails);
-		return SerializationUtils.clone(personDetails);
-	}
-
-	@Override
-	public PersonDetails setUserPassword(Identifier personId, String password) {
-		/* ensure the person exists first */
-		PersonDetails personDetails = findPersonDetails(personId);
-		if (passwordEncoder == null) {
-			passwordService.setPassword(personId, password);
-		} else {
-			passwordService.setPassword(personId, passwordEncoder.encode(password));
-		}
-		return SerializationUtils.clone(personDetails);
-	}
+	
 
 	@Override
 	public PersonSummary findPersonSummary(Identifier personId) {
@@ -256,7 +189,6 @@ public class HazelcastPersonService implements CrmPersonService {
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
 			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
 			.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
-			.filter(k -> filter.getUserName() != null ? k.getUser().getUserName().equals(filter.getUserName()) : true)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
