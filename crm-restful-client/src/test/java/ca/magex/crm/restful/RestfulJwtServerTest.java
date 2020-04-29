@@ -1,4 +1,4 @@
-package ca.magex.crm.test.restful;
+package ca.magex.crm.restful;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -31,6 +31,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
+import ca.magex.crm.test.restful.RestfulCrmServices;
 
 @Ignore
 public class RestfulJwtServerTest {

@@ -1,7 +1,7 @@
-package ca.magex.crm.rest.controllers;
+package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.rest.controllers.ContentExtractor.action;
-import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
+import static ca.magex.crm.restful.controllers.ContentExtractor.action;
+import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
 
 import java.io.IOException;
 import java.io.InputStream;

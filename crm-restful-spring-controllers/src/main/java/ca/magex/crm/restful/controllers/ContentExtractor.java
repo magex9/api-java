@@ -1,4 +1,4 @@
-package ca.magex.crm.rest.controllers;
+package ca.magex.crm.restful.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

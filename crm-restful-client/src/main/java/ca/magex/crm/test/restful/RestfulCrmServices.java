@@ -51,7 +51,7 @@ public class RestfulCrmServices implements CrmServices {
 	public RestfulCrmServices(String server, Locale locale) {
 		this.server = server;
 		this.locale = locale;
-		this.contentType = "applciation/json";
+		this.contentType = "application/json";
 	}
 
 	public String getConfig() throws Exception {

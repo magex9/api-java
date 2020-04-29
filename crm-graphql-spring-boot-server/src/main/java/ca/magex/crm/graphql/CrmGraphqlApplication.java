@@ -13,10 +13,10 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 		"ca.magex.crm.spring.security",
 		"ca.magex.crm.policy"
 })
-public class CrmGraphqlJwtApplication {
+public class CrmGraphqlApplication {
 
 	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(CrmGraphqlJwtApplication.class);
+		SpringApplication app = new SpringApplication(CrmGraphqlApplication.class);
 		/* generate a file called application.pid, used to track the running process */
 		app.addListeners(new ApplicationPidFileWriter());
 		app.run(args);

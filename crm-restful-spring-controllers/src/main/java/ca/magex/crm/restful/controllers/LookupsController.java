@@ -1,10 +1,10 @@
-package ca.magex.crm.rest.controllers;
+package ca.magex.crm.restful.controllers;
 	
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractDisplayName;
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractLocale;
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractOrganizationId;
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractStatus;
-import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractDisplayName;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractLocale;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractOrganizationId;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractStatus;
+import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
 
 import java.util.List;
 import java.util.Locale;

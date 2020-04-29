@@ -1,11 +1,11 @@
-package ca.magex.crm.rest.controllers;
+package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractBody;
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractDisplayName;
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractPaging;
-import static ca.magex.crm.rest.controllers.ContentExtractor.extractStatus;
-import static ca.magex.crm.rest.controllers.ContentExtractor.getContentType;
-import static ca.magex.crm.rest.controllers.ContentExtractor.getTransformer;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractBody;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractDisplayName;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractPaging;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractStatus;
+import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
+import static ca.magex.crm.restful.controllers.ContentExtractor.getTransformer;
 
 import java.io.IOException;
 import java.util.function.Function;
