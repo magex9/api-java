@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ import ca.magex.crm.resource.CrmLookupLoader;
 @Primary
 public class AmnesiaLookupService implements CrmLookupService {
 	
-	@Autowired private CrmLookupLoader lookupLoader;
+	private CrmLookupLoader lookupLoader;
 
 	private Lookups<Status, String> statuses;
 	
@@ -45,8 +44,12 @@ public class AmnesiaLookupService implements CrmLookupService {
 	
 	private Lookups<BusinessClassification, String> classifications;
 
+	public AmnesiaLookupService(CrmLookupLoader lookupLoader) {
+		this.lookupLoader = lookupLoader;
+	}
+	
 	@PostConstruct
-	public void initialize() {
+	public AmnesiaLookupService initialize() {
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
 		roles = new Lookups<Role, String>(lookupLoader.loadLookup(Role.class, "Role.csv"), Role.class, String.class);
 		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
@@ -55,6 +58,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 		sectors = new Lookups<BusinessSector, String>(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"), BusinessSector.class, String.class);
 		units = new Lookups<BusinessUnit, String>(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"), BusinessUnit.class, String.class);
 		classifications = new Lookups<BusinessClassification, String>(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"), BusinessClassification.class, String.class);
+		return this;
 	}
 	
 	public List<Status> findStatuses() {

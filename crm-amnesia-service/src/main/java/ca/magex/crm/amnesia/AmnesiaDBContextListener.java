@@ -32,47 +32,43 @@ public class AmnesiaDBContextListener implements ApplicationListener<ContextRefr
 
 	private static final Logger LOG = LoggerFactory.getLogger(AmnesiaDBContextListener.class);
 
-	@Autowired private CrmLookupService lookupService;
-	@Autowired private CrmOrganizationService organizationService;
-	@Autowired private CrmLocationService locationService;
-	@Autowired private CrmPersonService personService;
-	@Autowired private CrmUserService userService;
+	@Autowired private AmnesiaDB db;
 	@Autowired(required = false) private PasswordEncoder passwordEncoder;
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		LOG.info("Creating Magex Organization");
-		OrganizationDetails magex = organizationService.createOrganization("Magex");
+		OrganizationDetails magex = db.api().createOrganization("Magex");
 		Locale locale = Lang.ENGLISH;
 		
 		for (int i = 1; i < 25; i++) {
 			String name = Character.toString((int)'A' + i - 1);
-			LocationDetails location = locationService.createLocation(magex.getOrganizationId(), "Location " + name, "LOC" + i, new MailingAddress((100 + i) + " Main Street", "Ottawa", "Ontario", "Canada", "K1S 1B9"));
+			LocationDetails location = db.api().createLocation(magex.getOrganizationId(), "Location " + name, "LOC" + i, new MailingAddress((100 + i) + " Main Street", "Ottawa", "Ontario", "Canada", "K1S 1B9"));
 			if (i < 5)
-				locationService.disableLocation(location.getLocationId());
+				db.api().disableLocation(location.getLocationId());
 		}
 		
-		PersonDetails crmAdmin = personService.createPerson(
+		PersonDetails crmAdmin = db.api().createPerson(
 				magex.getOrganizationId(),
 				new PersonName(null, "Crm", "", "Admin"),
 				new MailingAddress("123 Main Street", "Ottawa", "Ontario", "Canada", "K1S 1B9"),
-				new Communication("Crm Administrator", lookupService.findLanguageByCode("en").getName(locale), "crmadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"),
-				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
+				new Communication("Crm Administrator", db.api().findLanguageByCode("en").getName(locale), "crmadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"),
+				new BusinessPosition(db.api().findBusinessSectorByCode("4").getName(locale), db.api().findBusinessUnitByCode("4").getName(locale), db.api().findBusinessClassificationByCode("4").getName(locale)));
 
 		/* create crm user with admin/admin */
-		User crmAdminUser = userService.createUser(crmAdmin.getPersonId(), "admin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN").getCode()));
-		userService.setUserPassword(crmAdminUser.getUserId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
+		User crmAdminUser = db.api().createUser(crmAdmin.getPersonId(), "admin", Arrays.asList(db.api().findRoleByCode("CRM_ADMIN").getCode()));
+		db.api().setUserPassword(crmAdminUser.getUserId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("admin"));
 
-		PersonDetails sysAdmin = personService.createPerson(
+		PersonDetails sysAdmin = db.api().createPerson(
 				magex.getOrganizationId(),
 				new PersonName(null, "System", "", "Admin"),
 				new MailingAddress("123 Main Street", "Ottawa", "Ontario", "Canada", "K1S 1B9"),
-				new Communication("System Administrator", lookupService.findLanguageByCode("en").getName(locale), "sysadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"),
-				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
+				new Communication("System Administrator", db.api().findLanguageByCode("en").getName(locale), "sysadmin@magex.ca", new Telephone("613-555-5555"), "613-555-5556"),
+				new BusinessPosition(db.api().findBusinessSectorByCode("4").getName(locale), db.api().findBusinessUnitByCode("4").getName(locale), db.api().findBusinessClassificationByCode("4").getName(locale)));
 
 		/* create system user with sysadmin/sysadmin */
-		User sysAdminUser = userService.createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN").getCode()));
-		userService.setUserPassword(sysAdminUser.getUserId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("sysadmin"));
+		User sysAdminUser = db.api().createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList(db.api().findRoleByCode("CRM_ADMIN").getCode()));
+		db.api().setUserPassword(sysAdminUser.getUserId(), passwordEncoder == null ? "admin" : passwordEncoder.encode("sysadmin"));
 	}
 	
 }

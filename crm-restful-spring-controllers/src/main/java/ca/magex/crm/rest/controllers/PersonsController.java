@@ -221,37 +221,37 @@ public class PersonsController {
 		res.getWriter().write(DataFormatter.formatted(data));
 	}
 	
-	@PostMapping("/api/persons/{personId}/roles")
-	public void setUserRoles(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("personId") String personId) throws IOException {
-		JsonTransformer transformer = getTransformer(req, crm);
-		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((DataText)r).value()).getCode()).collect(Collectors.toList()));
-		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
-		res.setStatus(200);
-		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
-	}
-	
-	@PostMapping("/api/persons/{personId}/roles/{roleId}")
-	public void addUserRole(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
-		JsonTransformer transformer = getTransformer(req, crm);
-		PersonDetails details = crm.addUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
-		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
-		res.setStatus(200);
-		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
-	}
-	
-	@DeleteMapping("/api/persons/{personId}/roles/{roleId}")
-	public void removeUserRole(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
-		JsonTransformer transformer = getTransformer(req, crm);
-		PersonDetails details = crm.removeUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
-		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
-		res.setStatus(200);
-		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
-	}
+//	@PostMapping("/api/persons/{personId}/roles")
+//	public void setUserRoles(HttpServletRequest req, HttpServletResponse res, 
+//			@PathVariable("personId") String personId) throws IOException {
+//		JsonTransformer transformer = getTransformer(req, crm);
+//		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((DataText)r).value()).getCode()).collect(Collectors.toList()));
+//		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
+//		res.setStatus(200);
+//		res.setContentType(getContentType(req));
+//		res.getWriter().write(DataFormatter.formatted(data));
+//	}
+//	
+//	@PostMapping("/api/persons/{personId}/roles/{roleId}")
+//	public void addUserRole(HttpServletRequest req, HttpServletResponse res, 
+//			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
+//		JsonTransformer transformer = getTransformer(req, crm);
+//		PersonDetails details = crm.addUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
+//		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
+//		res.setStatus(200);
+//		res.setContentType(getContentType(req));
+//		res.getWriter().write(DataFormatter.formatted(data));
+//	}
+//	
+//	@DeleteMapping("/api/persons/{personId}/roles/{roleId}")
+//	public void removeUserRole(HttpServletRequest req, HttpServletResponse res, 
+//			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
+//		JsonTransformer transformer = getTransformer(req, crm);
+//		PersonDetails details = crm.removeUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
+//		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
+//		res.setStatus(200);
+//		res.setContentType(getContentType(req));
+//		res.getWriter().write(DataFormatter.formatted(data));
+//	}
 
 }

@@ -13,6 +13,7 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -625,24 +626,6 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public PersonDetails addUserRole(Identifier personId, String role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PersonDetails removeUserRole(Identifier personId, String role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PersonDetails setUserRoles(Identifier personId, List<String> roles) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public PersonSummary findPersonSummary(Identifier personId) {
 		// TODO Auto-generated method stub
 		return null;
@@ -673,9 +656,45 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public PersonDetails setUserPassword(Identifier personId, String password) {
+	public User createUser(Identifier personId, String username, List<String> roles) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	@Override
+	public User findUserById(Identifier userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User findUserByUsername(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User addUserRole(Identifier userId, String role) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User removeUserRole(Identifier userId, String role) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User setUserRoles(Identifier userId, List<String> roles) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User setUserPassword(Identifier userId, String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

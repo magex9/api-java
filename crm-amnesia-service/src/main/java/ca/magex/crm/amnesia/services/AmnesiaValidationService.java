@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
@@ -12,27 +13,17 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 
 public class AmnesiaValidationService implements CrmValidation {
 
-	private CrmLookupService lookups;
+	private AmnesiaDB db;
 	
-	private CrmOrganizationService organizations;
-	
-	private CrmLocationService locations;
-
-	public AmnesiaValidationService(CrmLookupService lookups, CrmOrganizationService organizations,
-			CrmLocationService locations) {
+	public AmnesiaValidationService(AmnesiaDB db) {
 		super();
-		this.lookups = lookups;
-		this.organizations = organizations;
-		this.locations = locations;
+		this.db = db;
 	}
 
 	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
@@ -50,7 +41,7 @@ public class AmnesiaValidationService implements CrmValidation {
 			messages.add(new Message(organization.getOrganizationId(), "error", "status", "Status is mandatory for an organization"));
 		
 		// Main location reference
-		if (organization.getMainLocationId() != null && !locations.findLocationDetails(organization.getMainLocationId()).getOrganizationId().equals(organization.getOrganizationId())) {
+		if (organization.getMainLocationId() != null && !db.api().findLocationDetails(organization.getMainLocationId()).getOrganizationId().equals(organization.getOrganizationId())) {
 			messages.add(new Message(organization.getOrganizationId(), "error", "mainLocation", "Main location organization has invalid referential integrity"));
 		}
 		
@@ -67,7 +58,7 @@ public class AmnesiaValidationService implements CrmValidation {
 			messages.add(new Message(location.getLocationId(), "error", "organizationId", "Organization cannot be null"));
 		} else {
 			try {
-				organizations.findOrganizationDetails(location.getOrganizationId());
+				db.api().findOrganizationDetails(location.getOrganizationId());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(location.getLocationId(), "error", "organizationId", "Organization does not exist"));
 			}
@@ -130,7 +121,7 @@ public class AmnesiaValidationService implements CrmValidation {
 			messages.add(new Message(identifier, "error", prefix + ".country", "Country is mandatory"));
 		} else {
 			try {
-				lookups.findCountryByCode(address.getCountry());
+				db.api().findCountryByCode(address.getCountry());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", prefix + ".country", "Country code is not in the lookup"));
 			}
@@ -138,7 +129,7 @@ public class AmnesiaValidationService implements CrmValidation {
 		
 		// Postal Code
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
-			if (address.getCountry() != null && lookups.findCountryByCode(address.getCountry()).getCode().equals("CA")) {
+			if (address.getCountry() != null && db.api().findCountryByCode(address.getCountry()).getCode().equals("CA")) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z][0-9][A-Z][0-9]")) {
 					messages.add(new Message(identifier, "error", prefix + ".provinceCode", "Canadian province format is invalid"));
 				}
@@ -153,7 +144,7 @@ public class AmnesiaValidationService implements CrmValidation {
 			messages.add(new Message(identifier, "error", prefix + ".salutation", "Salutation is mandatory"));
 		} else {
 			try {
-				lookups.findSalutationByCode(name.getSalutation());
+				db.api().findSalutationByCode(name.getSalutation());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", prefix + ".salutation", "Salutation code is not in the lookup"));
 			}
@@ -190,7 +181,7 @@ public class AmnesiaValidationService implements CrmValidation {
 			messages.add(new Message(person.getPersonId(), "error", "organizationId", "Organization cannot be null"));
 		} else {
 			try {
-				organizations.findOrganizationDetails(person.getOrganizationId());
+				db.api().findOrganizationDetails(person.getOrganizationId());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(person.getPersonId(), "error", "organizationId", "Organization does not exist"));
 			}
@@ -229,7 +220,7 @@ public class AmnesiaValidationService implements CrmValidation {
 		
 		for (String role : roles) {
 			try {
-				lookups.findRoleByCode(role);
+				db.api().findRoleByCode(role);
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(personId, "error", "roles('" + role + "')", "Role does not exist"));
 			}

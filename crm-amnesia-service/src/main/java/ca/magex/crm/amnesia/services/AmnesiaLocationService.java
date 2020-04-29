@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -25,9 +24,11 @@ import ca.magex.crm.api.system.Status;
 @Primary
 public class AmnesiaLocationService implements CrmLocationService {
 
-	@Autowired private AmnesiaDB db;
+	private AmnesiaDB db;
 	
-	public AmnesiaLocationService() {}
+	public AmnesiaLocationService(AmnesiaDB db) {
+		this.db = db;
+	}
 	
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		return db.saveLocation(new LocationDetails(db.generateId(), db.findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address));
@@ -62,7 +63,6 @@ public class AmnesiaLocationService implements CrmLocationService {
 			.filter(loc -> StringUtils.isNotBlank(filter.getDisplayName()) ? loc.getDisplayName().contains(filter.getDisplayName()) : true)
 			.filter(loc -> filter.getStatus() != null ? loc.getStatus().equals(filter.getStatus()) : true)
 			.filter(loc -> filter.getOrganizationId() != null ? loc.getOrganizationId().equals(filter.getOrganizationId()) : true);
-		
 	}
 	
 	public long countLocations(LocationsFilter filter) {
