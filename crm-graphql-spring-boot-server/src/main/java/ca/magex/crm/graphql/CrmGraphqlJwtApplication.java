@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 
 @SpringBootApplication(scanBasePackages = {
+		"ca.magex.crm.api",
 		"ca.magex.crm.resource",
 		//"ca.magex.crm.hazelcast",
 		"ca.magex.crm.amnesia",
