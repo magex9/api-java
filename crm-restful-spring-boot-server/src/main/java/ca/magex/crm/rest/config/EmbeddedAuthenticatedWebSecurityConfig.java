@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql.config;
+package ca.magex.crm.rest.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +24,8 @@ import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-@Profile(MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED)
-public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
+@Profile(MagexCrmProfiles.CRM_AUTH_EMBEDDED)
+public class EmbeddedAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private UserDetailsService jwtUserDetailsService;
 	@Autowired private UserDetailsPasswordService jwtUserDetailsPasswordService;
@@ -38,26 +38,32 @@ public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapt
 				.passwordEncoder(passwordEncoder)
 				.userDetailsPasswordManager(jwtUserDetailsPasswordService);
 	}
-	
+
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	
+
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
 				/* get the list of public resources */
-				.authorizeRequests()
-					.antMatchers("/authenticate", "/graphql").permitAll()
+				.authorizeRequests().antMatchers(
+						"/authenticate",
+						"/",
+						"/crm.yaml",
+						"/swagger-ui-bundle.js",
+						"/swagger-ui.css",
+						"/favicon.ico").permitAll()
 				/* user details needs to be protected */
-					.antMatchers("/validate").hasRole("AUTH_REQUEST")
+				.and().authorizeRequests().antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */
+				.and().authorizeRequests()
 					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
 					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
-					/* any other requests require authentication */
-					.anyRequest().authenticated()
+				/* any other requests require authentication */
+				.and().authorizeRequests().anyRequest().authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

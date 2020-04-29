@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
@@ -17,6 +19,7 @@ import ca.magex.crm.api.system.Identifier;
 
 @Service
 @Primary
+@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
 public class AmnesiaUserService implements CrmUserService {
 
 	private AmnesiaDB db;
@@ -36,7 +39,7 @@ public class AmnesiaUserService implements CrmUserService {
 	@Override
 	public User findUserByUsername(String userName) {
 		return db.findByType(User.class)
-				.filter((u) -> StringUtils.equals(u.getUserName(), userName))
+				.filter((u) -> StringUtils.equals(u.getUsername(), userName))
 				.findFirst()
 				.orElseThrow(() -> {
 					return new ItemNotFoundException("Unable to find user with userName " + userName);

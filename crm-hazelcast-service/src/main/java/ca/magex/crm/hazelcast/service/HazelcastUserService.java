@@ -8,12 +8,14 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
@@ -24,6 +26,7 @@ import ca.magex.crm.api.system.Identifier;
 
 @Service
 @Primary
+@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
 public class HazelcastUserService implements CrmUserService {
 	
 	@Autowired private HazelcastInstance hzInstance;
@@ -62,7 +65,7 @@ public class HazelcastUserService implements CrmUserService {
 	public User findUserByUsername(String username) {
 		Map<Identifier, User> users = hzInstance.getMap("users");
 		User user = users.values().stream()
-			.filter(u -> StringUtils.equalsIgnoreCase(u.getUserName(), username))
+			.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
 			.findFirst()
 			.orElseThrow(() -> {
 				return new ItemNotFoundException("Unable to find user with username " + username);

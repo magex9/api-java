@@ -692,7 +692,7 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public User setUserPassword(Identifier userId, String password) {
+	public User setUserPassword(Identifier userId, String password, boolean encoded) {
 		// TODO Auto-generated method stub
 		return null;
 	}

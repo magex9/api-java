@@ -6,10 +6,12 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.hazelcast.core.HazelcastInstance;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -23,6 +25,7 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
+@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
 public class HazelcastLookupService implements CrmLookupService {
 
 	@Autowired private HazelcastInstance hzInstance;

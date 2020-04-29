@@ -1,4 +1,4 @@
-package ca.magex.crm;
+package ca.magex.crm.rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,11 +7,12 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { 
-		"ca.magex.crm.api", 
+		"ca.magex.crm.api",
+		"ca.magex.crm.resource",
 		"ca.magex.crm.amnesia", 
 		"ca.magex.crm.rest", 
-		"ca.magex.crm.spring.jwt",
-		"ca.magex.crm.resource" 
+		"ca.magex.crm.spring.security",		
+		"ca.magex.crm.policy"
 })
 public class CrmRestfulJwtApplication {
 

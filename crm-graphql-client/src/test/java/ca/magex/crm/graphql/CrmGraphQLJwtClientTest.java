@@ -15,10 +15,11 @@ import ca.magex.crm.test.CrmServicesTestSuite;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = {
-		MagexCrmProfiles.AUTH_EMBEDDED_JWT,
-		MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED
-	})
-public class OrganizationServiceGraphQLNoauthClientTest {
+	MagexCrmProfiles.AUTH_EMBEDDED_JWT,
+	MagexCrmProfiles.CRM_AUTH_EMBEDDED,
+	MagexCrmProfiles.CRM_CENTRALIZED
+})
+public class CrmGraphQLJwtClientTest {
 
 	@LocalServerPort private int randomPort;
 
@@ -26,6 +27,7 @@ public class OrganizationServiceGraphQLNoauthClientTest {
 	public void runTests() {
 		/* we are running these tests with an embedded authentication server so everything is on the same servlet */
 		CrmServicesGraphQLClientImpl crmServices = new CrmServicesGraphQLClientImpl("http://localhost:" + randomPort + "/crm/graphql");
+		crmServices.authenticateJwt("http://localhost:" + randomPort + "/crm/authenticate", "admin", "admin");
 		
 		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();
 		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);

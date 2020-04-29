@@ -39,8 +39,7 @@
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-json</module>		
 		<module>crm-restful-spring-controllers</module>
-		<module>crm-restful-spring-boot-jwt-server</module>
-		<module>crm-restful-spring-boot-noauth-server</module>
+		<module>crm-restful-spring-boot-server</module>
 		<module>crm-restful-client</module>
 	</modules>
 

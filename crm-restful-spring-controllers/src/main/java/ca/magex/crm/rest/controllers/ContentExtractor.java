@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.SecuredCrmServices;
@@ -86,7 +86,7 @@ public class ContentExtractor {
 	
 	public static DataObject extractBody(HttpServletRequest req) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		IOUtils.copy(req.getInputStream(), baos);
+		StreamUtils.copy(req.getInputStream(), baos);		
 		return DataParser.parseObject(new String(baos.toByteArray()));
 	}
 

@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql.config;
+package ca.magex.crm.rest.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -49,8 +49,13 @@ public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapt
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
 				/* get the list of public resources */
-				.authorizeRequests()
-					.antMatchers("/authenticate", "/graphql").permitAll()
+				.authorizeRequests().antMatchers(
+						"/authenticate",
+						"/",
+						"/crm.yaml",
+						"/swagger-ui-bundle.js",
+						"/swagger-ui.css",
+						"/favicon.ico").permitAll()												
 				/* user details needs to be protected */
 					.antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */

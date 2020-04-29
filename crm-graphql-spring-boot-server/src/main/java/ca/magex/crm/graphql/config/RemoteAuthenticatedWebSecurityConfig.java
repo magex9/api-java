@@ -27,7 +27,8 @@ public class RemoteAuthenticatedWebSecurityConfig extends WebSecurityConfigurerA
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
 				/* get the list of public resources */
-				.authorizeRequests().antMatchers("/,/favicon.ico,/images/**").permitAll()
+				.authorizeRequests()
+					.antMatchers("/").permitAll()
 				/* actuator needs to be protected */
 				.and().authorizeRequests()	
 					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")

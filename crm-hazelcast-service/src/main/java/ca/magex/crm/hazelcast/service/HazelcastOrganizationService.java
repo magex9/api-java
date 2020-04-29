@@ -8,12 +8,14 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
@@ -26,6 +28,7 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
+@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
 public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Autowired private HazelcastInstance hzInstance;

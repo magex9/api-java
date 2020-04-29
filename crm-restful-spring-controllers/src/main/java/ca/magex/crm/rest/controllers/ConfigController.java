@@ -11,8 +11,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +31,7 @@ public class ConfigController {
 	public void getYamlConfig(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		res.setStatus(200);
 		try (InputStream is = getClass().getResource("/public/crm.yaml").openStream()) {
-			IOUtils.copy(is, res.getOutputStream());
+			StreamUtils.copy(is, res.getOutputStream());
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading crm.yaml");
 		}

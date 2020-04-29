@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -21,6 +23,7 @@ import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.system.Identifier;
 
 @Repository
+@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
 public class AmnesiaDB implements CrmPasswordService {
 	
 	public static final String SYSTEM_ADMIN = "SYS_ADMIN";

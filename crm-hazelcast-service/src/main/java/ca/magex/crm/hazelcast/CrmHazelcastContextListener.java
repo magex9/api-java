@@ -9,11 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstance;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -31,6 +33,7 @@ import ca.magex.crm.resource.CrmDataInitializer;
 import ca.magex.crm.resource.CrmLookupLoader;
 
 @Component
+@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
 public class CrmHazelcastContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastContextListener.class);
@@ -68,6 +71,7 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 			LOG.info("Hazelcast CRM Previously Initialized on: " + new Date(initTimeStamp));
 			return;
 		}			
+		initMap.put("timestamp", 0L);
 		
 		LOG.info("Initializing Hazelcast CRM");
 		LOG.info("Initializing Lookups");
@@ -82,5 +86,10 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 		
 		/* initialize org data */
 		CrmDataInitializer.initialize(crmOrganizationService, crmLocationService, crmPersonService, crmUserService, crmlookupService);
+		
+		/* set our initialization timestamp */
+		long t1 = System.currentTimeMillis();
+		initMap.put("timestamp", t1);
+		LOG.info("Hazelcast CRM Initialized on: " + new Date(t1));
 	}		
 }
