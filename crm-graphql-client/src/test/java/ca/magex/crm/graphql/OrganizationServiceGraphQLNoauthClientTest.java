@@ -16,7 +16,7 @@ import ca.magex.crm.test.CrmServicesTestSuite;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = {
 		MagexCrmProfiles.AUTH_EMBEDDED_JWT,
-		MagexCrmProfiles.CRM_NO_AUTH
+		MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED
 	})
 public class OrganizationServiceGraphQLNoauthClientTest {
 

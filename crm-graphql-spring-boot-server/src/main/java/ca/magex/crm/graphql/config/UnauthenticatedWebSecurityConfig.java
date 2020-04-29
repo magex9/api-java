@@ -24,7 +24,7 @@ import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+@Profile(MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED)
 public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private UserDetailsService jwtUserDetailsService;
