@@ -9,8 +9,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -22,7 +22,7 @@ import ca.magex.crm.test.TestConfig;
 @ContextConfiguration(classes = { TestConfig.class })
 public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTests {
 
-	@Autowired private AmnesiaDB db;
+	@Autowired private SecuredCrmServices crm;
 
 	@Test
 	public void testOrganizationJson() throws Exception {
@@ -32,7 +32,7 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId);
-		JsonTransformer transformer = new JsonTransformer(db.api(), Lang.ENGLISH, false);
+		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
 		String json = DataFormatter.formatted(obj);
@@ -60,7 +60,7 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId);
-		JsonTransformer transformer = new JsonTransformer(db.api(), Lang.ENGLISH, true);
+		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
 		String json = DataFormatter.formatted(obj);

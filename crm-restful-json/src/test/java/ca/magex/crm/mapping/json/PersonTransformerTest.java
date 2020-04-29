@@ -22,6 +22,7 @@ import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.services.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -33,7 +34,7 @@ import ca.magex.crm.test.TestConfig;
 @ContextConfiguration(classes = {TestConfig.class})
 public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 
-	@Autowired private AmnesiaDB db;
+	@Autowired private SecuredCrmServices crm;
 
 	@Test
 	public void testPersonJson() throws Exception {
@@ -42,22 +43,22 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		Identifier organizationId = new Identifier("xyz");
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
-		PersonName legalName = new PersonName(db.api().findSalutationByCode("3").getName(locale), "Chris", "P", "Bacon");
-		Country canada = db.api().findCountryByCode("CA");
+		PersonName legalName = new PersonName(crm.findSalutationByCode("3").getName(locale), "Chris", "P", "Bacon");
+		Country canada = crm.findCountryByCode("CA");
 		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada.getName(locale), "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
-		Language language = db.api().findLanguageByCode("en");
+		Language language = crm.findLanguageByCode("en");
 		Telephone homePhone = new Telephone("2342342345", null);
 		String faxNumber = "4564564565";
 		Communication communication = new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
-		BusinessPosition unit = new BusinessPosition(db.api().findBusinessSectors().get(0).getName(locale), null, null);
+		BusinessPosition unit = new BusinessPosition(crm.findBusinessSectors().get(0).getName(locale), null, null);
 		List<String> roles = new ArrayList<String>();
-		roles.add(db.api().findRoleByCode("SYS_ADMIN").getName(locale));
-		roles.add(db.api().findRoleByCode("RE_ADMIN").getName(locale));
+		roles.add(crm.findRoleByCode("SYS_ADMIN").getName(locale));
+		roles.add(crm.findRoleByCode("RE_ADMIN").getName(locale));
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
-		JsonTransformer transformer = new JsonTransformer(db.api(), Lang.ENGLISH, false);
+		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 		
 		DataObject obj = transformer.formatPersonDetails(person);
 		String json = DataFormatter.formatted(obj);
@@ -116,7 +117,7 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		BusinessPosition unit = new BusinessPosition("Information Technology", null, null);
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
-		JsonTransformer transformer = new JsonTransformer(db.api(), Lang.ENGLISH, true);
+		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 		
 		DataObject obj = transformer.formatPersonDetails(person);
 		String json = DataFormatter.formatted(obj);
