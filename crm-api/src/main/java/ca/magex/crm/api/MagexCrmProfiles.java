@@ -7,7 +7,8 @@ public class MagexCrmProfiles {
 	public static final String AUTH_REMOTE_JWT			= "AuthRemoteJwt";
 	
 	// CRM Authentication Profile
-	public static final String CRM_NO_AUTH			   	= "CrmNoAuth";
+	public static final String CRM_NO_AUTH_EMBEDDED	   	= "CrmNoAuthEmbedded";
+	public static final String CRM_NO_AUTH_REMOTE	   	= "CrmNoAuthRemote";
 	public static final String CRM_AUTH_EMBEDDED 		= "CrmAuthEmbedded";
 	public static final String CRM_AUTH_REMOTE	 		= "CrmAuthRemote";
 }

@@ -12,7 +12,10 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+@Profile(value = {
+		MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED,
+		MagexCrmProfiles.CRM_NO_AUTH_REMOTE
+})
 public class DefaultCrmUserPolicy implements CrmUserPolicy {
 
 	@Autowired private CrmUserService userService;

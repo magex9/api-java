@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -18,12 +19,10 @@ import ca.magex.crm.api.system.Identifier;
 @Primary
 public class AmnesiaUserService implements CrmUserService {
 
-	private AmnesiaDB db;
-
-	public AmnesiaUserService(AmnesiaDB db) {
-		this.db = db;
-	}
+	@Autowired private AmnesiaDB db;
 	
+	@Autowired private PasswordEncoder passwordEncoder;
+
 	@Override
 	public User findUserById(Identifier userId) {
 		return db.findUser(userId);
@@ -53,9 +52,14 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public User setUserPassword(Identifier userId, String password) {
+	public User setUserPassword(Identifier userId, String password, boolean encoded) {
 		User user = findUserById(userId);
-		db.setPassword(userId, password);
+		if (encoded) {
+			db.setPassword(userId, password);
+		}
+		else {
+			db.setPassword(userId, passwordEncoder.encode(password));
+		}
 		return user;
 	}
 
