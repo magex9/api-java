@@ -1,4 +1,4 @@
-package ca.magex.crm.rest.config;
+package ca.magex.crm.restful.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
