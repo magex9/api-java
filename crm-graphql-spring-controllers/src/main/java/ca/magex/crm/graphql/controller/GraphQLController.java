@@ -45,10 +45,12 @@ public class GraphQLController {
 			MapBuilder variablesBuilder = new MapBuilder();
 			if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {
 				JSONObject variables = jsonRequest.getJSONObject("variables");
-				JSONArray variableNames = variables.names();
-				for (int i=0; i<variableNames.length(); i++) {
-					variablesBuilder.withEntry(variableNames.getString(i), variables.get(variableNames.getString(i)));
-				}			
+				if (variables.length() > 0) {
+					JSONArray variableNames = variables.names();
+					for (int i=0; i<variableNames.length(); i++) {
+						variablesBuilder.withEntry(variableNames.getString(i), variables.get(variableNames.getString(i)));
+					}
+				}
 			}
 	
 			ExecutionInput executionInput = ExecutionInput.newExecutionInput()
