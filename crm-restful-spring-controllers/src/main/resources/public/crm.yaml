@@ -14,7 +14,7 @@ servers:
 #          - production
 #          - training
 #          - preview
-  - url: http://localhost:8080/api
+  - url: http://localhost:9002/api
     description: Local development (uses test data)
   - url: https://magex9.github.io/apis/restful/v0
     description: Test server (uses shared data)
