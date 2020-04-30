@@ -1,28 +1,26 @@
 package ca.magex.crm.graphql.client;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.util.StreamUtils;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import ca.magex.crm.graphql.exceptions.GraphQLClientException;
+import ca.magex.crm.graphql.model.GraphQLRequest;
+import ca.magex.crm.spring.security.jwt.JwtRequest;
+import ca.magex.crm.spring.security.jwt.JwtToken;
 
 /**
  * HTTP client that handles executing GraphQL queries and returning the response
@@ -30,15 +28,15 @@ import ca.magex.crm.graphql.exceptions.GraphQLClientException;
  * @author Jonny
  *
  */
-public abstract class GraphQLClient implements Closeable {
+public abstract class GraphQLClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GraphQLClient.class);
 
 	protected String endpoint;
 	protected Properties queries;
-	protected CloseableHttpClient httpclient;
-
-	private String jwtToken;
+	
+	private String authToken;
+	private RestTemplate restTemplate = new RestTemplate();
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
@@ -47,7 +45,6 @@ public abstract class GraphQLClient implements Closeable {
 	 */
 	public GraphQLClient(String endpoint, String queryResource) {
 		this.endpoint = endpoint;
-		this.httpclient = HttpClients.createDefault();
 		this.queries = new Properties();
 		try {
 			try (InputStream in = CrmServicesGraphQLClientImpl.class.getResource(queryResource).openStream()) {
@@ -66,34 +63,16 @@ public abstract class GraphQLClient implements Closeable {
 	 * @param password
 	 */
 	public void authenticateJwt(String authEndpoint, String username, String password) {
-		long t1 = System.currentTimeMillis();
-		try {
-			HttpPost httpPost = new HttpPost(authEndpoint);
-			JSONObject json = new JSONObject();
-			json.put("username", username);
-			json.put("password", password);
-			httpPost.setEntity(new StringEntity(json.toString()));
-			httpPost.setHeader("Content-Type", "application/json");
-			try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					JSONObject token = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
-					this.jwtToken = token.getString("token");
-				} else {
-					throw new GraphQLClientException("Status: " + response.getStatusLine().getStatusCode());
-				}
-			}
-		} catch (Exception e) {
-			throw new GraphQLClientException("Error during authentication", e);
-		} finally {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("execution of authenticate() took " + (System.currentTimeMillis() - t1) + "ms.");
-			}
+		ResponseEntity<JwtToken> response = restTemplate.exchange(
+				RequestEntity
+					.post(URI.create(authEndpoint))
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(new JwtRequest(username, password)), 
+				JwtToken.class);
+		if (!response.getStatusCode().is2xxSuccessful()) {
+			throw new GraphQLClientException(response.getStatusCode().getReasonPhrase());
 		}
-	}
-
-	@Override
-	public void close() throws IOException {
-		httpclient.close();
+		this.authToken = response.getBody().getToken();		
 	}
 
 	/**
@@ -106,7 +85,7 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected <T> T performGraphQLQueryWithVariables(String queryId, String queryName, Map<String, Object> variables) {
-		return performGraphQLQuery(queryName, constructEntityWithVariables(queryId, variables));
+		return performGraphQLQuery(queryName, constructRequestWithVariables(queryId, variables));
 	}
 
 	/**
@@ -119,41 +98,42 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 */
 	protected <T> T performGraphQLQueryWithSubstitution(String queryId, String queryName, Object... params) {
-		return performGraphQLQuery(queryName, constructEntityWithSubstitution(queryId, params));
+		return performGraphQLQuery(queryName, constructRequestWithSubstitution(queryId, params));
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T performGraphQLQuery(String queryName, HttpEntity entity) {
+	private <T> T performGraphQLQuery(String queryName, GraphQLRequest request) {
 		long t1 = System.currentTimeMillis();
 		try {
-			HttpPost httpPost = new HttpPost(endpoint);
-			if (jwtToken != null) {
-				httpPost.addHeader("Authorization", "Bearer " + jwtToken);
-			}
-			httpPost.setHeader("Content-Type", "application/json");
-			httpPost.setEntity(entity);
-			try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					JSONObject json = new JSONObject(StreamUtils.copyToString(response.getEntity().getContent(), Charset.forName("UTF-8")));
-					JSONArray errors = json.getJSONArray("errors");
-					if (errors.length() == 0) {
-						JSONObject data = json.getJSONObject("data");
-						if (data.get(queryName) == JSONObject.NULL) {
-							throw new GraphQLClientException("Null data returned without Error");
-						}
-						return (T) data.get(queryName);
-					} else {
-						throw new GraphQLClientException(errors.toString(3));
+			ResponseEntity<String> response = restTemplate.exchange(
+					RequestEntity
+						.post(URI.create(endpoint))
+						.contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", "Bearer " + authToken)
+						.body(request),
+						String.class);
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONObject json = new JSONObject(response.getBody());				
+				JSONArray errors = json.getJSONArray("errors");
+				if (errors.length() == 0) {
+					JSONObject data = json.getJSONObject("data");
+					if (data.get(queryName) == JSONObject.NULL) {
+						throw new GraphQLClientException("Null data returned without Error");
 					}
+					return (T) data.get(queryName);
 				} else {
-					throw new GraphQLClientException("Status: " + response.getStatusLine().getStatusCode());
+					throw new GraphQLClientException(errors.toString(3));
 				}
 			}
-		} catch (Exception e) {
-			throw new GraphQLClientException("Error performing graphql query " + queryName, e);
+			else {
+				throw new GraphQLClientException("Error performing graphql query " + queryName + ", " + response.getStatusCode().getReasonPhrase());
+			}
+		}
+		catch(JSONException jsone) {
+			throw new GraphQLClientException("Unable to parse response", jsone);
 		} finally {
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("execution of " + queryName + "(" + entity + ") took " + (System.currentTimeMillis() - t1) + "ms.");
+				LOG.debug("execution of " + request + " took " + (System.currentTimeMillis() - t1) + "ms.");
 			}
 		}
 	}
@@ -166,15 +146,11 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 * @throws Exception
 	 */
-	private HttpEntity constructEntityWithVariables(String queryName, Map<String, Object> variables) {
-		try {
-			JSONObject request = new JSONObject();
-			request.put("query", queries.getProperty(queryName));
-			request.put("variables", new JSONObject(variables));
-			return new StringEntity(request.toString(3));
-		} catch (Exception e) {
-			throw new GraphQLClientException("Unable to construct entity with variables", e);
-		}
+	private GraphQLRequest constructRequestWithVariables(String queryName, Map<String, Object> variables) {		
+		GraphQLRequest request = new GraphQLRequest();
+		request.setQuery(queries.getProperty(queryName));
+		request.getVariables().putAll(variables);
+		return request;
 	}
 
 	/**
@@ -184,18 +160,14 @@ public abstract class GraphQLClient implements Closeable {
 	 * @return
 	 * @throws Exception
 	 */
-	private HttpEntity constructEntityWithSubstitution(String queryName, Object... params) {
-		try {
-			JSONObject request = new JSONObject();
-			String query = queries.getProperty(queryName);
-			for (int param = 0; param < params.length; param++) {
-				query = query.replace("${" + param + "}", toVariableReplacementValue(params[param]));
-			}
-			request.put("query", query);
-			return new StringEntity(request.toString(3));
-		} catch (Exception e) {
-			throw new GraphQLClientException("Unable to construct entity with variables", e);
+	private GraphQLRequest constructRequestWithSubstitution(String queryName, Object... params) {
+		GraphQLRequest request = new GraphQLRequest();
+		String query = queries.getProperty(queryName);
+		for (int param = 0; param < params.length; param++) {
+			query = query.replace("${" + param + "}", toVariableReplacementValue(params[param]));
 		}
+		request.setQuery(query);
+		return request;		
 	}
 
 	/**

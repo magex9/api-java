@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 
