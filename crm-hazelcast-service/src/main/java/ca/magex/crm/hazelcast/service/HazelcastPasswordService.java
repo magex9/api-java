@@ -15,7 +15,7 @@ import ca.magex.crm.api.system.Identifier;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Autowired private HazelcastInstance hzInstance;

@@ -12,10 +12,7 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
-@Profile(value = {
-		MagexCrmProfiles.CRM_AUTH_EMBEDDED,
-		MagexCrmProfiles.CRM_AUTH_REMOTE
-})
+@Profile(MagexCrmProfiles.CRM_AUTH)
 public class SecureCrmLocationPolicy extends AbstractSecureCrmPolicy implements CrmLocationPolicy {
 
 	@Autowired private CrmLocationService locationService;

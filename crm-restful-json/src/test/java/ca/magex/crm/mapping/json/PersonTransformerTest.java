@@ -34,7 +34,7 @@ import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 @Ignore
 public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 

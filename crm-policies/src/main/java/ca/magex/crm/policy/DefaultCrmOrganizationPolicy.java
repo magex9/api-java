@@ -12,10 +12,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 @Component
-@Profile(value = {
-		MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED,
-		MagexCrmProfiles.CRM_NO_AUTH_REMOTE
-})
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class DefaultCrmOrganizationPolicy implements CrmOrganizationPolicy {
 
 	@Autowired private CrmOrganizationService organizationService;

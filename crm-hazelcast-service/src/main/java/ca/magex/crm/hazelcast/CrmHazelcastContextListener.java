@@ -33,7 +33,7 @@ import ca.magex.crm.resource.CrmDataInitializer;
 import ca.magex.crm.resource.CrmLookupLoader;
 
 @Component
-@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class CrmHazelcastContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastContextListener.class);

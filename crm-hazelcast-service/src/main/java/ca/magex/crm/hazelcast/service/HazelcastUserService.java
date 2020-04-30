@@ -26,7 +26,7 @@ import ca.magex.crm.api.system.Identifier;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastUserService implements CrmUserService {
 	
 	@Autowired private HazelcastInstance hzInstance;

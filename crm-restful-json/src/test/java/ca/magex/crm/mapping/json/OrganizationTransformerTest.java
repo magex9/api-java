@@ -22,7 +22,7 @@ import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class })
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTests {
 
 	@Autowired private SecuredCrmServices crm;

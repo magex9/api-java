@@ -16,8 +16,8 @@ import ca.magex.crm.test.CrmServicesTestSuite;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = {
 	MagexCrmProfiles.AUTH_EMBEDDED_JWT,
-	MagexCrmProfiles.CRM_AUTH_EMBEDDED,
-	MagexCrmProfiles.CRM_CENTRALIZED
+	MagexCrmProfiles.CRM_AUTH,
+	MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED
 })
 public class CrmGraphQLJwtClientTest {
 

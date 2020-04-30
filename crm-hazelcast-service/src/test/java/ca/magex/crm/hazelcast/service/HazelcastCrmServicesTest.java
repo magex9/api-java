@@ -14,7 +14,7 @@ import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
-@ActiveProfiles(MagexCrmProfiles.CRM_DISTRIBUTED)
+@ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastCrmServicesTest extends AbstractJUnit4SpringContextTests {
 
 	@Autowired private CrmServicesTestSuite crmServicesTest;
