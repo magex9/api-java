@@ -11,4 +11,8 @@ public class MagexCrmProfiles {
 	public static final String CRM_NO_AUTH_REMOTE	   	= "CrmNoAuthRemote";
 	public static final String CRM_AUTH_EMBEDDED 		= "CrmAuthEmbedded";
 	public static final String CRM_AUTH_REMOTE	 		= "CrmAuthRemote";
+	
+	// CRM Datastore Profile
+	public static final String CRM_DISTRIBUTED			= "CrmDistributedDatastore";
+	public static final String CRM_CENTRALIZED			= "CrmCentralizedDatastore";
 }

@@ -50,7 +50,7 @@ public class UnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapt
 		httpSecurity.csrf().disable()
 				/* get the list of public resources */
 				.authorizeRequests()
-					.antMatchers("/graphql").permitAll()												
+					.antMatchers("/authenticate", "/graphql").permitAll()
 				/* user details needs to be protected */
 					.antMatchers("/validate").hasRole("AUTH_REQUEST")
 				/* actuator needs to be protected */

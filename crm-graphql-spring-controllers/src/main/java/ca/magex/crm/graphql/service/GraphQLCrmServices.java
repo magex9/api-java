@@ -38,7 +38,7 @@ public class GraphQLCrmServices {
 	@Autowired LookupDataFetcher lookupDataFetcher;
 	@Autowired UserDataFetcher userDataFetcher;
 
-	@Value("classpath:organizations.graphql") private Resource resource;
+	@Value("classpath:crm.graphql") private Resource resource;
 
 	private GraphQL graphQL;
 

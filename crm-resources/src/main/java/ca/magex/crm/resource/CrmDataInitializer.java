@@ -63,8 +63,8 @@ public class CrmDataInitializer {
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
 
 		/* create system user with sysadmin/sysadmin */
-		User sysAdminUser = userService.createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN").getCode()));
-		userService.setUserPassword(sysAdminUser.getUserId(), "admin", false);
+		User sysAdminUser = userService.createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList(lookupService.findRoleByCode("SYS_ADMIN").getCode()));
+		userService.setUserPassword(sysAdminUser.getUserId(), "sysadmin", false);
 		
 		LOG.info("Creating System Application User");
 		PersonDetails appCrm = personService.createPerson(

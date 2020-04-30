@@ -7,9 +7,11 @@ import java.util.Locale;
 import javax.annotation.PostConstruct;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.Lookups;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -22,8 +24,9 @@ import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
 
-@Service("amnesiaLookupService")
+@Service
 @Primary
+@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
 public class AmnesiaLookupService implements CrmLookupService {
 	
 	private CrmLookupLoader lookupLoader;

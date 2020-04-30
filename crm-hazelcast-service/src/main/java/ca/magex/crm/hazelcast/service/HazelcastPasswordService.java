@@ -3,14 +3,19 @@ package ca.magex.crm.hazelcast.service;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.hazelcast.core.HazelcastInstance;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.system.Identifier;
 
 @Service
+@Primary
+@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
 public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Autowired private HazelcastInstance hzInstance;

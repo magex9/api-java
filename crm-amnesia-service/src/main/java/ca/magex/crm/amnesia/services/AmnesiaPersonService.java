@@ -6,10 +6,12 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -25,6 +27,7 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
+@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
 public class AmnesiaPersonService implements CrmPersonService {
 
 	private AmnesiaDB db;

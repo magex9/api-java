@@ -51,7 +51,7 @@ public class RestfulCrmServices implements CrmServices {
 	public RestfulCrmServices(String server, Locale locale) {
 		this.server = server;
 		this.locale = locale;
-		this.contentType = "applciation/json";
+		this.contentType = "application/json";
 	}
 
 	public String getConfig() throws Exception {
@@ -692,7 +692,7 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public User setUserPassword(Identifier userId, String password) {
+	public User setUserPassword(Identifier userId, String password, boolean encoded) {
 		// TODO Auto-generated method stub
 		return null;
 	}
