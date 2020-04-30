@@ -16,7 +16,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;

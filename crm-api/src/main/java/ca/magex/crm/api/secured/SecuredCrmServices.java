@@ -1,4 +1,4 @@
-package ca.magex.crm.api.services;
+package ca.magex.crm.api.secured;
 
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +32,14 @@ import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmUserPolicy;
+import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.services.CrmValidation;
+import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.mapping.data.DataArray;
 import ca.magex.crm.mapping.data.DataElement;
