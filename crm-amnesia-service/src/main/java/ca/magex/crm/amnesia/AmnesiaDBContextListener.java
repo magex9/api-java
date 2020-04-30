@@ -17,7 +17,7 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.resource.CrmDataInitializer;
 
 @Component
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaDBContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AmnesiaDBContextListener.class);

@@ -26,7 +26,7 @@ import ca.magex.crm.resource.CrmLookupLoader;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLookupService implements CrmLookupService {
 	
 	private CrmLookupLoader lookupLoader;

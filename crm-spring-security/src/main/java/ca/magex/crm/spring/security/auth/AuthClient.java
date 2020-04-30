@@ -31,12 +31,7 @@ public class AuthClient {
 	}
 	
 	/**
-	 * returns a JSONObject with the following format
-	 * {
-	 * 	"valid" : "true/false",
-	 *  "status" : "HTTP response status line",
-	 *  "token" : "jwtToken if valid = true"
-	 * }
+	 * unsecured, returns a JwtToken object wrapped in a Response Entity
 	 *
 	 * @param username
 	 * @param password
@@ -52,12 +47,8 @@ public class AuthClient {
 	}
 	
 	/**
-	 * returns a JSONObject with the following format 
-	 * {
-	 * 	"valid" : "true/false",
-	 *  "status" : "HTTP response status line",
-	 *  "username" : "username if valid = true"  
-	 * }
+	 * returns an Auth details, generally requires the token for an account with AUTH_REQUEST role
+	 * 
 	 * @param udEndpoint
 	 * @param username
 	 * @param token

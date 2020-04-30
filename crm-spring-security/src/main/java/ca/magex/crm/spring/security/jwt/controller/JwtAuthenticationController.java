@@ -33,7 +33,7 @@ public class JwtAuthenticationController {
 	@Autowired private JwtTokenService jwtTokenService;
 	
 	@PostMapping(value = "/authenticate")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+	public ResponseEntity<JwtToken> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(
 						jwtRequest.getUsername(), 

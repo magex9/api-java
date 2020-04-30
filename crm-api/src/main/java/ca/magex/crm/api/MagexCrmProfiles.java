@@ -7,12 +7,10 @@ public class MagexCrmProfiles {
 	public static final String AUTH_REMOTE_JWT			= "AuthRemoteJwt";
 	
 	// CRM Authentication Profile
-	public static final String CRM_NO_AUTH_EMBEDDED	   	= "CrmNoAuthEmbedded";
-	public static final String CRM_NO_AUTH_REMOTE	   	= "CrmNoAuthRemote";
-	public static final String CRM_AUTH_EMBEDDED 		= "CrmAuthEmbedded";
-	public static final String CRM_AUTH_REMOTE	 		= "CrmAuthRemote";
+	public static final String CRM_AUTH                 = "CrmAuth";
+	public static final String CRM_NO_AUTH              = "CrmNoAuth";
 	
 	// CRM Datastore Profile
-	public static final String CRM_DISTRIBUTED			= "CrmDistributedDatastore";
-	public static final String CRM_CENTRALIZED			= "CrmCentralizedDatastore";
+	public static final String CRM_DATASTORE_DECENTRALIZED		= "CrmDecentralizedDatastore";
+	public static final String CRM_DATASTORE_CENTRALIZED		= "CrmCentralizedDatastore";
 }

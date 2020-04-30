@@ -9,10 +9,7 @@ import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
-@Profile(value = {
-		MagexCrmProfiles.CRM_AUTH_EMBEDDED,
-		MagexCrmProfiles.CRM_AUTH_REMOTE
-})
+@Profile(MagexCrmProfiles.CRM_AUTH)
 public class SecureCrmOrganizationPolicy extends AbstractSecureCrmPolicy implements CrmOrganizationPolicy {
 
 	@Override

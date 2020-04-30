@@ -21,7 +21,7 @@ import com.hazelcast.core.HazelcastInstance;
 import ca.magex.crm.api.MagexCrmProfiles;
 
 @Configuration
-@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class CrmHazelcastInstance {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastInstance.class);

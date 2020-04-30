@@ -104,13 +104,18 @@ public abstract class GraphQLClient {
 	@SuppressWarnings("unchecked")
 	private <T> T performGraphQLQuery(String queryName, GraphQLRequest request) {
 		long t1 = System.currentTimeMillis();
-		try {
+		try {			
 			ResponseEntity<String> response = restTemplate.exchange(
-					RequestEntity
-						.post(URI.create(endpoint))
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Authorization", "Bearer " + authToken)
-						.body(request),
+					authToken == null ?
+						RequestEntity
+							.post(URI.create(endpoint))
+							.contentType(MediaType.APPLICATION_JSON)
+							.body(request) :
+						RequestEntity
+							.post(URI.create(endpoint))
+							.contentType(MediaType.APPLICATION_JSON)
+							.header("Authorization", "Bearer " + authToken)
+							.body(request),
 						String.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONObject json = new JSONObject(response.getBody());				

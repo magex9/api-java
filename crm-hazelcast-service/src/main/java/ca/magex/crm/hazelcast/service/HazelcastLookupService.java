@@ -25,7 +25,7 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DISTRIBUTED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastLookupService implements CrmLookupService {
 
 	@Autowired private HazelcastInstance hzInstance;

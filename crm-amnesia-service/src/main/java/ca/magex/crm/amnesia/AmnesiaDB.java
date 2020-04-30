@@ -23,7 +23,7 @@ import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.system.Identifier;
 
 @Repository
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaDB implements CrmPasswordService {
 	
 	public static final String SYSTEM_ADMIN = "SYS_ADMIN";

@@ -3,6 +3,7 @@ package ca.magex.crm.restful.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,32 +17,33 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
+@Order(3)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-@Profile(MagexCrmProfiles.CRM_AUTH_REMOTE)
-public class RemoteAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class RestUnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private JwtRequestFilter jwtRequestFilter;
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf().disable()
-				/* get the list of public resources */
-				.authorizeRequests().antMatchers(
+		/* 
+		 * graphql api endpoints 
+		 * @formatter:off 
+		 */
+		httpSecurity.authorizeRequests()
+				.antMatchers(
 						"/authenticate",
 						"/",
+						"/api/**",
 						"/crm.yaml",
 						"/swagger-ui-bundle.js",
 						"/swagger-ui.css",
 						"/favicon.ico").permitAll()
-				/* actuator needs to be protected */
-				.and().authorizeRequests()	
-					.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-					.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
-				/* any other requests require authentication */
-				.and().authorizeRequests().anyRequest().authenticated()
-				.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+			.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+			.csrf().disable();
+//			.csrf().csrfTokenRepository(new CookieCsrfTokenRepository());		
 	}
 }
