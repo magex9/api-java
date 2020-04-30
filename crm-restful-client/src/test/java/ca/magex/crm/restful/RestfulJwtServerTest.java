@@ -33,7 +33,6 @@ import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
 import ca.magex.crm.test.restful.RestfulCrmServices;
 
-@Ignore
 public class RestfulJwtServerTest {
 	
 	private String username = "admin";
@@ -42,7 +41,7 @@ public class RestfulJwtServerTest {
 	
 	private String key = null;
 
-	private String server = "http://localhost:8080";
+	private String server = "http://localhost:9002";
 	
 	private Locale locale = Lang.ENGLISH;
 	
