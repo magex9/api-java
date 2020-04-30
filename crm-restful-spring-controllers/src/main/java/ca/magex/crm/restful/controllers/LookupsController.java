@@ -21,7 +21,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.mapping.data.DataArray;
 import ca.magex.crm.mapping.data.DataElement;

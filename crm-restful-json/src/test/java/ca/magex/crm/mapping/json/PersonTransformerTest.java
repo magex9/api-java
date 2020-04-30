@@ -24,7 +24,7 @@ import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
