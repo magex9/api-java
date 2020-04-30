@@ -3,7 +3,7 @@ package ca.magex.crm.amnesia.services;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.services.SecuredCrmServices;
+import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
 
 public class AmnesiaTestDataPopulator {

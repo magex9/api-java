@@ -1,4 +1,4 @@
-package ca.magex.crm.api.services;
+package ca.magex.crm.api.secured;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.services.SecuredCrmServices;
 
 @Configuration
 public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServices> {
