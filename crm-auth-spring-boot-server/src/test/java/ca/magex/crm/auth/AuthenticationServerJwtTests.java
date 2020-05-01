@@ -29,12 +29,14 @@ public class AuthenticationServerJwtTests {
 		
 		AuthClient authClient = new AuthClient("http", "localhost", randomPort, context);
 
-		ResponseEntity<JwtToken> jwtToken = authClient.acquireJwtToken("app_crm", "NutritionFactsPer1Can");
+		ResponseEntity<JwtToken> jwtToken = authClient.acquireJwtToken("app_crm", "NutritionFactsPer1Can");		
 		Assert.assertTrue(jwtToken.toString(), jwtToken.getStatusCode().is2xxSuccessful());
+		jwtToken.getHeaders().entrySet().forEach((entry) -> System.out.println(entry.getKey() + " --> " + entry.getValue()));
 		logger.info("Acquired token: " + jwtToken.getBody().getToken());
 
 		ResponseEntity<AuthDetails> authDetails = authClient.validateJwtToken(jwtToken.getBody().getToken(), jwtToken.getBody().getToken());
 		Assert.assertTrue(authDetails.toString(), authDetails.getStatusCode().is2xxSuccessful());
+		authDetails.getHeaders().entrySet().forEach((entry) -> System.out.println(entry.getKey() + " --> " + entry.getValue()));
 		logger.info("Token Details : " + authDetails.getBody());
 	}
 }

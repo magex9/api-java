@@ -22,6 +22,7 @@ import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.crm.spring.security.jwt.JwtTokenService;
+import io.jsonwebtoken.JwtException;
 
 @RestController
 @CrossOrigin
@@ -31,21 +32,26 @@ public class JwtAuthenticationController {
 	@Autowired private UserDetailsService userDetailsService;
 	@Autowired private AuthenticationManager authenticationManager;
 	@Autowired private JwtTokenService jwtTokenService;
-	
+
 	@PostMapping(value = "/authenticate")
 	public ResponseEntity<JwtToken> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(
-						jwtRequest.getUsername(), 
+						jwtRequest.getUsername(),
 						jwtRequest.getPassword()));
 		return ResponseEntity.ok(new JwtToken(jwtTokenService.generateToken(authentication)));
 	}
-	
+
 	@PostMapping(value = "/validate")
 	public ResponseEntity<?> validateToken(@RequestBody JwtToken jwtToken) {
-		String username = jwtTokenService.validateToken(jwtToken.getToken());
-		Date expiration = jwtTokenService.getExpiration(jwtToken.getToken());
-		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		return ResponseEntity.ok(new AuthDetails(username, expiration, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())));
-	}	
+		try {
+			String username = jwtTokenService.validateToken(jwtToken.getToken());
+			Date expiration = jwtTokenService.getExpiration(jwtToken.getToken());
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			return ResponseEntity.ok(new AuthDetails(username, expiration, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())));
+		}		
+		catch(JwtException jwt) {
+			return ResponseEntity.unprocessableEntity().body(jwt.getMessage());
+		}
+	}
 }

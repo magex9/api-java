@@ -30,17 +30,18 @@
 		
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>
+		<module>crm-auth-spring-boot-server</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
 		<module>crm-graphql-spring-controllers</module>				
 		<module>crm-graphql-spring-boot-server</module>		
-		<!-- <module>crm-graphql-client</module>  -->
+		<module>crm-graphql-client</module>
 		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-json</module>		
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
-		<module>crm-restful-client</module>
+		<!-- <module>crm-restful-client</module>  -->
 	</modules>
 
 </project>

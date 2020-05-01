@@ -16,15 +16,15 @@ public class ServerShutdown {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerShutdown.class);
 	
-	private static int applicationPort = 9002; 
-	private static int[] managmentPorts = new int [] {9003};
+	private static int applicationPort = 9012; 
+	private static int[] managmentPorts = new int [] {9013};
 	private static RestTemplate restTemplate = new RestTemplate();
 	private static String authToken;
 	
 	public static void main(String[] args) {						
 		authToken = restTemplate.exchange(
 				RequestEntity
-					.post(URI.create("http://localhost:" + applicationPort + "/crm/authenticate"))
+					.post(URI.create("http://localhost:" + applicationPort + "/auth/authenticate"))
 					.contentType(MediaType.APPLICATION_JSON)
 					.body(new JwtRequest("sysadmin", "sysadmin")), 
 				JwtToken.class).getBody().getToken();
