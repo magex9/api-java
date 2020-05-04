@@ -1,4 +1,4 @@
-package ca.magex.crm.crmzuulspringbootserver;
+package ca.magex.crm.zuul;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

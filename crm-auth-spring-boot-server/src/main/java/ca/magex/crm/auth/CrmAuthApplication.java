@@ -8,6 +8,7 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 		"ca.magex.crm.api",					// Generic CRM beans 
 		"ca.magex.crm.auth",				// auth server configuration
 		"ca.magex.crm.resource", 			// lookup data
+		"ca.magex.crm.amnesia",				// crm implementation
 		"ca.magex.crm.hazelcast",			// crm implementation
 		"ca.magex.crm.spring.security",		// security implementation
 		"ca.magex.crm.policy"
