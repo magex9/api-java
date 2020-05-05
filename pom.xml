@@ -19,7 +19,9 @@
 		<module>crm-api</module>
 		<module>crm-resources</module>		
 		<module>crm-test</module>
-		<module>crm-jms-server</module>
+		<module>crm-activemq-spring-boot-server</module>
+		<module>crm-zuul-spring-boot-server</module>
+		<module>crm-eureka-spring-boot-server</module>
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
@@ -30,17 +32,18 @@
 		
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>
+		<module>crm-auth-spring-boot-server</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
 		<module>crm-graphql-spring-controllers</module>				
 		<module>crm-graphql-spring-boot-server</module>		
-		<!-- <module>crm-graphql-client</module>  -->
+		<module>crm-graphql-client</module>
 		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-json</module>		
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
-		<module>crm-restful-client</module>
+		<!-- <module>crm-restful-client</module>  -->
 	</modules>
 
 </project>

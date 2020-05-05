@@ -1,11 +1,14 @@
 package ca.magex.crm.spring.security.auth;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import ca.magex.crm.spring.security.jwt.JwtRequest;
@@ -18,6 +21,18 @@ public class AuthClient {
 	private Integer port;
 	private String context;
 	private RestTemplate restTemplate = new RestTemplate();
+	
+	public static ResponseErrorHandler NoOpErrorHandler = new ResponseErrorHandler() {
+		
+		@Override
+		public boolean hasError(ClientHttpResponse response) throws IOException {			
+			return false;
+		}
+		
+		@Override
+		public void handleError(ClientHttpResponse response) throws IOException {
+		}
+	};
 	
 	/**
 	 * Creates a new authentication client for the given host
@@ -38,6 +53,7 @@ public class AuthClient {
 	 * @return
 	 */
 	public ResponseEntity<JwtToken> acquireJwtToken(String username, String password) {
+		restTemplate.setErrorHandler(NoOpErrorHandler);
 		return restTemplate.exchange(
 				RequestEntity
 					.post(URI.create(protocol + "://" + host + ":" + port + context + "/authenticate"))
@@ -64,4 +80,6 @@ public class AuthClient {
 					.body(new JwtToken(tokenToValidate)),
 				AuthDetails.class);		
 	}
+	
+	
 }

@@ -1,6 +1,7 @@
 package ca.magex.crm.spring.security.jwt;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -34,6 +35,10 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 		this.principal = principal;
 		this.credentials = credentials;
 		super.setAuthenticated(true);
+	}
+	
+	JwtAuthenticationToken(AuthenticatedPrincipal principal) {
+		this(principal, null, Collections.emptyList());
 	}
 
 	@Override

@@ -18,6 +18,8 @@ public class AuthDetails implements Serializable {
 
 	private static final long serialVersionUID = -7211992019209078326L;
 
+	private boolean successful;
+	private String failureReason;
 	private String username;
 	private Date expiration;
 	private List<String> grantedAuthorities;
@@ -25,9 +27,35 @@ public class AuthDetails implements Serializable {
 	public AuthDetails() {}
 
 	public AuthDetails(String username, Date expiration, List<String> grantedAuthorities) {
+		this.successful = true;
+		this.failureReason = null;
 		this.username = username;
 		this.expiration = expiration;
 		this.grantedAuthorities = Collections.unmodifiableList(grantedAuthorities);
+	}
+	
+	public AuthDetails(String failureReason) {
+		this.successful = false;
+		this.failureReason = failureReason;
+		this.username = null;
+		this.expiration = null;
+		this.grantedAuthorities = null;
+	}
+	
+	public boolean isSuccessful() {
+		return successful;
+	}
+	
+	public void setSuccessful(boolean successful) {
+		this.successful = successful;
+	}
+	
+	public String getFailureReason() {
+		return failureReason;
+	}
+	
+	public void setFailureReason(String failureReason) {
+		this.failureReason = failureReason;
 	}
 
 	public String getUsername() {
