@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.auth.AuthDetails;
-import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.crm.spring.security.jwt.JwtTokenService;
 import io.jsonwebtoken.JwtException;
@@ -37,17 +38,21 @@ public class JwtAuthenticationController {
 	@Autowired private JwtTokenService jwtTokenService;
 
 	@PostMapping(value = "/authenticate")
-	public ResponseEntity<JwtToken> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+	public ResponseEntity<JwtToken> createAuthenticationToken(@RequestBody String jwtRequest) throws Exception {
 		try {
+			JSONObject json = new JSONObject(jwtRequest);
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(
-							jwtRequest.getUsername(),
-							jwtRequest.getPassword()));
+							json.getString("username"),
+							json.getString("password")));
 			return ResponseEntity.ok(new JwtToken(jwtTokenService.generateToken(authentication)));
 		}
 		catch(AuthenticationException e) {
 			LoggerFactory.getLogger(getClass()).info("Authentication Failure: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		catch(JSONException json) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 		catch(Exception e) {
 			LoggerFactory.getLogger(getClass()).error("Error processing authentication request", e);
@@ -56,13 +61,17 @@ public class JwtAuthenticationController {
 	}
 
 	@PostMapping(value = "/validate")
-	public ResponseEntity<?> validateToken(@RequestBody JwtToken jwtToken) {
+	public ResponseEntity<?> validateToken(@RequestBody String jwtToken) {
 		try {
-			String username = jwtTokenService.validateToken(jwtToken.getToken());
-			Date expiration = jwtTokenService.getExpiration(jwtToken.getToken());
+			JSONObject json = new JSONObject(jwtToken);
+			String username = jwtTokenService.validateToken(json.getString("token"));
+			Date expiration = jwtTokenService.getExpiration(json.getString("token"));
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 			return ResponseEntity.ok(new AuthDetails(username, expiration, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())));
 		}		
+		catch(JSONException json) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 		catch(JwtException jwt) {
 			return ResponseEntity.ok().body(new AuthDetails(jwt.getMessage()));
 		}

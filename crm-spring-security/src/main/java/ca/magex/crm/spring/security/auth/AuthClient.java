@@ -22,7 +22,7 @@ public class AuthClient {
 	private String context;
 	private RestTemplate restTemplate = new RestTemplate();
 	
-	private static ResponseErrorHandler NoOpErrorHandler = new ResponseErrorHandler() {
+	public static ResponseErrorHandler NoOpErrorHandler = new ResponseErrorHandler() {
 		
 		@Override
 		public boolean hasError(ClientHttpResponse response) throws IOException {			
