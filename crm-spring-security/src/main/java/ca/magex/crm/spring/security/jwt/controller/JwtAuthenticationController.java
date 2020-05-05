@@ -3,12 +3,15 @@ package ca.magex.crm.spring.security.jwt.controller;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,11 +38,21 @@ public class JwtAuthenticationController {
 
 	@PostMapping(value = "/authenticate")
 	public ResponseEntity<JwtToken> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(
-						jwtRequest.getUsername(),
-						jwtRequest.getPassword()));
-		return ResponseEntity.ok(new JwtToken(jwtTokenService.generateToken(authentication)));
+		try {
+			Authentication authentication = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(
+							jwtRequest.getUsername(),
+							jwtRequest.getPassword()));
+			return ResponseEntity.ok(new JwtToken(jwtTokenService.generateToken(authentication)));
+		}
+		catch(AuthenticationException e) {
+			LoggerFactory.getLogger(getClass()).info("Authentication Failure: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		catch(Exception e) {
+			LoggerFactory.getLogger(getClass()).error("Error processing authentication request", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@PostMapping(value = "/validate")
@@ -51,7 +64,7 @@ public class JwtAuthenticationController {
 			return ResponseEntity.ok(new AuthDetails(username, expiration, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())));
 		}		
 		catch(JwtException jwt) {
-			return ResponseEntity.unprocessableEntity().body(jwt.getMessage());
+			return ResponseEntity.ok().body(new AuthDetails(jwt.getMessage()));
 		}
 	}
 }

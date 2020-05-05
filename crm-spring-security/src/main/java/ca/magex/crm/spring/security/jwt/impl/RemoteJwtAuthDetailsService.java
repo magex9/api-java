@@ -59,7 +59,9 @@ public class RemoteJwtAuthDetailsService implements JwtAuthDetailsService {
 	@Override
 	public JwtAuthenticationToken getJwtAuthenticationTokenForUsername(String token) {
 		ResponseEntity<AuthDetails> authDetails = authClient.validateJwtToken(token, authToken);
-		Assert.isTrue(authDetails.getStatusCode().is2xxSuccessful(), authDetails.toString()); // TODO fail
+		 // TODO generate a graceful failure here
+		Assert.isTrue(authDetails.getStatusCode().is2xxSuccessful(), authDetails.toString());
+		Assert.isTrue(authDetails.getBody().isSuccessful(), authDetails.getBody().getFailureReason());
 		return new JwtAuthenticationToken(
 				new JwtAuthenticatedPrincipal(authDetails.getBody().getUsername()),
 				null,

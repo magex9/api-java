@@ -24,11 +24,6 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 
@@ -47,13 +42,13 @@
 			<artifactId>crm-amnesia-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-hazelcast-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-spring-security</artifactId>

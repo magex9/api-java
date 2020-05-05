@@ -1,13 +1,12 @@
-package ca.magex.crm.zuul;
+package ca.magex.crm.eureka;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CrmZuulSpringBootServerApplicationTests {
+class CrmEurekaSpringBootServerApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
-
 }

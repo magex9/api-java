@@ -41,8 +41,8 @@
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
+		
 		<!-- Test Dependencies -->
-
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-test</artifactId>
