@@ -225,7 +225,7 @@ public class StructureValidationService implements CrmValidation {
 		
 		for (String role : roles) {
 			try {
-				lookups.findRoleByCode(role);
+				//lookups.findRoleByCode(role);
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(personId, "error", "roles('" + role + "')", "Role does not exist"));
 			}

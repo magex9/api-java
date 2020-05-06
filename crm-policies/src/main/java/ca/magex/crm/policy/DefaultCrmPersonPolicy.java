@@ -1,6 +1,7 @@
 package ca.magex.crm.policy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 @Component
+@Primary
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class DefaultCrmPersonPolicy implements CrmPersonPolicy {
 

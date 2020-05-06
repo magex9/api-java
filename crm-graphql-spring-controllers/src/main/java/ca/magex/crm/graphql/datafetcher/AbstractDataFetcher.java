@@ -12,8 +12,8 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.util.PagingBuilder;
 import graphql.schema.DataFetchingEnvironment;
 

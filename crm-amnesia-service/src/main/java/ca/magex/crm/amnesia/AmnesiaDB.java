@@ -2,7 +2,9 @@ package ca.magex.crm.amnesia;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -13,13 +15,16 @@ import org.springframework.stereotype.Repository;
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.common.User;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.services.CrmPasswordService;
+import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Permission;
+import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 
 @Repository
@@ -36,12 +41,12 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<Identifier, Serializable> data;
 	
-	private Map<Identifier, String> passwords;
+	private Map<String, String> passwords;
 	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new HashMap<Identifier, String>();
+		passwords = new HashMap<String, String>();
 	}
 	
 	public Identifier generateId() {
@@ -95,26 +100,91 @@ public class AmnesiaDB implements CrmPasswordService {
 		return person;
 	}
 	
+	public User findUser(String username) {
+		Serializable obj = data.get(new Identifier(username));
+		if (obj == null)
+			throw new ItemNotFoundException("Unable to find: " + username);
+		if (!(obj instanceof User))
+			throw new BadRequestException(new Identifier(username), "error", "class", "Expected User but got: " + obj.getClass().getName());
+		return (User)SerializationUtils.clone(obj);
+	}
+	
+	public User findUser(Identifier userId) {
+		return (User)findById(userId, User.class);
+	}	
+	
 	public User saveUser(User user) {
 		data.put(user.getUserId(), user);
 		return user;
 	}
 	
-	public User findUser(Identifier userId) {
-		Serializable obj = data.get(userId);
-		if (obj == null)
-			throw new ItemNotFoundException("Unable to find: " + userId);
-		if (!(obj instanceof User))
-			throw new BadRequestException(userId, "error", "class", "Expected User but got: " + obj.getClass().getName());
-		return (User)SerializationUtils.clone(obj);
-	}	
-	
-	public void setPassword(Identifier userId, String password) {
-		/* only store the encoded password */
-		passwords.put(userId, password);
+	public Group findGroup(Identifier groupId) {
+		return (Group)findById(groupId, Group.class);
 	}
 	
-	public String getPassword(Identifier userId) {
-		return passwords.get(userId);
+	public Group saveGroup(Group group) {
+		data.put(group.getGroupId(), group);
+		return group;
+	}
+	
+	public Role findRole(Identifier roleId) {
+		return (Role)findById(roleId, Role.class);
+	}
+	
+	public Role saveRole(Role role) {
+		data.put(role.getRoleId(), role);
+		return role;
+	}
+	
+	public Permission findPermission(Identifier roleId) {
+		return (Permission)findById(roleId, Permission.class);
+	}
+	
+	public Permission savePermission(Permission permission) {
+		data.put(permission.getPermissionId(), permission);
+		return permission;
+	}
+	
+	public List<Permission> findPermissions(Identifier userId) {
+		return findByType(Permission.class)
+			.filter(p -> p.getUserId().equals(userId))
+			.collect(Collectors.toList());
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T findById(Identifier identifier, Class<T> cls) {
+		Serializable obj = data.get(identifier);
+		if (obj == null)
+			throw new ItemNotFoundException("Unable to find: " + identifier);
+		if (!(cls.equals(obj.getClass())))
+			throw new BadRequestException(identifier, "error", "class", "Expected " + cls.getName() + " but got: " + obj.getClass().getName());
+		return (T)SerializationUtils.clone(obj);
+	}
+	
+	@Override
+	public String getEncodedPassword(String username) {
+		return passwords.get(username);
+	}
+
+	@Override
+	public boolean isTempPassword(String username) {
+		return false;
+	}
+
+	@Override
+	public boolean isExpiredPassword(String username) {
+		return false;
+	}
+
+	@Override
+	public boolean verifyPassword(String username, String encodedPassword) {
+		return passwords.get(username).equals(encodedPassword);
+	}
+
+	@Override
+	public boolean updatePassword(String username, String password) {
+		/* only store the encoded password */
+		passwords.put(username, password);
+		return true;
 	}
 }

@@ -1,5 +1,6 @@
-package ca.magex.crm.api.lookup;
+package ca.magex.crm.api.roles;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -7,30 +8,45 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Status;
 
-public class BusinessSector implements CrmLookupItem {
+public class Group implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String code;
+	private Identifier groupId;
+	
+	private Status status;
 	
 	private Localized name;
 
-	public BusinessSector(String code, String english, String french) {
+	public Group(Identifier groupId, Status status, Localized name) {
 		super();
-		this.code = code;
-		this.name = new Localized(english, french);
+		this.groupId = groupId;
+		this.status = status;
+		this.name = name;
 	}
 	
-	@Override
-	public String getCode() {
-		return code;
+	public Identifier getGroupId() {
+		return groupId;
 	}
 	
-	@Override
+	public Status getStatus() {
+		return status;
+	}
+	
+	public Group withStatus(Status status) {
+		return new Group(groupId, status, name);
+	}
+	
 	public String getName(Locale locale) {
 		return name.get(locale);
+	}
+	
+	public Group withName(Localized name) {
+		return new Group(groupId, status, name);
 	}
 	
 	@Override
@@ -42,9 +58,9 @@ public class BusinessSector implements CrmLookupItem {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}
+	}	
 }

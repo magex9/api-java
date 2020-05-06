@@ -34,7 +34,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName) {
-		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null));
+		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {

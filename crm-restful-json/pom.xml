@@ -18,7 +18,7 @@
 			<artifactId>crm-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -48,6 +48,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-policies</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-test</artifactId>

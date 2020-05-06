@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.common.User;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;

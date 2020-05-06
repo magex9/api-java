@@ -1,8 +1,6 @@
 package ca.magex.crm.api.system;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import ca.magex.crm.api.lookup.CrmLookupItem;
 
@@ -14,13 +12,11 @@ public enum Status implements CrmLookupItem {
 	
 	private String code;
 	
-	private Map<Locale, String> names;
+	private Localized name;
 
 	private Status(String english, String french) {
 		this.code = toString().toLowerCase();
-		this.names = new HashMap<Locale, String>();
-		this.names.put(Lang.ENGLISH, english);
-		this.names.put(Lang.FRENCH, french);
+		this.name = new Localized(english, french);
 	}
 	
 	@Override
@@ -30,6 +26,6 @@ public enum Status implements CrmLookupItem {
 	
 	@Override
 	public String getName(Locale locale) {
-		return names.get(locale);
+		return name.get(locale);
 	}
 }

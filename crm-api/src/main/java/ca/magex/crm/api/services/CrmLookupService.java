@@ -10,7 +10,6 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmLookupService {
@@ -18,10 +17,6 @@ public interface CrmLookupService {
 	List<Status> findStatuses();
 	Status findStatusByCode(String code) throws ItemNotFoundException;
 	Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
-	
-	List<Role> findRoles();
-	Role findRoleByCode(String code) throws ItemNotFoundException;
-	Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException;
 	
 	List<Country> findCountries();
 	Country findCountryByCode(String code) throws ItemNotFoundException;

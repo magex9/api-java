@@ -15,10 +15,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.common.User;
+import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.graphql.TestConfig;
 import graphql.ExecutionResult;
 

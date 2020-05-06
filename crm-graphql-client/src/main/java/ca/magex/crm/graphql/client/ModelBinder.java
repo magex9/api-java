@@ -21,7 +21,6 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -35,8 +34,9 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 /**

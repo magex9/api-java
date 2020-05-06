@@ -8,5 +8,7 @@ public interface CrmUserPolicy {
 	boolean canViewUser(Identifier userId);
 	boolean canUpdateUserPassword(Identifier userId);
 	boolean canUpdateUserRole(Identifier userId);
+    boolean canEnableUser(Identifier userId);
+    boolean canDisableUser(Identifier userId);  
     
 }

@@ -7,18 +7,20 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Lang;
@@ -32,10 +34,14 @@ public class CrmDataInitializer {
 			CrmLocationService locationService,
 			CrmPersonService personService,
 			CrmUserService userService,
+			CrmPermissionService permissionService,
+			CrmPasswordService passwordService,
 			CrmLookupService lookupService) {
+
+		CrmRoleInitializer.initialize(permissionService);
 		
-		LOG.info("Creating Magex Organization");
-		OrganizationDetails magex = organizationService.createOrganization("Magex");
+		LOG.info("Creating MageX Organization");
+		OrganizationDetails magex = organizationService.createOrganization("MageX");
 		Locale locale = Lang.ENGLISH;
 		
 		for (int i = 1; i < 25; i++) {
@@ -53,8 +59,8 @@ public class CrmDataInitializer {
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
 
 		/* create crm user with admin/admin */
-		User crmAdminUser = userService.createUser(crmAdmin.getPersonId(), "admin", Arrays.asList(lookupService.findRoleByCode("CRM_ADMIN").getCode()));
-		userService.setUserPassword(crmAdminUser.getUserId(), "admin", false);
+		User crmAdminUser = userService.createUser(crmAdmin.getPersonId(), "admin", Arrays.asList("CRM_ADMIN"));
+		passwordService.updatePassword(crmAdminUser.getUserId().toString(), "admin");
 
 		PersonDetails sysAdmin = personService.createPerson(
 				magex.getOrganizationId(),
@@ -64,8 +70,8 @@ public class CrmDataInitializer {
 				new BusinessPosition(lookupService.findBusinessSectorByCode("4").getName(locale), lookupService.findBusinessUnitByCode("4").getName(locale), lookupService.findBusinessClassificationByCode("4").getName(locale)));
 
 		/* create system user with sysadmin/sysadmin */
-		User sysAdminUser = userService.createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList(lookupService.findRoleByCode("SYS_ADMIN").getCode()));
-		userService.setUserPassword(sysAdminUser.getUserId(), "sysadmin", false);
+		User sysAdminUser = userService.createUser(sysAdmin.getPersonId(), "sysadmin", Arrays.asList("SYS_ADMIN"));
+		passwordService.updatePassword(sysAdminUser.getUserId().toString(), "sysadmin");
 		
 		LOG.info("Creating System Application User");
 		PersonDetails appCrm = personService.createPerson(
@@ -76,8 +82,8 @@ public class CrmDataInitializer {
 				null);
 		
 		/* create system user with app_crm/NutritionFactsPer1Can */
-		User appCrmUser = userService.createUser(appCrm.getPersonId(), "app_crm", Arrays.asList(lookupService.findRoleByCode("AUTH_REQUEST").getCode()));
-		userService.setUserPassword(appCrmUser.getUserId(), "NutritionFactsPer1Can", false);
+		User appCrmUser = userService.createUser(appCrm.getPersonId(), "app_crm", Arrays.asList("AUTH_REQUEST"));
+		passwordService.updatePassword(appCrmUser.getUserId().toString(), "NutritionFactsPer1Can");
 	}
 	
 }
