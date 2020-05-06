@@ -7,7 +7,7 @@ trigger:
 
 #Stages Configuration (to be ran sequentially)
 stages:
-  - stage: Master Stage
+  - stage: Master
     jobs:
     - job: Build
       steps:
