@@ -25,7 +25,7 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPermissionService implements CrmPermissionService {
 	
 	private AmnesiaDB db;
