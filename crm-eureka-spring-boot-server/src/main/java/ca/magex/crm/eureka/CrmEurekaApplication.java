@@ -15,5 +15,4 @@ public class CrmEurekaApplication {
 		app.addListeners(new ApplicationPidFileWriter());
 		app.run(args);
 	}
-
 }

@@ -21,7 +21,6 @@
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
 		<module>crm-zuul-spring-boot-server</module>
-		<module>crm-eureka-spring-boot-server</module>
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
@@ -38,6 +37,11 @@
 		<module>crm-graphql-spring-controllers</module>				
 		<module>crm-graphql-spring-boot-server</module>		
 		<module>crm-graphql-client</module>
+		
+		<!-- Eureka Service Registry -->
+<!-- 		<module>crm-eureka-spring-boot-server</module> -->
+<!-- 		<module>crm-graphql-spring-boot-eureka-client-server</module> -->
+<!-- 		<module>crm-graphql-spring-boot-feign-client</module> -->
 		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-json</module>		
