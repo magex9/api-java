@@ -5,7 +5,18 @@
 
 trigger:
 - master
-
+- task: InstallSSHKey@0
+  inputs:
+    knownHostsEntry: '40.86.226.36 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBImNin/YuUCDrbVjujJa5+KqRiZkDChQ41RHUwLBGHS2KcUKd724HtI93Kjk8nhq8D3bVFPMC1McaRWYfjJe2Hg='
+    sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Zpvxtu+AepIMTYQLWqMP2Gbv9nhXLV/9LnwSZWH25Jw1rKILcpEVAt+60EKITGj75UTHjFj2MqMbh14YWG0pHm6cSJi9CqmlVVPRec2lrGY8nUKDsp8d7UXSB3HkOR6ulF/rne12Ex6zWtVZYD3Sp9zIsWjkUlDrueVKfGP8h4TV/Lt4+OOcj0TUazxEP+H++s4au8DcZKSwBAw4f9E/Jx4baTgCqHoG6chOdnt+/Lw/gSPlYmDGT3joJS1/73xdSGPIipY7TAKOdNAwp+qP4WhNWlEO3TdeIKNWGznv1KaZ4HoIgUyKXUbP/X5foz0DVXvvhZVHO72fNlybB3HJ finuser@RD3'
+    sshPassphrase: 'fintraccanafe'
+    sshKeySecureFile: 'azure.key'
+- task: InstallSSHKey@0
+  inputs:
+    knownHostsEntry: '40.86.226.36 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBImNin/YuUCDrbVjujJa5+KqRiZkDChQ41RHUwLBGHS2KcUKd724HtI93Kjk8nhq8D3bVFPMC1McaRWYfjJe2Hg='
+    sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Zpvxtu+AepIMTYQLWqMP2Gbv9nhXLV/9LnwSZWH25Jw1rKILcpEVAt+60EKITGj75UTHjFj2MqMbh14YWG0pHm6cSJi9CqmlVVPRec2lrGY8nUKDsp8d7UXSB3HkOR6ulF/rne12Ex6zWtVZYD3Sp9zIsWjkUlDrueVKfGP8h4TV/Lt4+OOcj0TUazxEP+H++s4au8DcZKSwBAw4f9E/Jx4baTgCqHoG6chOdnt+/Lw/gSPlYmDGT3joJS1/73xdSGPIipY7TAKOdNAwp+qP4WhNWlEO3TdeIKNWGznv1KaZ4HoIgUyKXUbP/X5foz0DVXvvhZVHO72fNlybB3HJ finuser@RD3'
+    sshPassphrase: 'fintraccanafe'
+    sshKeySecureFile: 'azure.key'
 pool:
   vmImage: 'ubuntu-latest'
 
