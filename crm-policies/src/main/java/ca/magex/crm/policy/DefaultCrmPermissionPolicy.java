@@ -30,7 +30,7 @@ public class DefaultCrmPermissionPolicy implements CrmPermissionPolicy {
 
 	@Override
 	public boolean canEnableGroup(Identifier groupId) {
-		return true;
+		return 1 == 1 ? true : true;
 	}
 
 	@Override
