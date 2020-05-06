@@ -21,7 +21,7 @@ public class DefaultCrmPermissionPolicy implements CrmPermissionPolicy {
 	
 	@Override
 	public boolean canCreateGroup() {
-		return true;
+		return false;
 	}
 
 	@Override
