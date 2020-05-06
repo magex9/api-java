@@ -1,15 +1,13 @@
 package ca.magex.crm.api.lookup;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 
 public class BusinessClassification implements CrmLookupItem {
 
@@ -17,14 +15,12 @@ public class BusinessClassification implements CrmLookupItem {
 
 	private String code;
 	
-	private Map<Locale, String> names;
+	private Localized name;
 
 	public BusinessClassification(String code, String english, String french) {
 		super();
 		this.code = code;
-		this.names = new HashMap<Locale, String>();
-		this.names.put(Lang.ENGLISH, english);
-		this.names.put(Lang.FRENCH, french);
+		this.name = new Localized(english, french);
 	}
 	
 	@Override
@@ -34,7 +30,7 @@ public class BusinessClassification implements CrmLookupItem {
 	
 	@Override
 	public String getName(Locale locale) {
-		return names.get(locale);
+		return name.get(locale);
 	}
 	
 	@Override

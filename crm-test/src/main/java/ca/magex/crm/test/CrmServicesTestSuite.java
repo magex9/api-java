@@ -22,7 +22,6 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -41,13 +40,15 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 
 /**
@@ -66,6 +67,7 @@ public class CrmServicesTestSuite {
 	@Autowired private CrmLocationService locationService;
 	@Autowired private CrmPersonService personService;
 	@Autowired private CrmUserService userService;
+	@Autowired private CrmPermissionService permissionService;
 
 	public void runAllTests() {
 		runLookupServiceTests();
@@ -80,7 +82,6 @@ public class CrmServicesTestSuite {
 		logger.info("Running Lookup Service Tests");
 		logger.info("----------------------------");
 		runLookupTest(Status.class, lookupService::findStatuses, lookupService::findStatusByCode, lookupService::findStatusByLocalizedName);
-		runLookupTest(Role.class, lookupService::findRoles, lookupService::findRoleByCode, lookupService::findRoleByLocalizedName);
 		runLookupTest(Country.class, lookupService::findCountries, lookupService::findCountryByCode, lookupService::findCountryByLocalizedName);
 		runLookupTest(Language.class, lookupService::findLanguages, lookupService::findLanguageByCode, lookupService::findLanguageByLocalizedName);
 		runLookupTest(Salutation.class, lookupService::findSalutations, lookupService::findSalutationByCode, lookupService::findSalutationByLocalizedName);
@@ -448,48 +449,39 @@ public class CrmServicesTestSuite {
 		 * add user role (first time we add a role it will generate a user name for us)
 		 */
 		logger.info("Adding User Role");
-		Role r1 = lookupService.findRoleByCode("CRM_ADMIN");
-		user = userService.addUserRole(user.getUserId(), r1.getCode());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
+		Role r1 = permissionService.findRoleByCode("CRM_ADMIN");
+		user = userService.addUserRole(user.getUserId(), r1.getRoleId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId()));
 
-		user = userService.findUserById(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
+		user = userService.findUser(user.getUserId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId()));
 		
-		user = userService.findUserByUsername(user.getUsername());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
-
 		/* add another role and verify */
 		logger.info("Adding User Role");
-		Role r2 = lookupService.findRoleByCode("SYS_ADMIN");
-		user = userService.addUserRole(user.getUserId(), r2.getCode());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));		
+		Role r2 = permissionService.findRoleByCode("SYS_ADMIN");
+		user = userService.addUserRole(user.getUserId(), r2.getRoleId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));		
 		
-		user = userService.findUserById(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
+		user = userService.findUser(user.getUserId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));
 		
-		user = userService.findUserByUsername(user.getUsername());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
-	
 		/* remove a role and verify */
 		logger.info("Removing User Role");
-		user = userService.removeUserRole(user.getUserId(), r1.getCode());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
+		user = userService.removeUserRole(user.getUserId(), r1.getRoleId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getRoleId()));
 
-		user = userService.findUserById(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
+		user = userService.findUser(user.getUserId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getRoleId()));
 		
-		user = userService.findUserByUsername(user.getUsername());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
-
 		/* set roles and verify */
 		logger.info("Setting User Roles");
-		user = userService.setUserRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
+		user = userService.setRoles(user.getUserId(), Arrays.asList(r1.getRoleId(), r2.getRoleId()));
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));
 
-		user = userService.findUserById(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
+		user = userService.findUser(user.getUserId());
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));
 		
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
+		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));
 	}
 
 	private void verifyOrgDetails(OrganizationDetails orgDetails, Identifier orgId, Status status, String displayName, Identifier mainLocationIdentifier) {
@@ -552,13 +544,14 @@ public class CrmServicesTestSuite {
 		logger.info("Verifying Person Summary " + personId + " Passed");
 	}
 
-	private void verifyUser(User user, Identifier personId, Identifier userId, String username, List<String> roles) {
+	private void verifyUser(User user, Identifier personId, Identifier userId, String username, List<Identifier> roles) {
 		Assert.assertNotNull(user.getUserId());
-		Assert.assertEquals(personId, user.getPersonId());
+		Assert.assertEquals(personId, user.getPerson().getPersonId());
 		Assert.assertEquals(userId, user.getUserId());
-		Assert.assertEquals(username, user.getUsername());
-		Assert.assertTrue("user roles: " + user.getRoles() + ", expected roles: " + roles, 
-				user.getRoles().size() == roles.size() && user.getRoles().containsAll(roles) && roles.containsAll(user.getRoles()));
+		Assert.assertEquals(username, user.getUserId().toString());
+		List<Identifier> userRoles = userService.getRoles(user.getUserId());
+		Assert.assertTrue("user roles: " + userRoles + ", expected roles: " + roles, 
+				userRoles.size() == roles.size() && userRoles.containsAll(roles) && roles.containsAll(userRoles));
 		logger.info("Verifying User " + userId + " Passed");
 	}
 }

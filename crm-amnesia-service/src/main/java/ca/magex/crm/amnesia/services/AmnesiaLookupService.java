@@ -19,8 +19,8 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.system.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
 
@@ -54,7 +54,6 @@ public class AmnesiaLookupService implements CrmLookupService {
 	@PostConstruct
 	public AmnesiaLookupService initialize() {
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
-		roles = new Lookups<Role, String>(lookupLoader.loadLookup(Role.class, "Role.csv"), Role.class, String.class);
 		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
 		salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
 		languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);

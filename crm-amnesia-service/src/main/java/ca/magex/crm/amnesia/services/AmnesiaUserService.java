@@ -2,20 +2,23 @@ package ca.magex.crm.amnesia.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.common.User;
-import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.UsersFilter;
+import ca.magex.crm.api.roles.Permission;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
@@ -30,60 +33,91 @@ public class AmnesiaUserService implements CrmUserService {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 	}
-	
+
 	@Override
-	public User findUserById(Identifier userId) {
+	public User createUser(Identifier personId, String username, List<String> roles) {
+		return db.saveUser(new User(new Identifier(username), db.findPerson(personId), Status.ACTIVE));
+	}
+
+	@Override
+	public User enableUser(Identifier userId) {
+		return db.saveUser(db.findUser(userId).withStatus(Status.ACTIVE));
+	}
+
+	@Override
+	public User disableUser(Identifier userId) {
+		return db.saveUser(db.findUser(userId).withStatus(Status.INACTIVE));
+	}
+
+	@Override
+	public User findUser(Identifier userId) {
 		return db.findUser(userId);
 	}
 
 	@Override
-	public User findUserByUsername(String userName) {
-		return db.findByType(User.class)
-				.filter((u) -> StringUtils.equals(u.getUsername(), userName))
-				.findFirst()
-				.orElseThrow(() -> {
-					return new ItemNotFoundException("Unable to find user with userName " + userName);
-				});
+	public List<Identifier> getRoles(Identifier userId) {
+		return db.findPermissions(userId).stream()
+			.filter(p -> p.getStatus().equals(Status.ACTIVE))
+			.map(p -> db.findRole(p.getRoleId()).getRoleId())
+			.collect(Collectors.toList());
 	}
 
 	@Override
-	public User createUser(Identifier personId, String userName, List<String> roles) {
-		PersonDetails pd = db.findPerson(personId);
-		return db.saveUser(new User(db.generateId(), pd.getOrganizationId(), personId, userName, roles));
+	public User addUserRole(Identifier userId, Identifier roleId) {
+		List<Permission> permissions = db.findPermissions(userId);
+		if (!permissions.stream().anyMatch(p -> p.getRoleId().equals(roleId)))
+			db.savePermission(new Permission(db.generateId(), userId, roleId, Status.ACTIVE));
+		return db.findUser(userId);
 	}
 
 	@Override
-	public User setUserRoles(Identifier userId, List<String> roles) {
-		User user = findUserById(userId);
-		user = user.withRoles(roles);
-		return db.saveUser(user);
-	}
-
-	@Override
-	public User setUserPassword(Identifier userId, String password, boolean encoded) {
-		User user = findUserById(userId);
-		if (encoded) {
-			db.setPassword(userId, password);
+	public User removeUserRole(Identifier userId, Identifier roleId) {
+		List<Permission> permissions = db.findPermissions(userId).stream().filter(p -> p.getRoleId().equals(roleId)).collect(Collectors.toList());
+		for (Permission permission : permissions) {
+			db.savePermission(permission.withStatus(Status.INACTIVE));
 		}
-		else {
-			db.setPassword(userId, passwordEncoder.encode(password));
+		return db.findUser(userId);
+	}
+
+	@Override
+	public User setRoles(Identifier userId, List<Identifier> roleIds) {
+		List<Identifier> updates = new ArrayList<Identifier>(roleIds);
+		for (Permission permission : db.findPermissions(userId)) {
+			if (updates.contains(permission.getRoleId())) {
+				db.savePermission(permission.withStatus(Status.ACTIVE));
+			} else {
+				db.savePermission(permission.withStatus(Status.INACTIVE));
+			}
+			updates.remove(permission.getRoleId());
 		}
-		return user;
+		for (Identifier roleId : updates) {
+			db.savePermission(new Permission(db.generateId(), userId, roleId, Status.ACTIVE));
+		}
+		return db.findUser(userId);
 	}
 
 	@Override
-	public User addUserRole(Identifier userId, String role) {
-		User user = findUserById(userId);
-		List<String> roles = new ArrayList<String>(user.getRoles());
-		roles.add(role);
-		return setUserRoles(userId, roles);
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		db.updatePassword(userId.toString(), passwordEncoder.encode(newPassword));
+		return true;
 	}
 
 	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		User user = findUserById(userId);
-		List<String> roles = new ArrayList<String>(user.getRoles());
-		roles.remove(role);
-		return setUserRoles(userId, roles);
+	public boolean resetPassword(Identifier userId) {
+		db.updatePassword(userId.toString(), passwordEncoder.encode(db.generateId().toString()));
+		return true;
 	}
+
+	@Override
+	public long countUsers(UsersFilter filter) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

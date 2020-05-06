@@ -33,6 +33,7 @@ import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
 import ca.magex.crm.test.restful.RestfulCrmServices;
 
+@Ignore
 public class RestfulJwtServerTest {
 	
 	private String username = "admin";

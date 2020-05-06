@@ -2,19 +2,24 @@ package ca.magex.crm.mapping.json;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
@@ -22,11 +27,11 @@ import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class })
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
-public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTests {
+@ActiveProfiles(MagexCrmProfiles.CRM_CENTRALIZED)
+public class OrganizationTransformerTest {
 
 	@Autowired private SecuredCrmServices crm;
-
+	
 	@Test
 	public void testOrganizationJson() throws Exception {
 
@@ -34,7 +39,9 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
-		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId);
+		List<Identifier> groupIds = new ArrayList<Identifier>();
+		groupIds.add(new Group(new Identifier("group"), Status.ACTIVE, new Localized("Group Name")).getGroupId());
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
@@ -44,7 +51,8 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 				"  \"organizationId\": \"abc\",\n" + 
 				"  \"status\": \"Active\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
-				"  \"mainLocationId\": \"xyz\"\n" + 
+				"  \"mainLocationId\": \"xyz\",\n" + 
+				"  \"groupIds\": [\"group\"]\n" + 
 				"}", json);
 
 		OrganizationDetails reloaded = transformer.parseOrganizationDetails(obj);
@@ -62,7 +70,9 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
-		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId);
+		List<Identifier> groupIds = new ArrayList<Identifier>();
+		groupIds.add(new Group(new Identifier("group"), Status.ACTIVE, new Localized("Group Name")).getGroupId());
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
@@ -82,7 +92,11 @@ public class OrganizationTransformerTest extends AbstractJUnit4SpringContextTest
 				"  \"mainLocationId\": {\n" + 
 				"    \"@type\": \"LocationDetails\",\n" + 
 				"    \"@id\": \"xyz\"\n" + 
-				"  }\n" + 
+				"  },\n" + 
+				"  \"groupIds\": [{\n" + 
+				"    \"@type\": \"Group\",\n" + 
+				"    \"@id\": \"group\"\n" + 
+				"  }]\n" + 
 				"}", json);
 
 		OrganizationDetails reloaded = transformer.parseOrganizationDetails(obj);

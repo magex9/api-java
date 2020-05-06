@@ -1,5 +1,7 @@
 package ca.magex.crm.api.crm;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -13,20 +15,23 @@ public class OrganizationDetails extends OrganizationSummary {
 	private static final long serialVersionUID = 1L;
 	
 	private Identifier mainLocationId;
+	
+	private List<Identifier> groupIds;
 
-	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId) {
+	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId, List<Identifier> groupIds) {
 		super(organizationId, status, displayName);	
 		this.mainLocationId = mainLocationId;
+		this.groupIds = groupIds;
 	}
 
 	@Override
 	public OrganizationDetails withStatus(Status status) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
 	}
 	
 	@Override
 	public OrganizationDetails withDisplayName(String displayName) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
 	}
 
 	public Identifier getMainLocationId() {
@@ -34,7 +39,11 @@ public class OrganizationDetails extends OrganizationSummary {
 	}
 
 	public OrganizationDetails withMainLocationId(Identifier mainLocationId) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+	}
+	
+	public List<Identifier> getGroupIds() {
+		return groupIds;
 	}
 	
 	@Override

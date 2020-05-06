@@ -1,61 +1,47 @@
-package ca.magex.crm.api.common;
+package ca.magex.crm.api.roles;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private Identifier userId;
-	
-	private Identifier organizationId;
-	
-	private Identifier personId;
-	
-	private String username;
 
-	private List<String> roles;
-
-	public User(Identifier userId, Identifier organizationId, Identifier personId, String username, List<String> roles) {
+	private PersonSummary person;
+	
+	private Status status;
+	
+	public User(Identifier userId, PersonSummary person, Status status) {
 		super();
 		this.userId = userId;
-		this.organizationId = organizationId;
-		this.personId = personId;
-		this.username = username;
-		this.roles = Collections.unmodifiableList(roles);
+		this.person = person;
+		this.status = status;
 	}
 	
 	public Identifier getUserId() {
 		return userId;
 	}
+
+	public PersonSummary getPerson() {
+		return person;
+	}
 	
-	public Identifier getOrganizationId() {
-		return organizationId;
-	}
-	
-	public Identifier getPersonId() {
-		return personId;
+	public Status getStatus() {
+		return status;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public List<String> getRoles() {
-		return roles;
-	}
-
-	public User withRoles(List<String> roles) {
-		return new User(userId, organizationId, personId, username, roles);
+	public User withStatus(Status status) {
+		return new User(userId, person, status);
 	}
 	
 	@Override
@@ -72,4 +58,5 @@ public class User implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
+
 }

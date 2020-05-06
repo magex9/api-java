@@ -16,9 +16,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmPasswordService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;

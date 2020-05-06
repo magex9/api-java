@@ -1,5 +1,6 @@
 package ca.magex.crm.test.restful;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -13,7 +14,6 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -24,16 +24,22 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PermissionsFilter;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Permission;
+import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataArray;
 import ca.magex.crm.mapping.data.DataElement;
@@ -158,40 +164,6 @@ public class RestfulCrmServices implements CrmServices {
 				with("name", name))
 			.getArray("options").stream()
 			.map(o -> Status.valueOf(((DataObject)o).getString("code")))
-			.findFirst().get();
-	}
-
-	@Override
-	public List<Role> findRoles() {
-		return get("/api/lookup/roles").getArray("options").stream()
-			.map(o -> new Role(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
-			.collect(Collectors.toList());
-	}
-
-	@Override
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/roles", new DataObject().
-				with("code", code))
-			.getArray("options").stream()
-			.map(o -> new Role(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
-			.findFirst().get();
-	}
-
-	@Override
-	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return get("/api/lookup/roles", new DataObject().
-				with("name", name))
-			.getArray("options").stream()
-			.map(o -> new Role(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
@@ -396,7 +368,8 @@ public class RestfulCrmServices implements CrmServices {
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
 			result.getString("displayName"),
-			result.contains("mainLocation") ? new Identifier(result.getString("mainLocation")) : null);
+			result.contains("mainLocation") ? new Identifier(result.getString("mainLocation")) : null,
+			new ArrayList<Identifier>());
 	}
 
 	@Override
@@ -415,7 +388,8 @@ public class RestfulCrmServices implements CrmServices {
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
 			result.getString("displayName"),
-			result.contains("mainLocationId") ? new Identifier(result.getString("mainLocationId")) : null);
+			result.contains("mainLocationId") ? new Identifier(result.getString("mainLocationId")) : null,
+					new ArrayList<Identifier>());
 	}
 
 	@Override
@@ -426,7 +400,8 @@ public class RestfulCrmServices implements CrmServices {
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
 			result.getString("displayName"),
-			result.contains("mainLocation") ? new Identifier(result.getString("mainLocation")) : null);
+			result.contains("mainLocation") ? new Identifier(result.getString("mainLocation")) : null,
+					new ArrayList<Identifier>());
 	}
 	
 	@Override
@@ -437,7 +412,8 @@ public class RestfulCrmServices implements CrmServices {
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
 			result.getString("displayName"),
-			result.contains("mainLocation") ? new Identifier(result.getString("mainLocation")) : null);
+			result.contains("mainLocation") ? new Identifier(result.getString("mainLocation")) : null,
+					new ArrayList<Identifier>());
 	}
 
 	@Override
@@ -497,7 +473,8 @@ public class RestfulCrmServices implements CrmServices {
 				new Identifier(item.getString("organizationId")),
 				Status.valueOf(item.getString("status").toUpperCase()),
 				item.getString("displayName"),
-				item.contains("mainLocationId") ? new Identifier(item.getString("mainLocationId")) : null))
+				item.contains("mainLocationId") ? new Identifier(item.getString("mainLocationId")) : null,
+						new ArrayList<Identifier>()))
 			.collect(Collectors.toList());
 		long total = result.getLong("total");
 		return new PageImpl<OrganizationDetails>(items, paging, total);
@@ -662,37 +639,157 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public User findUserById(Identifier userId) {
+	public User enableUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public User findUserByUsername(String username) {
+	public User disableUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public User addUserRole(Identifier userId, String role) {
+	public User findUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public User removeUserRole(Identifier userId, String role) {
+	public List<Identifier> getRoles(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public User setUserRoles(Identifier userId, List<String> roles) {
+	public User addUserRole(Identifier userId, Identifier roleId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public User setUserPassword(Identifier userId, String password, boolean encoded) {
+	public User removeUserRole(Identifier userId, Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User setRoles(Identifier userId, List<Identifier> roleIds) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean resetPassword(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public long countUsers(UsersFilter filter) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Group> findGroups() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Group findGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Group createGroup(Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Group updateGroupName(Identifier groupId, Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Group enableGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Group disableGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Role> findRoles(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role findRoleByCode(String code) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role createRole(Identifier groupId, String code, Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role updateRoleName(Identifier roleId, Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role enableRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Role disableRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long countPermissions(PermissionsFilter filter) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}

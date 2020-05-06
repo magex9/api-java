@@ -9,7 +9,6 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.User;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -21,7 +20,9 @@ import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PermissionsFilter;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -30,18 +31,24 @@ import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
+import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmUserPolicy;
+import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Permission;
+import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public final class SecuredCrmServices implements Crm {
@@ -66,11 +73,16 @@ public final class SecuredCrmServices implements Crm {
 	
 	private final CrmUserPolicy userPolicy;
 	
+	private final CrmPermissionService permissionsService;
+	
+	private final CrmPermissionPolicy permissionsPolicy;
+	
 	public SecuredCrmServices(CrmLookupService lookupService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
-			CrmUserService userService, CrmUserPolicy userPolicy) {
+			CrmUserService userService, CrmUserPolicy userPolicy,
+			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy) {
 		super();
 		this.validationService = new StructureValidationService(lookupService, organizationService, locationService);
 		this.lookupService = lookupService;
@@ -82,6 +94,8 @@ public final class SecuredCrmServices implements Crm {
 		this.personPolicy = personPolicy;
 		this.userService = userService;
 		this.userPolicy = userPolicy;
+		this.permissionsService = permissionsService;
+		this.permissionsPolicy = permissionsPolicy;
 	}
 	
 	@Override
@@ -97,21 +111,6 @@ public final class SecuredCrmServices implements Crm {
 	@Override
 	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return lookupService.findStatusByLocalizedName(locale, name);
-	}
-	
-	@Override
-	public List<Role> findRoles() {
-		return lookupService.findRoles();
-	}
-	
-	@Override
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		return lookupService.findRoleByCode(code);
-	}
-	
-	@Override
-	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return lookupService.findRoleByLocalizedName(locale, name);
 	}
 	
 	@Override
@@ -387,50 +386,101 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("createUser: " + personId);
 		return userService.createUser(personId, username, roles);
 	}
-	
+
 	@Override
-	public User findUserById(Identifier userId) {
-		if (!canViewUser(userId))
-			throw new PermissionDeniedException("findUserById: " + userId);
-		return userService.findUserById(userId);
-	}
-	
-	@Override
-	public User findUserByUsername(String username) {		
-		User user = userService.findUserByUsername(username);
-		if (!canViewUser(user.getUserId()))
-			throw new PermissionDeniedException("findUserByUsername: " + username);
-		return user;
-	}
-	
-	@Override
-	public User setUserRoles(Identifier userId, List<String> roles) {
-		if (!canUpdateUserRole(userId))
-			throw new PermissionDeniedException("setUserRoles: " + userId);
-		return userService.setUserRoles(userId, roles);
+	public User enableUser(Identifier userId) {
+		if (!canEnableUser(userId))
+			throw new PermissionDeniedException("enableUser: " + userId);
+		return userService.enableUser(userId);
 	}
 
 	@Override
-	public User addUserRole(Identifier userId, String role) {
+	public User disableUser(Identifier userId) {
+		if (!canDisableUser(userId))
+			throw new PermissionDeniedException("enableUser: " + userId);
+		return userService.disableUser(userId);
+	}
+
+	@Override
+	public User findUser(Identifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("findUser: " + userId);
+		return userService.findUser(userId);
+	}
+
+	@Override
+	public List<Identifier> getRoles(Identifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("getRoles: " + userId);
+		return userService.getRoles(userId);
+	}
+
+	@Override
+	public User addUserRole(Identifier userId, Identifier roleId) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("addUserRole: " + userId);
-		return userService.addUserRole(userId, role);
+		return userService.addUserRole(userId, roleId);
+	}
+
+	@Override
+	public User removeUserRole(Identifier userId, Identifier roleId) {
+		if (!canUpdateUserRole(userId))
+			throw new PermissionDeniedException("removeUserRole: " + userId);
+		return userService.removeUserRole(userId, roleId);
+	}
+
+	@Override
+	public User setRoles(Identifier userId, List<Identifier> roleIds) {
+		if (!canUpdateUserRole(userId))
+			throw new PermissionDeniedException("setRoles: " + userId);
+		return userService.setRoles(userId, roleIds);
+	}
+
+	@Override
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		return userService.changePassword(userId, currentPassword, newPassword);
+	}
+
+	@Override
+	public boolean resetPassword(Identifier userId) {
+		return userService.resetPassword(userId);
+	}
+
+	@Override
+	public long countUsers(UsersFilter filter) {
+		return userService.countUsers(filter);
+	}
+
+	@Override
+	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+		return userService.findUsers(filter, paging);
+	}
+
+	@Override
+	public boolean canEnableUser(Identifier userId) {
+		return userPolicy.canEnableUser(userId);
+	}
+
+	@Override
+	public boolean canDisableUser(Identifier userId) {
+		return userPolicy.canDisableUser(userId);
 	}
 	
 	@Override
-	public User setUserPassword(Identifier userId, String password, boolean encoded) {
-		if (!canUpdateUserPassword(userId))
-			throw new PermissionDeniedException("setUserPassword: " + userId);
-		return userService.setUserPassword(userId, password, encoded);
+	public boolean canViewUser(Identifier userId) {
+		return userPolicy.canViewUser(userId);
 	}
 
 	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		if (!canUpdateUserRole(userId))
-			throw new PermissionDeniedException("removeUserRole: " + userId);
-		return userService.removeUserRole(userId, role);
+	public boolean canUpdateUserRole(Identifier userId) {
+		return userPolicy.canUpdateUserRole(userId);
 	}
 
+	@Override
+	public boolean canUpdateUserPassword(Identifier userId) {
+		return userPolicy.canUpdateUserPassword(userId);
+	}
+	
 	public OrganizationDetails validate(OrganizationDetails organization) {
 		return validationService.validate(organization);
 	}
@@ -511,19 +561,173 @@ public final class SecuredCrmServices implements Crm {
 	public boolean canCreateUserForPerson(Identifier personId) {
 		return userPolicy.canCreateUserForPerson(personId);
 	}
+
+	@Override
+	public List<Group> findGroups() {
+		return permissionsService.findGroups();
+	}
+
+	@Override
+	public Group findGroup(Identifier groupId) {
+		if (!canViewGroup(groupId))
+			throw new PermissionDeniedException("findGroup: " + groupId);
+		return permissionsService.findGroup(groupId);
+	}
+
+	@Override
+	public Group createGroup(Localized name) {
+		if (!canCreateGroup())
+			throw new PermissionDeniedException("createGroup: " + name);
+		return permissionsService.createGroup(name);
+	}
+
+	@Override
+	public Group updateGroupName(Identifier groupId, Localized name) {
+		if (!canUpdateGroup(groupId))
+			throw new PermissionDeniedException("updateGroupName: " + groupId);
+		return permissionsService.updateGroupName(groupId, name);
+	}
+
+	@Override
+	public Group enableGroup(Identifier groupId) {
+		if (!canEnableGroup(groupId))
+			throw new PermissionDeniedException("enableGroup: " + groupId);
+		return permissionsService.enableGroup(groupId);
+	}
+
+	@Override
+	public Group disableGroup(Identifier groupId) {
+		if (!canDisableGroup(groupId))
+			throw new PermissionDeniedException("disableGroup: " + groupId);
+		return permissionsService.disableGroup(groupId);
+	}
+
+	@Override
+	public List<Role> findRoles(Identifier groupId) {
+		if (!canViewRoles())
+			throw new PermissionDeniedException("findRoles: " + groupId);
+		return permissionsService.findRoles(groupId);
+	}
+
+	@Override
+	public Role findRole(Identifier roleId) {
+		if (!canViewRole(roleId))
+			throw new PermissionDeniedException("findRole: " + roleId);
+		return permissionsService.findRole(roleId);
+	}
+
+	@Override
+	public Role findRoleByCode(String code) {
+		if (!canViewRole(code))
+			throw new PermissionDeniedException("findRoleByCode: " + code);
+		return permissionsService.findRoleByCode(code);
+	}
+
+	@Override
+	public Role createRole(Identifier groupId, String code, Localized name) {
+		if (!canCreateRole())
+			throw new PermissionDeniedException("addRole: " + groupId);
+		return permissionsService.createRole(groupId, code, name);
+	}
+
+	@Override
+	public Role updateRoleName(Identifier roleId, Localized name) {
+		if (!canUpdateRole(roleId))
+			throw new PermissionDeniedException("updateRoleName: " + roleId);
+		return permissionsService.updateRoleName(roleId, name);
+	}
+
+	@Override
+	public Role enableRole(Identifier roleId) {
+		if (!canEnableRole(roleId))
+			throw new PermissionDeniedException("enableRole: " + roleId);
+		return permissionsService.enableRole(roleId);
+	}
+
+	@Override
+	public Role disableRole(Identifier roleId) {
+		if (!canDisableRole(roleId))
+			throw new PermissionDeniedException("disableRole: " + roleId);
+		return permissionsService.disableRole(roleId);
+	}
+
+	@Override
+	public long countPermissions(PermissionsFilter filter) {
+		if (!canViewPermissions())
+			throw new PermissionDeniedException("countPermissions");
+		return permissionsService.countPermissions(filter);
+	}
+
+	@Override
+	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
+		if (!canViewPermissions())
+			throw new PermissionDeniedException("findPermissions");
+		return permissionsService.findPermissions(filter, paging);
+	}
+
+	@Override
+	public boolean canCreateGroup() {
+		return permissionsPolicy.canCreateGroup();
+	}
+
+	@Override
+	public boolean canViewGroup(Identifier groupId) {
+		return permissionsPolicy.canViewGroup(groupId);
+	}
+
+	@Override
+	public boolean canUpdateGroup(Identifier groupId) {
+		return permissionsPolicy.canUpdateGroup(groupId);
+	}
+
+	@Override
+	public boolean canEnableGroup(Identifier groupId) {
+		return permissionsPolicy.canEnableGroup(groupId);
+	}
+
+	@Override
+	public boolean canDisableGroup(Identifier groupId) {
+		return permissionsPolicy.canDisableGroup(groupId);
+	}
+
+	@Override
+	public boolean canCreateRole() {
+		return permissionsPolicy.canCreateRole();
+	}
 	
 	@Override
-	public boolean canViewUser(Identifier userId) {
-		return userPolicy.canViewUser(userId);
+	public boolean canViewRoles() {
+		return permissionsPolicy.canCreateRole();
 	}
 
 	@Override
-	public boolean canUpdateUserRole(Identifier userId) {
-		return userPolicy.canUpdateUserRole(userId);
+	public boolean canViewRole(String code) {
+		return permissionsPolicy.canViewRole(code);
 	}
 
 	@Override
-	public boolean canUpdateUserPassword(Identifier userId) {
-		return userPolicy.canUpdateUserPassword(userId);
+	public boolean canViewRole(Identifier roleId) {
+		return permissionsPolicy.canViewRole(roleId);
 	}
+
+	@Override
+	public boolean canUpdateRole(Identifier roleId) {
+		return permissionsPolicy.canUpdateRole(roleId);
+	}
+
+	@Override
+	public boolean canEnableRole(Identifier roleId) {
+		return permissionsPolicy.canEnableRole(roleId);
+	}
+
+	@Override
+	public boolean canDisableRole(Identifier roleId) {
+		return permissionsPolicy.canDisableRole(roleId);
+	}
+
+	@Override
+	public boolean canViewPermissions() {
+		return permissionsPolicy.canViewPermissions();
+	}
+
 }

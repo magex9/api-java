@@ -16,7 +16,7 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.system.Role;
+import ca.magex.crm.api.roles.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -52,12 +52,6 @@ public class CrmLookupLoaderTest extends AbstractJUnit4SpringContextTests {
 	public void testLoadLanguages() {
 		List<Language> roles = crmLookupLoader.loadLookup(Language.class, "Language.csv");
 		Assert.assertEquals(roles.toString(), 2, roles.size());
-	}
-	
-	@Test
-	public void testLoadRoles() {
-		List<Role> roles = crmLookupLoader.loadLookup(Role.class, "Role.csv");
-		Assert.assertEquals(roles.toString(), 10, roles.size());
 	}
 	
 	@Test

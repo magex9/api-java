@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import ca.magex.crm.api.common.User;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.Identifier;
 
 public class AbstractSecureCrmPolicy {
 
@@ -20,7 +21,7 @@ public class AbstractSecureCrmPolicy {
 		if (auth == null) {
 			return null;
 		}		
-		return userService.findUserByUsername(auth.getName());		
+		return userService.findUser(new Identifier(auth.getName()));		
 	}
 	
 	/**
@@ -30,11 +31,11 @@ public class AbstractSecureCrmPolicy {
 	 * @return
 	 */
 	protected boolean isCrmAdmin(User user) {
-		return user.getRoles()
-				.stream()
-				.filter((r) -> r.contentEquals("CRM_ADMIN"))
-				.findAny()
-				.isPresent();
+		return userService.getRoles(user.getUserId())
+			.stream()
+			.filter((r) -> r.toString().equals("CRM_ADMIN"))
+			.findAny()
+			.isPresent();
 	}
 	
 	/**
@@ -43,10 +44,10 @@ public class AbstractSecureCrmPolicy {
 	 * @return
 	 */
 	protected boolean isReAdmin(User user) {
-		return user.getRoles()
-				.stream()
-				.filter((r) -> r.contentEquals("RE_ADMIN"))
-				.findAny()
-				.isPresent();
+		return userService.getRoles(user.getUserId())
+			.stream()
+			.filter((r) -> r.toString().equals("RE_ADMIN"))
+			.findAny()
+			.isPresent();
 	}
 }

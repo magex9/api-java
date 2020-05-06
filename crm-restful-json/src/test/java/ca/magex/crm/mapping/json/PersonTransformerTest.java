@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
@@ -24,19 +22,23 @@ import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-@Profile(MagexCrmProfiles.CRM_CENTRALIZED)
-@Ignore
-public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
+@ContextConfiguration(classes = { TestConfig.class })
+@ActiveProfiles(value = {		
+		MagexCrmProfiles.CRM_CENTRALIZED,
+		MagexCrmProfiles.CRM_NO_AUTH_EMBEDDED
+})
+public class PersonTransformerTest {
 
 	@Autowired private SecuredCrmServices crm;
 
@@ -58,8 +60,9 @@ public class PersonTransformerTest extends AbstractJUnit4SpringContextTests {
 		Communication communication = new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition(crm.findBusinessSectors().get(0).getName(locale), null, null);
 		List<String> roles = new ArrayList<String>();
-		roles.add(crm.findRoleByCode("SYS_ADMIN").getName(locale));
-		roles.add(crm.findRoleByCode("RE_ADMIN").getName(locale));
+		Group group = crm.createGroup(new Localized("System"));
+		roles.add(crm.createRole(group.getGroupId(), "SYS_ADMIN", new Localized("System Admin")).getRoleId().toString());
+		roles.add(crm.createRole(group.getGroupId(), "RE_ADMIN", new Localized("RE Admin")).getRoleId().toString());
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
