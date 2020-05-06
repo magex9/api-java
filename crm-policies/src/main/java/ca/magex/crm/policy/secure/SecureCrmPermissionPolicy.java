@@ -14,10 +14,7 @@ import ca.magex.crm.api.system.Status;
 
 @Component
 @Primary
-@Profile(value = {
-		MagexCrmProfiles.CRM_AUTH_EMBEDDED,
-		MagexCrmProfiles.CRM_AUTH_REMOTE
-})
+@Profile(MagexCrmProfiles.CRM_AUTH)
 public class SecureCrmPermissionPolicy extends AbstractSecureCrmPolicy implements CrmPermissionPolicy {
 
 	@Autowired private CrmPermissionService permissionService;
