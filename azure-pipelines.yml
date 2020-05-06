@@ -1,7 +1,4 @@
 # Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
 - master
@@ -16,25 +13,39 @@ steps:
     sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Zpvxtu+AepIMTYQLWqMP2Gbv9nhXLV/9LnwSZWH25Jw1rKILcpEVAt+60EKITGj75UTHjFj2MqMbh14YWG0pHm6cSJi9CqmlVVPRec2lrGY8nUKDsp8d7UXSB3HkOR6ulF/rne12Ex6zWtVZYD3Sp9zIsWjkUlDrueVKfGP8h4TV/Lt4+OOcj0TUazxEP+H++s4au8DcZKSwBAw4f9E/Jx4baTgCqHoG6chOdnt+/Lw/gSPlYmDGT3joJS1/73xdSGPIipY7TAKOdNAwp+qP4WhNWlEO3TdeIKNWGznv1KaZ4HoIgUyKXUbP/X5foz0DVXvvhZVHO72fNlybB3HJ finuser@RD3'
     sshPassphrase: 'fintraccanafe'
     sshKeySecureFile: 'azure.key'
-- task: Maven@3
+
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+#- task: Maven@3
+#  inputs:
+#    mavenPomFile: 'pom.xml'
+#    mavenOptions: '-Xmx3072m'
+#    javaHomeOption: 'JDKVersion'
+#    jdkVersionOption: '1.11'
+#    jdkArchitectureOption: 'x64'
+#    publishJUnitResults: true
+#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#    goals: 'package'
+
+#- task: Maven@3
+#  inputs:
+#    mavenPomFile: 'pom.xml'
+#    publishJUnitResults: true
+#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#    javaHomeOption: 'JDKVersion'
+#    jdkVersionOption: '1.11'
+#    mavenVersionOption: 'Default'
+#    mavenOptions: '-Xmx3072m'
+#    mavenAuthenticateFeed: false
+#    effectivePomSkip: false
+#    sonarQubeRunAnalysis: false
+
+- task: SSH@0
   inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    mavenVersionOption: 'Default'
-    mavenOptions: '-Xmx3072m'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
+    sshEndpoint: 'ssh - RD3'
+    runOptions: 'commands'
+    commands: 'whoami'
+    readyTimeout: '20000'
+
