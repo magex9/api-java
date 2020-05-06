@@ -23,16 +23,16 @@ stages:
       environment: 'ut'
       strategy:
       # default deployment strategy, more coming...
-      runOnce:
-        deploy:
-          steps:
-          - script: echo my first deployment
-          - task: SSH@0
-            inputs:
-              sshEndpoint: 'ssh - RD3'
-              runOptions: 'commands'
-              commands: 'whoami'
-              readyTimeout: '20000'
+        runOnce:
+          deploy:
+            steps:
+            - script: echo my first deployment
+            - task: SSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                runOptions: 'commands'
+                commands: 'whoami'
+                readyTimeout: '20000'
 
 # Build your Java project and run tests with Apache Maven.
 # Add steps that analyze code, save build artifacts, deploy, and more:
