@@ -43,7 +43,7 @@ stages:
               inputs:
                 sshEndpoint: 'ssh - RD3'
                 runOptions: 'commands'
-                commands: 'whoami'
+                commands: 'ls -la'
                 readyTimeout: '20000'
 
 # Build your Java project and run tests with Apache Maven.
