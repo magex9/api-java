@@ -41,7 +41,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - script: echo my first deployment
+            - script: ls -la *
             - task: CopyFilesOverSSH@0
               inputs:
                 sshEndpoint: 'ssh - RD3'
