@@ -45,7 +45,7 @@ stages:
             - task: CopyFilesOverSSH@0
               inputs:
                 sshEndpoint: 'ssh - RD3'
-                sourceFolder: '$(Pipeline.Workspace)'
+                sourceFolder: '$(Pipeline.Workspace)/authApp/'
                 contents: '*.jar'
                 targetFolder: '/var/data/finuser/builds/'
                 readyTimeout: '20000'
