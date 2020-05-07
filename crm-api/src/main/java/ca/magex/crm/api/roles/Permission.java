@@ -12,7 +12,7 @@ import ca.magex.crm.api.system.Status;
 
 public class Permission implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	private Identifier permissionId;
 	
