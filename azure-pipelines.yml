@@ -42,11 +42,18 @@ stages:
           deploy:
             steps:
             - script: echo my first deployment
+            - task: CopyFilesOverSSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                contents: '*.jar'
+                targetFolder: '/var/data/finuser/builds/'
+                readyTimeout: '20000'
+                failOnEmptySource: true
             - task: SSH@0
               inputs:
                 sshEndpoint: 'ssh - RD3'
                 runOptions: 'commands'
-                commands: 'ls -la'
+                commands: 'ls -la /var/data/finuser/builds'
                 readyTimeout: '20000'
 
 # Build your Java project and run tests with Apache Maven.
