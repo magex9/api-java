@@ -59,6 +59,13 @@ input PersonFilter {
 	status: String
 }
 
+input UserFilter {
+	organizationId: String
+	personId: String
+	status: String
+	role: String	
+}
+
 type Query {	
 	# Organization Service 
 	findOrganization(organizationId: String!): Organization	
@@ -76,8 +83,9 @@ type Query {
 	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
 	
 	# User Service
-	findUser(userId: String!): User
-	findUserByUsername(username: String!): User
+	findUser(username: String!): User
+	countUsers(filter: UserFilter!): Int!
+	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
 	# Lookup Service
 	findCodeLookups(category: String!, code: String): [CodeLookup]
@@ -104,10 +112,12 @@ type Mutation {
 		
 	# User Service
 	createUser(personId: String!, username: String!, roles: [String]): User
-	addUserRole(userId: String!, role: String!): User
-	removeUserRole(userId: String!, role: String!): User
-	setUserRoles(userId: String!, roles: [String]): User
-	setUserPassword(userId: String!, password: String!): User
+	enableUser(username: String!): Location
+	disableUser(username: String!): Location	
+	addUserRole(username: String!, role: String!): User
+	removeUserRole(username: String!, role: String!): User
+	setUserRoles(username: String!, roles: [String]): User
+	setUserPassword(username: String!, password: String!): User
 }
 
 # Main Types
@@ -161,11 +171,10 @@ type BusinessPosition {
 }
 
 type User {
-	userId: String
-	organizationId: String
-	personId: String
-	username: String
-	roles: [String]
+	userId: String!
+	status: String!
+	person: Person!
+	roles: [String]!
 }
 
 type MailingAddress {
@@ -202,6 +211,15 @@ type PersonPage {
 	totalPages: Int!
 	totalElements: Int!	
 	content: [Person]
+}
+
+type UserPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [User]
 }
 
 # Simple Types

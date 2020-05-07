@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.graphql.controller.GraphQLController;
@@ -36,7 +37,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	
 	public DataFetcher<Integer> countPersons() {
 		return (environment) -> {
-			logger.info("Entering countPersons@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering countPersons@" + PersonDataFetcher.class.getSimpleName());
 			return (int) crm.countPersons(
 					extractFilter(extractFilter(environment)));
 		};
@@ -44,10 +45,18 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<Page<PersonDetails>> findPersons() {
 		return (environment) -> {
-			logger.info("Entering findPersons@" + OrganizationDataFetcher.class.getSimpleName());
+			logger.info("Entering findPersons@" + PersonDataFetcher.class.getSimpleName());
 			return crm.findPersonDetails(
 					extractFilter(extractFilter(environment)), 
 					extractPaging(environment));
+		};
+	}
+	
+	public DataFetcher<PersonDetails> byUser() {
+		return (environment) -> {
+			logger.info("Entering ByUser@" + PersonDataFetcher.class.getSimpleName());
+			User user = environment.getSource();			
+			return crm.findPersonDetails(user.getPerson().getPersonId());
 		};
 	}
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
+import ca.magex.crm.graphql.datafetcher.PermissionDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.datafetcher.UserDataFetcher;
 import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
@@ -32,11 +33,14 @@ public class GraphQLCrmServices {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLCrmServices.class);
 
+	// TODO switch these to constructor args instead of autowired fields when
+	// everything is working again
 	@Autowired LocationDataFetcher locationDataFetcher;
 	@Autowired OrganizationDataFetcher organizationDataFetcher;
 	@Autowired PersonDataFetcher personDataFetcher;
 	@Autowired LookupDataFetcher lookupDataFetcher;
 	@Autowired UserDataFetcher userDataFetcher;
+	@Autowired PermissionDataFetcher PermissionDataFetcher;
 
 	@Value("classpath:crm.graphql") private Resource resource;
 
@@ -99,10 +103,13 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enablePerson", personDataFetcher.enablePerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disablePerson", personDataFetcher.disablePerson()))
-		
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUserById()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findUserByUsername", userDataFetcher.findUserByUsername()))
+
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUser()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("countUsers", userDataFetcher.countUsers()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findUsers", userDataFetcher.findUsers()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createUser", userDataFetcher.createUser()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableUser", userDataFetcher.createUser()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableUser", userDataFetcher.createUser()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", userDataFetcher.addUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", userDataFetcher.removeUserRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", userDataFetcher.setUserRoles()))
@@ -110,6 +117,7 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
 
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
 				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
 				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
 				.build();

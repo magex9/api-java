@@ -18,6 +18,10 @@ import ca.magex.crm.api.system.Status;
 public class DefaultCrmLocationPolicy implements CrmLocationPolicy {
 
 	@Autowired private CrmLocationService locationService;
+	
+	public DefaultCrmLocationPolicy() {
+		System.out.println("hello");
+	}
 
 	@Override
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {

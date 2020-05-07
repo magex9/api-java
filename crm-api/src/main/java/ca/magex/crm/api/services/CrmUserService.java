@@ -11,28 +11,28 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmUserService {
 	
-	User createUser(Identifier personId, String username, List<String> roles);
+	User createUser(Identifier personId, String username, List<String> roles);//
 	
-	User enableUser(Identifier userId);
+	User enableUser(Identifier userId);//
     
-	User disableUser(Identifier userId);
+	User disableUser(Identifier userId);//
 
-    User findUser(Identifier userId);
+    User findUser(Identifier userId);//
     
     List<Identifier> getRoles(Identifier userId);
 	
-	User addUserRole(Identifier userId, Identifier roleId);
+	User addUserRole(Identifier userId, Identifier roleId);//
 	
-	User removeUserRole(Identifier userId, Identifier roleId);
+	User removeUserRole(Identifier userId, Identifier roleId);//
 	
 	User setRoles(Identifier userId, List<Identifier> roleIds);
 	
 	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
 	
-	boolean resetPassword(Identifier userId);
+	boolean resetPassword(Identifier userId);//
 	
-    long countUsers(UsersFilter filter);
+    long countUsers(UsersFilter filter);//
     
-    Page<User> findUsers(UsersFilter filter, Paging paging);
+    Page<User> findUsers(UsersFilter filter, Paging paging);//
     
 }

@@ -72,13 +72,7 @@ public class LookupDataFetcher extends AbstractDataFetcher {
 					return crm.findBusinessClassifications().stream().map((c) -> (CrmLookupItem) c).collect(Collectors.toList());
 				} else {
 					return Arrays.asList(crm.findBusinessClassificationByCode(code));
-				}
-			case "ROLE":
-				if (StringUtils.isBlank(code)) {
-					return crm.findRoles().stream().map((c) -> (CrmLookupItem) c).collect(Collectors.toList());
-				} else {
-					return Arrays.asList(crm.findRoleByCode(code));
-				}
+				}			
 			case "STATUS":
 				if (StringUtils.isBlank(code)) {
 					return Arrays.asList(Status.values());
