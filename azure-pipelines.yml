@@ -29,6 +29,8 @@ stages:
             
             echo 'Hello world'
             ls -la */**
+      - publish: $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar
+        artifact: authApp
   - stage: deploy
     jobs:
     - deployment: Deploy
