@@ -11,7 +11,7 @@ stages:
     jobs:
     - job: Build
       steps:
-      - task: BuildMavenProject
+      - task: Maven@3
         inputs:
           mavenPomFile: 'pom.xml'
           mavenOptions: '-Xmx3072m'
@@ -21,7 +21,7 @@ stages:
           publishJUnitResults: true
           testResultsFiles: '**/surefire-reports/TEST-*.xml'
           goals: 'package'
-      - task: see build content
+      - task: Bash@3
         inputs:
           targetType: 'inline'
           script: |
