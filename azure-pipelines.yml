@@ -4,7 +4,7 @@ pool:
 
 trigger:
       - master
-
+#test
 #Stages Configuration (to be ran sequentially)
 stages:
   - stage: Master
