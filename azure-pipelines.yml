@@ -29,10 +29,11 @@ stages:
             
             echo 'Hello world'
             ls -la */**
-
+  - stage: deploy
+    jobs:
     - deployment: Deploy
       displayName: deploy Web App
-      environment: 'ut'
+      #environment: 'ut'
       strategy:
       # default deployment strategy, more coming...
         runOnce:
