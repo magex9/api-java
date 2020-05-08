@@ -19,13 +19,15 @@ public interface CrmUserService {
 
     User findUser(Identifier userId);
     
-    List<Identifier> getRoles(Identifier userId);
+    User findUserByUsername(String username);
+    
+    List<String> getRoles(Identifier userId);
 	
-	User addUserRole(Identifier userId, Identifier roleId);
+	User addUserRole(Identifier userId, String role);
 	
-	User removeUserRole(Identifier userId, Identifier roleId);
+	User removeUserRole(Identifier userId, String role);
 	
-	User setRoles(Identifier userId, List<Identifier> roleIds);
+	User setRoles(Identifier userId, List<String> roles);
 	
 	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
 	
