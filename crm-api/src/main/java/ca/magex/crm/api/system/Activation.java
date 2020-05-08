@@ -6,10 +6,12 @@ import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import ca.magex.crm.api.services.Crm;
+
 public class Activation implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+
 	private Identifier identifier;
 	
 	private LocalDateTime enabled;
