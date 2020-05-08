@@ -3,7 +3,10 @@ package ca.magex.crm.amnesia.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.Permission;
@@ -36,7 +40,9 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
-		return db.saveUser(new User(new Identifier(username), db.findPerson(personId), Status.ACTIVE));
+		User user = db.saveUser(new User(db.generateId(), username, db.findPerson(personId), Status.ACTIVE));
+		setRoles(user.getUserId(), roles);
+		return user;
 	}
 
 	@Override
@@ -53,17 +59,20 @@ public class AmnesiaUserService implements CrmUserService {
 	public User findUser(Identifier userId) {
 		return db.findUser(userId);
 	}
-
+	
 	@Override
-	public List<Identifier> getRoles(Identifier userId) {
-		return db.findPermissions(userId).stream()
-			.filter(p -> p.getStatus().equals(Status.ACTIVE))
-			.map(p -> db.findRole(p.getRoleId()).getRoleId())
-			.collect(Collectors.toList());
+	public User findUserByUsername(String username) {
+		return db.findByType(User.class).filter(u -> u.getUsername().equals(username)).findAny().get();
+	}
+	
+	@Override
+	public List<String> getRoles(Identifier userId) {
+		return db.findUserRoles(db.findUser(userId).getUsername());
 	}
 
 	@Override
-	public User addUserRole(Identifier userId, Identifier roleId) {
+	public User addUserRole(Identifier userId, String role) {
+		Identifier roleId = db.findRoleByCode(role).getRoleId();
 		List<Permission> permissions = db.findPermissions(userId);
 		if (!permissions.stream().anyMatch(p -> p.getRoleId().equals(roleId)))
 			db.savePermission(new Permission(db.generateId(), userId, roleId, Status.ACTIVE));
@@ -71,7 +80,8 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public User removeUserRole(Identifier userId, Identifier roleId) {
+	public User removeUserRole(Identifier userId, String role) {
+		Identifier roleId = db.findRoleByCode(role).getRoleId();
 		List<Permission> permissions = db.findPermissions(userId).stream().filter(p -> p.getRoleId().equals(roleId)).collect(Collectors.toList());
 		for (Permission permission : permissions) {
 			db.savePermission(permission.withStatus(Status.INACTIVE));
@@ -80,18 +90,19 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public User setRoles(Identifier userId, List<Identifier> roleIds) {
-		List<Identifier> updates = new ArrayList<Identifier>(roleIds);
+	public User setRoles(Identifier userId, List<String> roles) {
+		List<String> updates = new ArrayList<String>(roles);
 		for (Permission permission : db.findPermissions(userId)) {
-			if (updates.contains(permission.getRoleId())) {
+			String role = db.findRole(permission.getRoleId()).getCode();
+			if (updates.contains(role)) {
 				db.savePermission(permission.withStatus(Status.ACTIVE));
 			} else {
 				db.savePermission(permission.withStatus(Status.INACTIVE));
 			}
-			updates.remove(permission.getRoleId());
+			updates.remove(role);
 		}
-		for (Identifier roleId : updates) {
-			db.savePermission(new Permission(db.generateId(), userId, roleId, Status.ACTIVE));
+		for (String role : updates) {
+			db.savePermission(new Permission(db.generateId(), userId, db.findRoleByCode(role).getRoleId(), Status.ACTIVE));
 		}
 		return db.findUser(userId);
 	}
@@ -110,14 +121,23 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public long countUsers(UsersFilter filter) {
-		// TODO Auto-generated method stub
-		return 0;
+		return applyFilter(filter).count();
 	}
 
 	@Override
 	public Page<User> findUsers(UsersFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		return PageBuilder.buildPageFor(applyFilter(filter)
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList()), paging);
+	}
+	
+	private Stream<User> applyFilter(UsersFilter filter) {
+		return db.findByType(User.class)
+			.filter(user -> StringUtils.isNotBlank(filter.getRole()) ? getRoles(user.getUserId()).contains(filter.getRole()) : true)
+			.filter(user -> filter.getStatus() != null ? filter.getStatus().equals(user.getStatus()) : true)
+			.filter(user -> filter.getPersonId() != null ? filter.getPersonId().equals(user.getPerson().getPersonId()) : true)
+			.filter(user -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(user.getPerson().getOrganizationId()) : true);
 	}
 	
 }
