@@ -221,6 +221,24 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
 		return organizationService.updateOrganizationMainLocation(organizationId, locationId);
 	}
+    
+	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+		if (!canUpdateOrganization(organizationId))
+			throw new PermissionDeniedException("addGroup: " + organizationId + ", " + groupId);
+		return organizationService.addGroup(organizationId, groupId);
+	}
+	
+	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+		if (!canUpdateOrganization(organizationId))
+			throw new PermissionDeniedException("removeGroupRole: " + organizationId + ", " + groupId);
+		return organizationService.removeGroup(organizationId, groupId);
+	}
+	
+	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+		if (!canUpdateOrganization(organizationId))
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groupIds);
+		return organizationService.setGroups(organizationId, groupIds);
+	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		if (!canEnableOrganization(organizationId))
@@ -407,30 +425,38 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("findUser: " + userId);
 		return userService.findUser(userId);
 	}
+	
+	@Override
+	public User findUserByUsername(String username) {
+		User user = userService.findUserByUsername(username);
+		if (!canViewUser(user.getUserId()))
+			throw new PermissionDeniedException("findUserByUsername: " + username);
+		return user;
+	}
 
 	@Override
-	public List<Identifier> getRoles(Identifier userId) {
+	public List<String> getRoles(Identifier userId) {
 		if (!canViewUser(userId))
 			throw new PermissionDeniedException("getRoles: " + userId);
 		return userService.getRoles(userId);
 	}
 
 	@Override
-	public User addUserRole(Identifier userId, Identifier roleId) {
+	public User addUserRole(Identifier userId, String role) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("addUserRole: " + userId);
-		return userService.addUserRole(userId, roleId);
+		return userService.addUserRole(userId, role);
 	}
 
 	@Override
-	public User removeUserRole(Identifier userId, Identifier roleId) {
+	public User removeUserRole(Identifier userId, String role) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("removeUserRole: " + userId);
-		return userService.removeUserRole(userId, roleId);
+		return userService.removeUserRole(userId, role);
 	}
 
 	@Override
-	public User setRoles(Identifier userId, List<Identifier> roleIds) {
+	public User setRoles(Identifier userId, List<String> roleIds) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
 		return userService.setRoles(userId, roleIds);

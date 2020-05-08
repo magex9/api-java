@@ -26,6 +26,7 @@ import ca.magex.crm.api.roles.Permission;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 
 @Repository
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
@@ -40,6 +41,12 @@ public class AmnesiaDB implements CrmPasswordService {
 	private IdGenerator idGenerator;
 	
 	private Map<Identifier, Serializable> data;
+	
+	private Map<String, Role> rolesByCode;
+	
+	private Map<String, User> usersByUsername;
+	
+	private Map<String, List<String>> userRoles;
 	
 	private Map<String, String> passwords;
 	
@@ -118,11 +125,16 @@ public class AmnesiaDB implements CrmPasswordService {
 		return (User)findById(userId, User.class);
 	}	
 	
-	public User saveUser(User user) {
-		data.put(user.getUserId(), user);
-		return user;
+	public User findUserByUsername(String username) {
+		return usersByUsername.get(username);
 	}
 	
+	public User saveUser(User user) {
+		data.put(user.getUserId(), user);
+		usersByUsername.put(user.getUsername(), user);
+		return user;
+	}
+
 	public Group findGroup(Identifier groupId) {
 		return (Group)findById(groupId, Group.class);
 	}
@@ -136,8 +148,13 @@ public class AmnesiaDB implements CrmPasswordService {
 		return (Role)findById(roleId, Role.class);
 	}
 	
+	public Role findRoleByCode(String role) {
+		return rolesByCode.get(role);
+	}
+	
 	public Role saveRole(Role role) {
 		data.put(role.getRoleId(), role);
+		rolesByCode.put(role.getCode(), role);
 		return role;
 	}
 	
@@ -147,6 +164,11 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	public Permission savePermission(Permission permission) {
 		data.put(permission.getPermissionId(), permission);
+		userRoles.put(findUser(permission.getUserId()).getUsername(), 
+			findPermissions(permission.getUserId()).stream()
+				.filter(p -> p.getStatus().equals(Status.ACTIVE))
+				.map(p -> findRole(p.getRoleId()).getCode())
+				.collect(Collectors.toList()));
 		return permission;
 	}
 	
@@ -154,6 +176,10 @@ public class AmnesiaDB implements CrmPasswordService {
 		return findByType(Permission.class)
 			.filter(p -> p.getUserId().equals(userId))
 			.collect(Collectors.toList());
+	}
+	
+	public List<String> findUserRoles(String username) {
+		return userRoles.get(username);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -192,4 +218,12 @@ public class AmnesiaDB implements CrmPasswordService {
 		passwords.put(username, password);
 		return true;
 	}
+	
+	public void dump() {
+		data.keySet()
+			.stream()
+			.sorted((x, y) -> x.toString().compareTo(y.toString()))
+			.forEach(key -> System.out.println(key + " => " + data.get(key).toString()));
+	}
+	
 }

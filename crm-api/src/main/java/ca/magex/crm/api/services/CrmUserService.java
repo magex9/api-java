@@ -17,16 +17,18 @@ public interface CrmUserService {
 
 	User disableUser(Identifier userId);
 
-	User findUser(Identifier userId);
-
-	List<Identifier> getRoles(Identifier userId);
-
-	User addUserRole(Identifier userId, Identifier roleId);
-
-	User removeUserRole(Identifier userId, Identifier roleId);
-
-	User setRoles(Identifier userId, List<Identifier> roleIds);
-
+    User findUser(Identifier userId);
+    
+    User findUserByUsername(String username);
+    
+    List<String> getRoles(Identifier userId);
+	
+	User addUserRole(Identifier userId, String role);
+	
+	User removeUserRole(Identifier userId, String role);
+	
+	User setRoles(Identifier userId, List<String> roles);
+	
 	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
 
 	boolean resetPassword(Identifier userId);
@@ -34,5 +36,4 @@ public interface CrmUserService {
 	long countUsers(UsersFilter filter);
 
 	Page<User> findUsers(UsersFilter filter, Paging paging);
-
 }

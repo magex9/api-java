@@ -450,7 +450,7 @@ public class CrmServicesTestSuite {
 		 */
 		logger.info("Adding User Role");
 		Role r1 = permissionService.findRoleByCode("CRM_ADMIN");
-		user = userService.addUserRole(user.getUserId(), r1.getRoleId());
+		user = userService.addUserRole(user.getUserId(), r1.getCode());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId()));
 
 		user = userService.findUser(user.getUserId());
@@ -459,7 +459,7 @@ public class CrmServicesTestSuite {
 		/* add another role and verify */
 		logger.info("Adding User Role");
 		Role r2 = permissionService.findRoleByCode("SYS_ADMIN");
-		user = userService.addUserRole(user.getUserId(), r2.getRoleId());
+		user = userService.addUserRole(user.getUserId(), r2.getCode());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));		
 		
 		user = userService.findUser(user.getUserId());
@@ -467,7 +467,7 @@ public class CrmServicesTestSuite {
 		
 		/* remove a role and verify */
 		logger.info("Removing User Role");
-		user = userService.removeUserRole(user.getUserId(), r1.getRoleId());
+		user = userService.removeUserRole(user.getUserId(), r1.getCode());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getRoleId()));
 
 		user = userService.findUser(user.getUserId());
@@ -475,7 +475,7 @@ public class CrmServicesTestSuite {
 		
 		/* set roles and verify */
 		logger.info("Setting User Roles");
-		user = userService.setRoles(user.getUserId(), Arrays.asList(r1.getRoleId(), r2.getRoleId()));
+		user = userService.setRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));
 
 		user = userService.findUser(user.getUserId());
@@ -549,7 +549,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(personId, user.getPerson().getPersonId());
 		Assert.assertEquals(userId, user.getUserId());
 		Assert.assertEquals(username, user.getUserId().toString());
-		List<Identifier> userRoles = userService.getRoles(user.getUserId());
+		List<String> userRoles = userService.getRoles(user.getUserId());
 		Assert.assertTrue("user roles: " + userRoles + ", expected roles: " + roles, 
 				userRoles.size() == roles.size() && userRoles.containsAll(roles) && roles.containsAll(userRoles));
 		logger.info("Verifying User " + userId + " Passed");

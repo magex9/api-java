@@ -8,28 +8,36 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public class User implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	private Identifier userId;
+	
+	private String username;
 
 	private PersonSummary person;
 	
 	private Status status;
 	
-	public User(Identifier userId, PersonSummary person, Status status) {
+	public User(Identifier userId, String username, PersonSummary person, Status status) {
 		super();
 		this.userId = userId;
+		this.username = username;
 		this.person = person;
 		this.status = status;
 	}
 	
 	public Identifier getUserId() {
 		return userId;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 
 	public PersonSummary getPerson() {
@@ -41,7 +49,7 @@ public class User implements Serializable {
 	}
 
 	public User withStatus(Status status) {
-		return new User(userId, person, status);
+		return new User(userId, username, person, status);
 	}
 	
 	@Override

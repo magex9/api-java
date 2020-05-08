@@ -100,7 +100,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering byOrganization@" + PermissionDataFetcher.class.getSimpleName());
 			User user = environment.getSource();
-			return crm.getRoles(user.getUserId()).stream().map((roleId) -> crm.findRole(roleId)).collect(Collectors.toList());
+			return crm.getRoles(user.getUserId()).stream().map((code) -> crm.findRoleByCode(code)).collect(Collectors.toList());
 		};
 	}
 	

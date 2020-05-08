@@ -46,6 +46,10 @@ public class OrganizationDetails extends OrganizationSummary {
 		return groupIds;
 	}
 	
+	public OrganizationDetails withGroupIds(List<Identifier> groupIds) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);

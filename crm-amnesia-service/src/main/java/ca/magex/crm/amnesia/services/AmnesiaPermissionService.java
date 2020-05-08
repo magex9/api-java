@@ -85,7 +85,7 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 
 	@Override
 	public Role createRole(Identifier groupId, String code, Localized name) {
-		return db.saveRole(new Role(new Identifier(code), groupId, code, Status.ACTIVE, name));
+		return db.saveRole(new Role(db.generateId(), groupId, code, Status.ACTIVE, name));
 	}
 
 	@Override

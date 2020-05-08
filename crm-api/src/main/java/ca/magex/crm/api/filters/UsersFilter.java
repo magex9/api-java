@@ -3,7 +3,7 @@ package ca.magex.crm.api.filters;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -46,8 +46,8 @@ public class UsersFilter implements Serializable {
 		return role;
 	}
 
-	public Comparator<PersonSummary> getComparator(Paging paging) {
-		return paging.new PagingComparator<PersonSummary>();
+	public Comparator<User> getComparator(Paging paging) {
+		return paging.new PagingComparator<User>();
 	}
 
 }
