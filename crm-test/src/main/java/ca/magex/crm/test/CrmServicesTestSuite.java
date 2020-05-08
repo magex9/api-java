@@ -42,7 +42,6 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmLocationService;
@@ -53,7 +52,6 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 /**
@@ -475,11 +473,7 @@ public class CrmServicesTestSuite {
 		logger.info("Adding User Role");
 		Role r1 = permissionService.findRoleByCode("CRM_ADMIN");
 		user = userService.addUserRole(user.getUserId(), r1.getCode());
-<<<<<<< HEAD
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId()));
-=======
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
->>>>>>> branch 'master' of https://github.com/magex9/api-java.git
 
 		user = userService.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
@@ -488,11 +482,7 @@ public class CrmServicesTestSuite {
 		logger.info("Adding User Role");
 		Role r2 = permissionService.findRoleByCode("SYS_ADMIN");
 		user = userService.addUserRole(user.getUserId(), r2.getCode());
-<<<<<<< HEAD
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));		
-=======
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));		
->>>>>>> branch 'master' of https://github.com/magex9/api-java.git
 		
 		user = userService.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
@@ -500,23 +490,15 @@ public class CrmServicesTestSuite {
 		/* remove a role and verify */
 		logger.info("Removing User Role");
 		user = userService.removeUserRole(user.getUserId(), r1.getCode());
-<<<<<<< HEAD
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getRoleId()));
-=======
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
->>>>>>> branch 'master' of https://github.com/magex9/api-java.git
-
 		user = userService.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
 		
 		/* set roles and verify */
 		logger.info("Setting User Roles");
 		user = userService.setRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
-<<<<<<< HEAD
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getRoleId(), r2.getRoleId()));
-=======
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
->>>>>>> branch 'master' of https://github.com/magex9/api-java.git
+
 
 		user = userService.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
@@ -588,11 +570,7 @@ public class CrmServicesTestSuite {
 		Assert.assertNotNull(user.getUserId());
 		Assert.assertEquals(personId, user.getPerson().getPersonId());
 		Assert.assertEquals(userId, user.getUserId());
-<<<<<<< HEAD
-		Assert.assertEquals(username, user.getUserId().toString());
-=======
 		Assert.assertEquals(username, user.getUsername());
->>>>>>> branch 'master' of https://github.com/magex9/api-java.git
 		List<String> userRoles = userService.getRoles(user.getUserId());
 		Assert.assertTrue("user roles: " + userRoles + ", expected roles: " + roles, 
 				userRoles.size() == roles.size() && userRoles.containsAll(roles) && roles.containsAll(userRoles));
