@@ -1,6 +1,8 @@
 package ca.magex.crm.amnesia;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,4 +189,12 @@ public class AmnesiaDB implements CrmPasswordService {
 		passwords.put(username, password);
 		return true;
 	}
+	
+	public void dump() {
+		data.keySet()
+			.stream()
+			.sorted((x, y) -> x.toString().compareTo(y.toString()))
+			.forEach(key -> System.out.println(key + " => " + data.get(key).toString()));
+	}
+	
 }
