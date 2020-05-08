@@ -54,6 +54,9 @@ public class AmnesiaDB implements CrmPasswordService {
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
 		passwords = new HashMap<String, String>();
+		rolesByCode = new HashMap<String, Role>();
+		usersByUsername = new HashMap<String, User>();
+		userRoles = new HashMap<String, List<String>>();
 	}
 	
 	public void reset() {
