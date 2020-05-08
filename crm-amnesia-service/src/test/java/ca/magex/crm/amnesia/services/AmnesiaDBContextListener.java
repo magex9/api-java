@@ -1,11 +1,11 @@
-package ca.magex.crm.amnesia;
+package ca.magex.crm.amnesia.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
@@ -20,7 +20,7 @@ import ca.magex.crm.resource.CrmDataInitializer;
 
 @Component
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
-public class AmnesiaDBContextListener implements ApplicationListener<ApplicationReadyEvent> {
+public class AmnesiaDBContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AmnesiaDBContextListener.class);
 
@@ -33,9 +33,10 @@ public class AmnesiaDBContextListener implements ApplicationListener<Application
 	@Autowired private CrmPasswordService crmPasswordService;
 
 	@Override
-	public void onApplicationEvent(ApplicationReadyEvent event) {
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 		LOG.info("Initializing Crm Data");
 		CrmDataInitializer.initialize(crmOrganizationService, crmLocationService, crmPersonService, crmUserService,
 				crmPermissionService, crmPasswordService, crmLookupService);
 	}	
+	
 }
