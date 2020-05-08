@@ -705,7 +705,7 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public List<Group> findGroups() {
+	public Page<Group> findGroups(Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -741,7 +741,7 @@ public class RestfulCrmServices implements CrmServices {
 	}
 
 	@Override
-	public List<Role> findRoles(Identifier groupId) {
+	public Page<Role> findRoles(Identifier groupId, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}

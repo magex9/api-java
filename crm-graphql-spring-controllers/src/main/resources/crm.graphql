@@ -87,45 +87,63 @@ type Query {
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
+	# Permission Service
+	findGroup(groupId: String!): Group
+	findGroups(paging: PagingInput!): GroupPage
+	
+	findRole(roleId: String!): Role
+	
 	# Lookup Service
 	findCodeLookups(category: String!, code: String): [CodeLookup]
 }
 
 type Mutation {
 	# Organization Service 
-	createOrganization(organizationDisplayName: String!): Organization
-	updateOrganization(organizationId: String!, organizationDisplayName: String, locationId: String): Organization
-	enableOrganization(organizationId: String!): Organization
-	disableOrganization(organizationId: String!): Organization	
+	createOrganization(displayName: String!): Organization
+	updateOrganization(organizationId: String!, displayName: String, locationId: String, status: String): Organization
 	
 	# Location Service
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
-	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput): Location
-	enableLocation(locationId: String!): Location
-	disableLocation(locationId: String!): Location
+	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput, status: String): Location
 	
 	# Person Service
 	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
-	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput): Person
-	enablePerson(personId: String!): Person
-	disablePerson(personId: String!): Person	
+	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput, status: String): Person
 		
 	# User Service
 	createUser(personId: String!, username: String!, roles: [String]): User
-	enableUser(username: String!): Location
-	disableUser(username: String!): Location	
-	addUserRole(username: String!, role: String!): User
-	removeUserRole(username: String!, role: String!): User
-	setUserRoles(username: String!, roles: [String]): User
-	setUserPassword(username: String!, password: String!): User
+	updateUser(username: String!, roles: [String], status: String): User	
+	
+	# Permission Service
+	createGroup(englishName: String!, frenchName: String!): Group
+	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
+	
+	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
+	updateRole(roleId: String!, englishName: String, frenchName: String, status: String): Role
 }
 
 # Main Types
+type Group {
+	groupId: String!
+	status: String!
+	englishName: String!
+	frenchName: String!
+}
+
+type Role {
+	roleId: String!
+	groupId: String!
+	status: String!
+	englishName: String!
+	frenchName: String!
+}
+
 type Organization {
 	organizationId: String!
 	status: String!
 	displayName: String!
 	mainLocation: Location
+	groups: [Group]
 }
 
 type Location {
@@ -174,7 +192,7 @@ type User {
 	userId: String!
 	status: String!
 	person: Person!
-	roles: [String]!
+	roles: [Role]!
 }
 
 type MailingAddress {
@@ -186,6 +204,15 @@ type MailingAddress {
 }
 
 # Pagination Types
+type GroupPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Group]
+}
+
 type OrganizationPage {
 	number: Int!
 	numberOfElements: Int!

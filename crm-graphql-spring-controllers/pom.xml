@@ -36,6 +36,7 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 
+		<!-- TODO remove this starter and bring in just graphql libraries directly (this will break our logging though) -->
 		<dependency>
 			<groupId>com.graphql-java-kickstart</groupId>
 			<artifactId>graphql-spring-boot-starter</artifactId>
@@ -52,7 +53,7 @@
 		
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-amnesia-impl</artifactId>
+			<artifactId>crm-amnesia-service</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

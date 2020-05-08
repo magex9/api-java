@@ -19,10 +19,6 @@ public class DefaultCrmLocationPolicy implements CrmLocationPolicy {
 
 	@Autowired private CrmLocationService locationService;
 	
-	public DefaultCrmLocationPolicy() {
-		System.out.println("hello");
-	}
-
 	@Override
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
 		return true;

@@ -1,7 +1,5 @@
 package ca.magex.crm.api.services;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.filters.Paging;
@@ -14,7 +12,7 @@ import ca.magex.crm.api.system.Localized;
 
 public interface CrmPermissionService {
 	
-    List<Group> findGroups();
+    Page<Group> findGroups(Paging paging);
     
     Group findGroup(Identifier groupId);
     
@@ -26,7 +24,7 @@ public interface CrmPermissionService {
     
     Group disableGroup(Identifier groupId);
     
-    List<Role> findRoles(Identifier groupId);
+	Page<Role> findRoles(Identifier groupId, Paging paging);
     
     Role findRole(Identifier roleId);
     

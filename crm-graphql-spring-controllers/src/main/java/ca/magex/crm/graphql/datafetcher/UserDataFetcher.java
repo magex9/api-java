@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
@@ -64,75 +63,35 @@ public class UserDataFetcher extends AbstractDataFetcher {
 		};
 	}
 	
-	public DataFetcher<User> enableUser() {
+	public DataFetcher<User> updateUser() {
 		return (environment) -> {
-			logger.info("Entering enableUser@" + PersonDataFetcher.class.getSimpleName());
+			logger.info("Entering createUser@" + UserDataFetcher.class.getSimpleName());
 			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			crm.enableUser(userId);
-			return crm.findUser(userId);
-		};
-	}
-
-	public DataFetcher<User> disableUser() {
-		return (environment) -> {
-			logger.info("Entering disableUser@" + PersonDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			crm.disableUser(userId);
-			return crm.findUser(userId);
-		};
-	}
-
-	public DataFetcher<User> addUserRole() {
-		return (environment) -> {
-			logger.info("Entering addUserRole@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			Identifier roleId = new Identifier((String) environment.getArgument("roleId"));
-			return crm.addUserRole(userId, roleId);
-		};
-	}
-
-	public DataFetcher<User> removeUserRole() {
-		return (environment) -> {
-			logger.info("Entering removeUserRole@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			Identifier roleId = new Identifier((String) environment.getArgument("roleId"));
-			return crm.removeUserRole(userId, roleId);
-		};
-	}
-
-	public DataFetcher<User> setUserRoles() {
-		return (environment) -> {
-			logger.info("Entering setUserRoles@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			Object roles = environment.getArgument("roles");
-//			return crm.setUserRoles(
-//					userId,
-//					environment.getArgument("roles"));
+			User user = crm.findUser(userId);
 			
-			return null;
+			if (environment.getArgument("roles") != null) {				
+				crm.setRoles(userId, environment.getArgument("roles"));
+			}
+			if (environment.getArgument("status") != null) {
+				String status = StringUtils.upperCase(environment.getArgument("status"));
+				switch(status) {
+				case "ACTIVE":
+					if (user.getStatus() != Status.ACTIVE) {
+						user = crm.enableUser(userId);
+					}
+					break;
+				case "INACTIVE":
+					if (user.getStatus() != Status.INACTIVE) {
+						user = crm.disableUser(userId);
+					}
+					break;
+				default:
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
+				}
+			}
+			return user;
 		};
-	}
-	
-	public DataFetcher<User> restPassword() {
-		return (environment) -> {
-			logger.info("Entering resetPassword@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			crm.resetPassword(userId);
-			return crm.findUser(userId);
-		};
-	}
-
-	public DataFetcher<User> changePassword() {
-		return (environment) -> {
-			logger.info("Entering changePassword@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
-			crm.changePassword(
-					userId, 
-					environment.getArgument("currentPassword"), 
-					environment.getArgument("newPassword"));
-			return crm.findUser(userId);
-		};
-	}
+	}	
 	
 	private UsersFilter extractFilter(Map<String, Object> filter) {
 		String personId = (String) filter.get("personId");

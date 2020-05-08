@@ -35,8 +35,9 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public List<Group> findGroups() {
-		return db.findByType(Group.class).collect(Collectors.toList());
+	public Page<Group> findGroups(Paging paging) {
+		List<Group> allMatchingGroups = db.findByType(Group.class).collect(Collectors.toList());
+		return PageBuilder.buildPageFor(allMatchingGroups, paging);
 	}
 
 	@Override
@@ -65,10 +66,11 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public List<Role> findRoles(Identifier groupId) {
-		return db.findByType(Role.class)
+	public Page<Role> findRoles(Identifier groupId, Paging paging) {
+		List<Role> allRoles = db.findByType(Role.class)
 			.filter(r -> r.getGroupId().equals(groupId))
 			.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(allRoles, paging);
 	}
 
 	@Override
@@ -83,7 +85,7 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 
 	@Override
 	public Role createRole(Identifier groupId, String code, Localized name) {
-		return db.saveRole(new Role(new Identifier(code), groupId, Status.ACTIVE, name));
+		return db.saveRole(new Role(new Identifier(code), groupId, code, Status.ACTIVE, name));
 	}
 
 	@Override

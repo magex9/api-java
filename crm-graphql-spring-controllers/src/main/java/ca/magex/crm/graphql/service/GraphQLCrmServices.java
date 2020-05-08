@@ -3,7 +3,6 @@ package ca.magex.crm.graphql.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
@@ -40,7 +40,7 @@ public class GraphQLCrmServices {
 	@Autowired PersonDataFetcher personDataFetcher;
 	@Autowired LookupDataFetcher lookupDataFetcher;
 	@Autowired UserDataFetcher userDataFetcher;
-	@Autowired PermissionDataFetcher PermissionDataFetcher;
+	@Autowired PermissionDataFetcher permissionDataFetcher;
 
 	@Value("classpath:crm.graphql") private Resource resource;
 
@@ -80,46 +80,58 @@ public class GraphQLCrmServices {
 	private RuntimeWiring buildRuntimeWiring() {
 		logger.info("Building GraphQL runtime wiring");
 		return RuntimeWiring.newRuntimeWiring()
+				// organization data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countOrganizations", organizationDataFetcher.countOrganizations()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganizations", organizationDataFetcher.findOrganizations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOrganization", organizationDataFetcher.createOrganization()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganization", organizationDataFetcher.updateOrganization()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableOrganization", organizationDataFetcher.enableOrganization()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableOrganization", organizationDataFetcher.disableOrganization()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("groups", permissionDataFetcher.groupsByOrganization()))
 
+				// location data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countLocations", locationDataFetcher.countLocations()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableLocation", locationDataFetcher.enableLocation()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableLocation", locationDataFetcher.disableLocation()))
 
+				// person data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countPersons", personDataFetcher.countPersons()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPersons", personDataFetcher.findPersons()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createPerson", personDataFetcher.createPerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enablePerson", personDataFetcher.enablePerson()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disablePerson", personDataFetcher.disablePerson()))
 
+				// user data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUser()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countUsers", userDataFetcher.countUsers()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUsers", userDataFetcher.findUsers()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createUser", userDataFetcher.createUser()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("enableUser", userDataFetcher.createUser()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("disableUser", userDataFetcher.createUser()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("addUserRole", userDataFetcher.addUserRole()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("removeUserRole", userDataFetcher.removeUserRole()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("setUserRoles", userDataFetcher.setUserRoles()))
-
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
-
-				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateUser", userDataFetcher.updateUser()))				
 				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
-				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Locale.CANADA)))
-				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Locale.CANADA_FRENCH)))
+				.type("User", typeWiring -> typeWiring.dataFetcher("roles", permissionDataFetcher.rolesByUser()))
+
+				// group data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroup", permissionDataFetcher.findGroup()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroups", permissionDataFetcher.findGroups()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createGroup", permissionDataFetcher.createGroup()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateGroup", permissionDataFetcher.updateGroup()))
+				.type("Group", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
+				.type("Group", typeWiring -> typeWiring.dataFetcher("frenchName", permissionDataFetcher.getNameByLocale(Lang.FRENCH)))
+
+				// role data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findRole", permissionDataFetcher.findRole()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createRole", permissionDataFetcher.createRole()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateRole", permissionDataFetcher.updateRole()))
+				.type("Role", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
+				.type("Role", typeWiring -> typeWiring.dataFetcher("frenchName", permissionDataFetcher.getNameByLocale(Lang.FRENCH)))
+
+				// lookup data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
+				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Lang.ENGLISH)))
+				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Lang.FRENCH)))
+
 				.build();
 	}
 }

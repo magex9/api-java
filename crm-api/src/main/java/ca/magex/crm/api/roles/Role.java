@@ -1,6 +1,7 @@
 package ca.magex.crm.api.roles;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -19,14 +20,17 @@ public class Role implements Serializable {
 	
 	private Identifier groupId;
 	
+	private String code;
+	
 	private Status status;
 	
 	private Localized name;
 	
-	public Role(Identifier roleId, Identifier groupId, Status status, Localized name) {
+	public Role(Identifier roleId, Identifier groupId, String code, Status status, Localized name) {
 		super();
 		this.roleId = roleId;
 		this.groupId = groupId;
+		this.code = code;
 		this.status = status;
 		this.name = name;
 	}
@@ -39,20 +43,24 @@ public class Role implements Serializable {
 		return groupId;
 	}
 	
+	public String getCode() {
+		return code;
+	}
+	
 	public Status getStatus() {
 		return status;
 	}
 	
 	public Role withStatus(Status status) {
-		return new Role(roleId, groupId, status, name);
+		return new Role(roleId, groupId, code, status, name);
 	}
 	
-	public Localized getName() {
-		return name;
+	public String getName(Locale locale) {
+		return name.get(locale);
 	}
 	
 	public Role withName(Localized name) {
-		return new Role(roleId, groupId, status, name);
+		return new Role(roleId, groupId, code, status, name);
 	}
 
 	@Override

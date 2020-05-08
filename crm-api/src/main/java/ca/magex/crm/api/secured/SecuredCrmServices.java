@@ -563,8 +563,8 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public List<Group> findGroups() {
-		return permissionsService.findGroups();
+	public Page<Group> findGroups(Paging paging) {
+		return permissionsService.findGroups(paging);
 	}
 
 	@Override
@@ -603,10 +603,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public List<Role> findRoles(Identifier groupId) {
+	public Page<Role> findRoles(Identifier groupId, Paging paging) {
 		if (!canViewRoles())
 			throw new PermissionDeniedException("findRoles: " + groupId);
-		return permissionsService.findRoles(groupId);
+		return permissionsService.findRoles(groupId, paging);
 	}
 
 	@Override

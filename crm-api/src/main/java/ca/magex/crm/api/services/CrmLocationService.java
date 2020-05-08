@@ -11,15 +11,24 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmLocationService {
 
-    LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address);
-    LocationSummary enableLocation(Identifier locationId);
-    LocationSummary disableLocation(Identifier locationId);
-    LocationDetails updateLocationName(Identifier locationId, String displaysName);
-    LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address);
-    LocationSummary findLocationSummary(Identifier locationId);
-    LocationDetails findLocationDetails(Identifier locationId);
-    long countLocations(LocationsFilter filter);
-    Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging);
-    Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging);
-    
+	LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address);
+
+	LocationSummary enableLocation(Identifier locationId);
+
+	LocationSummary disableLocation(Identifier locationId);
+
+	LocationDetails updateLocationName(Identifier locationId, String displaysName);
+
+	LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address);
+
+	LocationSummary findLocationSummary(Identifier locationId);
+
+	LocationDetails findLocationDetails(Identifier locationId);
+
+	long countLocations(LocationsFilter filter);
+
+	Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging);
+
+	Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging);
+
 }

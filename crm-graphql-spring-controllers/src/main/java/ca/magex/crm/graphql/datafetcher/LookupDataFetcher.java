@@ -1,16 +1,13 @@
 package ca.magex.crm.graphql.datafetcher;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.CrmLookupItem;
@@ -21,15 +18,6 @@ import graphql.schema.DataFetcher;
 public class LookupDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LookupDataFetcher.class);
-
-	public DataFetcher<String> getNameByLocale(Locale locale) {
-		return (environment) -> {
-			logger.debug("Entering getNameByLocale@" + LookupDataFetcher.class.getSimpleName());
-			Object source = environment.getSource();
-			Method getName = ReflectionUtils.findMethod(source.getClass(), "getName", Locale.class);
-			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
-		};
-	}
 	
 	public DataFetcher<List<CrmLookupItem>> findCodeLookups() {
 		return (environment) -> {

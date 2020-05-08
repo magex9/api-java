@@ -23,7 +23,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PermissionsFilter;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -31,10 +33,13 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Permission;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 /**
@@ -52,6 +57,10 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	public CrmServicesGraphQLClientImpl(String endpoint) {
 		super(endpoint, "/organization-service-queries.properties");
 	}
+	
+	/* --------------------------------------------------------------------------------------- */
+	/*                                   ORGANIZATION SERVICE                                  */
+	/* --------------------------------------------------------------------------------------- */
 
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName) {
@@ -147,6 +156,10 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
+	
+	/* --------------------------------------------------------------------------------------- */
+	/*                                  LOCATION SERVICE                                       */
+	/* --------------------------------------------------------------------------------------- */
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
@@ -253,6 +266,10 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
+	
+	/* --------------------------------------------------------------------------------------- */
+	/*                                 PERSON SERVICE                                          */ 
+	/* --------------------------------------------------------------------------------------- */
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
@@ -278,6 +295,22 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				position.getSector(),
 				position.getUnit(),
 				position.getClassification()));
+	}
+	
+	@Override
+	public PersonSummary enablePerson(Identifier personId) {
+		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
+				"enablePerson",
+				"enablePerson",
+				personId));
+	}
+
+	@Override
+	public PersonSummary disablePerson(Identifier personId) {
+		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
+				"disablePerson",
+				"disablePerson",
+				personId));
 	}
 
 	@Override
@@ -328,85 +361,6 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				position.getSector(),
 				position.getUnit(),
 				position.getClassification()));
-	}
-
-	@Override
-	public PersonSummary enablePerson(Identifier personId) {
-		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
-				"enablePerson",
-				"enablePerson",
-				personId));
-	}
-
-	@Override
-	public PersonSummary disablePerson(Identifier personId) {
-		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
-				"disablePerson",
-				"disablePerson",
-				personId));
-	}
-
-	@Override
-	public User findUserById(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"findUser",
-				"findUser",
-				userId));
-	}
-	
-	@Override
-	public User findUserByUsername(String username) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"findUserByUsername",
-				"findUserByUsername",
-				username));
-	}
-	
-	@Override
-	public User createUser(Identifier personId, String username, List<String> roles) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"createUser",
-				"createUser",
-				personId,
-				username,
-				roles));
-	}
-	
-	@Override
-	public User addUserRole(Identifier userId, String role) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"addUserRole",
-				"addUserRole",
-				userId,
-				role));
-	}
-
-	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"removeUserRole",
-				"removeUserRole",
-				userId,
-				role));
-	}
-	
-	@Override
-	public User setUserRoles(Identifier userId, List<String> roles) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"setUserRoles",
-				"setUserRoles",
-				userId,
-				roles));
-	}
-	
-	@Override
-	public User setUserPassword(Identifier userId, String password, boolean encoded) {
-		// TODO pass encoded flag over to graphql server
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
-				"setUserPassword",
-				"setUserPassword",
-				userId,
-				password));
 	}
 
 	@Override
@@ -461,7 +415,199 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
+	
+	
+	/* --------------------------------------------------------------------------------------- */
+	/*                                    USER SERVICE                                         */ 
+	/* --------------------------------------------------------------------------------------- */
 
+	@Override
+	public User createUser(Identifier personId, String username, List<String> roles) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"createUser",
+				"createUser",
+				personId,
+				username,
+				roles));
+	}
+	
+	@Override
+	public User enableUser(Identifier userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public User disableUser(Identifier userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public User findUser(Identifier userId) {
+		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+				"findUser",
+				"findUser",
+				userId));
+	}
+	
+	@Override
+	public List<Identifier> getRoles(Identifier userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public User addUserRole(Identifier userId, Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public User removeUserRole(Identifier userId, Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public User setRoles(Identifier userId, List<Identifier> roleIds) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean resetPassword(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public long countUsers(UsersFilter filter) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		return ModelBinder.toPage(paging, ModelBinder::toUser, performGraphQLQueryWithSubstitution(
+				"findUsers",
+				"findUsers",
+				filter.getOrganizationId(),
+				filter.getPersonId(),
+				filter.getStatus(),
+				filter.getRole(),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
+	}
+	
+	/* --------------------------------------------------------------------------------------- */
+	/*                                PERMISSIONS SERVICE                                      */ 
+	/* --------------------------------------------------------------------------------------- */
+	
+	@Override
+	public Page<Group> findGroups(Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Group findGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Group createGroup(Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Group updateGroupName(Identifier groupId, Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Group enableGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Group disableGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
+
+	@Override
+	public Page<Role> findRoles(Identifier groupId, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role findRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	@Override
+	public Role findRoleByCode(String code) throws ItemNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role createRole(Identifier groupId, String code, Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role updateRoleName(Identifier roleId, Localized name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role enableRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role disableRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public long countPermissions(PermissionsFilter filter) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
+
+	/* --------------------------------------------------------------------------------------- */
+	/*                                    LOOKUP SERVICE                                       */
+	/* --------------------------------------------------------------------------------------- */
+	
 	@Override
 	public List<Status> findStatuses() {
 		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
@@ -483,29 +629,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return findByLocalizedName(locale, name, this::findStatuses);
 	}
-
-	@Override
-	public List<Role> findRoles() {
-		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
-				"Role"));
-	}
-
-	@Override
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toRole, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
-				"Role",
-				code)).get(0);
-	}
-
-	@Override
-	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return findByLocalizedName(locale, name, this::findRoles);
-	}
-
+	
 	@Override
 	public List<Country> findCountries() {
 		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(

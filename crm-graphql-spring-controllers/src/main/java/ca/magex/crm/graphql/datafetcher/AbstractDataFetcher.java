@@ -1,10 +1,15 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ReflectionUtils;
 
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -15,6 +20,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.graphql.util.PagingBuilder;
+import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
@@ -25,8 +31,19 @@ import graphql.schema.DataFetchingEnvironment;
  */
 public abstract class AbstractDataFetcher {	
 
+	private static Logger logger = LoggerFactory.getLogger(AbstractDataFetcher.class);
+	
 	@Autowired protected Crm crm;
 
+	public DataFetcher<String> getNameByLocale(Locale locale) {
+		return (environment) -> {
+			logger.debug("Entering getNameByLocale@" + AbstractDataFetcher.class.getSimpleName());
+			Object source = environment.getSource();
+			Method getName = ReflectionUtils.findMethod(source.getClass(), "getName", Locale.class);
+			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
+		};
+	}
+	
 	/**
 	 * extracts the filter from the environment
 	 * 
@@ -122,7 +139,7 @@ public abstract class AbstractDataFetcher {
 				(String) businessMap.get("sector"),
 				(String) businessMap.get("unit"),
 				(String) businessMap.get("classification"));
-	}
+	}	
 
 	/**
 	 * Extracts the role from the environment

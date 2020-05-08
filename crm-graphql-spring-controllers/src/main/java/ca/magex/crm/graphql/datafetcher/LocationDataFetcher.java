@@ -69,39 +69,41 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<LocationDetails> enableLocation() {
-		return (environment) -> {
-			logger.info("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
-			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
-			crm.enableLocation(locationId);
-			return crm.findLocationDetails(locationId);
-		};
-	}
-
-	public DataFetcher<LocationDetails> disableLocation() {
-		return (environment) -> {
-			logger.info("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
-			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
-			crm.disableLocation(locationId);
-			return crm.findLocationDetails(locationId);
-		};
-	}
-
 	public DataFetcher<LocationDetails> updateLocation() {
 		return (environment) -> {
 			logger.info("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
 			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
+			LocationDetails loc = crm.findLocationDetails(locationId);
 			if (environment.getArgument("locationName") != null) {
-				crm.updateLocationName(
+				loc = crm.updateLocationName(
 						locationId,
 						environment.getArgument("locationName"));
 			}
 			if (environment.getArgument("locationAddress") != null) {
-				crm.updateLocationAddress(
+				loc = crm.updateLocationAddress(
 						locationId,
 						extractMailingAddress(environment, "locationAddress"));
 			}
-			return crm.findLocationDetails(locationId);
+			if (environment.getArgument("status") != null) {
+				String status = StringUtils.upperCase(environment.getArgument("status"));
+				switch (status) {
+				case "ACTIVE":
+					if (loc.getStatus() != Status.ACTIVE) {
+						crm.enableLocation(locationId);
+						loc = loc.withStatus(Status.ACTIVE);
+					}
+					break;
+				case "INACTIVE":
+					if (loc.getStatus() != Status.INACTIVE) {
+						crm.disableLocation(locationId);
+						loc = loc.withStatus(Status.INACTIVE);
+					}
+					break;
+				default:
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
+				}
+			}
+			return loc;
 		};
 	}
 

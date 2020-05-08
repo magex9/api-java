@@ -73,49 +73,51 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<PersonDetails> enablePerson() {
-		return (environment) -> {
-			logger.info("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			crm.enablePerson(personId);
-			return crm.findPersonDetails(personId);
-		};
-	}
-
-	public DataFetcher<PersonDetails> disablePerson() {
-		return (environment) -> {
-			logger.info("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			crm.disablePerson(personId);
-			return crm.findPersonDetails(personId);
-		};
-	}
-
 	public DataFetcher<PersonDetails> updatePerson() {
 		return (environment) -> {
 			logger.info("Entering updatePerson@" + PersonDataFetcher.class.getSimpleName());
 			Identifier personId = new Identifier((String) environment.getArgument("personId"));
+			PersonDetails person = crm.findPersonDetails(personId);
 			if (environment.getArgument("name") != null) {
-				crm.updatePersonName(
+				person = crm.updatePersonName(
 						personId,
 						extractPersonName(environment, "name"));
 			}
 			if (environment.getArgument("address") != null) {
-				crm.updatePersonAddress(
+				person = crm.updatePersonAddress(
 						personId,
 						extractMailingAddress(environment, "address"));
 			}
 			if (environment.getArgument("communication") != null) {
-				crm.updatePersonCommunication(
+				person = crm.updatePersonCommunication(
 						personId,
 						extractCommunication(environment, "communication"));
 			}
 			if (environment.getArgument("position") != null) {
-				crm.updatePersonBusinessPosition(
+				person = crm.updatePersonBusinessPosition(
 						personId,
 						extractBusinessPosition(environment, "position"));
 			}
-			return crm.findPersonDetails(personId);
+			if (environment.getArgument("status") != null) {
+				String status = StringUtils.upperCase(environment.getArgument("status"));
+				switch(status) {
+				case "ACTIVE":
+					if (person.getStatus() != Status.ACTIVE) {
+						crm.enablePerson(personId);
+						person = person.withStatus(Status.ACTIVE);
+					}
+					break;
+				case "INACTIVE":
+					if (person.getStatus() != Status.INACTIVE) {
+						crm.disablePerson(personId);
+						person = person.withStatus(Status.INACTIVE);
+					}
+					break;
+				default:
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
+				}
+			}
+			return person;
 		};
 	}
 
