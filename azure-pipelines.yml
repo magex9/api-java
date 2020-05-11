@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Maven
 <<<<<<< HEAD
 # Build your Java project and run tests with Apache Maven!
@@ -11,6 +12,11 @@
 pool:
     vmImage: 'ubuntu-latest'
 >>>>>>> 2c335ef... Reorganized pipeline
+=======
+#Pipeline Configuration
+pool:
+    vmImage: 'ubuntu-latest'
+>>>>>>> branch 'master' of https://github.com/eagleyes/api-java.git
 
 trigger:
       - master
