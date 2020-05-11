@@ -23,12 +23,6 @@ stages:
           publishJUnitResults: true
           testResultsFiles: '**/surefire-reports/TEST-*.xml'
           goals: 'package'
-
-
-    - job: Package
-      dependsOn: Build
-      condition: succeededOrFailed()
-      steps:
       - task: Bash@3
         name: "Packaging_app_code"
         inputs:
