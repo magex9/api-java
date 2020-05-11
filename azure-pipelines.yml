@@ -47,7 +47,7 @@ stages:
             cp $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-*-bootable.jar $build_dir/
             cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
             
-            cd ${build_dir} ; tar -cvzf ${publish_dir}/${application_name}-${application_version}.tgz *
+            cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${application_name}-${application_version}.tgz ${application_name}
             ls -la $(System.DefaultWorkingDirectory)/**
           failOnStderr: true
       
@@ -79,6 +79,13 @@ stages:
                 commands: 'ls -la /var/data/finuser/builds'
                 readyTimeout: '20000'
             - task: SSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                runOptions: 'commands'
+                commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
+                readyTimeout: '20000'
+            - task: SSH@0
+              name: restartApplication
               inputs:
                 sshEndpoint: 'ssh - RD3'
                 runOptions: 'commands'
