@@ -9,6 +9,8 @@ trigger:
 stages:
   - stage: Build
     jobs:
+
+
     - job: Build
       steps:
       - task: Maven@3
@@ -21,12 +23,19 @@ stages:
           publishJUnitResults: true
           testResultsFiles: '**/surefire-reports/TEST-*.xml'
           goals: 'package'
+
+
+    - job: Package
+      dependsOn: Build
+      condition: suceededOrFailed()
+      steps:
       - task: Bash@3
+        name: "Packaging_app_code"
         inputs:
           targetType: 'inline'
           script: |
             # Write your commands here
-            
+            set -x
             application_name=crm-auth-spring-boot-server
             application_version=1.0.0-SNAPSHOT
             build_dir="$(System.DefaultWorkingDirectory)/build/${application_name}"
