@@ -41,7 +41,7 @@ public class AmnesiaUserService implements CrmUserService {
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		User user = db.saveUser(new User(db.generateId(), username, db.findPerson(personId), Status.ACTIVE));
-		setRoles(user.getUserId(), roles);
+		updateUserRoles(user.getUserId(), roles);
 		return user;
 	}
 
@@ -90,7 +90,7 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public User setRoles(Identifier userId, List<String> roles) {
+	public User updateUserRoles(Identifier userId, List<String> roles) {
 		List<String> updates = new ArrayList<String>(roles);
 		for (Permission permission : db.findPermissions(userId)) {
 			String role = db.findRole(permission.getRoleId()).getCode();
