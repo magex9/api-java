@@ -14,20 +14,23 @@ public class UsersFilter implements Serializable {
 	private Identifier personId;
 
 	private Identifier organizationId;
-
+	
 	private Status status;
+
+	private String username;
 
 	private String role;
 
-	public UsersFilter(Identifier personId, Identifier organizationId, Status status, String role) {
+	public UsersFilter(Identifier personId, Identifier organizationId, Status status, String username, String role) {
 		this.personId = personId;
 		this.organizationId = organizationId;
 		this.status = status;
+		this.username = username;
 		this.role = role;
 	}
 
 	public UsersFilter() {
-		this(null, null, null, null);
+		this(null, null, null, null, null);
 	}
 	
 	public Identifier getPersonId() {
@@ -40,6 +43,10 @@ public class UsersFilter implements Serializable {
 
 	public Status getStatus() {
 		return status;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 
 	public String getRole() {
