@@ -32,6 +32,9 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastUserService implements CrmUserService {
 	
+	public static String HZ_USER_KEY = "users";
+	
+	
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmPasswordService passwordService;
 	@Autowired private CrmPersonService personService;
@@ -42,8 +45,8 @@ public class HazelcastUserService implements CrmUserService {
 		/* run a find on the personId to ensure it exists */
 		PersonSummary person = personService.findPersonSummary(personId);		
 		/* create our new user */
-		Map<Identifier, User> users = hzInstance.getMap("users");
-		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator("users");
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_USER_KEY);
 		User user = new User(
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				username,
@@ -55,7 +58,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User findUser(Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap("users");
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("Unable to find user for id " + userId);
@@ -65,7 +68,7 @@ public class HazelcastUserService implements CrmUserService {
 	
 	@Override
 	public User findUserByUsername(String username) {
-		Map<Identifier, User> users = hzInstance.getMap("users");
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.values().stream()
 			.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
 			.findFirst()
@@ -77,7 +80,7 @@ public class HazelcastUserService implements CrmUserService {
 	
 	@Override
 	public User addUserRole(Identifier userId, String role) {
-		Map<Identifier, User> users = hzInstance.getMap("users");
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("Unable to find user " + userId);
@@ -87,7 +90,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User removeUserRole(Identifier userId, String role) {
-		Map<Identifier, User> users = hzInstance.getMap("users");
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("Unable to find user " + userId);
@@ -97,7 +100,7 @@ public class HazelcastUserService implements CrmUserService {
 	
 	@Override
 	public User setRoles(Identifier userId, List<String> roles) {
-		Map<Identifier, User> users = hzInstance.getMap("users");
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("Unable to find user " + userId);

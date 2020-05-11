@@ -33,7 +33,6 @@ public class HazelcastPermissionService implements CrmPermissionService {
 
 	public static String HZ_GROUP_KEY = "groups";
 	public static String HZ_ROLE_KEY = "roles";
-	public static String HZ_PERMISSION_KEY = "permissions";
 
 	@Autowired private HazelcastInstance hzInstance;
 
@@ -132,7 +131,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Unable to find role for id " + roleId);
+			throw new ItemNotFoundException("Role ID '" + roleId + "'");
 		}
 		return SerializationUtils.clone(role);
 	}
@@ -142,7 +141,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Unable to find role for id " + roleId);
+			throw new ItemNotFoundException("Role ID '" + roleId + "'");
 		}
 		if (role.getName().equals(name)) {
 			return SerializationUtils.clone(role);
@@ -157,7 +156,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Unable to find role for id " + roleId);
+			throw new ItemNotFoundException("Role ID '" + roleId + "'");
 		}
 		if (role.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(role);
@@ -172,7 +171,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Unable to find role for id " + roleId);
+			throw new ItemNotFoundException("Role ID '" + roleId + "'");
 		}
 		if (role.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(role);
@@ -195,28 +194,30 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	@Override
 	public Role findRoleByCode(String code) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
-		return roles.values().stream().filter((r) -> r.getCode().equals(code)).findFirst().orElseThrow(() -> new ItemNotFoundException("No role found for code " + code));
+		return roles.values().stream().filter((r) -> r.getCode().equals(code)).findFirst().orElseThrow(() -> new ItemNotFoundException("Role Code '" + code + "'"));
 	}
 
 	@Override
 	public long countPermissions(PermissionsFilter filter) {
-		Map<Identifier, Permission> permissions = hzInstance.getMap(HZ_PERMISSION_KEY);
-		return permissions.values().stream()
-				.filter((p) -> filter.getUserId() == null || filter.getUserId().equals(p.getUserId()))
-				.filter((p) -> filter.getRoleId() == null || filter.getRoleId().equals(p.getRoleId()))
-				.filter((p) -> filter.getStatus() == null || filter.getStatus().equals(p.getStatus()))
-				.count();
+//		Map<Identifier, Permission> permissions = hzInstance.getMap(HZ_PERMISSION_KEY);
+//		return permissions.values().stream()
+//				.filter((p) -> filter.getUserId() == null || filter.getUserId().equals(p.getUserId()))
+//				.filter((p) -> filter.getRoleId() == null || filter.getRoleId().equals(p.getRoleId()))
+//				.filter((p) -> filter.getStatus() == null || filter.getStatus().equals(p.getStatus()))
+//				.count();
+		return 0L;
 	}
 
 	@Override
 	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
-		Map<Identifier, Permission> permissions = hzInstance.getMap(HZ_PERMISSION_KEY);
-		return PageBuilder.buildPageFor(permissions.values().stream()
-				.filter((p) -> filter.getUserId() == null || filter.getUserId().equals(p.getUserId()))
-				.filter((p) -> filter.getRoleId() == null || filter.getRoleId().equals(p.getRoleId()))
-				.filter((p) -> filter.getStatus() == null || filter.getStatus().equals(p.getStatus()))
-				.sorted(filter.getComparator(paging))
-				.collect(Collectors.toList()), paging);
+//		Map<Identifier, Permission> permissions = hzInstance.getMap(HZ_PERMISSION_KEY);
+//		return PageBuilder.buildPageFor(permissions.values().stream()
+//				.filter((p) -> filter.getUserId() == null || filter.getUserId().equals(p.getUserId()))
+//				.filter((p) -> filter.getRoleId() == null || filter.getRoleId().equals(p.getRoleId()))
+//				.filter((p) -> filter.getStatus() == null || filter.getStatus().equals(p.getStatus()))
+//				.sorted(filter.getComparator(paging))
+//				.collect(Collectors.toList()), paging);
+		return null;
 	}
 
 }

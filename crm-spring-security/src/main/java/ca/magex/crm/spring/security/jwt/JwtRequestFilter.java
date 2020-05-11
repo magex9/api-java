@@ -52,7 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				try {
 					JwtAuthenticationToken authenticationToken = jwtAuthDetailsService.getJwtAuthenticationTokenForUsername(jwtToken);
 					/* set the authentication for spring */
-					SecurityContextHolder.getContext().setAuthentication(authenticationToken);					
+					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				} catch (Exception e) {
 					logger.warn("Cannot parse jwt token: " + jwtToken, e);
 				}
