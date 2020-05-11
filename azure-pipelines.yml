@@ -28,8 +28,11 @@ stages:
             # Write your commands here
             
             echo 'Hello world'
-            ls -la */**
-      - publish: $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar
+            ls -la $(System.DefaultWorkingDirectory)/**
+            cd $(System.DefaultWorkingDirectory)
+            mkdir publish
+            tar -cvzf publish/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar crm-admin/admin
+      - publish: $(System.DefaultWorkingDirectory)/publish/*.tgz
         artifact: authApp
   - stage: deploy
     jobs:
@@ -46,7 +49,7 @@ stages:
               inputs:
                 sshEndpoint: 'ssh - RD3'
                 sourceFolder: '$(Pipeline.Workspace)/authApp/'
-                contents: '*.jar'
+                contents: '*.tgz'
                 targetFolder: '/var/data/finuser/builds/'
                 readyTimeout: '20000'
                 failOnEmptySource: true
@@ -55,6 +58,12 @@ stages:
                 sshEndpoint: 'ssh - RD3'
                 runOptions: 'commands'
                 commands: 'ls -la /var/data/finuser/builds'
+                readyTimeout: '20000'
+            - task: SSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                runOptions: 'commands'
+                commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
                 readyTimeout: '20000'
 
 # Build your Java project and run tests with Apache Maven.
