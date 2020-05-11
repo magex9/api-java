@@ -33,6 +33,8 @@ stages:
             application_name=crm-auth-spring-boot-server
             application_version=1.0.0-SNAPSHOT
             build_dir="$(System.DefaultWorkingDirectory)/build/${application_name}"
+            config_dir="${build_dir}/config"
+            config_file="${config_dir}/application.cfg"
             publish_dir="$(System.DefaultWorkingDirectory)/publish"
 
             if [ -d $build_dir ];then
@@ -40,6 +42,11 @@ stages:
             else
               mkdir -p $build_dir
             fi
+
+            if [ ! -d $config_dir ];then
+              mkdir -p $config_dir
+            fi
+
             if [ ! -d $publish_dir ];then
               mkdir -p $publish_dir
             fi
@@ -47,10 +54,16 @@ stages:
             cp $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-*-bootable.jar $build_dir/
             cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
             
+            #Create configuration file
+            touch ${config_file}
+            echo "export APPLICATION_NAME=${application_name} >> $config_file"
+            echo "export APPLICATION_VERSION=${application_version} >> $config_file"
+
+
             cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${application_name}-${application_version}.tgz ${application_name}
             ls -la $(System.DefaultWorkingDirectory)/**
           failOnStderr: true
-      
+           
       - publish: $(System.DefaultWorkingDirectory)/publish
         artifact: authApp
   - stage: deploy
