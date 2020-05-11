@@ -63,7 +63,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - script: ls -la $(Pipeline.Workspace)/authapp
+            - script: ls -la $(Pipeline.Workspace)/authApp
             - task: CopyFilesOverSSH@0
               inputs:
                 sshEndpoint: 'ssh - RD3'
