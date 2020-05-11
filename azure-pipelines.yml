@@ -28,10 +28,10 @@ stages:
             # Write your commands here
             
             echo 'Hello world'
+            
+            mkdir $(System.DefaultWorkingDirectory)
+            tar -C $(System.DefaultWorkingDirectory) -cvzf publish/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar crm-admin/admin
             ls -la $(System.DefaultWorkingDirectory)/**
-            cd $(System.DefaultWorkingDirectory)
-            mkdir publish
-            tar -cvzf publish/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar crm-admin/admin
       - publish: $(System.DefaultWorkingDirectory)/publish/*.tgz
         artifact: authApp
   - stage: deploy
