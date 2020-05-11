@@ -29,9 +29,10 @@ stages:
             
             echo 'Hello world'
             
-            mkdir $(System.DefaultWorkingDirectory)
+            mkdir $(System.DefaultWorkingDirectory)/publish
             tar -C $(System.DefaultWorkingDirectory) -cvzf publish/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar crm-admin/admin
             ls -la $(System.DefaultWorkingDirectory)/**
+          failOnStderr: true
       - publish: $(System.DefaultWorkingDirectory)/publish/*.tgz
         artifact: authApp
   - stage: deploy
