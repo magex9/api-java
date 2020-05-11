@@ -1,22 +1,147 @@
+<<<<<<< HEAD
 # Maven
+<<<<<<< HEAD
 # Build your Java project and run tests with Apache Maven!
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
+=======
+>>>>>>> cae8eb3... added ssh to RD3
+=======
+#Pipeline Configuration
+pool:
+    vmImage: 'ubuntu-latest'
+>>>>>>> 2c335ef... Reorganized pipeline
 
 trigger:
-- master
+      - master
+#test
+#Stages Configuration (to be ran sequentially)
+stages:
+  - stage: Build
+    jobs:
 
-pool:
-  vmImage: 'ubuntu-latest'
 
-steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+    - job: Build
+      steps:
+      - task: Maven@3
+        inputs:
+          mavenPomFile: 'pom.xml'
+          mavenOptions: '-Xmx3072m'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          goals: 'package'
+      - task: Bash@3
+        name: "Packaging_app_code"
+        inputs:
+          targetType: 'inline'
+          script: |
+            # Write your commands here
+            #set -x
+            application_name=crm-auth-spring-boot-server
+            application_version=1.0.0-SNAPSHOT
+            build_dir="$(System.DefaultWorkingDirectory)/build/${application_name}"
+            config_dir="${build_dir}/config"
+            config_file="${config_dir}/application.cfg"
+            publish_dir="$(System.DefaultWorkingDirectory)/publish"
+
+            if [ -d $build_dir ];then
+              rm -rf $build_dir/*
+            else
+              mkdir -p $build_dir
+            fi
+
+            if [ ! -d $config_dir ];then
+              mkdir -p $config_dir
+            fi
+
+            if [ ! -d $publish_dir ];then
+              mkdir -p $publish_dir
+            fi
+
+            cp $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-*-bootable.jar $build_dir/
+            cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
+            
+            #Create configuration file
+            touch ${config_file}
+            echo "export APPLICATION_NAME=${application_name} >> $config_file"
+            echo "export APPLICATION_VERSION=${application_version} >> $config_file"
+
+
+            cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${application_name}-${application_version}.tgz ${application_name}
+            ls -la $(System.DefaultWorkingDirectory)/**
+          failOnStderr: true
+           
+      - publish: $(System.DefaultWorkingDirectory)/publish
+        artifact: authApp
+  - stage: deploy
+    jobs:
+    - deployment: Deploy
+      displayName: deploy Web App
+      environment: 'ut'
+      strategy:
+      # default deployment strategy, more coming...
+        runOnce:
+          deploy:
+            steps:
+            - script: ls -la $(Pipeline.Workspace)/authApp
+            - task: CopyFilesOverSSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                sourceFolder: '$(Pipeline.Workspace)/authApp/'
+                contents: '*.tgz'
+                targetFolder: '/var/data/finuser/builds/'
+                readyTimeout: '20000'
+                failOnEmptySource: true
+            - task: SSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                runOptions: 'commands'
+                commands: 'ls -la /var/data/finuser/builds'
+                readyTimeout: '20000'
+            - task: SSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                runOptions: 'commands'
+                commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
+                readyTimeout: '20000'
+            - task: SSH@0
+              name: restartApplication
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                runOptions: 'commands'
+                commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
+                readyTimeout: '20000'
+
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+#- task: Maven@3
+#  inputs:
+#    mavenPomFile: 'pom.xml'
+#    mavenOptions: '-Xmx3072m'
+#    javaHomeOption: 'JDKVersion'
+#    jdkVersionOption: '1.11'
+#    jdkArchitectureOption: 'x64'
+#    publishJUnitResults: true
+#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#    goals: 'package'
+
+#- task: Maven@3
+#  inputs:
+#    mavenPomFile: 'pom.xml'
+#    publishJUnitResults: true
+#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#    javaHomeOption: 'JDKVersion'
+#    jdkVersionOption: '1.11'
+#    mavenVersionOption: 'Default'
+#    mavenOptions: '-Xmx3072m'
+#    mavenAuthenticateFeed: false
+#    effectivePomSkip: false
+#    sonarQubeRunAnalysis: false
+
+
+
