@@ -56,6 +56,10 @@ public class Role implements Serializable {
 		return new Role(roleId, groupId, code, status, name);
 	}
 	
+	public Localized getName() {
+		return name;
+	}
+	
 	public String getName(Locale locale) {
 		return name.get(locale);
 	}

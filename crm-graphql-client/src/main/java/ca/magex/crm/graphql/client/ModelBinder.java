@@ -206,6 +206,7 @@ public class ModelBinder {
 		try {
 			return new User(
 					new Identifier(json.getString("userId")),
+					json.getString("username"),
 					toPersonSummary(json.getJSONObject("person")),
 					Status.valueOf(json.getString("status")));
 		} catch (JSONException jsone) {

@@ -19,7 +19,6 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
 
@@ -53,32 +52,7 @@ public class HazelcastLookupService implements CrmLookupService {
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
-	}
-
-	@Override
-	public List<Role> findRoles() {
-		return hzInstance.getList("roles");
-	}
-
-	@Override
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		return hzInstance.getList("roles")
-				.stream()
-				.map((s) -> (Role) s)
-				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
-				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException(code));
-	}
-
-	@Override
-	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return hzInstance.getList("roles")
-				.stream()
-				.map((s) -> (Role) s)
-				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
-				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException(locale + "," + name));
-	}
+	}	
 
 	@Override
 	public List<Country> findCountries() {

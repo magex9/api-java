@@ -1,6 +1,7 @@
 package ca.magex.crm.amnesia.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +36,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName) {
-		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null));
+		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, Collections.emptyList()));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {

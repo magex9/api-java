@@ -65,12 +65,12 @@ public class UserDataFetcher extends AbstractDataFetcher {
 	
 	public DataFetcher<User> updateUser() {
 		return (environment) -> {
-			logger.info("Entering createUser@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("username"));
+			logger.info("Entering updateUser@" + UserDataFetcher.class.getSimpleName());
+			Identifier userId = new Identifier((String) environment.getArgument("userId"));
 			User user = crm.findUser(userId);
 			
 			if (environment.getArgument("roles") != null) {				
-				crm.setRoles(userId, environment.getArgument("roles"));
+				user = crm.setRoles(userId, environment.getArgument("roles"));
 			}
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));

@@ -5,6 +5,7 @@ import graphql.GraphQLError;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
 import graphql.execution.DataFetcherExceptionHandlerResult;
+import graphql.execution.SimpleDataFetcherExceptionHandler;
 
 /**
  * DataFetcher Exception Handler which translates the ApiExceptions into GraphQLError
@@ -14,6 +15,8 @@ import graphql.execution.DataFetcherExceptionHandlerResult;
  */
 public class ApiDataFetcherExceptionHandler implements DataFetcherExceptionHandler {
 
+	private SimpleDataFetcherExceptionHandler delegate = new SimpleDataFetcherExceptionHandler();
+	
 	@Override
 	public DataFetcherExceptionHandlerResult onException(DataFetcherExceptionHandlerParameters handlerParameters) {
 		/* we want to treat our ApiExceptions specially */
@@ -21,7 +24,7 @@ public class ApiDataFetcherExceptionHandler implements DataFetcherExceptionHandl
 			GraphQLError error = new ApiGraphQLError((ApiException) handlerParameters.getException());
 			return DataFetcherExceptionHandlerResult.newResult(error).build();
 		} else {
-			return DataFetcherExceptionHandlerResult.newResult().build();
+			return delegate.onException(handlerParameters);
 		}
 	}	
 }

@@ -51,9 +51,10 @@ public class GraphQLCrmServicesTests {
 
 	@SuppressWarnings("unchecked")
 	private <T> T execute(String queryName, String query, Object... args) throws Exception {
-		String formattedQuery = String.format(query, Arrays.asList(args).stream()
-				.map((arg) -> (arg instanceof List) ? StringUtils.join((List<String>) arg) : arg)
+		String formattedQuery = String.format(query, Arrays.asList(args).stream()				
+				.map((arg) -> (arg instanceof List) ? StringUtils.join((List<String>) arg) : arg)				
 				.map((arg) -> (arg instanceof String || arg instanceof Identifier) ? ("\"" + arg + "\"") : arg)
+				.map((arg) -> arg == null ? "" : arg)
 				.collect(Collectors.toList()).toArray());
 		ExecutionResult result = graphQl.getGraphQL().execute(formattedQuery);
 		Assert.assertEquals(result.getErrors().toString(), 0, result.getErrors().size());
@@ -173,13 +174,13 @@ public class GraphQLCrmServicesTests {
 
 		JSONObject admin = execute(
 				"createRole",
-				"mutation { createRole(groupId: %s, code: %s, englishName: %s, frenchName: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { createRole(groupId: %s, code: %s, englishName: %s, frenchName: %s) { roleId code groupId status englishName frenchName } }",
 				devId,
 				"ADM",
 				"administrator",
 				"administrateur");
 		Identifier adminId = new Identifier(admin.getString("roleId"));
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("administrator", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -188,10 +189,10 @@ public class GraphQLCrmServicesTests {
 		/* update status with no change */
 		admin = execute(
 				"updateRole",
-				"mutation { updateRole(roleId: %s, status: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { updateRole(roleId: %s, status: %s) { roleId code groupId status englishName frenchName } }",
 				adminId,
 				"active");
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("administrator", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -200,11 +201,11 @@ public class GraphQLCrmServicesTests {
 		/* update english name and status */
 		admin = execute(
 				"updateRole",
-				"mutation { updateRole(roleId: %s, englishName: %s, status: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { updateRole(roleId: %s, englishName: %s, status: %s) { roleId code groupId status englishName frenchName } }",
 				adminId,
 				"the admins",
 				"inactive");
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("the admins", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -213,10 +214,10 @@ public class GraphQLCrmServicesTests {
 		/* update status with no change */
 		admin = execute(
 				"updateRole",
-				"mutation { updateRole(roleId: %s, status: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { updateRole(roleId: %s, status: %s) { roleId code groupId status englishName frenchName } }",
 				adminId,
 				"inactive");
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("the admins", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -225,10 +226,10 @@ public class GraphQLCrmServicesTests {
 		/* update french name only */
 		admin = execute(
 				"updateRole",
-				"mutation { updateRole(roleId: %s, frenchName: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { updateRole(roleId: %s, frenchName: %s) { roleId code groupId status englishName frenchName } }",
 				adminId,
 				"les admins");
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("the admins", admin.get("englishName"));
 		Assert.assertEquals("les admins", admin.get("frenchName"));
@@ -237,12 +238,12 @@ public class GraphQLCrmServicesTests {
 		/* update both names and status */
 		admin = execute(
 				"updateRole",
-				"mutation { updateRole(roleId: %s, englishName: %s, frenchName: %s, status: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { updateRole(roleId: %s, englishName: %s, frenchName: %s, status: %s) { roleId code groupId status englishName frenchName } }",
 				adminId,
 				"administrator",
 				"administrateur",
 				"active");
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("administrator", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -251,9 +252,9 @@ public class GraphQLCrmServicesTests {
 		/* find the role by id */
 		admin = execute(
 				"findRole",
-				"{ findRole(roleId: %s) { roleId groupId status englishName frenchName } }",
+				"{ findRole(roleId: %s) { roleId code groupId status englishName frenchName } }",
 				adminId);
-		Assert.assertEquals("ADM", admin.get("roleId"));
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("administrator", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -368,7 +369,7 @@ public class GraphQLCrmServicesTests {
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
 		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainLocation"));
-		Assert.assertEquals(JSONObject.NULL, johnnuy.get("groups"));
+		Assert.assertEquals(0, johnnuy.getJSONArray("groups").length());
 
 		JSONObject hq = execute(
 				"createLocation",
@@ -393,7 +394,7 @@ public class GraphQLCrmServicesTests {
 				"active");
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy.org", johnnuy.get("displayName"));
-		Assert.assertTrue(johnnuy.get("groups") == JSONObject.NULL);
+		Assert.assertEquals(0, johnnuy.getJSONArray("groups").length());
 		Assert.assertEquals(headQuartersId.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 
 		/* update the organization details with status */
@@ -404,7 +405,7 @@ public class GraphQLCrmServicesTests {
 				"inactive");
 		Assert.assertEquals("INACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy.org", johnnuy.get("displayName"));
-		Assert.assertTrue(johnnuy.get("groups") == JSONObject.NULL);
+		Assert.assertEquals(0, johnnuy.getJSONArray("groups").length());
 		Assert.assertEquals(headQuartersId.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 
 		/* update the organization details with status and name */
@@ -416,7 +417,7 @@ public class GraphQLCrmServicesTests {
 				"inactive");
 		Assert.assertEquals("INACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("johnnuy industries", johnnuy.get("displayName"));
-		Assert.assertTrue(johnnuy.get("groups") == JSONObject.NULL);
+		Assert.assertEquals(0, johnnuy.getJSONArray("groups").length());
 		Assert.assertEquals(headQuartersId.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 
 		/* update the organization details with status and name */
@@ -428,7 +429,7 @@ public class GraphQLCrmServicesTests {
 				"active");
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
-		Assert.assertTrue(johnnuy.get("groups") == JSONObject.NULL);
+		Assert.assertEquals(0, johnnuy.getJSONArray("groups").length());
 		Assert.assertEquals(headQuartersId.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 
 		johnnuy = execute(
@@ -437,7 +438,7 @@ public class GraphQLCrmServicesTests {
 				johnnuyId);
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
-		Assert.assertTrue(johnnuy.get("groups") == JSONObject.NULL);
+		Assert.assertEquals(0, johnnuy.getJSONArray("groups").length());
 		Assert.assertEquals(headQuartersId.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 
 		/* should have 0 orgs matching %JJ% */
@@ -598,13 +599,12 @@ public class GraphQLCrmServicesTests {
 
 		JSONObject admin = execute(
 				"createRole",
-				"mutation { createRole(groupId: %s, code: %s, englishName: %s, frenchName: %s) { roleId groupId status englishName frenchName } }",
+				"mutation { createRole(groupId: %s, code: %s, englishName: %s, frenchName: %s) { roleId code groupId status englishName frenchName } }",
 				devId,
 				"ADM",
 				"administrator",
-				"administrateur");
-		Identifier adminId = new Identifier(admin.getString("roleId"));
-		Assert.assertEquals("ADM", admin.get("roleId"));
+				"administrateur");		
+		Assert.assertEquals("ADM", admin.get("code"));
 		Assert.assertEquals(devId.toString(), admin.get("groupId"));
 		Assert.assertEquals("administrator", admin.get("englishName"));
 		Assert.assertEquals("administrateur", admin.get("frenchName"));
@@ -635,8 +635,18 @@ public class GraphQLCrmServicesTests {
 				"mutation { createUser(personId: %s, username: %s, roles: [%s]) { userId status person { displayName communication { email } } } }",
 				jonnyId,
 				"jbigford",
-				Arrays.asList(adminId.toString()));
+				Arrays.asList(admin.getString("code")));
 		Identifier userId = new Identifier(user.getString("userId"));
+		Assert.assertEquals("ACTIVE", user.getString("status"));
+		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
+		
+		user = execute(
+				"updateUser",
+				"mutation { updateUser(userId: %s, roles: [%s], status: %s) { userId status person { displayName communication { email } } } }",
+				userId,
+				null,
+				"active");
 		Assert.assertEquals("ACTIVE", user.getString("status"));
 		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));

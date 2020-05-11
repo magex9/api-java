@@ -1,0 +1,16 @@
+Hazelcast Logging Configuration
+https://docs.hazelcast.org/docs/3.2/manual/html/logging.html
+
+To use SLF4J with Spring Boot use following setting
+
+-Dhazelcast.logging.type=slf4j
+
+Hazelcast with Java 11 requres the following for Optimizations
+
+--add-modules java.se 
+--add-exports java.base/jdk.internal.ref=ALL-UNNAMED 
+--add-opens java.base/java.lang=ALL-UNNAMED 
+--add-opens java.base/java.nio=ALL-UNNAMED 
+--add-opens java.base/sun.nio.ch=ALL-UNNAMED 
+--add-opens java.management/sun.management=ALL-UNNAMED 
+--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED 

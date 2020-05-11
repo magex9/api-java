@@ -42,6 +42,10 @@ public class Group implements Serializable {
 		return new Group(groupId, status, name);
 	}
 	
+	public Localized getName() {
+		return name;
+	}
+	
 	public String getName(Locale locale) {
 		return name.get(locale);
 	}

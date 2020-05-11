@@ -112,7 +112,7 @@ type Mutation {
 		
 	# User Service
 	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(username: String!, roles: [String], status: String): User	
+	updateUser(userId: String!, roles: [String], status: String): User	
 	
 	# Permission Service
 	createGroup(englishName: String!, frenchName: String!): Group
@@ -133,6 +133,7 @@ type Group {
 type Role {
 	roleId: String!
 	groupId: String!
+	code: String!
 	status: String!
 	englishName: String!
 	frenchName: String!
@@ -190,6 +191,7 @@ type BusinessPosition {
 
 type User {
 	userId: String!
+	username: String!
 	status: String!
 	person: Person!
 	roles: [Role]!

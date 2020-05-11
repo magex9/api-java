@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,7 +42,8 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				Status.ACTIVE, 
 				organizationDisplayName, 
-				null);
+				null,
+				Collections.emptyList());
 		organizations.put(orgDetails.getOrganizationId(), orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -59,6 +61,24 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		orgDetails = orgDetails.withStatus(Status.ACTIVE);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
+	}
+	
+	@Override
+	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
