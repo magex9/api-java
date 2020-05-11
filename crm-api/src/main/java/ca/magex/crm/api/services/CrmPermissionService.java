@@ -16,7 +16,9 @@ public interface CrmPermissionService {
     
     Group findGroup(Identifier groupId);
     
-	Group createGroup(Localized name);
+    Group findGroupByCode(String code);
+    
+	Group createGroup(String code, Localized name);
 	
 	Group updateGroupName(Identifier groupId, Localized name);
 	
@@ -37,9 +39,5 @@ public interface CrmPermissionService {
     Role enableRole(Identifier roleId);
     
     Role disableRole(Identifier roleId);
-    
-    long countPermissions(PermissionsFilter filter);
-    
-    Page<Permission> findPermissions(PermissionsFilter filter, Paging paging);
     
 }

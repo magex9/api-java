@@ -25,6 +25,11 @@ public class SecureCrmPermissionPolicy extends AbstractSecureCrmPolicy implement
 	}
 
 	@Override
+	public boolean canViewGroup(String group) {
+		return isCrmAdmin(getCurrentUser());
+	}
+
+	@Override
 	public boolean canViewGroup(Identifier groupId) {
 		return isCrmAdmin(getCurrentUser());
 	}

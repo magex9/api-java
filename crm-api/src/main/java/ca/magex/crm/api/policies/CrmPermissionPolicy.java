@@ -5,6 +5,7 @@ import ca.magex.crm.api.system.Identifier;
 public interface CrmPermissionPolicy {
 
     boolean canCreateGroup();
+    boolean canViewGroup(String group);
     boolean canViewGroup(Identifier groupId);
     boolean canUpdateGroup(Identifier groupId);
     boolean canEnableGroup(Identifier groupId);

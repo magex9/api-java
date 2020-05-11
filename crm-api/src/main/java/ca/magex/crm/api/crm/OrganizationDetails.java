@@ -16,22 +16,22 @@ public class OrganizationDetails extends OrganizationSummary {
 	
 	private Identifier mainLocationId;
 	
-	private List<Identifier> groupIds;
+	private List<String> groups;
 
-	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId, List<Identifier> groupIds) {
+	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId, List<String> groups) {
 		super(organizationId, status, displayName);	
 		this.mainLocationId = mainLocationId;
-		this.groupIds = groupIds;
+		this.groups = groups;
 	}
 
 	@Override
 	public OrganizationDetails withStatus(Status status) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 	}
 	
 	@Override
 	public OrganizationDetails withDisplayName(String displayName) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 	}
 
 	public Identifier getMainLocationId() {
@@ -39,15 +39,15 @@ public class OrganizationDetails extends OrganizationSummary {
 	}
 
 	public OrganizationDetails withMainLocationId(Identifier mainLocationId) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 	}
 	
-	public List<Identifier> getGroupIds() {
-		return groupIds;
+	public List<String> getGroups() {
+		return groups;
 	}
 	
-	public OrganizationDetails withGroupIds(List<Identifier> groupIds) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+	public OrganizationDetails withGroups(List<String> groups) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 	}
 	
 	@Override

@@ -25,6 +25,11 @@ public class DefaultCrmPermissionPolicy implements CrmPermissionPolicy {
 	}
 
 	@Override
+	public boolean canViewGroup(String group) {
+		return true;
+	}
+
+	@Override
 	public boolean canViewGroup(Identifier groupId) {
 		return true;
 	}

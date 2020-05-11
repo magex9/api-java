@@ -20,7 +20,6 @@ import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.filters.PermissionsFilter;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
@@ -35,7 +34,6 @@ import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Permission;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.Crm;
@@ -204,10 +202,10 @@ public final class SecuredCrmServices implements Crm {
 		return lookupService.findBusinessClassificationByLocalizedName(locale, name);
 	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName) {
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
-		return organizationService.createOrganization(organizationDisplayName);
+		return organizationService.createOrganization(organizationDisplayName, groups);
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
@@ -221,23 +219,30 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
 		return organizationService.updateOrganizationMainLocation(organizationId, locationId);
 	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
+		if (!canUpdateOrganization(organizationId))
+			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
+		return organizationService.updateOrganizationMainContact(organizationId, personId);
+	}
     
-	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("addGroup: " + organizationId + ", " + groupId);
-		return organizationService.addGroup(organizationId, groupId);
+			throw new PermissionDeniedException("addGroup: " + organizationId + ", " + group);
+		return organizationService.addOrganizationGroup(organizationId, group);
 	}
 	
-	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("removeGroupRole: " + organizationId + ", " + groupId);
-		return organizationService.removeGroup(organizationId, groupId);
+			throw new PermissionDeniedException("removeGroupRole: " + organizationId + ", " + group);
+		return organizationService.removeOrganizationGroup(organizationId, group);
 	}
 	
-	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> group) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groupIds);
-		return organizationService.setGroups(organizationId, groupIds);
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + group);
+		return organizationService.updateOrganizationGroups(organizationId, group);
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
@@ -456,10 +461,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public User setRoles(Identifier userId, List<String> roleIds) {
+	public User updateUserRoles(Identifier userId, List<String> roleIds) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.setRoles(userId, roleIds);
+		return userService.updateUserRoles(userId, roleIds);
 	}
 
 	@Override
@@ -599,12 +604,19 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("findGroup: " + groupId);
 		return permissionsService.findGroup(groupId);
 	}
+	
+	@Override
+	public Group findGroupByCode(String code) {
+		if (!canViewGroup(code))
+			throw new PermissionDeniedException("findGroupByCode: " + code);
+		return permissionsService.findGroupByCode(code);
+	}
 
 	@Override
-	public Group createGroup(Localized name) {
+	public Group createGroup(String code, Localized name) {
 		if (!canCreateGroup())
 			throw new PermissionDeniedException("createGroup: " + name);
-		return permissionsService.createGroup(name);
+		return permissionsService.createGroup(code, name);
 	}
 
 	@Override
@@ -678,22 +690,13 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public long countPermissions(PermissionsFilter filter) {
-		if (!canViewPermissions())
-			throw new PermissionDeniedException("countPermissions");
-		return permissionsService.countPermissions(filter);
-	}
-
-	@Override
-	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
-		if (!canViewPermissions())
-			throw new PermissionDeniedException("findPermissions");
-		return permissionsService.findPermissions(filter, paging);
-	}
-
-	@Override
 	public boolean canCreateGroup() {
 		return permissionsPolicy.canCreateGroup();
+	}
+
+	@Override
+	public boolean canViewGroup(String group) {
+		return permissionsPolicy.canViewGroup(group);
 	}
 
 	@Override
