@@ -15,7 +15,7 @@ stages:
       steps:
       - task: Maven@3
         inputs:
-          mavenPomFile: 'crm-auth-spring-boot-server/pom.xml'
+          mavenPomFile: 'pom.xml'
           mavenOptions: '-Xmx3072m'
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: '1.11'
@@ -29,7 +29,7 @@ stages:
           targetType: 'inline'
           script: |
             # Write your commands here
-            set -x
+            #set -x
             application_name=crm-auth-spring-boot-server
             application_version=1.0.0-SNAPSHOT
             build_dir="$(System.DefaultWorkingDirectory)/build/${application_name}"
