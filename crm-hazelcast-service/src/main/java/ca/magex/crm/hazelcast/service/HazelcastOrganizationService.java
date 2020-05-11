@@ -39,7 +39,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Autowired private CrmLocationService locationService;
 	
 	@Override
-	public OrganizationDetails createOrganization(String organizationDisplayName) {
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = new OrganizationDetails(
@@ -65,6 +65,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		orgDetails = orgDetails.withDisplayName(name);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
+	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -163,20 +169,22 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
 	
+	
+	
 	@Override
-	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		// TODO Auto-generated method stub
 		return null;
 	}

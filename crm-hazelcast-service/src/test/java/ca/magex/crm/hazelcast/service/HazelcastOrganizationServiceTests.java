@@ -1,10 +1,13 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -14,6 +17,7 @@ import com.hazelcast.core.HazelcastInstance;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.test.TestConfig;
@@ -27,30 +31,33 @@ public class HazelcastOrganizationServiceTests {
 	@Autowired private HazelcastOrganizationService hzOrganizationService;
 	@Autowired private HazelcastInstance hzInstance;
 	
+	@MockBean private CrmPersonService personService;
+	
 	@Before
 	public void reset() {
 		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
+		
 	}
 	
 	@Test
 	public void testOrganizations() {
 		/* create */
-		OrganizationDetails o1 = hzOrganizationService.createOrganization("Maple Leafs");		
+		OrganizationDetails o1 = hzOrganizationService.createOrganization("Maple Leafs", Collections.emptyList());		
 		Assert.assertEquals("Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(0, o1.getGroupIds().size());
+		Assert.assertEquals(0, o1.getGroups().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, hzOrganizationService.findOrganizationDetails(o1.getOrganizationId()));
-		OrganizationDetails o2 = hzOrganizationService.createOrganization("Senators");		
+		OrganizationDetails o2 = hzOrganizationService.createOrganization("Senators", Collections.emptyList());		
 		Assert.assertEquals("Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(0, o2.getGroupIds().size());
+		Assert.assertEquals(0, o2.getGroups().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, hzOrganizationService.findOrganizationDetails(o2.getOrganizationId()));
-		OrganizationDetails o3 = hzOrganizationService.createOrganization("Canadiens");		
+		OrganizationDetails o3 = hzOrganizationService.createOrganization("Canadiens", Collections.emptyList());		
 		Assert.assertEquals("Canadiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(0, o3.getGroupIds().size());
+		Assert.assertEquals(0, o3.getGroups().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, hzOrganizationService.findOrganizationDetails(o3.getOrganizationId()));
 		
@@ -58,21 +65,21 @@ public class HazelcastOrganizationServiceTests {
 		o1 = hzOrganizationService.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(0, o1.getGroupIds().size());
+		Assert.assertEquals(0, o1.getGroups().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, hzOrganizationService.findOrganizationDetails(o1.getOrganizationId()));
 		o1 = hzOrganizationService.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		o2 = hzOrganizationService.updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(0, o2.getGroupIds().size());
+		Assert.assertEquals(0, o2.getGroups().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, hzOrganizationService.findOrganizationDetails(o2.getOrganizationId()));
 		o2 = hzOrganizationService.updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		o3 = hzOrganizationService.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(0, o3.getGroupIds().size());
+		Assert.assertEquals(0, o3.getGroups().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, hzOrganizationService.findOrganizationDetails(o3.getOrganizationId()));
 		o3 = hzOrganizationService.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");

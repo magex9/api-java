@@ -61,9 +61,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	/* --------------------------------------------------------------------------------------- */
 	/*                                   ORGANIZATION SERVICE                                  */
 	/* --------------------------------------------------------------------------------------- */
-
+	
 	@Override
-	public OrganizationDetails createOrganization(String organizationDisplayName) {
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"createOrganization",
 				"createOrganization",
@@ -105,19 +105,25 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 	
 	@Override
-	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -482,11 +488,10 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 	
 	@Override
-	public User setRoles(Identifier userId, List<String> roles) {
+	public User updateUserRoles(Identifier userId, List<String> roles) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-		
 	
 	@Override
 	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
@@ -540,6 +545,12 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	/* --------------------------------------------------------------------------------------- */
 	
 	@Override
+	public Group findGroupByCode(String code) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public Page<Group> findGroups(Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
@@ -552,7 +563,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 	
 	@Override
-	public Group createGroup(Localized name) {
+	public Group createGroup(String code, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -617,18 +628,6 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	@Override
-	public long countPermissions(PermissionsFilter filter) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	@Override
-	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
-	}	
 
 	/* --------------------------------------------------------------------------------------- */
 	/*                                    LOOKUP SERVICE                                       */

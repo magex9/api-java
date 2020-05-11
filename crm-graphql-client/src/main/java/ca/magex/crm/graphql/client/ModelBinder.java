@@ -302,11 +302,11 @@ public class ModelBinder {
 		}
 	}
 	
-	public static List<Identifier> toIdentifierList(JSONArray jsonArray) {
+	public static List<String> toIdentifierList(JSONArray jsonArray) {
 		try {
-			List<Identifier> list = new ArrayList<>();
+			List<String> list = new ArrayList<>();
 			for (int i=0; i<jsonArray.length(); i++) {
-				list.add(new Identifier(jsonArray.getString(i)));
+				list.add(jsonArray.getString(i));
 			}
 			return list;
 		} catch (Exception jsone) {

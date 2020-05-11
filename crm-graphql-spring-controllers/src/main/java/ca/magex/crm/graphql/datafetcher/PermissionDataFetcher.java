@@ -35,7 +35,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering byOrganization@" + PermissionDataFetcher.class.getSimpleName());
 			OrganizationDetails organization = environment.getSource();
-			return organization.getGroupIds().stream().map(groupId -> crm.findGroup(groupId)).collect(Collectors.toList());			
+			return organization.getGroups().stream().map(groupCode -> crm.findGroupByCode(groupCode)).collect(Collectors.toList());			
 		};
 	}
 	
@@ -59,7 +59,8 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering createGroup@" + PermissionDataFetcher.class.getSimpleName());
 			String englishName = environment.getArgument("englishName");
 			String frenchName = environment.getArgument("frenchName");
-			return crm.createGroup(new Localized(englishName, frenchName));
+			String code = environment.getArgument("code");
+			return crm.createGroup(code, new Localized(englishName, frenchName));
 		};
 	}
 	

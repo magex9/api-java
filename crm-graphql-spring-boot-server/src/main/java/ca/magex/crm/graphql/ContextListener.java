@@ -32,7 +32,7 @@ public class ContextListener implements ApplicationListener<ApplicationReadyEven
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
 		LOG.info("Initializing Crm Data");
-		CrmDataInitializer.initialize(crmOrganizationService, crmLocationService, crmPersonService, crmUserService,
-				crmPermissionService, crmPasswordService, crmLookupService);
+//		CrmDataInitializer.initialize(crmOrganizationService, crmLocationService, crmPersonService, crmUserService,
+//				crmPermissionService, crmPasswordService, crmLookupService);
 	}	
 }

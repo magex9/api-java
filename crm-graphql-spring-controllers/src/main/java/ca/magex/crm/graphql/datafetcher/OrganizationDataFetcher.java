@@ -1,5 +1,6 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String organizationDisplayName = environment.getArgument("displayName");
-			return crm.createOrganization(organizationDisplayName);
+			return crm.createOrganization(organizationDisplayName, Collections.emptyList());
 		};
 	}
 

@@ -41,17 +41,17 @@ public class HazelcastPermissionServiceTests {
 	@Test
 	public void testGroups() {
 		/* create */
-		Group g1 = hzPermissionService.createGroup(new Localized("first", "premier"));
+		Group g1 = hzPermissionService.createGroup("A", new Localized("first", "premier"));
 		Assert.assertEquals("first", g1.getName(Lang.ENGLISH));
 		Assert.assertEquals("premier", g1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g1.getStatus());
 		Assert.assertEquals(g1, hzPermissionService.findGroup(g1.getGroupId()));
-		Group g2 = hzPermissionService.createGroup(new Localized("second", "deuxieme"));
+		Group g2 = hzPermissionService.createGroup("B", new Localized("second", "deuxieme"));
 		Assert.assertEquals("second", g2.getName(Lang.ENGLISH));
 		Assert.assertEquals("deuxieme", g2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g2.getStatus());
 		Assert.assertEquals(g2, hzPermissionService.findGroup(g2.getGroupId()));
-		Group g3 = hzPermissionService.createGroup(new Localized("third", "troisieme"));
+		Group g3 = hzPermissionService.createGroup("C", new Localized("third", "troisieme"));
 		Assert.assertEquals("third", g3.getName(Lang.ENGLISH));
 		Assert.assertEquals("troisieme", g3.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g3.getStatus());
@@ -185,9 +185,9 @@ public class HazelcastPermissionServiceTests {
 	@Test
 	public void testRoles() {
 		/* create groups first */
-		Group g1 = hzPermissionService.createGroup(new Localized("first", "premier"));
-		Group g2 = hzPermissionService.createGroup(new Localized("second", "deuxieme"));
-		Group g3 = hzPermissionService.createGroup(new Localized("third", "troisieme"));
+		Group g1 = hzPermissionService.createGroup("A", new Localized("first", "premier"));
+		Group g2 = hzPermissionService.createGroup("B", new Localized("second", "deuxieme"));
+		Group g3 = hzPermissionService.createGroup("C", new Localized("third", "troisieme"));
 
 		Role r1 = hzPermissionService.createRole(g1.getGroupId(), "ADM", new Localized("administrator", "administrateur"));
 		Assert.assertEquals("ADM", r1.getCode());

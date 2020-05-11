@@ -31,10 +31,9 @@ import ca.magex.crm.api.system.Status;
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastUserService implements CrmUserService {
-	
+
 	public static String HZ_USER_KEY = "users";
-	
-	
+
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmPasswordService passwordService;
 	@Autowired private CrmPersonService personService;
@@ -43,7 +42,7 @@ public class HazelcastUserService implements CrmUserService {
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		/* run a find on the personId to ensure it exists */
-		PersonSummary person = personService.findPersonSummary(personId);		
+		PersonSummary person = personService.findPersonSummary(personId);
 		/* create our new user */
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_USER_KEY);
@@ -65,19 +64,19 @@ public class HazelcastUserService implements CrmUserService {
 		}
 		return SerializationUtils.clone(user);
 	}
-	
+
 	@Override
 	public User findUserByUsername(String username) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.values().stream()
-			.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
-			.findFirst()
-			.orElseThrow(() -> {
-				return new ItemNotFoundException("Unable to find user with username " + username);
-			});
+				.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
+				.findFirst()
+				.orElseThrow(() -> {
+					return new ItemNotFoundException("Unable to find user with username " + username);
+				});
 		return SerializationUtils.clone(user);
 	}
-	
+
 	@Override
 	public User addUserRole(Identifier userId, String role) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
@@ -97,9 +96,9 @@ public class HazelcastUserService implements CrmUserService {
 		}
 		return SerializationUtils.clone(user);
 	}
-	
+
 	@Override
-	public User setRoles(Identifier userId, List<String> roles) {
+	public User updateUserRoles(Identifier userId, List<String> roles) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -107,7 +106,7 @@ public class HazelcastUserService implements CrmUserService {
 		}
 		return SerializationUtils.clone(user);
 	}
-	
+
 	@Override
 	public List<String> getRoles(Identifier userId) {
 		// TODO Auto-generated method stub
@@ -119,34 +118,34 @@ public class HazelcastUserService implements CrmUserService {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public boolean resetPassword(Identifier userId) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public User enableUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public User disableUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
-	}	
-	
+	}
+
 	@Override
 	public long countUsers(UsersFilter filter) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	@Override
 	public Page<User> findUsers(UsersFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
-	}		
+	}
 }

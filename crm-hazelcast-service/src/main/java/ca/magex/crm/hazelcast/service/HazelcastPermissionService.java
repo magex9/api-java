@@ -35,13 +35,14 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	public static String HZ_ROLE_KEY = "roles";
 
 	@Autowired private HazelcastInstance hzInstance;
-
+	
 	@Override
-	public Group createGroup(Localized name) {
+	public Group createGroup(String code, Localized name) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_GROUP_KEY);
-		Group group = new Group(
+		Group group = new Group(				
 				new Identifier(Long.toHexString(idGenerator.newId())),
+				code,
 				Status.ACTIVE,
 				name);
 		groups.put(group.getGroupId(), group);
@@ -101,6 +102,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		group = group.withStatus(Status.INACTIVE);
 		groups.put(group.getGroupId(), group);
 		return SerializationUtils.clone(group);
+	}
+	
+	@Override
+	public Group findGroupByCode(String code) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -196,28 +203,4 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		return roles.values().stream().filter((r) -> r.getCode().equals(code)).findFirst().orElseThrow(() -> new ItemNotFoundException("Role Code '" + code + "'"));
 	}
-
-	@Override
-	public long countPermissions(PermissionsFilter filter) {
-//		Map<Identifier, Permission> permissions = hzInstance.getMap(HZ_PERMISSION_KEY);
-//		return permissions.values().stream()
-//				.filter((p) -> filter.getUserId() == null || filter.getUserId().equals(p.getUserId()))
-//				.filter((p) -> filter.getRoleId() == null || filter.getRoleId().equals(p.getRoleId()))
-//				.filter((p) -> filter.getStatus() == null || filter.getStatus().equals(p.getStatus()))
-//				.count();
-		return 0L;
-	}
-
-	@Override
-	public Page<Permission> findPermissions(PermissionsFilter filter, Paging paging) {
-//		Map<Identifier, Permission> permissions = hzInstance.getMap(HZ_PERMISSION_KEY);
-//		return PageBuilder.buildPageFor(permissions.values().stream()
-//				.filter((p) -> filter.getUserId() == null || filter.getUserId().equals(p.getUserId()))
-//				.filter((p) -> filter.getRoleId() == null || filter.getRoleId().equals(p.getRoleId()))
-//				.filter((p) -> filter.getStatus() == null || filter.getStatus().equals(p.getStatus()))
-//				.sorted(filter.getComparator(paging))
-//				.collect(Collectors.toList()), paging);
-		return null;
-	}
-
 }

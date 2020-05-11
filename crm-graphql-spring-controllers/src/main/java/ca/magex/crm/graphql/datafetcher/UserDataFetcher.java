@@ -70,7 +70,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			User user = crm.findUser(userId);
 			
 			if (environment.getArgument("roles") != null) {				
-				user = crm.setRoles(userId, environment.getArgument("roles"));
+				user = crm.updateUserRoles(userId, environment.getArgument("roles"));
 			}
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));
@@ -97,6 +97,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 		String personId = (String) filter.get("personId");
 		String organizationId = (String) filter.get("organizationId");
 		String role = (String) filter.get("role");
+		String username = (String) filter.get("username");
 		
 		Status status = null;
 		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
@@ -111,6 +112,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 				personId == null ? null : new Identifier(personId),
 				organizationId == null ? null : new Identifier(organizationId),
 				status,
+				username,
 				role);
 	}
 }
