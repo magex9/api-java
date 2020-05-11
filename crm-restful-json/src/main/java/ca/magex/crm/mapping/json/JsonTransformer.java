@@ -135,8 +135,8 @@ public class JsonTransformer {
 		Status status = parseStatus("status", data);
 		String displayName = parseText("displayName", data);
 		Identifier mainLocationId = parseIdentifier("mainLocationId", data);
-		List<Identifier> groupIds = parseIdentifiers("groupIds", data);
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+		List<String> groups = parseTexts("groupIds", data);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 	}
 	
 	public DataObject formatOrganizationSummary(OrganizationSummary organization) {
@@ -227,7 +227,8 @@ public class JsonTransformer {
 			return null;
 		Identifier userId = parseIdentifier("userId", data);
 		Identifier personId = parseIdentifier("personId", data);
-		return new User(userId, crm.findPersonSummary(personId), Status.ACTIVE);
+		String username = parseText("username", data);
+		return new User(userId, username, crm.findPersonSummary(personId), Status.ACTIVE);
 	}	
 
 	public void formatText(List<DataPair> parent, String key, Object obj) {
@@ -690,6 +691,20 @@ public class JsonTransformer {
 		
 	public String parseText(String key, DataObject data) {
 		return data.contains(key) ? data.getString(key) : null;
+	}
+	
+	public List<String> parseTexts(String key, DataObject data) {
+		List<String> list = new ArrayList<String>();
+		for (DataElement child : data.getArray(key).values()) {
+			if (child instanceof DataText) {
+				list.add(((DataText)child).value());
+			} else if (child instanceof DataObject) {
+				list.add(((DataObject)child).getString("@id"));
+			} else {
+				throw new IllegalArgumentException("Unexpected data type for child: " + child.getClass());
+			}
+		}
+		return list;
 	}
 	
 	public Salutation parseSalutation(String key, DataObject data) {
