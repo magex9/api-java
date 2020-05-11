@@ -7,7 +7,7 @@ trigger:
 #test
 #Stages Configuration (to be ran sequentially)
 stages:
-  - stage: Master
+  - stage: Build
     jobs:
     - job: Build
       steps:
@@ -27,12 +27,27 @@ stages:
           script: |
             # Write your commands here
             
-            echo 'Hello world'
+            application_name=crm-auth-spring-boot-server
+            application_version=1.0.0-SNAPSHOT
+            build_dir="$(System.DefaultWorkingDirectory)/build/${application_name}"
+            publish_dir="$(System.DefaultWorkingDirectory)/publish"
+
+            if [ -d $build_dir ];then
+              rm -rf $build_dir/*
+            else
+              mkdir -p $build_dir
+            fi
+            if [ ! -d $publish_dir ];then
+              mkdir -p $publish_dir
+            fi
+
+            cp $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-*-bootable.jar $build_dir/
+            cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
             
-            mkdir $(System.DefaultWorkingDirectory)/publish
-            tar -C $(System.DefaultWorkingDirectory) -cvzf publish/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-1.0.0-SNAPSHOT-bootable.jar crm-admin/admin
+            tar -C ${build_dir} -cvzf ${publish_dir}/${application_name}-${application_version}.tgz *
             ls -la $(System.DefaultWorkingDirectory)/**
           failOnStderr: true
+      
       - publish: $(System.DefaultWorkingDirectory)/publish
         artifact: authApp
   - stage: deploy
@@ -45,7 +60,7 @@ stages:
         runOnce:
           deploy:
             steps:
-            - script: ls -la $(Pipeline.Workspace)
+            - script: ls -la $(Pipeline.Workspace)/authapp
             - task: CopyFilesOverSSH@0
               inputs:
                 sshEndpoint: 'ssh - RD3'
