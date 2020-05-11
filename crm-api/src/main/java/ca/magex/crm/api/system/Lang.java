@@ -10,6 +10,8 @@ public class Lang {
 	
 	public static final Locale FRENCH = Locale.CANADA_FRENCH;
 	
+	public static final Locale BILINGUAL = Locale.ROOT;
+	
 	public static final List<Locale> SUPPORTED = Arrays.asList(ENGLISH, FRENCH);
 	
 	public static boolean isEnglish(Locale locale) {
