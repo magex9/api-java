@@ -126,7 +126,7 @@ public class CrmServicesTestSuite {
 
 		/* create and verify new organization */
 		logger.info("Creating new Organiztion");
-		OrganizationDetails orgDetails = organizationService.createOrganization("ABC");
+		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of("SYS"));
 		Identifier orgId = orgDetails.getOrganizationId();
 		logger.info("Generated OrgId: " + orgId);
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null);
@@ -496,7 +496,7 @@ public class CrmServicesTestSuite {
 		
 		/* set roles and verify */
 		logger.info("Setting User Roles");
-		user = userService.setRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
+		user = userService.updateUserRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
 
 

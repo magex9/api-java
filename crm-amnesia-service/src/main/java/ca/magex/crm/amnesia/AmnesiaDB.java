@@ -42,6 +42,8 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<Identifier, Serializable> data;
 	
+	private Map<String, Group> groupsByCode;
+	
 	private Map<String, Role> rolesByCode;
 	
 	private Map<String, User> usersByUsername;
@@ -54,6 +56,7 @@ public class AmnesiaDB implements CrmPasswordService {
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
 		passwords = new HashMap<String, String>();
+		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
 		userRoles = new HashMap<String, List<String>>();
@@ -142,8 +145,13 @@ public class AmnesiaDB implements CrmPasswordService {
 		return (Group)findById(groupId, Group.class);
 	}
 	
+	public Group findGroupByCode(String group) {
+		return groupsByCode.get(group);
+	}
+	
 	public Group saveGroup(Group group) {
 		data.put(group.getGroupId(), group);
+		groupsByCode.put(group.getCode(), group);
 		return group;
 	}
 	
@@ -182,7 +190,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	public List<String> findUserRoles(String username) {
-		return userRoles.get(username);
+		return userRoles.containsKey(username) ? userRoles.get(username) : List.of();
 	}
 	
 	@SuppressWarnings("unchecked")

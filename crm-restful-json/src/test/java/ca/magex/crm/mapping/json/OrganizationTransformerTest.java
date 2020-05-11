@@ -13,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
@@ -36,12 +35,13 @@ public class OrganizationTransformerTest {
 	public void testOrganizationJson() throws Exception {
 
 		Identifier organizationId = new Identifier("abc");
+		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
-		List<Identifier> groupIds = new ArrayList<Identifier>();
-		groupIds.add(new Group(new Identifier("group"), Status.ACTIVE, new Localized("Group Name")).getGroupId());
-		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+		List<String> groups = new ArrayList<String>();
+		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
@@ -67,12 +67,13 @@ public class OrganizationTransformerTest {
 	public void testOrganizationLinkedData() throws Exception {
 
 		Identifier organizationId = new Identifier("abc");
+		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("xyz");
-		List<Identifier> groupIds = new ArrayList<Identifier>();
-		groupIds.add(new Group(new Identifier("group"), Status.ACTIVE, new Localized("Group Name")).getGroupId());
-		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groupIds);
+		List<String> groups = new ArrayList<String>();
+		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);

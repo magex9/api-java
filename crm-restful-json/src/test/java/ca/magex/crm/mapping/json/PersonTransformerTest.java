@@ -57,7 +57,7 @@ public class PersonTransformerTest {
 		Communication communication = new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition(crm.findBusinessSectors().get(0).getName(locale), null, null);
 		List<String> roles = new ArrayList<String>();
-		Group group = crm.createGroup(new Localized("System"));
+		Group group = crm.createGroup("system", new Localized("System"));
 		roles.add(crm.createRole(group.getGroupId(), "SYS_ADMIN", new Localized("System Admin")).getRoleId().toString());
 		roles.add(crm.createRole(group.getGroupId(), "RE_ADMIN", new Localized("RE Admin")).getRoleId().toString());
 		

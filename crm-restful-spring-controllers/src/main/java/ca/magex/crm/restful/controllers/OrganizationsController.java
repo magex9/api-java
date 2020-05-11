@@ -8,6 +8,7 @@ import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getTransformer;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import ca.magex.crm.mapping.data.DataArray;
 import ca.magex.crm.mapping.data.DataElement;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.mapping.data.DataText;
 import ca.magex.crm.mapping.json.JsonTransformer;
 
 @Controller
@@ -68,7 +70,8 @@ public class OrganizationsController {
 		JsonTransformer transformer = getTransformer(req, crm);
 		DataObject body = extractBody(req);
 		String displayName = body.getString("displayName");
-		DataElement data = transformer.formatOrganizationDetails(crm.createOrganization(displayName));
+		List<String> groups = body.getArray("groups").stream().map(e -> ((DataText)e).value()).collect(Collectors.toList());
+		DataElement data = transformer.formatOrganizationDetails(crm.createOrganization(displayName, groups));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
 		res.getWriter().write(DataFormatter.formatted(data));

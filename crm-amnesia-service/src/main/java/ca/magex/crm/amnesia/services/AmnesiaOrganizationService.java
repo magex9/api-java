@@ -34,8 +34,8 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 		this.db = db;
 	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName) {
-		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null));
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
+		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, groups));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
@@ -54,23 +54,29 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 		return db.saveOrganization(findOrganizationDetails(organizationId).withMainLocationId(db.findLocation(locationId).getLocationId()));
 	}
 	
-	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+	@Override
+	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
 		OrganizationDetails organization = findOrganizationDetails(organizationId);
-		List<Identifier> groupIds = new ArrayList<Identifier>(organization.getGroupIds());
-		if (!groupIds.contains(groupId))
-			groupIds.add(groupId);
-		return db.saveOrganization(organization.withGroupIds(groupIds));
+		List<String> groups = new ArrayList<String>(organization.getGroups());
+		if (!groups.contains(group))
+			groups.add(group);
+		return db.saveOrganization(organization.withGroups(groups));
 	}
 	
-	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
 		OrganizationDetails organization = findOrganizationDetails(organizationId);
-		List<Identifier> groupIds = new ArrayList<Identifier>(organization.getGroupIds());
-   		groupIds.remove(groupId);
-   		return db.saveOrganization(organization.withGroupIds(groupIds));
+		List<String> groups = new ArrayList<String>(organization.getGroups());
+   		groups.remove(group);
+   		return db.saveOrganization(organization.withGroups(groups));
 	}
 	
-	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withGroupIds(groupIds));
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
+		return db.saveOrganization(findOrganizationDetails(organizationId).withGroups(groups));
 	}
 	
 	@Override
@@ -108,4 +114,5 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
 	}
+
 }
