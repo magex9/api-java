@@ -103,6 +103,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				organizationId,
 				locationId));
 	}
+	
+	@Override
+	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {		
@@ -452,28 +470,23 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 	
 	@Override
-	public List<Identifier> getRoles(Identifier userId) {
+	public User addUserRole(Identifier userId, String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public User addUserRole(Identifier userId, Identifier roleId) {
+	public User removeUserRole(Identifier userId, String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public User removeUserRole(Identifier userId, Identifier roleId) {
+	public User setRoles(Identifier userId, List<String> roles) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	@Override
-	public User setRoles(Identifier userId, List<Identifier> roleIds) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		
 	
 	@Override
 	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
@@ -485,6 +498,19 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	public boolean resetPassword(Identifier userId) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public User findUserByUsername(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	@Override
+	public List<String> getRoles(Identifier userId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override

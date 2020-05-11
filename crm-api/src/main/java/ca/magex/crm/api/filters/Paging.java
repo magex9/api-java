@@ -4,28 +4,34 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.util.ReflectionUtils;
 
+import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
+
 public class Paging implements Pageable, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private long offset;
-	
+
 	private int pageSize;
-	
+
 	private int pageNumber;
-	
+
 	private Sort sort;
-	
+
 	public static Paging singleInstance() {
 		return new Paging(1, 1, Sort.unsorted());
 	}
-	
+
 	public Paging(int pageNumber, int pageSize, Sort sort) {
 		super();
 		this.offset = pageSize * (pageNumber - 1);
@@ -38,14 +44,14 @@ public class Paging implements Pageable, Serializable {
 		super();
 		this.offset = offset;
 		this.pageSize = pageSize;
-		this.pageNumber = (int)Math.floor(offset / pageSize);
+		this.pageNumber = (int) Math.floor(offset / pageSize);
 		this.sort = sort;
 	}
 
 	public Paging(Sort sort) {
 		this(0, 10, sort);
 	}
-	
+
 	@Override
 	public int getPageNumber() {
 		return pageNumber;
@@ -85,31 +91,51 @@ public class Paging implements Pageable, Serializable {
 	public Pageable first() {
 		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
 	}
-	
+
 	/**
 	 * Creates a new Comparator based on this Paging Instance
+	 * 
 	 * @author Jonny
 	 *
 	 * @param <T>
 	 */
 	public class PagingComparator<T> implements Comparator<T> {
-		
+
 		@SuppressWarnings("unchecked")
 		@Override
 		public int compare(T o1, T o2) {
 			Iterator<Order> iterator = Paging.this.getSort().iterator();
-			while(iterator.hasNext()) {
+			while (iterator.hasNext()) {
 				Order order = iterator.next();
-				Field field = ReflectionUtils.findField(o1.getClass(), order.getProperty());
+				String propertyName = order.getProperty();
+				String propertyKey = null;
+				if (propertyName.indexOf(":") > 0) {
+					String[] vals = propertyName.split(":");
+					propertyName = vals[0];
+					propertyKey = vals[1];
+				}
+				Field field = ReflectionUtils.findField(o1.getClass(), propertyName);
 				if (field != null) {
 					ReflectionUtils.makeAccessible(field);
 					Object val1 = ReflectionUtils.getField(field, o1);
 					Object val2 = ReflectionUtils.getField(field, o2);
-					if (Comparable.class.isAssignableFrom(val1.getClass())) {
+					/* localized use the key */
+					if (Localized.class.isAssignableFrom(val1.getClass())) {
+						if (propertyKey == null) {
+							throw new ApiException("Cannot sort by Localized without specifying Locale");
+						}
+						Localized lVal1 = (Localized) val1;
+						Localized lVal2 = (Localized) val2;
+						Locale locale = Lang.parse(propertyKey);
+						int compare = StringUtils.compare(lVal1.get(locale), lVal2.get(locale));
+						if (compare != 0) {
+							return compare;
+						}
+					} else if (Comparable.class.isAssignableFrom(val1.getClass())) {
 						Comparable<Object> cVal1 = (Comparable<Object>) val1;
 						Comparable<Object> cVal2 = (Comparable<Object>) val2;
 						int compare = cVal1.compareTo(cVal2);
-						if (compare !=0) {
+						if (compare != 0) {
 							return compare;
 						}
 					}

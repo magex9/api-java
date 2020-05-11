@@ -23,13 +23,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Role;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.resource.CrmDataInitializer;
 import ca.magex.crm.resource.CrmLookupLoader;
 
 @Component
@@ -38,11 +32,6 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastContextListener.class);
 	
-	@Autowired private CrmOrganizationService crmOrganizationService;
-	@Autowired private CrmLocationService crmLocationService;
-	@Autowired private CrmPersonService crmPersonService;
-	@Autowired private CrmUserService crmUserService;
-	@Autowired private CrmLookupService crmlookupService;
 	@Autowired private HazelcastInstance hzInstance;	
 	@Autowired private CrmLookupLoader lookupLoader;
 	
@@ -76,17 +65,13 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 		LOG.info("Initializing Hazelcast CRM");
 		LOG.info("Initializing Lookups");
 		hzInstance.getList("statuses").addAll(Arrays.asList(Status.values()));
-		hzInstance.getList("roles").addAll(lookupLoader.loadLookup(Role.class, "Role.csv"));
 		hzInstance.getList("countries").addAll(lookupLoader.loadLookup(Country.class, "Country.csv"));
 		hzInstance.getList("languages").addAll(lookupLoader.loadLookup(Language.class, "Language.csv"));
 		hzInstance.getList("salutations").addAll(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"));
 		hzInstance.getList("sectors").addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
 		hzInstance.getList("units").addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
 		hzInstance.getList("classifications").addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
-		
-		/* initialize org data */
-		CrmDataInitializer.initialize(crmOrganizationService, crmLocationService, crmPersonService, crmUserService, crmlookupService);
-		
+
 		/* set our initialization timestamp */
 		long t1 = System.currentTimeMillis();
 		initMap.put("timestamp", t1);

@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -31,57 +33,31 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastOrganizationService implements CrmOrganizationService {
 
+	public static String HZ_ORGANIZATION_KEY = "organizations";
+	
 	@Autowired private HazelcastInstance hzInstance;
+	@Autowired private CrmLocationService locationService;
 	
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
-		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator("organizations");
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
+		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = new OrganizationDetails(
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				Status.ACTIVE, 
 				organizationDisplayName, 
-				null);
+				null,
+				Collections.emptyList());
 		organizations.put(orgDetails.getOrganizationId(), orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
-		OrganizationDetails orgDetails = organizations.get(organizationId);
-		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find organization " + organizationId);
-		}
-		if (orgDetails.getStatus() == Status.ACTIVE) {
-			return orgDetails;
-		}
-		orgDetails = orgDetails.withStatus(Status.ACTIVE);
-		organizations.put(organizationId, orgDetails);
-		return SerializationUtils.clone(orgDetails);
-	}
-
-	@Override
-	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
-		OrganizationDetails orgDetails = organizations.get(organizationId);
-		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find organization " + organizationId);
-		}
-		if (orgDetails.getStatus() == Status.INACTIVE) {
-			return orgDetails;
-		}
-		orgDetails = orgDetails.withStatus(Status.INACTIVE);
-		organizations.put(organizationId, orgDetails);
-		return SerializationUtils.clone(orgDetails);
-	}
-
-	@Override
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find organization " + organizationId);
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
 		if (StringUtils.equals(orgDetails.getDisplayName(), name)) {
 			return orgDetails;
@@ -90,13 +66,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
-
+	
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
+		locationService.findLocationDetails(locationId); // ensure the location exists
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find organization " + organizationId);
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
 			return orgDetails;
@@ -110,29 +87,59 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
+	public OrganizationSummary enableOrganization(Identifier organizationId) {
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
+		OrganizationDetails orgDetails = organizations.get(organizationId);
+		if (orgDetails == null) {
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+		}
+		if (orgDetails.getStatus() == Status.ACTIVE) {
+			return orgDetails;
+		}
+		orgDetails = orgDetails.withStatus(Status.ACTIVE);
+		organizations.put(organizationId, orgDetails);
+		return SerializationUtils.clone(orgDetails);
+	}
+
+	@Override
+	public OrganizationSummary disableOrganization(Identifier organizationId) {
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
+		OrganizationDetails orgDetails = organizations.get(organizationId);
+		if (orgDetails == null) {
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+		}
+		if (orgDetails.getStatus() == Status.INACTIVE) {
+			return orgDetails;
+		}
+		orgDetails = orgDetails.withStatus(Status.INACTIVE);
+		organizations.put(organizationId, orgDetails);
+		return SerializationUtils.clone(orgDetails);
+	}
+
+	@Override
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		return findOrganizationDetails(organizationId);
 	}
 
 	@Override
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Unable to find organization " + organizationId);
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		return organizations.size();
 	}
 
 	@Override
 	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationDetails> allMatchingOrgs = organizations.values()
 			.stream()
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -145,7 +152,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {		
-		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap("organizations");
+		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationSummary> allMatchingOrgs = organizations.values()
 			.stream()
 			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -154,5 +161,23 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+	}
+	
+	@Override
+	public OrganizationDetails addGroup(Identifier organizationId, Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails removeGroup(Identifier organizationId, Identifier groupId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public OrganizationDetails setGroups(Identifier organizationId, List<Identifier> groupIds) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

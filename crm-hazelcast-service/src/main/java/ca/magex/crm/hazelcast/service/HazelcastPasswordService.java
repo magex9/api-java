@@ -1,7 +1,5 @@
 package ca.magex.crm.hazelcast.service;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -10,8 +8,7 @@ import org.springframework.stereotype.Service;
 import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.services.CrmPasswordService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 
 @Service
 @Primary
@@ -21,14 +18,32 @@ public class HazelcastPasswordService implements CrmPasswordService {
 	@Autowired private HazelcastInstance hzInstance;
 	
 	@Override
-	public void setPassword(Identifier personId, String password) {
-		Map<Identifier, String> passwords = hzInstance.getMap("passwords");
-		passwords.put(personId, password);
+	public String getEncodedPassword(String username) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
+	
 	@Override
-	public String getPassword(Identifier personId) {
-		Map<Identifier, String> passwords = hzInstance.getMap("passwords");
-		return passwords.get(personId);
+	public boolean isExpiredPassword(String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean isTempPassword(String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean updatePassword(String username, String encodedPassword) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean verifyPassword(String username, String encodedPassword) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
