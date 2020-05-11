@@ -47,7 +47,7 @@ stages:
             cp $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-*-bootable.jar $build_dir/
             cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
             
-            tar -C ${build_dir} -cvzf ${publish_dir}/${application_name}-${application_version}.tgz *
+            cd ${build_dir} ; tar -cvzf ${publish_dir}/${application_name}-${application_version}.tgz *
             ls -la $(System.DefaultWorkingDirectory)/**
           failOnStderr: true
       
