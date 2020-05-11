@@ -19,13 +19,16 @@ public class Group implements Serializable {
 
 	private Identifier groupId;
 	
+	private String code;
+	
 	private Status status;
 	
 	private Localized name;
 
-	public Group(Identifier groupId, Status status, Localized name) {
+	public Group(Identifier groupId, String code, Status status, Localized name) {
 		super();
 		this.groupId = groupId;
+		this.code = code;
 		this.status = status;
 		this.name = name;
 	}
@@ -34,12 +37,16 @@ public class Group implements Serializable {
 		return groupId;
 	}
 	
+	public String getCode() {
+		return code;
+	}
+	
 	public Status getStatus() {
 		return status;
 	}
 	
 	public Group withStatus(Status status) {
-		return new Group(groupId, status, name);
+		return new Group(groupId, code, status, name);
 	}
 	
 	public String getName(Locale locale) {
@@ -47,7 +54,7 @@ public class Group implements Serializable {
 	}
 	
 	public Group withName(Localized name) {
-		return new Group(groupId, status, name);
+		return new Group(groupId, code, status, name);
 	}
 	
 	@Override
