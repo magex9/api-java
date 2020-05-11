@@ -27,7 +27,7 @@ stages:
 
     - job: Package
       dependsOn: Build
-      condition: suceededOrFailed()
+      condition: succeededOrFailed()
       steps:
       - task: Bash@3
         name: "Packaging_app_code"
