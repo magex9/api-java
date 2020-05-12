@@ -1,6 +1,6 @@
 package ca.magex.crm.restful.controllers;
 	
-import static ca.magex.crm.restful.controllers.ContentExtractor.extractDisplayName;
+import static ca.magex.crm.restful.controllers.ContentExtractor.*;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractLocale;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractOrganizationId;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractStatus;
@@ -36,7 +36,7 @@ public class LookupsController {
 	private SecuredCrmServices crm;
 	
 	public LocationsFilter extractLocationFilter(HttpServletRequest req) throws BadRequestException {
-		return new LocationsFilter(extractOrganizationId(req), extractDisplayName(req), extractStatus(req));
+		return new LocationsFilter(extractOrganizationId(req), extractDisplayName(req), extractReference(req), extractStatus(req));
 	}
 
 	@GetMapping("/api/lookup/countries")

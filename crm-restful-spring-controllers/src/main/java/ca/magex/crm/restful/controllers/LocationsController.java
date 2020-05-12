@@ -2,7 +2,7 @@ package ca.magex.crm.restful.controllers;
 	
 import static ca.magex.crm.restful.controllers.ContentExtractor.action;
 import static ca.magex.crm.restful.controllers.ContentExtractor.createPage;
-import static ca.magex.crm.restful.controllers.ContentExtractor.extractBody;
+import static ca.magex.crm.restful.controllers.ContentExtractor.*;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractDisplayName;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractOrganizationId;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractPaging;
@@ -82,7 +82,7 @@ public class LocationsController {
 	}
 	
 	public LocationsFilter extractLocationFilter(HttpServletRequest req) throws BadRequestException {
-		return new LocationsFilter(extractOrganizationId(req), extractDisplayName(req), extractStatus(req));
+		return new LocationsFilter(extractOrganizationId(req), extractDisplayName(req), extractReference(req), extractStatus(req));
 	}
 
 	@PostMapping("/api/locations")

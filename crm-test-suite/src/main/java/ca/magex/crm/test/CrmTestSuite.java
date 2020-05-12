@@ -112,11 +112,11 @@ public class CrmTestSuite {
 		locations.createLocation(organizationId, "LOC0026", "Morningview", new MailingAddress("2581 Morningview Lane", "New York", "New York", "United States", "10013"));
 		locations.createLocation(organizationId, "LOC0027", "Munster", new MailingAddress("Straße der Pariser Kommune 73", "Münster", "North Rhine-Westphalia", "Germany", "48165"));
 		
-		locations.disableLocation(locations.findLocationByReference(organizationId, "LOC0006").getLocationId());
-		locations.disableLocation(locations.findLocationByReference(organizationId, "LOC0011").getLocationId());
-		locations.disableLocation(locations.findLocationByReference(organizationId, "LOC0012").getLocationId());
-		locations.enableLocation(locations.findLocationByReference(organizationId, "LOC0012").getLocationId());
-		
+		locations.disableLocation(locations.findLocationDetails(new LocationsFilter(organizationId, null, "LOC0006", null), new Paging(Sort.by("displayName"))).getContent().get(0).getLocationId());
+		locations.disableLocation(locations.findLocationDetails(new LocationsFilter(organizationId, null, "LOC0011", null), new Paging(Sort.by("displayName"))).getContent().get(0).getLocationId());
+		locations.disableLocation(locations.findLocationDetails(new LocationsFilter(organizationId, null, "LOC0012", null), new Paging(Sort.by("displayName"))).getContent().get(0).getLocationId());
+		locations.enableLocation(locations.findLocationDetails(new LocationsFilter(organizationId, null, "LOC0012", null), new Paging(Sort.by("displayName"))).getContent().get(0).getLocationId());
+
 		PersonName michaelName = new PersonName("Mr.", "Michael", "L", "Dunn");
 		Communication michaelComm = new Communication("Chief Technology Officer", "English", "michael.dunn@express.ca", new Telephone("4164695921", "886"), "5194723522");
 		BusinessPosition michaelJob = new BusinessPosition("Business Services", "Compliance", "Financial Analyst");
@@ -171,22 +171,22 @@ public class CrmTestSuite {
 		assertEquals(Status.ACTIVE, orgResults.getContent().get(0).getStatus());
 		Identifier organizationId = orgResults.getContent().get(0).getOrganizationId();
 
-		Page<LocationSummary> allLocationsResults = locations.findLocationSummaries(new LocationsFilter(organizationId, null, null), new Paging(Sort.by("displayName")));
+		Page<LocationSummary> allLocationsResults = locations.findLocationSummaries(new LocationsFilter().withOrganizationId(organizationId), new Paging(Sort.by("displayName")));
 		assertPage(allLocationsResults, 27, 10, 3, true, false, true, false);
 		assertEquals("Adelaide", allLocationsResults.getContent().get(0).getDisplayName());
 		assertEquals("10th", allLocationsResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
 		
-		Page<LocationSummary> activeLocationsResults = locations.findLocationSummaries(new LocationsFilter(organizationId, null, Status.ACTIVE), new Paging(2, 5, Sort.by("displayName")));
+		Page<LocationSummary> activeLocationsResults = locations.findLocationSummaries(new LocationsFilter().withOrganizationId(organizationId).withStatus(Status.ACTIVE), new Paging(2, 5, Sort.by("displayName")));
 		assertPage(activeLocationsResults, 25, 5, 5, false, true, true, false);
 		assertEquals("5th", activeLocationsResults.getContent().get(0).getDisplayName());
 		assertEquals("10th", activeLocationsResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
 		
-		Page<LocationSummary> inactiveLocationsResults = locations.findLocationSummaries(new LocationsFilter(organizationId, null, Status.INACTIVE), new Paging(Sort.by("displayName")));
+		Page<LocationSummary> inactiveLocationsResults = locations.findLocationSummaries(new LocationsFilter().withOrganizationId(organizationId).withStatus(Status.INACTIVE), new Paging(Sort.by("displayName")));
 		assertPage(inactiveLocationsResults, 2, 2, 1, false, false, false, false);
 		assertEquals("1st", inactiveLocationsResults.getContent().get(0).getDisplayName());
 		assertEquals("2nd", inactiveLocationsResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
 		
-		Page<LocationSummary> displayNameResults = locations.findLocationSummaries(new LocationsFilter(organizationId, "in", null), new Paging(Sort.by(Order.desc("displayName"))));
+		Page<LocationSummary> displayNameResults = locations.findLocationSummaries(new LocationsFilter().withOrganizationId(organizationId).withDisplayName("in"), new Paging(Sort.by(Order.desc("displayName"))));
 		assertPage(displayNameResults, 6, 3, 1, false, false, false, false);
 		assertEquals("Saint-Antoine", displayNameResults.getContent().get(5).getDisplayName());
 		assertEquals("Ping", displayNameResults.getContent().get(4).getDisplayName());

@@ -46,6 +46,14 @@ public class LocationsFilter implements Serializable {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 	
+	public String getReference() {
+		return reference;
+	}
+	
+	public LocationsFilter setReference(String reference) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
+	}
+	
 	public Status getStatus() {
 		return status;
 	}

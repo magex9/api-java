@@ -42,6 +42,7 @@ import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -63,6 +64,7 @@ public class CrmServicesTestSuite {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrmServicesTestSuite.class);
 
+	@Autowired private CrmInitializationService initializationService;
 	@Autowired private CrmLookupService lookupService;
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
@@ -71,6 +73,8 @@ public class CrmServicesTestSuite {
 	@Autowired private CrmPermissionService permissionService;
 
 	public void runAllTests() {
+		if (!initializationService.isInitialized())
+			initializationService.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
 		runLookupServiceTests();
 		Identifier orgIdentifier = runOrganizationServiceTests();
 		runLocationServiceTests(orgIdentifier);

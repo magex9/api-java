@@ -38,10 +38,11 @@ public class OrganizationTransformerTest {
 		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
-		Identifier mainLocationId = new Identifier("xyz");
+		Identifier mainLocationId = new Identifier("locationRef");
+		Identifier mainContactId = new Identifier("contactRef");
 		List<String> groups = new ArrayList<String>();
 		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
-		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
@@ -51,7 +52,8 @@ public class OrganizationTransformerTest {
 				"  \"organizationId\": \"abc\",\n" + 
 				"  \"status\": \"Active\",\n" + 
 				"  \"displayName\": \"Junit Test\",\n" + 
-				"  \"mainLocationId\": \"xyz\",\n" + 
+				"  \"mainLocationId\": \"locationRef\",\n" + 
+				"  \"mainContactId\": \"contactRef\",\n" + 
 				"  \"groupIds\": [\"group\"]\n" + 
 				"}", json);
 
@@ -70,10 +72,11 @@ public class OrganizationTransformerTest {
 		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
-		Identifier mainLocationId = new Identifier("xyz");
+		Identifier mainLocationId = new Identifier("locationRef");
+		Identifier mainContactId = new Identifier("contactRef");
 		List<String> groups = new ArrayList<String>();
 		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
-		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
+		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 
 		DataObject obj = transformer.formatOrganizationDetails(organization);
@@ -92,7 +95,11 @@ public class OrganizationTransformerTest {
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"mainLocationId\": {\n" + 
 				"    \"@type\": \"LocationDetails\",\n" + 
-				"    \"@id\": \"xyz\"\n" + 
+				"    \"@id\": \"locationRef\"\n" + 
+				"  },\n" + 
+				"  \"mainContactId\": {\n" + 
+				"    \"@type\": \"LocationDetails\",\n" + 
+				"    \"@id\": \"contactRef\"\n" + 
 				"  },\n" + 
 				"  \"groupIds\": [{\n" + 
 				"    \"@type\": \"Group\",\n" + 

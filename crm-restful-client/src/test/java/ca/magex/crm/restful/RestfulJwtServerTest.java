@@ -85,7 +85,7 @@ public class RestfulJwtServerTest {
 		Page<OrganizationDetails> organizations1 = crm.findOrganizationDetails(new OrganizationsFilter(), new Paging(Sort.by("displayName")));
 		System.out.println(organizations1.getContent());
 		int initialOrgCount = organizations1.getContent().size();
-		OrganizationDetails organizationA1 = crm.createOrganization("Org " + time);
+		OrganizationDetails organizationA1 = crm.createOrganization("Org " + time, List.of("ORG"));
 		assertEquals("Org " + time, organizationA1.getDisplayName());
 		assertEquals(Status.ACTIVE, organizationA1.getStatus());
 		assertNull(organizationA1.getMainLocationId());

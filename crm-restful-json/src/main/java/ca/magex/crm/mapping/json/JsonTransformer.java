@@ -135,8 +135,9 @@ public class JsonTransformer {
 		Status status = parseStatus("status", data);
 		String displayName = parseText("displayName", data);
 		Identifier mainLocationId = parseIdentifier("mainLocationId", data);
+		Identifier mainContactId = parseIdentifier("mainContactId", data);
 		List<String> groups = parseTexts("groupIds", data);
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
 	
 	public DataObject formatOrganizationSummary(OrganizationSummary organization) {
