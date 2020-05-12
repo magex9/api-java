@@ -24,7 +24,7 @@
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
-		<!-- <module>crm-hazelcast-service</module> -->
+		<module>crm-hazelcast-service</module>
 		
 		<!-- Policy Implementations -->
 		<module>crm-policies</module>		
@@ -34,15 +34,14 @@
 		<module>crm-auth-spring-boot-server</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
-		<!-- <module>crm-graphql-spring-controllers</module>				
+		<module>crm-graphql-spring-controllers</module>				
 		<module>crm-graphql-spring-boot-server</module>		
 		<module>crm-graphql-client</module>
-		-->
 		
 		<!-- Eureka Service Registry -->
-<!-- 		<module>crm-eureka-spring-boot-server</module> -->
-<!-- 		<module>crm-graphql-spring-boot-eureka-client-server</module> -->
-<!-- 		<module>crm-graphql-spring-boot-feign-client</module> -->
+		<module>crm-eureka-spring-boot-server</module>
+ 		<module>crm-graphql-spring-boot-eureka-client-server</module>
+ 		<module>crm-graphql-spring-boot-feign-client</module>
 		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-json</module>		
