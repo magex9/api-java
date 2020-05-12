@@ -37,6 +37,7 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -50,6 +51,8 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public final class SecuredCrmServices implements Crm {
+	
+	private final CrmInitializationService initializationService;
 
 	private final CrmLookupService lookupService;
 	
@@ -75,7 +78,7 @@ public final class SecuredCrmServices implements Crm {
 	
 	private final CrmPermissionPolicy permissionsPolicy;
 	
-	public SecuredCrmServices(CrmLookupService lookupService, 
+	public SecuredCrmServices(CrmInitializationService initializationService, CrmLookupService lookupService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
@@ -83,6 +86,7 @@ public final class SecuredCrmServices implements Crm {
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy) {
 		super();
 		this.validationService = new StructureValidationService(lookupService, organizationService, locationService);
+		this.initializationService = initializationService;
 		this.lookupService = lookupService;
 		this.organizationService = organizationService;
 		this.organizationPolicy = organizationPolicy;
@@ -95,6 +99,19 @@ public final class SecuredCrmServices implements Crm {
 		this.permissionsService = permissionsService;
 		this.permissionsPolicy = permissionsPolicy;
 	}
+
+	@Override
+	public boolean isInitialized() {
+		return initializationService.isInitialized();
+	}
+
+	@Override
+	public User initializeSystem(String username, String password, String email) {
+		if (isInitialized())
+			throw new RuntimeException("The system is already initialized");
+		return initializeSystem(username, password, email);
+	}
+
 	
 	@Override
 	public List<Status> findStatuses() {
@@ -758,5 +775,4 @@ public final class SecuredCrmServices implements Crm {
 	public boolean canViewPermissions() {
 		return permissionsPolicy.canViewPermissions();
 	}
-
 }

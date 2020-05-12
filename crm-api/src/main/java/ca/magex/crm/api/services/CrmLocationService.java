@@ -24,7 +24,7 @@ public interface CrmLocationService {
 	LocationSummary findLocationSummary(Identifier locationId);
 
 	LocationDetails findLocationDetails(Identifier locationId);
-
+	
 	long countLocations(LocationsFilter filter);
 
 	Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging);
