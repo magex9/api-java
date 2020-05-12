@@ -9,6 +9,7 @@ import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmUserPolicy;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -20,6 +21,7 @@ import ca.magex.crm.api.services.CrmUserService;
 public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServices> {
 
 	/* autowired services */
+	@Autowired private CrmInitializationService initializationService;	
 	@Autowired private CrmLookupService lookupService;	
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;
@@ -37,7 +39,7 @@ public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServ
 	@Override
 	public SecuredCrmServices getObject() throws Exception {
 		return new SecuredCrmServices(
-			lookupService, 
+			initializationService, lookupService, 
 			organizationService, organizationPolicy,
 			locationService, locationPolicy,
 			personService, personPolicy,

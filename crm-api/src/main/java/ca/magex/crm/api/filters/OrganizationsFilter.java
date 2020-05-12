@@ -26,12 +26,21 @@ public class OrganizationsFilter implements Serializable {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public OrganizationsFilter withStatus(Status status) {
+		return new OrganizationsFilter(displayName, status);
+	}
 
 	public String getDisplayName() {
 		return displayName;
+	}
+	
+	public OrganizationsFilter withDisplayName(String displayName) {
+		return new OrganizationsFilter(displayName, status);
 	}
 
 	public Comparator<OrganizationSummary> getComparator(Paging paging) {
 		return paging.new PagingComparator<OrganizationSummary>();		
 	}
+	
 }

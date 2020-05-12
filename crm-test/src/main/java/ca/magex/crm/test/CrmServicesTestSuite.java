@@ -1,7 +1,5 @@
 package ca.magex.crm.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,7 +71,6 @@ public class CrmServicesTestSuite {
 	@Autowired private CrmPermissionService permissionService;
 
 	public void runAllTests() {
-		//runAssertSystemInitializedProperly();
 		runLookupServiceTests();
 		Identifier orgIdentifier = runOrganizationServiceTests();
 		runLocationServiceTests(orgIdentifier);
@@ -274,7 +271,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with 1 match on name filter */
 		logger.info("Finding Location Details with Name Match");
-		Page<LocationDetails> locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<LocationDetails> locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName, null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locDetailsPage.getNumber());
 		Assert.assertEquals(1, locDetailsPage.getTotalPages());
 		Assert.assertEquals(1, locDetailsPage.getNumberOfElements());
@@ -284,7 +281,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with no match on name filter */
 		logger.info("Finding Location Details without Name Match");
-		locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locDetailsPage.getNumber());
 		Assert.assertEquals(0, locDetailsPage.getTotalPages());
 		Assert.assertEquals(0, locDetailsPage.getNumberOfElements());
@@ -293,7 +290,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with 1 match on name filter */
 		logger.info("Finding Location Summary without Name Match");
-		Page<LocationSummary> locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<LocationSummary> locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName, null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locSummaryPage.getNumber());
 		Assert.assertEquals(1, locSummaryPage.getTotalPages());
 		Assert.assertEquals(1, locSummaryPage.getNumberOfElements());
@@ -303,7 +300,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with no match on name filter */
 		logger.info("Finding Location Summary without Name Match");
-		locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locSummaryPage.getNumber());
 		Assert.assertEquals(0, locSummaryPage.getTotalPages());
 		Assert.assertEquals(0, locSummaryPage.getNumberOfElements());
@@ -440,24 +437,6 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(0, personSummaryPage.getContent().size());
 
 		return personDetails.getPersonId();
-	}
-	
-	private void runAssertSystemInitializedProperly() {
-		User systemUser = userService.findUser(new Identifier("system"));
-		assertEquals(Status.ACTIVE, systemUser.getStatus());
-		assertEquals("Admin, System", systemUser.getPerson().getDisplayName());
-		assertEquals(new Identifier("system"), systemUser.getPerson().getOrganizationId());
-		assertEquals(new Identifier("system"), systemUser.getPerson().getPersonId());
-		assertEquals(Status.ACTIVE, systemUser.getPerson().getStatus());
-		
-		OrganizationDetails systemOrganization = organizationService.findOrganizationDetails(systemUser.getPerson().getOrganizationId());
-		assertEquals(Status.ACTIVE, systemOrganization.getStatus());
-		assertEquals("System", systemOrganization.getDisplayName());
-		
-		PersonDetails systemPerson = personService.findPersonDetails(systemUser.getPerson().getPersonId());
-		assertEquals(Status.ACTIVE, systemPerson.getStatus());
-		assertEquals("System", systemPerson.getDisplayName());
-		
 	}
 
 	private void runUserServiceTests(Identifier personId) {

@@ -160,17 +160,17 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(ls3, hzLocationService.findLocationSummary(l3.getLocationId()));
 
 		/* count locations */
-		Assert.assertEquals(3, hzLocationService.countLocations(new LocationsFilter(null, null, null)));
-		Assert.assertEquals(3, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), null, null)));
-		Assert.assertEquals(3, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), null, Status.ACTIVE)));
-		Assert.assertEquals(1, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", Status.ACTIVE)));
-		Assert.assertEquals(0, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), "Rogers Centre", Status.ACTIVE)));
-		Assert.assertEquals(0, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", Status.INACTIVE)));
-		Assert.assertEquals(0, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLS"), "TD Place", Status.ACTIVE)));
+		Assert.assertEquals(3, hzLocationService.countLocations(new LocationsFilter(null, null, null, null)));
+		Assert.assertEquals(3, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), null, null, null)));
+		Assert.assertEquals(3, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), null, null, Status.ACTIVE)));
+		Assert.assertEquals(1, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", null, Status.ACTIVE)));
+		Assert.assertEquals(0, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), "Rogers Centre", null, Status.ACTIVE)));
+		Assert.assertEquals(0, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", null, Status.INACTIVE)));
+		Assert.assertEquals(0, hzLocationService.countLocations(new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE)));
 		
 		/* find locations details */
 		Page<LocationDetails> detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(null, null, null), 
+				new LocationsFilter(null, null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -179,7 +179,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(new Identifier("MLB"), null, null), 
+				new LocationsFilter(new Identifier("MLB"), null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -188,7 +188,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(new Identifier("MLB"), null, Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), null, null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -197,7 +197,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -206,7 +206,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 		
 		detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(new Identifier("MLB"), "Rogers Centre", Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), "Rogers Centre", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -215,7 +215,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 		
 		detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", Status.INACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", null, Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -224,7 +224,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 		
 		detailsPage = hzLocationService.findLocationDetails(
-				new LocationsFilter(new Identifier("MLS"), "TD Place", Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -234,7 +234,7 @@ public class HazelcastLocationServiceTests {
 		
 		/* find locations summaries */
 		Page<LocationSummary> summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(null, null, null), 
+				new LocationsFilter(null, null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -243,7 +243,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLB"), null, null), 
+				new LocationsFilter(new Identifier("MLB"), null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -252,7 +252,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLB"), null, Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), null, null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -261,7 +261,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -270,7 +270,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(1, summariesPage.getTotalElements());
 		
 		summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLB"), "Rogers Centre", Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), "Rogers Centre", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -279,7 +279,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 		
 		summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", Status.INACTIVE), 
+				new LocationsFilter(new Identifier("MLB"), "Yankee Stadium", null, Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -288,7 +288,7 @@ public class HazelcastLocationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 		
 		summariesPage = hzLocationService.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLS"), "TD Place", Status.ACTIVE), 
+				new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
