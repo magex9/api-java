@@ -6,7 +6,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
 
 public class AbstractSecureCrmPolicy {
 
@@ -20,8 +19,8 @@ public class AbstractSecureCrmPolicy {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null) {
 			return null;
-		}		
-		return userService.findUser(new Identifier(auth.getName()));		
+		}
+		return userService.findUserByUsername(auth.getName());		
 	}
 	
 	/**
