@@ -9,13 +9,20 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
+import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
+import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
+import ca.magex.crm.amnesia.services.AmnesiaPersonService;
+import ca.magex.crm.amnesia.services.AmnesiaUserService;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
+import ca.magex.crm.api.common.Communication;
+import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
@@ -27,6 +34,7 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.resource.CrmRoleInitializer;
 
 @Repository
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
@@ -39,6 +47,8 @@ public class AmnesiaDB implements CrmPasswordService {
 	public static final String RE_ADMIN = "RE_ADMIN";
 	
 	private IdGenerator idGenerator;
+
+	private Identifier systemId;
 	
 	private Map<Identifier, Serializable> data;
 	
@@ -60,6 +70,21 @@ public class AmnesiaDB implements CrmPasswordService {
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
 		userRoles = new HashMap<String, List<String>>();
+	}
+	
+	public boolean isInitialized() {
+		return systemId != null;
+	}
+	
+	public Identifier initialize(String organization, PersonName name, String email, String username, String password) {
+		if (systemId == null) {
+			CrmRoleInitializer.initialize(new AmnesiaPermissionService(this));
+			Identifier organizationId = new AmnesiaOrganizationService(this).createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
+			Identifier personId = new AmnesiaPersonService(this).createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
+			systemId = new AmnesiaUserService(this, new BCryptPasswordEncoder()).createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();
+			passwords.put(username, password);
+		}
+		return systemId;
 	}
 	
 	public void reset() {
@@ -116,15 +141,6 @@ public class AmnesiaDB implements CrmPasswordService {
 	public PersonDetails savePerson(PersonDetails person) {
 		data.put(person.getPersonId(), person);
 		return person;
-	}
-	
-	public User findUser(String username) {
-		Serializable obj = data.get(new Identifier(username));
-		if (obj == null)
-			throw new ItemNotFoundException("Unable to find: " + username);
-		if (!(obj instanceof User))
-			throw new BadRequestException(new Identifier(username), "error", "class", "Expected User but got: " + obj.getClass().getName());
-		return (User)SerializationUtils.clone(obj);
 	}
 	
 	public User findUser(Identifier userId) {
