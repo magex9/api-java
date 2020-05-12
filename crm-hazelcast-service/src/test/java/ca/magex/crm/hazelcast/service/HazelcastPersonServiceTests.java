@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,6 +25,7 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -136,17 +139,126 @@ public class HazelcastPersonServiceTests {
 		Assert.assertEquals(ps1, hzPersonService.enablePerson(p1.getPersonId()));
 		
 		/* count */
+		Assert.assertEquals(3, hzPersonService.countPersons(new PersonsFilter(null, null, null)));
 		Assert.assertEquals(3, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), null, null)));
 		Assert.assertEquals(3, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), null, Status.ACTIVE)));
+		Assert.assertEquals(1, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), p1.getDisplayName(), Status.ACTIVE)));
 		Assert.assertEquals(0, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), null, Status.INACTIVE)));
+		Assert.assertEquals(0, hzPersonService.countPersons(new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE)));
 		
-		/* find */
+		/* find details */
+		Page<PersonDetails> detailsPage = hzPersonService.findPersonDetails(
+				new PersonsFilter(null, null, null), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, detailsPage.getNumber());
+		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(1, detailsPage.getTotalPages());
+		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
+		detailsPage = hzPersonService.findPersonDetails(
+				new PersonsFilter(new Identifier("BLIZZARD"), null, null), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, detailsPage.getNumber());
+		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(1, detailsPage.getTotalPages());
+		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
+		detailsPage = hzPersonService.findPersonDetails(
+				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.ACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, detailsPage.getNumber());
+		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(1, detailsPage.getTotalPages());
+		Assert.assertEquals(3, detailsPage.getTotalElements());
+		
+		detailsPage = hzPersonService.findPersonDetails(
+				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.INACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, detailsPage.getNumber());
+		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(0, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(0, detailsPage.getTotalPages());
+		Assert.assertEquals(0, detailsPage.getTotalElements());
+		
+		detailsPage = hzPersonService.findPersonDetails(
+				new PersonsFilter(new Identifier("BLIZZARD"), p1.getDisplayName(), Status.ACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, detailsPage.getNumber());
+		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(1, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(1, detailsPage.getTotalPages());
+		Assert.assertEquals(1, detailsPage.getTotalElements());
+		
+		detailsPage = hzPersonService.findPersonDetails(
+				new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, detailsPage.getNumber());
+		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(0, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(0, detailsPage.getTotalPages());
+		Assert.assertEquals(0, detailsPage.getTotalElements());
+		
+		/* find summaries */
+		Page<PersonSummary> summariesPage = hzPersonService.findPersonSummaries(
+				new PersonsFilter(null, null, null), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, summariesPage.getNumber());
+		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(1, summariesPage.getTotalPages());
+		Assert.assertEquals(3, summariesPage.getTotalElements());
+		
+		summariesPage = hzPersonService.findPersonSummaries(
+				new PersonsFilter(new Identifier("BLIZZARD"), null, null), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, summariesPage.getNumber());
+		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(1, summariesPage.getTotalPages());
+		Assert.assertEquals(3, summariesPage.getTotalElements());
+		
+		summariesPage = hzPersonService.findPersonSummaries(
+				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.ACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, summariesPage.getNumber());
+		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(1, summariesPage.getTotalPages());
+		Assert.assertEquals(3, summariesPage.getTotalElements());
+		
+		summariesPage = hzPersonService.findPersonSummaries(
+				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.INACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, summariesPage.getNumber());
+		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(0, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(0, summariesPage.getTotalPages());
+		Assert.assertEquals(0, summariesPage.getTotalElements());
+		
+		summariesPage = hzPersonService.findPersonSummaries(
+				new PersonsFilter(new Identifier("BLIZZARD"), p1.getDisplayName(), Status.ACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, summariesPage.getNumber());
+		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(1, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(1, summariesPage.getTotalPages());
+		Assert.assertEquals(1, summariesPage.getTotalElements());
+		
+		summariesPage = hzPersonService.findPersonSummaries(
+				new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
+				new Paging(1, 5, Sort.by("displayName")));
+		Assert.assertEquals(1, summariesPage.getNumber());
+		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(0, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(0, summariesPage.getTotalPages());
+		Assert.assertEquals(0, summariesPage.getTotalElements());
 	}
 	
 	@Test
-	public void testInvalidLocId() {
+	public void testInvalidPersonId() {
 		try {
 			hzPersonService.findPersonDetails(new Identifier("abc"));
 			Assert.fail("should fail if we get here");

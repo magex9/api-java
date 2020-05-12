@@ -52,7 +52,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Autowired @Lazy private CrmPersonService personService;
 
 	@Override
-	public OrganizationDetails createOrganization(@NotNull String organizationDisplayName, @NotNull List<String> groups) {
+	public OrganizationDetails createOrganization(
+			@NotNull String organizationDisplayName, 
+			@NotNull List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = new OrganizationDetails(
@@ -67,7 +69,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationDisplayName(@NotNull Identifier organizationId, @NotNull String name) {
+	public OrganizationDetails updateOrganizationDisplayName(
+			@NotNull Identifier organizationId, 
+			@NotNull String name) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -83,7 +87,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainContact(@NotNull Identifier organizationId, @NotNull Identifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(
+			@NotNull Identifier organizationId, 
+			@NotNull Identifier personId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -100,7 +106,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainLocation(@NotNull Identifier organizationId, @NotNull Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(
+			@NotNull Identifier organizationId, 
+			@NotNull Identifier locationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -117,7 +125,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationGroups(@NotNull Identifier organizationId, @NotNull List<String> groups) {
+	public OrganizationDetails updateOrganizationGroups(
+			@NotNull Identifier organizationId, 
+			@NotNull List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -136,7 +146,8 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationSummary enableOrganization(@NotNull Identifier organizationId) {
+	public OrganizationSummary enableOrganization(
+			@NotNull Identifier organizationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -151,7 +162,8 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationSummary disableOrganization(@NotNull Identifier organizationId) {
+	public OrganizationSummary disableOrganization(
+			@NotNull Identifier organizationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -166,12 +178,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(@NotNull Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(
+			@NotNull Identifier organizationId) {
 		return findOrganizationDetails(organizationId);
 	}
 
 	@Override
-	public OrganizationDetails findOrganizationDetails(@NotNull Identifier organizationId) {
+	public OrganizationDetails findOrganizationDetails(
+			@NotNull Identifier organizationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -181,7 +195,8 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public long countOrganizations(@NotNull OrganizationsFilter filter) {
+	public long countOrganizations(
+			@NotNull OrganizationsFilter filter) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		return organizations.values()
 				.stream()
@@ -191,7 +206,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public Page<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter, @NotNull Paging paging) {
+	public Page<OrganizationDetails> findOrganizationDetails(
+			@NotNull OrganizationsFilter filter,
+			@NotNull Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationDetails> allMatchingOrgs = organizations.values()
 				.stream()
@@ -204,7 +221,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public Page<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter, @NotNull Paging paging) {
+	public Page<OrganizationSummary> findOrganizationSummaries(
+			@NotNull OrganizationsFilter filter, 
+			@NotNull Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationSummary> allMatchingOrgs = organizations.values()
 				.stream()

@@ -76,7 +76,9 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonName(@NotNull Identifier personId, @NotNull PersonName name) {
+	public PersonDetails updatePersonName(
+			@NotNull Identifier personId,
+			@NotNull PersonName name) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -91,7 +93,9 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonAddress(@NotNull Identifier personId, @NotNull MailingAddress address) {
+	public PersonDetails updatePersonAddress(
+			@NotNull Identifier personId,
+			@NotNull MailingAddress address) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -106,7 +110,9 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonCommunication(@NotNull Identifier personId, @NotNull Communication communication) {
+	public PersonDetails updatePersonCommunication(
+			@NotNull Identifier personId,
+			@NotNull Communication communication) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -121,7 +127,9 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonBusinessPosition(@NotNull Identifier personId, @NotNull BusinessPosition position) {
+	public PersonDetails updatePersonBusinessPosition(
+			@NotNull Identifier personId,
+			@NotNull BusinessPosition position) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -136,7 +144,8 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary enablePerson(@NotNull Identifier personId) {
+	public PersonSummary enablePerson(
+			@NotNull Identifier personId) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -151,7 +160,8 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary disablePerson(@NotNull Identifier personId) {
+	public PersonSummary disablePerson(
+			@NotNull Identifier personId) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -166,10 +176,14 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary findPersonSummary(@NotNull Identifier personId) { return findPersonDetails(personId); }
+	public PersonSummary findPersonSummary(
+			@NotNull Identifier personId) {
+		return findPersonDetails(personId);
+	}
 
 	@Override
-	public PersonDetails findPersonDetails(@NotNull Identifier personId) {
+	public PersonDetails findPersonDetails(
+			@NotNull Identifier personId) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
@@ -179,7 +193,8 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public long countPersons(@NotNull PersonsFilter filter) {
+	public long countPersons(
+			@NotNull PersonsFilter filter) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		return persons.values()
 				.stream()
@@ -190,7 +205,9 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public Page<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter, @NotNull Paging paging) {
+	public Page<PersonDetails> findPersonDetails(
+			@NotNull PersonsFilter filter, 
+			@NotNull Paging paging) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		List<PersonDetails> allMatchingPersons = persons.values()
 				.stream()
@@ -204,7 +221,9 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public Page<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter, @NotNull Paging paging) {
+	public Page<PersonSummary> findPersonSummaries(
+			@NotNull PersonsFilter filter, 
+			@NotNull Paging paging) {
 		Map<Identifier, PersonSummary> persons = hzInstance.getMap(HZ_PERSON_KEY);
 		List<PersonSummary> allMatchingPersons = persons.values()
 				.stream()
