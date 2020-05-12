@@ -18,6 +18,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -29,7 +30,7 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastPermissionServiceTests {
 
-	@Autowired private HazelcastPermissionService hzPermissionService;
+	@Autowired private CrmPermissionService hzPermissionService;
 	@Autowired private HazelcastInstance hzInstance;
 
 	@Before
@@ -46,16 +47,19 @@ public class HazelcastPermissionServiceTests {
 		Assert.assertEquals("premier", g1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g1.getStatus());
 		Assert.assertEquals(g1, hzPermissionService.findGroup(g1.getGroupId()));
+		Assert.assertEquals(g1, hzPermissionService.findGroupByCode("A"));
 		Group g2 = hzPermissionService.createGroup("B", new Localized("second", "deuxieme"));
 		Assert.assertEquals("second", g2.getName(Lang.ENGLISH));
 		Assert.assertEquals("deuxieme", g2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g2.getStatus());
 		Assert.assertEquals(g2, hzPermissionService.findGroup(g2.getGroupId()));
+		Assert.assertEquals(g2, hzPermissionService.findGroupByCode("B"));
 		Group g3 = hzPermissionService.createGroup("C", new Localized("third", "troisieme"));
 		Assert.assertEquals("third", g3.getName(Lang.ENGLISH));
 		Assert.assertEquals("troisieme", g3.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g3.getStatus());
 		Assert.assertEquals(g3, hzPermissionService.findGroup(g3.getGroupId()));
+		Assert.assertEquals(g3, hzPermissionService.findGroupByCode("C"));
 
 		/* update */
 		g1 = hzPermissionService.updateGroupName(g1.getGroupId(), new Localized("one", "un"));
@@ -158,6 +162,13 @@ public class HazelcastPermissionServiceTests {
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Group ID 'abc'", e.getMessage());
+		}
+		
+		try {
+			hzPermissionService.findGroupByCode("abc");
+			Assert.fail("should fail if we get here");
+		} catch (ItemNotFoundException e) {
+			Assert.assertEquals("Item not found: Group Code 'abc'", e.getMessage());
 		}
 
 		try {

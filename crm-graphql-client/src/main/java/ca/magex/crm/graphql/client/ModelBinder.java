@@ -80,14 +80,19 @@ public class ModelBinder {
 	public static OrganizationDetails toOrganizationDetails(JSONObject json) {
 		try {
 			Identifier locationId = null;
+			Identifier contactId = null;
 			if (json.has("mainLocation") && json.get("mainLocation") != JSONObject.NULL) {
 				locationId = new Identifier(json.getJSONObject("mainLocation").getString("locationId"));
+			}
+			if (json.has("mainContact") && json.get("mainContact") != JSONObject.NULL) {
+				locationId = new Identifier(json.getJSONObject("mainContact").getString("personId"));
 			}
 			return new OrganizationDetails(
 					new Identifier(json.getString("organizationId")),
 					Status.valueOf(json.getString("status")),
 					json.getString("displayName"),
 					locationId,
+					contactId,
 					toIdentifierList(json.getJSONArray("groupIds")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing OrganizationDetails from: " + json.toString(), jsone);

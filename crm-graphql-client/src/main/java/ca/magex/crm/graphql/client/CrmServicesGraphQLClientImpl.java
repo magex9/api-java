@@ -57,11 +57,17 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	public CrmServicesGraphQLClientImpl(String endpoint) {
 		super(endpoint, "/organization-service-queries.properties");
 	}
-	
-	/* --------------------------------------------------------------------------------------- */
-	/*                                   ORGANIZATION SERVICE                                  */
-	/* --------------------------------------------------------------------------------------- */
-	
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+	/* ORGANIZATION SERVICE */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
@@ -103,25 +109,13 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				organizationId,
 				locationId));
 	}
-	
+
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	@Override
-	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
 	@Override
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		// TODO Auto-generated method stub
@@ -129,7 +123,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {		
+	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		return ModelBinder.toOrganizationSummary(performGraphQLQueryWithVariables(
 				"findOrganizationSummary",
 				"findOrganization",
@@ -180,10 +174,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
-	
-	/* --------------------------------------------------------------------------------------- */
-	/*                                  LOCATION SERVICE                                       */
-	/* --------------------------------------------------------------------------------------- */
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+	/* LOCATION SERVICE */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
@@ -290,10 +290,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
-	
-	/* --------------------------------------------------------------------------------------- */
-	/*                                 PERSON SERVICE                                          */ 
-	/* --------------------------------------------------------------------------------------- */
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+	/* PERSON SERVICE */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
@@ -320,7 +326,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				position.getUnit(),
 				position.getClassification()));
 	}
-	
+
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
 		return ModelBinder.toPersonSummary(performGraphQLQueryWithSubstitution(
@@ -439,11 +445,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
-	
-	
-	/* --------------------------------------------------------------------------------------- */
-	/*                                    USER SERVICE                                         */ 
-	/* --------------------------------------------------------------------------------------- */
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+	/* USER SERVICE */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
@@ -454,19 +465,19 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				username,
 				roles));
 	}
-	
+
 	@Override
 	public User enableUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public User disableUser(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public User findUser(Identifier userId) {
 		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
@@ -474,56 +485,55 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				"findUser",
 				userId));
 	}
-	
+
 	@Override
 	public User addUserRole(Identifier userId, String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public User removeUserRole(Identifier userId, String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public boolean resetPassword(Identifier userId) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public User findUserByUsername(String username) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
 	@Override
 	public List<String> getRoles(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public long countUsers(UsersFilter filter) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 	@Override
 	public Page<User> findUsers(UsersFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
@@ -539,113 +549,124 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
-	
-	/* --------------------------------------------------------------------------------------- */
-	/*                                PERMISSIONS SERVICE                                      */ 
-	/* --------------------------------------------------------------------------------------- */
-	
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+	/* PERMISSIONS SERVICE */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+
 	@Override
 	public Group findGroupByCode(String code) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Page<Group> findGroups(Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Group findGroup(Identifier groupId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Group createGroup(String code, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Group updateGroupName(Identifier groupId, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Group enableGroup(Identifier groupId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Group disableGroup(Identifier groupId) {
 		// TODO Auto-generated method stub
 		return null;
-	}	
+	}
 
 	@Override
 	public Page<Role> findRoles(Identifier groupId, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Role findRole(Identifier roleId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
 	@Override
 	public Role findRoleByCode(String code) throws ItemNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Role createRole(Identifier groupId, String code, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Role enableRole(Identifier roleId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Role disableRole(Identifier roleId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* --------------------------------------------------------------------------------------- */
-	/*                                    LOOKUP SERVICE                                       */
-	/* --------------------------------------------------------------------------------------- */
-	
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+	/* LOOKUP SERVICE */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------
+	 */
+
 	@Override
 	public List<Status> findStatuses() {
 		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"Status"));
 	}
 
 	@Override
 	public Status findStatusByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"Status",
 				code)).get(0);
 	}
@@ -654,20 +675,20 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return findByLocalizedName(locale, name, this::findStatuses);
 	}
-	
+
 	@Override
 	public List<Country> findCountries() {
 		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"Country"));
 	}
 
 	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"Country",
 				code)).get(0);
 	}
@@ -680,16 +701,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public List<Salutation> findSalutations() {
 		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"Salutation"));
 	}
 
 	@Override
 	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"Salutation",
 				code)).get(0);
 	}
@@ -702,16 +723,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public List<Language> findLanguages() {
 		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"Language"));
 	}
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"Language",
 				code)).get(0);
 	}
@@ -724,16 +745,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public List<BusinessSector> findBusinessSectors() {
 		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"BusinessSector"));
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"BusinessSector",
 				code)).get(0);
 	}
@@ -746,16 +767,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public List<BusinessUnit> findBusinessUnits() {
 		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"BusinessUnit"));
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"BusinessUnit",
 				code)).get(0);
 	}
@@ -768,16 +789,16 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public List<BusinessClassification> findBusinessClassifications() {
 		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups", 
-				"findCodeLookups", 
+				"findAllCodeLookups",
+				"findCodeLookups",
 				"BusinessClassification"));
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
 		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup", 
-				"findCodeLookups", 
+				"findSpecificCodeLookup",
+				"findCodeLookups",
 				"BusinessClassification",
 				code)).get(0);
 	}
@@ -785,10 +806,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return findByLocalizedName(locale, name, this::findBusinessClassifications);
-	}	
-	
+	}
+
 	/**
 	 * helper methods used to look through a list of the given locale/name pair
+	 * 
 	 * @param <T>
 	 * @param locale
 	 * @param name
@@ -803,7 +825,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				.get()
 				.stream()
 				.filter((c) -> StringUtils.equals(c.getName(locale), name))
-				.findFirst();				
+				.findFirst();
 		if (optional.isEmpty()) {
 			throw new ItemNotFoundException("");
 		}

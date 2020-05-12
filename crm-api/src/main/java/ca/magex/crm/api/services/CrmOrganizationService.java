@@ -2,6 +2,8 @@ package ca.magex.crm.api.services;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -49,7 +51,7 @@ public interface CrmOrganizationService {
 	 * @param groups The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups);
+	OrganizationDetails createOrganization(@NotNull String organizationDisplayName, @NotNull List<String> groups);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -58,7 +60,7 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to enable.
 	 * @return The organization that was enabled.
 	 */
-	OrganizationSummary enableOrganization(Identifier organizationId);
+	OrganizationSummary enableOrganization(@NotNull Identifier organizationId);
 
 	/**
 	 * Disable an existing organization that is active. If the organization is
@@ -70,28 +72,28 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to disable.
 	 * @return The organization that was disabled.
 	 */
-	OrganizationSummary disableOrganization(Identifier organizationId);
+	OrganizationSummary disableOrganization(@NotNull Identifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name);
+	OrganizationDetails updateOrganizationDisplayName(@NotNull Identifier organizationId, @NotNull String name);
 
-	OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId);
+	OrganizationDetails updateOrganizationMainLocation(@NotNull Identifier organizationId, Identifier locationId);
 
-	OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId);
+	OrganizationDetails updateOrganizationMainContact(@NotNull Identifier organizationId, Identifier personId);
 
-	OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups);
+	OrganizationDetails updateOrganizationGroups(@NotNull Identifier organizationId, @NotNull List<String> groups);
 
-	OrganizationDetails addOrganizationGroup(Identifier organizationId, String group);
+//	OrganizationDetails addOrganizationGroup(Identifier organizationId, String group);
 
-	OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group);
+//	OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group);
 
-	OrganizationSummary findOrganizationSummary(Identifier organizationId);
+	OrganizationSummary findOrganizationSummary(@NotNull Identifier organizationId);
 
-	OrganizationDetails findOrganizationDetails(Identifier organizationId);
+	OrganizationDetails findOrganizationDetails(@NotNull Identifier organizationId);
 
-	long countOrganizations(OrganizationsFilter filter);
+	long countOrganizations(@NotNull OrganizationsFilter filter);
 
-	Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging);
+	Page<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter, @NotNull Paging paging);
 
-	Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging);
+	Page<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter, @NotNull Paging paging);
 
 }
