@@ -15,29 +15,44 @@ public class LocationsFilter implements Serializable {
 
 	private String displayName;
 	
+	private String reference;
+	
 	private Status status;
 
-	public LocationsFilter(Identifier organizationId, String displayName, Status status) {
+	public LocationsFilter(Identifier organizationId, String displayName, String reference, Status status) {
 		this.organizationId = organizationId;
 		this.displayName = displayName;
+		this.reference = reference;
 		this.status = status;
 	}
 
 	public LocationsFilter() {
-		this(null, null, null);
+		this(null, null, null, null);
 	}
 	
 	public Identifier getOrganizationId() {
 		return organizationId;
 	}
 	
+	public LocationsFilter withOrganizationId(Identifier organizationId) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
+	}
+	
+	public String getDisplayName() {
+		return displayName;
+	}	
+	
+	public LocationsFilter withDisplayName(String displayName) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
+	}
+	
 	public Status getStatus() {
 		return status;
 	}
 
-	public String getDisplayName() {
-		return displayName;
-	}	
+	public LocationsFilter withStatus(Status status) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
+	}
 	
 	public Comparator<LocationSummary> getComparator(Paging paging) {
 		return paging.new PagingComparator<LocationSummary>();
