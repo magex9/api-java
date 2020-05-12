@@ -12,32 +12,65 @@ import ca.magex.crm.api.system.Localized;
 
 public interface CrmPermissionService {
 
-	Page<Group> findGroups(@NotNull Paging paging);
+	Page<Group> findGroups(
+		@NotNull Paging paging
+	);
 
-	Group findGroup(@NotNull Identifier groupId);
+	Group findGroup(
+		@NotNull Identifier groupId
+	);
 
-	Group findGroupByCode(@NotNull String code);
+	Group findGroupByCode(
+		@NotNull String code
+	);
 
-	Group createGroup(@NotNull String code, @NotNull Localized name);
+	Group createGroup(
+		@NotNull String code, 
+		@NotNull Localized name
+	);
 
-	Group updateGroupName(@NotNull Identifier groupId, @NotNull Localized name);
+	Group updateGroupName(
+		@NotNull Identifier groupId, 
+		@NotNull Localized name
+	);
 
-	Group enableGroup(@NotNull Identifier groupId);
+	Group enableGroup(
+		@NotNull Identifier groupId
+	);
 
-	Group disableGroup(@NotNull Identifier groupId);
+	Group disableGroup(
+		@NotNull Identifier groupId
+	);
 
-	Page<Role> findRoles(@NotNull Identifier groupId, @NotNull Paging paging);
+	Page<Role> findRoles(
+		@NotNull Identifier groupId, 
+		@NotNull Paging paging
+	);
 
-	Role findRole(@NotNull Identifier roleId);
+	Role findRole(
+		@NotNull Identifier roleId
+	);
 
-	Role findRoleByCode(@NotNull String code);
+	Role findRoleByCode(
+		@NotNull String code
+	);
 
-	Role createRole(@NotNull Identifier groupId, @NotNull String code, @NotNull Localized name);
+	Role createRole(
+		@NotNull Identifier groupId, 
+		@NotNull String code, 
+		@NotNull Localized name
+	);
 
-	Role updateRoleName(@NotNull Identifier roleId, @NotNull Localized name);
+	Role updateRoleName(
+		@NotNull Identifier roleId, 
+		@NotNull Localized name
+	);
 
-	Role enableRole(@NotNull Identifier roleId);
+	Role enableRole(
+		@NotNull Identifier roleId
+	);
 
-	Role disableRole(@NotNull Identifier roleId);
-
+	Role disableRole(
+		@NotNull Identifier roleId
+	);
 }

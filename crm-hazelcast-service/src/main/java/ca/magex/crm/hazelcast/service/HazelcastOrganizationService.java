@@ -44,10 +44,8 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Autowired private HazelcastInstance hzInstance;
 
-	// these need to be marked as lazy because spring proxies this class due to the
-	// @Validated annotation
-	// if these are not lazy then they are autowired before the proxy is created and
-	// we get a cyclic dependency
+	// these need to be marked as lazy because spring proxies this class due to the @Validated annotation
+	// if these are not lazy then they are autowired before the proxy is created and we get a cyclic dependency
 	// so making them lazy allows the proxy to be created before autowiring
 	@Autowired @Lazy private CrmPermissionService permissionService;
 	@Autowired @Lazy private CrmLocationService locationService;
@@ -85,7 +83,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainContact(@NotNull Identifier organizationId, Identifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(@NotNull Identifier organizationId, @NotNull Identifier personId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -96,17 +94,13 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		if (orgDetails.getMainContactId() != null && orgDetails.getMainContactId().equals(personId)) {
 			return orgDetails;
 		}
-		/* nothing to update here */
-		if (orgDetails.getMainContactId() == null && personId == null) {
-			return orgDetails;
-		}
 		orgDetails = orgDetails.withMainContactId(personId);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainLocation(@NotNull Identifier organizationId, Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(@NotNull Identifier organizationId, @NotNull Identifier locationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -115,10 +109,6 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		locationService.findLocationSummary(locationId); // ensure the location exists
 		/* nothing to update here */
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
-			return orgDetails;
-		}
-		/* nothing to update here */
-		if (orgDetails.getMainLocationId() == null && locationId == null) {
 			return orgDetails;
 		}
 		orgDetails = orgDetails.withMainLocationId(locationId);

@@ -1,5 +1,7 @@
 package ca.magex.crm.api.services;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -14,27 +16,49 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmPersonService {
 
-	PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position);
+	PersonDetails createPerson(
+			@NotNull Identifier organizationId, 
+			@NotNull PersonName name, 
+			@NotNull MailingAddress address, 
+			@NotNull Communication communication, 
+			@NotNull BusinessPosition position);
 
-	PersonSummary enablePerson(Identifier personId);
+	PersonSummary enablePerson(
+			@NotNull Identifier personId);
 
-	PersonSummary disablePerson(Identifier personId);
+	PersonSummary disablePerson(
+			@NotNull Identifier personId);
 
-	PersonDetails updatePersonName(Identifier personId, PersonName name);
+	PersonDetails updatePersonName(
+			@NotNull Identifier personId, 
+			@NotNull PersonName name);
 
-	PersonDetails updatePersonAddress(Identifier personId, MailingAddress address);
+	PersonDetails updatePersonAddress(
+			@NotNull Identifier personId, 
+			@NotNull MailingAddress address);
 
-	PersonDetails updatePersonCommunication(Identifier personId, Communication communication);
+	PersonDetails updatePersonCommunication(
+			@NotNull Identifier personId, 
+			@NotNull Communication communication);
 
-	PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position);
+	PersonDetails updatePersonBusinessPosition(
+			@NotNull Identifier personId, 
+			@NotNull BusinessPosition position);
 
-	PersonSummary findPersonSummary(Identifier personId);
+	PersonSummary findPersonSummary(
+			@NotNull Identifier personId);
 
-	PersonDetails findPersonDetails(Identifier personId);
+	PersonDetails findPersonDetails(
+			@NotNull Identifier personId);
 
-	long countPersons(PersonsFilter filter);
+	long countPersons(
+			@NotNull PersonsFilter filter);
 
-	Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging);
+	Page<PersonDetails> findPersonDetails(
+			@NotNull PersonsFilter filter, 
+			@NotNull Paging paging);
 
-	Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging);
+	Page<PersonSummary> findPersonSummaries(
+			@NotNull PersonsFilter filter, 
+			@NotNull Paging paging);
 }

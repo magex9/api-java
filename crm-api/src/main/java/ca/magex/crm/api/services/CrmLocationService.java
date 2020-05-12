@@ -1,5 +1,7 @@
 package ca.magex.crm.api.services;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.MailingAddress;
@@ -11,24 +13,50 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmLocationService {
 
-	LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address);
+	LocationDetails createLocation(
+		@NotNull Identifier organizationId, 
+		@NotNull String displayName, 
+		@NotNull String reference, 
+		@NotNull MailingAddress address
+	);
 
-	LocationSummary enableLocation(Identifier locationId);
+	LocationSummary enableLocation(
+		@NotNull Identifier locationId
+	);
 
-	LocationSummary disableLocation(Identifier locationId);
+	LocationSummary disableLocation(
+		@NotNull Identifier locationId
+	);
 
-	LocationDetails updateLocationName(Identifier locationId, String displaysName);
+	LocationDetails updateLocationName(
+		@NotNull Identifier locationId, 
+		@NotNull String displaysName
+	);
 
-	LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address);
+	LocationDetails updateLocationAddress(
+		@NotNull Identifier locationId, 
+		@NotNull MailingAddress address
+	);
 
-	LocationSummary findLocationSummary(Identifier locationId);
+	LocationSummary findLocationSummary(
+		@NotNull Identifier locationId
+	);
 
-	LocationDetails findLocationDetails(Identifier locationId);
+	LocationDetails findLocationDetails(
+		@NotNull Identifier locationId
+	);
 
-	long countLocations(LocationsFilter filter);
+	long countLocations(
+		@NotNull LocationsFilter filter
+	);	
 
-	Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging);
+	Page<LocationDetails> findLocationDetails(
+		@NotNull LocationsFilter filter, 
+		@NotNull Paging paging
+	);
 
-	Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging);
-
+	Page<LocationSummary> findLocationSummaries(
+		@NotNull LocationsFilter filter, 
+		@NotNull Paging paging
+	);
 }

@@ -2,6 +2,8 @@ package ca.magex.crm.api.services;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.filters.Paging;
@@ -11,29 +13,63 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmUserService {
 
-	User createUser(Identifier personId, String username, List<String> roles);
+	User createUser(
+		@NotNull Identifier personId, 
+		@NotNull String username, 
+		@NotNull List<String> roles
+	);
 
-	User enableUser(Identifier userId);
+	User enableUser(
+		@NotNull Identifier userId
+	);
 
-	User disableUser(Identifier userId);
+	User disableUser(
+		@NotNull Identifier userId
+	);
 
-    User findUser(Identifier userId);
+    User findUser(
+    	@NotNull Identifier userId
+    );
     
-    User findUserByUsername(String username);
+    User findUserByUsername(
+    	@NotNull String username
+    );
     
-    List<String> getRoles(Identifier userId);
+    List<String> getRoles(
+    	@NotNull Identifier userId
+    );
 	
-	User addUserRole(Identifier userId, String role);
+	User addUserRole(
+		@NotNull Identifier userId, 
+		@NotNull String role
+	);
 	
-	User removeUserRole(Identifier userId, String role);
+	User removeUserRole(
+		@NotNull Identifier userId, 
+		@NotNull String role
+	);
 	
-	User updateUserRoles(Identifier userId, List<String> roles);
+	User updateUserRoles(
+		@NotNull Identifier userId, 
+		@NotNull List<String> roles
+	);
 	
-	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
+	boolean changePassword(
+		@NotNull Identifier userId, 
+		@NotNull String currentPassword, 
+		@NotNull String newPassword
+	);
 
-	boolean resetPassword(Identifier userId);
+	boolean resetPassword(
+		@NotNull Identifier userId
+	);
 
-	long countUsers(UsersFilter filter);
+	long countUsers(
+		@NotNull UsersFilter filter
+	);
 
-	Page<User> findUsers(UsersFilter filter, Paging paging);
+	Page<User> findUsers(
+		@NotNull UsersFilter filter, 
+		@NotNull Paging paging
+	);
 }

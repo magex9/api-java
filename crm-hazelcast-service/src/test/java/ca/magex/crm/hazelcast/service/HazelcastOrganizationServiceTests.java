@@ -108,7 +108,6 @@ public class HazelcastOrganizationServiceTests {
 		o3 = hzOrganizationService.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 
 		/* update main location */
-		Assert.assertEquals(o1, hzOrganizationService.updateOrganizationMainLocation(o1.getOrganizationId(), null));
 		o1 = hzOrganizationService.updateOrganizationMainLocation(o1.getOrganizationId(), new Identifier("Toronto"));
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -116,11 +115,7 @@ public class HazelcastOrganizationServiceTests {
 		Assert.assertEquals(new Identifier("Toronto"), o1.getMainLocationId());
 		Assert.assertEquals(o1, hzOrganizationService.findOrganizationDetails(o1.getOrganizationId()));
 		o1 = hzOrganizationService.updateOrganizationMainLocation(o1.getOrganizationId(), new Identifier("Toronto")); // set to duplicate value
-		o1 = hzOrganizationService.updateOrganizationMainLocation(o1.getOrganizationId(), null); // set back to null
-		Assert.assertNull(o1.getMainLocationId());
-		o1 = hzOrganizationService.updateOrganizationMainLocation(o1.getOrganizationId(), new Identifier("Toronto")); // reset to original value
-
-		Assert.assertEquals(o2, hzOrganizationService.updateOrganizationMainLocation(o2.getOrganizationId(), null));
+		
 		o2 = hzOrganizationService.updateOrganizationMainLocation(o2.getOrganizationId(), new Identifier("Ottawa"));
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -128,11 +123,8 @@ public class HazelcastOrganizationServiceTests {
 		Assert.assertEquals(new Identifier("Ottawa"), o2.getMainLocationId());
 		Assert.assertEquals(o2, hzOrganizationService.findOrganizationDetails(o2.getOrganizationId()));
 		o2 = hzOrganizationService.updateOrganizationMainLocation(o2.getOrganizationId(), new Identifier("Ottawa"));
-		o2 = hzOrganizationService.updateOrganizationMainLocation(o2.getOrganizationId(), null);
-		o2 = hzOrganizationService.updateOrganizationMainLocation(o2.getOrganizationId(), new Identifier("Ottawa"));
 		o2 = hzOrganizationService.updateOrganizationMainLocation(o2.getOrganizationId(), new Identifier("Ottawa"));
 
-		Assert.assertEquals(o3, hzOrganizationService.updateOrganizationMainLocation(o3.getOrganizationId(), null));
 		o3 = hzOrganizationService.updateOrganizationMainLocation(o3.getOrganizationId(), new Identifier("Montreal"));
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
@@ -140,12 +132,9 @@ public class HazelcastOrganizationServiceTests {
 		Assert.assertEquals(new Identifier("Montreal"), o3.getMainLocationId());
 		Assert.assertEquals(o3, hzOrganizationService.findOrganizationDetails(o3.getOrganizationId()));
 		o3 = hzOrganizationService.updateOrganizationMainLocation(o3.getOrganizationId(), new Identifier("Montreal"));
-		o3 = hzOrganizationService.updateOrganizationMainLocation(o3.getOrganizationId(), null);
-		o3 = hzOrganizationService.updateOrganizationMainLocation(o3.getOrganizationId(), new Identifier("Montreal"));
 		o3 = hzOrganizationService.updateOrganizationMainLocation(o3.getOrganizationId(), new Identifier("Montreal"));
 
 		/* update main contact */
-		Assert.assertEquals(o1, hzOrganizationService.updateOrganizationMainContact(o1.getOrganizationId(), null));
 		o1 = hzOrganizationService.updateOrganizationMainContact(o1.getOrganizationId(), new Identifier("Freddy"));
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -153,11 +142,8 @@ public class HazelcastOrganizationServiceTests {
 		Assert.assertEquals(new Identifier("Freddy"), o1.getMainContactId());
 		Assert.assertEquals(o1, hzOrganizationService.findOrganizationDetails(o1.getOrganizationId()));
 		o1 = hzOrganizationService.updateOrganizationMainContact(o1.getOrganizationId(), new Identifier("Freddy")); // set to duplicate value
-		o1 = hzOrganizationService.updateOrganizationMainContact(o1.getOrganizationId(), null); // set back to null
-		Assert.assertNull(o1.getMainContactId());
 		o1 = hzOrganizationService.updateOrganizationMainContact(o1.getOrganizationId(), new Identifier("Freddy")); // reset to original value
 
-		Assert.assertEquals(o2, hzOrganizationService.updateOrganizationMainContact(o2.getOrganizationId(), null));
 		o2 = hzOrganizationService.updateOrganizationMainContact(o2.getOrganizationId(), new Identifier("Craig"));
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -165,19 +151,14 @@ public class HazelcastOrganizationServiceTests {
 		Assert.assertEquals(new Identifier("Craig"), o2.getMainContactId());
 		Assert.assertEquals(o2, hzOrganizationService.findOrganizationDetails(o2.getOrganizationId()));
 		o2 = hzOrganizationService.updateOrganizationMainContact(o2.getOrganizationId(), new Identifier("Craig"));
-		o2 = hzOrganizationService.updateOrganizationMainContact(o2.getOrganizationId(), null);
-		o2 = hzOrganizationService.updateOrganizationMainContact(o2.getOrganizationId(), new Identifier("Craig"));
 		o2 = hzOrganizationService.updateOrganizationMainContact(o2.getOrganizationId(), new Identifier("Craig"));
 
-		Assert.assertEquals(o3, hzOrganizationService.updateOrganizationMainContact(o3.getOrganizationId(), null));
 		o3 = hzOrganizationService.updateOrganizationMainContact(o3.getOrganizationId(), new Identifier("Carey"));
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
 		Assert.assertEquals(0, o3.getGroups().size());
 		Assert.assertEquals(new Identifier("Carey"), o3.getMainContactId());
 		Assert.assertEquals(o3, hzOrganizationService.findOrganizationDetails(o3.getOrganizationId()));
-		o3 = hzOrganizationService.updateOrganizationMainContact(o3.getOrganizationId(), new Identifier("Carey"));
-		o3 = hzOrganizationService.updateOrganizationMainContact(o3.getOrganizationId(), null);
 		o3 = hzOrganizationService.updateOrganizationMainContact(o3.getOrganizationId(), new Identifier("Carey"));
 		o3 = hzOrganizationService.updateOrganizationMainContact(o3.getOrganizationId(), new Identifier("Carey"));
 
