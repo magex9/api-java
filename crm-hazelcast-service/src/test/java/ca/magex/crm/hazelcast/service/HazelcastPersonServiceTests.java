@@ -21,7 +21,9 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
@@ -60,6 +62,20 @@ public class HazelcastPersonServiceTests {
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, hzPersonService.findPersonDetails(p1.getPersonId()));
 		
+		hzPersonService.createPerson(
+			new Identifier("BLIZZARD"), 
+			new PersonName("Ms", "Tammy", "GD", "Jones"), 
+			new MailingAddress("5 Avenue Anatole France", "Paris", "", "France", "75007"), 
+			new Communication("Leader", "English", "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
+			new BusinessPosition("IT", "Tester", "Junior"));
+		
+		hzPersonService.createPerson(
+			new Identifier("BLIZZARD"), 
+			new PersonName("Mr", "James", "Earl", "Bond"), 
+			new MailingAddress("5 Avenue Anatole France", "Paris", "", "France", "75007"), 
+			new Communication("Leader", "English", "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
+			new BusinessPosition("IT", "Tester", "Junior"));
+		
 		/* update */
 		PersonName tommy = new PersonName("Mrs", "Michelle", "Pauline", "Smith");
 		p1 = hzPersonService.updatePersonName(p1.getPersonId(), tommy);
@@ -96,6 +112,37 @@ public class HazelcastPersonServiceTests {
 		
 		BusinessPosition position2 = new BusinessPosition("Legal", "Lawyer", "Senior");
 		p1 = hzPersonService.updatePersonBusinessPosition(p1.getPersonId(), position2);
+		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
+		Assert.assertEquals(tommy, p1.getLegalName());
+		Assert.assertEquals(louvre, p1.getAddress());
+		Assert.assertEquals(comms2, p1.getCommunication());
+		Assert.assertEquals(position2, p1.getPosition());
+		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
+		Assert.assertEquals(p1, hzPersonService.findPersonDetails(p1.getPersonId()));
+		Assert.assertEquals(p1, hzPersonService.updatePersonBusinessPosition(p1.getPersonId(), position2));
+		
+		/* disable */
+		PersonSummary ps1 = hzPersonService.disablePerson(p1.getPersonId());
+		Assert.assertEquals("Smith, Michelle Pauline", ps1.getDisplayName());
+		Assert.assertEquals(Status.INACTIVE, ps1.getStatus());
+		Assert.assertEquals(ps1, hzPersonService.findPersonSummary(ps1.getPersonId()));
+		Assert.assertEquals(ps1, hzPersonService.disablePerson(p1.getPersonId()));
+		
+		/* enable */
+		ps1 = hzPersonService.enablePerson(p1.getPersonId());
+		Assert.assertEquals("Smith, Michelle Pauline", ps1.getDisplayName());
+		Assert.assertEquals(Status.ACTIVE, ps1.getStatus());
+		Assert.assertEquals(ps1, hzPersonService.findPersonSummary(ps1.getPersonId()));
+		Assert.assertEquals(ps1, hzPersonService.enablePerson(p1.getPersonId()));
+		
+		/* count */
+		Assert.assertEquals(3, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), null, null)));
+		Assert.assertEquals(3, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), null, Status.ACTIVE)));
+		Assert.assertEquals(0, hzPersonService.countPersons(new PersonsFilter(new Identifier("BLIZZARD"), null, Status.INACTIVE)));
+		
+		/* find */
+		
+		
 	}
 	
 	@Test
@@ -130,6 +177,13 @@ public class HazelcastPersonServiceTests {
 		
 		try {
 			hzPersonService.updatePersonCommunication(new Identifier("abc"), new Communication("", "", "", new Telephone(""), ""));
+			Assert.fail("should fail if we get here");
+		} catch (ItemNotFoundException e) {
+			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+		}
+		
+		try {
+			hzPersonService.updatePersonBusinessPosition(new Identifier("abc"), new BusinessPosition("", "", ""));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());

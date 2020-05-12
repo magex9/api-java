@@ -51,7 +51,12 @@ public class HazelcastPersonService implements CrmPersonService {
 	@Autowired @Lazy private CrmOrganizationService organizationService;
 
 	@Override
-	public PersonDetails createPerson(@NotNull Identifier organizationId, @NotNull PersonName legalName, @NotNull MailingAddress address, @NotNull Communication communication, @NotNull BusinessPosition position) {
+	public PersonDetails createPerson(
+			@NotNull Identifier organizationId,
+			@NotNull PersonName legalName,
+			@NotNull MailingAddress address,
+			@NotNull Communication communication,
+			@NotNull BusinessPosition position) {
 		/* run a find on the organizationId to ensure it exists */
 		organizationService.findOrganizationDetails(organizationId);
 		/* create our new person for this organizationId */
@@ -69,7 +74,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		persons.put(personDetails.getPersonId(), personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
-	
+
 	@Override
 	public PersonDetails updatePersonName(@NotNull Identifier personId, @NotNull PersonName name) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
@@ -84,7 +89,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
-	
+
 	@Override
 	public PersonDetails updatePersonAddress(@NotNull Identifier personId, @NotNull MailingAddress address) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
@@ -99,7 +104,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
-	
+
 	@Override
 	public PersonDetails updatePersonCommunication(@NotNull Identifier personId, @NotNull Communication communication) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
@@ -114,7 +119,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
-	
+
 	@Override
 	public PersonDetails updatePersonBusinessPosition(@NotNull Identifier personId, @NotNull BusinessPosition position) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
@@ -122,10 +127,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		}
-		if (personDetails.getPosition() != null && personDetails.getPosition().equals(position)) {
-			return SerializationUtils.clone(personDetails);
-		}
-		if (personDetails.getPosition() == null && position == null) {
+		if (personDetails.getPosition().equals(position)) {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withPosition(position);
@@ -164,9 +166,7 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary findPersonSummary(@NotNull Identifier personId) {
-		return findPersonDetails(personId);
-	}
+	public PersonSummary findPersonSummary(@NotNull Identifier personId) { return findPersonDetails(personId); }
 
 	@Override
 	public PersonDetails findPersonDetails(@NotNull Identifier personId) {
@@ -181,7 +181,12 @@ public class HazelcastPersonService implements CrmPersonService {
 	@Override
 	public long countPersons(@NotNull PersonsFilter filter) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
-		return persons.size();
+		return persons.values()
+				.stream()
+				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
+				.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
+				.count();
 	}
 
 	@Override
