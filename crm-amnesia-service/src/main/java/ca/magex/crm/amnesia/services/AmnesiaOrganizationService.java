@@ -36,7 +36,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
-		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, groups));
+		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null, groups));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
@@ -61,20 +61,20 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 		return null;
 	}
 
-	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
-		OrganizationDetails organization = findOrganizationDetails(organizationId);
-		List<String> groups = new ArrayList<String>(organization.getGroups());
-		if (!groups.contains(group))
-			groups.add(group);
-		return db.saveOrganization(organization.withGroups(groups));
-	}
-	
-	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
-		OrganizationDetails organization = findOrganizationDetails(organizationId);
-		List<String> groups = new ArrayList<String>(organization.getGroups());
-   		groups.remove(group);
-   		return db.saveOrganization(organization.withGroups(groups));
-	}
+//	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
+//		OrganizationDetails organization = findOrganizationDetails(organizationId);
+//		List<String> groups = new ArrayList<String>(organization.getGroups());
+//		if (!groups.contains(group))
+//			groups.add(group);
+//		return db.saveOrganization(organization.withGroups(groups));
+//	}
+//	
+//	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
+//		OrganizationDetails organization = findOrganizationDetails(organizationId);
+//		List<String> groups = new ArrayList<String>(organization.getGroups());
+//   		groups.remove(group);
+//   		return db.saveOrganization(organization.withGroups(groups));
+//	}
 	
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		return db.saveOrganization(findOrganizationDetails(organizationId).withGroups(groups));

@@ -227,17 +227,17 @@ public final class SecuredCrmServices implements Crm {
 		return organizationService.updateOrganizationMainContact(organizationId, personId);
 	}
     
-	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
-		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("addGroup: " + organizationId + ", " + group);
-		return organizationService.addOrganizationGroup(organizationId, group);
-	}
-	
-	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
-		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("removeGroupRole: " + organizationId + ", " + group);
-		return organizationService.removeOrganizationGroup(organizationId, group);
-	}
+//	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
+//		if (!canUpdateOrganization(organizationId))
+//			throw new PermissionDeniedException("addGroup: " + organizationId + ", " + group);
+//		return organizationService.addOrganizationGroup(organizationId, group);
+//	}
+//	TODO - Remove these methods
+//	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
+//		if (!canUpdateOrganization(organizationId))
+//			throw new PermissionDeniedException("removeGroupRole: " + organizationId + ", " + group);
+//		return organizationService.removeOrganizationGroup(organizationId, group);
+//	}
 	
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> group) {
 		if (!canUpdateOrganization(organizationId))
