@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Maven
-<<<<<<< HEAD
 # Build your Java project and run tests with Apache Maven!
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
-=======
->>>>>>> cae8eb3... added ssh to RD3
-=======
+
 #Pipeline Configuration
 pool:
     vmImage: 'ubuntu-latest'
->>>>>>> 2c335ef... Reorganized pipeline
-=======
-#Pipeline Configuration
-pool:
-    vmImage: 'ubuntu-latest'
->>>>>>> branch 'master' of https://github.com/eagleyes/api-java.git
 
 trigger:
       - master
@@ -120,34 +108,3 @@ stages:
                 runOptions: 'commands'
                 commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
                 readyTimeout: '20000'
-
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
-#- task: Maven@3
-#  inputs:
-#    mavenPomFile: 'pom.xml'
-#    mavenOptions: '-Xmx3072m'
-#    javaHomeOption: 'JDKVersion'
-#    jdkVersionOption: '1.11'
-#    jdkArchitectureOption: 'x64'
-#    publishJUnitResults: true
-#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-#    goals: 'package'
-
-#- task: Maven@3
-#  inputs:
-#    mavenPomFile: 'pom.xml'
-#    publishJUnitResults: true
-#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-#    javaHomeOption: 'JDKVersion'
-#    jdkVersionOption: '1.11'
-#    mavenVersionOption: 'Default'
-#    mavenOptions: '-Xmx3072m'
-#    mavenAuthenticateFeed: false
-#    effectivePomSkip: false
-#    sonarQubeRunAnalysis: false
-
-
-
