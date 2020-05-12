@@ -1,0 +1,224 @@
+package ca.magex.crm.test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+
+import ca.magex.crm.api.authentication.CrmPasswordService;
+import ca.magex.crm.api.common.BusinessPosition;
+import ca.magex.crm.api.common.Communication;
+import ca.magex.crm.api.common.MailingAddress;
+import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.filters.LocationsFilter;
+import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.UsersFilter;
+import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
+
+public class CrmTestSuite {
+
+	/**
+	 * Create the main administrator org thats has access to all organizations
+	 */
+	public static Identifier createSysAdmin(CrmOrganizationService orgs, CrmLocationService locations, CrmPersonService persons, CrmUserService users, CrmPasswordService passwords) {
+		Identifier organizationId = orgs.createOrganization("MageX", List.of("CRM")).getOrganizationId();
+
+		MailingAddress address = new MailingAddress("1234 Alta Vista Drive", "Ottawa", "Ontario", "Canada", "K3J 3I3");
+		Identifier mainLocationId = locations.createLocation(organizationId, "Headquarters", "HQ", address).getLocationId();
+		orgs.updateOrganizationMainLocation(organizationId, mainLocationId);
+		
+		PersonName scottName = new PersonName("Mr.", "Scott", null, "Finlay");
+		Communication scottComm = new Communication("Developer", "English", "scott@work.ca", new Telephone("6132345535"), null);
+		BusinessPosition scottJob = new BusinessPosition("IM/IT", "Development", "Developer");
+		Identifier scottId = persons.createPerson(organizationId, scottName, address, scottComm, scottJob).getPersonId();
+		users.createUser(scottId, "finlays", Arrays.asList("ORG_ADMIN", "CRM_ADMIN"));
+		orgs.updateOrganizationMainContact(organizationId, scottId);
+		
+		return organizationId;
+	}
+	
+	/**
+	 * Create a sample organization with a regular user.
+	 */
+	public static Identifier createOmniTech(CrmOrganizationService orgs, CrmLocationService locations, CrmPersonService persons, CrmUserService users, CrmPasswordService passwords) {
+		Identifier organizationId = orgs.createOrganization("Omni Tech", List.of("ORG")).getOrganizationId();
+		
+		MailingAddress mainAddress = new MailingAddress("1761 Township Road", "Leduc", "Alberta", "Canada", "T9E 2X2");
+		Identifier mainLocationId = locations.createLocation(organizationId, "HQ", "HQ", mainAddress).getLocationId();
+		orgs.updateOrganizationMainLocation(organizationId, mainLocationId);
+		
+		PersonName jennaName = new PersonName("Mrs.", "Jenna", "J", "Marshall");
+		Communication jennaComm = new Communication("Chief Technology Officer", "French", "jenna@omnitech.com", new Telephone("4168814588"), "4169985565");
+		BusinessPosition jennaJob = new BusinessPosition("Corporate Services", "Information Technology", "Executive");
+		Identifier jennaId = persons.createPerson(organizationId, jennaName, mainAddress, jennaComm, jennaJob).getPersonId();
+		users.createUser(jennaId, "jenna", List.of("ORG_ADMIN"));
+		
+		PersonName chaseName = new PersonName("Mr.", "Chase", "L", "Montgomery");
+		Communication chaseComm = new Communication("Financial Advisor", "English", "chase@omnitech.com", new Telephone("4187786566"), "4169985565");
+		BusinessPosition chaseJob = new BusinessPosition("Corporate Services", "Finance", "Advisor");
+		Identifier chaseId = persons.createPerson(organizationId, chaseName, mainAddress, chaseComm, chaseJob).getPersonId();
+		users.createUser(chaseId, "chase", Arrays.asList("ORG_USER"));
+		
+		return organizationId;
+	}
+	
+	public static Identifier createExpressServices(CrmOrganizationService orgs, CrmLocationService locations, CrmPersonService persons, CrmUserService users, CrmPasswordService passwords) {
+		Identifier organizationId = orgs.createOrganization("Omni Tech", List.of("ORG")).getOrganizationId();
+		
+		MailingAddress mainAddress = new MailingAddress("4844 Water Street", "Kitchener", "Ontario", "Canada", "N2H 5A5");
+		Identifier mainLocationId = locations.createLocation(organizationId, "LOC0002", "Headquarters", mainAddress).getLocationId();
+		orgs.updateOrganizationMainLocation(organizationId, mainLocationId);
+		
+		locations.createLocation(organizationId, "LOC0002", "Neilson", new MailingAddress("2192 Neilson Avenue", "Toronto", "Ontario", "Canada", "M1M 1V1"));
+		locations.createLocation(organizationId, "LOC0003", "Yonge", new MailingAddress("4774 Yonge Street", "Toronto", "Ontario", "Canada", "M4W 1J7"));
+		locations.createLocation(organizationId, "LOC0004", "De L'Acadie", new MailingAddress("1324 De L'Acadie Boul", "Montreal", "Quebec", "Canada", "H4N 3C5"));
+		locations.createLocation(organizationId, "LOC0005", "Benton", new MailingAddress("4615 Benton Street", "Kitchener", "Ontario", "Canada", "N2G 4L9"));
+		locations.createLocation(organizationId, "LOC0006", "Saint-Antoine", new MailingAddress("1749 rue Saint-Antoine", "St Hyacinthé", "Quebec", "Canada", "J2S 8R8"));
+		locations.createLocation(organizationId, "LOC0007", "Parkdale", new MailingAddress("2415 Parkdale Ave", "Brockville", "Ontario", "Canada", "K6V 4X4"));
+		locations.createLocation(organizationId, "LOC0008", "Riedel", new MailingAddress("4592 Riedel Street", "Fort Mcmurray", "Alberta", "Canada", "T9H 3J9"));
+		locations.createLocation(organizationId, "LOC0009", "Dufferin", new MailingAddress("1588 Dufferin Street", "Toronto", "Ontario", "Canada", "M6H 4B6"));
+		locations.createLocation(organizationId, "LOC0010", "Haaglund", new MailingAddress("993 Haaglund Rd", "Grand Forks", "British Columbia", "Canada", "V0H 1H0"));
+		locations.createLocation(organizationId, "LOC0011", "Lauzon", new MailingAddress("1272 Lauzon Parkway", "Tecumseh", "Ontario", "Canada", "N8N 1L7"));
+		locations.createLocation(organizationId, "LOC0012", "Silver", new MailingAddress("29 Silver St", "Gowganda", "Ontario", "Canada", "P0J 1J0"));
+		locations.createLocation(organizationId, "LOC0013", "Adelaide", new MailingAddress("274 Adelaide St", "Toronto", "Ontario", "Canada", "M5H 1P6"));
+		locations.createLocation(organizationId, "LOC0014", "Halsey", new MailingAddress("1968 Halsey Avenue", "Toronto", "Ontario", "Canada", "M3B 2W6"));
+		locations.createLocation(organizationId, "LOC0015", "Speers", new MailingAddress("428 Speers Road", "Toronto", "Ontario", "Canada", "M6A 1G5"));
+		locations.createLocation(organizationId, "LOC0016", "Pape", new MailingAddress("1869 Pape Ave", "Toronto", "Ontario", "Canada", "M4E 2V5"));
+		locations.createLocation(organizationId, "LOC0017", "Eglinton", new MailingAddress("3282 Eglinton Avenue", "Toronto", "Ontario", "Canada", "M4P 1A6"));
+		locations.createLocation(organizationId, "LOC0018", "Derry", new MailingAddress("1494 Derry Rd", "Toronto", "Ontario", "Canada", "M4T 1A8"));
+		locations.createLocation(organizationId, "LOC0019", "Runnymede", new MailingAddress("547 Runnymede Rd", "Toronto", "Ontario", "Canada", "M6S 2Z7"));
+		locations.createLocation(organizationId, "LOC0020", "Dundas", new MailingAddress("1597 Dundas St", "Toronto", "Ontario", "Canada", "M6B 3L5"));
+		locations.createLocation(organizationId, "LOC0021", "Tycos", new MailingAddress("341 Tycos Dr", "Toronto", "Ontario", "Canada", "M5T 1T4"));
+		locations.createLocation(organizationId, "LOC0022", "Victoria", new MailingAddress("3773 Victoria Park Ave", "Toronto", "Ontario", "Canada", "M2J 3T7"));
+		locations.createLocation(organizationId, "LOC0023", "King", new MailingAddress("2453 King Street", "Toronto", "Ontario", "Canada", "M0J 1J0"));
+		locations.createLocation(organizationId, "LOC0024", "Pine", new MailingAddress("2294 Pine Street", "Ponoka", "Alberta", "Canada", "T0C 2H0"));
+		locations.createLocation(organizationId, "LOC0025", "North", new MailingAddress("1075 North Street", "Salt Lake City", "Utah", "United States", "84111"));
+		locations.createLocation(organizationId, "LOC0026", "Morningview", new MailingAddress("2581 Morningview Lane", "New York", "New York", "United States", "10013"));
+		locations.createLocation(organizationId, "LOC0027", "Munster", new MailingAddress("Straße der Pariser Kommune 73", "Münster", "North Rhine-Westphalia", "Germany", "48165"));
+		
+		locations.disableLocation(locations.findLocationByReference(organizationId, "LOC0006").getLocationId());
+		locations.disableLocation(locations.findLocationByReference(organizationId, "LOC0011").getLocationId());
+		locations.disableLocation(locations.findLocationByReference(organizationId, "LOC0012").getLocationId());
+		locations.enableLocation(locations.findLocationByReference(organizationId, "LOC0012").getLocationId());
+		
+		PersonName michaelName = new PersonName("Mr.", "Michael", "L", "Dunn");
+		Communication michaelComm = new Communication("Chief Technology Officer", "English", "michael.dunn@express.ca", new Telephone("4164695921", "886"), "5194723522");
+		BusinessPosition michaelJob = new BusinessPosition("Business Services", "Compliance", "Financial Analyst");
+		Identifier michaelId = persons.createPerson(organizationId, michaelName, mainAddress, michaelComm, michaelJob).getPersonId();
+		users.createUser(michaelId, "michael", List.of("ORG_ADMIN"));
+		
+		PersonName maryName = new PersonName("Mrs.", "Mary", "S", "Duffy");
+		Communication maryComm = new Communication("Financial Advisor", "English", "mary.duffy@express.ca", new Telephone("4164695921", "363"), "5194723522");
+		BusinessPosition maryJob = new BusinessPosition("Business Services", "Compliance", "Financial Analyst");
+		Identifier maryId = persons.createPerson(organizationId, maryName, mainAddress, maryComm, maryJob).getPersonId();
+		users.createUser(maryId, "mary", Arrays.asList("ORG_USER"));
+		
+		PersonName karenName = new PersonName("Mr.", "Karen", "J", "Dahlke");
+		Communication karenComm = new Communication("Financial Advisor", "English", "karen.dahlke@express.ca", new Telephone("4164695921", "393"), "5194723522");
+		BusinessPosition karenJob = new BusinessPosition("Corporate Services", "Information Technology", "Admistrative Assistant");
+		Identifier karenId = persons.createPerson(organizationId, karenName, mainAddress, karenComm, karenJob).getPersonId();
+		users.createUser(karenId, "karen", Arrays.asList("ORG_USER"));
+		persons.disablePerson(karenId);
+		
+		PersonName bobbyName = new PersonName(null, "Bobby", null, "Martin");
+		Communication bobbyComm = new Communication("Financial Advisor", "English", "bobby.martin@express.ca", new Telephone("4164695921", "556"), "5194723522");
+		BusinessPosition bobbyJob = new BusinessPosition("Business Services", "Marketing", "Senior Marketing Specialist");
+		MailingAddress bobbyAddress = new MailingAddress("3194 Danforth Avenue", "Toronto", "Ontario", "Canada", "M4K 1A6");
+		Identifier bobbyId = persons.createPerson(organizationId, bobbyName, bobbyAddress, bobbyComm, bobbyJob).getPersonId();
+		users.createUser(bobbyId, "bobby", Arrays.asList("ORG_USER"));
+		
+		PersonName johnName = new PersonName("Mr.", "John", "A", "Vachon");
+		Communication johnComm = new Communication("Financial Advisor", "French", "john.vachon@express.ca", new Telephone("4164695921", "896"), "5194723522");
+		BusinessPosition johnJob = new BusinessPosition("Corporate Services", "Auditors", "Financial Auditor");
+		Identifier johnId = persons.createPerson(organizationId, johnName, mainAddress, johnComm, johnJob).getPersonId();
+		users.createUser(johnId, "john", Arrays.asList("ORG_USER"));
+		users.disableUser(johnId);
+		
+		PersonName christopherName = new PersonName("Mr.", "Christopher", "J", "Webster");
+		Communication christopherComm = new Communication("Financial Advisor", "French", "christopher.webster@express.ca", new Telephone("4164695921", "242"), "5194723522");
+		BusinessPosition christopherJob = new BusinessPosition("Corporate Services", "Auditors", "Fraud Examiner");
+		persons.createPerson(organizationId, christopherName, mainAddress, christopherComm, christopherJob).getPersonId();
+		
+		PersonName sandraName = new PersonName("Miss.", "Sandra", "M", "Griffin");
+		Communication sandraComm = new Communication("Financial Advisor", "French", "sandra.griffin@express.ca", new Telephone("4164695921", "113"), "5194723522");
+		BusinessPosition sandraJob = new BusinessPosition("Business Services", "Sales", "Insurance Sales Agent");
+		persons.createPerson(organizationId, sandraName, mainAddress, sandraComm, sandraJob).getPersonId();
+		
+		return organizationId;
+	}
+	
+	public static void validateExpressServices(CrmOrganizationService orgs, CrmLocationService locations, CrmPersonService persons, CrmUserService users, CrmPasswordService passwords) {
+		Page<OrganizationSummary> orgResults = orgs.findOrganizationSummaries(new OrganizationsFilter().withDisplayName("Omni Tech"), new Paging(Sort.by("displayName")));
+		assertEquals(1L, orgResults.getTotalElements());
+		assertEquals(3L, orgResults.getTotalPages());
+		assertEquals("Omni Tech", orgResults.getContent().get(0).getDisplayName());
+		assertEquals(Status.ACTIVE, orgResults.getContent().get(0).getStatus());
+		Identifier organizationId = orgResults.getContent().get(0).getOrganizationId();
+
+		Page<LocationSummary> allLocationsResults = locations.findLocationSummaries(new LocationsFilter(organizationId, null, null), new Paging(Sort.by("displayName")));
+		assertPage(allLocationsResults, 27, 10, 3, true, false, true, false);
+		assertEquals("Adelaide", allLocationsResults.getContent().get(0).getDisplayName());
+		assertEquals("10th", allLocationsResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
+		
+		Page<LocationSummary> activeLocationsResults = locations.findLocationSummaries(new LocationsFilter(organizationId, null, Status.ACTIVE), new Paging(2, 5, Sort.by("displayName")));
+		assertPage(activeLocationsResults, 25, 5, 5, false, true, true, false);
+		assertEquals("5th", activeLocationsResults.getContent().get(0).getDisplayName());
+		assertEquals("10th", activeLocationsResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
+		
+		Page<LocationSummary> inactiveLocationsResults = locations.findLocationSummaries(new LocationsFilter(organizationId, null, Status.INACTIVE), new Paging(Sort.by("displayName")));
+		assertPage(inactiveLocationsResults, 2, 2, 1, false, false, false, false);
+		assertEquals("1st", inactiveLocationsResults.getContent().get(0).getDisplayName());
+		assertEquals("2nd", inactiveLocationsResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
+		
+		Page<LocationSummary> displayNameResults = locations.findLocationSummaries(new LocationsFilter(organizationId, "in", null), new Paging(Sort.by(Order.desc("displayName"))));
+		assertPage(displayNameResults, 6, 3, 1, false, false, false, false);
+		assertEquals("Saint-Antoine", displayNameResults.getContent().get(5).getDisplayName());
+		assertEquals("Ping", displayNameResults.getContent().get(4).getDisplayName());
+		assertEquals("Morningview", displayNameResults.getContent().get(3).getDisplayName());
+		assertEquals("King", displayNameResults.getContent().get(2).getDisplayName());
+		assertEquals("Eglinton", displayNameResults.getContent().get(1).getDisplayName());
+		assertEquals("Dufferin", displayNameResults.getContent().get(0).getDisplayName());
+		
+		Page<PersonSummary> allPeopleResults = persons.findPersonSummaries(new PersonsFilter(organizationId, null, null), new Paging(Sort.by("displayName")));
+		assertPage(allPeopleResults, 7, 7, 1, false, false, false, false);
+		assertEquals("Dahlke, Karen", allPeopleResults.getContent().get(0).getDisplayName());
+		assertEquals("Webster, Christopher", allPeopleResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
+		
+		Page<PersonSummary> activePeopleResults = persons.findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), new Paging(2, 3, Sort.by(Order.desc("displayName"))));
+		assertPage(activePeopleResults, 5, 3, 2, false, true, false, true);
+		assertEquals("Dahlke, Karen", activePeopleResults.getContent().get(0).getDisplayName());
+		assertEquals("Webster, Christopher", activePeopleResults.getContent().get(allLocationsResults.getContent().size() - 1).getDisplayName());
+		
+		Page<User> allUsers = users.findUsers(new UsersFilter(organizationId, null, null, null, null), new Paging(Sort.by("username")));
+		assertPage(allUsers, 5, 5, 1, false, false, false, false);
+		assertEquals("karen", allUsers.getContent().get(0).getUsername());
+		assertEquals("christopher", allUsers.getContent().get(allLocationsResults.getContent().size() - 1).getUsername());
+	}
+	
+	public static <T> void assertPage(Page<T> page, int totalElements, int pageSize, int pageNumber, boolean first, boolean previous, boolean next, boolean last) {
+		assertEquals(totalElements, page.getTotalElements());
+		assertEquals(pageNumber, page.getNumber());
+		assertEquals(pageSize, page.getContent().size());
+		assertEquals(first, page.isFirst());
+		assertEquals(previous, page.hasPrevious());
+		assertEquals(next, page.hasNext());
+		assertEquals(last, page.isLast());
+	}
+	
+}
