@@ -31,7 +31,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
-import ca.magex.crm.test.restful.RestfulCrmServices;
+import ca.magex.crm.test.restful.RestfulCrmClient;
 
 @Ignore
 public class RestfulJwtServerTest {
@@ -50,7 +50,7 @@ public class RestfulJwtServerTest {
 
 	@Before
 	public void setup() {
-		crm = new RestfulCrmServices(server, locale);
+		crm = new RestfulCrmClient(server, locale);
 	}
 	
 	@Test

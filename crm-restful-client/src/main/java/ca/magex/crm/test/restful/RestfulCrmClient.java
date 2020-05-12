@@ -22,11 +22,11 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.filters.PermissionsFilter;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
@@ -36,10 +36,9 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Permission;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmClient;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
@@ -48,7 +47,7 @@ import ca.magex.crm.mapping.data.DataElement;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
 
-public class RestfulCrmServices implements CrmServices {
+public class RestfulCrmClient implements CrmClient {
 
 	private String server;
 
@@ -56,10 +55,18 @@ public class RestfulCrmServices implements CrmServices {
 	
 	private String contentType;
 	
-	public RestfulCrmServices(String server, Locale locale) {
+	public RestfulCrmClient(String server, Locale locale) {
 		this.server = server;
 		this.locale = locale;
 		this.contentType = "application/json";
+	}
+	
+	public boolean login(String username, String password) {
+		return true;
+	}
+	
+	public boolean logout() {
+		return true;
 	}
 
 	public String getConfig() throws Exception {
@@ -811,6 +818,252 @@ public class RestfulCrmServices implements CrmServices {
 
 	@Override
 	public Group findGroupByCode(@NotNull String code) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isInitialized() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canCreateOrganization() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreateLocationForOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableLocation(Identifier locationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreatePersonForOrganization(Identifier organizationId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewPerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdatePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnablePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisablePerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreateUserForPerson(Identifier personId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewUser(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateUserPassword(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateUserRole(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableUser(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableUser(Identifier userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreateGroup() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewGroup(String group) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableGroup(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canCreateRole() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewRoles() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewRole(String code) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canUpdateRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canEnableRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canDisableRole(Identifier roleId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewPermissions() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LocationDetails validate(LocationDetails location) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PersonDetails validate(PersonDetails person) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
 		// TODO Auto-generated method stub
 		return null;
 	}

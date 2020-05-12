@@ -1,10 +1,15 @@
 package ca.magex.crm.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
@@ -16,39 +21,86 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.UnauthenticatedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.services.CrmClient;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.test.restful.RestfulCrmClient;
 
 public class CrmTestSuite {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CrmTestSuite.class);
+	
+	public static void main(String[] args) {
+		CrmClient crm = new RestfulCrmClient("http://localhost:9002", Lang.ENGLISH);
 
+		logger.info("Asserting that the server has not been setup yet");
+		assertFalse(crm.isInitialized());
+		
+		logger.info("Setting up the initial user");
+		crm.initializeSystem("DevOps", new PersonName(null, "System", null, "Admin"), "scott@magex.ca", "admin", "admin");
+		assertTrue(crm.isInitialized());
+
+		logger.info("Try to create a new organization before logging in");
+		assertFalse(crm.canCreateOrganization());
+		try {
+			crm.createOrganization("MageX", List.of("CRM"));
+		} catch (UnauthenticatedException expected) { }
+
+		logger.info("Login as the system admin and try to create the organization");
+		crm.login("admin", "admin");
+		Page<OrganizationDetails> orgs = crm.findOrganizationDetails(new OrganizationsFilter(), new Paging(Sort.by("displayName")));
+		assertEquals(1L, orgs.getTotalElements());
+		assertTrue(crm.canCreateOrganization());
+		crm.createOrganization("CRM Management", List.of("CRM"));
+
+		orgs = crm.findOrganizationDetails(new OrganizationsFilter(), new Paging(Sort.by("displayName")));
+		assertEquals(2L, orgs.getTotalElements());
+		
+		logger.info("Make sure the organization can be found using case-insensitive filters with the default no user or location.");
+		OrganizationDetails magex = crm.findOrganizationDetails(crm.findOrganizationDetails(new OrganizationsFilter().withDisplayName("crm"), new Paging(Sort.by("displayName"))).getContent().get(0).getOrganizationId());
+		assertEquals("CRM Management", magex.getDisplayName());
+		assertNull(magex.getMainLocationId());
+		assertNull(magex.getMainContactId());
+		crm.logout();
+		
+		createCrmOrg(crm);
+		//verifyCrmOrg(crm);
+
+		
+	}
+	
 	/**
 	 * Create the main administrator org thats has access to all organizations
 	 */
-	public static Identifier createSysAdmin(CrmOrganizationService orgs, CrmLocationService locations, CrmPersonService persons, CrmUserService users, CrmPasswordService passwords) {
-		Identifier organizationId = orgs.createOrganization("MageX", List.of("CRM")).getOrganizationId();
+	public static Identifier createCrmOrg(Crm crm) {
+		Identifier organizationId = crm.createOrganization("MageX", List.of("CRM")).getOrganizationId();
 
 		MailingAddress address = new MailingAddress("1234 Alta Vista Drive", "Ottawa", "Ontario", "Canada", "K3J 3I3");
-		Identifier mainLocationId = locations.createLocation(organizationId, "Headquarters", "HQ", address).getLocationId();
-		orgs.updateOrganizationMainLocation(organizationId, mainLocationId);
+		Identifier mainLocationId = crm.createLocation(organizationId, "Headquarters", "HQ", address).getLocationId();
+		crm.updateOrganizationMainLocation(organizationId, mainLocationId);
 		
 		PersonName scottName = new PersonName("Mr.", "Scott", null, "Finlay");
 		Communication scottComm = new Communication("Developer", "English", "scott@work.ca", new Telephone("6132345535"), null);
 		BusinessPosition scottJob = new BusinessPosition("IM/IT", "Development", "Developer");
-		Identifier scottId = persons.createPerson(organizationId, scottName, address, scottComm, scottJob).getPersonId();
-		users.createUser(scottId, "finlays", Arrays.asList("ORG_ADMIN", "CRM_ADMIN"));
-		orgs.updateOrganizationMainContact(organizationId, scottId);
+		Identifier scottId = crm.createPerson(organizationId, scottName, address, scottComm, scottJob).getPersonId();
+		crm.createUser(scottId, "finlays", Arrays.asList("ORG_ADMIN", "CRM_ADMIN"));
+		crm.updateOrganizationMainContact(organizationId, scottId);
 		
 		return organizationId;
 	}
