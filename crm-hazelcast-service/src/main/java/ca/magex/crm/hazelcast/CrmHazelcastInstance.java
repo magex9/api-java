@@ -13,10 +13,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.spring.transaction.HazelcastTransactionManager;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 
@@ -42,6 +44,11 @@ public class CrmHazelcastInstance {
 	@Bean
 	public HazelcastInstance hzInstance() {
 		return hzInstance;
+	}
+	
+	@Bean
+	public PlatformTransactionManager txManager() {
+		return new HazelcastTransactionManager(hzInstance);
 	}
 	
 	@PreDestroy

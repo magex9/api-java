@@ -11,8 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.CrmClient;
 import ca.magex.crm.test.CrmServicesTestSuite;
-import ca.magex.crm.test.restful.RestfulCrmServices;
+import ca.magex.crm.test.restful.RestfulCrmClient;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,7 +29,7 @@ public class CrmRestfulJwtClientTest {
 	@Test
 	public void runTests() {
 		/* we are running these tests with an embedded authentication server so everything is on the same servlet */
-		RestfulCrmServices crmServices = new RestfulCrmServices("http://localhost:" + randomPort + "/crm", Locale.ENGLISH);
+		CrmClient crmServices = new RestfulCrmClient("http://localhost:" + randomPort + "/crm", Locale.ENGLISH);
 		
 		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();
 		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);

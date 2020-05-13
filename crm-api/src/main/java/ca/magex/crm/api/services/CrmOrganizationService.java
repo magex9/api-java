@@ -5,11 +5,16 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 /**
@@ -51,7 +56,10 @@ public interface CrmOrganizationService {
 	 * @param groups The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(@NotNull String organizationDisplayName, @NotNull List<String> groups);
+	OrganizationDetails createOrganization(
+		@NotNull String organizationDisplayName,
+		@NotNull List<String> groups
+	);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -60,7 +68,9 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to enable.
 	 * @return The organization that was enabled.
 	 */
-	OrganizationSummary enableOrganization(@NotNull Identifier organizationId);
+	OrganizationSummary enableOrganization(
+		@NotNull Identifier organizationId
+	);
 
 	/**
 	 * Disable an existing organization that is active. If the organization is
@@ -72,28 +82,86 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to disable.
 	 * @return The organization that was disabled.
 	 */
-	OrganizationSummary disableOrganization(@NotNull Identifier organizationId);
+	OrganizationSummary disableOrganization(
+		@NotNull Identifier organizationId
+	);
 
-	OrganizationDetails updateOrganizationDisplayName(@NotNull Identifier organizationId, @NotNull String name);
+	OrganizationDetails updateOrganizationDisplayName(
+		@NotNull Identifier organizationId, 
+		@NotNull String name
+	);
 
-	OrganizationDetails updateOrganizationMainLocation(@NotNull Identifier organizationId, Identifier locationId);
+	OrganizationDetails updateOrganizationMainLocation(
+		@NotNull Identifier organizationId, 
+		@NotNull Identifier locationId
+	);
 
-	OrganizationDetails updateOrganizationMainContact(@NotNull Identifier organizationId, Identifier personId);
+	OrganizationDetails updateOrganizationMainContact(
+		@NotNull Identifier organizationId, 
+		@NotNull Identifier personId
+	);
 
-	OrganizationDetails updateOrganizationGroups(@NotNull Identifier organizationId, @NotNull List<String> groups);
+	OrganizationDetails updateOrganizationGroups(
+		@NotNull Identifier organizationId, 
+		@NotNull List<String> groups
+	);
 
-//	OrganizationDetails addOrganizationGroup(Identifier organizationId, String group);
+	OrganizationSummary findOrganizationSummary(
+		@NotNull Identifier organizationId
+	);
 
-//	OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group);
+	OrganizationDetails findOrganizationDetails(
+		@NotNull Identifier organizationId
+	);
 
-	OrganizationSummary findOrganizationSummary(@NotNull Identifier organizationId);
+	long countOrganizations(
+		@NotNull OrganizationsFilter filter
+	);
 
-	OrganizationDetails findOrganizationDetails(@NotNull Identifier organizationId);
+	FilteredPage<OrganizationDetails> findOrganizationDetails(
+		@NotNull OrganizationsFilter filter, 
+		@NotNull Paging paging
+	);
 
-	long countOrganizations(@NotNull OrganizationsFilter filter);
-
-	Page<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter, @NotNull Paging paging);
-
-	Page<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter, @NotNull Paging paging);
+	FilteredPage<OrganizationSummary> findOrganizationSummaries(
+		@NotNull OrganizationsFilter filter, 
+		@NotNull Paging paging
+	);
+	
+	default Page<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
+		return findOrganizationDetails(filter, defaultOrganizationsPaging());
+	}
+	
+	default Page<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
+		return findOrganizationSummaries(filter, defaultOrganizationsPaging());
+	}
+	
+	default OrganizationsFilter defaultOrganizationsFilter() {
+		return new OrganizationsFilter();
+	};
+	
+	default Paging defaultOrganizationsPaging() {
+		return new Paging(SORT_OPTIONS.get(0));
+	}
+	
+	public static final List<Sort> SORT_OPTIONS = List.of(
+		Sort.by(Order.asc("displayName")),
+		Sort.by(Order.desc("displayName")),
+		Sort.by(Order.asc("status")),
+		Sort.by(Order.desc("status"))
+	);
+	
+	default List<Sort> getOrganizationsSortOptions() {
+		return SORT_OPTIONS;
+	}
+	
+	default OrganizationDetails findOrganizationByDisplayName(String displayName) {
+		FilteredPage<OrganizationDetails> page = findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName), defaultOrganizationsPaging());
+		if (page.getTotalElements() < 1)
+			throw new ItemNotFoundException("Unable to find org by display name: " + displayName);
+		if (page.getTotalElements() > 1)
+			throw new DuplicateItemFoundException("Duplicate orgs found for display name: " + page.getTotalElements() + " - " + displayName);
+		return page.getContent().get(0);
+	}
 
 }

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -20,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.spring.security.auth.AuthClient;
 import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtToken;
@@ -34,6 +37,10 @@ public class AuthClientTests {
 	@Value("${server.servlet.context-path}") private String context;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	@Autowired CrmOrganizationService orgService;
+	@Autowired CrmLocationService locService;
+	
 
 	@Test
 	public void testValidAuthenticationToken() throws Exception {

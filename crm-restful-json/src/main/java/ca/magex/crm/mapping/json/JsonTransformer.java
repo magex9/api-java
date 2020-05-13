@@ -135,8 +135,9 @@ public class JsonTransformer {
 		Status status = parseStatus("status", data);
 		String displayName = parseText("displayName", data);
 		Identifier mainLocationId = parseIdentifier("mainLocationId", data);
+		Identifier mainContactId = parseIdentifier("mainContactId", data);
 		List<String> groups = parseTexts("groupIds", data);
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, groups);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
 	
 	public DataObject formatOrganizationSummary(OrganizationSummary organization) {
@@ -228,7 +229,8 @@ public class JsonTransformer {
 		Identifier userId = parseIdentifier("userId", data);
 		Identifier personId = parseIdentifier("personId", data);
 		String username = parseText("username", data);
-		return new User(userId, username, crm.findPersonSummary(personId), Status.ACTIVE);
+		List<String> roles = parseTexts("roles", data);
+		return new User(userId, username, crm.findPersonSummary(personId), Status.ACTIVE, roles);
 	}	
 
 	public void formatText(List<DataPair> parent, String key, Object obj) {

@@ -64,6 +64,15 @@ public class ContentExtractor {
 			throw new IllegalArgumentException("The display name must be under 60 characters");
 		return value;
 	}
+
+	public static String extractReference(HttpServletRequest req) throws IllegalArgumentException {
+		String value = req.getParameter("reference");
+		if (value == null)
+			return null;
+		if (value.length() > 60)
+			throw new IllegalArgumentException("The reference must be under 60 characters");
+		return value;
+	}
 	
 	public static Status extractStatus(HttpServletRequest req) throws IllegalArgumentException {
 		String value = req.getParameter("status");

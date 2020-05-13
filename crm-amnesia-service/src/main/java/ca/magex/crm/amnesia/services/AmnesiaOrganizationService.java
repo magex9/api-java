@@ -1,7 +1,5 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,7 +8,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -21,6 +18,7 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -57,25 +55,9 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return db.saveOrganization(findOrganizationDetails(organizationId).withMainContactId(db.findPerson(personId).getPersonId()));
 	}
 
-//	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
-//		OrganizationDetails organization = findOrganizationDetails(organizationId);
-//		List<String> groups = new ArrayList<String>(organization.getGroups());
-//		if (!groups.contains(group))
-//			groups.add(group);
-//		return db.saveOrganization(organization.withGroups(groups));
-//	}
-//	
-//	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
-//		OrganizationDetails organization = findOrganizationDetails(organizationId);
-//		List<String> groups = new ArrayList<String>(organization.getGroups());
-//   		groups.remove(group);
-//   		return db.saveOrganization(organization.withGroups(groups));
-//	}
-	
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		return db.saveOrganization(findOrganizationDetails(organizationId).withGroups(groups));
 	}
@@ -100,20 +82,20 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 		return apply(filter).count();
 	}
 	
-	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		List<OrganizationSummary> allMatchingOrgs = apply(filter)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
 	
-	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		List<OrganizationDetails> allMatchingOrgs = apply(filter)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
 
 }

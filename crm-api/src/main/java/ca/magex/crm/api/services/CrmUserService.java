@@ -2,38 +2,96 @@ package ca.magex.crm.api.services;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 
 public interface CrmUserService {
 
-	User createUser(Identifier personId, String username, List<String> roles);
+	User createUser(
+		@NotNull Identifier personId, 
+		@NotNull String username, 
+		@NotNull List<String> roles
+	);
 
-	User enableUser(Identifier userId);
+	User enableUser(
+		@NotNull Identifier userId
+	);
 
-	User disableUser(Identifier userId);
+	User disableUser(
+		@NotNull Identifier userId
+	);
 
-    User findUser(Identifier userId);
+    User findUser(
+    	@NotNull Identifier userId
+    );
     
-    User findUserByUsername(String username);
-    
-    List<String> getRoles(Identifier userId);
+    User findUserByUsername(
+    	@NotNull String username
+    );
 	
-	User addUserRole(Identifier userId, String role);
+	User updateUserRoles(
+		@NotNull Identifier userId, 
+		@NotNull List<String> roles
+	);
 	
-	User removeUserRole(Identifier userId, String role);
-	
-	User updateUserRoles(Identifier userId, List<String> roles);
-	
-	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
+	boolean changePassword(
+		@NotNull Identifier userId, 
+		@NotNull String currentPassword, 
+		@NotNull String newPassword
+	);
 
-	boolean resetPassword(Identifier userId);
+	boolean resetPassword(
+		@NotNull Identifier userId
+	);
 
-	long countUsers(UsersFilter filter);
+	long countUsers(
+		@NotNull UsersFilter filter
+	);
 
-	Page<User> findUsers(UsersFilter filter, Paging paging);
+	FilteredPage<User> findUsers(
+		@NotNull UsersFilter filter, 
+		@NotNull Paging paging
+	);
+	
+	default Page<User> findUsers(@NotNull UsersFilter filter) {
+		return findUsers(filter, defaultUsersPaging());
+	}
+	
+	default Page<User> findActiveUserForOrg(@NotNull Identifier organizationId) {
+		return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));
+	}
+	
+	default UsersFilter defaultUsersFilter() {
+		return new UsersFilter();
+	};
+	
+	default Paging defaultUsersPaging() {
+		return new Paging(SORT_OPTIONS.get(0));
+	}
+	
+	public static final List<Sort> SORT_OPTIONS = List.of(
+		Sort.by(Order.asc("username")),
+		Sort.by(Order.desc("username")),
+		Sort.by(Order.asc("personName")),
+		Sort.by(Order.desc("personName")),
+		Sort.by(Order.asc("organizationName")),
+		Sort.by(Order.desc("organizationName")),
+		Sort.by(Order.asc("status")),
+		Sort.by(Order.desc("status"))
+	);
+	
+	default List<Sort> getUsersSortOptions() {
+		return SORT_OPTIONS;
+	}
+	
 }

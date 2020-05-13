@@ -1,5 +1,6 @@
 package ca.magex.crm.api.crm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -24,7 +25,7 @@ public class OrganizationDetails extends OrganizationSummary {
 		super(organizationId, status, displayName);
 		this.mainLocationId = mainLocationId;
 		this.mainContactId = mainContactId;
-		this.groups = groups;
+		this.groups = new ArrayList<String>(groups);
 	}
 
 	@Override
@@ -75,5 +76,4 @@ public class OrganizationDetails extends OrganizationSummary {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
-
 }

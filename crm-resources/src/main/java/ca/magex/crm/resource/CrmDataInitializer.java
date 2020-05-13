@@ -1,11 +1,5 @@
 package ca.magex.crm.resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ca.magex.crm.api.authentication.CrmSetup;
-import ca.magex.crm.api.services.CrmServices;
-
 public class CrmDataInitializer {
 
 //	private static final Logger LOG = LoggerFactory.getLogger(CrmDataInitializer.class);

@@ -31,7 +31,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataObject;
 import ca.magex.crm.mapping.data.DataParser;
-import ca.magex.crm.test.restful.RestfulCrmServices;
+import ca.magex.crm.test.restful.RestfulCrmClient;
 
 @Ignore
 public class RestfulJwtServerTest {
@@ -50,7 +50,7 @@ public class RestfulJwtServerTest {
 
 	@Before
 	public void setup() {
-		crm = new RestfulCrmServices(server, locale);
+		crm = new RestfulCrmClient(server, locale);
 	}
 	
 	@Test
@@ -85,7 +85,7 @@ public class RestfulJwtServerTest {
 		Page<OrganizationDetails> organizations1 = crm.findOrganizationDetails(new OrganizationsFilter(), new Paging(Sort.by("displayName")));
 		System.out.println(organizations1.getContent());
 		int initialOrgCount = organizations1.getContent().size();
-		OrganizationDetails organizationA1 = crm.createOrganization("Org " + time);
+		OrganizationDetails organizationA1 = crm.createOrganization("Org " + time, List.of("ORG"));
 		assertEquals("Org " + time, organizationA1.getDisplayName());
 		assertEquals(Status.ACTIVE, organizationA1.getStatus());
 		assertNull(organizationA1.getMainLocationId());

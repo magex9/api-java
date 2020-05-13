@@ -15,7 +15,9 @@ import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmPermissionService;
@@ -122,7 +124,7 @@ public class HazelcastPermissionServiceTests {
 		g3 = hzPermissionService.enableGroup(g3.getGroupId());
 
 		/* paging */
-		Page<Group> page = hzPermissionService.findGroups(new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
+		Page<Group> page = hzPermissionService.findGroups(new GroupsFilter(), new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
 		Assert.assertEquals(3, page.getNumberOfElements());
@@ -133,7 +135,7 @@ public class HazelcastPermissionServiceTests {
 		Assert.assertEquals(g3, page.getContent().get(1));
 		Assert.assertEquals(g2, page.getContent().get(2));
 
-		page = hzPermissionService.findGroups(new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
+		page = hzPermissionService.findGroups(new GroupsFilter(), new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
 		Assert.assertEquals(3, page.getNumberOfElements());
@@ -144,7 +146,7 @@ public class HazelcastPermissionServiceTests {
 		Assert.assertEquals(g3, page.getContent().get(1));
 		Assert.assertEquals(g1, page.getContent().get(2));
 
-		page = hzPermissionService.findGroups(new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
+		page = hzPermissionService.findGroups(new GroupsFilter(), new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(2, page.getTotalPages());
 		Assert.assertEquals(2, page.getNumberOfElements());
@@ -288,7 +290,7 @@ public class HazelcastPermissionServiceTests {
 		r3 = hzPermissionService.enableRole(r3.getRoleId());
 		
 		/* find roles for group */
-		Page<Role> page = hzPermissionService.findRoles(g1.getGroupId(), new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
+		Page<Role> page = hzPermissionService.findRoles(new RolesFilter(g1.getGroupId(), null), new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
 		Assert.assertEquals(3, page.getNumberOfElements());
@@ -299,7 +301,7 @@ public class HazelcastPermissionServiceTests {
 		Assert.assertEquals(r3, page.getContent().get(1));
 		Assert.assertEquals(r2, page.getContent().get(2));
 		
-		page = hzPermissionService.findRoles(g1.getGroupId(), new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
+		page = hzPermissionService.findRoles(new RolesFilter(g1.getGroupId(), null), new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
 		Assert.assertEquals(3, page.getNumberOfElements());
@@ -310,7 +312,7 @@ public class HazelcastPermissionServiceTests {
 		Assert.assertEquals(r3, page.getContent().get(1));
 		Assert.assertEquals(r1, page.getContent().get(2));
 
-		page = hzPermissionService.findRoles(g1.getGroupId(), new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
+		page = hzPermissionService.findRoles(new RolesFilter(g1.getGroupId(), null), new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(2, page.getTotalPages());
 		Assert.assertEquals(2, page.getNumberOfElements());

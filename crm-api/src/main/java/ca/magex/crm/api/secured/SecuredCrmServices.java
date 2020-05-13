@@ -3,8 +3,6 @@ package ca.magex.crm.api.secured;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -17,10 +15,12 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -37,6 +37,7 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -45,11 +46,14 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.StructureValidationService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public final class SecuredCrmServices implements Crm {
+	
+	private final CrmInitializationService initializationService;
 
 	private final CrmLookupService lookupService;
 	
@@ -75,7 +79,7 @@ public final class SecuredCrmServices implements Crm {
 	
 	private final CrmPermissionPolicy permissionsPolicy;
 	
-	public SecuredCrmServices(CrmLookupService lookupService, 
+	public SecuredCrmServices(CrmInitializationService initializationService, CrmLookupService lookupService, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
@@ -83,6 +87,7 @@ public final class SecuredCrmServices implements Crm {
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy) {
 		super();
 		this.validationService = new StructureValidationService(lookupService, organizationService, locationService);
+		this.initializationService = initializationService;
 		this.lookupService = lookupService;
 		this.organizationService = organizationService;
 		this.organizationPolicy = organizationPolicy;
@@ -94,6 +99,18 @@ public final class SecuredCrmServices implements Crm {
 		this.userPolicy = userPolicy;
 		this.permissionsService = permissionsService;
 		this.permissionsPolicy = permissionsPolicy;
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return initializationService.isInitialized();
+	}
+
+	@Override
+	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
+		if (isInitialized())
+			throw new RuntimeException("The system is already initialized");
+		return initializationService.initializeSystem(organization, name, email, username, password); 
 	}
 	
 	@Override
@@ -226,18 +243,6 @@ public final class SecuredCrmServices implements Crm {
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
 		return organizationService.updateOrganizationMainContact(organizationId, personId);
 	}
-    
-//	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
-//		if (!canUpdateOrganization(organizationId))
-//			throw new PermissionDeniedException("addGroup: " + organizationId + ", " + group);
-//		return organizationService.addOrganizationGroup(organizationId, group);
-//	}
-//	TODO - Remove these methods
-//	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
-//		if (!canUpdateOrganization(organizationId))
-//			throw new PermissionDeniedException("removeGroupRole: " + organizationId + ", " + group);
-//		return organizationService.removeOrganizationGroup(organizationId, group);
-//	}
 	
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> group) {
 		if (!canUpdateOrganization(organizationId))
@@ -273,11 +278,11 @@ public final class SecuredCrmServices implements Crm {
 		return organizationService.countOrganizations(filter);
 	}
 	
-	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		return organizationService.findOrganizationDetails(filter, paging);
 	}
 
-	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		return organizationService.findOrganizationSummaries(filter, paging);
 	}
 
@@ -328,11 +333,11 @@ public final class SecuredCrmServices implements Crm {
 		return locationService.countLocations(filter);
 	}
 	
-	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		return locationService.findLocationDetails(filter, paging);
 	}
 	
-	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		return locationService.findLocationSummaries(filter, paging);
 	}
 
@@ -394,12 +399,12 @@ public final class SecuredCrmServices implements Crm {
 		return personService.countPersons(filter);
 	}
 	
-	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		// TODO filter results of the find based on the policy
 		return personService.findPersonDetails(filter, paging);
 	}
 	
-	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return personService.findPersonSummaries(filter, paging);
 	}
 	
@@ -440,27 +445,6 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public List<String> getRoles(Identifier userId) {
-		if (!canViewUser(userId))
-			throw new PermissionDeniedException("getRoles: " + userId);
-		return userService.getRoles(userId);
-	}
-
-	@Override
-	public User addUserRole(Identifier userId, String role) {
-		if (!canUpdateUserRole(userId))
-			throw new PermissionDeniedException("addUserRole: " + userId);
-		return userService.addUserRole(userId, role);
-	}
-
-	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		if (!canUpdateUserRole(userId))
-			throw new PermissionDeniedException("removeUserRole: " + userId);
-		return userService.removeUserRole(userId, role);
-	}
-
-	@Override
 	public User updateUserRoles(Identifier userId, List<String> roleIds) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
@@ -483,7 +467,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		return userService.findUsers(filter, paging);
 	}
 
@@ -594,8 +578,8 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Page<Group> findGroups(Paging paging) {
-		return permissionsService.findGroups(paging);
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
+		return permissionsService.findGroups(filter, paging);
 	}
 
 	@Override
@@ -641,10 +625,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Page<Role> findRoles(Identifier groupId, Paging paging) {
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		if (!canViewRoles())
-			throw new PermissionDeniedException("findRoles: " + groupId);
-		return permissionsService.findRoles(groupId, paging);
+			throw new PermissionDeniedException("findRoles: " + filter);
+		return permissionsService.findRoles(filter, paging);
 	}
 
 	@Override
@@ -758,5 +742,4 @@ public final class SecuredCrmServices implements Crm {
 	public boolean canViewPermissions() {
 		return permissionsPolicy.canViewPermissions();
 	}
-
 }

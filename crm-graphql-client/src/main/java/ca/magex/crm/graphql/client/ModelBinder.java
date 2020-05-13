@@ -1,5 +1,6 @@
 package ca.magex.crm.graphql.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -93,7 +95,7 @@ public class ModelBinder {
 					json.getString("displayName"),
 					locationId,
 					contactId,
-					toIdentifierList(json.getJSONArray("groupIds")));
+					toStringList(json.getJSONArray("groups")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing OrganizationDetails from: " + json.toString(), jsone);
 		}
@@ -213,7 +215,8 @@ public class ModelBinder {
 					new Identifier(json.getString("userId")),
 					json.getString("username"),
 					toPersonSummary(json.getJSONObject("person")),
-					Status.valueOf(json.getString("status")));
+					Status.valueOf(json.getString("status")),
+					toStringList(json.getJSONArray("roles")));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);
 		}
@@ -295,11 +298,11 @@ public class ModelBinder {
 		}
 	}
 	
-	public static <T> List<T> toSimpleList(Function<Object, T> constructor, JSONArray jsonArray) {
+	public static List<String> toStringList(JSONArray jsonArray) {
 		try {
-			List<T> list = new ArrayList<>();
+			List<String> list = new ArrayList<>();
 			for (int i=0; i<jsonArray.length(); i++) {
-				list.add(constructor.apply(jsonArray.get(i)));
+				list.add(jsonArray.getString(i));
 			}
 			return list;
 		} catch (Exception jsone) {
@@ -319,14 +322,14 @@ public class ModelBinder {
 		}
 	}
 
-	public static <T> Page<T> toPage(Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
+	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
 		try {
 			List<T> contents = new ArrayList<>();
 			JSONArray content = json.getJSONArray("content");
 			for (int i = 0; i < content.length(); i++) {
 				contents.add(constructor.apply(content.getJSONObject(i)));
 			}
-			return new PageImpl<T>(contents, paging, json.getInt("totalElements"));
+			return new FilteredPage<T>(filter, paging, contents, json.getInt("totalElements"));
 		} catch (Exception jsone) {
 			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
 		}
