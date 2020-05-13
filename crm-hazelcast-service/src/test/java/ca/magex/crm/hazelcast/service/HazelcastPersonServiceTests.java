@@ -151,7 +151,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
-		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(5, detailsPage.getSize());
 		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(1, detailsPage.getTotalPages());
 		Assert.assertEquals(3, detailsPage.getTotalElements());
@@ -160,7 +160,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
-		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(5, detailsPage.getSize());
 		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(1, detailsPage.getTotalPages());
 		Assert.assertEquals(3, detailsPage.getTotalElements());
@@ -169,7 +169,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
-		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(5, detailsPage.getSize());
 		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(1, detailsPage.getTotalPages());
 		Assert.assertEquals(3, detailsPage.getTotalElements());
@@ -178,7 +178,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
-		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(5, detailsPage.getSize());
 		Assert.assertEquals(0, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(0, detailsPage.getTotalPages());
 		Assert.assertEquals(0, detailsPage.getTotalElements());
@@ -187,7 +187,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), p1.getDisplayName(), Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
-		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(5, detailsPage.getSize());
 		Assert.assertEquals(1, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(1, detailsPage.getTotalPages());
 		Assert.assertEquals(1, detailsPage.getTotalElements());
@@ -196,7 +196,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
-		Assert.assertEquals(5,  detailsPage.getSize());
+		Assert.assertEquals(5, detailsPage.getSize());
 		Assert.assertEquals(0, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(0, detailsPage.getTotalPages());
 		Assert.assertEquals(0, detailsPage.getTotalElements());
@@ -206,7 +206,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
-		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(5, summariesPage.getSize());
 		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(1, summariesPage.getTotalPages());
 		Assert.assertEquals(3, summariesPage.getTotalElements());
@@ -215,7 +215,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
-		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(5, summariesPage.getSize());
 		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(1, summariesPage.getTotalPages());
 		Assert.assertEquals(3, summariesPage.getTotalElements());
@@ -224,7 +224,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
-		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(5, summariesPage.getSize());
 		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(1, summariesPage.getTotalPages());
 		Assert.assertEquals(3, summariesPage.getTotalElements());
@@ -233,7 +233,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), null, Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
-		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(5, summariesPage.getSize());
 		Assert.assertEquals(0, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(0, summariesPage.getTotalPages());
 		Assert.assertEquals(0, summariesPage.getTotalElements());
@@ -242,7 +242,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("BLIZZARD"), p1.getDisplayName(), Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
-		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(5, summariesPage.getSize());
 		Assert.assertEquals(1, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(1, summariesPage.getTotalPages());
 		Assert.assertEquals(1, summariesPage.getTotalElements());
@@ -251,7 +251,7 @@ public class HazelcastPersonServiceTests {
 				new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
-		Assert.assertEquals(5,  summariesPage.getSize());
+		Assert.assertEquals(5, summariesPage.getSize());
 		Assert.assertEquals(0, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(0, summariesPage.getTotalPages());
 		Assert.assertEquals(0, summariesPage.getTotalElements());
