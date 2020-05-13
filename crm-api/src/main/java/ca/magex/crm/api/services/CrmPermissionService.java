@@ -2,17 +2,16 @@ package ca.magex.crm.api.services;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 
 public interface CrmPermissionService {
 
-	Page<Group> findGroups(
+	FilteredPage<Group> findGroups(
 		@NotNull Paging paging
 	);
 
@@ -42,7 +41,7 @@ public interface CrmPermissionService {
 		@NotNull Identifier groupId
 	);
 
-	Page<Role> findRoles(
+	FilteredPage<Role> findRoles(
 		@NotNull Identifier groupId, 
 		@NotNull Paging paging
 	);

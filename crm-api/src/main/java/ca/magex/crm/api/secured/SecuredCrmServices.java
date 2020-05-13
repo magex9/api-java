@@ -3,8 +3,6 @@ package ca.magex.crm.api.secured;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -46,6 +44,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.services.StructureValidationService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
@@ -277,11 +276,11 @@ public final class SecuredCrmServices implements Crm {
 		return organizationService.countOrganizations(filter);
 	}
 	
-	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		return organizationService.findOrganizationDetails(filter, paging);
 	}
 
-	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		return organizationService.findOrganizationSummaries(filter, paging);
 	}
 
@@ -332,11 +331,11 @@ public final class SecuredCrmServices implements Crm {
 		return locationService.countLocations(filter);
 	}
 	
-	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		return locationService.findLocationDetails(filter, paging);
 	}
 	
-	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		return locationService.findLocationSummaries(filter, paging);
 	}
 
@@ -398,12 +397,12 @@ public final class SecuredCrmServices implements Crm {
 		return personService.countPersons(filter);
 	}
 	
-	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		// TODO filter results of the find based on the policy
 		return personService.findPersonDetails(filter, paging);
 	}
 	
-	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return personService.findPersonSummaries(filter, paging);
 	}
 	
@@ -487,7 +486,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		return userService.findUsers(filter, paging);
 	}
 
@@ -598,7 +597,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Page<Group> findGroups(Paging paging) {
+	public FilteredPage<Group> findGroups(Paging paging) {
 		return permissionsService.findGroups(paging);
 	}
 
@@ -645,7 +644,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Page<Role> findRoles(Identifier groupId, Paging paging) {
+	public FilteredPage<Role> findRoles(Identifier groupId, Paging paging) {
 		if (!canViewRoles())
 			throw new PermissionDeniedException("findRoles: " + groupId);
 		return permissionsService.findRoles(groupId, paging);

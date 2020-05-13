@@ -16,6 +16,7 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -68,12 +69,12 @@ public interface CrmPersonService {
 		@NotNull PersonsFilter filter
 	);
 
-	Page<PersonDetails> findPersonDetails(
+	FilteredPage<PersonDetails> findPersonDetails(
 		@NotNull PersonsFilter filter, 
 		@NotNull Paging paging
 	);
 
-	Page<PersonSummary> findPersonSummaries(
+	FilteredPage<PersonSummary> findPersonSummaries(
 		@NotNull PersonsFilter filter, 
 		@NotNull Paging paging
 	);

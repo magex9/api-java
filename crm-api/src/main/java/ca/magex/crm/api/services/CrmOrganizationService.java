@@ -14,6 +14,7 @@ import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 /**
@@ -117,12 +118,12 @@ public interface CrmOrganizationService {
 		@NotNull OrganizationsFilter filter
 	);
 
-	Page<OrganizationDetails> findOrganizationDetails(
+	FilteredPage<OrganizationDetails> findOrganizationDetails(
 		@NotNull OrganizationsFilter filter, 
 		@NotNull Paging paging
 	);
 
-	Page<OrganizationSummary> findOrganizationSummaries(
+	FilteredPage<OrganizationSummary> findOrganizationSummaries(
 		@NotNull OrganizationsFilter filter, 
 		@NotNull Paging paging
 	);
@@ -155,7 +156,7 @@ public interface CrmOrganizationService {
 	}
 	
 	default OrganizationDetails findOrganizationByDisplayName(String displayName) {
-		Page<OrganizationDetails> page = findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName), defaultOrganizationsPaging());
+		FilteredPage<OrganizationDetails> page = findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName), defaultOrganizationsPaging());
 		if (page.getTotalElements() < 1)
 			throw new ItemNotFoundException("Unable to find org by display name: " + displayName);
 		if (page.getTotalElements() > 1)

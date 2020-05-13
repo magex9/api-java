@@ -13,6 +13,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -55,21 +56,21 @@ public interface CrmLocationService {
 		@NotNull LocationsFilter filter
 	);	
 
-	Page<LocationDetails> findLocationDetails(
+	FilteredPage<LocationDetails> findLocationDetails(
 		@NotNull LocationsFilter filter, 
 		@NotNull Paging paging
 	);
 
-	Page<LocationSummary> findLocationSummaries(
+	FilteredPage<LocationSummary> findLocationSummaries(
 		@NotNull LocationsFilter filter, 
 		@NotNull Paging paging
 	);
 	
-	default Page<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {
+	default FilteredPage<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {
 		return findLocationDetails(filter, defaultLocationsPaging());
 	}
 	
-	default Page<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {
+	default FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {
 		return findLocationSummaries(filter, defaultLocationsPaging());
 	}
 	

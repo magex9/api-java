@@ -13,12 +13,13 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.util.ReflectionUtils;
 
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
 public class Paging implements Pageable, Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	private long offset;
 

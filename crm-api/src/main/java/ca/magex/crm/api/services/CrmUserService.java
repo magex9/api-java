@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Order;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -71,7 +72,7 @@ public interface CrmUserService {
 		@NotNull UsersFilter filter
 	);
 
-	Page<User> findUsers(
+	FilteredPage<User> findUsers(
 		@NotNull UsersFilter filter, 
 		@NotNull Paging paging
 	);
