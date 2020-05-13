@@ -1,7 +1,5 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,25 +55,9 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return db.saveOrganization(findOrganizationDetails(organizationId).withMainContactId(db.findPerson(personId).getPersonId()));
 	}
 
-//	public OrganizationDetails addOrganizationGroup(Identifier organizationId, String group) {
-//		OrganizationDetails organization = findOrganizationDetails(organizationId);
-//		List<String> groups = new ArrayList<String>(organization.getGroups());
-//		if (!groups.contains(group))
-//			groups.add(group);
-//		return db.saveOrganization(organization.withGroups(groups));
-//	}
-//	
-//	public OrganizationDetails removeOrganizationGroup(Identifier organizationId, String group) {
-//		OrganizationDetails organization = findOrganizationDetails(organizationId);
-//		List<String> groups = new ArrayList<String>(organization.getGroups());
-//   		groups.remove(group);
-//   		return db.saveOrganization(organization.withGroups(groups));
-//	}
-	
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		return db.saveOrganization(findOrganizationDetails(organizationId).withGroups(groups));
 	}

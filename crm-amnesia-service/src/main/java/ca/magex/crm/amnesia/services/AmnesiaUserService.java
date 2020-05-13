@@ -1,6 +1,5 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,36 +61,7 @@ public class AmnesiaUserService implements CrmUserService {
 	@Override
 	public User findUserByUsername(String username) {
 		return db.findByType(User.class).filter(u -> u.getUsername().equals(username)).findAny().get();
-	}
-	
-	@Override
-	public List<String> getRoles(Identifier userId) {
-		return db.findUser(userId).getRoles();
-	}
-
-	@Override
-	public User addUserRole(Identifier userId, String role) {
-		db.findRoleByCode(role); // ensure role exists
-		User user = db.findUser(userId);
-		if (user.getRoles().contains(role)) {
-			return user;
-		}
-		List<String> roles = new ArrayList<>(user.getRoles());
-		roles.add(role);				
-		return db.saveUser(user.withRoles(roles));
-	}
-
-	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		db.findRoleByCode(role); // ensure role exists
-		User user = db.findUser(userId);
-		if (!user.getRoles().contains(role)) {
-			return user;
-		}
-		List<String> roles = new ArrayList<>(user.getRoles());
-		roles.remove(role);				
-		return db.saveUser(user.withRoles(roles));
-	}
+	}	
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
@@ -128,7 +98,7 @@ public class AmnesiaUserService implements CrmUserService {
 	
 	private Stream<User> applyFilter(UsersFilter filter) {
 		return db.findByType(User.class)
-			.filter(user -> StringUtils.isNotBlank(filter.getRole()) ? getRoles(user.getUserId()).contains(filter.getRole()) : true)
+			.filter(user -> StringUtils.isNotBlank(filter.getRole()) ? user.getRoles().contains(filter.getRole()) : true)
 			.filter(user -> filter.getStatus() != null ? filter.getStatus().equals(user.getStatus()) : true)
 			.filter(user -> filter.getPersonId() != null ? filter.getPersonId().equals(user.getPerson().getPersonId()) : true)
 			.filter(user -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(user.getPerson().getOrganizationId()) : true);

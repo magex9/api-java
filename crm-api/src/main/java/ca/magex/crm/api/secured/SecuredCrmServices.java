@@ -443,27 +443,6 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public List<String> getRoles(Identifier userId) {
-		if (!canViewUser(userId))
-			throw new PermissionDeniedException("getRoles: " + userId);
-		return userService.getRoles(userId);
-	}
-
-	@Override
-	public User addUserRole(Identifier userId, String role) {
-		if (!canUpdateUserRole(userId))
-			throw new PermissionDeniedException("addUserRole: " + userId);
-		return userService.addUserRole(userId, role);
-	}
-
-	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		if (!canUpdateUserRole(userId))
-			throw new PermissionDeniedException("removeUserRole: " + userId);
-		return userService.removeUserRole(userId, role);
-	}
-
-	@Override
 	public User updateUserRoles(Identifier userId, List<String> roleIds) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);

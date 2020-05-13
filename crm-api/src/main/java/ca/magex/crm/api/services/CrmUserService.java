@@ -38,20 +38,6 @@ public interface CrmUserService {
     User findUserByUsername(
     	@NotNull String username
     );
-    
-    List<String> getRoles(
-    	@NotNull Identifier userId
-    );
-	
-	User addUserRole(
-		@NotNull Identifier userId, 
-		@NotNull String role
-	);
-	
-	User removeUserRole(
-		@NotNull Identifier userId, 
-		@NotNull String role
-	);
 	
 	User updateUserRoles(
 		@NotNull Identifier userId, 

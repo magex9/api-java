@@ -13,7 +13,6 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -95,15 +94,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			}
 			return group;
 		};
-	}
-	
-	public DataFetcher<List<Role>> rolesByUser() {
-		return (environment) -> {
-			logger.info("Entering byOrganization@" + PermissionDataFetcher.class.getSimpleName());
-			User user = environment.getSource();
-			return crm.getRoles(user.getUserId()).stream().map((code) -> crm.findRoleByCode(code)).collect(Collectors.toList());
-		};
-	}
+	}	
 	
 	public DataFetcher<Role> findRole() {
 		return (environment) -> {
