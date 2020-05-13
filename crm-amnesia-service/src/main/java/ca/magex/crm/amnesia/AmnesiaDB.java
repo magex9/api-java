@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
 import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
+import ca.magex.crm.amnesia.services.AmnesiaPasswordService;
 import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
 import ca.magex.crm.amnesia.services.AmnesiaPersonService;
 import ca.magex.crm.amnesia.services.AmnesiaUserService;
@@ -49,6 +50,8 @@ public class AmnesiaDB implements CrmPasswordService {
 
 	private Identifier systemId;
 	
+	private AmnesiaPasswordService passwords;
+	
 	private Map<Identifier, Serializable> data;
 	
 	private Map<String, Group> groupsByCode;
@@ -57,12 +60,10 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<String, User> usersByUsername;
 	
-	private Map<String, String> passwords;
-	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new HashMap<String, String>();
+		passwords = new AmnesiaPasswordService();
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
@@ -78,14 +79,15 @@ public class AmnesiaDB implements CrmPasswordService {
 			Identifier organizationId = new AmnesiaOrganizationService(this).createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
 			Identifier personId = new AmnesiaPersonService(this).createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
 			systemId = new AmnesiaUserService(this, new BCryptPasswordEncoder()).createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();
-			passwords.put(username, password);
+			passwords.generateTemporaryPassword(username);
+			passwords.updatePassword(username, new BCryptPasswordEncoder().encode(password));
 		}
 		return systemId;
 	}
 	
 	public void reset() {
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new HashMap<String, String>();
+		passwords = new AmnesiaPasswordService();
 	}
 	
 	public Identifier generateId() {
@@ -193,34 +195,32 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	@Override
 	public String getEncodedPassword(String username) {
-		return passwords.get(username);
+		return passwords.getEncodedPassword(username);
 	}
 
 	@Override
 	public boolean isTempPassword(String username) {
-		return false;
+		return passwords.isTempPassword(username);
 	}
 
 	@Override
 	public boolean isExpiredPassword(String username) {
-		return false;
+		return passwords.isExpiredPassword(username);
 	}
 
 	@Override
-	public boolean verifyPassword(String username, String encodedPassword) {
-		return passwords.get(username).equals(encodedPassword);
+	public boolean verifyPassword(String username, String rawPassword) {
+		return passwords.verifyPassword(username, rawPassword);
 	}
 	
 	@Override
 	public String generateTemporaryPassword(@NotNull String username) {
-		// TODO Auto-generated method stub
-		return null;
+		return passwords.generateTemporaryPassword(username);
 	}
 
 	@Override
-	public void updatePassword(String username, String password) {
-		/* only store the encoded password */
-		passwords.put(username, password);
+	public void updatePassword(String username, String encodedPassword) {
+		passwords.updatePassword(username, encodedPassword);
 	}
 	
 	public void dump() {

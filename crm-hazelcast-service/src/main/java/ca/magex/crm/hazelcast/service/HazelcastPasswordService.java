@@ -98,12 +98,12 @@ public class HazelcastPasswordService implements CrmPasswordService {
 	}
 	
 	@Override
-	public void updatePassword(@NotNull String username, @NotNull String password) {
+	public void updatePassword(@NotNull String username, @NotNull String encodedPassword) {
 		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
-		passwords.put(username, passwordDetails.withPassword(password));
+		passwords.put(username, passwordDetails.withPassword(encodedPassword));
 	}
 }

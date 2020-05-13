@@ -10,7 +10,7 @@ public interface CrmPasswordService {
 	
 	boolean isExpiredPassword(@NotNull String username);
 	
-	boolean verifyPassword(String username, String encodedPassword);
+	boolean verifyPassword(String username, String rawPassword);
 	
 	String generateTemporaryPassword(@NotNull String username);
 	
