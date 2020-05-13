@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -80,7 +81,7 @@ public class CrmTestSuite {
 		assertNull(magex.getMainContactId());
 		crm.logout();
 		
-		createCrmOrg(crm);
+		Pair<Identifier, String> adminInfo = createCrmOrg(crm);
 		verifyCrmOrg(crm);
 		
 	}
@@ -88,7 +89,7 @@ public class CrmTestSuite {
 	/**
 	 * Create the main administrator org thats has access to all organizations
 	 */
-	public static Identifier createCrmOrg(CrmClient crm) {
+	public static Pair<Identifier, String> createCrmOrg(CrmClient crm) {
 		Identifier organizationId = crm.createOrganization("MageX", List.of("CRM")).getOrganizationId();
 
 		MailingAddress address = new MailingAddress("1234 Alta Vista Drive", "Ottawa", "Ontario", "Canada", "K3J 3I3");
@@ -101,8 +102,9 @@ public class CrmTestSuite {
 		Identifier scottId = crm.createPerson(organizationId, scottName, address, scottComm, scottJob).getPersonId();
 		crm.createUser(scottId, "magex", Arrays.asList("ORG_ADMIN", "CRM_ADMIN"));
 		crm.updateOrganizationMainContact(organizationId, scottId);
+		String tmp = crm.resetPassword(scottId);
 		
-		return organizationId;
+		return Pair.of(scottId, tmp);
 	}
 	
 	public static void verifyCrmOrg(CrmClient crm) {

@@ -33,7 +33,7 @@ public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPas
 	@Override
 	public UserDetails updatePassword(UserDetails userDetails, String newPassword) {
 		User user = userService.findUser(new Identifier(userDetails.getUsername()));
-		passwordService.updatePassword(user.getUserId().toString(), newPassword);
+		passwordService.updatePassword(user.getUsername(), newPassword);
 		return new CrmUserDetails(user, newPassword, user.getRoles());
 	}
 

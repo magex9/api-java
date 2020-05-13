@@ -78,9 +78,10 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public boolean resetPassword(Identifier userId) {
-		db.updatePassword(userId.toString(), passwordEncoder.encode(db.generateId().toString()));
-		return true;
+	public String resetPassword(Identifier userId) {
+		// TODO generate temporary
+//		db.updatePassword(userId.toString(), passwordEncoder.encode(db.generateId().toString()));
+		return "TEMP";
 	}
 
 	@Override

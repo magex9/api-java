@@ -457,7 +457,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public boolean resetPassword(Identifier userId) {
+	public String resetPassword(Identifier userId) {
 		return userService.resetPassword(userId);
 	}
 

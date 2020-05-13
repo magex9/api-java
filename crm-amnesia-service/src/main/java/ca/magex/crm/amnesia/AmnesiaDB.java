@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -208,12 +210,17 @@ public class AmnesiaDB implements CrmPasswordService {
 	public boolean verifyPassword(String username, String encodedPassword) {
 		return passwords.get(username).equals(encodedPassword);
 	}
+	
+	@Override
+	public String generateTemporaryPassword(@NotNull String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
-	public boolean updatePassword(String username, String password) {
+	public void updatePassword(String username, String password) {
 		/* only store the encoded password */
 		passwords.put(username, password);
-		return true;
 	}
 	
 	public void dump() {

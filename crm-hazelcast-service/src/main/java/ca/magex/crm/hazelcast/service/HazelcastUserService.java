@@ -161,15 +161,29 @@ public class HazelcastUserService implements CrmUserService {
 			@NotNull Identifier userId,
 			@NotNull String currentPassword,
 			@NotNull String newPassword) {
-		// TODO Auto-generated method stub
-		return false;
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		User user = users.get(userId);
+		if (user == null) {
+			throw new ItemNotFoundException("User ID '" + userId + "'");
+		}
+		if (passwordService.verifyPassword(user.getUsername(), passwordEncoder.encode(currentPassword))) {
+			passwordService.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
-	public boolean resetPassword(
+	public String resetPassword(
 			@NotNull Identifier userId) {
-		// TODO Auto-generated method stub
-		return false;
+		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		User user = users.get(userId);
+		if (user == null) {
+			throw new ItemNotFoundException("User ID '" + userId + "'");
+		}
+		return passwordService.generateTemporaryPassword(user.getUsername());
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public interface CrmUserService {
 		@NotNull String newPassword
 	);
 
-	boolean resetPassword(
+	String resetPassword(
 		@NotNull Identifier userId
 	);
 

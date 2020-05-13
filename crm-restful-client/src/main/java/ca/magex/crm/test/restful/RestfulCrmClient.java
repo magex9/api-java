@@ -683,9 +683,9 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public boolean resetPassword(Identifier userId) {
+	public String resetPassword(Identifier userId) {
 		// TODO Auto-generated method stub
-		return false;
+		return "";
 	}
 
 	@Override
