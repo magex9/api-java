@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,6 +30,7 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -206,7 +206,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public Page<OrganizationDetails> findOrganizationDetails(
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(
 			@NotNull OrganizationsFilter filter,
 			@NotNull Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
@@ -217,11 +217,11 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
 
 	@Override
-	public Page<OrganizationSummary> findOrganizationSummaries(
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(
 			@NotNull OrganizationsFilter filter, 
 			@NotNull Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
@@ -232,6 +232,6 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingOrgs, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
 }

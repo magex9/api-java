@@ -1,6 +1,5 @@
 package ca.magex.crm.hazelcast.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -33,6 +30,7 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -161,7 +159,7 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public Page<User> findUsers(
+	public FilteredPage<User> findUsers(
 			@NotNull UsersFilter filter,
 			@NotNull Paging paging) {
 		// TODO Auto-generated method stub

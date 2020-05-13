@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -20,10 +19,12 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -36,6 +37,7 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
@@ -146,9 +148,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toOrganizationSummary, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationSummary, performGraphQLQueryWithSubstitution(
 				"findOrganizationSummaries",
 				"findOrganizations",
 				filter.getDisplayName(),
@@ -160,9 +162,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toOrganizationDetails, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationDetails, performGraphQLQueryWithSubstitution(
 				"findOrganizationDetails",
 				"findOrganizations",
 				filter.getDisplayName(),
@@ -262,9 +264,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toLocationDetails, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toLocationDetails, performGraphQLQueryWithSubstitution(
 				"findLocationDetails",
 				"findLocations",
 				filter.getDisplayName(),
@@ -276,9 +278,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toLocationSummary, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toLocationSummary, performGraphQLQueryWithSubstitution(
 				"findLocationSummaries",
 				"findLocations",
 				filter.getDisplayName(),
@@ -417,9 +419,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toPersonSummary, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toPersonSummary, performGraphQLQueryWithSubstitution(
 				"findPersonSummaries",
 				"findPersons",
 				filter.getDisplayName(),
@@ -431,9 +433,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toPersonDetails, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toPersonDetails, performGraphQLQueryWithSubstitution(
 				"findPersonDetails",
 				"findPersons",
 				filter.getDisplayName(),
@@ -515,9 +517,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		return ModelBinder.toPage(paging, ModelBinder::toUser, performGraphQLQueryWithSubstitution(
+		return ModelBinder.toPage(filter, paging, ModelBinder::toUser, performGraphQLQueryWithSubstitution(
 				"findUsers",
 				"findUsers",
 				filter.getOrganizationId(),
@@ -547,7 +549,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<Group> findGroups(Paging paging) {
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -583,7 +585,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Page<Role> findRoles(Identifier groupId, Paging paging) {
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}

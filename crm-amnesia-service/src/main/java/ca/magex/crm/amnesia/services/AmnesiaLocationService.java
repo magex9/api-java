@@ -7,7 +7,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
@@ -19,6 +18,7 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -72,15 +72,15 @@ public class AmnesiaLocationService implements CrmLocationService {
 		return apply(filter).count();
 	}
 	
-	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
-		return PageBuilder.buildPageFor(apply(filter)
+	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+		return PageBuilder.buildPageFor(filter, apply(filter)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList()), paging);
 	}
 	
-	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		return PageBuilder.buildPageFor(apply(filter)
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+		return PageBuilder.buildPageFor(filter, apply(filter)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList()), paging);

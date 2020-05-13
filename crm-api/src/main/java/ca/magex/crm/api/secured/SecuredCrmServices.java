@@ -15,10 +15,12 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -576,8 +578,8 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public FilteredPage<Group> findGroups(Paging paging) {
-		return permissionsService.findGroups(paging);
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
+		return permissionsService.findGroups(filter, paging);
 	}
 
 	@Override
@@ -623,10 +625,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public FilteredPage<Role> findRoles(Identifier groupId, Paging paging) {
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		if (!canViewRoles())
-			throw new PermissionDeniedException("findRoles: " + groupId);
-		return permissionsService.findRoles(groupId, paging);
+			throw new PermissionDeniedException("findRoles: " + filter);
+		return permissionsService.findRoles(filter, paging);
 	}
 
 	@Override

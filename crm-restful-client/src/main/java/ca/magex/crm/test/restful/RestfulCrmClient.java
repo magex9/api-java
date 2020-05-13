@@ -7,9 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-
 import com.mashape.unirest.http.Unirest;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -24,10 +21,12 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -39,6 +38,7 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmClient;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
@@ -456,7 +456,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 	
 	@Override
-	public Page<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		DataObject result = get("/api/organizations", new DataObject()
 			.with("displayName", filter.getDisplayName())
 			.with("status", filter.getStatus().toString().toLowerCase())
@@ -470,11 +470,11 @@ public class RestfulCrmClient implements CrmClient {
 				item.getString("displayName")))
 			.collect(Collectors.toList());
 		long total = result.getLong("total");
-		return new PageImpl<OrganizationSummary>(items, paging, total);
+		return new FilteredPage<OrganizationSummary>(filter, paging, items, total);
 	}
 	
 	@Override
-	public Page<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		DataObject result = get("/api/organizations", new DataObject()
 			.with("displayName", filter.getDisplayName())
 			.with("status", filter.getStatus() != null ? filter.getStatus().toString().toLowerCase() : null)
@@ -491,7 +491,7 @@ public class RestfulCrmClient implements CrmClient {
 				new ArrayList<String>()))
 			.collect(Collectors.toList());
 		long total = result.getLong("total");
-		return new PageImpl<OrganizationDetails>(items, paging, total);
+		return new FilteredPage<OrganizationDetails>(filter, paging, items, total);
 	}
 	
 	@Override
@@ -562,13 +562,13 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Page<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Page<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
+	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -635,13 +635,13 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Page<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -695,13 +695,13 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Page<User> findUsers(UsersFilter filter, Paging paging) {
+	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Page<Group> findGroups(Paging paging) {
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -737,7 +737,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Page<Role> findRoles(Identifier groupId, Paging paging) {
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		// TODO Auto-generated method stub
 		return null;
 	}

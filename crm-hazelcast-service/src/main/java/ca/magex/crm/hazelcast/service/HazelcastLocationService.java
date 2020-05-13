@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -29,6 +28,7 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -165,7 +165,7 @@ public class HazelcastLocationService implements CrmLocationService {
 	}
 
 	@Override
-	public Page<LocationDetails> findLocationDetails(
+	public FilteredPage<LocationDetails> findLocationDetails(
 			@NotNull LocationsFilter filter, 
 			@NotNull Paging paging) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
@@ -177,11 +177,11 @@ public class HazelcastLocationService implements CrmLocationService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingLocations, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingLocations, paging);
 	}
 
 	@Override
-	public Page<LocationSummary> findLocationSummaries(
+	public FilteredPage<LocationSummary> findLocationSummaries(
 			@NotNull LocationsFilter filter, 
 			@NotNull Paging paging) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
@@ -193,6 +193,6 @@ public class HazelcastLocationService implements CrmLocationService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingLocations, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingLocations, paging);
 	}
 }

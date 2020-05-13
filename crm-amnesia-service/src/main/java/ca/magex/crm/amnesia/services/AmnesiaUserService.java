@@ -8,7 +8,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +18,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -89,8 +89,8 @@ public class AmnesiaUserService implements CrmUserService {
 	}
 
 	@Override
-	public Page<User> findUsers(UsersFilter filter, Paging paging) {
-		return PageBuilder.buildPageFor(applyFilter(filter)
+	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
+		return PageBuilder.buildPageFor(filter, applyFilter(filter)
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList()), paging);

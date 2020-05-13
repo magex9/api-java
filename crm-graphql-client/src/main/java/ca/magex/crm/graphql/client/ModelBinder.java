@@ -1,5 +1,6 @@
 package ca.magex.crm.graphql.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -320,14 +322,14 @@ public class ModelBinder {
 		}
 	}
 
-	public static <T> Page<T> toPage(Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
+	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
 		try {
 			List<T> contents = new ArrayList<>();
 			JSONArray content = json.getJSONArray("content");
 			for (int i = 0; i < content.length(); i++) {
 				contents.add(constructor.apply(content.getJSONObject(i)));
 			}
-			return new PageImpl<T>(contents, paging, json.getInt("totalElements"));
+			return new FilteredPage<T>(filter, paging, contents, json.getInt("totalElements"));
 		} catch (Exception jsone) {
 			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
 		}

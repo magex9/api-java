@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -32,6 +31,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -205,7 +205,7 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public Page<PersonDetails> findPersonDetails(
+	public FilteredPage<PersonDetails> findPersonDetails(
 			@NotNull PersonsFilter filter, 
 			@NotNull Paging paging) {
 		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
@@ -217,11 +217,11 @@ public class HazelcastPersonService implements CrmPersonService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingPersons, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingPersons, paging);
 	}
 
 	@Override
-	public Page<PersonSummary> findPersonSummaries(
+	public FilteredPage<PersonSummary> findPersonSummaries(
 			@NotNull PersonsFilter filter, 
 			@NotNull Paging paging) {
 		Map<Identifier, PersonSummary> persons = hzInstance.getMap(HZ_PERSON_KEY);
@@ -233,6 +233,6 @@ public class HazelcastPersonService implements CrmPersonService {
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(allMatchingPersons, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingPersons, paging);
 	}
 }

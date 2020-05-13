@@ -2,7 +2,9 @@ package ca.magex.crm.api.services;
 
 import javax.validation.constraints.NotNull;
 
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.system.FilteredPage;
@@ -12,6 +14,7 @@ import ca.magex.crm.api.system.Localized;
 public interface CrmPermissionService {
 
 	FilteredPage<Group> findGroups(
+		@NotNull GroupsFilter filter,
 		@NotNull Paging paging
 	);
 
@@ -42,7 +45,7 @@ public interface CrmPermissionService {
 	);
 
 	FilteredPage<Role> findRoles(
-		@NotNull Identifier groupId, 
+		@NotNull RolesFilter filter, 
 		@NotNull Paging paging
 	);
 

@@ -9,7 +9,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,11 +17,14 @@ import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmPermissionService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
@@ -122,10 +124,11 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	
 	
 	@Override
-	public Page<Group> findGroups(
+	public FilteredPage<Group> findGroups(
+			@NotNull GroupsFilter filter,
 			@NotNull Paging paging) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
-		return PageBuilder.buildPageFor(groups.values().stream()
+		return PageBuilder.buildPageFor(filter, groups.values().stream()
 				.sorted(paging.new PagingComparator<Group>())
 				.collect(Collectors.toList()),
 				paging);
@@ -209,12 +212,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Page<Role> findRoles(
-			@NotNull Identifier groupId, 
+	public FilteredPage<Role> findRoles(
+			@NotNull RolesFilter filter, 
 			@NotNull Paging paging) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
-		return PageBuilder.buildPageFor(roles.values().stream()
-				.filter((r) -> r.getGroupId().equals(groupId))
+		return PageBuilder.buildPageFor(filter, roles.values().stream()
+				.filter((r) -> r.getGroupId().equals(filter.getGroupId()))
 				.sorted(paging.new PagingComparator<Role>())
 				.collect(Collectors.toList()),
 				paging);
