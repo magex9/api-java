@@ -20,9 +20,11 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.UnauthenticatedException;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -31,7 +33,6 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmClient;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -80,15 +81,14 @@ public class CrmTestSuite {
 		crm.logout();
 		
 		createCrmOrg(crm);
-		//verifyCrmOrg(crm);
-
+		verifyCrmOrg(crm);
 		
 	}
 	
 	/**
 	 * Create the main administrator org thats has access to all organizations
 	 */
-	public static Identifier createCrmOrg(Crm crm) {
+	public static Identifier createCrmOrg(CrmClient crm) {
 		Identifier organizationId = crm.createOrganization("MageX", List.of("CRM")).getOrganizationId();
 
 		MailingAddress address = new MailingAddress("1234 Alta Vista Drive", "Ottawa", "Ontario", "Canada", "K3J 3I3");
@@ -99,10 +99,42 @@ public class CrmTestSuite {
 		Communication scottComm = new Communication("Developer", "English", "scott@work.ca", new Telephone("6132345535"), null);
 		BusinessPosition scottJob = new BusinessPosition("IM/IT", "Development", "Developer");
 		Identifier scottId = crm.createPerson(organizationId, scottName, address, scottComm, scottJob).getPersonId();
-		crm.createUser(scottId, "finlays", Arrays.asList("ORG_ADMIN", "CRM_ADMIN"));
+		crm.createUser(scottId, "magex", Arrays.asList("ORG_ADMIN", "CRM_ADMIN"));
 		crm.updateOrganizationMainContact(organizationId, scottId);
 		
 		return organizationId;
+	}
+	
+	public static void verifyCrmOrg(CrmClient crm) {
+		logger.info("Make sure that the user needs to login before they can search for the organizations");
+		try {
+			crm.findOrganizationDetails(new OrganizationsFilter(), new Paging(Sort.by("displayName")));
+		} catch (UnauthenticatedException expected) { }
+		
+		crm.login("magex", "magex");
+		logger.info("The crm organization should be able to search for organizations");
+		
+		Page<OrganizationDetails> orgs = crm.findOrganizationDetails(crm.defaultOrganizationsFilter());
+		assertSinglePage(orgs, 2);
+		
+		Identifier organizationId = crm.findOrganizationByDisplayName("MageX").getOrganizationId();
+		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
+		assertEquals("MageX", org.getDisplayName());
+		assertEquals(List.of("CRM"), org.getGroups());
+		assertEquals(Status.ACTIVE, org.getStatus());
+		
+		LocationDetails mainLocation = crm.findLocationDetails(org.getMainLocationId());
+		assertEquals("HQ", mainLocation.getReference());
+		assertEquals(Status.ACTIVE, mainLocation.getStatus());
+		
+		PersonDetails mainContact = crm.findPersonDetails(org.getMainContactId());
+		assertEquals("scott@magex.ca", mainContact.getCommunication().getEmail());
+		assertEquals(Status.ACTIVE, mainContact.getStatus());
+		
+		Page<User> users = crm.findUsers(new UsersFilter().withOrganizationId(organizationId));
+		assertSinglePage(users, 1);
+		
+		crm.logout();
 	}
 	
 	/**
@@ -261,6 +293,10 @@ public class CrmTestSuite {
 		assertPage(allUsers, 5, 5, 1, false, false, false, false);
 		assertEquals("karen", allUsers.getContent().get(0).getUsername());
 		assertEquals("christopher", allUsers.getContent().get(allLocationsResults.getContent().size() - 1).getUsername());
+	}
+	
+	public static <T> void assertSinglePage(Page<T> page, int totalElements) {
+		assertPage(page, totalElements, totalElements, 1, false, false, false, false);
 	}
 	
 	public static <T> void assertPage(Page<T> page, int totalElements, int pageSize, int pageNumber, boolean first, boolean previous, boolean next, boolean last) {

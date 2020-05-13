@@ -5,9 +5,13 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Identifier;
@@ -122,5 +126,41 @@ public interface CrmOrganizationService {
 		@NotNull OrganizationsFilter filter, 
 		@NotNull Paging paging
 	);
+	
+	default Page<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
+		return findOrganizationDetails(filter, defaultOrganizationsPaging());
+	}
+	
+	default Page<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
+		return findOrganizationSummaries(filter, defaultOrganizationsPaging());
+	}
+	
+	default OrganizationsFilter defaultOrganizationsFilter() {
+		return new OrganizationsFilter();
+	};
+	
+	default Paging defaultOrganizationsPaging() {
+		return new Paging(SORT_OPTIONS.get(0));
+	}
+	
+	public static final List<Sort> SORT_OPTIONS = List.of(
+		Sort.by(Order.asc("displayName")),
+		Sort.by(Order.desc("displayName")),
+		Sort.by(Order.asc("status")),
+		Sort.by(Order.desc("status"))
+	);
+	
+	default List<Sort> getOrganizationsSortOptions() {
+		return SORT_OPTIONS;
+	}
+	
+	default OrganizationDetails findOrganizationByDisplayName(String displayName) {
+		Page<OrganizationDetails> page = findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName), defaultOrganizationsPaging());
+		if (page.getTotalElements() < 1)
+			throw new ItemNotFoundException("Unable to find org by display name: " + displayName);
+		if (page.getTotalElements() > 1)
+			throw new DuplicateItemFoundException("Duplicate orgs found for display name: " + page.getTotalElements() + " - " + displayName);
+		return page.getContent().get(0);
+	}
 
 }
