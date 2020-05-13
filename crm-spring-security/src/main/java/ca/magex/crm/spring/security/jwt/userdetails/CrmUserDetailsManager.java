@@ -1,7 +1,5 @@
 package ca.magex.crm.spring.security.jwt.userdetails;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
@@ -29,14 +27,14 @@ public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPas
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userService.findUser(new Identifier(username));
-		return new CrmUserDetails(user, passwordService.getEncodedPassword(user.getUserId().toString()), userService.getRoles(user.getUserId()).stream().map(r -> r.toString()).collect(Collectors.toList()));
+		return new CrmUserDetails(user, passwordService.getEncodedPassword(user.getUserId().toString()), user.getRoles());
 	}
 
 	@Override
 	public UserDetails updatePassword(UserDetails userDetails, String newPassword) {
 		User user = userService.findUser(new Identifier(userDetails.getUsername()));
 		passwordService.updatePassword(user.getUserId().toString(), newPassword);
-		return new CrmUserDetails(user, newPassword, userService.getRoles(user.getUserId()).stream().map(r -> r.toString()).collect(Collectors.toList()));
+		return new CrmUserDetails(user, newPassword, user.getRoles());
 	}
 
 	@Override

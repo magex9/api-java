@@ -30,11 +30,7 @@ public class AbstractSecureCrmPolicy {
 	 * @return
 	 */
 	protected boolean isCrmAdmin(User user) {
-		return userService.getRoles(user.getUserId())
-			.stream()
-			.filter((r) -> r.toString().equals("CRM_ADMIN"))
-			.findAny()
-			.isPresent();
+		return userService.findUser(user.getUserId()).getRoles().contains("CRM_ADMIN");			
 	}
 	
 	/**
@@ -43,10 +39,6 @@ public class AbstractSecureCrmPolicy {
 	 * @return
 	 */
 	protected boolean isReAdmin(User user) {
-		return userService.getRoles(user.getUserId())
-			.stream()
-			.filter((r) -> r.toString().equals("RE_ADMIN"))
-			.findAny()
-			.isPresent();
+		return userService.findUser(user.getUserId()).getRoles().contains("RE_ADMIN");		
 	}
 }

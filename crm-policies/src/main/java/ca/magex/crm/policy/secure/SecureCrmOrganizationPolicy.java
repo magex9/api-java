@@ -16,7 +16,7 @@ public class SecureCrmOrganizationPolicy extends AbstractSecureCrmPolicy impleme
 
 	@Override
 	public boolean canCreateOrganization() {
-		return userService.getRoles(getCurrentUser().getUserId()).stream().filter((r) -> r.toString().equals("CRM_ADMIN")).findAny().isPresent();
+		return getCurrentUser().getRoles().contains("CRM_ADMIN");
 	}
 
 	@Override

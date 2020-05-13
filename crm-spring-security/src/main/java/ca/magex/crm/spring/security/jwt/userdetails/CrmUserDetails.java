@@ -1,5 +1,6 @@
 package ca.magex.crm.spring.security.jwt.userdetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class CrmUserDetails implements UserDetails {
 	public CrmUserDetails(User user, String password, List<String> roles) {
 		this.delegate = user;
 		this.password = password;
-		this.roles = roles;
+		this.roles = new ArrayList<>(roles);
 	}
 
 	public String getPassword() {

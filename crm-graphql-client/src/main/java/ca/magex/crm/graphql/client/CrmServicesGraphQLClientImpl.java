@@ -485,18 +485,6 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public User addUserRole(Identifier userId, String role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public User removeUserRole(Identifier userId, String role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
 		// TODO Auto-generated method stub
 		return null;
@@ -516,12 +504,6 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public User findUserByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> getRoles(Identifier userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

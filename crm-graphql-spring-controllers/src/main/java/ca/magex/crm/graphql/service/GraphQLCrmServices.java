@@ -110,7 +110,6 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createUser", userDataFetcher.createUser()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateUser", userDataFetcher.updateUser()))				
 				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
-				.type("User", typeWiring -> typeWiring.dataFetcher("roles", permissionDataFetcher.rolesByUser()))
 
 				// group data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroup", permissionDataFetcher.findGroup()))

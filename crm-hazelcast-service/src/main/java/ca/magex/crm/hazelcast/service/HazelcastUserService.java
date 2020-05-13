@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +25,12 @@ import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
@@ -51,18 +54,28 @@ public class HazelcastUserService implements CrmUserService {
 	// so making them lazy allows the proxy to be created before autowiring
 	@Autowired @Lazy private CrmPasswordService passwordService;
 	@Autowired @Lazy private CrmPersonService personService;
+	@Autowired @Lazy private CrmPermissionService permissionService;
 
 	@Override
 	public User createUser(
 			@NotNull Identifier personId,
 			@NotNull String username,
 			@NotNull List<String> roles) {
-
+		roles.forEach((role) -> {
+			permissionService.findRoleByCode(role); // ensure each role exists
+		});		
 		/* run a find on the personId to ensure it exists */
 		PersonSummary person = personService.findPersonSummary(personId);
 		/* create our new user */
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_USER_KEY);
+		/* ensure the user name doen't exist */
+		if (users.values().stream()
+				.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
+				.count() > 0) {
+			throw new DuplicateItemFoundException("Username '" + username + "'");
+		}		
+		
 		User user = new User(
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				username,
@@ -98,30 +111,6 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User addUserRole(
-			@NotNull Identifier userId,
-			@NotNull String role) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
-		User user = users.get(userId);
-		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
-		}
-		return SerializationUtils.clone(user);
-	}
-
-	@Override
-	public User removeUserRole(
-			@NotNull Identifier userId,
-			@NotNull String role) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
-		User user = users.get(userId);
-		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
-		}
-		return SerializationUtils.clone(user);
-	}
-
-	@Override
 	public User updateUserRoles(
 			@NotNull Identifier userId,
 			@NotNull List<String> roles) {
@@ -130,14 +119,8 @@ public class HazelcastUserService implements CrmUserService {
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
+//		if 
 		return SerializationUtils.clone(user);
-	}
-
-	@Override
-	public List<String> getRoles(
-			@NotNull Identifier userId) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -671,12 +671,6 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public List<String> getRoles(Identifier userId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public User updateUserRoles(Identifier userId, List<String> roleIds) {
 		// TODO Auto-generated method stub
 		return null;
@@ -800,18 +794,6 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public User findUserByUsername(@NotNull String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public User addUserRole(@NotNull Identifier userId, @NotNull String role) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public User removeUserRole(@NotNull Identifier userId, @NotNull String role) {
 		// TODO Auto-generated method stub
 		return null;
 	}
