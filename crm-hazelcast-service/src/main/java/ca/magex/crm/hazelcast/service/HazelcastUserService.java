@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -38,8 +40,10 @@ import ca.magex.crm.api.system.Status;
 public class HazelcastUserService implements CrmUserService {
 
 	public static String HZ_USER_KEY = "users";
-
+	public static String HZ_PERMISSIONS_KEY = "users";
+	
 	@Autowired private HazelcastInstance hzInstance;
+	@Autowired private PlatformTransactionManager txManager;
 	@Autowired private PasswordEncoder passwordEncoder;
 
 	// these need to be marked as lazy because spring proxies this class due to the @Validated annotation
@@ -53,6 +57,7 @@ public class HazelcastUserService implements CrmUserService {
 			@NotNull Identifier personId,
 			@NotNull String username,
 			@NotNull List<String> roles) {
+
 		/* run a find on the personId to ensure it exists */
 		PersonSummary person = personService.findPersonSummary(personId);
 		/* create our new user */
@@ -62,7 +67,8 @@ public class HazelcastUserService implements CrmUserService {
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				username,
 				person,
-				Status.ACTIVE);
+				Status.ACTIVE,
+				roles);
 		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}

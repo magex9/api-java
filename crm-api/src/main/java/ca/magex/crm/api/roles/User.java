@@ -1,6 +1,8 @@
 package ca.magex.crm.api.roles;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -24,12 +26,15 @@ public class User implements Serializable {
 	
 	private Status status;
 	
-	public User(Identifier userId, String username, PersonSummary person, Status status) {
+	private List<String> roles;
+	
+	public User(Identifier userId, String username, PersonSummary person, Status status, List<String> roles) {
 		super();
 		this.userId = userId;
 		this.username = username;
 		this.person = person;
 		this.status = status;
+		this.roles = new ArrayList<String>(roles);
 	}
 	
 	public Identifier getUserId() {
@@ -49,7 +54,15 @@ public class User implements Serializable {
 	}
 
 	public User withStatus(Status status) {
-		return new User(userId, username, person, status);
+		return new User(userId, username, person, status, roles);
+	}
+	
+	public List<String> getRoles() {
+		return roles;
+	}
+	
+	public User withRoles(List<String> roles) {
+		return new User(userId, username, person, status, roles);
 	}
 	
 	@Override
@@ -66,5 +79,4 @@ public class User implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
-
 }

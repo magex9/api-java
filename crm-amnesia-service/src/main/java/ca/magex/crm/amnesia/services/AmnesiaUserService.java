@@ -18,7 +18,6 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.Permission;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
@@ -40,7 +39,7 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
-		User user = db.saveUser(new User(db.generateId(), username, db.findPerson(personId), Status.ACTIVE));
+		User user = db.saveUser(new User(db.generateId(), username, db.findPerson(personId), Status.ACTIVE, roles));
 		updateUserRoles(user.getUserId(), roles);
 		return user;
 	}
@@ -67,44 +66,39 @@ public class AmnesiaUserService implements CrmUserService {
 	
 	@Override
 	public List<String> getRoles(Identifier userId) {
-		return db.findUserRoles(db.findUser(userId).getUsername());
+		return db.findUser(userId).getRoles();
 	}
 
 	@Override
 	public User addUserRole(Identifier userId, String role) {
-		Identifier roleId = db.findRoleByCode(role).getRoleId();
-		List<Permission> permissions = db.findPermissions(userId);
-		if (!permissions.stream().anyMatch(p -> p.getRoleId().equals(roleId)))
-			db.savePermission(new Permission(db.generateId(), userId, roleId, Status.ACTIVE));
-		return db.findUser(userId);
+		db.findRoleByCode(role); // ensure role exists
+		User user = db.findUser(userId);
+		if (user.getRoles().contains(role)) {
+			return user;
+		}
+		List<String> roles = new ArrayList<>(user.getRoles());
+		roles.add(role);				
+		return db.saveUser(user.withRoles(roles));
 	}
 
 	@Override
 	public User removeUserRole(Identifier userId, String role) {
-		Identifier roleId = db.findRoleByCode(role).getRoleId();
-		List<Permission> permissions = db.findPermissions(userId).stream().filter(p -> p.getRoleId().equals(roleId)).collect(Collectors.toList());
-		for (Permission permission : permissions) {
-			db.savePermission(permission.withStatus(Status.INACTIVE));
+		db.findRoleByCode(role); // ensure role exists
+		User user = db.findUser(userId);
+		if (!user.getRoles().contains(role)) {
+			return user;
 		}
-		return db.findUser(userId);
+		List<String> roles = new ArrayList<>(user.getRoles());
+		roles.remove(role);				
+		return db.saveUser(user.withRoles(roles));
 	}
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
-		List<String> updates = new ArrayList<String>(roles);
-		for (Permission permission : db.findPermissions(userId)) {
-			String role = db.findRole(permission.getRoleId()).getCode();
-			if (updates.contains(role)) {
-				db.savePermission(permission.withStatus(Status.ACTIVE));
-			} else {
-				db.savePermission(permission.withStatus(Status.INACTIVE));
-			}
-			updates.remove(role);
-		}
-		for (String role : updates) {
-			db.savePermission(new Permission(db.generateId(), userId, db.findRoleByCode(role).getRoleId(), Status.ACTIVE));
-		}
-		return db.findUser(userId);
+		roles.forEach((role) -> {
+			db.findRoleByCode(role); // ensure role exists
+		});
+		return db.saveUser(db.findUser(userId).withRoles(roles));
 	}
 
 	@Override

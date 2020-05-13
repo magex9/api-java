@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -29,11 +28,9 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Permission;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmRoleInitializer;
 
 @Repository
@@ -58,8 +55,6 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<String, User> usersByUsername;
 	
-	private Map<String, List<String>> userRoles;
-	
 	private Map<String, String> passwords;
 	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
@@ -69,7 +64,6 @@ public class AmnesiaDB implements CrmPasswordService {
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
-		userRoles = new HashMap<String, List<String>>();
 	}
 	
 	public boolean isInitialized() {
@@ -183,31 +177,7 @@ public class AmnesiaDB implements CrmPasswordService {
 		data.put(role.getRoleId(), role);
 		rolesByCode.put(role.getCode(), role);
 		return role;
-	}
-	
-	public Permission findPermission(Identifier roleId) {
-		return (Permission)findById(roleId, Permission.class);
-	}
-	
-	public Permission savePermission(Permission permission) {
-		data.put(permission.getPermissionId(), permission);
-		userRoles.put(findUser(permission.getUserId()).getUsername(), 
-			findPermissions(permission.getUserId()).stream()
-				.filter(p -> p.getStatus().equals(Status.ACTIVE))
-				.map(p -> findRole(p.getRoleId()).getCode())
-				.collect(Collectors.toList()));
-		return permission;
-	}
-	
-	public List<Permission> findPermissions(Identifier userId) {
-		return findByType(Permission.class)
-			.filter(p -> p.getUserId().equals(userId))
-			.collect(Collectors.toList());
-	}
-	
-	public List<String> findUserRoles(String username) {
-		return userRoles.containsKey(username) ? userRoles.get(username) : List.of();
-	}
+	}	
 	
 	@SuppressWarnings("unchecked")
 	public <T> T findById(Identifier identifier, Class<T> cls) {

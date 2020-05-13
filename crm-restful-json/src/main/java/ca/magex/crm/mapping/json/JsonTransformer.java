@@ -229,7 +229,8 @@ public class JsonTransformer {
 		Identifier userId = parseIdentifier("userId", data);
 		Identifier personId = parseIdentifier("personId", data);
 		String username = parseText("username", data);
-		return new User(userId, username, crm.findPersonSummary(personId), Status.ACTIVE);
+		List<String> roles = parseTexts("roles", data);
+		return new User(userId, username, crm.findPersonSummary(personId), Status.ACTIVE, roles);
 	}	
 
 	public void formatText(List<DataPair> parent, String key, Object obj) {
