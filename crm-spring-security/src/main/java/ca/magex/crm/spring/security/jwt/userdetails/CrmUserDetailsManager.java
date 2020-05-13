@@ -26,7 +26,7 @@ public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPas
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userService.findUser(new Identifier(username));
+		User user = userService.findUserByUsername(username);
 		return new CrmUserDetails(user, passwordService.getEncodedPassword(user.getUserId().toString()), user.getRoles());
 	}
 

@@ -117,7 +117,11 @@ public class HazelcastUserService implements CrmUserService {
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
-//		if 
+		if (user.getRoles().containsAll(roles) && roles.containsAll(user.getRoles())) {
+			return SerializationUtils.clone(user); 
+		}
+		user = user.withRoles(roles);
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 

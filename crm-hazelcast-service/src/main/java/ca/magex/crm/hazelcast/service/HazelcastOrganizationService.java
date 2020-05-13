@@ -79,7 +79,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		}
 		/* nothing to update here */
 		if (StringUtils.equals(orgDetails.getDisplayName(), name)) {
-			return orgDetails;
+			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withDisplayName(name);
 		organizations.put(organizationId, orgDetails);
@@ -98,7 +98,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		personService.findPersonSummary(personId); // ensure the person exists
 		/* nothing to update here */
 		if (orgDetails.getMainContactId() != null && orgDetails.getMainContactId().equals(personId)) {
-			return orgDetails;
+			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainContactId(personId);
 		organizations.put(organizationId, orgDetails);
@@ -117,7 +117,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		locationService.findLocationSummary(locationId); // ensure the location exists
 		/* nothing to update here */
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
-			return orgDetails;
+			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainLocationId(locationId);
 		organizations.put(organizationId, orgDetails);
@@ -138,7 +138,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		}
 		/* nothing to update here */
 		if (orgDetails.getGroups().containsAll(groups) && groups.containsAll(orgDetails.getGroups())) {
-			return orgDetails;
+			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withGroups(groups);
 		organizations.put(organizationId, orgDetails);
@@ -154,7 +154,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
 		if (orgDetails.getStatus() == Status.ACTIVE) {
-			return orgDetails;
+			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.ACTIVE);
 		organizations.put(organizationId, orgDetails);
@@ -170,7 +170,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
 		if (orgDetails.getStatus() == Status.INACTIVE) {
-			return orgDetails;
+			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.INACTIVE);
 		organizations.put(organizationId, orgDetails);
