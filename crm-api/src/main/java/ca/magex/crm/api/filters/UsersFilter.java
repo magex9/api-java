@@ -2,14 +2,30 @@ package ca.magex.crm.api.filters;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.List;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public class UsersFilter implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final List<Sort> SORT_OPTIONS = List.of(
+		Sort.by(Order.asc("username")),
+		Sort.by(Order.desc("username")),
+		Sort.by(Order.asc("personName")),
+		Sort.by(Order.desc("personName")),
+		Sort.by(Order.asc("organizationName")),
+		Sort.by(Order.desc("organizationName")),
+		Sort.by(Order.asc("status")),
+		Sort.by(Order.desc("status"))
+	);
 
 	private Identifier organizationId;
 	
@@ -71,6 +87,10 @@ public class UsersFilter implements Serializable {
 	
 	public UsersFilter withRole(String role) {
 		return new UsersFilter(personId, personId, status, username, role);
+	}
+
+	public static List<Sort> getSortOptions() {
+		return SORT_OPTIONS;
 	}
 
 	public Comparator<User> getComparator(Paging paging) {

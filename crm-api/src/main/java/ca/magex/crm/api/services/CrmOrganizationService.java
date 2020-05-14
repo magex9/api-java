@@ -5,8 +5,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -141,18 +139,7 @@ public interface CrmOrganizationService {
 	};
 	
 	default Paging defaultOrganizationsPaging() {
-		return new Paging(SORT_OPTIONS.get(0));
-	}
-	
-	public static final List<Sort> SORT_OPTIONS = List.of(
-		Sort.by(Order.asc("displayName")),
-		Sort.by(Order.desc("displayName")),
-		Sort.by(Order.asc("status")),
-		Sort.by(Order.desc("status"))
-	);
-	
-	default List<Sort> getOrganizationsSortOptions() {
-		return SORT_OPTIONS;
+		return new Paging(OrganizationsFilter.getSortOptions().get(0));
 	}
 	
 	default OrganizationDetails findOrganizationByDisplayName(String displayName) {

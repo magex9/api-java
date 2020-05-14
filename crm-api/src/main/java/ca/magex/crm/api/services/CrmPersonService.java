@@ -1,12 +1,8 @@
 package ca.magex.crm.api.services;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -96,18 +92,7 @@ public interface CrmPersonService {
 	};
 	
 	default Paging defaultPersonsPaging() {
-		return new Paging(SORT_OPTIONS.get(0));
-	}
-	
-	public static final List<Sort> SORT_OPTIONS = List.of(
-		Sort.by(Order.asc("displayName")),
-		Sort.by(Order.desc("displayName")),
-		Sort.by(Order.asc("status")),
-		Sort.by(Order.desc("status"))
-	);
-	
-	default List<Sort> getPersonsSortOptions() {
-		return SORT_OPTIONS;
+		return new Paging(PersonsFilter.getSortOptions().get(0));
 	}
 	
 }

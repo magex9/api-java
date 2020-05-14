@@ -5,8 +5,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -76,22 +74,7 @@ public interface CrmUserService {
 	};
 	
 	default Paging defaultUsersPaging() {
-		return new Paging(SORT_OPTIONS.get(0));
-	}
-	
-	public static final List<Sort> SORT_OPTIONS = List.of(
-		Sort.by(Order.asc("username")),
-		Sort.by(Order.desc("username")),
-		Sort.by(Order.asc("personName")),
-		Sort.by(Order.desc("personName")),
-		Sort.by(Order.asc("organizationName")),
-		Sort.by(Order.desc("organizationName")),
-		Sort.by(Order.asc("status")),
-		Sort.by(Order.desc("status"))
-	);
-	
-	default List<Sort> getUsersSortOptions() {
-		return SORT_OPTIONS;
+		return new Paging(UsersFilter.getSortOptions().get(0));
 	}
 	
 }
