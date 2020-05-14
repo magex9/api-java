@@ -50,7 +50,7 @@ public class Paging implements Pageable, Serializable {
 	}
 
 	public Paging(Sort sort) {
-		this(0, 10, sort);
+		this(1, 10, sort);
 	}
 
 	@Override
