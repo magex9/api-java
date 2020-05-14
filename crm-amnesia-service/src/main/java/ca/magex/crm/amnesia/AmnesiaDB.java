@@ -22,7 +22,6 @@ import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
 import ca.magex.crm.amnesia.services.AmnesiaPersonService;
 import ca.magex.crm.amnesia.services.AmnesiaUserService;
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
@@ -38,7 +37,7 @@ import ca.magex.crm.resource.CrmRoleInitializer;
 
 @Repository
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
-public class AmnesiaDB implements CrmPasswordService {
+public class AmnesiaDB {
 	
 	public static final String SYSTEM_ADMIN = "SYS_ADMIN";
 	
@@ -70,7 +69,7 @@ public class AmnesiaDB implements CrmPasswordService {
 		this.passwordEncoder = passwordEncoder;
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new AmnesiaPasswordService();
+		passwords = new AmnesiaPasswordService(this);
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
@@ -98,7 +97,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	public void reset() {
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new AmnesiaPasswordService();
+		passwords = new AmnesiaPasswordService(this);
 	}
 	
 	public Identifier generateId() {
@@ -211,36 +210,6 @@ public class AmnesiaDB implements CrmPasswordService {
 		if (!(cls.equals(obj.getClass())))
 			throw new BadRequestException(identifier, "error", "class", "Expected " + cls.getName() + " but got: " + obj.getClass().getName());
 		return (T)SerializationUtils.clone(obj);
-	}
-	
-	@Override
-	public String getEncodedPassword(String username) {
-		return passwords.getEncodedPassword(username);
-	}
-
-	@Override
-	public boolean isTempPassword(String username) {
-		return passwords.isTempPassword(username);
-	}
-
-	@Override
-	public boolean isExpiredPassword(String username) {
-		return passwords.isExpiredPassword(username);
-	}
-
-	@Override
-	public boolean verifyPassword(String username, String rawPassword) {
-		return passwords.verifyPassword(username, rawPassword);
-	}
-	
-	@Override
-	public String generateTemporaryPassword(@NotNull String username) {
-		return passwords.generateTemporaryPassword(username);
-	}
-
-	@Override
-	public void updatePassword(String username, String encodedPassword) {
-		passwords.updatePassword(username, encodedPassword);
 	}
 	
 	public void dump() {

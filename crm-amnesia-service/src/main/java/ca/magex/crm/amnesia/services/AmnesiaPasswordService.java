@@ -7,25 +7,30 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
+import ca.magex.crm.amnesia.AmnesiaDB;
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
+@Service
+@Primary
+@Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPasswordService implements CrmPasswordService {
 
-	private PasswordEncoder passwordEncoder;
-	
 	private Map<String, PasswordDetails> passwords;
 	
 	private long expiration = TimeUnit.DAYS.toMillis(365);
 	
-	public AmnesiaPasswordService() {
+	private AmnesiaDB db;
+	
+	public AmnesiaPasswordService(AmnesiaDB db) {
+		this.db = db;
 		this.passwords = new HashMap<String, PasswordDetails>();
-		this.passwordEncoder = new BCryptPasswordEncoder();
 	}
 	
 	@Override
@@ -61,25 +66,29 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
-		return passwordEncoder.matches(rawPassword, passwordDetails.getCipherText());
+		return !isExpired(passwordDetails.getExpiration()) && db.getPasswordEncoder().matches(rawPassword, passwordDetails.getCipherText());
+	}
+	
+	private boolean isExpired(Date expirationDate) {
+		return expirationDate != null && expirationDate.before(new Date());
 	}
 
 	@Override
 	public String generateTemporaryPassword(@NotNull String username) {
-		String tempPassword = RandomStringUtils.random(10);
+		String tempPassword = db.generateId().toString();
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails != null) {
 			passwords.put(
 					username, 
 					passwordDetails.withTemporaryPassword(
-							passwordEncoder.encode(tempPassword), 
+							db.getPasswordEncoder().encode(tempPassword), 
 							new Date(System.currentTimeMillis() + expiration)));
 		}
 		else {
 			passwords.put(
 					username, 
 					new PasswordDetails(
-							passwordEncoder.encode(tempPassword), 
+							db.getPasswordEncoder().encode(tempPassword), 
 							true, 
 							new Date(System.currentTimeMillis() + expiration)));
 		}

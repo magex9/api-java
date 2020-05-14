@@ -13,6 +13,8 @@ import ca.magex.crm.api.system.Lang;
 
 public class Lookups<LOOKUP extends Object, KEY extends Object> {
 
+	private Class<?> lookupClass;
+	
 	private List<LOOKUP> options;
 	
 	private Map<KEY, LOOKUP> mapByCode;
@@ -21,6 +23,7 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 	
 	public Lookups(List<LOOKUP> options, Class<?> lookupClass, Class<?> codeClass) {
 		try {
+			this.lookupClass = lookupClass;
 			this.options = options;
 			this.mapByCode = new HashMap<KEY, LOOKUP>();
 			this.mapByName = new HashMap<Locale, Map<String, LOOKUP>>();
@@ -47,15 +50,15 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 	
 	public LOOKUP findByCode(KEY code) {
 		if (!mapByCode.containsKey(code))
-			throw new ItemNotFoundException("Unable to find lookup by code: " + code);
+			throw new ItemNotFoundException(lookupClass.getSimpleName() + " '" + code + "'");
 		return mapByCode.get(code);
 	}
 
 	public LOOKUP findByName(Locale locale, String name) {
 		if (!mapByName.containsKey(locale))
-			throw new ItemNotFoundException("Locale is not supported: " + locale);
+			throw new ItemNotFoundException(lookupClass.getSimpleName() + "[" + locale + "] '" + name + "'");
 		if (!mapByName.get(locale).containsKey(name))
-			throw new ItemNotFoundException("Unable to find lookup by name: " + name);
+			throw new ItemNotFoundException(lookupClass.getSimpleName() + "[" + locale + "] '" + name + "'");
 		return mapByName.get(locale).get(name);
 	}
 	

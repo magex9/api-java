@@ -30,8 +30,11 @@ public class AmnesiaUserService implements CrmUserService {
 
 	private AmnesiaDB db;
 	
+	private AmnesiaPasswordService passwords;
+	
 	public AmnesiaUserService(AmnesiaDB db) {
 		this.db = db;
+		this.passwords = new AmnesiaPasswordService(db);
 	}
 
 	@Override
@@ -79,8 +82,8 @@ public class AmnesiaUserService implements CrmUserService {
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
-		if (db.verifyPassword(user.getUsername(), db.getPasswordEncoder().encode(currentPassword))) {
-			db.updatePassword(user.getUsername(), db.getPasswordEncoder().encode(newPassword));
+		if (passwords.verifyPassword(user.getUsername(), db.getPasswordEncoder().encode(currentPassword))) {
+			passwords.updatePassword(user.getUsername(), db.getPasswordEncoder().encode(newPassword));
 			return true;
 		}
 		else {
@@ -94,7 +97,7 @@ public class AmnesiaUserService implements CrmUserService {
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
-		return db.generateTemporaryPassword(user.getUsername());
+		return passwords.generateTemporaryPassword(user.getUsername());
 	}
 
 	@Override
