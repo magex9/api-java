@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.data.domain.PageImpl;
 
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.Crm;
 
@@ -29,6 +31,14 @@ public class FilteredPage<T> extends PageImpl<T> {
 	
 	public Paging getPaging() {
 		return paging;
+	}
+	
+	public T getSingleItem() {
+		if (getTotalElements() < 1)
+			throw new ItemNotFoundException("No items found: " + filter);
+		if (getTotalElements() > 1)
+			throw new DuplicateItemFoundException("Duplicate items found: " + filter);
+		return getContent().get(0);
 	}
 
 }
