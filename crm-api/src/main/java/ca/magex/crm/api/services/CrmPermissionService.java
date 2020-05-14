@@ -22,10 +22,6 @@ public interface CrmPermissionService {
 		return new GroupsFilter();
 	};
 	
-	default Paging defaultGroupsPaging() {
-		return new Paging(GroupsFilter.getSortOptions().get(0));
-	}
-
 	Group findGroup(
 		@NotNull Identifier groupId
 	);
@@ -61,10 +57,6 @@ public interface CrmPermissionService {
 		return new RolesFilter();
 	};
 	
-	default Paging defaultRolesPaging() {
-		return new Paging(RolesFilter.SORT_OPTIONS.get(0));
-	}
-
 	Role findRole(
 		@NotNull Identifier roleId
 	);

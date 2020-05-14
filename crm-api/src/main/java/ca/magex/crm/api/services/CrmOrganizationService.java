@@ -4,12 +4,8 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
-import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
@@ -126,29 +122,20 @@ public interface CrmOrganizationService {
 		@NotNull Paging paging
 	);
 	
-	default Page<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
-		return findOrganizationDetails(filter, defaultOrganizationsPaging());
-	}
+	default FilteredPage<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
+		return findOrganizationDetails(filter, OrganizationsFilter.getDefaultPaging());
+	};
 	
-	default Page<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
-		return findOrganizationSummaries(filter, defaultOrganizationsPaging());
-	}
+	default FilteredPage<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
+		return findOrganizationSummaries(filter, OrganizationsFilter.getDefaultPaging());
+	};
 	
 	default OrganizationsFilter defaultOrganizationsFilter() {
 		return new OrganizationsFilter();
 	};
 	
-	default Paging defaultOrganizationsPaging() {
-		return new Paging(OrganizationsFilter.getSortOptions().get(0));
-	}
-	
 	default OrganizationDetails findOrganizationByDisplayName(String displayName) {
-		FilteredPage<OrganizationDetails> page = findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName), defaultOrganizationsPaging());
-		if (page.getTotalElements() < 1)
-			throw new ItemNotFoundException("Unable to find org by display name: " + displayName);
-		if (page.getTotalElements() > 1)
-			throw new DuplicateItemFoundException("Duplicate orgs found for display name: " + page.getTotalElements() + " - " + displayName);
-		return page.getContent().get(0);
-	}
+		return findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName)).getSingleItem();
+	};
 
 }

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.roles.User;
@@ -91,6 +92,14 @@ public class UsersFilter implements Serializable {
 
 	public static List<Sort> getSortOptions() {
 		return SORT_OPTIONS;
+	}
+	
+	public static Sort getDefaultSort() {
+		return Sort.by(Direction.ASC, "username");
+	}
+
+	public static Paging getDefaultPaging() {
+		return new Paging(getDefaultSort());
 	}
 
 	public Comparator<User> getComparator(Paging paging) {

@@ -76,23 +76,19 @@ public interface CrmPersonService {
 	);
 	
 	default Page<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
-		return findPersonDetails(filter, defaultPersonsPaging());
+		return findPersonDetails(filter, PersonsFilter.getDefaultPaging());
 	}
 	
 	default Page<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter) {
-		return findPersonSummaries(filter, defaultPersonsPaging());
+		return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());
 	}
 	
 	default Page<PersonSummary> findActivePersonSummariesForOrg(@NotNull Identifier organizationId) {
-		return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), defaultPersonsPaging());
+		return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());
 	}
 	
 	default PersonsFilter defaultPersonsFilter() {
 		return new PersonsFilter();
 	};
-	
-	default Paging defaultPersonsPaging() {
-		return new Paging(PersonsFilter.getSortOptions().get(0));
-	}
 	
 }
