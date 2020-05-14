@@ -229,7 +229,7 @@ public class HazelcastUserServiceTests {
 
 		usersPage = hzUserService.findUsers(
 				new UsersFilter(null, null, Status.ACTIVE, null, null),
-				new Paging(1, 5, Sort.by("username")));
+				new Paging(1, 5, Sort.by("person.displayName", "username")));
 		Assert.assertEquals(1, usersPage.getNumber());
 		Assert.assertEquals(5, usersPage.getSize());
 		Assert.assertEquals(3, usersPage.getNumberOfElements());
@@ -242,7 +242,7 @@ public class HazelcastUserServiceTests {
 
 		usersPage = hzUserService.findUsers(
 				new UsersFilter(null, null, Status.INACTIVE, null, null),
-				new Paging(1, 5, Sort.by("username")));
+				new Paging(1, 5, Sort.by("person.displayName")));
 		Assert.assertEquals(1, usersPage.getNumber());
 		Assert.assertEquals(5, usersPage.getSize());
 		Assert.assertEquals(0, usersPage.getNumberOfElements());
