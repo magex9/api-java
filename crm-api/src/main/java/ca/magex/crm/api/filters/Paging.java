@@ -57,10 +57,18 @@ public class Paging implements Pageable, Serializable {
 	public int getPageNumber() {
 		return pageNumber;
 	}
+	
+	public Paging withPageNumber(int pageNumber) {
+		return new Paging(pageNumber, pageSize, sort);
+	}
 
 	@Override
 	public int getPageSize() {
 		return pageSize;
+	}
+
+	public Paging withPageSize(int pageSize) {
+		return new Paging(pageNumber, pageSize, sort);
 	}
 
 	@Override
@@ -68,9 +76,17 @@ public class Paging implements Pageable, Serializable {
 		return offset;
 	}
 
+	public Paging withOffset(long offset) {
+		return new Paging(offset, pageSize, sort);
+	}
+
 	@Override
 	public Sort getSort() {
 		return sort;
+	}
+	
+	public Paging withSort(Sort sort) {
+		return new Paging(pageNumber, pageSize, sort);
 	}
 
 	@Override
@@ -79,17 +95,17 @@ public class Paging implements Pageable, Serializable {
 	}
 
 	@Override
-	public Pageable next() {
+	public Paging next() {
 		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
 	}
 
 	@Override
-	public Pageable previousOrFirst() {
+	public Paging previousOrFirst() {
 		return new Paging(getOffset() - getPageSize() < 0 ? 0 : getOffset() - getPageSize(), getPageSize(), getSort());
 	}
 
 	@Override
-	public Pageable first() {
+	public Paging first() {
 		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
 	}
 
