@@ -4,16 +4,30 @@ import javax.validation.constraints.NotNull;
 
 public interface CrmPasswordService {
 	
-	String getEncodedPassword(@NotNull String username);
+	String getEncodedPassword(
+		@NotNull String username
+	);
 	
-	boolean isTempPassword(@NotNull String username);
+	boolean isTempPassword(
+		@NotNull String username
+	);
 	
-	boolean isExpiredPassword(@NotNull String username);
+	boolean isExpiredPassword(
+		@NotNull String username
+	);
 	
-	boolean verifyPassword(String username, String rawPassword);
+	boolean verifyPassword(
+		@NotNull String username, 
+		@NotNull String rawPassword
+	);
 	
-	String generateTemporaryPassword(@NotNull String username);
+	String generateTemporaryPassword(
+		@NotNull String username
+	);
 	
-	void updatePassword(@NotNull String username, @NotNull String encodedPassword);
+	void updatePassword(
+		@NotNull String username,
+		@NotNull String encodedPassword
+	);
 	
 }
