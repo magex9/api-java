@@ -22,7 +22,6 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
 
