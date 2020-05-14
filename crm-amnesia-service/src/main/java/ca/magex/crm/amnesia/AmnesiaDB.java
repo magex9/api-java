@@ -50,6 +50,8 @@ public class AmnesiaDB implements CrmPasswordService {
 
 	private Identifier systemId;
 	
+	private PasswordEncoder passwordEncoder;
+	
 	private AmnesiaPasswordService passwords;
 	
 	private Map<Identifier, Serializable> data;
@@ -60,13 +62,22 @@ public class AmnesiaDB implements CrmPasswordService {
 	
 	private Map<String, User> usersByUsername;
 	
+	public AmnesiaDB() {
+		this(new AmnesiaPasswordEncoder());
+	}
+	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
 		idGenerator = new AmnesiaBase58IdGenerator();
 		data = new HashMap<Identifier, Serializable>();
 		passwords = new AmnesiaPasswordService();
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
+	}
+	
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
 	}
 	
 	public boolean isInitialized() {
@@ -78,7 +89,7 @@ public class AmnesiaDB implements CrmPasswordService {
 			CrmRoleInitializer.initialize(new AmnesiaPermissionService(this));
 			Identifier organizationId = new AmnesiaOrganizationService(this).createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
 			Identifier personId = new AmnesiaPersonService(this).createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
-			systemId = new AmnesiaUserService(this, new BCryptPasswordEncoder()).createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();
+			systemId = new AmnesiaUserService(this).createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, new BCryptPasswordEncoder().encode(password));
 		}
@@ -102,7 +113,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	public OrganizationDetails findOrganization(Identifier organizationId) {
 		Serializable obj = data.get(organizationId);
 		if (obj == null)
-			throw new ItemNotFoundException("Unable to find: " + organizationId);
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		if (!(obj instanceof OrganizationDetails))
 			throw new BadRequestException(organizationId, "error", "class", "Expected OrganizationDetails but got: " + obj.getClass().getName());
 		return (OrganizationDetails)SerializationUtils.clone(obj);
@@ -116,7 +127,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	public LocationDetails findLocation(Identifier locationId) {
 		Serializable obj = data.get(locationId);
 		if (obj == null)
-			throw new ItemNotFoundException("Unable to find: " + locationId);
+			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		if (!(obj instanceof LocationDetails))
 			throw new BadRequestException(locationId, "error", "class", "Expected LocationDetails but got: " + obj.getClass().getName());
 		return (LocationDetails)SerializationUtils.clone(obj);
@@ -130,7 +141,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	public PersonDetails findPerson(Identifier personId) {
 		Serializable obj = data.get(personId);
 		if (obj == null)
-			throw new ItemNotFoundException("Unable to find: " + personId);
+			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		if (!(obj instanceof PersonDetails))
 			throw new BadRequestException(personId, "error", "class", "Expected PersonDetails but got: " + obj.getClass().getName());
 		return (PersonDetails)SerializationUtils.clone(obj);
@@ -142,7 +153,12 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	public User findUser(Identifier userId) {
-		return (User)findById(userId, User.class);
+		Serializable obj = data.get(userId);
+		if (obj == null)
+			throw new ItemNotFoundException("User ID '" + userId + "'");
+		if (!(obj instanceof User))
+			throw new BadRequestException(userId, "error", "class", "Expected User but got: " + obj.getClass().getName());
+		return (User)SerializationUtils.clone(obj);
 	}	
 	
 	public User findUserByUsername(String username) {
@@ -160,6 +176,8 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	public Group findGroupByCode(String group) {
+		if (!groupsByCode.containsKey(group))
+			throw new ItemNotFoundException("Group Code '" + group + "'");
 		return groupsByCode.get(group);
 	}
 	
@@ -174,6 +192,8 @@ public class AmnesiaDB implements CrmPasswordService {
 	}
 	
 	public Role findRoleByCode(String role) {
+		if (!rolesByCode.containsKey(role))
+			throw new ItemNotFoundException("Role Code '" + role + "'");
 		return rolesByCode.get(role);
 	}
 	
@@ -187,7 +207,7 @@ public class AmnesiaDB implements CrmPasswordService {
 	public <T> T findById(Identifier identifier, Class<T> cls) {
 		Serializable obj = data.get(identifier);
 		if (obj == null)
-			throw new ItemNotFoundException("Unable to find: " + identifier);
+			throw new ItemNotFoundException(cls.getSimpleName() + " ID '" + identifier + "'");
 		if (!(cls.equals(obj.getClass())))
 			throw new BadRequestException(identifier, "error", "class", "Expected " + cls.getName() + " but got: " + obj.getClass().getName());
 		return (T)SerializationUtils.clone(obj);

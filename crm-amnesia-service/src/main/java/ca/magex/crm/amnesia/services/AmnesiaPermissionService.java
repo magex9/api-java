@@ -34,7 +34,9 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 
 	@Override
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
-		List<Group> allMatchingGroups = db.findByType(Group.class).collect(Collectors.toList());
+		List<Group> allMatchingGroups = db.findByType(Group.class)
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
 	}
 
@@ -72,6 +74,7 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		List<Role> allRoles = db.findByType(Role.class)
 			.filter(r -> r.getGroupId().equals(filter.getGroupId()))
+			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allRoles, paging);
 	}
