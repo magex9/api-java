@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -73,15 +74,26 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
-		db.updatePassword(userId.toString(), passwordEncoder.encode(newPassword));
-		return true;
+		User user = db.findUser(userId);
+		if (user == null) {
+			throw new ItemNotFoundException("User ID '" + userId + "'");
+		}
+		if (db.verifyPassword(user.getUsername(), passwordEncoder.encode(currentPassword))) {
+			db.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
 	public String resetPassword(Identifier userId) {
-		// TODO generate temporary
-//		db.updatePassword(userId.toString(), passwordEncoder.encode(db.generateId().toString()));
-		return "TEMP";
+		User user = db.findUser(userId);
+		if (user == null) {
+			throw new ItemNotFoundException("User ID '" + userId + "'");
+		}
+		return db.generateTemporaryPassword(user.getUsername());
 	}
 
 	@Override

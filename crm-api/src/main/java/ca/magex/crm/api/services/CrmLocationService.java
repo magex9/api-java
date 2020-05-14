@@ -1,12 +1,8 @@
 package ca.magex.crm.api.services;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
@@ -83,22 +79,7 @@ public interface CrmLocationService {
 	};
 	
 	default Paging defaultLocationsPaging() {
-		return new Paging(SORT_OPTIONS.get(0));
-	}
-	
-	public static final List<Sort> SORT_OPTIONS = List.of(
-		Sort.by(Order.asc("displayName")),
-		Sort.by(Order.desc("displayName")),
-		Sort.by(Order.asc("reference")),
-		Sort.by(Order.desc("reference")),
-		Sort.by(Order.asc("country")),
-		Sort.by(Order.desc("country")),
-		Sort.by(Order.asc("status")),
-		Sort.by(Order.desc("status"))
-	);
-	
-	default List<Sort> getLocationsSortOptions() {
-		return SORT_OPTIONS;
+		return new Paging(LocationsFilter.getSortOptions().get(0));
 	}
 	
 }
