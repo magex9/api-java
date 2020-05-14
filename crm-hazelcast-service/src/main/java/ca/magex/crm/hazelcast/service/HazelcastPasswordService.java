@@ -51,7 +51,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
-		return passwordDetails.getExpiration() != null && passwordDetails.getExpiration().before(new Date());
+		return isExpired(passwordDetails.getExpiration());
 	}
 	
 	@Override
@@ -65,13 +65,13 @@ public class HazelcastPasswordService implements CrmPasswordService {
 	}
 	
 	@Override
-	public boolean verifyPassword(String username, String rawPassword) {
+	public boolean verifyPassword(@NotNull String username, @NotNull String rawPassword) {
 		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
-		}
-		return passwordEncoder.matches(rawPassword, passwordDetails.getCipherText());
+		}		
+		return !isExpired(passwordDetails.getExpiration()) && passwordEncoder.matches(rawPassword, passwordDetails.getCipherText());
 	}
 	
 	@Override
@@ -105,5 +105,14 @@ public class HazelcastPasswordService implements CrmPasswordService {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
 		passwords.put(username, passwordDetails.withPassword(encodedPassword));
+	}
+	
+	/**
+	 * ensures the expiration date is in the future
+	 * @param expirationDate
+	 * @return
+	 */
+	private boolean isExpired(Date expirationDate) {
+		return expirationDate != null && expirationDate.before(new Date());
 	}
 }

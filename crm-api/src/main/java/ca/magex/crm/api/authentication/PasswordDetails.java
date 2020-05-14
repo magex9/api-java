@@ -42,6 +42,8 @@ public class PasswordDetails implements Serializable {
 	public PasswordDetails withPassword(String cipherText) {
 		PasswordDetails details = SerializationUtils.clone(this);
 		details.cipherText.push(cipherText);
+		details.temporary = false;
+		details.expiration = null;
 		return details;
 	}
 	
