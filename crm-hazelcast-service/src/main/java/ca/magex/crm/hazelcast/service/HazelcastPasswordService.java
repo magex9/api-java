@@ -71,7 +71,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}		
-		return !isExpired(passwordDetails.getExpiration()) && passwordEncoder.matches(rawPassword, passwordDetails.getCipherText());
+		return passwordEncoder.matches(rawPassword, passwordDetails.getCipherText());
 	}
 	
 	@Override

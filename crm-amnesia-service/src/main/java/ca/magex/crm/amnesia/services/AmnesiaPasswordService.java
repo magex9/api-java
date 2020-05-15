@@ -61,7 +61,7 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
-		return !isExpired(passwordDetails.getExpiration()) && db.getPasswordEncoder().matches(rawPassword, passwordDetails.getCipherText());
+		return db.getPasswordEncoder().matches(rawPassword, passwordDetails.getCipherText());
 	}
 	
 	private boolean isExpired(Date expirationDate) {

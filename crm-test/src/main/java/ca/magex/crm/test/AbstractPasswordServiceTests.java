@@ -1,5 +1,8 @@
 package ca.magex.crm.test;
 
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +23,12 @@ public abstract class AbstractPasswordServiceTests {
 	@Before
 	public void setup() {
 		reset();
+	}
+	
+	@After
+	public void resetExpiry() {
+		/* update expiration time to be 0, so everything is expired */
+		ReflectionTestUtils.setField(getPasswordService(), "expiration", TimeUnit.DAYS.toMillis(365));		
 	}
 
 	@Test
@@ -65,7 +74,7 @@ public abstract class AbstractPasswordServiceTests {
 		Assert.assertNotEquals("BoatyMcBoatFace", tempPassword3);
 		Assert.assertTrue(getPasswordService().isTempPassword("BoatyMcBoatFace"));
 		Assert.assertTrue(getPasswordService().isExpiredPassword("BoatyMcBoatFace"));
-		Assert.assertFalse(getPasswordService().verifyPassword("BoatyMcBoatFace", tempPassword3)); // verified false because it's expired
+		Assert.assertTrue(getPasswordService().verifyPassword("BoatyMcBoatFace", tempPassword3)); // should still be verified even if expired (Requirement to change an expired password)
 	}
 	
 	@Test
