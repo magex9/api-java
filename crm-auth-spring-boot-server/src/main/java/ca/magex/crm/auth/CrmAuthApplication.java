@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmServices;
 
 @SpringBootApplication(scanBasePackages = {
 		"ca.magex.crm.api",					// Generic CRM beans 

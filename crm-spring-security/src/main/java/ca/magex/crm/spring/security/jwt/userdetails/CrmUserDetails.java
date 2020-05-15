@@ -34,7 +34,7 @@ public class CrmUserDetails implements UserDetails {
 	}
 
 	public String getUsername() {
-		return delegate.getUserId().toString();
+		return delegate.getUsername();
 	}
 
 	public boolean isAccountNonExpired() {

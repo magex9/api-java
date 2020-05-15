@@ -1,6 +1,8 @@
 package ca.magex.crm.auth;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,8 +23,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.spring.security.auth.AuthClient;
 import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtToken;
@@ -40,17 +44,23 @@ public class AuthClientTests {
 	
 	@Autowired CrmOrganizationService orgService;
 	@Autowired CrmLocationService locService;
-	
+	@Autowired CrmUserService userService;
 
 	@Test
 	public void testValidAuthenticationToken() throws Exception {
 		/* app_crm should be able to get auth details */
 		AuthClient authClient = new AuthClient("http", "localhost", randomPort, context);
-		ResponseEntity<JwtToken> jwtToken = authClient.acquireJwtToken("app_crm", "NutritionFactsPer1Can");
+		ResponseEntity<JwtToken> jwtToken = authClient.acquireJwtToken("sysadmin", "sysadmin");
 		Assert.assertTrue(jwtToken.toString(), jwtToken.getStatusCode().is2xxSuccessful());
 		logger.info("Respons Headers:");
 		jwtToken.getHeaders().entrySet().forEach((entry) -> logger.info(entry.getKey() + " --> " + entry.getValue()));
 		logger.info("Acquired token: " + jwtToken.getBody().getToken());
+		
+		/* add the AUTH_REQUEST role to the user to allow for token validation */
+		User user = userService.findUserByUsername("sysadmin");
+		List<String> roles = new ArrayList<String>(user.getRoles());
+		roles.add("APP_AUTH_REQUEST");
+		userService.updateUserRoles(user.getUserId(), roles);
 
 		ResponseEntity<AuthDetails> authDetails = authClient.validateJwtToken(jwtToken.getBody().getToken(), jwtToken.getBody().getToken());
 		Assert.assertTrue(authDetails.toString(), authDetails.getStatusCode().is2xxSuccessful());
@@ -73,10 +83,17 @@ public class AuthClientTests {
 	public void testUnauthorized() throws Exception {
 		/* admin user should not be able to get auth details */
 		AuthClient authClient = new AuthClient("http", "localhost", randomPort, context);
-		ResponseEntity<JwtToken> jwtToken = authClient.acquireJwtToken("admin", "admin");
+		ResponseEntity<JwtToken> jwtToken = authClient.acquireJwtToken("sysadmin", "sysadmin");
 		Assert.assertTrue(jwtToken.toString(), jwtToken.getStatusCode().is2xxSuccessful());
 		logger.info("Respons Headers:");
 		jwtToken.getHeaders().entrySet().forEach((entry) -> logger.info(entry.getKey() + " --> " + entry.getValue()));
+		
+		/* add the AUTH_REQUEST role to the user to allow for token validation */
+		User user = userService.findUserByUsername("sysadmin");
+		List<String> roles = new ArrayList<String>(user.getRoles());
+		if (roles.remove("APP_AUTH_REQUEST")) {
+			userService.updateUserRoles(user.getUserId(), roles);
+		}
 
 		ResponseEntity<AuthDetails> authDetails = authClient.validateJwtToken(jwtToken.getBody().getToken(), jwtToken.getBody().getToken());
 		Assert.assertTrue(authDetails.toString(), authDetails.getStatusCode().is4xxClientError());
