@@ -1,8 +1,6 @@
 package ca.magex.crm.amnesia.services;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
@@ -22,20 +20,17 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPasswordService implements CrmPasswordService {
 
-	private Map<String, PasswordDetails> passwords;
-	
 	private long expiration = TimeUnit.DAYS.toMillis(365);
 	
 	private AmnesiaDB db;
 	
 	public AmnesiaPasswordService(AmnesiaDB db) {
 		this.db = db;
-		this.passwords = new HashMap<String, PasswordDetails>();
 	}
 	
 	@Override
 	public String getEncodedPassword(@NotNull String username) {
-		PasswordDetails passwordDetails = passwords.get(username);
+		PasswordDetails passwordDetails = db.findPassword(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
@@ -44,7 +39,7 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 
 	@Override
 	public boolean isTempPassword(@NotNull String username) {
-		PasswordDetails passwordDetails = passwords.get(username);
+		PasswordDetails passwordDetails = db.findPassword(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
@@ -53,7 +48,7 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 
 	@Override
 	public boolean isExpiredPassword(@NotNull String username) {
-		PasswordDetails passwordDetails = passwords.get(username);
+		PasswordDetails passwordDetails = db.findPassword(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
@@ -62,7 +57,7 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 
 	@Override
 	public boolean verifyPassword(String username, String rawPassword) {
-		PasswordDetails passwordDetails = passwords.get(username);
+		PasswordDetails passwordDetails = db.findPassword(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
@@ -76,16 +71,16 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 	@Override
 	public String generateTemporaryPassword(@NotNull String username) {
 		String tempPassword = db.generateId().toString();
-		PasswordDetails passwordDetails = passwords.get(username);
+		PasswordDetails passwordDetails = db.findPassword(username);
 		if (passwordDetails != null) {
-			passwords.put(
+			db.savePassword(
 					username, 
 					passwordDetails.withTemporaryPassword(
 							db.getPasswordEncoder().encode(tempPassword), 
 							new Date(System.currentTimeMillis() + expiration)));
 		}
 		else {
-			passwords.put(
+			db.savePassword(
 					username, 
 					new PasswordDetails(
 							db.getPasswordEncoder().encode(tempPassword), 
@@ -97,11 +92,11 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 
 	@Override
 	public void updatePassword(@NotNull String username, @NotNull String encodedPassword) {
-		PasswordDetails passwordDetails = passwords.get(username);
+		PasswordDetails passwordDetails = db.findPassword(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
-		passwords.put(username, passwordDetails.withPassword(encodedPassword));
+		db.savePassword(username, passwordDetails.withPassword(encodedPassword));
 	}
 
 }

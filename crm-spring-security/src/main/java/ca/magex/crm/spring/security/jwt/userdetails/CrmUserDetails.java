@@ -1,8 +1,6 @@
 package ca.magex.crm.spring.security.jwt.userdetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.system.Status;
 
 /**
  */
@@ -20,12 +19,10 @@ public class CrmUserDetails implements UserDetails {
 
 	private final String password;
 	private final User delegate;
-	private final List<String> roles;
 
-	public CrmUserDetails(User user, String password, List<String> roles) {
+	public CrmUserDetails(User user, String password) {
 		this.delegate = user;
 		this.password = password;
-		this.roles = new ArrayList<>(roles);
 	}
 
 	public String getPassword() {
@@ -33,7 +30,7 @@ public class CrmUserDetails implements UserDetails {
 	}
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return roles.stream().map(r -> "ROLE_" + r).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+		return delegate.getRoles().stream().map(r -> "ROLE_" + r).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	}
 
 	public String getUsername() {
@@ -53,6 +50,6 @@ public class CrmUserDetails implements UserDetails {
 	}
 
 	public boolean isEnabled() {
-		return true;
+		return delegate.getStatus() == Status.ACTIVE;
 	}
 }
