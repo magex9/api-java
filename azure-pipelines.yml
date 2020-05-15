@@ -6,8 +6,12 @@
 pool:
     vmImage: 'ubuntu-latest'
 
+#variables:
+#  - application_name ... application_name variable is defined as a pipeline input variable
+#                         To use it in bash , it must be referred as ${APPLICATION_NAME}
+
 trigger:
-      - master
+      - azure
 #test
 #Stages Configuration (to be ran sequentially)
 stages:
@@ -20,13 +24,17 @@ stages:
       - task: Maven@3
         inputs:
           mavenPomFile: 'pom.xml'
-          mavenOptions: '-Xmx3072m'
-          javaHomeOption: 'JDKVersion'
-          jdkVersionOption: '1.11'
-          jdkArchitectureOption: 'x64'
+          options: '-Dmaven.test.failure.ignore=true'
           publishJUnitResults: true
           testResultsFiles: '**/surefire-reports/TEST-*.xml'
-          goals: 'package'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          mavenVersionOption: 'Default'
+          mavenOptions: '-Xmx3072m'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+        
       - task: Bash@3
         name: "Packaging_app_code"
         inputs:
@@ -34,9 +42,14 @@ stages:
           script: |
             # Write your commands here
             #set -x
-            application_name=crm-auth-spring-boot-server
+            echo ${APPLICATION_NAME}
+            
+            #IN case we want to set an azure variable:
+            #echo '##vso[task.setvariable variable=a]20'
+            
+            #application_name=${application_name} #now from pipeline variable
             application_version=1.0.0-SNAPSHOT
-            build_dir="$(System.DefaultWorkingDirectory)/build/${application_name}"
+            build_dir="$(System.DefaultWorkingDirectory)/build/${APPLICATION_NAME}"
             config_dir="${build_dir}/config"
             config_file="${config_dir}/application.cfg"
             publish_dir="$(System.DefaultWorkingDirectory)/publish"
@@ -55,16 +68,17 @@ stages:
               mkdir -p $publish_dir
             fi
 
-            cp $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/crm-auth-spring-boot-server-*-bootable.jar $build_dir/
+            cp $(System.DefaultWorkingDirectory)/${APPLICATION_NAME}/target/${APPLICATION_NAME}-*-bootable.jar $build_dir/
             cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
             
             #Create configuration file
             touch ${config_file}
-            echo "export APPLICATION_NAME=${application_name} >> $config_file"
-            echo "export APPLICATION_VERSION=${application_version} >> $config_file"
+            echo "export APPLICATION_NAME=${APPLICATION_NAME}" >> $config_file
+            echo "export APPLICATION_VERSION=${application_version}" >> $config_file
 
 
-            cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${application_name}-${application_version}.tgz ${application_name}
+            cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${APPLICATION_NAME}-${application_version}.tgz ${APPLICATION_NAME}
+            cp $(System.DefaultWorkingDirectory)/test.sh $(System.DefaultWorkingDirectory)/publish/
             ls -la $(System.DefaultWorkingDirectory)/**
           failOnStderr: true
            
@@ -89,22 +103,36 @@ stages:
                 targetFolder: '/var/data/finuser/builds/'
                 readyTimeout: '20000'
                 failOnEmptySource: true
+            - task: CopyFilesOverSSH@0
+              inputs:
+                sshEndpoint: 'ssh - RD3'
+                sourceFolder: '$(Pipeline.Workspace)/authApp/'
+                contents: 'test.sh'
+                targetFolder: '/var/data/finuser/admin/'
+                readyTimeout: '20000'
+                failOnEmptySource: true
+            
             - task: SSH@0
               inputs:
                 sshEndpoint: 'ssh - RD3'
                 runOptions: 'commands'
                 commands: 'ls -la /var/data/finuser/builds'
                 readyTimeout: '20000'
+
             - task: SSH@0
+              name: UntarApplicationPackage
               inputs:
                 sshEndpoint: 'ssh - RD3'
-                runOptions: 'commands'
-                commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
+                runOptions: 'inline'
+                inline: |
+                  rm -rf /var/data/finuser/apps/$(application_name) > /dev/null
+                  tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/$(application_name)-1.0.0-SNAPSHOT.tgz
                 readyTimeout: '20000'
             - task: SSH@0
-              name: restartApplication
+              name: ReStartApplication
               inputs:
                 sshEndpoint: 'ssh - RD3'
-                runOptions: 'commands'
-                commands: 'rm -rf /var/data/finuser/apps/crm-auth-spring-boot-server; tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/crm-auth-spring-boot-server-1.0.0-SNAPSHOT.tgz'
+                runOptions: 'inline'
+                inline: |
+                  /var/data/finuser/apps/$(application_name)/admin/service.sh restart
                 readyTimeout: '20000'
