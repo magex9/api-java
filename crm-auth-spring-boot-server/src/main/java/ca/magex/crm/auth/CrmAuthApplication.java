@@ -1,9 +1,5 @@
 package ca.magex.crm.auth;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.annotation.Bean;
 
-import ca.magex.crm.api.common.BusinessPosition;
-import ca.magex.crm.api.common.Communication;
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 
 @SpringBootApplication(scanBasePackages = {
 		"ca.magex.crm.api",					// Generic CRM beans 
@@ -50,7 +36,6 @@ public class CrmAuthApplication {
 	public ApplicationRunner dataInitializer() {
 		return new ApplicationRunner() {			
 			
-			@Autowired CrmServices crm;
 			@Autowired CrmInitializationService initializationService;
 			
 			@Override

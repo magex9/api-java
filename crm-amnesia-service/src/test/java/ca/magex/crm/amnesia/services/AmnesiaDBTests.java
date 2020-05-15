@@ -22,13 +22,13 @@ public class AmnesiaDBTests {
 
 	@Test
 	public void testAmnesiaPasswordEncoder() throws Exception {
-		assertEquals(AmnesiaPasswordEncoder.class, new AmnesiaDB().getPasswordEncoder().getClass());
+		assertEquals(AmnesiaPasswordEncoder.class, new AmnesiaDB(new AmnesiaPasswordEncoder()).getPasswordEncoder().getClass());
 		assertEquals(BCryptPasswordEncoder.class, new AmnesiaDB(new BCryptPasswordEncoder()).getPasswordEncoder().getClass());
 	}
 	
 	@Test
 	public void testSystemInitiailization() throws Exception {
-		AmnesiaDB db = new AmnesiaDB();
+		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
 		assertFalse(db.isInitialized());
 		db.initialize("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
 		assertTrue(db.isInitialized());
@@ -37,7 +37,7 @@ public class AmnesiaDBTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testResetData() throws Exception {
-		AmnesiaDB db = new AmnesiaDB();
+		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
 		Field field = AmnesiaDB.class.getDeclaredField("data");
 		field.setAccessible(true);
 		assertEquals(0, ((Map<Identifier, Serializable>)field.get(db)).size());

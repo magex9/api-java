@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +22,7 @@ import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
 import ca.magex.crm.amnesia.services.AmnesiaPersonService;
 import ca.magex.crm.amnesia.services.AmnesiaUserService;
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
@@ -43,13 +43,7 @@ import ca.magex.crm.resource.CrmRoleInitializer;
 @Repository
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaDB {
-	
-	public static final String SYSTEM_ADMIN = "SYS_ADMIN";
-	
-	public static final String CRM_ADMIN = "CRM_ADMIN";
 
-	public static final String RE_ADMIN = "RE_ADMIN";
-	
 	private IdGenerator idGenerator;
 
 	private Identifier systemId;
@@ -71,6 +65,8 @@ public class AmnesiaDB {
 	private AmnesiaUserService users;
 	
 	private AmnesiaPasswordService passwords;
+
+	private Map<String, PasswordDetails> passwordData;
 	
 	private Map<Identifier, Serializable> data;
 	
@@ -79,10 +75,6 @@ public class AmnesiaDB {
 	private Map<String, Role> rolesByCode;
 	
 	private Map<String, User> usersByUsername;
-	
-	public AmnesiaDB() {
-		this(new AmnesiaPasswordEncoder());
-	}
 	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
@@ -93,9 +85,10 @@ public class AmnesiaDB {
 		locations = new AmnesiaLocationService(this);
 		persons = new AmnesiaPersonService(this);
 		users = new AmnesiaUserService(this);
+		passwords = new AmnesiaPasswordService(this);
 		validation = new StructureValidationService(lookups, permissions, organizations, locations);
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new AmnesiaPasswordService(this);
+		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
@@ -139,19 +132,22 @@ public class AmnesiaDB {
 	
 	public Identifier initialize(String organization, PersonName name, String email, String username, String password) {
 		if (systemId == null) {
-			CrmRoleInitializer.initialize(new AmnesiaPermissionService(this));
-			Identifier organizationId = new AmnesiaOrganizationService(this).createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
-			Identifier personId = new AmnesiaPersonService(this).createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
-			systemId = new AmnesiaUserService(this).createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();
+			CrmRoleInitializer.initialize(permissions);
+			Identifier organizationId = organizations.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
+			Identifier personId = persons.createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
+			systemId = users.createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();			
 			passwords.generateTemporaryPassword(username);
-			passwords.updatePassword(username, new BCryptPasswordEncoder().encode(password));
+			passwords.updatePassword(username, passwordEncoder.encode(password));
 		}
 		return systemId;
 	}
 	
 	public void reset() {
-		data = new HashMap<Identifier, Serializable>();
-		passwords = new AmnesiaPasswordService(this);
+		data.clear();
+		passwordData.clear();
+		groupsByCode.clear();
+		rolesByCode.clear();
+		usersByUsername.clear();
 	}
 	
 	public Identifier generateId() {
@@ -161,6 +157,14 @@ public class AmnesiaDB {
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> Stream<T> findByType(Class<T> cls) {
 		return data.values().stream().filter(c -> c.getClass().equals(cls)).map(c -> (T)c);
+	}
+	
+	public PasswordDetails findPassword(String username) {
+		return passwordData.get(username);
+	}
+	
+	public void savePassword(String username, PasswordDetails passwordDetails) {
+		this.passwordData.put(username, passwordDetails);
 	}
 	
 	public OrganizationDetails findOrganization(Identifier organizationId) {
