@@ -27,7 +27,7 @@ public class HazelcastPermissionServiceTests extends AbstractPermissionServiceTe
 		return hzPermissionService;
 	}
 
-	@Before
+	@Override
 	public void reset() {
 		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
 		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();

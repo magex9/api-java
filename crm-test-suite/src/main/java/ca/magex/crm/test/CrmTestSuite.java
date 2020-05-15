@@ -1,5 +1,7 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.assertPage;
+import static ca.magex.crm.test.CrmAsserts.assertSinglePage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -10,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -298,20 +299,6 @@ public class CrmTestSuite {
 		assertPage(allUsers, 5, 5, 1, false, false, false, false);
 		assertEquals("karen", allUsers.getContent().get(0).getUsername());
 		assertEquals("christopher", allUsers.getContent().get(allLocationsResults.getContent().size() - 1).getUsername());
-	}
-	
-	public static <T> void assertSinglePage(Page<T> page, int totalElements) {
-		assertPage(page, totalElements, totalElements, 1, false, false, false, false);
-	}
-	
-	public static <T> void assertPage(Page<T> page, int totalElements, int pageSize, int pageNumber, boolean first, boolean previous, boolean next, boolean last) {
-		assertEquals(totalElements, page.getTotalElements());
-		assertEquals(pageNumber, page.getNumber());
-		assertEquals(pageSize, page.getContent().size());
-		assertEquals(first, page.isFirst());
-		assertEquals(previous, page.hasPrevious());
-		assertEquals(next, page.hasNext());
-		assertEquals(last, page.isLast());
 	}
 	
 }

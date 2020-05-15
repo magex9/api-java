@@ -19,14 +19,14 @@ public class Message implements Serializable {
 	
 	private String path;
 	
-	private String message;
+	private Localized reason;
 
-	public Message(Identifier identifier, String type, String path, String message) {
+	public Message(Identifier identifier, String type, String path, Localized reason) {
 		super();
 		this.identifier = identifier;
 		this.type = type;
 		this.path = path;
-		this.message = message;
+		this.reason = reason;
 	}
 
 	public Identifier getIdentifier() {
@@ -41,8 +41,8 @@ public class Message implements Serializable {
 		return path;
 	}
 
-	public String getMessage() {
-		return message;
+	public Localized getReason() {
+		return reason;
 	}
 	
 	@Override

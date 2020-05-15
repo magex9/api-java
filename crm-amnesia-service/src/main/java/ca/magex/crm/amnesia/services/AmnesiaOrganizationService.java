@@ -34,34 +34,37 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
-		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null, groups));
+		return db.saveOrganization(validate(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null, groups)));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withStatus(Status.ACTIVE));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withStatus(Status.ACTIVE)));
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withDisplayName(name));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withDisplayName(name)));
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withMainLocationId(db.findLocation(locationId).getLocationId()));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainLocationId(db.findLocation(locationId).getLocationId())));
 	}
 	
-	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withMainContactId(db.findPerson(personId).getPersonId()));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainContactId(db.findPerson(personId).getPersonId())));
 	}
 
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withGroups(groups));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withGroups(groups)));
 	}
 	
+	private OrganizationDetails validate(OrganizationDetails organization) {
+		return db.getValidation().validate(organization);
+	}
+
 	@Override
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		return db.findOrganization(organizationId);

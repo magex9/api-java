@@ -11,6 +11,7 @@ import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.test.AbstractPersonServiceTests;
 import ca.magex.crm.test.TestConfig;
@@ -21,6 +22,7 @@ import ca.magex.crm.test.TestConfig;
 public class HazelcastPersonServiceTests extends AbstractPersonServiceTests {
 
 	@Autowired private CrmPersonService hzPersonService;
+	@Autowired private CrmPermissionService hzPermissionService;
 	@Autowired private CrmOrganizationService hzOrganizationService;
 	@Autowired private HazelcastInstance hzInstance;
 	
@@ -32,10 +34,17 @@ public class HazelcastPersonServiceTests extends AbstractPersonServiceTests {
 	@Override
 	public CrmPersonService getPersonService() {
 		return hzPersonService;
-	}	
+	}
 	
-	@Before
+	@Override
+	public CrmPermissionService getPermissionService() {
+		return hzPermissionService;
+	}
+	
+	@Override
 	public void reset() {
+		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
+		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
 		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
 		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
 	}

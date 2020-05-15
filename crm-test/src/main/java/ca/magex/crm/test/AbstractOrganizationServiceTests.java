@@ -1,5 +1,8 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
+import static org.junit.Assert.*;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +18,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
@@ -50,22 +54,22 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testOrganizations() {
 		/* create */
-		OrganizationDetails o1 = getOrganizationService().createOrganization("Maple Leafs", Collections.emptyList());
+		OrganizationDetails o1 = getOrganizationService().createOrganization("Maple Leafs", List.of("NHL"));
 		Assert.assertEquals("Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(0, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getGroups().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, getOrganizationService().findOrganizationDetails(o1.getOrganizationId()));
-		OrganizationDetails o2 = getOrganizationService().createOrganization("Senators", Collections.emptyList());
+		OrganizationDetails o2 = getOrganizationService().createOrganization("Senators", List.of("NHL"));
 		Assert.assertEquals("Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(0, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getGroups().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, getOrganizationService().findOrganizationDetails(o2.getOrganizationId()));
-		OrganizationDetails o3 = getOrganizationService().createOrganization("Canadiens", Collections.emptyList());
+		OrganizationDetails o3 = getOrganizationService().createOrganization("Canadiens", List.of("NHL"));
 		Assert.assertEquals("Canadiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(0, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getGroups().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, getOrganizationService().findOrganizationDetails(o3.getOrganizationId()));
 
@@ -73,21 +77,21 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = getOrganizationService().updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(0, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getGroups().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, getOrganizationService().findOrganizationDetails(o1.getOrganizationId()));
 		o1 = getOrganizationService().updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		o2 = getOrganizationService().updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(0, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getGroups().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, getOrganizationService().findOrganizationDetails(o2.getOrganizationId()));
 		o2 = getOrganizationService().updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		o3 = getOrganizationService().updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(0, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getGroups().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, getOrganizationService().findOrganizationDetails(o3.getOrganizationId()));
 		o3 = getOrganizationService().updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
@@ -101,7 +105,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = getOrganizationService().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(0, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getGroups().size());
 		Assert.assertEquals(torontoId, o1.getMainLocationId());
 		Assert.assertEquals(o1, getOrganizationService().findOrganizationDetails(o1.getOrganizationId()));
 		o1 = getOrganizationService().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId); // set to duplicate value
@@ -114,7 +118,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = getOrganizationService().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(0, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getGroups().size());
 		Assert.assertEquals(ottawaId, o2.getMainLocationId());
 		Assert.assertEquals(o2, getOrganizationService().findOrganizationDetails(o2.getOrganizationId()));
 		o2 = getOrganizationService().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
@@ -128,7 +132,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = getOrganizationService().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(0, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getGroups().size());
 		Assert.assertEquals(montrealId, o3.getMainLocationId());
 		Assert.assertEquals(o3, getOrganizationService().findOrganizationDetails(o3.getOrganizationId()));
 		o3 = getOrganizationService().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
@@ -144,7 +148,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = getOrganizationService().updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(0, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getGroups().size());
 		Assert.assertEquals(freddyId, o1.getMainContactId());
 		Assert.assertEquals(o1, getOrganizationService().findOrganizationDetails(o1.getOrganizationId()));
 		o1 = getOrganizationService().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // set to duplicate value
@@ -159,7 +163,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = getOrganizationService().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(0, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getGroups().size());
 		Assert.assertEquals(craigId, o2.getMainContactId());
 		Assert.assertEquals(o2, getOrganizationService().findOrganizationDetails(o2.getOrganizationId()));
 		o2 = getOrganizationService().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
@@ -174,7 +178,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = getOrganizationService().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(0, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getGroups().size());
 		Assert.assertEquals(careyId, o3.getMainContactId());
 		Assert.assertEquals(o3, getOrganizationService().findOrganizationDetails(o3.getOrganizationId()));
 		o3 = getOrganizationService().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
@@ -378,4 +382,63 @@ public abstract class AbstractOrganizationServiceTests {
 			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
 		}
 	}
+	
+	@Test
+	public void testCreateOrgWithMissingGroup() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
+		assertEquals(getPermissionService().findGroup(groupId).getCode(), getOrganizationService().findOrganizationDetails(organizationId).getGroups().get(0));
+		try {
+			getOrganizationService().createOrganization("INVALID", List.of("MISSING"));
+			fail("Should have gotten bad request");
+		} catch (BadRequestException e) {
+			assertEquals("Bad Request: Organization has validation errors", e.getMessage());
+			assertBadRequestMessage(e, null, "error", "groups[0]", "Group does not exist: MISSING");
+		}
+	}
+	
+	@Test
+	public void testFindByIdentifierOtherType() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
+		assertEquals("ORG", getOrganizationService().findOrganizationDetails(organizationId).getDisplayName());
+		try {
+			getOrganizationService().findOrganizationDetails(groupId);
+			fail("Requested the wrong type");
+		} catch (ItemNotFoundException expected) { }
+	}
+	
+	@Test
+	public void testOrgWithNoName() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		try {
+			getOrganizationService().createOrganization("", List.of("GRP")).getOrganizationId();
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, null, "error", "displayName", "Display name is mandatory for an organization");
+		}
+	}
+	
+	@Test
+	public void testOrgWithLongName() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		try {
+			getOrganizationService().createOrganization("The organization can only have a name with a maximum or 60 characters", List.of("GRP")).getOrganizationId();
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, null, "error", "displayName", "Display name must be 60 characters or less");
+		}
+	}
+	
+	@Test
+	public void testOrgWithNoGroup() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		try {
+			getOrganizationService().createOrganization("Org", List.of()).getOrganizationId();
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, null, "error", "groups", "Organizations must have a permission group assigned to them");
+		}
+	}
+	
 }

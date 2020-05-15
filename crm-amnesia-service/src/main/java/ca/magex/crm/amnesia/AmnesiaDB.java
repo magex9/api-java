@@ -1,5 +1,6 @@
 package ca.magex.crm.amnesia;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.IdGenerator;
+import ca.magex.crm.amnesia.services.AmnesiaLocationService;
+import ca.magex.crm.amnesia.services.AmnesiaLookupService;
 import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
 import ca.magex.crm.amnesia.services.AmnesiaPasswordService;
 import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
@@ -30,7 +33,11 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.resource.CrmLookupLoader;
 import ca.magex.crm.resource.CrmRoleInitializer;
 
 @Repository
@@ -43,7 +50,23 @@ public class AmnesiaDB {
 	
 	private PasswordEncoder passwordEncoder;
 	
-	private Map<String, PasswordDetails> passwords;
+	private StructureValidationService validation;
+	
+	private AmnesiaLookupService lookups;
+	
+	private AmnesiaPermissionService permissions;
+	
+	private AmnesiaOrganizationService organizations;
+	
+	private AmnesiaLocationService locations;
+	
+	private AmnesiaPersonService persons;
+	
+	private AmnesiaUserService users;
+	
+	private AmnesiaPasswordService passwords;
+
+	private Map<String, PasswordDetails> passwordData;
 	
 	private Map<Identifier, Serializable> data;
 	
@@ -56,11 +79,47 @@ public class AmnesiaDB {
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 		idGenerator = new AmnesiaBase58IdGenerator();
+		lookups = new AmnesiaLookupService(new CrmLookupLoader());
+		permissions = new AmnesiaPermissionService(this);
+		organizations = new AmnesiaOrganizationService(this);
+		locations = new AmnesiaLocationService(this);
+		persons = new AmnesiaPersonService(this);
+		users = new AmnesiaUserService(this);
+		passwords = new AmnesiaPasswordService(this);
+		validation = new StructureValidationService(lookups, permissions, organizations, locations);
 		data = new HashMap<Identifier, Serializable>();
-		passwords = new HashMap<String, PasswordDetails>();
+		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
+	}
+	
+	public CrmLookupService getLookups() {
+		return lookups;
+	}
+	
+	public AmnesiaPermissionService getPermissions() {
+		return permissions;
+	}
+	
+	public AmnesiaOrganizationService getOrganizations() {
+		return organizations;
+	}
+	
+	public AmnesiaLocationService getLocations() {
+		return locations;
+	}
+	
+	public AmnesiaPersonService getPersons() {
+		return persons;
+	}
+	
+	public AmnesiaUserService getUsers() {
+		return users;
+	}
+	
+	public StructureValidationService getValidation() {
+		return validation;
 	}
 	
 	public PasswordEncoder getPasswordEncoder() {
@@ -73,19 +132,22 @@ public class AmnesiaDB {
 	
 	public Identifier initialize(String organization, PersonName name, String email, String username, String password) {
 		if (systemId == null) {
-			CrmRoleInitializer.initialize(new AmnesiaPermissionService(this));
-			Identifier organizationId = new AmnesiaOrganizationService(this).createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
-			Identifier personId = new AmnesiaPersonService(this).createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
-			systemId = new AmnesiaUserService(this).createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();			
-			new AmnesiaPasswordService(this).generateTemporaryPassword(username);
-			new AmnesiaPasswordService(this).updatePassword(username, passwordEncoder.encode(password));
+			CrmRoleInitializer.initialize(permissions);
+			Identifier organizationId = organizations.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
+			Identifier personId = persons.createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
+			systemId = users.createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();			
+			passwords.generateTemporaryPassword(username);
+			passwords.updatePassword(username, passwordEncoder.encode(password));
 		}
 		return systemId;
 	}
 	
 	public void reset() {
 		data.clear();
-		passwords.clear();
+		passwordData.clear();
+		groupsByCode.clear();
+		rolesByCode.clear();
+		usersByUsername.clear();
 	}
 	
 	public Identifier generateId() {
@@ -98,33 +160,33 @@ public class AmnesiaDB {
 	}
 	
 	public PasswordDetails findPassword(String username) {
-		return passwords.get(username);
+		return passwordData.get(username);
 	}
 	
 	public void savePassword(String username, PasswordDetails passwordDetails) {
-		this.passwords.put(username, passwordDetails);
+		this.passwordData.put(username, passwordDetails);
 	}
-
+	
 	public OrganizationDetails findOrganization(Identifier organizationId) {
 		Serializable obj = data.get(organizationId);
 		if (obj == null)
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		if (!(obj instanceof OrganizationDetails))
-			throw new BadRequestException(organizationId, "error", "class", "Expected OrganizationDetails but got: " + obj.getClass().getName());
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		return (OrganizationDetails)SerializationUtils.clone(obj);
 	}
-
+	
 	public OrganizationDetails saveOrganization(OrganizationDetails organization) {
 		data.put(organization.getOrganizationId(), organization);
 		return organization;
 	}
-
+	
 	public LocationDetails findLocation(Identifier locationId) {
 		Serializable obj = data.get(locationId);
 		if (obj == null)
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		if (!(obj instanceof LocationDetails))
-			throw new BadRequestException(locationId, "error", "class", "Expected LocationDetails but got: " + obj.getClass().getName());
+			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		return (LocationDetails)SerializationUtils.clone(obj);
 	}
 
@@ -138,7 +200,7 @@ public class AmnesiaDB {
 		if (obj == null)
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		if (!(obj instanceof PersonDetails))
-			throw new BadRequestException(personId, "error", "class", "Expected PersonDetails but got: " + obj.getClass().getName());
+			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		return (PersonDetails)SerializationUtils.clone(obj);
 	}
 
@@ -152,7 +214,7 @@ public class AmnesiaDB {
 		if (obj == null)
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		if (!(obj instanceof User))
-			throw new BadRequestException(userId, "error", "class", "Expected User but got: " + obj.getClass().getName());
+			throw new ItemNotFoundException("User ID '" + userId + "'");
 		return (User)SerializationUtils.clone(obj);
 	}	
 	
@@ -204,15 +266,19 @@ public class AmnesiaDB {
 		if (obj == null)
 			throw new ItemNotFoundException(cls.getSimpleName() + " ID '" + identifier + "'");
 		if (!(cls.equals(obj.getClass())))
-			throw new BadRequestException(identifier, "error", "class", "Expected " + cls.getName() + " but got: " + obj.getClass().getName());
+			throw new ItemNotFoundException(cls.getSimpleName() + " ID '" + identifier + "'");
 		return (T)SerializationUtils.clone(obj);
 	}
 	
 	public void dump() {
+		dump(System.out);
+	}
+	
+	public void dump(PrintStream os) {
 		data.keySet()
 			.stream()
 			.sorted((x, y) -> x.toString().compareTo(y.toString()))
-			.forEach(key -> System.out.println(key + " => " + data.get(key).toString()));
+			.forEach(key -> os.println(key + " => " + data.get(key).toString()));
 	}
 	
 }
