@@ -63,10 +63,6 @@ public class AmnesiaPasswordService implements CrmPasswordService {
 		}
 		return db.getPasswordEncoder().matches(rawPassword, passwordDetails.getCipherText());
 	}
-	
-	private boolean isExpired(Date expirationDate) {
-		return expirationDate != null && expirationDate.before(new Date());
-	}
 
 	@Override
 	public String generateTemporaryPassword(@NotNull String username) {

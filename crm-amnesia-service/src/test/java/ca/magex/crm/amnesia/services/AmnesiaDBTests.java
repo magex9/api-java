@@ -58,4 +58,18 @@ public class AmnesiaDBTests {
 		assertEquals(0, ((Map<Identifier, Serializable>)field.get(db)).size());
 	}
 	
+	@Test
+	public void testDataDump() throws Exception {
+		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
+		db.getPermissions().createGroup("A", new Localized("A"));
+		db.getPermissions().createGroup("B", new Localized("B"));
+		db.getPermissions().createGroup("C", new Localized("C"));
+		db.getPermissions().createGroup("D", new Localized("D"));
+		db.getPermissions().createGroup("E", new Localized("E"));
+		db.getPermissions().createGroup("F", new Localized("F"));
+		db.getPermissions().createGroup("G", new Localized("G"));
+		db.getPermissions().createGroup("H", new Localized("H"));
+		db.dump(System.out);
+	}
+	
 }

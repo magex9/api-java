@@ -8,8 +8,11 @@ import org.apache.commons.lang3.StringUtils;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.system.Identifier;
@@ -25,19 +28,33 @@ public class StructureValidationService implements CrmValidation {
 	
 	private CrmOrganizationService organizations;
 	
+	private CrmPersonService persons;
+
 	private CrmLocationService locations;
 
 	public StructureValidationService(CrmLookupService lookups, CrmPermissionService permissions, CrmOrganizationService organizations,
-			CrmLocationService locations) {
+			CrmLocationService locations, CrmPersonService persons) {
 		super();
 		this.lookups = lookups;
 		this.permissions = permissions;
 		this.organizations = organizations;
 		this.locations = locations;
+		this.persons = persons;
 	}
 
 	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
+
+		// If disabling the organization, make sure its not already disabled
+		if (organization.getStatus().equals(Status.INACTIVE)) {
+			try {
+				OrganizationSummary existing = organizations.findOrganizationSummary(organization.getOrganizationId());
+				if (existing.getStatus().equals(Status.INACTIVE))
+					throw new BadRequestException("Creating inactive organization", organization.getOrganizationId(), "error", "status", new Localized("Cannot update an organziation that is already inactive"));
+			} catch (ItemNotFoundException e) {
+				throw new BadRequestException("Creating inactive organization", organization.getOrganizationId(), "error", "status", new Localized("Cannot create a new organization that is inactive"));
+			}
+		}
 		
 		// Display Name
 		if (StringUtils.isBlank(organization.getDisplayName())) {
@@ -50,9 +67,30 @@ public class StructureValidationService implements CrmValidation {
 		if (organization.getStatus() == null)
 			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized("Status is mandatory for an organization")));
 		
+		// Main contact reference
+		if (organization.getMainContactId() != null) {
+			PersonSummary person = persons.findPersonSummary(organization.getMainContactId());
+			// Make sure main contact belongs to current org
+			if (!person.getOrganizationId().equals(organization.getOrganizationId())) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainContactId", new Localized("Main contact organization has invalid referential integrity")));
+			}
+			// Make sure main contact is active
+			if (!person.getStatus().equals(Status.ACTIVE)) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainContactId", new Localized("Main contact must be active")));
+			}
+		}
+		
 		// Main location reference
-		if (organization.getMainLocationId() != null && !locations.findLocationDetails(organization.getMainLocationId()).getOrganizationId().equals(organization.getOrganizationId())) {
-			messages.add(new Message(organization.getOrganizationId(), "error", "mainLocation", new Localized("Main location organization has invalid referential integrity")));
+		if (organization.getMainLocationId() != null) {
+			LocationSummary location = locations.findLocationSummary(organization.getMainLocationId());
+			// Make sure main location belongs to current org
+			if (!location.getOrganizationId().equals(organization.getOrganizationId())) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainLocationId", new Localized("Main location organization has invalid referential integrity")));
+			}
+			// Make sure main location is active
+			if (!location.getStatus().equals(Status.ACTIVE)) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainLocationId", new Localized("Main location must be active")));
+			}
 		}
 
 		// Group

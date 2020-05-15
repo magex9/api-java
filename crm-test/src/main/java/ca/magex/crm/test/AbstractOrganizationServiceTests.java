@@ -216,7 +216,10 @@ public abstract class AbstractOrganizationServiceTests {
 		OrganizationSummary os1 = getOrganizationService().disableOrganization(o1.getOrganizationId());
 		Assert.assertEquals("Toronto Maple Leafs", os1.getDisplayName());
 		Assert.assertEquals(Status.INACTIVE, os1.getStatus());
-		Assert.assertEquals(os1, getOrganizationService().disableOrganization(os1.getOrganizationId()));
+		try {
+			Assert.assertEquals(os1, getOrganizationService().disableOrganization(os1.getOrganizationId()));
+			Assert.fail("Cannot disable inactive orgs");
+		} catch (BadRequestException expected) { }
 		Assert.assertEquals(os1, getOrganizationService().findOrganizationSummary(os1.getOrganizationId()));
 
 		/* enable */
@@ -455,5 +458,91 @@ public abstract class AbstractOrganizationServiceTests {
 			assertBadRequestMessage(e, null, "error", "groups", "Organizations must have a permission group assigned to them");
 		}
 	}
+	
+	@Test
+	public void testCannotUpdateDisabledOrganization() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
+		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.ValidCanadianAddress).getLocationId();
+		Identifier personId = getPersonService().createPerson(organizationId, CrmAsserts.ValidPersonName, CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		getOrganizationService().disableOrganization(organizationId);
+		assertEquals(Status.INACTIVE, getOrganizationService().findOrganizationSummary(organizationId).getStatus());
+		
+		try {
+			getOrganizationService().updateOrganizationDisplayName(organizationId, "New name");
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "status", "Cannot update an organziation that is already inactive");
+		}
+		
+		try {
+			getOrganizationService().updateOrganizationMainLocation(organizationId, locationId);
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "status", "Cannot update an organziation that is already inactive");
+		}
+		
+		try {
+			getOrganizationService().updateOrganizationMainContact(organizationId, personId);
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "status", "Cannot update an organziation that is already inactive");
+		}
+		
+		try {
+			getOrganizationService().updateOrganizationGroups(organizationId, List.of("GRP"));
+			fail("Requested the wrong type");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "status", "Cannot update an organziation that is already inactive");
+		}
+	}
+
+	@Test
+	public void testCannotUpdateDisabledGroup() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("A", new Localized("A")).getGroupId();
+		getPermissionService().createGroup("B", new Localized("B")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("A")).getOrganizationId();
+		
+		getOrganizationService().updateOrganizationGroups(organizationId, List.of("B"));
+		getPermissionService().disableGroup(groupId);
+		
+		try {
+			getOrganizationService().updateOrganizationGroups(organizationId, List.of("A"));
+			fail("Unable to assign disabled references");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "groups[0]", "Group is not active: A");
+		}
+	}
+
+	@Test
+	public void testCannotUpdateDisabledMainLocation() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
+		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.ValidCanadianAddress).getLocationId();
+		getLocationService().disableLocation(locationId);
+		
+		try {
+			getOrganizationService().updateOrganizationMainLocation(organizationId, locationId);
+			fail("Unable to assign disabled references");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "mainLocationId", "Main location must be active");
+		}
+	}		
+
+	@Test
+	public void testCannotUpdateDisabledMainContact() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
+		Identifier personId = getPersonService().createPerson(organizationId, CrmAsserts.ValidPersonName, CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		getPersonService().disablePerson(personId);
+		
+		try {
+			getOrganizationService().updateOrganizationMainContact(organizationId, personId);
+			fail("Unable to assign disabled references");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationId, "error", "mainContactId", "Main contact must be active");
+		}
+	}		
+
 	
 }

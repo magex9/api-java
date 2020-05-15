@@ -86,7 +86,7 @@ public final class SecuredCrmServices implements Crm {
 			CrmUserService userService, CrmUserPolicy userPolicy,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy) {
 		super();
-		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService);
+		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService, personService);
 		this.initializationService = initializationService;
 		this.lookupService = lookupService;
 		this.organizationService = organizationService;

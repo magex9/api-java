@@ -84,7 +84,7 @@ public class AmnesiaDB {
 		persons = new AmnesiaPersonService(this);
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
-		validation = new StructureValidationService(lookups, permissions, organizations, locations);
+		validation = new StructureValidationService(lookups, permissions, organizations, locations, persons);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
