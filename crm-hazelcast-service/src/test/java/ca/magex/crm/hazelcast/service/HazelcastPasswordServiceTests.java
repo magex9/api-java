@@ -34,7 +34,7 @@ public class HazelcastPasswordServiceTests extends AbstractPasswordServiceTests 
 		return hzPasswordService;
 	}
 	
-	@Before
+	@Override
 	public void reset() {
 		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();
 	}

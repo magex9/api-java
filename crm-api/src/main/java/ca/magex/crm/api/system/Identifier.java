@@ -10,7 +10,9 @@ import ca.magex.crm.api.services.Crm;
 
 public class Identifier implements Serializable {
 
-	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;;
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final Identifier UNDEFINED = new Identifier("undefined");
 	
 	public static final String PATTERN = "[A-Za-z0-9]+";
 	

@@ -3,6 +3,7 @@ package ca.magex.crm.test;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -15,14 +16,26 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractLocationServiceTests {
 
+	public abstract CrmPermissionService getPermissionService();
+
+	public abstract CrmOrganizationService getOrganizationService();
+
 	public abstract CrmLocationService getLocationService();
 	
-	public abstract CrmOrganizationService getOrganizationService();
+	public abstract void reset();
+
+	@Before
+	public void setup() {
+		reset();
+		getPermissionService().createGroup("ORG", new Localized("Organization"));
+	}
 	
 	@Test
 	public void testLocations() {

@@ -1,6 +1,7 @@
 package ca.magex.crm.test;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,13 @@ import ca.magex.crm.api.system.Status;
 public abstract class AbstractPermissionServiceTests {
 
 	public abstract CrmPermissionService getPermissionService();
+
+	public abstract void reset();
+		
+	@Before
+	public void setup() {
+		reset();
+	}
 
 	@Test
 	public void testGroups() {
