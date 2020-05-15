@@ -1,11 +1,10 @@
 package ca.magex.crm.amnesia.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -14,7 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
 public class AmnesiaDBTests {

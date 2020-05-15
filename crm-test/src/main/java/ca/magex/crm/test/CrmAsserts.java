@@ -4,11 +4,24 @@ import static org.junit.Assert.assertEquals;
 
 import org.springframework.data.domain.Page;
 
+import ca.magex.crm.api.common.BusinessPosition;
+import ca.magex.crm.api.common.Communication;
+import ca.magex.crm.api.common.MailingAddress;
+import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 
 public class CrmAsserts {
+	
+	public static final MailingAddress ValidCanadianAddress = new MailingAddress("123 Main St", "Ottawa", "Ontario", "Canada", "K1K1K1");
+	
+	public static final PersonName ValidPersonName = new PersonName("Mr.", "Chris", "P", "Bacon");
+	
+	public static final Communication ValidCommunication = new Communication("Developer", "English", "user@work.ca", new Telephone("5551234567"), null);
+	
+	public static final BusinessPosition ValidBusinessPosition = new BusinessPosition("Corporate Services", "Development", "Developer");
 	
 	public static <T> void assertSinglePage(Page<T> page, int totalElements) {
 		assertPage(page, totalElements, totalElements, 1, false, false, false, false);

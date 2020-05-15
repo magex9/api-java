@@ -1,7 +1,8 @@
 package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.List;
@@ -381,6 +382,20 @@ public abstract class AbstractOrganizationServiceTests {
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testWrongIdentifiers() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+
+		assertEquals("Org Name", getOrganizationService().findOrganizationDetails(organizationId).getDisplayName());
+		assertEquals("Org Name", getOrganizationService().findOrganizationSummary(organizationId).getDisplayName());
+		assertEquals("Org Name", getOrganizationService().findOrganizationByDisplayName("Org Name").getDisplayName());
+		try {
+			getOrganizationService().findOrganizationDetails(groupId);
+			fail("Not a valid identifier");
+		} catch (ItemNotFoundException e) { }
 	}
 	
 	@Test
