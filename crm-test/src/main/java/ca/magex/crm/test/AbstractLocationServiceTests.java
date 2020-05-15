@@ -1,5 +1,8 @@
 package ca.magex.crm.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -335,6 +338,20 @@ public abstract class AbstractLocationServiceTests {
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
 		}
+	}
+	
+	@Test
+	public void testWrongIdentifiers() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.ValidCanadianAddress).getLocationId();
+
+		assertEquals("LOC", getLocationService().findLocationDetails(locationId).getReference());
+		assertEquals("LOC", getLocationService().findLocationSummary(locationId).getReference());
+		try {
+			getLocationService().findLocationDetails(groupId);
+			fail("Not a valid identifier");
+		} catch (ItemNotFoundException e) { }
 	}
 
 }

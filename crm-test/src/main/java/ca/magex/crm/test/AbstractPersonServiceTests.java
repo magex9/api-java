@@ -1,5 +1,8 @@
 package ca.magex.crm.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -309,4 +312,19 @@ public abstract class AbstractPersonServiceTests {
 			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
 		}
 	}
+	
+	@Test
+	public void testWrongIdentifiers() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+
+		assertEquals("Bacon, Chris P", getPersonService().findPersonDetails(personId).getDisplayName());
+		assertEquals("Bacon, Chris P", getPersonService().findPersonSummary(personId).getDisplayName());
+		try {
+			getPersonService().findPersonDetails(groupId);
+			fail("Not a valid identifier");
+		} catch (ItemNotFoundException e) { }
+	}
+	
 }

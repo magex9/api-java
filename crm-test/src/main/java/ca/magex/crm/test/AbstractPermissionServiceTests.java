@@ -1,5 +1,8 @@
 package ca.magex.crm.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -348,4 +351,22 @@ public abstract class AbstractPermissionServiceTests {
 			Assert.assertEquals("Item not found: Role ID 'abc'", e.getMessage());
 		}
 	}
+	
+	@Test
+	public void testWrongIdentifiers() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier roleId = getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		assertEquals("Group", getPermissionService().findGroupByCode("GRP").getName(Lang.ENGLISH));
+		try {
+			getPermissionService().findGroup(roleId);
+			fail("Not a valid identifier");
+		} catch (ItemNotFoundException e) { }
+
+		assertEquals("Admin", getPermissionService().findRoleByCode("ADMIN").getName(Lang.ENGLISH));
+		try {
+			getPermissionService().findRole(groupId);
+			fail("Not a valid identifier");
+		} catch (ItemNotFoundException e) { }
+	}
+	
 }
