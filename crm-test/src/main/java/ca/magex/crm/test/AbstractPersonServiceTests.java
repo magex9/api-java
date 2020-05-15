@@ -30,17 +30,16 @@ public abstract class AbstractPersonServiceTests {
 	public abstract CrmPersonService getPersonService();
 
 	public abstract void reset();
-	
-	private Identifier blizzardId;
-	
+		
 	@Before
 	public void setup() {
-		reset();
-		blizzardId = getOrganizationService().createOrganization("Blizzard", List.of("ORG")).getOrganizationId();
+		reset();	
 	}
 
 	@Test
 	public void testPersons() {
+		Identifier blizzardId = getOrganizationService().createOrganization("Blizzard", List.of("ORG")).getOrganizationId();
+		
 		PersonName leroy = new PersonName("Mr", "Leroy", "MF", "Jenkins");
 		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", "", "France", "75007");
 		Communication comms = new Communication("Leader", "English", "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");

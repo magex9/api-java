@@ -9,6 +9,9 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import ca.magex.crm.api.common.BusinessPosition;
+import ca.magex.crm.api.common.Communication;
+import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -34,20 +37,6 @@ public abstract class AbstractOrganizationServiceTests {
 	public abstract CrmPermissionService getPermissionService();
 
 	public abstract void reset();
-	
-	private Identifier nhlId;
-
-	private Identifier torontoId;
-
-	private Identifier ottawaId;
-
-	private Identifier montrealId;
-	
-	private Identifier freddyId;
-	
-	private Identifier craigId;
-	
-	private Identifier careyId;
 
 	@Before
 	public void setup() {
@@ -55,14 +44,7 @@ public abstract class AbstractOrganizationServiceTests {
 		getPermissionService().createGroup("NHL", new Localized("NHL", "LNH"));
 		getPermissionService().createGroup("PLAYOFFS", new Localized("Playoffs", "Playoffs"));
 		getPermissionService().createGroup("ONTARIO", new Localized("Ontario", "Ontario"));
-		getPermissionService().createGroup("QUEBEC", new Localized("Quebec", "Québec"));
-		nhlId = getOrganizationService().createOrganization("National Hockey League", List.of("NHL")).getOrganizationId();
-		torontoId = getLocationService().createLocation(nhlId, "Toronto", "TORONTO", null).getLocationId();
-		ottawaId = getLocationService().createLocation(nhlId, "Toronto", "TORONTO", null).getLocationId();
-		montrealId = getLocationService().createLocation(nhlId, "Toronto", "TORONTO", null).getLocationId();
-		freddyId = getPersonService().createPerson(nhlId, new PersonName("Mr.", "Freddy", "R", "Davis"), null, null, null).getPersonId();
-		craigId = getPersonService().createPerson(nhlId, new PersonName("Mr.", "Craig", null, "Phillips"), null, null, null).getPersonId();
-		careyId = getPersonService().createPerson(nhlId, new PersonName(null, "Carey", null, "Thomas"), null, null, null).getPersonId();
+		getPermissionService().createGroup("QUEBEC", new Localized("Quebec", "Québec"));		
 	}
 	
 	@Test
@@ -111,6 +93,11 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = getOrganizationService().updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 
 		/* update main location */
+		Identifier torontoId = getLocationService().createLocation(
+				o1.getOrganizationId(), 
+				"Toronto",
+				"TORONTO", 
+				new MailingAddress("40 Bay St", "Toronto", "ON", "CA", "M5J 2X2")).getLocationId();
 		o1 = getOrganizationService().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -119,6 +106,11 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(o1, getOrganizationService().findOrganizationDetails(o1.getOrganizationId()));
 		o1 = getOrganizationService().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId); // set to duplicate value
 		
+		Identifier ottawaId = getLocationService().createLocation(
+				o2.getOrganizationId(), 
+				"Ottawa", 
+				"OTTAWA", 
+				new MailingAddress("1000 Palladium Dr", "Ottawa", "ON", "CA", "K2V 1A5")).getLocationId();
 		o2 = getOrganizationService().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -128,6 +120,11 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = getOrganizationService().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		o2 = getOrganizationService().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 
+		Identifier montrealId = getLocationService().createLocation(
+				o3.getOrganizationId(), 
+				"Montreal", 
+				"MONTREAL",
+				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", "QC", "CA", "H4B 5G0")).getLocationId();
 		o3 = getOrganizationService().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
@@ -138,6 +135,12 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = getOrganizationService().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 
 		/* update main contact */
+		Identifier freddyId = getPersonService().createPerson(
+				o1.getOrganizationId(),
+				new PersonName("Mr.", "Freddy", "R", "Davis"), 
+				new MailingAddress("40 Bay St", "Toronto", "ON", "CA", "M5J 2X2"), 
+				new Communication("", "", "", null, ""), 
+				new BusinessPosition("", "", "")).getPersonId();		
 		o1 = getOrganizationService().updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -147,6 +150,12 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = getOrganizationService().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // set to duplicate value
 		o1 = getOrganizationService().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // reset to original value
 
+		Identifier craigId = getPersonService().createPerson(
+				o2.getOrganizationId(), 
+				new PersonName("Mr.", "Craig", null, "Phillips"), 
+				new MailingAddress("1000 Palladium Dr", "Ottawa", "ON", "CA", "K2V 1A5"), 
+				new Communication("", "", "", null, ""), 
+				new BusinessPosition("", "", "")).getPersonId();
 		o2 = getOrganizationService().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -156,6 +165,12 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = getOrganizationService().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		o2 = getOrganizationService().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 
+		Identifier careyId = getPersonService().createPerson(
+				o3.getOrganizationId(), 
+				new PersonName(null, "Carey", null, "Thomas"), 
+				new MailingAddress("40 Bay St", "Toronto", "ON", "CA", "M5J 2X2"), 
+				new Communication("", "", "", null, ""),
+				new BusinessPosition("", "", "")).getPersonId();
 		o3 = getOrganizationService().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
@@ -208,7 +223,7 @@ public abstract class AbstractOrganizationServiceTests {
 		
 		/* count organizations */
 		Assert.assertEquals(1, getOrganizationService().countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE)));
-		Assert.assertEquals(4, getOrganizationService().countOrganizations(new OrganizationsFilter(null, Status.ACTIVE)));
+		Assert.assertEquals(3, getOrganizationService().countOrganizations(new OrganizationsFilter(null, Status.ACTIVE)));
 		Assert.assertEquals(0, getOrganizationService().countOrganizations(new OrganizationsFilter(null, Status.INACTIVE)));
 		Assert.assertEquals(0, getOrganizationService().countOrganizations(new OrganizationsFilter("Edmonton Oilers", null)));
 		Assert.assertEquals(1, getOrganizationService().countOrganizations(new OrganizationsFilter("Ottawa Senators", null)));
@@ -230,7 +245,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(2,  detailsPage.getSize());
 		Assert.assertEquals(2, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(2, detailsPage.getTotalPages());
-		Assert.assertEquals(4, detailsPage.getTotalElements());
+		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = getOrganizationService().findOrganizationDetails(
 				new OrganizationsFilter(null, Status.INACTIVE), 
@@ -275,7 +290,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(2,  summariesPage.getSize());
 		Assert.assertEquals(2, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(2, summariesPage.getTotalPages());
-		Assert.assertEquals(4, summariesPage.getTotalElements());
+		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = getOrganizationService().findOrganizationSummaries(
 				new OrganizationsFilter(null, Status.INACTIVE), 

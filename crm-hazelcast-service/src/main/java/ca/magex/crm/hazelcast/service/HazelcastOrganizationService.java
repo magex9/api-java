@@ -20,8 +20,10 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
@@ -95,7 +97,10 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		if (orgDetails == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
-		personService.findPersonSummary(personId); // ensure the person exists
+		PersonSummary personSummary = personService.findPersonSummary(personId); // ensure the person exists
+		if (!personSummary.getOrganizationId().equals(organizationId)) {
+			throw new ItemNotFoundException("Person ID '" + personId + "'");
+		}
 		/* nothing to update here */
 		if (orgDetails.getMainContactId() != null && orgDetails.getMainContactId().equals(personId)) {
 			return SerializationUtils.clone(orgDetails);
@@ -114,7 +119,10 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		if (orgDetails == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
-		locationService.findLocationSummary(locationId); // ensure the location exists
+		LocationSummary locationSummary = locationService.findLocationSummary(locationId); // ensure the location exists
+		if (!locationSummary.getOrganizationId().equals(organizationId)) {
+			throw new ItemNotFoundException("Location ID '" + locationId + "'");
+		}
 		/* nothing to update here */
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
 			return SerializationUtils.clone(orgDetails);

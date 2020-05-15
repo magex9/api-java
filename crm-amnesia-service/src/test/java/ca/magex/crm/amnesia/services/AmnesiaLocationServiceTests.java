@@ -1,7 +1,5 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.test.AbstractLocationServiceTests;
 import ca.magex.crm.test.TestConfig;
 
@@ -31,24 +28,18 @@ public class AmnesiaLocationServiceTests extends AbstractLocationServiceTests {
 	@Autowired
 	private CrmOrganizationService organizationService;
 	
-	private Identifier mlbOrganizationId;
-
 	@Before
 	public void reset() {
 		db.reset();
-		mlbOrganizationId = organizationService.createOrganization("MLB", List.of("ORG")).getOrganizationId();
 	}
 
+	@Override
 	public CrmLocationService getLocationService() {
 		return locationService;
 	}
 	
+	@Override
 	public CrmOrganizationService getOrganizationService() {
 		return organizationService;
 	}
-	
-	public Identifier getMlbOrganizationId() {
-		return mlbOrganizationId;
-	}
-
 }

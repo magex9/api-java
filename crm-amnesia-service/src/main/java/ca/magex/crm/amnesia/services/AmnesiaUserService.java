@@ -70,10 +70,11 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
+		User user = db.findUser(userId);
 		roles.forEach((role) -> {
 			db.findRoleByCode(role); // ensure role exists
 		});
-		return db.saveUser(db.findUser(userId).withRoles(roles));
+		return db.saveUser(user.withRoles(roles));
 	}
 
 	@Override

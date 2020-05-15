@@ -1,5 +1,7 @@
 package ca.magex.crm.test;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -22,13 +24,14 @@ public abstract class AbstractLocationServiceTests {
 	
 	public abstract CrmOrganizationService getOrganizationService();
 	
-	public abstract Identifier getMlbOrganizationId();
-	
 	@Test
 	public void testLocations() {
+		
+		Identifier mlbId = getOrganizationService().createOrganization("MLB", List.of("ORG")).getOrganizationId();
+		
 		/* create */
 		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", "NY", "US", "10451");
-		LocationDetails l1 = getLocationService().createLocation(getMlbOrganizationId(), "New York", "NYY", newyork);
+		LocationDetails l1 = getLocationService().createLocation(mlbId, "New York", "NYY", newyork);
 		Assert.assertEquals("New York", l1.getDisplayName());
 		Assert.assertEquals("NYY", l1.getReference());
 		Assert.assertEquals(Status.ACTIVE, l1.getStatus());
@@ -36,7 +39,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(l1, getLocationService().findLocationDetails(l1.getLocationId()));
 
 		MailingAddress boston = new MailingAddress("4 Jersey St", "Boston", "MA", "US", "02215");
-		LocationDetails l2 = getLocationService().createLocation(getMlbOrganizationId(), "Boston", "BOS", boston);
+		LocationDetails l2 = getLocationService().createLocation(mlbId, "Boston", "BOS", boston);
 		Assert.assertEquals("Boston", l2.getDisplayName());
 		Assert.assertEquals("BOS", l2.getReference());
 		Assert.assertEquals(Status.ACTIVE, l2.getStatus());
@@ -44,7 +47,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(l2, getLocationService().findLocationDetails(l2.getLocationId()));
 
 		MailingAddress chicago = new MailingAddress("1060 W Addison St", "Chicago", "IL", "US", "60613");
-		LocationDetails l3 = getLocationService().createLocation(getMlbOrganizationId(), "Chicago", "CHC", chicago);
+		LocationDetails l3 = getLocationService().createLocation(mlbId, "Chicago", "CHC", chicago);
 		Assert.assertEquals("Chicago", l3.getDisplayName());
 		Assert.assertEquals("CHC", l3.getReference());
 		Assert.assertEquals(Status.ACTIVE, l3.getStatus());
@@ -140,11 +143,11 @@ public abstract class AbstractLocationServiceTests {
 
 		/* count locations */
 		Assert.assertEquals(3, getLocationService().countLocations(new LocationsFilter(null, null, null, null)));
-		Assert.assertEquals(3, getLocationService().countLocations(new LocationsFilter(getMlbOrganizationId(), null, null, null)));
-		Assert.assertEquals(3, getLocationService().countLocations(new LocationsFilter(getMlbOrganizationId(), null, null, Status.ACTIVE)));
-		Assert.assertEquals(1, getLocationService().countLocations(new LocationsFilter(getMlbOrganizationId(), "Yankee Stadium", null, Status.ACTIVE)));
-		Assert.assertEquals(0, getLocationService().countLocations(new LocationsFilter(getMlbOrganizationId(), "Rogers Centre", null, Status.ACTIVE)));
-		Assert.assertEquals(0, getLocationService().countLocations(new LocationsFilter(getMlbOrganizationId(), "Yankee Stadium", null, Status.INACTIVE)));
+		Assert.assertEquals(3, getLocationService().countLocations(new LocationsFilter(mlbId, null, null, null)));
+		Assert.assertEquals(3, getLocationService().countLocations(new LocationsFilter(mlbId, null, null, Status.ACTIVE)));
+		Assert.assertEquals(1, getLocationService().countLocations(new LocationsFilter(mlbId, "Yankee Stadium", null, Status.ACTIVE)));
+		Assert.assertEquals(0, getLocationService().countLocations(new LocationsFilter(mlbId, "Rogers Centre", null, Status.ACTIVE)));
+		Assert.assertEquals(0, getLocationService().countLocations(new LocationsFilter(mlbId, "Yankee Stadium", null, Status.INACTIVE)));
 		Assert.assertEquals(0, getLocationService().countLocations(new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE)));
 		
 		/* find locations details */
@@ -158,7 +161,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = getLocationService().findLocationDetails(
-				new LocationsFilter(getMlbOrganizationId(), null, null, null), 
+				new LocationsFilter(mlbId, null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -167,7 +170,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = getLocationService().findLocationDetails(
-				new LocationsFilter(getMlbOrganizationId(), null, null, Status.ACTIVE), 
+				new LocationsFilter(mlbId, null, null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -176,7 +179,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(3, detailsPage.getTotalElements());
 		
 		detailsPage = getLocationService().findLocationDetails(
-				new LocationsFilter(getMlbOrganizationId(), "Yankee Stadium", null, Status.ACTIVE), 
+				new LocationsFilter(mlbId, "Yankee Stadium", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -185,7 +188,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 		
 		detailsPage = getLocationService().findLocationDetails(
-				new LocationsFilter(getMlbOrganizationId(), "Rogers Centre", null, Status.ACTIVE), 
+				new LocationsFilter(mlbId, "Rogers Centre", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -194,7 +197,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 		
 		detailsPage = getLocationService().findLocationDetails(
-				new LocationsFilter(getMlbOrganizationId(), "Yankee Stadium", null, Status.INACTIVE), 
+				new LocationsFilter(mlbId, "Yankee Stadium", null, Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5,  detailsPage.getSize());
@@ -222,7 +225,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = getLocationService().findLocationSummaries(
-				new LocationsFilter(getMlbOrganizationId(), null, null, null), 
+				new LocationsFilter(mlbId, null, null, null), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -231,7 +234,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = getLocationService().findLocationSummaries(
-				new LocationsFilter(getMlbOrganizationId(), null, null, Status.ACTIVE), 
+				new LocationsFilter(mlbId, null, null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -240,7 +243,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(3, summariesPage.getTotalElements());
 		
 		summariesPage = getLocationService().findLocationSummaries(
-				new LocationsFilter(getMlbOrganizationId(), "Yankee Stadium", null, Status.ACTIVE), 
+				new LocationsFilter(mlbId, "Yankee Stadium", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -249,7 +252,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(1, summariesPage.getTotalElements());
 		
 		summariesPage = getLocationService().findLocationSummaries(
-				new LocationsFilter(getMlbOrganizationId(), "Rogers Centre", null, Status.ACTIVE), 
+				new LocationsFilter(mlbId, "Rogers Centre", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -258,7 +261,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 		
 		summariesPage = getLocationService().findLocationSummaries(
-				new LocationsFilter(getMlbOrganizationId(), "Yankee Stadium", null, Status.INACTIVE), 
+				new LocationsFilter(mlbId, "Yankee Stadium", null, Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
