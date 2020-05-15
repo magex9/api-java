@@ -1,7 +1,6 @@
 package ca.magex.crm.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -329,6 +328,38 @@ public abstract class AbstractUserServiceTests {
 			getUserService().findUser(groupId);
 			fail("Not a valid identifier");
 		} catch (ItemNotFoundException e) { }
+	}
+	
+	@Test
+	public void testResetPassword() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of("ADMIN")).getUserId();
+
+		try {
+			getUserService().resetPassword(groupId);
+			fail("Not a valid identifier");
+		} catch (ItemNotFoundException e) { }
+
+		String temp = getUserService().resetPassword(userId);
+		assertTrue(temp.matches("[A-Za-z0-9]+"));
+	}
+	
+	@Test
+	public void testChangePassword() throws Exception {
+		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of("ADMIN")).getUserId();
+
+		assertTrue(getUserService().changePassword(userId, getUserService().resetPassword(userId), "pass1"));
+		assertTrue(getUserService().changePassword(userId, "pass1", "pass2"));
+		assertTrue(getUserService().changePassword(userId, "pass2", "pass3"));
+		assertFalse(getUserService().changePassword(userId, "pass2", "pass4"));
+		assertFalse(getUserService().changePassword(userId, getUserService().resetPassword(userId), ""));
 	}
 	
 }

@@ -55,5 +55,6 @@ public class HazelcastUserServiceTests extends AbstractUserServiceTests {
 		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
 		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
 		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
+		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();
 	}
 }

@@ -79,11 +79,10 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		if (!isValidPasswordFormat(newPassword))
+			return false;
 		User user = db.findUser(userId);
-		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
-		}
-		if (passwords.verifyPassword(user.getUsername(), db.getPasswordEncoder().encode(currentPassword))) {
+		if (passwords.verifyPassword(user.getUsername(), currentPassword)) {
 			passwords.updatePassword(user.getUsername(), db.getPasswordEncoder().encode(newPassword));
 			return true;
 		}
@@ -94,11 +93,7 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public String resetPassword(Identifier userId) {
-		User user = db.findUser(userId);
-		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
-		}
-		return passwords.generateTemporaryPassword(user.getUsername());
+		return passwords.generateTemporaryPassword(db.findUser(userId).getUsername());
 	}
 
 	@Override

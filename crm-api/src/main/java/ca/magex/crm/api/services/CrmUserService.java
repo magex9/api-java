@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.filters.Paging;
@@ -60,6 +61,16 @@ public interface CrmUserService {
 		@NotNull UsersFilter filter, 
 		@NotNull Paging paging
 	);
+	
+	default boolean isValidPasswordFormat(String password) {
+		if (StringUtils.isBlank(password))
+			return false;
+		if (password.length() < 5 || password.length() > 255)
+			return false;
+		if (!password.matches("[A-Za-z0-9\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)]+"))
+			return false;
+		return true;
+	}
 	
 	default Page<User> findUsers(@NotNull UsersFilter filter) {
 		return findUsers(filter, defaultUsersPaging());

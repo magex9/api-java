@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
-import ca.magex.crm.amnesia.generator.IdGenerator;
+import ca.magex.crm.amnesia.generator.AmnesiaIdGenerator;
 import ca.magex.crm.amnesia.services.AmnesiaLocationService;
 import ca.magex.crm.amnesia.services.AmnesiaLookupService;
 import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
@@ -28,7 +28,6 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -36,7 +35,6 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.resource.CrmLookupLoader;
 import ca.magex.crm.resource.CrmRoleInitializer;
 
@@ -44,7 +42,7 @@ import ca.magex.crm.resource.CrmRoleInitializer;
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaDB {
 
-	private IdGenerator idGenerator;
+	private AmnesiaIdGenerator idGenerator;
 
 	private Identifier systemId;
 	
@@ -216,10 +214,6 @@ public class AmnesiaDB {
 		if (!(obj instanceof User))
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		return (User)SerializationUtils.clone(obj);
-	}	
-	
-	public User findUserByUsername(String username) {
-		return usersByUsername.get(username);
 	}
 	
 	public User saveUser(User user) {

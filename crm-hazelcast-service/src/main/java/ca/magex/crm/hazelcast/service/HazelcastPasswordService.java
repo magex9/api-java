@@ -77,7 +77,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 	@Override
 	public String generateTemporaryPassword(@NotNull String username) {
 		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
-		String tempPassword = RandomStringUtils.random(10);
+		String tempPassword = RandomStringUtils.random(10, "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ");
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails != null) {
 			passwords.put(

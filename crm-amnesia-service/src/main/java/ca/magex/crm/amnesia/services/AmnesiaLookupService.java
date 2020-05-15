@@ -75,18 +75,6 @@ public class AmnesiaLookupService implements CrmLookupService {
 		return statuses.findByName(locale, name);
 	}
 
-	public List<Role> findRoles() {
-		return roles.getOptions();
-	}
-	
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		return roles.findByCode(code);
-	}
-	
-	public Role findRoleByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return roles.findByName(locale, name);
-	}
-
 	public List<Country> findCountries() {
 		return countries.getOptions();
 	}

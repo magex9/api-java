@@ -2,7 +2,7 @@ package ca.magex.crm.amnesia.generator;
 
 import ca.magex.crm.api.system.Identifier;
 
-public class AmnesiaSequenceIdGenerator implements IdGenerator {
+public class AmnesiaSequenceIdGenerator implements AmnesiaIdGenerator {
 
 	private static int sequence = 1;
 

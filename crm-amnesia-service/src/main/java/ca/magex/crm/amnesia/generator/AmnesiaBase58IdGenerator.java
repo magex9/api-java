@@ -4,7 +4,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import ca.magex.crm.api.system.Identifier;
 
-public class AmnesiaBase58IdGenerator implements IdGenerator {
+public class AmnesiaBase58IdGenerator implements AmnesiaIdGenerator {
 
 	private static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 
