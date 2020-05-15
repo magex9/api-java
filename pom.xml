@@ -17,6 +17,7 @@
 		
 		<!-- Support Modules -->
 		<module>crm-api</module>
+		<module>crm-helloworld</module>
 		<module>crm-resources</module>		
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
