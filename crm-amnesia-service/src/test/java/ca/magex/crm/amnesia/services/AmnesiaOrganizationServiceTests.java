@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -24,6 +25,9 @@ public class AmnesiaOrganizationServiceTests extends AbstractOrganizationService
 	private AmnesiaDB db;
 	
 	@Autowired
+	private CrmLookupService lookupService;
+	
+	@Autowired
 	private CrmOrganizationService organizationService;
 
 	@Autowired
@@ -35,6 +39,11 @@ public class AmnesiaOrganizationServiceTests extends AbstractOrganizationService
 	@Autowired
 	private CrmPermissionService permissionService;
 
+	@Override
+	public CrmLookupService getLookupService() {
+		return lookupService;
+	}
+	
 	@Override
 	public CrmOrganizationService getOrganizationService() {
 		return organizationService;

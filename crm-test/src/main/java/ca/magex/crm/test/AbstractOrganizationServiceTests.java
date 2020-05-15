@@ -1,8 +1,7 @@
 package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,15 +23,19 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractOrganizationServiceTests {
 
+	public abstract CrmLookupService getLookupService();
+	
 	public abstract CrmOrganizationService getOrganizationService();
 	
 	public abstract CrmLocationService getLocationService();
@@ -542,7 +545,54 @@ public abstract class AbstractOrganizationServiceTests {
 		} catch (BadRequestException e) {
 			assertBadRequestMessage(e, organizationId, "error", "mainContactId", "Main contact must be active");
 		}
-	}		
-
+	}
+	
+	@Test
+	public void testCreatingOrgWithMainContactFromOtherOrg() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationA = getOrganizationService().createOrganization("A", List.of("GRP")).getOrganizationId();
+		Identifier organizationB = getOrganizationService().createOrganization("B", List.of("GRP")).getOrganizationId();
+		Identifier personB = getPersonService().createPerson(organizationB, CrmAsserts.ValidPersonName, CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		
+		try {
+			getOrganizationService().updateOrganizationMainContact(organizationA, personB);
+			fail("Unable to assign disabled references");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationA, "error", "mainContactId", "Main contact organization has invalid referential integrity");
+		}
+	}
+	
+	@Test
+	public void testCreatingOrgWithMainLocationFromOtherOrg() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier organizationA = getOrganizationService().createOrganization("A", List.of("GRP")).getOrganizationId();
+		Identifier organizationB = getOrganizationService().createOrganization("B", List.of("GRP")).getOrganizationId();
+		Identifier locationB = getLocationService().createLocation(organizationB, "Location", "B", CrmAsserts.ValidCanadianAddress).getLocationId();
+		
+		try {
+			getOrganizationService().updateOrganizationMainLocation(organizationA, locationB);
+			fail("Unable to assign disabled references");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, organizationA, "error", "mainLocationId", "Main location organization has invalid referential integrity");
+		}
+	}
+	
+	@Test
+	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
+		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
+		try {
+			validation.validate(new OrganizationDetails(new Identifier("org"), Status.INACTIVE, "org name", null, null, List.of("GRP")));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertBadRequestMessage(e, new Identifier("org"), "error", "status", "Cannot create a new organization that is inactive");
+		}
+		try {
+			validation.validate(new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertBadRequestMessage(e, new Identifier("org"), "error", "status", "Status is mandatory for an organization");
+		}
+	}
 	
 }

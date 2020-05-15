@@ -10,6 +10,7 @@ import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -21,12 +22,17 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastOrganizationServiceTests extends AbstractOrganizationServiceTests {
 
+	@Autowired private CrmLookupService hzLookupService;
 	@Autowired private CrmOrganizationService hzOrganizationService;
 	@Autowired private CrmLocationService hzLocationService;
 	@Autowired private CrmPersonService hzPersonService;
 	@Autowired private CrmPermissionService hzPermissionService;
 	@Autowired private HazelcastInstance hzInstance;
 
+	@Override
+	public CrmLookupService getLookupService() {
+		return hzLookupService;
+	}
 	
 	@Override
 	public CrmLocationService getLocationService() {

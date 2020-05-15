@@ -44,6 +44,10 @@ public class StructureValidationService implements CrmValidation {
 
 	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
+		
+		// Status
+		if (organization.getStatus() == null)
+			throw new BadRequestException("Status cannot be null", organization.getOrganizationId(), "error", "status", new Localized("Status is mandatory for an organization"));
 
 		// If disabling the organization, make sure its not already disabled
 		if (organization.getStatus().equals(Status.INACTIVE)) {
@@ -62,10 +66,6 @@ public class StructureValidationService implements CrmValidation {
 		} else if (organization.getDisplayName().length() > 60) {
 			messages.add(new Message(organization.getOrganizationId(), "error", "displayName", new Localized("Display name must be 60 characters or less")));
 		}
-		
-		// Status
-		if (organization.getStatus() == null)
-			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized("Status is mandatory for an organization")));
 		
 		// Main contact reference
 		if (organization.getMainContactId() != null) {
