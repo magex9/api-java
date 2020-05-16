@@ -26,7 +26,11 @@ public class CrmAsserts {
 	
 	public static final Localized ORG = new Localized("ORG", "Organization", "Organisation");
 	
-	public static final Localized ORG_ADMIN = new Localized("SYS_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
+	public static final Localized ORG_ADMIN = new Localized("ORG_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
+	
+	public static final Localized ORG_LEAD = new Localized("ORG_LEAD", "Organization Lead", "Chef du l'organisation");
+	
+	public static final Localized ORG_OFFICER = new Localized("ORG_OFFICER", "Organization Officer", "Agent d'organisation");
 	
 	public static final Localized ENGLISH = new Localized("EN", "English", "Anglais");
 	
