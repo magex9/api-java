@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
@@ -21,17 +22,14 @@ public class Role implements Serializable {
 	
 	private Identifier groupId;
 	
-	private String code;
-	
 	private Status status;
 	
 	private Localized name;
 	
-	public Role(Identifier roleId, Identifier groupId, String code, Status status, Localized name) {
+	public Role(Identifier roleId, Identifier groupId, Status status, Localized name) {
 		super();
 		this.roleId = roleId;
 		this.groupId = groupId;
-		this.code = code;
 		this.status = status;
 		this.name = name;
 	}
@@ -45,7 +43,7 @@ public class Role implements Serializable {
 	}
 	
 	public String getCode() {
-		return code;
+		return name.get(Lang.ROOT);
 	}
 	
 	public Status getStatus() {
@@ -53,7 +51,7 @@ public class Role implements Serializable {
 	}
 	
 	public Role withStatus(Status status) {
-		return new Role(roleId, groupId, code, status, name);
+		return new Role(roleId, groupId, status, name);
 	}
 	
 	public Localized getName() {
@@ -65,7 +63,7 @@ public class Role implements Serializable {
 	}
 	
 	public Role withName(Localized name) {
-		return new Role(roleId, groupId, code, status, name);
+		return new Role(roleId, groupId, status, name);
 	}
 
 	@Override

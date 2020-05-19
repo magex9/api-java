@@ -1,5 +1,11 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.GROUP;
+import static ca.magex.crm.test.CrmAsserts.ILLINOIS;
+import static ca.magex.crm.test.CrmAsserts.MASSACHUSETTS;
+import static ca.magex.crm.test.CrmAsserts.NEW_YORK;
+import static ca.magex.crm.test.CrmAsserts.ORG;
+import static ca.magex.crm.test.CrmAsserts.UNITED_STATES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -21,7 +27,6 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractLocationServiceTests {
@@ -37,7 +42,7 @@ public abstract class AbstractLocationServiceTests {
 	@Before
 	public void setup() {
 		reset();
-		getPermissionService().createGroup("ORG", new Localized("Organization"));
+		getPermissionService().createGroup(ORG);
 	}
 	
 	@Test
@@ -46,7 +51,7 @@ public abstract class AbstractLocationServiceTests {
 		Identifier mlbId = getOrganizationService().createOrganization("MLB", List.of("ORG")).getOrganizationId();
 		
 		/* create */
-		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", "NY", "US", "10451");
+		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", NEW_YORK.getCode(), UNITED_STATES.getCode(), "10451");
 		LocationDetails l1 = getLocationService().createLocation(mlbId, "New York", "NYY", newyork);
 		Assert.assertEquals("New York", l1.getDisplayName());
 		Assert.assertEquals("NYY", l1.getReference());
@@ -54,7 +59,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(newyork, l1.getAddress());
 		Assert.assertEquals(l1, getLocationService().findLocationDetails(l1.getLocationId()));
 
-		MailingAddress boston = new MailingAddress("4 Jersey St", "Boston", "MA", "US", "02215");
+		MailingAddress boston = new MailingAddress("4 Jersey St", "Boston", MASSACHUSETTS.getCode(), UNITED_STATES.getCode(), "02215");
 		LocationDetails l2 = getLocationService().createLocation(mlbId, "Boston", "BOS", boston);
 		Assert.assertEquals("Boston", l2.getDisplayName());
 		Assert.assertEquals("BOS", l2.getReference());
@@ -62,7 +67,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(boston, l2.getAddress());
 		Assert.assertEquals(l2, getLocationService().findLocationDetails(l2.getLocationId()));
 
-		MailingAddress chicago = new MailingAddress("1060 W Addison St", "Chicago", "IL", "US", "60613");
+		MailingAddress chicago = new MailingAddress("1060 W Addison St", "Chicago", ILLINOIS.getCode(), UNITED_STATES.getCode(), "60613");
 		LocationDetails l3 = getLocationService().createLocation(mlbId, "Chicago", "CHC", chicago);
 		Assert.assertEquals("Chicago", l3.getDisplayName());
 		Assert.assertEquals("CHC", l3.getReference());
@@ -319,7 +324,7 @@ public abstract class AbstractLocationServiceTests {
 		}
 		
 		try {
-			getLocationService().updateLocationAddress(new Identifier("abc"), new MailingAddress("", "", "", "", ""));
+			getLocationService().updateLocationAddress(new Identifier("abc"), CrmAsserts.MAILING_ADDRESS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
@@ -342,9 +347,9 @@ public abstract class AbstractLocationServiceTests {
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.ValidCanadianAddress).getLocationId();
+		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.MAILING_ADDRESS).getLocationId();
 
 		assertEquals("LOC", getLocationService().findLocationDetails(locationId).getReference());
 		assertEquals("LOC", getLocationService().findLocationSummary(locationId).getReference());

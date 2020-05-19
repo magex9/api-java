@@ -27,6 +27,7 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataArray;
 import ca.magex.crm.mapping.data.DataElement;
@@ -723,6 +724,20 @@ public class JsonTransformer {
 		return null;
 	}
 	
+	public Localized parseProvince(String key, DataObject data) {
+		if (data.contains(key, DataText.class)) {
+			if (locale == null)
+				return new Localized(Lang.ROOT, data.getString(key));
+			return crm.findCountryByLocalizedName(locale, data.getString(key));
+		} else if (data.contains(key, DataObject.class)) {
+			DataObject ld = data.getObject(key);
+			if (!ld.getString("@type").equals("Country"))
+				throw new IllegalArgumentException("Unexpected link data type for Country: " + ld.getString("@type"));
+			return new Localized(Lang.ROOT, ld.getString("@value")); 
+		}
+		return null;
+	}
+	
 	public Country parseCountry(String key, DataObject data) {
 		if (data.contains(key, DataText.class)) {
 			if (locale == null)
@@ -819,10 +834,10 @@ public class JsonTransformer {
 			return null;
 		String street = parseText("street", data);
 		String city = parseText("city", data);
-		String province = parseText("province", data);
+		Localized province = parseProvince("province", data);
 		Country country = parseCountry("country", data);
 		String postalCode = parseText("postalCode", data);
-		return new MailingAddress(street, city, province, country.getName(locale), postalCode);	
+		return new MailingAddress(street, city, province.getCode(), country.getCode(), postalCode);	
 	}
 	
 	public Communication parseCommunication(String key, DataObject parent) {
@@ -834,7 +849,7 @@ public class JsonTransformer {
 		Language language = parseLanguage("language", data);
 		Telephone homePhone = parseTelephone("homePhone", data);
 		String faxNumber = parseText("faxNumber", data);
-		return new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
+		return new Communication(jobTitle, language.getCode(), email, homePhone, faxNumber);
 	}
 	
 	public BusinessPosition parseBusinessPosition(String key, DataObject parent) {

@@ -515,7 +515,7 @@ public class RestfulCrmClient implements CrmClient {
 				result.getObject("address").getString("street"),
 				result.getObject("address").getString("city"),
 				result.getObject("address").getString("province"),
-				findCountryByLocalizedName(locale, result.getObject("address").getString("country")).getCode(),
+				result.getObject("address").getString("country"),
 				result.getObject("address").getString("postalCode")));
 	}
 
@@ -713,7 +713,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Group createGroup(String code, Localized name) {
+	public Group createGroup(Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -755,7 +755,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, String code, Localized name) {
+	public Role createRole(Identifier groupId, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}

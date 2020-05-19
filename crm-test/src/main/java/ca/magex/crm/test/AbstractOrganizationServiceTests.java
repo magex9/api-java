@@ -1,7 +1,16 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.test.CrmAsserts.CANADA;
+import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.GROUP;
+import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.ONTARIO;
+import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.QUEBEC;
 import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +21,6 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import ca.magex.crm.api.common.BusinessPosition;
-import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -49,10 +56,10 @@ public abstract class AbstractOrganizationServiceTests {
 	@Before
 	public void setup() {
 		reset();
-		getPermissionService().createGroup("NHL", new Localized("NHL", "LNH"));
-		getPermissionService().createGroup("PLAYOFFS", new Localized("Playoffs", "Playoffs"));
-		getPermissionService().createGroup("ONTARIO", new Localized("Ontario", "Ontario"));
-		getPermissionService().createGroup("QUEBEC", new Localized("Quebec", "Québec"));		
+		getPermissionService().createGroup(new Localized("NHL", "NHL", "LNH"));
+		getPermissionService().createGroup(new Localized("PLAYOFFS", "Playoffs", "Playoffs"));
+		getPermissionService().createGroup(new Localized("ONTARIO", "Ontario", "Ontario"));
+		getPermissionService().createGroup(new Localized("QUEBEC", "Quebec", "Québec"));		
 	}
 	
 	@Test
@@ -105,7 +112,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o1.getOrganizationId(), 
 				"Toronto",
 				"TORONTO", 
-				new MailingAddress("40 Bay St", "Toronto", "ON", "CA", "M5J 2X2")).getLocationId();
+				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2")).getLocationId();
 		o1 = getOrganizationService().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -118,7 +125,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o2.getOrganizationId(), 
 				"Ottawa", 
 				"OTTAWA", 
-				new MailingAddress("1000 Palladium Dr", "Ottawa", "ON", "CA", "K2V 1A5")).getLocationId();
+				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5")).getLocationId();
 		o2 = getOrganizationService().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -132,7 +139,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o3.getOrganizationId(), 
 				"Montreal", 
 				"MONTREAL",
-				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", "QC", "CA", "H4B 5G0")).getLocationId();
+				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", QUEBEC.getCode(), CANADA.getCode(), "H4B 5G0")).getLocationId();
 		o3 = getOrganizationService().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
@@ -146,9 +153,9 @@ public abstract class AbstractOrganizationServiceTests {
 		Identifier freddyId = getPersonService().createPerson(
 				o1.getOrganizationId(),
 				new PersonName("Mr.", "Freddy", "R", "Davis"), 
-				new MailingAddress("40 Bay St", "Toronto", "ON", "CA", "M5J 2X2"), 
-				new Communication("", "", "", null, ""), 
-				new BusinessPosition("", "", "")).getPersonId();		
+				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"), 
+				COMMUNICATIONS, 
+				BUSINESS_POSITION).getPersonId();		
 		o1 = getOrganizationService().updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -161,9 +168,9 @@ public abstract class AbstractOrganizationServiceTests {
 		Identifier craigId = getPersonService().createPerson(
 				o2.getOrganizationId(), 
 				new PersonName("Mr.", "Craig", null, "Phillips"), 
-				new MailingAddress("1000 Palladium Dr", "Ottawa", "ON", "CA", "K2V 1A5"), 
-				new Communication("", "", "", null, ""), 
-				new BusinessPosition("", "", "")).getPersonId();
+				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5"), 
+				COMMUNICATIONS, 
+				BUSINESS_POSITION).getPersonId();
 		o2 = getOrganizationService().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -176,9 +183,9 @@ public abstract class AbstractOrganizationServiceTests {
 		Identifier careyId = getPersonService().createPerson(
 				o3.getOrganizationId(), 
 				new PersonName(null, "Carey", null, "Thomas"), 
-				new MailingAddress("40 Bay St", "Toronto", "ON", "CA", "M5J 2X2"), 
-				new Communication("", "", "", null, ""),
-				new BusinessPosition("", "", "")).getPersonId();
+				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"), 
+				COMMUNICATIONS, 
+				BUSINESS_POSITION).getPersonId();
 		o3 = getOrganizationService().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
@@ -392,7 +399,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
 
 		assertEquals("Org Name", getOrganizationService().findOrganizationDetails(organizationId).getDisplayName());
@@ -406,7 +413,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testCreateOrgWithMissingGroup() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
 		assertEquals(getPermissionService().findGroup(groupId).getCode(), getOrganizationService().findOrganizationDetails(organizationId).getGroups().get(0));
 		try {
@@ -420,7 +427,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testFindByIdentifierOtherType() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
 		assertEquals("ORG", getOrganizationService().findOrganizationDetails(organizationId).getDisplayName());
 		try {
@@ -431,7 +438,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testOrgWithNoName() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		try {
 			getOrganizationService().createOrganization("", List.of("GRP")).getOrganizationId();
 			fail("Requested the wrong type");
@@ -442,7 +449,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testOrgWithLongName() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		try {
 			getOrganizationService().createOrganization("The organization can only have a name with a maximum or 60 characters", List.of("GRP")).getOrganizationId();
 			fail("Requested the wrong type");
@@ -453,7 +460,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testOrgWithNoGroup() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		try {
 			getOrganizationService().createOrganization("Org", List.of()).getOrganizationId();
 			fail("Requested the wrong type");
@@ -464,10 +471,10 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testCannotUpdateDisabledOrganization() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.ValidCanadianAddress).getLocationId();
-		Identifier personId = getPersonService().createPerson(organizationId, CrmAsserts.ValidPersonName, CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		Identifier personId = getPersonService().createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		getOrganizationService().disableOrganization(organizationId);
 		assertEquals(Status.INACTIVE, getOrganizationService().findOrganizationSummary(organizationId).getStatus());
 		
@@ -502,8 +509,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledGroup() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("A", new Localized("A")).getGroupId();
-		getPermissionService().createGroup("B", new Localized("B")).getGroupId();
+		Identifier groupId = getPermissionService().createGroup(new Localized("A", "A", "A")).getGroupId();
+		getPermissionService().createGroup(new Localized("B", "B", "B")).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("A")).getOrganizationId();
 		
 		getOrganizationService().updateOrganizationGroups(organizationId, List.of("B"));
@@ -519,9 +526,9 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledMainLocation() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.ValidCanadianAddress).getLocationId();
+		Identifier locationId = getLocationService().createLocation(organizationId, "Location", "LOC", CrmAsserts.MAILING_ADDRESS).getLocationId();
 		getLocationService().disableLocation(locationId);
 		
 		try {
@@ -534,9 +541,9 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledMainContact() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier personId = getPersonService().createPerson(organizationId, CrmAsserts.ValidPersonName, CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		Identifier personId = getPersonService().createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		getPersonService().disablePerson(personId);
 		
 		try {
@@ -549,10 +556,10 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testCreatingOrgWithMainContactFromOtherOrg() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationA = getOrganizationService().createOrganization("A", List.of("GRP")).getOrganizationId();
 		Identifier organizationB = getOrganizationService().createOrganization("B", List.of("GRP")).getOrganizationId();
-		Identifier personB = getPersonService().createPerson(organizationB, CrmAsserts.ValidPersonName, CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		Identifier personB = getPersonService().createPerson(organizationB, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		
 		try {
 			getOrganizationService().updateOrganizationMainContact(organizationA, personB);
@@ -564,10 +571,10 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testCreatingOrgWithMainLocationFromOtherOrg() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationA = getOrganizationService().createOrganization("A", List.of("GRP")).getOrganizationId();
 		Identifier organizationB = getOrganizationService().createOrganization("B", List.of("GRP")).getOrganizationId();
-		Identifier locationB = getLocationService().createLocation(organizationB, "Location", "B", CrmAsserts.ValidCanadianAddress).getLocationId();
+		Identifier locationB = getLocationService().createLocation(organizationB, "Location", "B", CrmAsserts.MAILING_ADDRESS).getLocationId();
 		
 		try {
 			getOrganizationService().updateOrganizationMainLocation(organizationA, locationB);
@@ -579,7 +586,7 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	@Test
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
-		getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		getPermissionService().createGroup(GROUP).getGroupId();
 		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
 		try {
 			validation.validate(new OrganizationDetails(new Identifier("org"), Status.INACTIVE, "org name", null, null, List.of("GRP")));

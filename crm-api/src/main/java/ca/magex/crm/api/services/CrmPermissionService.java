@@ -31,7 +31,6 @@ public interface CrmPermissionService {
 	);
 
 	Group createGroup(
-		@NotNull String code, 
 		@NotNull Localized name
 	);
 
@@ -67,7 +66,6 @@ public interface CrmPermissionService {
 
 	Role createRole(
 		@NotNull Identifier groupId, 
-		@NotNull String code, 
 		@NotNull Localized name
 	);
 

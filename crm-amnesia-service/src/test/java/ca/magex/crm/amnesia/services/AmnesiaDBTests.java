@@ -1,6 +1,8 @@
 package ca.magex.crm.amnesia.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -50,7 +52,7 @@ public class AmnesiaDBTests {
 		Field field = AmnesiaDB.class.getDeclaredField("data");
 		field.setAccessible(true);
 		assertEquals(0, ((Map<Identifier, Serializable>)field.get(db)).size());
-		new AmnesiaPermissionService(db).createGroup("A", new Localized("A"));
+		new AmnesiaPermissionService(db).createGroup(new Localized("A", "A", "A"));
 		assertEquals(1, ((Map<Identifier, Serializable>)field.get(db)).size());
 		db.dump();
 		db.reset();
@@ -61,14 +63,10 @@ public class AmnesiaDBTests {
 	@Test
 	public void testDataDump() throws Exception {
 		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
-		db.getPermissions().createGroup("A", new Localized("A"));
-		db.getPermissions().createGroup("B", new Localized("B"));
-		db.getPermissions().createGroup("C", new Localized("C"));
-		db.getPermissions().createGroup("D", new Localized("D"));
-		db.getPermissions().createGroup("E", new Localized("E"));
-		db.getPermissions().createGroup("F", new Localized("F"));
-		db.getPermissions().createGroup("G", new Localized("G"));
-		db.getPermissions().createGroup("H", new Localized("H"));
+		db.getPermissions().createGroup(new Localized("A", "A", "A"));
+		db.getPermissions().createGroup(new Localized("B", "B", "B"));
+		db.getPermissions().createGroup(new Localized("C", "C", "C"));
+		db.getPermissions().createGroup(new Localized("D", "D", "D"));
 		db.dump(System.out);
 	}
 	

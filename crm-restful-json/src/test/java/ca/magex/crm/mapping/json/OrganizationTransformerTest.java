@@ -1,5 +1,6 @@
 package ca.magex.crm.mapping.json;
 
+import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
@@ -35,13 +35,12 @@ public class OrganizationTransformerTest {
 	public void testOrganizationJson() throws Exception {
 
 		Identifier organizationId = new Identifier("abc");
-		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("locationRef");
 		Identifier mainContactId = new Identifier("contactRef");
 		List<String> groups = new ArrayList<String>();
-		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
+		groups.add(new Group(new Identifier("group"), Status.ACTIVE, GROUP).getCode());
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 
@@ -69,13 +68,12 @@ public class OrganizationTransformerTest {
 	public void testOrganizationLinkedData() throws Exception {
 
 		Identifier organizationId = new Identifier("abc");
-		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("locationRef");
 		Identifier mainContactId = new Identifier("contactRef");
 		List<String> groups = new ArrayList<String>();
-		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
+		groups.add(new Group(new Identifier("group"), Status.ACTIVE, GROUP).getCode());
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 

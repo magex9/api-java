@@ -1,5 +1,11 @@
 package ca.magex.crm.mapping.json;
 
+import static ca.magex.crm.test.CrmAsserts.CANADA;
+import static ca.magex.crm.test.CrmAsserts.ENGLISH;
+import static ca.magex.crm.test.CrmAsserts.ONTARIO;
+import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.SYS;
+import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -20,13 +26,10 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.mapping.data.DataFormatter;
 import ca.magex.crm.mapping.data.DataObject;
@@ -47,19 +50,17 @@ public class PersonTransformerTest {
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
 		PersonName legalName = new PersonName(crm.findSalutationByCode("3").getName(locale), "Chris", "P", "Bacon");
-		Country canada = crm.findCountryByCode("CA");
-		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", canada.getName(locale), "K1K1K1");
+		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
-		Language language = crm.findLanguageByCode("en");
 		Telephone homePhone = new Telephone("2342342345", null);
 		String faxNumber = "4564564565";
-		Communication communication = new Communication(jobTitle, language.getName(locale), email, homePhone, faxNumber);
+		Communication communication = new Communication(jobTitle, ENGLISH.getCode(), email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition(crm.findBusinessSectors().get(0).getName(locale), null, null);
 		List<String> roles = new ArrayList<String>();
-		Group group = crm.createGroup("system", new Localized("System"));
-		roles.add(crm.createRole(group.getGroupId(), "SYS_ADMIN", new Localized("System Admin")).getRoleId().toString());
-		roles.add(crm.createRole(group.getGroupId(), "RE_ADMIN", new Localized("RE Admin")).getRoleId().toString());
+		Group group = crm.createGroup(SYS);
+		roles.add(crm.createRole(group.getGroupId(), SYS_ADMIN).getRoleId().toString());
+		roles.add(crm.createRole(group.getGroupId(), ORG_ADMIN).getRoleId().toString());
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
@@ -112,12 +113,12 @@ public class PersonTransformerTest {
 		Status status = Status.PENDING;
 		String displayName = "Junit Test";
 		PersonName legalName = new PersonName("Mr.", "Chris", "P", "Bacon");
-		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", "Ontario", "Canada", "K1K1K1");
+		MailingAddress address = new MailingAddress("123 Main St", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K1K1K1");
 		String email = "chris@bacon.com";
 		String jobTitle = "Tester";
 		Telephone homePhone = new Telephone("2342342345", null);
 		String faxNumber = "4564564565";
-		Communication communication = new Communication(jobTitle, "English", email, homePhone, faxNumber);
+		Communication communication = new Communication(jobTitle, ENGLISH.getCode(), email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition("Information Technology", null, null);
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);

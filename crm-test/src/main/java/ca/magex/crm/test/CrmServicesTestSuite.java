@@ -1,5 +1,9 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.CANADA;
+import static ca.magex.crm.test.CrmAsserts.ENGLISH;
+import static ca.magex.crm.test.CrmAsserts.ONTARIO;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +143,7 @@ public class CrmServicesTestSuite {
 
 		/* create and verify new location for organization */
 		logger.info("Creating main Location");
-		MailingAddress address = new MailingAddress("54 fifth street", "Toronto", "Ontario", "Canada", "T5R5X3");
+		MailingAddress address = new MailingAddress("54 fifth street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
 		LocationDetails locDetails = locationService.createLocation(
 				orgId,
 				"HeadQuarters",
@@ -266,7 +270,7 @@ public class CrmServicesTestSuite {
 
 		/* update and verify the location address */
 		logger.info("Updating Location Address");
-		MailingAddress newAddress = new MailingAddress("55 second street", "Toronto", "Ontario", "Canada", "T5R5X3");
+		MailingAddress newAddress = new MailingAddress("55 second street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
 		locDetails = locationService.updateLocationAddress(locId, newAddress);
 		verifyLocationDetails(locDetails, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName, newAddress);
 
@@ -318,8 +322,8 @@ public class CrmServicesTestSuite {
 		logger.info("----------------------------");
 		long personCount = personService.countPersons(new PersonsFilter());
 		final PersonName originalName = new PersonName("Mr.", "Mike", "Peter", "Johns");
-		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", "Ontario", "Canada", "K4J9O9");
-		final Communication originalComms = new Communication("Engineer", "English", "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
+		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
+		final Communication originalComms = new Communication("Engineer", ENGLISH.getCode(), "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
 		final BusinessPosition originalPosition = new BusinessPosition("IM/IT", "Solutions", "Team Lead");
 
 		/* create a person and verify results */
@@ -368,7 +372,7 @@ public class CrmServicesTestSuite {
 
 		/* update person address and verify */
 		logger.info("Updating Person Address");
-		final MailingAddress newAddress = new MailingAddress("15 fourth street", "Ottawa", "Ontario", "Canada", "K4J9O9");
+		final MailingAddress newAddress = new MailingAddress("15 fourth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
 		personDetails = personService.updatePersonAddress(personDetails.getPersonId(), newAddress);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition);
 
@@ -380,7 +384,7 @@ public class CrmServicesTestSuite {
 
 		/* update person communications and verify */
 		logger.info("Updating Person Communiation");
-		final Communication newComms = new Communication("Supervisor", "English", "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
+		final Communication newComms = new Communication("Supervisor", ENGLISH.getCode(), "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
 		personDetails = personService.updatePersonCommunication(personDetails.getPersonId(), newComms);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition);
 

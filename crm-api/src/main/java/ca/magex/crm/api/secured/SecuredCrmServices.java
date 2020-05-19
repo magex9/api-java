@@ -597,10 +597,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Group createGroup(String code, Localized name) {
+	public Group createGroup(Localized name) {
 		if (!canCreateGroup())
 			throw new PermissionDeniedException("createGroup: " + name);
-		return permissionsService.createGroup(code, name);
+		return permissionsService.createGroup(name);
 	}
 
 	@Override
@@ -646,10 +646,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, String code, Localized name) {
+	public Role createRole(Identifier groupId, Localized name) {
 		if (!canCreateRole())
 			throw new PermissionDeniedException("addRole: " + groupId);
-		return permissionsService.createRole(groupId, code, name);
+		return permissionsService.createRole(groupId, name);
 	}
 
 	@Override

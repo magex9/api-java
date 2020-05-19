@@ -2,6 +2,7 @@ package ca.magex.crm.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static ca.magex.crm.test.CrmAsserts.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,19 +36,19 @@ public abstract class AbstractPermissionServiceTests {
 	@Test
 	public void testGroups() {
 		/* create */
-		Group g1 = getPermissionService().createGroup("A", new Localized("first", "premier"));
+		Group g1 = getPermissionService().createGroup(new Localized("A", "first", "premier"));
 		Assert.assertEquals("first", g1.getName(Lang.ENGLISH));
 		Assert.assertEquals("premier", g1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g1.getStatus());
 		Assert.assertEquals(g1, getPermissionService().findGroup(g1.getGroupId()));
 		Assert.assertEquals(g1, getPermissionService().findGroupByCode("A"));
-		Group g2 = getPermissionService().createGroup("B", new Localized("second", "deuxieme"));
+		Group g2 = getPermissionService().createGroup(new Localized("B", "second", "deuxieme"));
 		Assert.assertEquals("second", g2.getName(Lang.ENGLISH));
 		Assert.assertEquals("deuxieme", g2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g2.getStatus());
 		Assert.assertEquals(g2, getPermissionService().findGroup(g2.getGroupId()));
 		Assert.assertEquals(g2, getPermissionService().findGroupByCode("B"));
-		Group g3 = getPermissionService().createGroup("C", new Localized("third", "troisieme"));
+		Group g3 = getPermissionService().createGroup(new Localized("C", "third", "troisieme"));
 		Assert.assertEquals("third", g3.getName(Lang.ENGLISH));
 		Assert.assertEquals("troisieme", g3.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g3.getStatus());
@@ -55,19 +56,19 @@ public abstract class AbstractPermissionServiceTests {
 		Assert.assertEquals(g3, getPermissionService().findGroupByCode("C"));
 
 		/* update */
-		g1 = getPermissionService().updateGroupName(g1.getGroupId(), new Localized("one", "un"));
+		g1 = getPermissionService().updateGroupName(g1.getGroupId(), new Localized(g1.getCode(), "one", "un"));
 		Assert.assertEquals("one", g1.getName(Lang.ENGLISH));
 		Assert.assertEquals("un", g1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g1.getStatus());
 		Assert.assertEquals(g1, getPermissionService().findGroup(g1.getGroupId()));
 		g1 = getPermissionService().updateGroupName(g1.getGroupId(), g1.getName());
-		g2 = getPermissionService().updateGroupName(g2.getGroupId(), new Localized("two", "deux"));
+		g2 = getPermissionService().updateGroupName(g2.getGroupId(), new Localized(g2.getCode(), "two", "deux"));
 		Assert.assertEquals("two", g2.getName(Lang.ENGLISH));
 		Assert.assertEquals("deux", g2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g2.getStatus());
 		Assert.assertEquals(g2, getPermissionService().findGroup(g2.getGroupId()));
 		g2 = getPermissionService().updateGroupName(g2.getGroupId(), g2.getName());
-		g3 = getPermissionService().updateGroupName(g3.getGroupId(), new Localized("three", "trois"));
+		g3 = getPermissionService().updateGroupName(g3.getGroupId(), new Localized(g3.getCode(), "three", "trois"));
 		Assert.assertEquals("three", g3.getName(Lang.ENGLISH));
 		Assert.assertEquals("trois", g3.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, g3.getStatus());
@@ -165,7 +166,7 @@ public abstract class AbstractPermissionServiceTests {
 		}
 
 		try {
-			getPermissionService().updateGroupName(new Identifier("abc"), new Localized("four", "quatre"));
+			getPermissionService().updateGroupName(new Identifier("abc"), new Localized("4", "four", "quatre"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Group ID 'abc'", e.getMessage());
@@ -189,25 +190,25 @@ public abstract class AbstractPermissionServiceTests {
 	@Test
 	public void testRoles() {
 		/* create groups first */
-		Group g1 = getPermissionService().createGroup("A", new Localized("first", "premier"));
-		Group g2 = getPermissionService().createGroup("B", new Localized("second", "deuxieme"));
-		Group g3 = getPermissionService().createGroup("C", new Localized("third", "troisieme"));
+		Group g1 = getPermissionService().createGroup(new Localized("A", "first", "premier"));
+		Group g2 = getPermissionService().createGroup(new Localized("B", "second", "deuxieme"));
+		Group g3 = getPermissionService().createGroup(new Localized("C", "third", "troisieme"));
 
-		Role r1 = getPermissionService().createRole(g1.getGroupId(), "ADM", new Localized("administrator", "administrateur"));
+		Role r1 = getPermissionService().createRole(g1.getGroupId(), new Localized("ADM", "administrator", "administrateur"));
 		Assert.assertEquals("ADM", r1.getCode());
 		Assert.assertEquals("administrator", r1.getName(Lang.ENGLISH));
 		Assert.assertEquals("administrateur", r1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, r1.getStatus());
 		Assert.assertEquals(r1, getPermissionService().findRole(r1.getRoleId()));
 		Assert.assertEquals(r1, getPermissionService().findRoleByCode(r1.getCode()));
-		Role r2 = getPermissionService().createRole(g1.getGroupId(), "MGR", new Localized("manager", "gestionaire"));
+		Role r2 = getPermissionService().createRole(g1.getGroupId(), new Localized("MGR", "manager", "gestionaire"));
 		Assert.assertEquals("MGR", r2.getCode());
 		Assert.assertEquals("manager", r2.getName(Lang.ENGLISH));
 		Assert.assertEquals("gestionaire", r2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, r2.getStatus());
 		Assert.assertEquals(r2, getPermissionService().findRole(r2.getRoleId()));
 		Assert.assertEquals(r2, getPermissionService().findRoleByCode(r2.getCode()));
-		Role r3 = getPermissionService().createRole(g1.getGroupId(), "USR", new Localized("user", "utilisateur"));
+		Role r3 = getPermissionService().createRole(g1.getGroupId(), new Localized("USR", "user", "utilisateur"));
 		Assert.assertEquals("USR", r3.getCode());
 		Assert.assertEquals("user", r3.getName(Lang.ENGLISH));
 		Assert.assertEquals("utilisateur", r3.getName(Lang.FRENCH));
@@ -216,24 +217,24 @@ public abstract class AbstractPermissionServiceTests {
 		Assert.assertEquals(r3, getPermissionService().findRoleByCode(r3.getCode()));
 		
 		/* add a couple extra roles for the other groups */
-		getPermissionService().createRole(g2.getGroupId(), "OTH", new Localized("OTHER", "OTHER"));
-		getPermissionService().createRole(g3.getGroupId(), "OTH", new Localized("OTHER", "OTHER"));
+		getPermissionService().createRole(g2.getGroupId(), new Localized("OTH", "OTHER", "OTHER"));
+		getPermissionService().createRole(g3.getGroupId(), new Localized("OTH", "OTHER", "OTHER"));
 				
 		
 		/* update */
-		r1 = getPermissionService().updateRoleName(r1.getRoleId(), new Localized("one", "un"));
+		r1 = getPermissionService().updateRoleName(r1.getRoleId(), new Localized(r1.getCode(), "one", "un"));
 		Assert.assertEquals("one", r1.getName(Lang.ENGLISH));
 		Assert.assertEquals("un", r1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, r1.getStatus());
 		Assert.assertEquals(r1, getPermissionService().findRole(r1.getRoleId()));
 		r1 = getPermissionService().updateRoleName(r1.getRoleId(), r1.getName());
-		r2 = getPermissionService().updateRoleName(r2.getRoleId(), new Localized("two", "deux"));
+		r2 = getPermissionService().updateRoleName(r2.getRoleId(), new Localized(r2.getCode(), "two", "deux"));
 		Assert.assertEquals("two", r2.getName(Lang.ENGLISH));
 		Assert.assertEquals("deux", r2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, r2.getStatus());
 		Assert.assertEquals(r2, getPermissionService().findRole(r2.getRoleId()));
 		r2 = getPermissionService().updateRoleName(r2.getRoleId(), r2.getName());
-		r3 = getPermissionService().updateRoleName(r3.getRoleId(), new Localized("three", "trois"));
+		r3 = getPermissionService().updateRoleName(r3.getRoleId(), new Localized(r3.getCode(), "three", "trois"));
 		Assert.assertEquals("three", r3.getName(Lang.ENGLISH));
 		Assert.assertEquals("trois", r3.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.ACTIVE, r3.getStatus());
@@ -331,7 +332,7 @@ public abstract class AbstractPermissionServiceTests {
 		}
 
 		try {
-			getPermissionService().updateRoleName(new Identifier("abc"), new Localized("four", "quatre"));
+			getPermissionService().updateRoleName(new Identifier("abc"), new Localized("4", "four", "quatre"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Role ID 'abc'", e.getMessage());
@@ -354,15 +355,15 @@ public abstract class AbstractPermissionServiceTests {
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
-		Identifier roleId = getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		Identifier roleId = getPermissionService().createRole(groupId, ADMIN).getRoleId();
 		assertEquals("Group", getPermissionService().findGroupByCode("GRP").getName(Lang.ENGLISH));
 		try {
 			getPermissionService().findGroup(roleId);
 			fail("Not a valid identifier");
 		} catch (ItemNotFoundException e) { }
 
-		assertEquals("Admin", getPermissionService().findRoleByCode("ADMIN").getName(Lang.ENGLISH));
+		assertEquals("Admin", getPermissionService().findRoleByCode("ADM").getName(Lang.ENGLISH));
 		try {
 			getPermissionService().findRole(groupId);
 			fail("Not a valid identifier");

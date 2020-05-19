@@ -1,6 +1,14 @@
 package ca.magex.crm.test;
 
-import static org.junit.Assert.*;
+import static ca.magex.crm.test.CrmAsserts.ADMIN;
+import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.GROUP;
+import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -10,9 +18,6 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import ca.magex.crm.api.common.BusinessPosition;
-import ca.magex.crm.api.common.Communication;
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
@@ -50,28 +55,28 @@ public abstract class AbstractUserServiceTests {
 	@Before
 	public void setup() {
 		reset();
-		Identifier aaId = getPermissionService().createGroup("AA", new Localized("Army Ants", "French Army Ants")).getGroupId();
-		getPermissionService().createRole(aaId, "ADM", new Localized("ADM", "ADM"));
+		Identifier aaId = getPermissionService().createGroup(new Localized("AA", "Army Ants", "French Army Ants")).getGroupId();
+		getPermissionService().createRole(aaId, new Localized("ADM", "ADM", "ADM"));
 		
-		Identifier zzId = getPermissionService().createGroup("ZZ", new Localized("Ziggity Zaggity", "French Ziggity Zaggity")).getGroupId();
-		getPermissionService().createRole(zzId, "USR", new Localized("USR", "USR"));
-		getPermissionService().createRole(zzId, "PPL", new Localized("PPL", "PPL"));
+		Identifier zzId = getPermissionService().createGroup(new Localized("ZZ", "Ziggity Zaggity", "French Ziggity Zaggity")).getGroupId();
+		getPermissionService().createRole(zzId, new Localized("USR", "USR", "USR"));
+		getPermissionService().createRole(zzId, new Localized("PPL", "PPL", "PPL"));
 		
 		tAndA = getOrganizationService().createOrganization("T&A", List.of("AA", "ZZ"));
 		
 		adam = getPersonService().createPerson(
 				tAndA.getOrganizationId(), 
 				new PersonName("", "Adam", "", ""), 
-				new MailingAddress("", "", "", "", ""),
-				new Communication("", "", "", null, ""), 
-				new BusinessPosition("",  "", ""));
+				MAILING_ADDRESS,
+				COMMUNICATIONS, 
+				BUSINESS_POSITION);
 		
 		bob = getPersonService().createPerson(
 				tAndA.getOrganizationId(), 
 				new PersonName("", "Bob", "", ""), 
-				new MailingAddress("", "", "", "", ""),
-				new Communication("", "", "", null, ""), 
-				new BusinessPosition("",  "", ""));
+				MAILING_ADDRESS,
+				COMMUNICATIONS, 
+				BUSINESS_POSITION);
 	}
 
 	@Test
@@ -316,11 +321,11 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
-		getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		getPermissionService().createRole(groupId, ADMIN).getRoleId();
 		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
-		Identifier userId = getUserService().createUser(personId, "user", List.of("ADMIN")).getUserId();
+		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of("ADM")).getUserId();
 
 		assertEquals(userId, getUserService().findUser(userId).getUserId());
 		assertEquals(userId, getUserService().findUserByUsername("user").getUserId());
@@ -332,11 +337,11 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testResetPassword() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
-		getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		getPermissionService().createRole(groupId, ADMIN).getRoleId();
 		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
-		Identifier userId = getUserService().createUser(personId, "user", List.of("ADMIN")).getUserId();
+		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of("ADM")).getUserId();
 
 		try {
 			getUserService().resetPassword(groupId);
@@ -349,11 +354,11 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testChangePassword() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
-		getPermissionService().createRole(groupId, "ADMIN", new Localized("Admin")).getRoleId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		getPermissionService().createRole(groupId, ADMIN).getRoleId();
 		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
-		Identifier userId = getUserService().createUser(personId, "user", List.of("ADMIN")).getUserId();
+		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of("ADM")).getUserId();
 
 		assertTrue(getUserService().changePassword(userId, getUserService().resetPassword(userId), "pass1"));
 		assertTrue(getUserService().changePassword(userId, "pass1", "pass2"));
