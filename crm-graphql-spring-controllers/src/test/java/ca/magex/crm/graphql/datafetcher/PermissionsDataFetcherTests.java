@@ -213,7 +213,10 @@ public class PermissionsDataFetcherTests {
 		/* find the group by page */
 		developers = execute(
 				"findGroups",
-				"{ findGroups(filter: {status: %s}, paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }",
+				"{ findGroups(filter: {code: %s, englishName: %s, frenchName: %s, status: %s}, paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }",
+				"DEV",
+				"developers",
+				"developeurs",
 				"active",
 				1,
 				5,
@@ -393,7 +396,12 @@ public class PermissionsDataFetcherTests {
 		/* find the group by paging */
 		developers = execute(
 				"findRoles",
-				"{ findRoles(paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }",
+				"{ findRoles(filter: {groupId: %s, code: %s, englishName: %s, frenchName: %s, status: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }",
+				devId,
+				"ADM",
+				"administrator",
+				"administrateur",
+				"active",
 				1,
 				5,
 				"englishName",
@@ -404,8 +412,8 @@ public class PermissionsDataFetcherTests {
 		Assert.assertEquals(1, developers.getInt("totalPages"));
 		Assert.assertEquals(1, developers.getInt("totalElements"));
 		JSONArray devContents = developers.getJSONArray("content");
-		Assert.assertEquals("developers", devContents.getJSONObject(0).get("englishName"));
-		Assert.assertEquals("developeurs", devContents.getJSONObject(0).get("frenchName"));
+		Assert.assertEquals("administrator", devContents.getJSONObject(0).get("englishName"));
+		Assert.assertEquals("administrateur", devContents.getJSONObject(0).get("frenchName"));
 		Assert.assertEquals("ACTIVE", devContents.getJSONObject(0).get("status"));
 	}
 }

@@ -1,6 +1,7 @@
 package ca.magex.crm.api.filters;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
@@ -156,16 +157,32 @@ public class Paging implements Pageable, Serializable {
 						Localized lVal1 = (Localized) val1;
 						Localized lVal2 = (Localized) val2;
 						Locale locale = Lang.parse(propertyKey);
-						int compare = StringUtils.compare(lVal1.get(locale), lVal2.get(locale));
-						if (compare != 0) {
-							return compare;
+						Collator collator = Collator.getInstance();
+						collator.setStrength(Collator.NO_DECOMPOSITION);
+						int compare = collator.compare(lVal1.get(locale), lVal2.get(locale));
+						if (compare == 0) {
+							compare = StringUtils.compare(lVal1.get(locale), lVal2.get(locale));
 						}
-					} else if (Comparable.class.isAssignableFrom(val1.getClass())) {
+						if (compare != 0) {
+							return order.isAscending() ? compare : -compare;
+						}
+					} else if (String.class.isAssignableFrom(val1.getClass())) {
+						Collator collator = Collator.getInstance();
+						collator.setStrength(Collator.NO_DECOMPOSITION);
+						int compare = collator.compare((String) val1, (String) val2);
+						if (compare == 0) {
+							compare = StringUtils.compare((String) val1, (String) val2);
+						}
+						if (compare != 0) {
+							return order.isAscending() ? compare : -compare;
+						}
+					}
+					else if (Comparable.class.isAssignableFrom(val1.getClass())) {
 						Comparable<Object> cVal1 = (Comparable<Object>) val1;
 						Comparable<Object> cVal2 = (Comparable<Object>) val2;
 						int compare = cVal1.compareTo(cVal2);
 						if (compare != 0) {
-							return compare;
+							return order.isAscending() ? compare : -compare;
 						}
 					}
 				}

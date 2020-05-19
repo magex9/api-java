@@ -5,6 +5,7 @@ import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.*;
 import static org.junit.Assert.*;
 
+import java.text.Collator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -405,6 +406,7 @@ public abstract class AbstractPermissionServiceTests {
 	
 	@Test
 	public void testGroupWithInvalidCodes() throws Exception {
+		
 		getPermissionService().createGroup(new Localized("A", "English", "French"));
 		try {
 			getPermissionService().createGroup(new Localized(null, "English", "French"));
@@ -417,7 +419,7 @@ public abstract class AbstractPermissionServiceTests {
 			assertBadRequestMessage(e, null, "error", "code", "Group code must not be blank");
 		}
 		try {
-			getPermissionService().createGroup(new Localized("a", "English", "French"));
+			getPermissionService().createGroup(new Localized("b", "English", "French"));
 			fail("Invalid group code");
 		} catch (BadRequestException e) { 
 			assertBadRequestMessage(e, null, "error", "code", "Group code must match: .*");
@@ -600,27 +602,36 @@ public abstract class AbstractPermissionServiceTests {
 		
 		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
 		
-		assertEquals(List.of("$", "00", "A", "AABc", "AAbA", "AAbA", "AAba", "AAbc", "Zzzz", "_"), 
+		assertEquals(List.of("_", "$", "00", "A", "AAbA", "AAbA", "AAba", "AABc", "AAbc", "Zzzz"),
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 			
-		assertEquals(List.of("_", "Zzzz", "00", "A", "AABc", "AAbA", "AAbA", "AAba", "AAbc", "$"), 
+		assertEquals(List.of("Zzzz", "AAbc", "AABc", "AAba", "AAbA", "AAbA", "A", "00", "$", "_"), 
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 				
-		assertEquals(List.of("93 Numbers", "A", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "ê", "é", "Y", "()"), 
+		assertEquals(List.of("()", "93 Numbers", "A", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "é", "ê", "Y"), 
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 					
-		assertEquals(List.of("Y", "93 Numbers", "A", "Duplicate", "Duplicate", "ê", "Duplicate", "Duplicate", "()", "é"), 
+		assertEquals(List.of("Y", "ê", "é", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "A", "93 Numbers", "()"), 
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 					
 		
+	}
+	
+	public static void main(String[] args) {
+		Collator collator = Collator.getInstance();
+		collator.setStrength(Collator.NO_DECOMPOSITION);
+		System.out.println(collator.compare("ABc", "AbC"));
+		System.out.println(collator.compare("AbC", "ABc"));
+		
+		System.out.println(collator.compare("e", "é"));
 	}
 	
 }

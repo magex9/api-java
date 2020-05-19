@@ -3,6 +3,8 @@ package ca.magex.crm.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -101,7 +103,7 @@ public class CrmAsserts {
 	}
 
 	public static void assertBadRequestMessage(BadRequestException e, Identifier identifier, String type, String path, String reason) {
-		assertEquals(1, e.getMessages().size());
+		assertEquals(e.getMessages().stream().map((m) -> m.toString()).collect(Collectors.joining()), 1, e.getMessages().size());
 		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
 	}
 	

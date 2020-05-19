@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.GroupsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.system.Identifier;
@@ -106,6 +107,16 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findRole@" + PermissionDataFetcher.class.getSimpleName());
 			Identifier roleId = new Identifier((String) environment.getArgument("roleId"));
 			return crm.findRole(roleId);
+		};
+	}
+	
+	public DataFetcher<Page<Role>> findRoles() {
+		return (environment) -> {
+			logger.info("Entering findRoles@" + PermissionDataFetcher.class.getSimpleName());	
+			Map<String,Object> filterCriteria = extractFilter(environment);
+			return crm.findRoles(
+					new RolesFilter(filterCriteria), 
+					extractPaging(environment));
 		};
 	}
 

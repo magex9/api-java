@@ -121,6 +121,7 @@ public class GraphQLCrmServices {
 
 				// role data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findRole", permissionDataFetcher.findRole()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findRoles", permissionDataFetcher.findRoles()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createRole", permissionDataFetcher.createRole()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateRole", permissionDataFetcher.updateRole()))
 				.type("Role", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
