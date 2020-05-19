@@ -86,7 +86,7 @@ public class GroupsFilter implements Serializable {
 		return Sort.by(Direction.ASC, "name");
 	}
 
-	public static Paging defaultPaging() {
+	public static Paging getDefaultPaging() {
 		return new Paging(getDefaultSort());
 	}
 

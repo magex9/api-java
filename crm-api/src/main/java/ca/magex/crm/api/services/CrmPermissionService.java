@@ -26,9 +26,14 @@ public interface CrmPermissionService {
 		@NotNull Identifier groupId
 	);
 
-	Group findGroupByCode(
+	default Group findGroupByCode(
 		@NotNull String code
-	);
+	) {
+		return findGroups(
+			defaultGroupsFilter().withCode(code), 
+			GroupsFilter.getDefaultPaging()
+		).getSingleItem();
+	};
 
 	Group createGroup(
 		@NotNull Localized name
@@ -60,9 +65,14 @@ public interface CrmPermissionService {
 		@NotNull Identifier roleId
 	);
 
-	Role findRoleByCode(
+	default Role findRoleByCode(
 		@NotNull String code
-	);
+	) {
+		return findRoles(
+			defaultRolesFilter().withCode(code), 
+			RolesFilter.getDefaultPaging()
+		).getSingleItem();
+	};
 
 	Role createRole(
 		@NotNull Identifier groupId, 
