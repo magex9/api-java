@@ -4,6 +4,10 @@ parameters:
   type: string
   default: "none"
 
+- name: application_version
+  type: string
+  default: "1.0.0-SNAPSHOT"
+
 steps:
 - task: Bash@3
   name: "Packaging_app_code"
