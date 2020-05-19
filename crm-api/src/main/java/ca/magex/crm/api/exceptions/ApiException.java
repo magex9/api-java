@@ -6,16 +6,23 @@ public class ApiException extends RuntimeException {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
-	public ApiException(String msg, Exception e) {
+	private Integer associatedErrorCode;
+	
+	public ApiException(String msg, Exception e, Integer associatedErrorCode) {
 		super(msg, e);
+		this.associatedErrorCode = associatedErrorCode;
+	}
+	
+	public ApiException(String msg, Exception e) {
+		this(msg, e, 500);
 	}
 
 	public ApiException(String msg) {
-		super(msg);
+		this(msg, null);
 	}
 	
-	public int getErrorCode() {
-		return 500;
+	public Integer getErrorCode() {
+		return associatedErrorCode;
 	}
 	
 }

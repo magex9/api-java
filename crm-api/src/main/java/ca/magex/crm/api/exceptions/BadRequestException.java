@@ -24,7 +24,7 @@ public class BadRequestException extends ApiException {
 	}
 
 	@Override
-	public int getErrorCode() {
+	public Integer getErrorCode() {
 		return 400;
 	}
 	

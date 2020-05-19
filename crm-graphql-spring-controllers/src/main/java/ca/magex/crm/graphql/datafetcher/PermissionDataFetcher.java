@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,29 +32,6 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
-	public DataFetcher<List<Group>> groupsByOrganization() {
-		return (environment) -> {
-			logger.info("Entering byOrganization@" + PermissionDataFetcher.class.getSimpleName());
-			OrganizationDetails organization = environment.getSource();
-			return organization.getGroups().stream().map(groupCode -> crm.findGroupByCode(groupCode)).collect(Collectors.toList());			
-		};
-	}
-	
-	public DataFetcher<Group> findGroup() {
-		return (environment) -> {
-			logger.info("Entering findGroup@" + PermissionDataFetcher.class.getSimpleName());
-			Identifier groupId = new Identifier((String) environment.getArgument("groupId"));
-			return crm.findGroup(groupId);
-		};
-	}
-	
-	public DataFetcher<Page<Group>> findGroups() {
-		return (environment) -> {
-			logger.info("Entering findGroups@" + PermissionDataFetcher.class.getSimpleName());
-			return crm.findGroups(new GroupsFilter(), extractPaging(environment));
-		};
-	}
-	
 	public DataFetcher<Group> createGroup() {
 		return (environment) -> {
 			logger.info("Entering createGroup@" + PermissionDataFetcher.class.getSimpleName());
@@ -63,22 +41,34 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			return crm.createGroup(new Localized(code, englishName, frenchName));
 		};
 	}
-	
+
+	public DataFetcher<Group> findGroup() {
+		return (environment) -> {
+			logger.info("Entering findGroup@" + PermissionDataFetcher.class.getSimpleName());
+			Identifier groupId = new Identifier((String) environment.getArgument("groupId"));
+			return crm.findGroup(groupId);
+		};
+	}
+
+	public DataFetcher<Page<Group>> findGroups() {
+		return (environment) -> {
+			logger.info("Entering findGroups@" + PermissionDataFetcher.class.getSimpleName());	
+			Map<String,Object> filterCriteria = extractFilter(environment);
+			return crm.findGroups(
+					new GroupsFilter(filterCriteria), 
+					extractPaging(environment));
+		};
+	}
+
 	public DataFetcher<Group> updateGroup() {
 		return (environment) -> {
 			logger.info("Entering updateGroup@" + PermissionDataFetcher.class.getSimpleName());
 			Identifier groupId = new Identifier((String) environment.getArgument("groupId"));
 			Group group = crm.findGroup(groupId);
-			/* need to be careful not to nullify names that aren't passed in for update */
-			String englishName = environment.getArgumentOrDefault("englishName", group.getName(Lang.ENGLISH));
-			String frenchName = environment.getArgumentOrDefault("frenchName", group.getName(Lang.FRENCH));
-			if (!StringUtils.equals(group.getName(Lang.ENGLISH), englishName) || !(StringUtils.equals(group.getName(Lang.FRENCH), frenchName))) {
-				group = crm.updateGroupName(groupId, new Localized(group.getCode(), englishName, frenchName));
-			}
-			/* update the status if provided */
+			/* update the status if provided FIRST - the validation for the name relies on the status */
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch(status) {
+				switch (status) {
 				case "ACTIVE":
 					if (group.getStatus() != Status.ACTIVE) {
 						group = crm.enableGroup(groupId);
@@ -90,13 +80,27 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected", null, null);
 				}
+			}
+			/* need to be careful not to nullify names that aren't passed in for update */
+			String englishName = environment.getArgumentOrDefault("englishName", group.getName(Lang.ENGLISH));
+			String frenchName = environment.getArgumentOrDefault("frenchName", group.getName(Lang.FRENCH));
+			if (!StringUtils.equals(group.getName(Lang.ENGLISH), englishName) || !(StringUtils.equals(group.getName(Lang.FRENCH), frenchName))) {
+				group = crm.updateGroupName(groupId, new Localized(group.getCode(), englishName, frenchName));
 			}
 			return group;
 		};
-	}	
-	
+	}
+
+	public DataFetcher<List<Group>> groupsByOrganization() {
+		return (environment) -> {
+			logger.info("Entering byOrganization@" + PermissionDataFetcher.class.getSimpleName());
+			OrganizationDetails organization = environment.getSource();
+			return organization.getGroups().stream().map(groupCode -> crm.findGroupByCode(groupCode)).collect(Collectors.toList());
+		};
+	}
+
 	public DataFetcher<Role> findRole() {
 		return (environment) -> {
 			logger.info("Entering findRole@" + PermissionDataFetcher.class.getSimpleName());
@@ -104,7 +108,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			return crm.findRole(roleId);
 		};
 	}
-	
+
 	public DataFetcher<Role> createRole() {
 		return (environment) -> {
 			logger.info("Entering createRole@" + PermissionDataFetcher.class.getSimpleName());
@@ -115,22 +119,16 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			return crm.createRole(groupId, new Localized(code, englishName, frenchName));
 		};
 	}
-	
+
 	public DataFetcher<Role> updateRole() {
 		return (environment) -> {
 			logger.info("Entering updateRole@" + PermissionDataFetcher.class.getSimpleName());
-			Identifier roleId = new Identifier((String) environment.getArgument("roleId"));			
+			Identifier roleId = new Identifier((String) environment.getArgument("roleId"));
 			Role role = crm.findRole(roleId);
-			/* need to be careful not to nullify names that aren't passed in for update */
-			String englishName = environment.getArgumentOrDefault("englishName", role.getName(Lang.ENGLISH));
-			String frenchName = environment.getArgumentOrDefault("frenchName", role.getName(Lang.FRENCH));
-			if (!StringUtils.equals(role.getName(Lang.ENGLISH), englishName) || !(StringUtils.equals(role.getName(Lang.FRENCH), frenchName))) {
-				role = crm.updateRoleName(roleId, new Localized(role.getCode(), englishName, frenchName));
-			}
-			/* update the status if provided */
+			/* update the status if provided FIRST - the validation for the name relies on the status */
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch(status) {
+				switch (status) {
 				case "ACTIVE":
 					if (role.getStatus() != Status.ACTIVE) {
 						role = crm.enableRole(roleId);
@@ -142,8 +140,14 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected", null, null);
 				}
+			}
+			/* need to be careful not to nullify names that aren't passed in for update */
+			String englishName = environment.getArgumentOrDefault("englishName", role.getName(Lang.ENGLISH));
+			String frenchName = environment.getArgumentOrDefault("frenchName", role.getName(Lang.FRENCH));
+			if (!StringUtils.equals(role.getName(Lang.ENGLISH), englishName) || !(StringUtils.equals(role.getName(Lang.FRENCH), frenchName))) {
+				role = crm.updateRoleName(roleId, new Localized(role.getCode(), englishName, frenchName));
 			}
 			return role;
 		};
