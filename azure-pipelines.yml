@@ -46,6 +46,6 @@ stages:
     jobs:
     - template: azure-deploy.yml
       parameters:
-        application_environment: 'ut'
+        environment: 'ut'
         application_name: crm-hellowworld
         sshEndpoint: 'ssh - RD3'
