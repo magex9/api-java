@@ -40,24 +40,24 @@ stages:
       parameters:
         application_name: crm-activemq-spring-boot-server
 
-  - stage: deployApplications
-    jobs:
-      - deployment: Deploy
-        displayName: Deploy Application ${{parameters.application_name}}
-        environment: ${{parameters.environment}}
-        strategy:
-        # default deployment strategy, more coming...
-          runOnce:
-            deploy:
-              steps:
-          jobs:
-          - template: azure-deploy.yml
-            parameters:
-              environment: 'ut'
-              application_name: crm-helloworld
-              sshEndpoint: 'ssh - RD3'
-          - template: azure-deploy.yml
-            parameters:
-              environment: 'ut'
-              application_name: crm-activemq-spring-boot-server
-              sshEndpoint: 'ssh - RD3'
+- stage: deployApplications
+  jobs:
+    - deployment: Deploy
+      displayName: Deploy Application ${{parameters.application_name}}
+      environment: ${{parameters.environment}}
+      strategy:
+      # default deployment strategy, more coming...
+        runOnce:
+          deploy:
+            steps:
+        jobs:
+        - template: azure-deploy.yml
+          parameters:
+            environment: 'ut'
+            application_name: crm-helloworld
+            sshEndpoint: 'ssh - RD3'
+        - template: azure-deploy.yml
+          parameters:
+            environment: 'ut'
+            application_name: crm-activemq-spring-boot-server
+            sshEndpoint: 'ssh - RD3'
