@@ -243,7 +243,12 @@ public abstract class AbstractPermissionServiceTests {
 		
 		/* add a couple extra roles for the other groups */
 		getPermissionService().createRole(g2.getGroupId(), new Localized("OTH", "OTHER", "OTHER"));
-		getPermissionService().createRole(g3.getGroupId(), new Localized("OTH", "OTHER", "OTHER"));
+		try {
+			getPermissionService().createRole(g3.getGroupId(), new Localized("OTH", "OTHER", "OTHER"));
+			fail("Cannot create duplicate roles");
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, null, "error", "code", "Duplicate code found in another role: .*");
+		}
 				
 		
 		/* update */
@@ -405,15 +410,21 @@ public abstract class AbstractPermissionServiceTests {
 		try {
 			getPermissionService().createGroup(new Localized("", "English", "French"));
 			fail("Invalid group code");
-		} catch (BadRequestException expected) { }
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Group code must not be blank");
+		}
 		try {
 			getPermissionService().createGroup(new Localized("a", "English", "French"));
 			fail("Invalid group code");
-		} catch (BadRequestException expected) { }
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Group code must match: .*");
+		}
 		try {
 			getPermissionService().createGroup(new Localized("$", "English", "French"));
 			fail("Invalid group code");
-		} catch (BadRequestException expected) { }
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Group code must match: .*");
+		}
 	}	
 	
 	@Test
@@ -458,7 +469,7 @@ public abstract class AbstractPermissionServiceTests {
 			fail("Should fail validation");
 		} catch(BadRequestException e) {
 			assertEquals(3, e.getMessages().size());
-			assertMessage(e.getMessages().get(0), null, "error", "code", "Display name is mandatory for an organization");
+			assertMessage(e.getMessages().get(0), null, "error", "code", "Group code must not be blank");
 			assertMessage(e.getMessages().get(1), null, "error", "englishName", "An English description is required");
 			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
 		}
@@ -467,11 +478,109 @@ public abstract class AbstractPermissionServiceTests {
 			fail("Should fail validation");
 		} catch(BadRequestException e) {
 			assertEquals(3, e.getMessages().size());
-			assertMessage(e.getMessages().get(0), null, "error", "code", "Display name is mandatory for an organization");
+			assertMessage(e.getMessages().get(0), null, "error", "code", "Group code must not be blank");
 			assertMessage(e.getMessages().get(1), null, "error", "englishName", "An English description is required");
 			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
 		}
-		
 	}
+	
+	@Test
+	public void testRolesWithInvalidCodes() throws Exception {
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		try {
+			getPermissionService().createRole(groupId, new Localized(null, "English", "French"));
+			fail("Invalid group code");
+		} catch (IllegalArgumentException expected) { }
+		try {
+			getPermissionService().createRole(groupId, new Localized("", "English", "French"));
+			fail("Invalid group code");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Role code must not be blank");
+		}
+		try {
+			getPermissionService().createRole(groupId, new Localized("a", "English", "French"));
+			fail("Invalid group code");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Role code must match: .*");
+		}
+		try {
+			getPermissionService().createRole(groupId, new Localized("$", "English", "French"));
+			fail("Invalid group code");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Role code must match: .*");
+		}
+	}	
+	
+	@Test
+	public void testCreatingRoleWithInvalidStatuses() throws Exception {
+		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
+		try {
+			validation.validate(new Role(new Identifier("role"), new Identifier("group"), Status.INACTIVE, GROUP));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Cannot create a new role that is inactive");
+		}
+		try {
+			validation.validate(new Role(new Identifier("role"), new Identifier("group"), null, GROUP));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Status is mandatory for a role");
+		}
+	}
+	
+	@Test
+	public void testCreatingDuplicateRoles() throws Exception {
+		Identifier groupId = getPermissionService().createGroup(SYS).getGroupId();
+		Identifier roleId = getPermissionService().createRole(groupId, SYS_ADMIN).getRoleId();
+		try {
+			getPermissionService().createRole(groupId, SYS_ADMIN).getRoleId();
+			fail("Cannot create duplicate groups");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Duplicate code found in another role: .*");
+		}
+		getPermissionService().disableRole(roleId);
+		try {
+			getPermissionService().createRole(groupId, SYS_ADMIN);
+			fail("Cannot create duplicate groups");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Duplicate code found in another role: .*");
+		}
+	}
+	
+	@Test
+	public void testCreateRoleForDisabledGroup() throws Exception {
+		Identifier groupId = getPermissionService().createGroup(ORG).getGroupId();
+		getPermissionService().createRole(groupId, ORG_ADMIN).getRoleId();
+		getPermissionService().disableGroup(groupId);
+		try {
+			getPermissionService().createRole(groupId, ORG_ASSISTANT).getRoleId();
+		} catch (BadRequestException e) {
+			assertBadRequestMessage(e, null, "error", "groupId", "Cannot create role for disabled group");
+		}
+	}
+	
+	@Test
+	public void testCreatingRoleWithBlankNamesGivesMultipleErrors() throws Exception {
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		try {
+			getPermissionService().createRole(groupId, new Localized("", "", ""));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertEquals(3, e.getMessages().size());
+			assertMessage(e.getMessages().get(0), null, "error", "code", "Role code must not be blank");
+			assertMessage(e.getMessages().get(1), null, "error", "englishName", "An English description is required");
+			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
+		}
+		try {
+			getPermissionService().createRole(groupId, new Localized("", "", ""));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertEquals(3, e.getMessages().size());
+			assertMessage(e.getMessages().get(0), null, "error", "code", "Role code must not be blank");
+			assertMessage(e.getMessages().get(1), null, "error", "englishName", "An English description is required");
+			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
+		}
+	}
+
 	
 }

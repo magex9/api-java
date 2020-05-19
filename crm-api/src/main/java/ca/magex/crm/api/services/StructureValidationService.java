@@ -16,6 +16,7 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.system.FilteredPage;
@@ -67,9 +68,9 @@ public class StructureValidationService implements CrmValidation {
 
 		// Must be a valid group code
 		if (StringUtils.isBlank(group.getCode())) {
-			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Group code must not be blank")));
 		} else if (!group.getCode().matches("[A-Z0-9_]{1,20}")) {
-			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Group code must match: [A-Z0-9_]{1,20}")));
 		}
 		
 		// Make sure the code is unique
@@ -112,16 +113,16 @@ public class StructureValidationService implements CrmValidation {
 
 		// Must be a valid role code
 		if (StringUtils.isBlank(role.getCode())) {
-			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must not be blank")));
 		} else if (!role.getCode().matches("[A-Z0-9_]{1,20}")) {
-			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must match: [A-Z0-9_]{1,20}")));
 		}
 		
 		// Make sure the code is unique
-		FilteredPage<Group> roles = permissions.findGroups(permissions.defaultGroupsFilter().withCode(role.getCode()), GroupsFilter.getDefaultPaging().allItems());
-		for (Group existing : roles.getContent()) {
-			if (!existing.getGroupId().equals(role.getGroupId()))
-				messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another role: " + existing.getGroupId())));
+		FilteredPage<Role> roles = permissions.findRoles(permissions.defaultRolesFilter().withCode(role.getCode()), RolesFilter.getDefaultPaging().allItems());
+		for (Role existing : roles.getContent()) {
+			if (!existing.getRoleId().equals(role.getRoleId()))
+				messages.add(new Message(role.getRoleId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another role: " + existing.getGroupId())));
 		}
 		
 		// Make sure there is an English description

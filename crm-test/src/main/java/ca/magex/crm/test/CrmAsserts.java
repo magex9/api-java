@@ -1,10 +1,8 @@
 package ca.magex.crm.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import org.hamcrest.CoreMatchers;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -30,7 +28,9 @@ public class CrmAsserts {
 	
 	public static final Localized ORG = new Localized("ORG", "Organization", "Organisation");
 	
-	public static final Localized ORG_ADMIN = new Localized("SYS_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
+	public static final Localized ORG_ADMIN = new Localized("ORG_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
+	
+	public static final Localized ORG_ASSISTANT = new Localized("ORG_ASSISTANT", "Organization Assistant", "Assistant du l'organization");
 	
 	public static final Localized ENGLISH = new Localized("EN", "English", "Anglais");
 	

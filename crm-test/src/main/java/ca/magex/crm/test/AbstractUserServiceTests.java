@@ -1,6 +1,6 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.ADMIN;
+import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
 import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
@@ -322,11 +322,11 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
-		getPermissionService().createRole(groupId, ADMIN).getRoleId();
-		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier groupId = getPermissionService().createGroup(ORG).getGroupId();
+		getPermissionService().createRole(groupId, ORG_ADMIN).getRoleId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of(ORG.getCode())).getOrganizationId();
 		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
-		Identifier userId = getUserService().createUser(personId, "user", List.of("ADM")).getUserId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of(ORG_ADMIN.getCode())).getUserId();
 
 		assertEquals(userId, getUserService().findUser(userId).getUserId());
 		assertEquals(userId, getUserService().findUserByUsername("user").getUserId());
@@ -338,11 +338,11 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testResetPassword() throws Exception {
-		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
-		getPermissionService().createRole(groupId, ADMIN).getRoleId();
-		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier groupId = getPermissionService().createGroup(ORG).getGroupId();
+		getPermissionService().createRole(groupId, ORG_ADMIN).getRoleId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of(ORG.getCode())).getOrganizationId();
 		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
-		Identifier userId = getUserService().createUser(personId, "user", List.of("ADM")).getUserId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of(ORG_ADMIN.getCode())).getUserId();
 
 		try {
 			getUserService().resetPassword(groupId);
@@ -355,11 +355,11 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testChangePassword() throws Exception {
-		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
-		getPermissionService().createRole(groupId, ADMIN).getRoleId();
-		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
+		Identifier groupId = getPermissionService().createGroup(ORG).getGroupId();
+		getPermissionService().createRole(groupId, ORG_ADMIN).getRoleId();
+		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of(ORG.getCode())).getOrganizationId();
 		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
-		Identifier userId = getUserService().createUser(personId, "user", List.of("ADM")).getUserId();
+		Identifier userId = getUserService().createUser(personId, "user", List.of(ORG_ADMIN.getCode())).getUserId();
 
 		assertTrue(getUserService().changePassword(userId, getUserService().resetPassword(userId), "pass1"));
 		assertTrue(getUserService().changePassword(userId, "pass1", "pass2"));
