@@ -1,8 +1,9 @@
 package ca.magex.crm.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static ca.magex.crm.test.CrmAsserts.*;
+import static org.junit.Assert.*;
+
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -18,7 +20,12 @@ import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmInitializationService;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -27,9 +34,17 @@ import ca.magex.crm.api.system.Status;
 public abstract class AbstractPermissionServiceTests {
 
 	public abstract CrmInitializationService getInitializationService();
-
+	
 	public abstract CrmPermissionService getPermissionService();
-		
+	
+	public abstract CrmLookupService getLookupService();
+	
+	public abstract CrmOrganizationService getOrganizationService();
+	
+	public abstract CrmLocationService getLocationService();
+	
+	public abstract CrmPersonService getPersonService();
+	
 	@Before
 	public void setup() {
 		getInitializationService().reset();
@@ -379,6 +394,40 @@ public abstract class AbstractPermissionServiceTests {
 			getPermissionService().findRole(groupId);
 			fail("Not a valid identifier");
 		} catch (ItemNotFoundException e) { }
+	}
+	
+	@Test
+	public void testGroupWithInvalidCodes() throws Exception {
+		getPermissionService().createGroup(new Localized("A", "English", "French"));
+		try {
+			getPermissionService().createGroup(new Localized(null, "English", "French"));
+			fail("Invalid group code");
+		} catch (IllegalArgumentException expected) { }
+		try {
+			getPermissionService().createGroup(new Localized("a", "English", "French"));
+			fail("Invalid group code");
+		} catch (BadRequestException expected) { }
+		try {
+			getPermissionService().createGroup(new Localized("$", "English", "French"));
+			fail("Invalid group code");
+		} catch (BadRequestException expected) { }
+	}	
+	
+	@Test
+	public void testCreatingGroupWithInvalidStatuses() throws Exception {
+		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
+		try {
+			validation.validate(new Group(new Identifier("group"), Status.INACTIVE, GROUP));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Cannot create a new group that is inactive");
+		}
+		try {
+			validation.validate(new Group(new Identifier("group"), null, GROUP));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Status is mandatory for a group");
+		}
 	}
 	
 }

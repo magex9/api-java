@@ -16,11 +16,17 @@ public class Localized implements Serializable {
 	private Map<Locale, String> text;
 	
 	public Localized(Locale locale, String value) {
-		this(Map.of(locale, value));
+		this(Map.of(notNull("Locale", locale), notNull("Value", value)));
 	}
 	
 	public Localized(String code, String english, String french) {
-		this(Map.of(Lang.ROOT, code, Lang.ENGLISH, english, Lang.FRENCH, french));
+		this(Map.of(Lang.ROOT, notNull("Code", code), Lang.ENGLISH, notNull("English", english), Lang.FRENCH, notNull("French", french)));
+	}
+	
+	private static <T> T notNull(String name, T obj) {
+		if (obj == null)
+			throw new IllegalArgumentException(name + " cannot be null");
+		return obj;
 	}
 	
 	public Localized(Map<Locale, String> text) {

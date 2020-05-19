@@ -79,6 +79,8 @@ public class StructureValidationService implements CrmValidation {
 				messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another group: " + existing.getGroupId())));
 		}
 		
+		
+		
 		// Make sure there is an English description
 		if (StringUtils.isBlank(group.getName(Lang.ENGLISH)))
 			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An English description is required")));
