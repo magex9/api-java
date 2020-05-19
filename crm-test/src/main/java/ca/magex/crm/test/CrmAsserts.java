@@ -66,11 +66,11 @@ public class CrmAsserts {
 	
 	public static final Localized RHINE = new Localized("RH", "North Rhine-Westphalia", "Rhénanie du Nord-Westphalie");
 	
-	public static final MailingAddress MAILING_ADDRESS = new MailingAddress("123 Main St", "Ottawa", QUEBEC, CANADA, "K1K1K1");
+	public static final MailingAddress MAILING_ADDRESS = new MailingAddress("123 Main St", "Ottawa", QUEBEC.getCode(), CANADA.getCode(), "K1K1K1");
 	
 	public static final PersonName PERSON_NAME = new PersonName("Mr.", "Chris", "P", "Bacon");
 	
-	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH, "user@work.ca", new Telephone("5551234567"), null);
+	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567"), null);
 	
 	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition("Corporate Services", "Development", "Developer");
 	
