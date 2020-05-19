@@ -66,6 +66,21 @@ input UserFilter {
 	role: String	
 }
 
+input GroupFilter {	
+	code: String
+	englishName: String
+	frenchName: String
+	status: String
+}
+
+input RoleFilter {
+	groupId: String
+	code: String
+	englishName: String
+	frenchName: String
+	status: String
+}
+
 type Query {	
 	# Organization Service 
 	findOrganization(organizationId: String!): Organization	
@@ -88,7 +103,8 @@ type Query {
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
 	# Permission Service
-	findGroup(groupId: String!): Group
+	findGroupById(groupId: String!): Group
+	findGroupByCode(code: String!): Group
 	findGroups(paging: PagingInput!): GroupPage
 	
 	findRole(roleId: String!): Role
@@ -115,7 +131,7 @@ type Mutation {
 	updateUser(userId: String!, roles: [String], status: String): User	
 	
 	# Permission Service
-	createGroup(englishName: String!, frenchName: String!): Group
+	createGroup(code: String!, englishName: String!, frenchName: String!): Group
 	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
 	
 	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
@@ -125,6 +141,7 @@ type Mutation {
 # Main Types
 type Group {
 	groupId: String!
+	code: String!
 	status: String!
 	englishName: String!
 	frenchName: String!

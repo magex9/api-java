@@ -281,7 +281,7 @@ public abstract class AbstractPermissionServiceTests {
 		r3 = getPermissionService().enableRole(r3.getRoleId());
 		
 		/* find roles for group */
-		Page<Role> page = getPermissionService().findRoles(new RolesFilter(g1.getGroupId(), null), new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
+		Page<Role> page = getPermissionService().findRoles(new RolesFilter(g1.getGroupId(), null, null, null, null), new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
 		Assert.assertEquals(3, page.getNumberOfElements());
@@ -292,7 +292,7 @@ public abstract class AbstractPermissionServiceTests {
 		Assert.assertEquals(r3, page.getContent().get(1));
 		Assert.assertEquals(r2, page.getContent().get(2));
 		
-		page = getPermissionService().findRoles(new RolesFilter(g1.getGroupId(), null), new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
+		page = getPermissionService().findRoles(new RolesFilter(g1.getGroupId(), null, null, null, null), new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
 		Assert.assertEquals(3, page.getNumberOfElements());
@@ -303,7 +303,7 @@ public abstract class AbstractPermissionServiceTests {
 		Assert.assertEquals(r3, page.getContent().get(1));
 		Assert.assertEquals(r1, page.getContent().get(2));
 
-		page = getPermissionService().findRoles(new RolesFilter(g1.getGroupId(), null), new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
+		page = getPermissionService().findRoles(new RolesFilter(g1.getGroupId(), null, null, null, null), new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(2, page.getTotalPages());
 		Assert.assertEquals(2, page.getNumberOfElements());

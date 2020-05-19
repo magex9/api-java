@@ -126,6 +126,15 @@ public class Paging implements Pageable, Serializable {
 			while (iterator.hasNext()) {
 				Order order = iterator.next();
 				String propertyName = order.getProperty();
+				if ("englishName".contentEquals(propertyName)) {
+					propertyName = "name:" + Lang.ENGLISH;
+				}
+				else if ("frenchName".contentEquals(propertyName)) {
+					propertyName = "name:" + Lang.FRENCH;
+				}
+				else if ("code".contentEquals(propertyName)) {					
+					propertyName = "name:"; // maps to root locale
+				}
 				String propertyKey = null;
 				if (propertyName.indexOf(":") > 0) {
 					String[] vals = propertyName.split(":");

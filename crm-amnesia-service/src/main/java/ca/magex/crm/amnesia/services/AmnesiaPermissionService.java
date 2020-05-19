@@ -18,6 +18,7 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
@@ -35,6 +36,10 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	@Override
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		List<Group> allMatchingGroups = db.findByType(Group.class)
+			.filter(g -> filter.getCode() == null || filter.getCode().equals(g.getCode()))
+			.filter(g -> filter.getEnglishName() == null || filter.getEnglishName().equals(g.getName(Lang.ENGLISH)))
+			.filter(g -> filter.getFrenchName() == null || filter.getFrenchName().equals(g.getName(Lang.FRENCH)))
+			.filter(g -> filter.getStatus() == null || filter.getStatus().equals(g.getStatus()))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
@@ -73,7 +78,11 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	@Override
 	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		List<Role> allRoles = db.findByType(Role.class)
-			.filter(r -> r.getGroupId().equals(filter.getGroupId()))
+			.filter(r -> filter.getGroupId() == null || filter.getGroupId().equals(r.getGroupId()))
+			.filter(r -> filter.getCode() == null || filter.getCode().equals(r.getCode()))
+			.filter(r -> filter.getEnglishName() == null || filter.getEnglishName().equals(r.getName(Lang.ENGLISH)))
+			.filter(r -> filter.getFrenchName() == null || filter.getFrenchName().equals(r.getName(Lang.FRENCH)))
+			.filter(r -> filter.getStatus() == null || filter.getStatus().equals(r.getStatus()))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allRoles, paging);

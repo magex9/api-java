@@ -12,15 +12,15 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 
 public interface CrmPermissionService {
-
-	FilteredPage<Group> findGroups(
-		@NotNull GroupsFilter filter,
-		@NotNull Paging paging
-	);
 	
 	default GroupsFilter defaultGroupsFilter() {
 		return new GroupsFilter();
 	};
+	
+	FilteredPage<Group> findGroups(
+		@NotNull GroupsFilter filter,
+		@NotNull Paging paging
+	);
 	
 	Group findGroup(
 		@NotNull Identifier groupId

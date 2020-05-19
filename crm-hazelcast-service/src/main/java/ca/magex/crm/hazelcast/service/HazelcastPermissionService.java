@@ -26,6 +26,7 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
@@ -129,6 +130,10 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			@NotNull Paging paging) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		return PageBuilder.buildPageFor(filter, groups.values().stream()
+				.filter(g -> filter.getCode() == null || filter.getCode().equals(g.getCode()))
+				.filter(g -> filter.getEnglishName() == null || filter.getEnglishName().equals(g.getName(Lang.ENGLISH)))
+				.filter(g -> filter.getFrenchName() == null || filter.getFrenchName().equals(g.getName(Lang.FRENCH)))
+				.filter(g -> filter.getStatus() == null || filter.getStatus().equals(g.getStatus()))
 				.sorted(paging.new PagingComparator<Group>())
 				.collect(Collectors.toList()),
 				paging);
@@ -217,7 +222,11 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			@NotNull Paging paging) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		return PageBuilder.buildPageFor(filter, roles.values().stream()
-				.filter((r) -> r.getGroupId().equals(filter.getGroupId()))
+				.filter(r -> filter.getGroupId() == null || filter.getGroupId().equals(r.getGroupId()))
+				.filter(r -> filter.getCode() == null || filter.getCode().equals(r.getCode()))
+				.filter(r -> filter.getEnglishName() == null || filter.getEnglishName().equals(r.getName(Lang.ENGLISH)))
+				.filter(r -> filter.getFrenchName() == null || filter.getFrenchName().equals(r.getName(Lang.FRENCH)))
+				.filter(r -> filter.getStatus() == null || filter.getStatus().equals(r.getStatus()))
 				.sorted(paging.new PagingComparator<Role>())
 				.collect(Collectors.toList()),
 				paging);
