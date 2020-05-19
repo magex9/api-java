@@ -1,5 +1,7 @@
 package ca.magex.crm.amnesia.services;
 
+import java.io.PrintStream;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,11 @@ public class AmnesiaInitializationService implements CrmInitializationService {
 	public boolean reset() {
 		db.reset();
 		return true;
+	}
+	
+	@Override
+	public void dump(PrintStream os) {
+		db.dump(os);
 	}
 
 }

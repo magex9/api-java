@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -131,5 +132,26 @@ public class HazelcastInitializationService implements CrmInitializationService 
 		hzInstance.getMap(HazelcastUserService.HZ_USER_KEY).clear();
 		
 		return true;
+	}
+	
+	@Override
+	public void dump(PrintStream os) {
+		List<String> keys = List.of(
+			HazelcastLocationService.HZ_LOCATION_KEY,
+			HazelcastOrganizationService.HZ_ORGANIZATION_KEY,
+			HazelcastPasswordService.HZ_PASSWORDS_KEY,
+			HazelcastPermissionService.HZ_GROUP_KEY,
+			HazelcastPermissionService.HZ_ROLE_KEY,
+			HazelcastPersonService.HZ_PERSON_KEY,
+			HazelcastUserService.HZ_USER_KEY
+		);
+		
+		for (String map : keys) {
+			Map<Identifier, Object> data = hzInstance.getMap(map);
+			data.keySet()
+				.stream()
+				.sorted((x, y) -> x.toString().compareTo(y.toString()))
+				.forEach(key -> os.println(key + " => " + data.get(key).toString()));
+		}
 	}
 }

@@ -1,6 +1,6 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.ADMIN;
+import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ORG;
 import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
@@ -9,8 +9,7 @@ import static ca.magex.crm.test.CrmAsserts.SYS;
 import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
 import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
 import static ca.magex.crm.test.CrmAsserts.assertMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -601,8 +600,8 @@ public abstract class AbstractPermissionServiceTests {
 		getPermissionService().createGroup(new Localized("C", "Zzzz", "()"));
 		getPermissionService().createGroup(new Localized("E", "AAbc", "Duplicate"));
 		getPermissionService().createGroup(new Localized("F", "AABc", "Duplicate"));
-		getPermissionService().createGroup(new Localized("G", "AAbA", "Duplicate"));
-		getPermissionService().createGroup(new Localized("H", "AAba", "Duplicate"));
+		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("G", "AAbA", "Duplicate")).getGroupId());
+		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("H", "AAba", "Duplicate")).getGroupId());
 		getPermissionService().createGroup(new Localized("I", "00", "93 Numbers"));
 		getPermissionService().createGroup(new Localized("J", "AAbA", "ê"));
 		
@@ -627,7 +626,37 @@ public abstract class AbstractPermissionServiceTests {
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
-					
-		
 	}
+	
+	@Test
+	public void testGroupFilters() throws Exception {
+		getPermissionService().createGroup(GROUP);
+		getPermissionService().createGroup(SYS);
+		getPermissionService().createGroup(ADMIN);
+		getPermissionService().disableGroup(getPermissionService().createGroup(ENGLISH).getGroupId());
+		getPermissionService().disableGroup(getPermissionService().createGroup(FRENCH).getGroupId());
+		
+		getInitializationService().dump();
+		
+		Paging englishSort = GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName")));
+		Paging frenchSort = GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName")));
+		
+		assertEquals(List.of(ENGLISH, FRENCH, SYS),
+			getPermissionService().findGroups(getPermissionService().defaultGroupsFilter()
+				.withEnglishName("e"), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+			
+		assertEquals(List.of(GROUP, SYS),
+			getPermissionService().findGroups(getPermissionService().defaultGroupsFilter()
+				.withFrenchName("e"), frenchSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+		
+		assertEquals(List.of(ADMIN, GROUP, SYS),
+			getPermissionService().findGroups(getPermissionService().defaultGroupsFilter()
+				.withStatus(Status.ACTIVE), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+				
+		assertEquals(List.of(ENGLISH, FRENCH),
+			getPermissionService().findGroups(getPermissionService().defaultGroupsFilter()
+				.withStatus(Status.INACTIVE), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+				
+	}
+		
 }

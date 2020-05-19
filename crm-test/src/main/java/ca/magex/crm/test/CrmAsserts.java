@@ -24,9 +24,9 @@ public class CrmAsserts {
 	
 	public static final Localized ADMIN = new Localized("ADM", "Admin", "Admin");
 	
-	public static final Localized SYS = new Localized("SYS", "System", "Systeme");
+	public static final Localized SYS = new Localized("SYS", "System", "Système");
 	
-	public static final Localized SYS_ADMIN = new Localized("SYS_ADMIN", "System Administrator", "Adminstrator du system");
+	public static final Localized SYS_ADMIN = new Localized("SYS_ADMIN", "System Administrator", "Adminstrator du système");
 	
 	public static final Localized ORG = new Localized("ORG", "Organization", "Organisation");
 	

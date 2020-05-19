@@ -1,5 +1,6 @@
 package ca.magex.crm.api.secured;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -116,6 +117,11 @@ public final class SecuredCrmServices implements Crm {
 	@Override
 	public boolean reset() {
 		return initializationService.reset();
+	}
+	
+	@Override
+	public void dump(PrintStream os) {
+		initializationService.dump(os);
 	}
 	
 	@Override
