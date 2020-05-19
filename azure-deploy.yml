@@ -25,7 +25,7 @@ parameters:
 
 jobs:
 - deployment: Deploy
-  displayName: deploy Web App
+  displayName: Deploy Application ${{parameters.application_name}}
   environment: ${{parameters.environment}}
   strategy:
   # default deployment strategy, more coming...
@@ -50,7 +50,7 @@ jobs:
             readyTimeout: '20000'
 
         - task: SSH@0
-          name: UntarApplicationPackage
+          displayName: Untar Application Package for ${{parameters.application_name}}
           inputs:
             sshEndpoint: ${{parameters.sshEndpoint}}
             runOptions: 'inline'
@@ -59,7 +59,7 @@ jobs:
               tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/${{parameters.application_name}}-${{parameters.application_version}}.tgz
             readyTimeout: '20000'
         - task: SSH@0
-          name: ReStartApplication
+          displayName: (Re)Start Application ${{parameters.application_name}}
           inputs:
             sshEndpoint: ${{parameters.sshEndpoint}}
             runOptions: 'inline'

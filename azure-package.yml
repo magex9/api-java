@@ -10,7 +10,7 @@ parameters:
 
 steps:
 - task: Bash@3
-  name: "Packaging_app_code"
+  displayName: "Packaging Application ${{parameters.application_name}}"
   inputs:
     failOnStderr: true
     targetType: 'inline'
