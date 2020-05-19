@@ -1,6 +1,6 @@
         
 parameters:
-- name: APPLICATION_NAME
+- name: application_name
   type: string
   default: "none"
 
@@ -13,22 +13,22 @@ steps:
     script: |
       # Write your commands here
       #set -x
-      if [ "${APPLICATION_NAME}" == "none" ];then
+      if [ "${{parameters.application_name}}" == "none" ];then
         echo "please provide an application name to the azure-package template via parameter APPLICATION_NAME"
         exit 1
       fi
 
-      echo ${APPLICATION_NAME}
+      echo ${{parameters.application_name}}
       
       #IN case we want to set an azure variable:
       #echo '##vso[task.setvariable variable=a]20'
       
-      #application_name=${application_name} #now from pipeline variable
+      #application_name=${{parameters.application_name}} #now from pipeline variable
       application_version=1.0.0-SNAPSHOT
-      build_dir="$(System.DefaultWorkingDirectory)/build/${APPLICATION_NAME}"
+      build_dir="$(System.DefaultWorkingDirectory)/build/${{parameters.application_name}}"
       config_dir="${build_dir}/config"
       config_file="${config_dir}/application.cfg"
-      publish_dir="$(System.DefaultWorkingDirectory)/publish/${APPLICATION_NAME}"
+      publish_dir="$(System.DefaultWorkingDirectory)/publish/${{parameters.application_name}}"
 
       if [ -d $build_dir ];then
         rm -rf $build_dir/*
@@ -44,17 +44,17 @@ steps:
         mkdir -p $publish_dir
       fi
 
-      cp $(System.DefaultWorkingDirectory)/${APPLICATION_NAME}/target/${APPLICATION_NAME}-*-bootable.jar $build_dir/
+      cp $(System.DefaultWorkingDirectory)/${{parameters.application_name}}/target/${{parameters.application_name}}-*-bootable.jar $build_dir/
       cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
       
       #Create configuration file
       touch ${config_file}
-      echo "export APPLICATION_NAME=${APPLICATION_NAME}" >> $config_file
-      echo "export APPLICATION_VERSION=${application_version}" >> $config_file
+      echo "export APPLICATION_NAME=${{parameters.application_name}}" >> $config_file
+      echo "export APPLICATION_VERSION=${{parameters.application_version}}" >> $config_file
 
-      cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${APPLICATION_NAME}-${application_version}.tgz ${APPLICATION_NAME}
+      cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${{parameters.application_name}}-${{parameters.application_version}}.tgz ${{parameters.application_name}}
       cp $(System.DefaultWorkingDirectory)/test.sh $(System.DefaultWorkingDirectory)/publish/
       ls -la $(System.DefaultWorkingDirectory)/**
   
-- publish: $(System.DefaultWorkingDirectory)/publish/$(APPLICATION_NAME)
-  artifact: $(APPLICATION_NAME)
+- publish: $(System.DefaultWorkingDirectory)/publish/${{parameters.application_name}}
+  artifact: ${{parameters.application_name}}

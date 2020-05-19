@@ -38,56 +38,14 @@ stages:
       - template: azure-package.yml
         parameters:
           APPLICATION_NAME: crm-hellowworld
+      - template: azure-package.yml
+        parameters:
+          APPLICATION_NAME: crm-activemq-spring-boot-server
        
-  - stage: deploy
+  - stage: deployApplications
     jobs:
-    - deployment: Deploy
-      displayName: deploy Web App
-      environment: 'ut'
-      strategy:
-      # default deployment strategy, more coming...
-        runOnce:
-          deploy:
-            steps:
-            - script: ls -la $(Pipeline.Workspace)/authApp
-            - task: CopyFilesOverSSH@0
-              inputs:
-                sshEndpoint: 'ssh - RD3'
-                sourceFolder: '$(Pipeline.Workspace)/authApp/'
-                contents: '*.tgz'
-                targetFolder: '/var/data/finuser/builds/'
-                readyTimeout: '20000'
-                failOnEmptySource: true
-            - task: CopyFilesOverSSH@0
-              inputs:
-                sshEndpoint: 'ssh - RD3'
-                sourceFolder: '$(Pipeline.Workspace)/authApp/'
-                contents: 'test.sh'
-                targetFolder: '/var/data/finuser/admin/'
-                readyTimeout: '20000'
-                failOnEmptySource: true
-            
-            - task: SSH@0
-              inputs:
-                sshEndpoint: 'ssh - RD3'
-                runOptions: 'commands'
-                commands: 'ls -la /var/data/finuser/builds'
-                readyTimeout: '20000'
-
-            - task: SSH@0
-              name: UntarApplicationPackage
-              inputs:
-                sshEndpoint: 'ssh - RD3'
-                runOptions: 'inline'
-                inline: |
-                  rm -rf /var/data/finuser/apps/$(application_name) > /dev/null
-                  tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/$(application_name)-1.0.0-SNAPSHOT.tgz
-                readyTimeout: '20000'
-            - task: SSH@0
-              name: ReStartApplication
-              inputs:
-                sshEndpoint: 'ssh - RD3'
-                runOptions: 'inline'
-                inline: |
-                  /var/data/finuser/apps/$(application_name)/admin/service.sh restart
-                readyTimeout: '20000'
+    - template: azure-deploy.yml
+      parameters:
+        application_environment: 'ut'
+        application_name: crm-hellowworld
+        sshEndpoint: 'ssh - RD3'
