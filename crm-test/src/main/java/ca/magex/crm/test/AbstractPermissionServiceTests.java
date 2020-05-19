@@ -636,8 +636,6 @@ public abstract class AbstractPermissionServiceTests {
 		getPermissionService().disableGroup(getPermissionService().createGroup(ENGLISH).getGroupId());
 		getPermissionService().disableGroup(getPermissionService().createGroup(FRENCH).getGroupId());
 		
-		getInitializationService().dump();
-		
 		Paging englishSort = GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName")));
 		Paging frenchSort = GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName")));
 		
