@@ -67,9 +67,9 @@ public class StructureValidationService implements CrmValidation {
 
 		// Must be a valid group code
 		if (StringUtils.isBlank(group.getCode())) {
-			messages.add(new Message(group.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
 		} else if (!group.getCode().matches("[A-Z0-9_]{1,20}")) {
-			messages.add(new Message(group.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
 		}
 		
 		// Make sure the code is unique
@@ -79,15 +79,13 @@ public class StructureValidationService implements CrmValidation {
 				messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another group: " + existing.getGroupId())));
 		}
 		
-		
-		
 		// Make sure there is an English description
 		if (StringUtils.isBlank(group.getName(Lang.ENGLISH)))
-			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An English description is required")));
+			messages.add(new Message(group.getGroupId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
 		
 		// Make sure there is a French description
 		if (StringUtils.isBlank(group.getName(Lang.FRENCH)))
-			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An French description is required")));
+			messages.add(new Message(group.getGroupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
 		
 		if (!messages.isEmpty())
 			throw new BadRequestException("Group has validation errors", messages);
@@ -114,9 +112,9 @@ public class StructureValidationService implements CrmValidation {
 
 		// Must be a valid role code
 		if (StringUtils.isBlank(role.getCode())) {
-			messages.add(new Message(role.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
 		} else if (!role.getCode().matches("[A-Z0-9_]{1,20}")) {
-			messages.add(new Message(role.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
 		}
 		
 		// Make sure the code is unique
@@ -128,11 +126,11 @@ public class StructureValidationService implements CrmValidation {
 		
 		// Make sure there is an English description
 		if (StringUtils.isBlank(role.getName(Lang.ENGLISH)))
-			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An English description is required")));
+			messages.add(new Message(role.getGroupId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
 		
 		// Make sure there is a French description
 		if (StringUtils.isBlank(role.getName(Lang.FRENCH)))
-			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An French description is required")));
+			messages.add(new Message(role.getGroupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
 		
 		if (!messages.isEmpty())
 			throw new BadRequestException("Group has validation errors", messages);

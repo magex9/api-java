@@ -1,9 +1,9 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.ADMIN;
+import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.*;
 import static org.junit.Assert.*;
-
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -404,6 +403,10 @@ public abstract class AbstractPermissionServiceTests {
 			fail("Invalid group code");
 		} catch (IllegalArgumentException expected) { }
 		try {
+			getPermissionService().createGroup(new Localized("", "English", "French"));
+			fail("Invalid group code");
+		} catch (BadRequestException expected) { }
+		try {
 			getPermissionService().createGroup(new Localized("a", "English", "French"));
 			fail("Invalid group code");
 		} catch (BadRequestException expected) { }
@@ -428,6 +431,47 @@ public abstract class AbstractPermissionServiceTests {
 		} catch(BadRequestException e) {
 			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Status is mandatory for a group");
 		}
+	}
+	
+	@Test
+	public void testCreatingDuplicateGroups() throws Exception {
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
+		try {
+			getPermissionService().createGroup(GROUP);
+			fail("Cannot create duplicate groups");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Duplicate code found in another group: .*");
+		}
+		getPermissionService().disableGroup(groupId);
+		try {
+			getPermissionService().createGroup(GROUP);
+			fail("Cannot create duplicate groups");
+		} catch (BadRequestException e) { 
+			assertBadRequestMessage(e, null, "error", "code", "Duplicate code found in another group: .*");
+		}
+	}
+	
+	@Test
+	public void testCreatingGroupWithBlankNamesGivesMultipleErrors() throws Exception {
+		try {
+			getPermissionService().createGroup(new Localized("", "", ""));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertEquals(3, e.getMessages().size());
+			assertMessage(e.getMessages().get(0), null, "error", "code", "Display name is mandatory for an organization");
+			assertMessage(e.getMessages().get(1), null, "error", "englishName", "An English description is required");
+			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
+		}
+		try {
+			getPermissionService().createGroup(new Localized(" ", " ", "\t"));
+			fail("Should fail validation");
+		} catch(BadRequestException e) {
+			assertEquals(3, e.getMessages().size());
+			assertMessage(e.getMessages().get(0), null, "error", "code", "Display name is mandatory for an organization");
+			assertMessage(e.getMessages().get(1), null, "error", "englishName", "An English description is required");
+			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
+		}
+		
 	}
 	
 }

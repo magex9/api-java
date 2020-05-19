@@ -1,7 +1,10 @@
 package ca.magex.crm.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import org.hamcrest.CoreMatchers;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -13,6 +16,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Message;
 
 public class CrmAsserts {
 	
@@ -87,14 +91,18 @@ public class CrmAsserts {
 		assertEquals(next, page.hasNext());
 		assertEquals(last, page.isLast());
 	}
-
-	public static void assertBadRequestMessage(BadRequestException e, Identifier identifier, String type, String path, String message) {
-		assertEquals(1, e.getMessages().size());
+	
+	public static void assertMessage(Message message, Identifier identifier, String type, String path, String reason) {
 		if (identifier != null)
-			assertEquals(identifier, e.getMessages().get(0).getIdentifier());
-		assertEquals(type, e.getMessages().get(0).getType());
-		assertEquals(path, e.getMessages().get(0).getPath());
-		assertEquals(message, e.getMessages().get(0).getReason().get(Lang.ENGLISH));
+			assertEquals(identifier, message.getIdentifier());
+		assertEquals(type, message.getType());
+		assertEquals(path, message.getPath());
+		assertTrue(message.getReason().get(Lang.ENGLISH) + " !~ " + reason, message.getReason().get(Lang.ENGLISH).matches(reason));
+	}
+
+	public static void assertBadRequestMessage(BadRequestException e, Identifier identifier, String type, String path, String reason) {
+		assertEquals(1, e.getMessages().size());
+		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
 	}
 	
 }
