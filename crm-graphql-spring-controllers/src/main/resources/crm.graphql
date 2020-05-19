@@ -81,7 +81,14 @@ input RoleFilter {
 	status: String
 }
 
-type Query {	
+type Query {
+	# Permission Service
+	findGroup(groupId: String!): Group
+	findGroups(filter: GroupFilter!, paging: PagingInput!): GroupPage
+	
+	findRole(roleId: String!): Role
+	findRoles(filter: RoleFilter!, paging: PagingInput!): RolePage
+		
 	# Organization Service 
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
@@ -102,18 +109,20 @@ type Query {
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
-	# Permission Service
-	findGroupById(groupId: String!): Group
-	findGroupByCode(code: String!): Group
-	findGroups(paging: PagingInput!): GroupPage
 	
-	findRole(roleId: String!): Role
 	
 	# Lookup Service
 	findCodeLookups(category: String!, code: String): [CodeLookup]
 }
 
 type Mutation {
+	# Permission Service
+	createGroup(code: String!, englishName: String!, frenchName: String!): Group
+	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
+	
+	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
+	updateRole(roleId: String!, englishName: String, frenchName: String, status: String): Role
+	
 	# Organization Service 
 	createOrganization(displayName: String!): Organization
 	updateOrganization(organizationId: String!, displayName: String, locationId: String, status: String): Organization
@@ -128,14 +137,7 @@ type Mutation {
 		
 	# User Service
 	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(userId: String!, roles: [String], status: String): User	
-	
-	# Permission Service
-	createGroup(code: String!, englishName: String!, frenchName: String!): Group
-	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
-	
-	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
-	updateRole(roleId: String!, englishName: String, frenchName: String, status: String): Role
+	updateUser(userId: String!, roles: [String], status: String): User		
 }
 
 # Main Types
@@ -230,6 +232,15 @@ type GroupPage {
 	totalPages: Int!
 	totalElements: Int!	
 	content: [Group]
+}
+
+type RolePage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Role]
 }
 
 type OrganizationPage {

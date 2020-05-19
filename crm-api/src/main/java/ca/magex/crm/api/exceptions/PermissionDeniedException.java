@@ -11,7 +11,7 @@ public class PermissionDeniedException extends ApiException {
 	}
 
 	@Override
-	public int getErrorCode() {
+	public Integer getErrorCode() {
 		return 403;
 	}
 	

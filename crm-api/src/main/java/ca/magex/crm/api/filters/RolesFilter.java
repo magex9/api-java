@@ -3,11 +3,14 @@ package ca.magex.crm.api.filters;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
@@ -38,6 +41,10 @@ public class RolesFilter implements Serializable {
 	
 	private Status status;
 
+	public RolesFilter() {
+		this(null, null, null, null, null);
+	}
+	
 	public RolesFilter(Identifier groupId, String englishName, String frenchName, String code, Status status) {
 		this.groupId = groupId;
 		this.englishName = englishName;
@@ -45,9 +52,19 @@ public class RolesFilter implements Serializable {
 		this.code = code;
 		this.status = status;
 	}
-
-	public RolesFilter() {
-		this(null, null, null, null, null);
+	
+	public RolesFilter(Map<String, Object> filterCriteria) {
+		this.groupId = new Identifier((String) filterCriteria.get("groupId"));
+		this.englishName = (String) filterCriteria.get("englishName");
+		this.frenchName = (String) filterCriteria.get("frenchName");
+		this.code = (String) filterCriteria.get("code");
+		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+			try {
+				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+			} catch (IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
 	}
 	
 	public Identifier getGroupId() {
