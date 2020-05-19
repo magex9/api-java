@@ -26,6 +26,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -36,6 +37,8 @@ import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractUserServiceTests {
 
+	public abstract CrmInitializationService getInitializationService();
+
 	public abstract CrmOrganizationService getOrganizationService();
 	
 	public abstract CrmPersonService getPersonService();
@@ -43,8 +46,6 @@ public abstract class AbstractUserServiceTests {
 	public abstract CrmUserService getUserService();
 	
 	public abstract CrmPermissionService getPermissionService();
-	
-	public abstract void reset();
 	
 	private PersonDetails adam;
 	
@@ -54,7 +55,7 @@ public abstract class AbstractUserServiceTests {
 	
 	@Before
 	public void setup() {
-		reset();
+		getInitializationService().reset();
 		Identifier aaId = getPermissionService().createGroup(new Localized("AA", "Army Ants", "French Army Ants")).getGroupId();
 		getPermissionService().createRole(aaId, new Localized("ADM", "ADM", "ADM"));
 		

@@ -10,12 +10,14 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -24,13 +26,13 @@ import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractPermissionServiceTests {
 
-	public abstract CrmPermissionService getPermissionService();
+	public abstract CrmInitializationService getInitializationService();
 
-	public abstract void reset();
+	public abstract CrmPermissionService getPermissionService();
 		
 	@Before
 	public void setup() {
-		reset();
+		getInitializationService().reset();
 	}
 
 	@Test
@@ -81,19 +83,28 @@ public abstract class AbstractPermissionServiceTests {
 		Assert.assertEquals("un", g1.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.INACTIVE, g1.getStatus());
 		Assert.assertEquals(g1, getPermissionService().findGroup(g1.getGroupId()));
-		g1 = getPermissionService().disableGroup(g1.getGroupId());
+		try {
+			g1 = getPermissionService().disableGroup(g1.getGroupId());
+			fail("Cant disable a disabled group");
+		} catch (BadRequestException expected) { }
 		g2 = getPermissionService().disableGroup(g2.getGroupId());
 		Assert.assertEquals("two", g2.getName(Lang.ENGLISH));
 		Assert.assertEquals("deux", g2.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.INACTIVE, g2.getStatus());
 		Assert.assertEquals(g2, getPermissionService().findGroup(g2.getGroupId()));
-		g2 = getPermissionService().disableGroup(g2.getGroupId());
+		try {
+			g2 = getPermissionService().disableGroup(g2.getGroupId());
+			fail("Cant disable a disabled group");
+		} catch (BadRequestException expected) { }
 		g3 = getPermissionService().disableGroup(g3.getGroupId());
 		Assert.assertEquals("three", g3.getName(Lang.ENGLISH));
 		Assert.assertEquals("trois", g3.getName(Lang.FRENCH));
 		Assert.assertEquals(Status.INACTIVE, g3.getStatus());
 		Assert.assertEquals(g3, getPermissionService().findGroup(g3.getGroupId()));
-		g3 = getPermissionService().disableGroup(g3.getGroupId());
+		try {
+			g3 = getPermissionService().disableGroup(g3.getGroupId());
+			fail("Cant disable a disabled group");
+		} catch (BadRequestException expected) { }
 
 		/* enable */
 		g1 = getPermissionService().enableGroup(g1.getGroupId());

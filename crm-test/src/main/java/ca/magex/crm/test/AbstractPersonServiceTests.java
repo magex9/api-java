@@ -31,6 +31,7 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -39,17 +40,17 @@ import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractPersonServiceTests {
 
+	public abstract CrmInitializationService getInitializationService();
+
 	public abstract CrmOrganizationService getOrganizationService();
 	
 	public abstract CrmPersonService getPersonService();
 	
 	public abstract CrmPermissionService getPermissionService();
-
-	public abstract void reset();
 		
 	@Before
 	public void setup() {
-		reset();	
+		getInitializationService().reset();
 		getPermissionService().createGroup(ORG);
 	}
 

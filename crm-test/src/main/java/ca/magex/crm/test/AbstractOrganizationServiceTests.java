@@ -29,6 +29,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -41,6 +42,8 @@ import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractOrganizationServiceTests {
 
+	public abstract CrmInitializationService getInitializationService();
+
 	public abstract CrmLookupService getLookupService();
 	
 	public abstract CrmOrganizationService getOrganizationService();
@@ -51,11 +54,9 @@ public abstract class AbstractOrganizationServiceTests {
 	
 	public abstract CrmPermissionService getPermissionService();
 
-	public abstract void reset();
-
 	@Before
 	public void setup() {
-		reset();
+		getInitializationService().reset();
 		getPermissionService().createGroup(new Localized("NHL", "NHL", "LNH"));
 		getPermissionService().createGroup(new Localized("PLAYOFFS", "Playoffs", "Playoffs"));
 		getPermissionService().createGroup(new Localized("ONTARIO", "Ontario", "Ontario"));

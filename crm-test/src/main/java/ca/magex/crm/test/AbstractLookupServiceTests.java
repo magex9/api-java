@@ -18,19 +18,20 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractLookupServiceTests {
 
-	public abstract CrmLookupService getLookupService();
+	public abstract CrmInitializationService getInitializationService();
 
-	public abstract void reset();
+	public abstract CrmLookupService getLookupService();
 
 	@Before
 	public void setup() {
-		reset();
+		getInitializationService().reset();
 	}
 	
 	@Test
