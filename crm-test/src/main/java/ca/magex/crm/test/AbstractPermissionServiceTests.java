@@ -609,7 +609,17 @@ public abstract class AbstractPermissionServiceTests {
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
-			
+				
+		assertEquals(List.of("93 Numbers", "A", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "ê", "é", "Y", "()"), 
+			getPermissionService().findGroups(filter, 
+				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))))
+					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
+					
+		assertEquals(List.of("Y", "93 Numbers", "A", "Duplicate", "Duplicate", "ê", "Duplicate", "Duplicate", "()", "é"), 
+			getPermissionService().findGroups(filter, 
+				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("frenchName"))))
+					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
+					
 		
 	}
 	
