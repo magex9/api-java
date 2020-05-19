@@ -77,7 +77,7 @@ public class AmnesiaDB {
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 		idGenerator = new AmnesiaBase58IdGenerator();
-		lookups = new AmnesiaLookupService(new CrmLookupLoader());
+		lookups = new AmnesiaLookupService(new CrmLookupLoader()).initialize();
 		permissions = new AmnesiaPermissionService(this);
 		organizations = new AmnesiaOrganizationService(this);
 		locations = new AmnesiaLocationService(this);
