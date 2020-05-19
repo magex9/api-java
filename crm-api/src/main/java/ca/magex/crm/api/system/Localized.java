@@ -15,16 +15,20 @@ public class Localized implements Serializable {
 	
 	private Map<Locale, String> text;
 	
-	public Localized(String english, String french) {
-		this(Map.of(Lang.ENGLISH, english, Lang.FRENCH, french));
+	public Localized(Locale locale, String value) {
+		this(Map.of(locale, value));
 	}
 	
-	public Localized(String english) {
-		this(Map.of(Lang.ENGLISH, english));
+	public Localized(String code, String english, String french) {
+		this(Map.of(Lang.ROOT, code, Lang.ENGLISH, english, Lang.FRENCH, french));
 	}
 	
 	public Localized(Map<Locale, String> text) {
 		this.text = text;
+	}
+	
+	public String getCode() {
+		return text.get(Lang.ROOT);
 	}
 
 	public String get(Locale locale) {
