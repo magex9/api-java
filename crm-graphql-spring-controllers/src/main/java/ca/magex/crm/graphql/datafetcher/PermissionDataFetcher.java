@@ -60,7 +60,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			String englishName = environment.getArgument("englishName");
 			String frenchName = environment.getArgument("frenchName");
 			String code = environment.getArgument("code");
-			return crm.createGroup(code, new Localized(englishName, frenchName));
+			return crm.createGroup(new Localized(code, englishName, frenchName));
 		};
 	}
 	
@@ -73,7 +73,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			String englishName = environment.getArgumentOrDefault("englishName", group.getName(Lang.ENGLISH));
 			String frenchName = environment.getArgumentOrDefault("frenchName", group.getName(Lang.FRENCH));
 			if (!StringUtils.equals(group.getName(Lang.ENGLISH), englishName) || !(StringUtils.equals(group.getName(Lang.FRENCH), frenchName))) {
-				group = crm.updateGroupName(groupId, new Localized(englishName, frenchName));
+				group = crm.updateGroupName(groupId, new Localized(group.getCode(), englishName, frenchName));
 			}
 			/* update the status if provided */
 			if (environment.getArgument("status") != null) {
@@ -112,7 +112,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			String code = environment.getArgument("code");
 			String englishName = environment.getArgument("englishName");
 			String frenchName = environment.getArgument("frenchName");
-			return crm.createRole(groupId, code, new Localized(englishName, frenchName));
+			return crm.createRole(groupId, new Localized(code, englishName, frenchName));
 		};
 	}
 	
@@ -125,7 +125,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 			String englishName = environment.getArgumentOrDefault("englishName", role.getName(Lang.ENGLISH));
 			String frenchName = environment.getArgumentOrDefault("frenchName", role.getName(Lang.FRENCH));
 			if (!StringUtils.equals(role.getName(Lang.ENGLISH), englishName) || !(StringUtils.equals(role.getName(Lang.FRENCH), frenchName))) {
-				role = crm.updateRoleName(roleId, new Localized(englishName, frenchName));
+				role = crm.updateRoleName(roleId, new Localized(role.getCode(), englishName, frenchName));
 			}
 			/* update the status if provided */
 			if (environment.getArgument("status") != null) {

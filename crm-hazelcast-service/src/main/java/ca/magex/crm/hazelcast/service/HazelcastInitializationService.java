@@ -111,4 +111,25 @@ public class HazelcastInitializationService implements CrmInitializationService 
 		}
 		return hzUserService.findUserByUsername(username);
 	}
+	
+	@Override
+	public boolean reset() {
+		hzInstance.getList("statuses").clear();
+		hzInstance.getList("countries").clear();
+		hzInstance.getList("languages").clear();
+		hzInstance.getList("salutations").clear();
+		hzInstance.getList("sectors").clear();
+		hzInstance.getList("units").clear();
+		hzInstance.getList("classifications").clear();
+		
+		hzInstance.getMap(HazelcastLocationService.HZ_LOCATION_KEY).clear();
+		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
+		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();
+		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
+		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
+		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
+		hzInstance.getMap(HazelcastUserService.HZ_USER_KEY).clear();
+		
+		return true;
+	}
 }

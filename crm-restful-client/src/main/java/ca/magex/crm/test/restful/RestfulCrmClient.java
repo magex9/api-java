@@ -815,6 +815,12 @@ public class RestfulCrmClient implements CrmClient {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean reset() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 	@Override
 	public boolean canCreateOrganization() {

@@ -30,5 +30,11 @@ public class AmnesiaInitializationService implements CrmInitializationService {
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		return db.findUser(db.initialize(organization, name, email, username, password));
 	}
+	
+	@Override
+	public boolean reset() {
+		db.reset();
+		return true;
+	}
 
 }

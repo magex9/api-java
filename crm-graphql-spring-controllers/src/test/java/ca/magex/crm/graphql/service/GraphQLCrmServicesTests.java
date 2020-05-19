@@ -35,7 +35,6 @@ import graphql.ExecutionResult;
 		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
 		MagexCrmProfiles.CRM_NO_AUTH
 })
-@DirtiesContext
 public class GraphQLCrmServicesTests {
 
 	private Logger log = LoggerFactory.getLogger(getClass());

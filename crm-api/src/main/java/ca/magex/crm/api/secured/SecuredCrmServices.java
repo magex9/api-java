@@ -114,6 +114,11 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	@Override
+	public boolean reset() {
+		return initializationService.reset();
+	}
+	
+	@Override
 	public List<Status> findStatuses() {
 		return lookupService.findStatuses();
 	}
