@@ -5,11 +5,15 @@ import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.*;
 import static org.junit.Assert.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
@@ -250,7 +254,6 @@ public abstract class AbstractPermissionServiceTests {
 			assertBadRequestMessage(e, null, "error", "code", "Duplicate code found in another role: .*");
 		}
 				
-		
 		/* update */
 		r1 = getPermissionService().updateRoleName(r1.getRoleId(), new Localized(r1.getCode(), "one", "un"));
 		Assert.assertEquals("one", r1.getName(Lang.ENGLISH));
@@ -582,5 +585,32 @@ public abstract class AbstractPermissionServiceTests {
 		}
 	}
 
+	@Test
+	public void testGroupSorting() throws Exception {
+		getPermissionService().createGroup(new Localized("A", "A", "A"));
+		getPermissionService().createGroup(new Localized("B", "$", "Y"));
+		getPermissionService().createGroup(new Localized("D", "_", "é"));
+		getPermissionService().createGroup(new Localized("C", "Zzzz", "()"));
+		getPermissionService().createGroup(new Localized("E", "AAbc", "Duplicate"));
+		getPermissionService().createGroup(new Localized("F", "AABc", "Duplicate"));
+		getPermissionService().createGroup(new Localized("G", "AAbA", "Duplicate"));
+		getPermissionService().createGroup(new Localized("H", "AAba", "Duplicate"));
+		getPermissionService().createGroup(new Localized("I", "00", "93 Numbers"));
+		getPermissionService().createGroup(new Localized("J", "AAbA", "ê"));
+		
+		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
+		
+		assertEquals(List.of("$", "00", "A", "AABc", "AAbA", "AAbA", "AAba", "AAbc", "Zzzz", "_"), 
+			getPermissionService().findGroups(filter, 
+				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))))
+					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
+			
+		assertEquals(List.of("_", "Zzzz", "00", "A", "AABc", "AAbA", "AAbA", "AAba", "AAbc", "$"), 
+			getPermissionService().findGroups(filter, 
+				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("englishName"))))
+					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
+			
+		
+	}
 	
 }
