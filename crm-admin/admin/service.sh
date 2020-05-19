@@ -42,8 +42,6 @@ fi
 
 jar_path="${work_dir}/${APPLICATION_NAME}-${APPLICATION_VERSION}${app_suffix}"
 
-ls -la $jar_path
-
 #check logs_dir
 if [ ! -d ${logs_dir} ];then
     mkdir -p ${logs_dir}
@@ -91,7 +89,12 @@ stop() {
     echo "Stopping application ${APPLICATION_NAME}"
     status ; rtrn_cd=$?
     if [ $rtrn_cd -eq 1 ];then
-        pid=`cat ${pid_file}`
+        if [ -f ${pid_file} ];then
+            pid=`cat ${pid_file}`
+        else
+            echo "problem reading pid file"
+            exit 1
+        fi
         echo "killing pid $pid"
         kill -15 $pid
     else
@@ -103,7 +106,12 @@ stop() {
 # 0 : not running
 # 1 : running
 status(){
-    pid=`cat ${pid_file}`
+    if [ -f ${pid_file} ];then
+        pid=`cat ${pid_file}`
+    else
+        echo "WARNING: pid does not exists for application ${APPLICATION_NAME} assuming it is not running"
+        return 0
+    fi
     if [ -z $pid ];then
         echo "pid does not exists for application ${APPLICATION_NAME} assuming it is not running"
         return 0
