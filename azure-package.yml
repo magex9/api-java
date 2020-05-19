@@ -1,0 +1,60 @@
+        
+parameters:
+- name: APPLICATION_NAME
+  type: string
+  default: "none"
+
+steps:
+- task: Bash@3
+  name: "Packaging_app_code"
+  inputs:
+    failOnStderr: true
+    targetType: 'inline'
+    script: |
+      # Write your commands here
+      #set -x
+      if [ "${APPLICATION_NAME}" == "none" ];then
+        echo "please provide an application name to the azure-package template via parameter APPLICATION_NAME"
+        exit 1
+      fi
+
+      echo ${APPLICATION_NAME}
+      
+      #IN case we want to set an azure variable:
+      #echo '##vso[task.setvariable variable=a]20'
+      
+      #application_name=${application_name} #now from pipeline variable
+      application_version=1.0.0-SNAPSHOT
+      build_dir="$(System.DefaultWorkingDirectory)/build/${APPLICATION_NAME}"
+      config_dir="${build_dir}/config"
+      config_file="${config_dir}/application.cfg"
+      publish_dir="$(System.DefaultWorkingDirectory)/publish"
+
+      if [ -d $build_dir ];then
+        rm -rf $build_dir/*
+      else
+        mkdir -p $build_dir
+      fi
+
+      if [ ! -d $config_dir ];then
+        mkdir -p $config_dir
+      fi
+
+      if [ ! -d $publish_dir ];then
+        mkdir -p $publish_dir
+      fi
+
+      cp $(System.DefaultWorkingDirectory)/${APPLICATION_NAME}/target/${APPLICATION_NAME}-*-bootable.jar $build_dir/
+      cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
+      
+      #Create configuration file
+      touch ${config_file}
+      echo "export APPLICATION_NAME=${APPLICATION_NAME}" >> $config_file
+      echo "export APPLICATION_VERSION=${application_version}" >> $config_file
+
+      cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${APPLICATION_NAME}-${application_version}.tgz ${APPLICATION_NAME}
+      cp $(System.DefaultWorkingDirectory)/test.sh $(System.DefaultWorkingDirectory)/publish/
+      ls -la $(System.DefaultWorkingDirectory)/**
+  
+- publish: $(System.DefaultWorkingDirectory)/publish
+  artifact: ${APPLICATION_NAME}
