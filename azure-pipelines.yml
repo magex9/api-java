@@ -50,14 +50,13 @@ stages:
         runOnce:
           deploy:
             steps:
-        jobs:
-        - template: azure-deploy.yml
-          parameters:
-            environment: 'ut'
-            application_name: crm-helloworld
-            sshEndpoint: 'ssh - RD3'
-        - template: azure-deploy.yml
-          parameters:
-            environment: 'ut'
-            application_name: crm-activemq-spring-boot-server
-            sshEndpoint: 'ssh - RD3'
+            - template: azure-deploy.yml
+              parameters:
+                environment: 'ut'
+                application_name: crm-helloworld
+                sshEndpoint: 'ssh - RD3'
+            - template: azure-deploy.yml
+              parameters:
+                environment: 'ut'
+                application_name: crm-activemq-spring-boot-server
+                sshEndpoint: 'ssh - RD3'

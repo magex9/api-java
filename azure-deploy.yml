@@ -23,39 +23,38 @@ parameters:
 
 ##########################################
 
-jobs:
-  steps:
-  - script: ls -la $(Pipeline.Workspace)/${{parameters.application_name}}
-  - task: CopyFilesOverSSH@0
-    inputs:
-      sshEndpoint: ${{parameters.sshEndpoint}}
-      sourceFolder: '$(Pipeline.Workspace)/${{parameters.application_name}}/'
-      contents: '*.tgz'
-      targetFolder: '/var/data/finuser/builds/'
-      readyTimeout: '20000'
-      failOnEmptySource: true
+steps:
+- script: ls -la $(Pipeline.Workspace)/${{parameters.application_name}}
+- task: CopyFilesOverSSH@0
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    sourceFolder: '$(Pipeline.Workspace)/${{parameters.application_name}}/'
+    contents: '*.tgz'
+    targetFolder: '/var/data/finuser/builds/'
+    readyTimeout: '20000'
+    failOnEmptySource: true
 
-  - task: SSH@0
-    inputs:
-      sshEndpoint: ${{parameters.sshEndpoint}}
-      runOptions: 'commands'
-      commands: 'ls -la /var/data/finuser/builds'
-      readyTimeout: '20000'
+- task: SSH@0
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    runOptions: 'commands'
+    commands: 'ls -la /var/data/finuser/builds'
+    readyTimeout: '20000'
 
-  - task: SSH@0
-    displayName: Untar Application Package for ${{parameters.application_name}}
-    inputs:
-      sshEndpoint: ${{parameters.sshEndpoint}}
-      runOptions: 'inline'
-      inline: |
-        rm -rf /var/data/finuser/apps/${{parameters.application_name}} > /dev/null
-        tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/${{parameters.application_name}}-${{parameters.application_version}}.tgz
-      readyTimeout: '20000'
-  - task: SSH@0
-    displayName: (Re)Start Application ${{parameters.application_name}}
-    inputs:
-      sshEndpoint: ${{parameters.sshEndpoint}}
-      runOptions: 'inline'
-      inline: |
-        /var/data/finuser/apps/${{parameters.application_name}}/admin/service.sh restart
-      readyTimeout: '20000'
+- task: SSH@0
+  displayName: Untar Application Package for ${{parameters.application_name}}
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    runOptions: 'inline'
+    inline: |
+      rm -rf /var/data/finuser/apps/${{parameters.application_name}} > /dev/null
+      tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/${{parameters.application_name}}-${{parameters.application_version}}.tgz
+    readyTimeout: '20000'
+- task: SSH@0
+  displayName: (Re)Start Application ${{parameters.application_name}}
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    runOptions: 'inline'
+    inline: |
+      /var/data/finuser/apps/${{parameters.application_name}}/admin/service.sh restart
+    readyTimeout: '20000'
