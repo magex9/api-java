@@ -28,7 +28,7 @@ steps:
       build_dir="$(System.DefaultWorkingDirectory)/build/${APPLICATION_NAME}"
       config_dir="${build_dir}/config"
       config_file="${config_dir}/application.cfg"
-      publish_dir="$(System.DefaultWorkingDirectory)/publish"
+      publish_dir="$(System.DefaultWorkingDirectory)/publish/${APPLICATION_NAME}"
 
       if [ -d $build_dir ];then
         rm -rf $build_dir/*
@@ -56,5 +56,5 @@ steps:
       cp $(System.DefaultWorkingDirectory)/test.sh $(System.DefaultWorkingDirectory)/publish/
       ls -la $(System.DefaultWorkingDirectory)/**
   
-- publish: $(System.DefaultWorkingDirectory)/publish
-  artifact: ${APPLICATION_NAME}
+- publish: $(System.DefaultWorkingDirectory)/publish/$(APPLICATION_NAME)
+  artifact: $(APPLICATION_NAME)
