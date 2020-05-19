@@ -2,10 +2,16 @@ package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.ADMIN;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
-import static ca.magex.crm.test.CrmAsserts.*;
-import static org.junit.Assert.*;
+import static ca.magex.crm.test.CrmAsserts.ORG;
+import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.ORG_ASSISTANT;
+import static ca.magex.crm.test.CrmAsserts.SYS;
+import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
+import static ca.magex.crm.test.CrmAsserts.assertMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import java.text.Collator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -624,14 +630,4 @@ public abstract class AbstractPermissionServiceTests {
 					
 		
 	}
-	
-	public static void main(String[] args) {
-		Collator collator = Collator.getInstance();
-		collator.setStrength(Collator.NO_DECOMPOSITION);
-		System.out.println(collator.compare("ABc", "AbC"));
-		System.out.println(collator.compare("AbC", "ABc"));
-		
-		System.out.println(collator.compare("e", "é"));
-	}
-	
 }
