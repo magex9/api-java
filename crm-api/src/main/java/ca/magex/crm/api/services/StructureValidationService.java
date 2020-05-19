@@ -15,8 +15,10 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -63,11 +65,27 @@ public class StructureValidationService implements CrmValidation {
 			}
 		}
 
+		// Must be a valid group code
 		if (StringUtils.isBlank(group.getCode())) {
 			messages.add(new Message(group.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
-		} else if (!group.getCode().matches("[A-Z0-9]{2,20}")) {
+		} else if (!group.getCode().matches("[A-Z0-9_]{1,20}")) {
 			messages.add(new Message(group.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
 		}
+		
+		// Make sure the code is unique
+		FilteredPage<Group> groups = permissions.findGroups(permissions.defaultGroupsFilter().withCode(group.getCode()), GroupsFilter.getDefaultPaging().allItems());
+		for (Group existing : groups.getContent()) {
+			if (!existing.getGroupId().equals(group.getGroupId()))
+				messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another group: " + existing.getGroupId())));
+		}
+		
+		// Make sure there is an English description
+		if (StringUtils.isBlank(group.getName(Lang.ENGLISH)))
+			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An English description is required")));
+		
+		// Make sure there is a French description
+		if (StringUtils.isBlank(group.getName(Lang.FRENCH)))
+			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An French description is required")));
 		
 		if (!messages.isEmpty())
 			throw new BadRequestException("Group has validation errors", messages);
@@ -75,6 +93,47 @@ public class StructureValidationService implements CrmValidation {
 	}
 
 	public Role validate(Role role) {
+		List<Message> messages = new ArrayList<Message>();
+		
+		// Status
+		if (role.getStatus() == null)
+			throw new BadRequestException("Status cannot be null", role.getGroupId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a role"));
+
+		// If disabling the organization, make sure its not already disabled
+		if (role.getStatus().equals(Status.INACTIVE)) {
+			try {
+				Group existing = permissions.findGroup(role.getGroupId());
+				if (existing.getStatus().equals(Status.INACTIVE))
+					throw new BadRequestException("Creating inactive role", role.getGroupId(), "error", "status", new Localized(Lang.ENGLISH, "Cannot update a role that is already inactive"));
+			} catch (ItemNotFoundException e) {
+				throw new BadRequestException("Creating inactive role", role.getGroupId(), "error", "status", new Localized(Lang.ENGLISH, "Cannot create a new role that is inactive"));
+			}
+		}
+
+		// Must be a valid role code
+		if (StringUtils.isBlank(role.getCode())) {
+			messages.add(new Message(role.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+		} else if (!role.getCode().matches("[A-Z0-9_]{1,20}")) {
+			messages.add(new Message(role.getGroupId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+		}
+		
+		// Make sure the code is unique
+		FilteredPage<Group> roles = permissions.findGroups(permissions.defaultGroupsFilter().withCode(role.getCode()), GroupsFilter.getDefaultPaging().allItems());
+		for (Group existing : roles.getContent()) {
+			if (!existing.getGroupId().equals(role.getGroupId()))
+				messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another role: " + existing.getGroupId())));
+		}
+		
+		// Make sure there is an English description
+		if (StringUtils.isBlank(role.getName(Lang.ENGLISH)))
+			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An English description is required")));
+		
+		// Make sure there is a French description
+		if (StringUtils.isBlank(role.getName(Lang.FRENCH)))
+			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "An French description is required")));
+		
+		if (!messages.isEmpty())
+			throw new BadRequestException("Group has validation errors", messages);
 		return role;
 	}
 
