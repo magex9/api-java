@@ -70,6 +70,10 @@ public class Paging implements Pageable, Serializable {
 	public Paging withPageSize(int pageSize) {
 		return new Paging(pageNumber, pageSize, sort);
 	}
+	
+	public Paging allItems() {
+		return new Paging(1, Integer.MAX_VALUE, sort);
+	}
 
 	@Override
 	public long getOffset() {
