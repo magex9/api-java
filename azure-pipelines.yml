@@ -37,7 +37,7 @@ stages:
         
       - template: azure-package.yml
         parameters:
-          application_name: crm-hellowworld
+          application_name: crm-helloworld
       - template: azure-package.yml
         parameters:
           application_name: crm-activemq-spring-boot-server
