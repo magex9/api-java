@@ -49,16 +49,9 @@ steps:
       fi
 
       cp $(System.DefaultWorkingDirectory)/${{parameters.application_name}}/target/${{parameters.application_name}}-*-bootable.jar $build_dir/
-      cp -r $(System.DefaultWorkingDirectory)/crm-admin/admin $build_dir/
-      
-      #Create configuration file
-      touch ${config_file}
-      echo "export APPLICATION_NAME=${{parameters.application_name}}" >> $config_file
-      echo "export APPLICATION_VERSION=${{parameters.application_version}}" >> $config_file
-
-      cd ${build_dir}/../ ; tar -cvzf ${publish_dir}/${{parameters.application_name}}-${{parameters.application_version}}.tgz ${{parameters.application_name}}
-      cp $(System.DefaultWorkingDirectory)/test.sh $(System.DefaultWorkingDirectory)/publish/
-      ls -la $(System.DefaultWorkingDirectory)/**
+        
+      cd ${build_dir}/../ ; tar -cvf ${publish_dir}/${{parameters.application_name}}-${{parameters.application_version}}.tar ${{parameters.application_name}}
+      ls -la ${publish_dir}/**
   
 - publish: $(System.DefaultWorkingDirectory)/publish/${{parameters.application_name}}
   artifact: ${{parameters.application_name}}
