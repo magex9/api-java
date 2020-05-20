@@ -40,7 +40,7 @@ stages:
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
         mavenAuthenticateFeed: false
-        effectivePomSkip: false
+        effectivePomSkip: true
         sonarQubeRunAnalysis: false
 
     - task: MavenAuthenticate@0
