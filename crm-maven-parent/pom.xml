@@ -25,7 +25,7 @@
 
 	<repositories>
 		<repository>
-			<id>appdev-snapshots</id>
+			<id>finapplicationdevelopment-snapshots</id>
 			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
 			<releases>
 				<enabled>false</enabled>
