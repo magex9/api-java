@@ -95,12 +95,12 @@ type Query {
 	countOrganizations(filter: OrganizationFilter!): Int!
 	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
 	
-	# Location Service
+	# Location Queries
 	findLocation(locationId: String!): Location
 	countLocations(filter: LocationFilter!): Int!
 	findLocations(filter: LocationFilter!, paging: PagingInput!): LocationPage!
 	
-	# Person Service
+	# Person Queries
 	findPerson(personId: String!): Person
 	countPersons(filter: PersonFilter!): Int!
 	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
@@ -127,11 +127,11 @@ type Mutation {
 	createOrganization(displayName: String!, groups: [String]!): Organization
 	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, groups: [String]): Organization
 	
-	# Location Service
+	# Location Maintenance
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
 	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput, status: String): Location
 	
-	# Person Service
+	# Person Maintenance
 	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput, status: String): Person
 		

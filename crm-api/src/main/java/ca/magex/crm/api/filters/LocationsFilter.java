@@ -50,6 +50,7 @@ public class LocationsFilter implements Serializable {
 		this.displayName = (String) filterCriteria.get("displayName");
 		this.reference = (String) filterCriteria.get("reference");
 		this.organizationId = filterCriteria.keySet().contains("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")): null;
+		this.status = null;
 		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 			try {
 				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));

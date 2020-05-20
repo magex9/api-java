@@ -36,6 +36,7 @@ public class OrganizationsFilter implements Serializable {
 	
 	public OrganizationsFilter(Map<String, Object> filterCriteria) {
 		this.displayName = (String) filterCriteria.get("displayName");
+		this.status = null;
 		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 			try {
 				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));

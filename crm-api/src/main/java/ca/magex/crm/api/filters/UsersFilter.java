@@ -3,11 +3,14 @@ package ca.magex.crm.api.filters;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
@@ -44,6 +47,22 @@ public class UsersFilter implements Serializable {
 		this.status = status;
 		this.username = username;
 		this.role = role;
+	}
+	
+	public UsersFilter(Map<String, Object> filterCriteria) {
+		this.personId = filterCriteria.containsKey("personId") ? new Identifier((String) filterCriteria.get("personId")) : null;
+		this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+		this.role = (String) filterCriteria.get("role");
+		this.username = (String) filterCriteria.get("username");		
+		this.status = null;
+		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+			try {
+				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+			}
+			catch(IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
 	}
 
 	public UsersFilter() {
