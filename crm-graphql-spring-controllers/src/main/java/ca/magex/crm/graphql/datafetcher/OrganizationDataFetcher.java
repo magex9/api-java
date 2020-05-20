@@ -1,7 +1,6 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,16 +41,15 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<Integer> countOrganizations() {
 		return (environment) -> {
 			logger.info("Entering countOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
-			return (int) crm.countOrganizations(extractFilter(
-					extractFilter(environment)));
+			return (int) crm.countOrganizations(new OrganizationsFilter(extractFilter(environment)));
 		};
 	}
 
 	public DataFetcher<Page<OrganizationDetails>> findOrganizations() {
 		return (environment) -> {
 			logger.info("Entering findOrganizations@" + OrganizationDataFetcher.class.getSimpleName());
-			return crm.findOrganizationDetails(extractFilter(
-					extractFilter(environment)),
+			return crm.findOrganizationDetails(
+					new OrganizationsFilter(extractFilter(environment)),
 					extractPaging(environment));
 		};
 	}
@@ -61,19 +59,10 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
 			OrganizationDetails org = crm.findOrganizationDetails(organizationId);
-			if (environment.getArgument("displayName") != null) {
-				org = crm.updateOrganizationDisplayName(
-						organizationId,
-						environment.getArgument("displayName"));
-			}
-			if (environment.getArgument("locationId") != null) {
-				org = crm.updateOrganizationMainLocation(
-						organizationId,
-						new Identifier((String) environment.getArgument("locationId")));
-			}
+			/* update status first because the other updates have validation based on status */
 			if (environment.getArgument("status") != null) {
-				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch (status) {
+				String newStatus = StringUtils.upperCase(environment.getArgument("status"));
+				switch (newStatus) {
 				case "ACTIVE":
 					if (org.getStatus() != Status.ACTIVE) {
 						crm.enableOrganization(organizationId);
@@ -87,23 +76,35 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
+					throw new ApiException("Invalid status '" + newStatus + "', one of {ACTIVE, INACTIVE} expected", null, null);
 				}
 			}
+			if (environment.getArgument("displayName") != null) {
+				String newDisplayName = environment.getArgument("displayName");
+				if (!StringUtils.equals(org.getDisplayName(), newDisplayName)) {
+					org = crm.updateOrganizationDisplayName(organizationId, newDisplayName);
+				}
+			}
+			if (environment.getArgument("mainLocationId") != null) {
+				Identifier newMainLocationId = new Identifier((String) environment.getArgument("mainLocationId"));
+				if (org.getMainLocationId() == null || !org.getMainLocationId().equals(newMainLocationId)) {
+					org = crm.updateOrganizationMainLocation(organizationId, newMainLocationId);
+				}
+			}
+			if (environment.getArgument("mainContactId") != null) {
+				Identifier newMainContactId = new Identifier((String) environment.getArgument("mainContactId"));
+				if (org.getMainContactId() == null || !org.getMainContactId().equals(newMainContactId)) {
+					org = crm.updateOrganizationMainContact(organizationId, newMainContactId);
+				}
+			}
+			if (environment.getArgument("groups") != null) {
+				List<String> newGroups = environment.getArgument("groups");
+				if (!org.getGroups().containsAll(newGroups) || !newGroups.containsAll(org.getGroups())) {
+					org = crm.updateOrganizationGroups(organizationId, newGroups);
+				}
+			}
+
 			return crm.findOrganizationDetails(organizationId);
 		};
-	}
-
-	private OrganizationsFilter extractFilter(Map<String, Object> filter) {
-		String displayName = (String) filter.get("displayName");
-		Status status = null;
-		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
-			try {
-				status = Status.valueOf(StringUtils.upperCase((String) filter.get("status")));
-			} catch (IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
-		}
-		return new OrganizationsFilter(displayName, status);
 	}
 }

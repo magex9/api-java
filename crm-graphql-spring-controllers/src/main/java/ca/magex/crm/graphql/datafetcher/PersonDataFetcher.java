@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
@@ -57,6 +58,18 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering ByUser@" + PersonDataFetcher.class.getSimpleName());
 			User user = environment.getSource();			
 			return crm.findPersonDetails(user.getPerson().getPersonId());
+		};
+	}
+	
+	public DataFetcher<PersonDetails> byOrganization() {
+		return (environment) -> {
+			logger.info("Entering byOrganization@" + PersonDataFetcher.class.getSimpleName());
+			OrganizationDetails organization = environment.getSource();
+			if (organization.getMainContactId() != null) {
+				return crm.findPersonDetails(organization.getMainContactId());
+			} else {
+				return null;
+			}
 		};
 	}
 

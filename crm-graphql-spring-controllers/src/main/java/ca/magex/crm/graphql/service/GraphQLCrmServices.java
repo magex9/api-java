@@ -87,6 +87,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOrganization", organizationDataFetcher.createOrganization()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganization", organizationDataFetcher.updateOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainContact", personDataFetcher.byOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("groups", permissionDataFetcher.groupsByOrganization()))
 
 				// location data fetching
