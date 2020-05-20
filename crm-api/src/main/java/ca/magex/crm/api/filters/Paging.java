@@ -141,14 +141,14 @@ public class Paging implements Pageable, Serializable {
 					propertyName = "name:"; // maps to root locale
 				}
 				String propertyKey = null;
-				if (propertyName.indexOf(":") > 0) {
+				if (propertyName.indexOf(":") > -1) {
 					String[] vals = propertyName.split(":");
 					propertyName = vals[0];
 					propertyKey = vals[1];
 				}					
 				try {					
-					Object val1 = pub.getProperty(o1, propertyName);
-					Object val2 = pub.getProperty(o2, propertyName);
+					Object val1 = propertyName.equals("") ? o1 : pub.getProperty(o1, propertyName);
+					Object val2 = propertyName.equals("") ? o2 : pub.getProperty(o2, propertyName);
 					/* localized use the key */
 					if (Localized.class.isAssignableFrom(val1.getClass())) {
 						if (propertyKey == null) {
