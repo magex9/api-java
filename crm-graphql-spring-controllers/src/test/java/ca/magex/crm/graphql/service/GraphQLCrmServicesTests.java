@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import graphql.ExecutionResult;
 		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
 		MagexCrmProfiles.CRM_NO_AUTH
 })
+@Ignore
 public class GraphQLCrmServicesTests {
 
 	private Logger log = LoggerFactory.getLogger(getClass());

@@ -34,7 +34,7 @@ import graphql.ExecutionResult;
 		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
 		MagexCrmProfiles.CRM_NO_AUTH
 })
-public class AbstractDataFetcherTests {
+public abstract class AbstractDataFetcherTests {
 	
 	protected Logger log = LoggerFactory.getLogger(getClass());
 	protected ObjectMapper objectMapper = new ObjectMapper();
