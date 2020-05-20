@@ -3,6 +3,7 @@ package ca.magex.crm.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -126,7 +127,7 @@ public class CrmAsserts {
 		GROUP, ADMIN, SYS, ENGLISH, FRENCH
 	);
 	
-	public static final List<String> LOCALIZED_SORTED_ENGLISH = List.of(
+	public static final List<String> LOCALIZED_SORTED_ENGLISH_ASC = List.of(
 		"_",
 		"[ brackets ]",
 		"{ mustashe }",		
@@ -164,7 +165,9 @@ public class CrmAsserts {
 		"Zzzz"
 	);
 	
-	public static final List<String> LOCALIZED_SORTED_FRENCH = List.of(		
+	public static final List<String> LOCALIZED_SORTED_ENGLISH_DESC = reverse(LOCALIZED_SORTED_ENGLISH_ASC);
+	
+	public static final List<String> LOCALIZED_SORTED_FRENCH_ASC = List.of(		
 		"/ divide",
 		"* astrix",
 		"% percent",
@@ -202,6 +205,8 @@ public class CrmAsserts {
 		"Ÿ"
 	);
 	
+	public static final List<String> LOCALIZED_SORTED_FRENCH_DESC = reverse(LOCALIZED_SORTED_FRENCH_ASC);
+	
 	public Stream<Localized> apply(LocalizedFilter filter) {
 		return LOCALIZED_SORTING_OPTIONS.stream()
 			.filter(g -> filter.getCode() == null || StringUtils.equalsIgnoreCase(filter.getCode(), g.getCode()))
@@ -227,7 +232,7 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_ENGLISH_ASC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.ENGLISH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		assertEquals(LOCALIZED_SORTED_ENGLISH, names);
+		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC, names);
 	}
 	
 	@Test
@@ -235,18 +240,15 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_ENGLISH_DESC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.ENGLISH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		List<String> reversed = new ArrayList<String>(LOCALIZED_SORTED_ENGLISH);
-		Collections.reverse(reversed);
-		assertEquals(reversed, names);
+		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC, names);
 	}
 	
 	@Test
 	public void testLocalizedSortingFrenchAscending() throws Exception {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_FRENCH_ASC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.FRENCH).getContent();
-		printList(names, String.class);
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		assertEquals(LOCALIZED_SORTED_FRENCH, names);
+		assertEquals(LOCALIZED_SORTED_FRENCH_ASC, names);
 	}
 	
 	@Test
@@ -254,9 +256,13 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_FRENCH_DESC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.FRENCH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		List<String> reversed = new ArrayList<String>(LOCALIZED_SORTED_FRENCH);
+		assertEquals(LOCALIZED_SORTED_FRENCH_DESC, names);
+	}
+	
+	public static <T> List<T> reverse(List<T> list) {
+		List<T> reversed = new ArrayList<T>(list);
 		Collections.reverse(reversed);
-		assertEquals(reversed, names);
+		return reversed;
 	}
 	
 	public static <T> void printList(List<T> list, Class<T> type) {

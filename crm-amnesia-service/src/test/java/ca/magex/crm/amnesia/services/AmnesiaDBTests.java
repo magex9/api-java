@@ -1,8 +1,6 @@
 package ca.magex.crm.amnesia.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -13,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
-import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 
@@ -23,15 +20,6 @@ public class AmnesiaDBTests {
 	public void testAmnesiaPasswordEncoder() throws Exception {
 		assertEquals(AmnesiaPasswordEncoder.class, new AmnesiaDB(new AmnesiaPasswordEncoder()).getPasswordEncoder().getClass());
 		assertEquals(BCryptPasswordEncoder.class, new AmnesiaDB(new BCryptPasswordEncoder()).getPasswordEncoder().getClass());
-	}
-	
-	@Test
-	public void testSystemInitiailization() throws Exception {
-		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
-		assertFalse(db.isInitialized());
-		Identifier systemId = db.initialize("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
-		assertTrue(db.isInitialized());
-		assertEquals(systemId, db.initialize("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin"));
 	}
 	
 	@Test
@@ -58,16 +46,6 @@ public class AmnesiaDBTests {
 		db.reset();
 		db.dump();
 		assertEquals(0, ((Map<Identifier, Serializable>)field.get(db)).size());
-	}
-	
-	@Test
-	public void testDataDump() throws Exception {
-		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
-		db.getPermissions().createGroup(new Localized("A", "A", "A"));
-		db.getPermissions().createGroup(new Localized("B", "B", "B"));
-		db.getPermissions().createGroup(new Localized("C", "C", "C"));
-		db.getPermissions().createGroup(new Localized("D", "D", "D"));
-		db.dump(System.out);
 	}
 	
 }

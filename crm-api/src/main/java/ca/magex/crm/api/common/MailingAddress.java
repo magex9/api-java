@@ -8,7 +8,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Localized;
 
 public class MailingAddress implements Serializable {
 

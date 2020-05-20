@@ -3,6 +3,7 @@ package ca.magex.crm.test;
 import static ca.magex.crm.test.CrmAsserts.CANADA;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.ONTARIO;
+import static ca.magex.crm.test.CrmAsserts.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
@@ -76,14 +78,21 @@ public class CrmServicesTestSuite {
 	@Autowired private CrmUserService userService;
 	@Autowired private CrmPermissionService permissionService;
 
-	public void runAllTests() {
+	public void runAllTests() throws Exception {
+		initializationService.reset();
 		if (!initializationService.isInitialized())
 			initializationService.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
+		initializationService.dump();
 		runLookupServiceTests();
-		Identifier orgIdentifier = runOrganizationServiceTests();
-		runLocationServiceTests(orgIdentifier);
-		Identifier personIdentifer = runPersonServiceTests(orgIdentifier);
-		runUserServiceTests(personIdentifer);
+		try {
+			runCreatePermissions();
+			Identifier orgIdentifier = runOrganizationServiceTests();
+			runLocationServiceTests(orgIdentifier);
+			Identifier personIdentifer = runPersonServiceTests(orgIdentifier);
+			runUserServiceTests(personIdentifer);
+		} catch (BadRequestException e) {
+			e.printMessages(System.out);
+		}
 	}
 
 	private void runLookupServiceTests() {
@@ -119,6 +128,13 @@ public class CrmServicesTestSuite {
 			}
 		}
 		logger.info("Running lookup tests for " + item.getName() + " Passed");
+	}
+	
+	private void runCreatePermissions() {
+		Identifier sysId = permissionService.createGroup(SYS).getGroupId();
+		permissionService.createRole(sysId, SYS_ADMIN);
+		Identifier orgId = permissionService.createGroup(ORG).getGroupId();
+		permissionService.createRole(orgId, ORG_ADMIN);
 	}
 
 	private Identifier runOrganizationServiceTests() {
@@ -458,7 +474,7 @@ public class CrmServicesTestSuite {
 		 * add user role (first time we add a role it will generate a user name for us)
 		 */
 		logger.info("Updating User Role");
-		Role r1 = permissionService.findRoleByCode("CRM_ADMIN");
+		Role r1 = permissionService.findRoleByCode("ORG_ADMIN");
 		user = userService.updateUserRoles(user.getUserId(), List.of(r1.getCode()));
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
 

@@ -51,7 +51,15 @@ public class Localized implements Serializable {
 	
 	@Override
 	public String toString() {
-		return text.toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"code\":\"");
+		sb.append(getCode());
+		sb.append("\",\"en\":\"");
+		sb.append(getEnglishName());
+		sb.append("\",\"fr\":\"");
+		sb.append(getFrenchName());
+		sb.append("\"}");
+		return sb.toString();
 	}
 	
 	@Override

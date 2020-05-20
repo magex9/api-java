@@ -1,5 +1,7 @@
 package ca.magex.crm.api.exceptions;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +32,12 @@ public class BadRequestException extends ApiException {
 	
 	public List<Message> getMessages() {
 		return messages;
+	}
+	
+	public void printMessages(OutputStream os) throws IOException {
+		for (Message message : messages) {
+			os.write(message.toString().getBytes());
+		}
 	}
 	
 }

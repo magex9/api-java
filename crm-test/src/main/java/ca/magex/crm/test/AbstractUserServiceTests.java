@@ -1,10 +1,10 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
 import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
-import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.ORG;
+import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -162,8 +162,8 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getTotalPages());
 		Assert.assertEquals(3, usersPage.getTotalElements());
 		Assert.assertEquals(3, usersPage.getContent().size());
-		Assert.assertEquals(u2, usersPage.getContent().get(0));
-		Assert.assertEquals(u1, usersPage.getContent().get(1));
+		Assert.assertEquals(u1, usersPage.getContent().get(0));
+		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
 
 		usersPage = getUserService().findUsers(
@@ -198,8 +198,8 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getTotalPages());
 		Assert.assertEquals(3, usersPage.getTotalElements());
 		Assert.assertEquals(3, usersPage.getContent().size());
-		Assert.assertEquals(u2, usersPage.getContent().get(0));
-		Assert.assertEquals(u1, usersPage.getContent().get(1));
+		Assert.assertEquals(u1, usersPage.getContent().get(0));
+		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
 
 		usersPage = getUserService().findUsers(
@@ -211,8 +211,8 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getTotalPages());
 		Assert.assertEquals(2, usersPage.getTotalElements());
 		Assert.assertEquals(2, usersPage.getContent().size());
-		Assert.assertEquals(u2, usersPage.getContent().get(0));
-		Assert.assertEquals(u1, usersPage.getContent().get(1));
+		Assert.assertEquals(u1, usersPage.getContent().get(0));
+		Assert.assertEquals(u2, usersPage.getContent().get(1));
 
 		usersPage = getUserService().findUsers(
 				new UsersFilter(null, bob.getPersonId(), null, null, null),
@@ -234,8 +234,8 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getTotalPages());
 		Assert.assertEquals(3, usersPage.getTotalElements());
 		Assert.assertEquals(3, usersPage.getContent().size());
-		Assert.assertEquals(u2, usersPage.getContent().get(0));
-		Assert.assertEquals(u1, usersPage.getContent().get(1));
+		Assert.assertEquals(u1, usersPage.getContent().get(0));
+		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
 
 		usersPage = getUserService().findUsers(
@@ -257,8 +257,8 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getTotalPages());
 		Assert.assertEquals(3, usersPage.getTotalElements());
 		Assert.assertEquals(3, usersPage.getContent().size());
-		Assert.assertEquals(u2, usersPage.getContent().get(0));
-		Assert.assertEquals(u1, usersPage.getContent().get(1));
+		Assert.assertEquals(u1, usersPage.getContent().get(0));
+		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
 
 		usersPage = getUserService().findUsers(
