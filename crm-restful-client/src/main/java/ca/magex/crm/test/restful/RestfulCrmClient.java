@@ -1,5 +1,6 @@
 package ca.magex.crm.test.restful;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -821,6 +822,12 @@ public class RestfulCrmClient implements CrmClient {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public void dump(OutputStream os) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public boolean canCreateOrganization() {
@@ -1030,6 +1037,18 @@ public class RestfulCrmClient implements CrmClient {
 	public boolean canViewPermissions() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public Group validate(Group group) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role validate(Role role) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
