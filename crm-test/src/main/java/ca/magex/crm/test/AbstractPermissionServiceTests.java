@@ -594,37 +594,38 @@ public abstract class AbstractPermissionServiceTests {
 
 	@Test
 	public void testGroupSorting() throws Exception {
-		getPermissionService().createGroup(new Localized("A", "A", "A"));
-		getPermissionService().createGroup(new Localized("B", "$", "Y"));
-		getPermissionService().createGroup(new Localized("D", "_", "é"));
-		getPermissionService().createGroup(new Localized("C", "Zzzz", "()"));
-		getPermissionService().createGroup(new Localized("E", "AAbc", "Duplicate"));
-		getPermissionService().createGroup(new Localized("F", "AABc", "Duplicaté"));
-		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("G", "AAbA", "Duplicate")).getGroupId());
-		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("H", "AAba", "Duplicaté")).getGroupId());
-		getPermissionService().createGroup(new Localized("I", "00", "93 Numbers"));
-		getPermissionService().createGroup(new Localized("J", "AAbA", "ê"));
+		for (Localized name : LOCALIZED_SORTING_OPTIONS) {
+			getPermissionService().createGroup(name);
+		}
+		getPermissionService().disableGroup(getPermissionService().findGroupByCode("E").getGroupId());
+		getPermissionService().disableGroup(getPermissionService().findGroupByCode("F").getGroupId());
+		getPermissionService().disableGroup(getPermissionService().findGroupByCode("H").getGroupId());
 		
 		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
 		
-		assertEquals(List.of("_", "$", "00", "A", "AAbA", "AAbA", "AAba", "AABc", "AAbc", "Zzzz"),
+		printList(LOCALIZED_SORTED_ENGLISH_ASC, String.class);
+		printList(getPermissionService().findGroups(filter, 
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("englishName"))))
+				.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()), String.class);
+		
+		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC,
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 			
-		assertEquals(List.of("Zzzz", "AAbc", "AABc", "AAba", "AAbA", "AAbA", "A", "00", "$", "_"), 
+		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC, 
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("englishName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 				
-		assertEquals(List.of("()", "93 Numbers", "A", "Duplicate", "Duplicate", "Duplicaté", "Duplicaté", "é", "ê", "Y"), 
+		assertEquals(LOCALIZED_SORTED_FRENCH_ASC, 
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 					
-		assertEquals(List.of("Y", "ê", "é", "Duplicate", "Duplicate", "Duplicaté", "Duplicaté", "A", "93 Numbers", "()"), 
+		assertEquals(LOCALIZED_SORTED_FRENCH_DESC, 
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("frenchName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 	}
 	
