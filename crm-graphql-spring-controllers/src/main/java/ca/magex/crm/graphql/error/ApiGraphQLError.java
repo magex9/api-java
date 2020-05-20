@@ -31,9 +31,8 @@ public class ApiGraphQLError implements GraphQLError {
 
 	@Override
 	public String getMessage() {
-		return (cause.getErrorCode() == null) ? 
-				cause.getMessage() : 
-					(cause.getErrorCode() + ": " + cause.getMessage());
+		return cause.getMessage(); 
+				
 	}
 
 	@Override
