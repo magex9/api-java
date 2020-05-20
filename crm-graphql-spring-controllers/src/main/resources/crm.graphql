@@ -127,7 +127,7 @@ type Mutation {
 	
 	# Organization Maintenance 
 	createOrganization(displayName: String!, groups: [String]!): Organization
-	updateOrganization(organizationId: String!, displayName: String, locationId: String, status: String, groups: [String]): Organization
+	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, groups: [String]): Organization
 	
 	# Location Service
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
@@ -165,6 +165,7 @@ type Organization {
 	status: String!
 	displayName: String!
 	mainLocation: Location
+	mainContact: Person
 	groups: [Group]
 }
 
