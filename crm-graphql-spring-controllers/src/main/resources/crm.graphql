@@ -110,9 +110,7 @@ type Query {
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
-	
-	
-	# Lookup Service
+	# Lookup Queries
 	findCodeLookups(category: String!, code: String): [CodeLookup]
 }
 
