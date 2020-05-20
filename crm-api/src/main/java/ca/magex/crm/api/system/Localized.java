@@ -36,6 +36,14 @@ public class Localized implements Serializable {
 	public String getCode() {
 		return text.get(Lang.ROOT);
 	}
+	
+	public String getEnglishName() {
+		return text.get(Lang.ENGLISH);
+	}
+	
+	public String getFrenchName() {
+		return text.get(Lang.FRENCH);
+	}
 
 	public String get(Locale locale) {
 		return text.get(locale);

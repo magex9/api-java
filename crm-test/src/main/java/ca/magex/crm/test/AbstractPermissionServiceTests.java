@@ -599,9 +599,9 @@ public abstract class AbstractPermissionServiceTests {
 		getPermissionService().createGroup(new Localized("D", "_", "é"));
 		getPermissionService().createGroup(new Localized("C", "Zzzz", "()"));
 		getPermissionService().createGroup(new Localized("E", "AAbc", "Duplicate"));
-		getPermissionService().createGroup(new Localized("F", "AABc", "Duplicate"));
+		getPermissionService().createGroup(new Localized("F", "AABc", "Duplicaté"));
 		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("G", "AAbA", "Duplicate")).getGroupId());
-		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("H", "AAba", "Duplicate")).getGroupId());
+		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("H", "AAba", "Duplicaté")).getGroupId());
 		getPermissionService().createGroup(new Localized("I", "00", "93 Numbers"));
 		getPermissionService().createGroup(new Localized("J", "AAbA", "ê"));
 		
@@ -617,12 +617,12 @@ public abstract class AbstractPermissionServiceTests {
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 				
-		assertEquals(List.of("()", "93 Numbers", "A", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "é", "ê", "Y"), 
+		assertEquals(List.of("()", "93 Numbers", "A", "Duplicate", "Duplicate", "Duplicaté", "Duplicaté", "é", "ê", "Y"), 
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 					
-		assertEquals(List.of("Y", "ê", "é", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "A", "93 Numbers", "()"), 
+		assertEquals(List.of("Y", "ê", "é", "Duplicate", "Duplicate", "Duplicaté", "Duplicaté", "A", "93 Numbers", "()"), 
 			getPermissionService().findGroups(filter, 
 				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));

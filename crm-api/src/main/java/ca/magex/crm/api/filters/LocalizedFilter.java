@@ -1,0 +1,106 @@
+package ca.magex.crm.api.filters;
+
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+
+import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Status;
+
+public class LocalizedFilter implements Serializable {
+
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final Sort SORT_ENGLISH_ASC = Sort.by(Order.asc("englishName"));
+
+	public static final Sort SORT_ENGLISH_DESC = Sort.by(Order.desc("englishName"));
+
+	public static final Sort SORT_FRENCH_ASC = Sort.by(Order.asc("frenchName"));
+
+	public static final Sort SORT_FRENCH_DESC = Sort.by(Order.desc("frenchName"));
+
+	public static final Sort SORT_CODE_ASC = Sort.by(Order.asc("code"));
+
+	public static final Sort SORT_CODE_DESC = Sort.by(Order.desc("code"));
+
+	public static final List<Sort> SORT_OPTIONS = List.of(
+		SORT_ENGLISH_ASC,
+		SORT_ENGLISH_DESC,
+		SORT_FRENCH_ASC,
+		SORT_FRENCH_DESC,
+		SORT_CODE_ASC,
+		SORT_CODE_DESC
+	);
+
+	private String englishName;
+	
+	private String frenchName;
+	
+	private String code;
+
+	public LocalizedFilter() {
+		this(null, null, null);
+	}
+	
+	public LocalizedFilter(String englishName, String frenchName, String code) {
+		this.englishName = englishName;
+		this.frenchName = frenchName;
+		this.code = code;
+	}
+	
+	public LocalizedFilter(Map<String, Object> filterCriteria) {
+		this.englishName = (String) filterCriteria.get("englishName");
+		this.frenchName = (String) filterCriteria.get("frenchName");
+		this.code = (String) filterCriteria.get("code");
+	}
+	
+	public String getEnglishName() {
+		return englishName;
+	}
+	
+	public String getFrenchName() {
+		return frenchName;
+	}
+	
+	public String getCode() {
+		return code;
+	}
+	
+	public LocalizedFilter withEnglishName(String englishName) {
+		return new LocalizedFilter(englishName, frenchName, code);
+	}
+	
+	public LocalizedFilter withFrenchName(String frenchName) {
+		return new LocalizedFilter(englishName, frenchName, code);
+	}
+	
+	public LocalizedFilter withCode(String code) {
+		return new LocalizedFilter(englishName, frenchName, code);
+	}
+	
+	public LocalizedFilter withStatus(Status status) {
+		return new LocalizedFilter(englishName, frenchName, code);
+	}
+	
+	public static List<Sort> getSortOptions() {
+		return SORT_OPTIONS;
+	}
+	
+	public static Sort getDefaultSort() {
+		return Sort.by(Direction.ASC, "name");
+	}
+
+	public static Paging getDefaultPaging() {
+		return new Paging(getDefaultSort());
+	}
+
+	public Comparator<Localized> getComparator(Paging paging) {
+		return paging.new PagingComparator<Localized>();
+	}
+}
