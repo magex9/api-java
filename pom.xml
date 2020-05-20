@@ -12,6 +12,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	 <distributionManagement>
+	 	<repository>
+			<id>appdev-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/Api-java/_packaging/appdev-snapshots/maven/v1</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</distributionManagement>
+	
 	<repositories>
 		<repository>
 			<id>appdev-snapshots</id>
