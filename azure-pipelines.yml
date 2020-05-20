@@ -27,6 +27,7 @@ stages:
         echo Installing $(m2settings.secureFilePath) to the .m2 directory...
         mkdir -p ~/.m2
         sudo cp $(m2settings.secureFilePath) ~/.m2/settings.xml
+        ls -la ~/.m2/settings.xml
         
     - task: Maven@3
       inputs:
