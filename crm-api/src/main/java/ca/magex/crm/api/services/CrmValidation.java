@@ -12,8 +12,8 @@ import ca.magex.crm.api.system.Identifier;
 
 public interface CrmValidation {
 
-//    Group validate(Group group) throws BadRequestException;
-//    Role validate(Role role) throws BadRequestException;
+    Group validate(Group group) throws BadRequestException;
+    Role validate(Role role) throws BadRequestException;
     OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException;
     LocationDetails validate(LocationDetails location) throws BadRequestException;
     PersonDetails validate(PersonDetails person) throws BadRequestException;

@@ -1,6 +1,6 @@
 package ca.magex.crm.api.services;
 
-import java.io.PrintStream;
+import java.io.OutputStream;
 
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.roles.User;
@@ -13,7 +13,7 @@ public interface CrmInitializationService {
 	
 	boolean reset();
 	
-	void dump(PrintStream os);
+	void dump(OutputStream os);
 	
 	default void dump() {
 		dump(System.out);
