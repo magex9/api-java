@@ -1,6 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -135,7 +135,7 @@ public class HazelcastInitializationService implements CrmInitializationService 
 	}
 	
 	@Override
-	public void dump(PrintStream os) {
+	public void dump(OutputStream os) {
 		List<String> keys = List.of(
 			HazelcastLocationService.HZ_LOCATION_KEY,
 			HazelcastOrganizationService.HZ_ORGANIZATION_KEY,
@@ -151,7 +151,13 @@ public class HazelcastInitializationService implements CrmInitializationService 
 			data.keySet()
 				.stream()
 				.sorted((x, y) -> x.toString().compareTo(y.toString()))
-				.forEach(key -> os.println(key + " => " + data.get(key).toString()));
+				.forEach(key -> {
+					try {
+						os.write(new String(key + " => " + data.get(key) + "\n").getBytes());
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
 		}
 	}
 }

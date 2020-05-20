@@ -6,9 +6,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.hazelcast.core.HazelcastInstance;
-
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -20,10 +19,15 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastPersonServiceTests extends AbstractPersonServiceTests {
 
+	@Autowired private CrmInitializationService hzInitializationService;
 	@Autowired private CrmPersonService hzPersonService;
 	@Autowired private CrmPermissionService hzPermissionService;
 	@Autowired private CrmOrganizationService hzOrganizationService;
-	@Autowired private HazelcastInstance hzInstance;
+	
+	@Override
+	public CrmInitializationService getInitializationService() {
+		return hzInitializationService;
+	}
 	
 	@Override
 	public CrmOrganizationService getOrganizationService() {
@@ -39,12 +43,5 @@ public class HazelcastPersonServiceTests extends AbstractPersonServiceTests {
 	public CrmPermissionService getPermissionService() {
 		return hzPermissionService;
 	}
-	
-	@Override
-	public void reset() {
-		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
-		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
-		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
-		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
-	}
+
 }
