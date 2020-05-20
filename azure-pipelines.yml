@@ -36,7 +36,8 @@ stages:
 
     - task: MavenAuthenticate@0
       inputs:
-      artifactsFeeds: 'appdev-snapshots'
+        artifactsFeeds: 'appdev-snapshots'
+      
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
