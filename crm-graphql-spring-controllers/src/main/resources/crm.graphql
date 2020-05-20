@@ -82,14 +82,15 @@ input RoleFilter {
 }
 
 type Query {
-	# Permission Service
+	# Group Queries	
 	findGroup(groupId: String!): Group
 	findGroups(filter: GroupFilter!, paging: PagingInput!): GroupPage
 	
+	# Role Queries	
 	findRole(roleId: String!): Role
 	findRoles(filter: RoleFilter!, paging: PagingInput!): RolePage
 		
-	# Organization Service 
+	# Organization Queries 
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
 	findOrganizations(filter: OrganizationFilter!, paging: PagingInput!): OrganizationPage!
@@ -116,16 +117,17 @@ type Query {
 }
 
 type Mutation {
-	# Permission Service
+	# Group Maintenance
 	createGroup(code: String!, englishName: String!, frenchName: String!): Group
 	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
 	
+	# Role Maintenance	
 	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
 	updateRole(roleId: String!, englishName: String, frenchName: String, status: String): Role
 	
-	# Organization Service 
-	createOrganization(displayName: String!): Organization
-	updateOrganization(organizationId: String!, displayName: String, locationId: String, status: String): Organization
+	# Organization Maintenance 
+	createOrganization(displayName: String!, groups: [String]!): Organization
+	updateOrganization(organizationId: String!, displayName: String, locationId: String, status: String, groups: [String]): Organization
 	
 	# Location Service
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location

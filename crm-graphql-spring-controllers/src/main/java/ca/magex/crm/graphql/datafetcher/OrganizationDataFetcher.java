@@ -1,6 +1,6 @@
 package ca.magex.crm.graphql.datafetcher;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +21,15 @@ import graphql.schema.DataFetcher;
 public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
+
+	public DataFetcher<OrganizationDetails> createOrganization() {
+		return (environment) -> {
+			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			String organizationDisplayName = environment.getArgument("displayName");
+			List<String> groups = environment.getArgument("groups");
+			return crm.createOrganization(organizationDisplayName, groups);
+		};
+	}
 
 	public DataFetcher<OrganizationDetails> findOrganization() {
 		return (environment) -> {
@@ -47,14 +56,6 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<OrganizationDetails> createOrganization() {
-		return (environment) -> {
-			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationDisplayName = environment.getArgument("displayName");
-			return crm.createOrganization(organizationDisplayName, Collections.emptyList());
-		};
-	}
-
 	public DataFetcher<OrganizationDetails> updateOrganization() {
 		return (environment) -> {
 			logger.info("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
@@ -72,7 +73,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			}
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch(status) {
+				switch (status) {
 				case "ACTIVE":
 					if (org.getStatus() != Status.ACTIVE) {
 						crm.enableOrganization(organizationId);

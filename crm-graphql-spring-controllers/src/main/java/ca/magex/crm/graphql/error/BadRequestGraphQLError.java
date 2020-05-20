@@ -8,42 +8,36 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.system.Message;
+import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 
-/**
- * Custom GraphQL Error to wrap an ApiException
- * 
- * @author Jonny
- */
-public class ApiGraphQLError implements GraphQLError {
+public class BadRequestGraphQLError implements GraphQLError {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	private ApiException cause = null;
-
-	public ApiGraphQLError(ApiException cause) {
-		this.cause = cause;
+	private Message message = null;
+	
+	public BadRequestGraphQLError(Message message) {
+		this.message = message;
 	}
-
+	
 	@Override
 	public String getMessage() {
-		return (cause.getErrorCode() == null) ? 
-				cause.getMessage() : 
-					(cause.getErrorCode() + ": " + cause.getMessage());
+		return message.toString();
 	}
-
+	
 	@Override
 	public List<SourceLocation> getLocations() {
 		return Collections.emptyList();
 	}
-
+	
 	@Override
-	public ErrorType getErrorType() {
-		return ErrorType.ExecutionAborted;
+	public ErrorClassification getErrorType() {
+		return ErrorType.ValidationError;
 	}
 	
 	@Override
@@ -60,4 +54,5 @@ public class ApiGraphQLError implements GraphQLError {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
+	
 }
