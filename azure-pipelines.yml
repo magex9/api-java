@@ -19,15 +19,15 @@ stages:
   jobs:
   - job: Build
     steps:
-    - task: DownloadSecureFile@1
-      name: m2settings
-      inputs:
-        secureFile: 'm2settings'
-    - script: |
-        echo Installing $(m2settings.secureFilePath) to the .m2 directory...
-        mkdir -p ~/.m2
-        cp $(m2settings.secureFilePath) ~/.m2/settings.xml
-        ls -la ~/.m2/settings.xml
+    #- task: DownloadSecureFile@1
+    #  name: m2settings
+    #  inputs:
+    #    secureFile: 'm2settings'
+    #- script: |
+    #    echo Installing $(m2settings.secureFilePath) to the .m2 directory...
+    #    mkdir -p ~/.m2
+    #    cp $(m2settings.secureFilePath) ~/.m2/settings.xml
+    #    ls -la ~/.m2/settings.xml
         
     - task: Maven@3
       inputs:
@@ -45,7 +45,7 @@ stages:
 
     - task: MavenAuthenticate@0
       inputs:
-        artifactsFeeds: 'appdev-snapshots'
+        artifactsFeeds: 'finapplicationdevelopment-snapshots'
       
     - task: Maven@3
       inputs:
