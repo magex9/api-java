@@ -19,6 +19,7 @@ stages:
   jobs:
   - job: Build
     steps:
+    
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
@@ -32,7 +33,23 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
-      
+
+    - task: MavenAuthenticate@0
+      inputs:
+      artifactsFeeds: 'appdev-snapshots'
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'deploy'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.11'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: true
+        effectivePomSkip: true
+        sonarQubeRunAnalysis: false
+
     - template: azure-package.yml
       parameters:
         application_name: crm-helloworld
