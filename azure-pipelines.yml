@@ -31,7 +31,7 @@ stages:
         
     - task: Maven@3
       inputs:
-        mavenPomFile: 'pom.xml'
+        mavenPomFile: 'crm-helloworld/pom.xml'
         options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -48,6 +48,8 @@ stages:
         artifactsFeeds: 'finapplicationdevelopment-snapshots'
     - script: |
         cat ~/.m2/settings.xml
+        cd crm-helloworld
+        mvn deploy
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
