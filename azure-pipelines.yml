@@ -46,7 +46,8 @@ stages:
     - task: MavenAuthenticate@0
       inputs:
         artifactsFeeds: 'finapplicationdevelopment-snapshots'
-      
+    - script: |
+        cat ~/.m2/settings.xml
     - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
