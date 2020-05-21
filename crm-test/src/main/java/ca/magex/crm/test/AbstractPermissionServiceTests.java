@@ -591,40 +591,69 @@ public abstract class AbstractPermissionServiceTests {
 			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
 		}
 	}
+	
+	@Test
+	public void testGroupPaging() throws Exception {
+		for (Localized name : LOCALIZED_SORTING_OPTIONS) {
+			getPermissionService().createGroup(name);
+		}
+		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
+		Page<Group> page1 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))));
+		assertEquals(1, page1.getNumber());
+		assertEquals(false, page1.hasPrevious());
+		assertEquals(true, page1.hasNext());
+		assertEquals(10, page1.getContent().size());
+		
+		Page<Group> page2 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))).withPageNumber(2));
+		assertEquals(2, page2.getNumber());
+		assertEquals(true, page2.hasPrevious());
+		assertEquals(true, page2.hasNext());
+		assertEquals(10, page2.getContent().size());
+		
+		Page<Group> page3 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("code"))).withPageNumber(3));
+		assertEquals(3, page3.getNumber());		
+		assertEquals(true, page3.hasPrevious());
+		assertEquals(true, page3.hasNext());
+		assertEquals(10, page3.getContent().size());
+		
+		Page<Group> page4 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(4));
+		assertEquals(4, page4.getNumber());
+		assertEquals(true, page4.hasPrevious());
+		assertEquals(false, page4.hasNext());
+		assertEquals(5, page4.getContent().size());
+		
+		
+	}
 
 	@Test
 	public void testGroupSorting() throws Exception {
-		getPermissionService().createGroup(new Localized("A", "A", "A"));
-		getPermissionService().createGroup(new Localized("B", "$", "Y"));
-		getPermissionService().createGroup(new Localized("D", "_", "é"));
-		getPermissionService().createGroup(new Localized("C", "Zzzz", "()"));
-		getPermissionService().createGroup(new Localized("E", "AAbc", "Duplicate"));
-		getPermissionService().createGroup(new Localized("F", "AABc", "Duplicate"));
-		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("G", "AAbA", "Duplicate")).getGroupId());
-		getPermissionService().disableGroup(getPermissionService().createGroup(new Localized("H", "AAba", "Duplicate")).getGroupId());
-		getPermissionService().createGroup(new Localized("I", "00", "93 Numbers"));
-		getPermissionService().createGroup(new Localized("J", "AAbA", "ê"));
+		for (Localized name : LOCALIZED_SORTING_OPTIONS) {
+			getPermissionService().createGroup(name);
+		}		
+		getPermissionService().disableGroup(getPermissionService().findGroupByCode("E").getGroupId());
+		getPermissionService().disableGroup(getPermissionService().findGroupByCode("F").getGroupId());
+		getPermissionService().disableGroup(getPermissionService().findGroupByCode("H").getGroupId());
 		
 		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
 		
-		assertEquals(List.of("_", "$", "00", "A", "AAbA", "AAbA", "AAba", "AABc", "AAbc", "Zzzz"),
+		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC,
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 			
-		assertEquals(List.of("Zzzz", "AAbc", "AABc", "AAba", "AAbA", "AAbA", "A", "00", "$", "_"), 
+		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC, 
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("englishName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("englishName"))))
 					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
 				
-		assertEquals(List.of("()", "93 Numbers", "A", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "é", "ê", "Y"), 
+		assertEquals(LOCALIZED_SORTED_FRENCH_ASC, 
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 					
-		assertEquals(List.of("Y", "ê", "é", "Duplicate", "Duplicate", "Duplicate", "Duplicate", "A", "93 Numbers", "()"), 
+		assertEquals(LOCALIZED_SORTED_FRENCH_DESC, 
 			getPermissionService().findGroups(filter, 
-				GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.desc("frenchName"))))
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("frenchName"))))
 					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
 	}
 	
@@ -653,6 +682,80 @@ public abstract class AbstractPermissionServiceTests {
 				
 		assertEquals(List.of(ENGLISH, FRENCH),
 			getPermissionService().findGroups(getPermissionService().defaultGroupsFilter()
+				.withStatus(Status.INACTIVE), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+				
+	}
+
+	@Test
+	public void testRoleSorting() throws Exception {
+		Identifier group1 = getPermissionService().createGroup(SYS).getGroupId();
+		Identifier group2 = getPermissionService().createGroup(ADMIN).getGroupId();
+		for (int i = 0; i < LOCALIZED_SORTING_OPTIONS.size(); i++) {
+			if (i < 6) {
+				getPermissionService().createRole(group1, LOCALIZED_SORTING_OPTIONS.get(i));
+			} else {
+				getPermissionService().createRole(group2, LOCALIZED_SORTING_OPTIONS.get(i));
+			}
+		}
+		getPermissionService().disableRole(getPermissionService().findRoleByCode(LOCALIZED_SORTING_OPTIONS.get(3).getCode()).getRoleId());
+		getPermissionService().disableRole(getPermissionService().findRoleByCode(LOCALIZED_SORTING_OPTIONS.get(8).getCode()).getRoleId());
+		getPermissionService().disableRole(getPermissionService().findRoleByCode(LOCALIZED_SORTING_OPTIONS.get(11).getCode()).getRoleId());
+		
+		RolesFilter filter = getPermissionService().defaultRolesFilter();
+		
+		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC,
+			getPermissionService().findRoles(filter, 
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("englishName"))))
+					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
+			
+		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC, 
+			getPermissionService().findRoles(filter, 
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("englishName"))))
+					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
+				
+		assertEquals(LOCALIZED_SORTED_FRENCH_ASC, 
+			getPermissionService().findRoles(filter, 
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.asc("frenchName"))))
+					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
+					
+		assertEquals(LOCALIZED_SORTED_FRENCH_DESC, 
+			getPermissionService().findRoles(filter, 
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("frenchName"))))
+					.getContent().stream().map(g -> g.getName(Lang.FRENCH)).collect(Collectors.toList()));
+		
+		assertEquals(List.of(LOCALIZED_SORTING_OPTIONS.get(8).getEnglishName(), LOCALIZED_SORTING_OPTIONS.get(11).getEnglishName()),
+			getPermissionService().findRoles(filter.withGroupId(group2).withStatus(Status.INACTIVE), 
+				GroupsFilter.getDefaultPaging().allItems().withSort(Sort.by(Order.desc("englishName"))))
+					.getContent().stream().map(g -> g.getName(Lang.ENGLISH)).collect(Collectors.toList()));
+		
+	}
+	
+	@Test
+	public void testRolesFilters() throws Exception {
+		Identifier groupId = getPermissionService().createGroup(ORG).getGroupId();
+		getPermissionService().createRole(groupId, GROUP);
+		getPermissionService().createRole(groupId, SYS);
+		getPermissionService().createRole(groupId, ADMIN);
+		getPermissionService().disableRole(getPermissionService().createRole(groupId, ENGLISH).getRoleId());
+		getPermissionService().disableRole(getPermissionService().createRole(groupId, FRENCH).getRoleId());
+		
+		Paging englishSort = RolesFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName")));
+		Paging frenchSort = RolesFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName")));
+		
+		assertEquals(List.of(ENGLISH, FRENCH, SYS),
+			getPermissionService().findRoles(getPermissionService().defaultRolesFilter()
+				.withEnglishName("e"), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+			
+		assertEquals(List.of(GROUP, SYS),
+			getPermissionService().findRoles(getPermissionService().defaultRolesFilter()
+				.withFrenchName("e"), frenchSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+		
+		assertEquals(List.of(ADMIN, GROUP, SYS),
+			getPermissionService().findRoles(getPermissionService().defaultRolesFilter()
+				.withStatus(Status.ACTIVE), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
+				
+		assertEquals(List.of(ENGLISH, FRENCH),
+			getPermissionService().findRoles(getPermissionService().defaultRolesFilter()
 				.withStatus(Status.INACTIVE), englishSort).stream().map(g -> g.getName()).collect(Collectors.toList()));
 				
 	}

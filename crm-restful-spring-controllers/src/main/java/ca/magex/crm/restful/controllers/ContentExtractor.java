@@ -43,7 +43,7 @@ public class ContentExtractor {
 	
 	public static Locale extractLocale(HttpServletRequest req) {
 		if (req.getHeader("Locale") == null)
-			return null;
+			return Lang.ROOT;
 		return Lang.parse(req.getHeader("Locale"));
 	}
 	

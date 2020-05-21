@@ -19,8 +19,8 @@ public class Localized implements Serializable {
 		this(Map.of(notNull("Locale", locale), notNull("Value", value)));
 	}
 	
-	public Localized(String code, String english, String french) {
-		this(Map.of(Lang.ROOT, notNull("Code", code), Lang.ENGLISH, notNull("English", english), Lang.FRENCH, notNull("French", french)));
+	public Localized(String code, String englishName, String frenchName) {
+		this(Map.of(Lang.ROOT, notNull("Code", code), Lang.ENGLISH, notNull("English", englishName), Lang.FRENCH, notNull("French", frenchName)));
 	}
 	
 	private static <T> T notNull(String name, T obj) {
@@ -36,6 +36,14 @@ public class Localized implements Serializable {
 	public String getCode() {
 		return text.get(Lang.ROOT);
 	}
+	
+	public String getEnglishName() {
+		return text.get(Lang.ENGLISH);
+	}
+	
+	public String getFrenchName() {
+		return text.get(Lang.FRENCH);
+	}
 
 	public String get(Locale locale) {
 		return text.get(locale);
@@ -43,7 +51,15 @@ public class Localized implements Serializable {
 	
 	@Override
 	public String toString() {
-		return text.toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"code\":\"");
+		sb.append(getCode());
+		sb.append("\",\"en\":\"");
+		sb.append(getEnglishName());
+		sb.append("\",\"fr\":\"");
+		sb.append(getFrenchName());
+		sb.append("\"}");
+		return sb.toString();
 	}
 	
 	@Override
@@ -55,5 +71,4 @@ public class Localized implements Serializable {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-	
 }

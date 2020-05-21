@@ -57,6 +57,16 @@ public class JsonTransformer {
 		return cls.getSimpleName();
 	}
 	
+	public DataObject formatGroup(Group group) {
+		if (group == null)
+			return null;
+		List<DataPair> pairs = new ArrayList<DataPair>();
+		formatIdentifier(pairs, "groupId", group, Group.class);
+		formatStatus(pairs, "status", group);
+		formatLocalized(pairs, "name", group);
+		return pairs.isEmpty() ? null : new DataObject(pairs);
+	}
+	
 	public DataObject formatLocationDetails(LocationDetails location) {
 		if (location == null)
 			return null;
@@ -323,6 +333,22 @@ public class JsonTransformer {
 					} else {
 						parent.add(new DataPair(key, new DataText(status.getName(locale))));
 					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void formatLocalized(List<DataPair> parent, String key, Object obj) {
+		if (obj != null) {
+			try {
+				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
+				if (!m.getReturnType().equals(Localized.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected Status but got: " + m.getReturnType().getName());
+				Localized localized = (Localized)m.invoke(obj, new Object[] { });
+				if (localized != null) {
+					parent.add(new DataPair(key, new DataText(localized.get(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

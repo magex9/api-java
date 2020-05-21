@@ -16,6 +16,7 @@ import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -81,7 +82,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected", null, null);
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
 			/* need to be careful not to nullify names that aren't passed in for update */
@@ -96,7 +97,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 
 	public DataFetcher<List<Group>> groupsByOrganization() {
 		return (environment) -> {
-			logger.info("Entering byOrganization@" + PermissionDataFetcher.class.getSimpleName());
+			logger.info("Entering groupsByOrganization@" + PermissionDataFetcher.class.getSimpleName());
 			OrganizationDetails organization = environment.getSource();
 			return organization.getGroups().stream().map(groupCode -> crm.findGroupByCode(groupCode)).collect(Collectors.toList());
 		};
@@ -151,7 +152,7 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected", null, null);
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
 			/* need to be careful not to nullify names that aren't passed in for update */
@@ -161,6 +162,14 @@ public class PermissionDataFetcher extends AbstractDataFetcher {
 				role = crm.updateRoleName(roleId, new Localized(role.getCode(), englishName, frenchName));
 			}
 			return role;
+		};
+	}
+	
+	public DataFetcher<List<Role>> rolesByUser() {
+		return (environment) -> {
+			logger.info("Entering rolesByUser@" + PermissionDataFetcher.class.getSimpleName());
+			User user = environment.getSource();
+			return user.getRoles().stream().map(roleCode -> crm.findRoleByCode(roleCode)).collect(Collectors.toList());
 		};
 	}
 }

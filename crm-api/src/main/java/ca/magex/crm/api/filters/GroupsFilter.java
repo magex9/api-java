@@ -53,6 +53,7 @@ public class GroupsFilter implements Serializable {
 		this.englishName = (String) filterCriteria.get("englishName");
 		this.frenchName = (String) filterCriteria.get("frenchName");
 		this.code = (String) filterCriteria.get("code");
+		this.status = null;
 		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 			try {
 				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));

@@ -1,6 +1,6 @@
 package ca.magex.crm.api.secured;
 
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,6 +14,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -120,7 +121,7 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	@Override
-	public void dump(PrintStream os) {
+	public void dump(OutputStream os) {
 		initializationService.dump(os);
 	}
 	
@@ -411,7 +412,6 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		// TODO filter results of the find based on the policy
 		return personService.findPersonDetails(filter, paging);
 	}
 	
@@ -505,6 +505,16 @@ public final class SecuredCrmServices implements Crm {
 	@Override
 	public boolean canUpdateUserPassword(Identifier userId) {
 		return userPolicy.canUpdateUserPassword(userId);
+	}
+	
+	@Override
+	public Group validate(Group group) throws BadRequestException {
+		return validationService.validate(group);
+	}
+	
+	@Override
+	public Role validate(Role role) throws BadRequestException {
+		return validationService.validate(role);
 	}
 	
 	public OrganizationDetails validate(OrganizationDetails organization) {

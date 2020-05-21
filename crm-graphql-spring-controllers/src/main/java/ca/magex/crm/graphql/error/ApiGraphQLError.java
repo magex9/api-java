@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.services.Crm;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
@@ -20,19 +21,18 @@ import graphql.language.SourceLocation;
  */
 public class ApiGraphQLError implements GraphQLError {
 
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
 	private ApiException cause = null;
 
 	public ApiGraphQLError(ApiException cause) {
 		this.cause = cause;
 	}
 
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public String getMessage() {
-		return (cause.getErrorCode() == null) ? 
-				cause.getMessage() : 
-					(cause.getErrorCode() + ": " + cause.getMessage());
+		return cause.getMessage(); 
+				
 	}
 
 	@Override

@@ -43,7 +43,41 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+		<!-- Test Dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-test</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-amnesia-service</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-policies</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-resources</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 
 </project>

@@ -37,6 +37,18 @@ public final class DataArray extends DataElement {
 		return elements;
 	}
 	
+	public DataElement get(int index) {
+		return elements.get(index);
+	}
+	
+	public DataObject getObject(int index) {
+		return (DataObject)get(index);
+	}
+	
+	public DataArray getArray(int index) {
+		return (DataArray)get(index);
+	}
+	
 	public int size() {
 		return elements.size();
 	}

@@ -3,8 +3,16 @@ package ca.magex.crm.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -13,6 +21,10 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.filters.LocalizedFilter;
+import ca.magex.crm.api.filters.PageBuilder;
+import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -80,6 +92,194 @@ public class CrmAsserts {
 	
 	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition("Corporate Services", "Development", "Developer");
 	
+	public static final List<Localized> LOCALIZED_SORTING_OPTIONS = List.of(
+		new Localized("A", "A", "A"),
+		new Localized("B", "$", " space first"),
+		new Localized("C", "$ Store", "/ divide"),
+		new Localized("D", "_", "+ plus"),
+		new Localized("E", "æther", "se dépêcher"),
+		new Localized("F", "Montreal", "À"),
+		new Localized("G", "Montréal", "ÂÂ"),
+		new Localized("H", "aaa", "A"),
+		new Localized("I", "aaAB", "a"),
+		new Localized("J", "AAAA", "ÄAÄ"),
+		new Localized("K", "AaaB", "äaÄ"),
+		new Localized("L", "AaAb", "à"),
+		new Localized("M", "{ mustashe }", "Ÿ"),
+		new Localized("N", " space first", "énorme"),
+		new Localized("O", "a", "Tout"),
+		new Localized("P", "1 First", "tout à fait"),
+		new Localized("Q", "Java", "Tout le"),
+		new Localized("R", "AA", "être"),
+		new Localized("S", "0 Zero", "garçon"),
+		new Localized("T", "Zzzz", "était"),
+		new Localized("U", "Æther", "Île"),
+		new Localized("V", "a", "mère"),
+		new Localized("W", "resume", "Où"),
+		new Localized("X", "Résumé", "français"),
+		new Localized("Y", "résumé", "% percent"),
+		new Localized("Z", "[ brackets ]", "* astrix"),
+		new Localized("A_B", "Boy", "Garçon"),
+		new Localized("A_B_", "** Footnote", "Jusqu’à ce que"),
+		new Localized("AB_C", "* Astrix", "œil"),
+		new Localized("XYZ", "XYZ", "XYZ"),
+		GROUP, ADMIN, SYS, ENGLISH, FRENCH
+	);
+	
+	public static final List<String> LOCALIZED_SORTED_ENGLISH_ASC = List.of(
+		"_",
+		"[ brackets ]",
+		"{ mustashe }",		
+		"$",
+		"$ Store",		
+		"** Footnote",
+		"* Astrix",		
+		"0 Zero",
+		"1 First",
+		"A",
+		"a",
+		"a",
+		"AA",
+		"aaa",
+		"AAAA",
+		"AaAb",
+		"AaaB",
+		"aaAB",
+		"Admin",
+		"Æther",
+		"æther",
+		"Boy",
+		"English",
+		"French",
+		"Group",
+		"Java",
+		"Montreal",
+		"Montréal",
+		"Résumé",
+		"resume",
+		"résumé",
+		" space first",
+		"System",
+		"XYZ",
+		"Zzzz"
+	);
+	
+	public static final List<String> LOCALIZED_SORTED_ENGLISH_DESC = reverse(LOCALIZED_SORTED_ENGLISH_ASC);
+	
+	public static final List<String> LOCALIZED_SORTED_FRENCH_ASC = List.of(		
+		"/ divide",
+		"* astrix",
+		"% percent",
+		"+ plus",						
+		"A",
+		"A",
+		"a",
+		"À",
+		"à",
+		"ÂÂ",
+		"ÄAÄ",
+		"äaÄ",
+		"Admin",		
+		"Anglais",
+		"énorme",
+		"était",
+		"être",		
+		"Français",
+		"français",
+		"Garçon",
+		"garçon",
+		"Groupe",
+		"Île",
+		"Jusqu’à ce que",
+		"mère",
+		"œil",
+		"Où",
+		"se dépêcher",
+		" space first",		
+		"Système",
+		"Tout",
+		"tout à fait",
+		"Tout le",
+		"XYZ",
+		"Ÿ"
+	);
+	
+	public static final List<String> LOCALIZED_SORTED_FRENCH_DESC = reverse(LOCALIZED_SORTED_FRENCH_ASC);
+	
+	public Stream<Localized> apply(LocalizedFilter filter) {
+		return LOCALIZED_SORTING_OPTIONS.stream()
+			.filter(g -> filter.getCode() == null || StringUtils.equalsIgnoreCase(filter.getCode(), g.getCode()))
+			.filter(g -> filter.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getEnglishName(), filter.getEnglishName()))
+			.filter(g -> filter.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getFrenchName(), filter.getFrenchName()));
+	}
+	
+	public long countLocalizedNames(LocalizedFilter filter) {
+		return apply(filter).count();
+	}
+	
+	public FilteredPage<String> findLocalizedNames(LocalizedFilter filter, Paging paging, Locale locale) {
+		List<String> matching = apply(filter)
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
+			.map(i -> i.get(locale))
+			.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(filter, matching, paging);
+	}
+	
+	@Test
+	public void testLocalizedSortingEnglishAscending() throws Exception {
+		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_ENGLISH_ASC).allItems();
+		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.ENGLISH).getContent();
+		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
+		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC, names);
+	}
+	
+	@Test
+	public void testLocalizedSortingEnglishDescending() throws Exception {
+		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_ENGLISH_DESC).allItems();
+		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.ENGLISH).getContent();
+		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
+		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC, names);
+	}
+	
+	@Test
+	public void testLocalizedSortingFrenchAscending() throws Exception {
+		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_FRENCH_ASC).allItems();
+		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.FRENCH).getContent();
+		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
+		assertEquals(LOCALIZED_SORTED_FRENCH_ASC, names);
+	}
+	
+	@Test
+	public void testLocalizedSortingFrenchDescending() throws Exception {
+		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_FRENCH_DESC).allItems();
+		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.FRENCH).getContent();
+		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
+		assertEquals(LOCALIZED_SORTED_FRENCH_DESC, names);
+	}
+	
+	public static <T> List<T> reverse(List<T> list) {
+		List<T> reversed = new ArrayList<T>(list);
+		Collections.reverse(reversed);
+		return reversed;
+	}
+	
+	public static <T> void printList(List<T> list, Class<T> type) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("List<" + type.getSimpleName() + "> list = List.of(\n");
+		for (int i = 0; i < list.size(); i++) {
+			T item = list.get(i);
+			if (i == list.size() - 1) {
+				sb.append("\t\"" + item + "\"\n");
+			} else {
+				sb.append("\t\"" + item + "\",\n");
+			}
+		}
+		sb.append(");\n");
+		System.out.println("\n");
+		System.out.println(sb.toString());
+	}
+	
 	public static <T> void assertSinglePage(Page<T> page, int totalElements) {
 		assertPage(page, totalElements, totalElements, 1, false, false, false, false);
 	}
@@ -106,5 +306,4 @@ public class CrmAsserts {
 		assertEquals(e.getMessages().stream().map((m) -> m.toString()).collect(Collectors.joining()), 1, e.getMessages().size());
 		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
 	}
-	
 }
