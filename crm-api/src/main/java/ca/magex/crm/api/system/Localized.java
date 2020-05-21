@@ -19,8 +19,8 @@ public class Localized implements Serializable {
 		this(Map.of(notNull("Locale", locale), notNull("Value", value)));
 	}
 	
-	public Localized(String code, String english, String french) {
-		this(Map.of(Lang.ROOT, notNull("Code", code), Lang.ENGLISH, notNull("English", english), Lang.FRENCH, notNull("French", french)));
+	public Localized(String code, String englishName, String frenchName) {
+		this(Map.of(Lang.ROOT, notNull("Code", code), Lang.ENGLISH, notNull("English", englishName), Lang.FRENCH, notNull("French", frenchName)));
 	}
 	
 	private static <T> T notNull(String name, T obj) {
