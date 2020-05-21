@@ -60,7 +60,7 @@ stages:
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         mavenAuthenticateFeed: true
-        effectivePomSkip: true
+        effectivePomSkip: false
         sonarQubeRunAnalysis: false
 
     - template: azure-package.yml
