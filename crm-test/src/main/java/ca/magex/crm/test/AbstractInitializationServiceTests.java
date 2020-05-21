@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -591,6 +591,40 @@ public abstract class AbstractPermissionServiceTests {
 			assertMessage(e.getMessages().get(2), null, "error", "frenchName", "An French description is required");
 		}
 	}
+	
+	@Test
+	public void testGroupPaging() throws Exception {
+		for (Localized name : LOCALIZED_SORTING_OPTIONS) {
+			getPermissionService().createGroup(name);
+		}
+		
+		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
+		Page<Group> page1 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))));
+		assertEquals(1, page1.getNumber());
+		assertEquals(false, page1.hasPrevious());
+		assertEquals(true, page1.hasNext());
+		assertEquals(10, page1.getContent().size());
+		
+		Page<Group> page2 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(2));
+		assertEquals(2, page2.getNumber());
+		assertEquals(true, page2.hasPrevious());
+		assertEquals(true, page2.hasNext());
+		assertEquals(10, page2.getContent().size());
+		
+		Page<Group> page3 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(3));
+		assertEquals(3, page3.getNumber());
+		assertEquals(true, page3.hasPrevious());
+		assertEquals(false, page3.hasNext());
+		assertEquals(5, page3.getContent().size());
+		
+		Page<Group> page4 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(4));
+		assertEquals(4, page4.getNumber());
+		assertEquals(true, page4.hasPrevious());
+		assertEquals(false, page4.hasNext());
+		assertEquals(0, page4.getContent().size());
+		
+		
+	}
 
 	@Test
 	public void testGroupSorting() throws Exception {
