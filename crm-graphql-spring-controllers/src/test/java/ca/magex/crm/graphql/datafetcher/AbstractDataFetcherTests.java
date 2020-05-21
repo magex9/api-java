@@ -22,8 +22,8 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.graphql.TestConfig;
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
+import ca.magex.crm.test.TestConfig;
 import graphql.ExecutionResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
