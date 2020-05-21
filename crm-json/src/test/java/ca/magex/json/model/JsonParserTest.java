@@ -164,12 +164,6 @@ public class JsonParserTest {
 		} catch (RuntimeException e) {
 			assertEquals("Expected a pair value at index: 14 (x } })", e.getMessage());
 		}
-		try {
-			JsonParser.parse("{ \"person\": { } }");
-			fail();
-		} catch (RuntimeException e) {
-			assertEquals("Expected a pair value at index: 14 (x } })", e.getMessage());
-		}
 	}
 	
 }
