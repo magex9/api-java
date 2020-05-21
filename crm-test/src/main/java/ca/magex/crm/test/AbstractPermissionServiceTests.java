@@ -605,13 +605,13 @@ public abstract class AbstractPermissionServiceTests {
 		assertEquals(true, page1.hasNext());
 		assertEquals(10, page1.getContent().size());
 		
-		Page<Group> page2 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(2));
+		Page<Group> page2 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("frenchName"))).withPageNumber(2));
 		assertEquals(2, page2.getNumber());
 		assertEquals(true, page2.hasPrevious());
 		assertEquals(true, page2.hasNext());
 		assertEquals(10, page2.getContent().size());
 		
-		Page<Group> page3 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(3));
+		Page<Group> page3 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("code"))).withPageNumber(3));
 		assertEquals(3, page3.getNumber());
 		assertEquals(true, page3.hasPrevious());
 		assertEquals(false, page3.hasNext());
