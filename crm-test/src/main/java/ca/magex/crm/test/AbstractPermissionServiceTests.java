@@ -597,7 +597,6 @@ public abstract class AbstractPermissionServiceTests {
 		for (Localized name : LOCALIZED_SORTING_OPTIONS) {
 			getPermissionService().createGroup(name);
 		}
-		
 		GroupsFilter filter = getPermissionService().defaultGroupsFilter();
 		Page<Group> page1 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))));
 		assertEquals(1, page1.getNumber());
@@ -612,16 +611,16 @@ public abstract class AbstractPermissionServiceTests {
 		assertEquals(10, page2.getContent().size());
 		
 		Page<Group> page3 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("code"))).withPageNumber(3));
-		assertEquals(3, page3.getNumber());
+		assertEquals(3, page3.getNumber());		
 		assertEquals(true, page3.hasPrevious());
-		assertEquals(false, page3.hasNext());
-		assertEquals(5, page3.getContent().size());
+		assertEquals(true, page3.hasNext());
+		assertEquals(10, page3.getContent().size());
 		
 		Page<Group> page4 = getPermissionService().findGroups(filter, GroupsFilter.getDefaultPaging().withSort(Sort.by(Order.asc("englishName"))).withPageNumber(4));
 		assertEquals(4, page4.getNumber());
 		assertEquals(true, page4.hasPrevious());
 		assertEquals(false, page4.hasNext());
-		assertEquals(0, page4.getContent().size());
+		assertEquals(5, page4.getContent().size());
 		
 		
 	}
@@ -630,7 +629,7 @@ public abstract class AbstractPermissionServiceTests {
 	public void testGroupSorting() throws Exception {
 		for (Localized name : LOCALIZED_SORTING_OPTIONS) {
 			getPermissionService().createGroup(name);
-		}
+		}		
 		getPermissionService().disableGroup(getPermissionService().findGroupByCode("E").getGroupId());
 		getPermissionService().disableGroup(getPermissionService().findGroupByCode("F").getGroupId());
 		getPermissionService().disableGroup(getPermissionService().findGroupByCode("H").getGroupId());

@@ -40,5 +40,28 @@ public class FilteredPage<T> extends PageImpl<T> {
 			throw new DuplicateItemFoundException("Duplicate items found: " + filter);
 		return getContent().get(0);
 	}
+	
+	@Override
+	public boolean hasPrevious() {
+		return getNumber() > 1;
+	}
+	
+	@Override
+	public boolean hasNext() {
+		return getNumber() < getTotalPages();
+	}
+	
+	@Override
+	public String toString() {
+
+		String contentType = "UNKNOWN";
+		List<T> content = getContent();
+
+		if (content.size() > 0) {
+			contentType = content.get(0).getClass().getName();
+		}
+
+		return String.format("Page %s of %d containing %s instances", getNumber(), getTotalPages(), contentType);
+	}
 
 }

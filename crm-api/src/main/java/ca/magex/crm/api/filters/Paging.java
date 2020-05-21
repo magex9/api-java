@@ -36,19 +36,20 @@ public class Paging implements Pageable, Serializable {
 
 	public Paging(int pageNumber, int pageSize, Sort sort) {
 		super();
-		this.offset = pageSize * (pageNumber - 1);
+		this.pageNumber = (pageNumber < 1 ? 1 : pageNumber); // if we ask for a page before 1, return the first page
 		this.pageSize = pageSize;
-		this.pageNumber = pageNumber;
 		this.sort = sort;
+		/* calculate the offset */
+		this.offset = this.pageSize * (this.pageNumber - 1);
 	}
 
-	public Paging(long offset, int pageSize, Sort sort) {
-		super();
-		this.offset = offset;
-		this.pageSize = pageSize;
-		this.pageNumber = (int) Math.floor(offset / pageSize);
-		this.sort = sort;
-	}
+//	public Paging(long offset, int pageSize, Sort sort) {
+//		super();
+//		this.offset = offset;
+//		this.pageSize = pageSize;
+//		this.pageNumber = (int) Math.floor(offset / pageSize);
+//		this.sort = sort;
+//	}
 
 	public Paging(Sort sort) {
 		this(1, 10, sort);
@@ -81,9 +82,9 @@ public class Paging implements Pageable, Serializable {
 		return offset;
 	}
 
-	public Paging withOffset(long offset) {
-		return new Paging(offset, pageSize, sort);
-	}
+//	public Paging withOffset(long offset) {
+//		return new Paging(offset, pageSize, sort);
+//	}
 
 	@Override
 	public Sort getSort() {
@@ -101,17 +102,17 @@ public class Paging implements Pageable, Serializable {
 
 	@Override
 	public Paging next() {
-		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
+		return new Paging(getPageNumber() + 1, getPageSize(), getSort());
 	}
 
 	@Override
 	public Paging previousOrFirst() {
-		return new Paging(getOffset() - getPageSize() < 0 ? 0 : getOffset() - getPageSize(), getPageSize(), getSort());
+		return new Paging(getPageNumber() - 1, getPageSize(), getSort());
 	}
 
 	@Override
 	public Paging first() {
-		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
+		return new Paging(1, getPageSize(), getSort());
 	}
 
 	/**
@@ -138,13 +139,13 @@ public class Paging implements Pageable, Serializable {
 					propertyName = "name:" + Lang.FRENCH;
 				}
 				else if ("code".contentEquals(propertyName)) {					
-					propertyName = "name:"; // maps to root locale
+					propertyName = "name:" + Lang.ROOT;
 				}
 				String propertyKey = null;
 				if (propertyName.indexOf(":") > -1) {
 					String[] vals = propertyName.split(":");
 					propertyName = vals[0];
-					propertyKey = vals[1];
+					propertyKey = (vals.length == 1 ? "" : vals[1]); // ROOT has no property key
 				}					
 				try {					
 					Object val1 = propertyName.equals("") ? o1 : pub.getProperty(o1, propertyName);

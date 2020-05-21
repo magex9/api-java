@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.graphql.util.PagingBuilder;
 import graphql.schema.DataFetcher;
