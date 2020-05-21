@@ -31,7 +31,7 @@ stages:
         
     - task: Maven@3
       inputs:
-        mavenPomFile: 'crm-helloworld/pom.xml'
+        mavenPomFile: 'pom.xml'
         options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -39,33 +39,24 @@ stages:
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
 
     - task: MavenAuthenticate@0
       inputs:
         artifactsFeeds: 'finapplicationdevelopment-snapshots'
-    - script: |
-        cat ~/.m2/settings.xml
-        cd crm-helloworld
-        mvn deploy
+   
     - task: Maven@3
       inputs:
-        mavenPomFile: 'crm-helloworld/pom.xml'
+        mavenPomFile: 'pom.xml'
         goals: 'deploy'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
 
-    - template: azure-package.yml
-      parameters:
-        application_name: crm-helloworld
-    - template: azure-package.yml
-      parameters:
-        application_name: crm-activemq-spring-boot-server
+    #- template: azure-package.yml
+    #  parameters:
+    #    application_name: crm-helloworld
+    #- template: azure-package.yml
+    #  parameters:
+    #    application_name: crm-activemq-spring-boot-server
