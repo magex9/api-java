@@ -1,6 +1,5 @@
 package ca.magex.crm.amnesia;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -147,6 +146,7 @@ public class AmnesiaDB {
 		groupsByCode.clear();
 		rolesByCode.clear();
 		usersByUsername.clear();
+		systemId = null;
 	}
 	
 	public Identifier generateId() {
