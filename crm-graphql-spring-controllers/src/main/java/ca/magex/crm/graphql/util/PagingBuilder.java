@@ -39,16 +39,15 @@ public class PagingBuilder {
 	
 	public Paging build() {
 		if (sortFields.size() != sortDirections.size()) {
-			throw new ApiException("sortFields does not match sortDirections");
+			throw new ApiException("sortFields count does not match sortDirections count");
 		}
 		List<Order> ordering = new ArrayList<>();
 		for (int i=0; i<sortFields.size(); i++) {
 			Direction dir = Direction.valueOf(sortDirections.get(i));
-			switch(dir) {
-			case ASC:
+			if (dir == Direction.ASC) {
 				ordering.add(Order.asc(sortFields.get(i)));
-				break;
-			case DESC:
+			}
+			else {
 				ordering.add(Order.desc(sortFields.get(i)));
 			}
 		}

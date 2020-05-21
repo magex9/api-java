@@ -76,7 +76,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + newStatus + "', one of {ACTIVE, INACTIVE} expected", null, null);
+					throw new ApiException("Invalid status '" + newStatus + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
 			if (environment.getArgument("displayName") != null) {

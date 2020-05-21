@@ -1,6 +1,6 @@
 package ca.magex.crm.graphql.datafetcher;
 
-import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,31 +26,6 @@ public class UserDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
-	public DataFetcher<User> findUser() {
-		return (environment) -> {
-			logger.info("Entering findUser@" + UserDataFetcher.class.getSimpleName());
-			String userId = environment.getArgument("username");
-			return crm.findUser(new Identifier(userId));
-		};
-	}
-	
-	public DataFetcher<Integer> countUsers() {
-		return (environment) -> {
-			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
-			return (int) crm.countUsers(
-					extractFilter(extractFilter(environment)));
-		};
-	}
-
-	public DataFetcher<Page<User>> findUsers() {
-		return (environment) -> {
-			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());			
-			return crm.findUsers(
-					extractFilter(extractFilter(environment)),
-					extractPaging(environment));
-		};
-	}
-
 	public DataFetcher<User> createUser() {
 		return (environment) -> {
 			logger.info("Entering createUser@" + UserDataFetcher.class.getSimpleName());
@@ -62,19 +37,38 @@ public class UserDataFetcher extends AbstractDataFetcher {
 					environment.getArgument("roles"));
 		};
 	}
-	
+
+	public DataFetcher<User> findUser() {
+		return (environment) -> {
+			logger.info("Entering findUser@" + UserDataFetcher.class.getSimpleName());
+			String userId = environment.getArgument("userId");
+			return crm.findUser(new Identifier(userId));
+		};
+	}
+
+	public DataFetcher<Integer> countUsers() {
+		return (environment) -> {
+			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
+			return (int) crm.countUsers(new UsersFilter(extractFilter(environment)));
+		};
+	}
+
+	public DataFetcher<Page<User>> findUsers() {
+		return (environment) -> {
+			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
+			return crm.findUsers(new UsersFilter(extractFilter(environment)), extractPaging(environment));
+		};
+	}
+
 	public DataFetcher<User> updateUser() {
 		return (environment) -> {
 			logger.info("Entering updateUser@" + UserDataFetcher.class.getSimpleName());
 			Identifier userId = new Identifier((String) environment.getArgument("userId"));
 			User user = crm.findUser(userId);
-			
-			if (environment.getArgument("roles") != null) {				
-				user = crm.updateUserRoles(userId, environment.getArgument("roles"));
-			}
+			/* update status first since other validation requires status */
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch(status) {
+				switch (status) {
 				case "ACTIVE":
 					if (user.getStatus() != Status.ACTIVE) {
 						user = crm.enableUser(userId);
@@ -89,30 +83,13 @@ public class UserDataFetcher extends AbstractDataFetcher {
 					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
+			if (environment.getArgument("roles") != null) {
+				List<String> newRoles = environment.getArgument("roles");
+				if (!user.getRoles().containsAll(newRoles) || !newRoles.containsAll(user.getRoles())) {
+					user = crm.updateUserRoles(userId, newRoles);
+				}
+			}
 			return user;
 		};
-	}	
-	
-	private UsersFilter extractFilter(Map<String, Object> filter) {
-		String personId = (String) filter.get("personId");
-		String organizationId = (String) filter.get("organizationId");
-		String role = (String) filter.get("role");
-		String username = (String) filter.get("username");
-		
-		Status status = null;
-		if (filter.containsKey("status") && StringUtils.isNotBlank((String) filter.get("status"))) {
-			try {
-				status = Status.valueOf((String) filter.get("status"));
-			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filter.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
-		}
-		return new UsersFilter(
-				personId == null ? null : new Identifier(personId),
-				organizationId == null ? null : new Identifier(organizationId),
-				status,
-				username,
-				role);
 	}
 }

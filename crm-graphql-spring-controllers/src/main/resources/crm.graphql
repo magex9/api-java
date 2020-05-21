@@ -105,8 +105,8 @@ type Query {
 	countPersons(filter: PersonFilter!): Int!
 	findPersons(filter: PersonFilter!, paging: PagingInput!): PersonPage!
 	
-	# User Service
-	findUser(username: String!): User
+	# User Queries
+	findUser(userId: String!): User
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
@@ -135,9 +135,9 @@ type Mutation {
 	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput, status: String): Person
 		
-	# User Service
+	# User Maintenance
 	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(userId: String!, roles: [String], status: String): User		
+	updateUser(userId: String!, status: String, roles: [String]): User		
 }
 
 # Main Types
@@ -187,6 +187,14 @@ type Person {
 	position: BusinessPosition
 }
 
+type User {
+	userId: String!
+	username: String!
+	status: String!
+	person: Person!
+	roles: [Role]!
+}
+
 # Complex Subtypes
 type Communication {
 	jobTitle: String
@@ -207,14 +215,6 @@ type BusinessPosition {
 	sector: String
 	unit: String
 	classification: String
-}
-
-type User {
-	userId: String!
-	username: String!
-	status: String!
-	person: Person!
-	roles: [Role]!
 }
 
 type MailingAddress {

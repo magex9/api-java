@@ -107,7 +107,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 					}
 					break;
 				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected", null, null);
+					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
 			if (environment.getArgument("name") != null) {

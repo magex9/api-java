@@ -29,10 +29,10 @@ import graphql.schema.DataFetchingEnvironment;
  * @author Jonny
  *
  */
-public abstract class AbstractDataFetcher {	
+public abstract class AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(AbstractDataFetcher.class);
-	
+
 	@Autowired protected Crm crm;
 
 	public DataFetcher<String> getNameByLocale(Locale locale) {
@@ -43,7 +43,7 @@ public abstract class AbstractDataFetcher {
 			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
 		};
 	}
-	
+
 	/**
 	 * extracts the filter from the environment
 	 * 
@@ -139,17 +139,5 @@ public abstract class AbstractDataFetcher {
 				(String) businessMap.get("sector"),
 				(String) businessMap.get("unit"),
 				(String) businessMap.get("classification"));
-	}	
-
-	/**
-	 * Extracts the role from the environment
-	 * 
-	 * @param environment
-	 * @param businessKey
-	 * @return
-	 */
-	protected List<Role> extractRoles(DataFetchingEnvironment environment, String roleKey) {
-		List<String> roles = environment.getArgument(roleKey);
-		return roles.stream().map(crm::findRoleByCode).collect(Collectors.toList());
 	}
 }
