@@ -14,6 +14,7 @@
 	
 	<modules>	
 		<module>crm-maven-parent</module>
+		<module>crm-json</module>
 		
 		<!-- Support Modules -->
 		<module>crm-api</module>
@@ -34,7 +35,7 @@
 		<module>crm-auth-spring-boot-server</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
-		<module>crm-graphql-spring-controllers</module>				
+		<module>crm-graphql-spring-controllers</module>
 <!-- 		<module>crm-graphql-spring-boot-server</module>		 -->
 <!-- 		<module>crm-graphql-client</module> -->
 		
@@ -44,10 +45,10 @@
 <!--  		<module>crm-graphql-spring-boot-feign-client</module> -->
 		
 		<!-- REST Endpoint Implementation -->
-<!-- 		<module>crm-restful-json</module>		 -->
-<!-- 		<module>crm-restful-spring-controllers</module> -->
-<!-- 		<module>crm-restful-spring-boot-server</module> -->
-<!-- 		<module>crm-restful-client</module> -->
+		<module>crm-restful-json</module>
+		<module>crm-restful-spring-controllers</module>
+		<module>crm-restful-spring-boot-server</module>
+		<module>crm-restful-client</module>
 	</modules>
 
 </project>

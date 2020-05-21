@@ -1,0 +1,9 @@
+[{
+	"name": "Batman",
+	"hero": true,
+	"tagline": "Because im batman"
+},{
+	"name": "Joker",
+	"hero": false,
+	"tagline": null
+}]
