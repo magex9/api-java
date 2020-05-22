@@ -1,5 +1,6 @@
 package ca.magex.crm.api.secured;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,6 +14,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -86,7 +88,7 @@ public final class SecuredCrmServices implements Crm {
 			CrmUserService userService, CrmUserPolicy userPolicy,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy) {
 		super();
-		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService);
+		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService, personService);
 		this.initializationService = initializationService;
 		this.lookupService = lookupService;
 		this.organizationService = organizationService;
@@ -111,6 +113,16 @@ public final class SecuredCrmServices implements Crm {
 		if (isInitialized())
 			throw new RuntimeException("The system is already initialized");
 		return initializationService.initializeSystem(organization, name, email, username, password); 
+	}
+	
+	@Override
+	public boolean reset() {
+		return initializationService.reset();
+	}
+	
+	@Override
+	public void dump(OutputStream os) {
+		initializationService.dump(os);
 	}
 	
 	@Override
@@ -400,7 +412,6 @@ public final class SecuredCrmServices implements Crm {
 	}
 	
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		// TODO filter results of the find based on the policy
 		return personService.findPersonDetails(filter, paging);
 	}
 	
@@ -494,6 +505,16 @@ public final class SecuredCrmServices implements Crm {
 	@Override
 	public boolean canUpdateUserPassword(Identifier userId) {
 		return userPolicy.canUpdateUserPassword(userId);
+	}
+	
+	@Override
+	public Group validate(Group group) throws BadRequestException {
+		return validationService.validate(group);
+	}
+	
+	@Override
+	public Role validate(Role role) throws BadRequestException {
+		return validationService.validate(role);
 	}
 	
 	public OrganizationDetails validate(OrganizationDetails organization) {
@@ -597,10 +618,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Group createGroup(String code, Localized name) {
+	public Group createGroup(Localized name) {
 		if (!canCreateGroup())
 			throw new PermissionDeniedException("createGroup: " + name);
-		return permissionsService.createGroup(code, name);
+		return permissionsService.createGroup(name);
 	}
 
 	@Override
@@ -646,10 +667,10 @@ public final class SecuredCrmServices implements Crm {
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, String code, Localized name) {
+	public Role createRole(Identifier groupId, Localized name) {
 		if (!canCreateRole())
 			throw new PermissionDeniedException("addRole: " + groupId);
-		return permissionsService.createRole(groupId, code, name);
+		return permissionsService.createRole(groupId, name);
 	}
 
 	@Override

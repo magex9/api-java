@@ -1,5 +1,7 @@
 package ca.magex.crm.amnesia.services;
 
+import java.io.OutputStream;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,17 @@ public class AmnesiaInitializationService implements CrmInitializationService {
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		return db.findUser(db.initialize(organization, name, email, username, password));
+	}
+	
+	@Override
+	public boolean reset() {
+		db.reset();
+		return true;
+	}
+	
+	@Override
+	public void dump(OutputStream os) {
+		db.dump(os);
 	}
 
 }

@@ -1,6 +1,6 @@
 package ca.magex.crm.amnesia;
 
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -77,14 +77,14 @@ public class AmnesiaDB {
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 		idGenerator = new AmnesiaBase58IdGenerator();
-		lookups = new AmnesiaLookupService(new CrmLookupLoader());
+		lookups = new AmnesiaLookupService(new CrmLookupLoader()).initialize();
 		permissions = new AmnesiaPermissionService(this);
 		organizations = new AmnesiaOrganizationService(this);
 		locations = new AmnesiaLocationService(this);
 		persons = new AmnesiaPersonService(this);
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
-		validation = new StructureValidationService(lookups, permissions, organizations, locations);
+		validation = new StructureValidationService(lookups, permissions, organizations, locations, persons);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
@@ -146,6 +146,7 @@ public class AmnesiaDB {
 		groupsByCode.clear();
 		rolesByCode.clear();
 		usersByUsername.clear();
+		systemId = null;
 	}
 	
 	public Identifier generateId() {
@@ -268,11 +269,17 @@ public class AmnesiaDB {
 		dump(System.out);
 	}
 	
-	public void dump(PrintStream os) {
+	public void dump(OutputStream os) {
 		data.keySet()
 			.stream()
 			.sorted((x, y) -> x.toString().compareTo(y.toString()))
-			.forEach(key -> os.println(key + " => " + data.get(key).toString()));
+			.forEach(key -> {
+				try {
+					os.write(new String(key + " => " + data.get(key) + "\n").getBytes());
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
 	}
 	
 }

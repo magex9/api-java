@@ -1,5 +1,15 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.test.CrmAsserts.ENGLISH;
+import static ca.magex.crm.test.CrmAsserts.FRANCE;
+import static ca.magex.crm.test.CrmAsserts.FRENCH;
+import static ca.magex.crm.test.CrmAsserts.GROUP;
+import static ca.magex.crm.test.CrmAsserts.ILE_DE_FRANCE;
+import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.ORG;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -21,27 +31,27 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractPersonServiceTests {
+
+	public abstract CrmInitializationService getInitializationService();
 
 	public abstract CrmOrganizationService getOrganizationService();
 	
 	public abstract CrmPersonService getPersonService();
 	
 	public abstract CrmPermissionService getPermissionService();
-
-	public abstract void reset();
 		
 	@Before
 	public void setup() {
-		reset();	
-		getPermissionService().createGroup("ORG", new Localized("Organization"));
+		getInitializationService().reset();
+		getPermissionService().createGroup(ORG);
 	}
 
 	@Test
@@ -49,8 +59,8 @@ public abstract class AbstractPersonServiceTests {
 		Identifier blizzardId = getOrganizationService().createOrganization("Blizzard", List.of("ORG")).getOrganizationId();
 		
 		PersonName leroy = new PersonName("Mr", "Leroy", "MF", "Jenkins");
-		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", "", "France", "75007");
-		Communication comms = new Communication("Leader", "English", "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");
+		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007");
+		Communication comms = new Communication("Leader", ENGLISH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");
 		BusinessPosition position = new BusinessPosition("IT", "Tester", "Junior");
 		/* create */
 		PersonDetails p1 = getPersonService().createPerson(blizzardId, leroy, eiffel, comms, position);
@@ -65,15 +75,15 @@ public abstract class AbstractPersonServiceTests {
 		getPersonService().createPerson(
 			blizzardId, 
 			new PersonName("Ms", "Tammy", "GD", "Jones"), 
-			new MailingAddress("5 Avenue Anatole France", "Paris", "", "France", "75007"), 
-			new Communication("Leader", "English", "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
+			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007"), 
+			new Communication("Leader", ENGLISH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
 			new BusinessPosition("IT", "Tester", "Junior"));
 		
 		getPersonService().createPerson(
 			blizzardId, 
 			new PersonName("Mr", "James", "Earl", "Bond"), 
-			new MailingAddress("5 Avenue Anatole France", "Paris", "", "France", "75007"), 
-			new Communication("Leader", "English", "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
+			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007"), 
+			new Communication("Leader", FRENCH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
 			new BusinessPosition("IT", "Tester", "Junior"));
 		
 		/* update */
@@ -88,7 +98,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(p1, getPersonService().findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, getPersonService().updatePersonName(p1.getPersonId(), tommy));
 		
-		MailingAddress louvre = new MailingAddress("Rue de Rivoli", "Paris", "", "France", "75001");
+		MailingAddress louvre = new MailingAddress("Rue de Rivoli", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75001");
 		p1 = getPersonService().updatePersonAddress(p1.getPersonId(), louvre);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
@@ -99,7 +109,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(p1, getPersonService().findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, getPersonService().updatePersonAddress(p1.getPersonId(), louvre));
 		
-		Communication comms2 = new Communication("Follower", "French", "follower@blizzard.com", new Telephone("666-9898"), "666-9797");
+		Communication comms2 = new Communication("Follower", FRENCH.getCode(), "follower@blizzard.com", new Telephone("666-9898"), "666-9797");
 		p1 = getPersonService().updatePersonCommunication(p1.getPersonId(), comms2);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
@@ -278,21 +288,21 @@ public abstract class AbstractPersonServiceTests {
 		}
 		
 		try {
-			getPersonService().updatePersonAddress(new Identifier("abc"), new MailingAddress("", "", "", "", ""));
+			getPersonService().updatePersonAddress(new Identifier("abc"), MAILING_ADDRESS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
 		}
 		
 		try {
-			getPersonService().updatePersonCommunication(new Identifier("abc"), new Communication("", "", "", new Telephone(""), ""));
+			getPersonService().updatePersonCommunication(new Identifier("abc"), COMMUNICATIONS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
 		}
 		
 		try {
-			getPersonService().updatePersonBusinessPosition(new Identifier("abc"), new BusinessPosition("", "", ""));
+			getPersonService().updatePersonBusinessPosition(new Identifier("abc"), BUSINESS_POSITION);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
@@ -315,9 +325,9 @@ public abstract class AbstractPersonServiceTests {
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = getPermissionService().createGroup("GRP", new Localized("Group")).getGroupId();
+		Identifier groupId = getPermissionService().createGroup(GROUP).getGroupId();
 		Identifier organizationId = getOrganizationService().createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier personId = getPersonService().createPerson(organizationId, new PersonName("Mr.", "Chris", "P", "Bacon"), CrmAsserts.ValidCanadianAddress, CrmAsserts.ValidCommunication, CrmAsserts.ValidBusinessPosition).getPersonId();
+		Identifier personId = getPersonService().createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 
 		assertEquals("Bacon, Chris P", getPersonService().findPersonDetails(personId).getDisplayName());
 		assertEquals("Bacon, Chris P", getPersonService().findPersonSummary(personId).getDisplayName());

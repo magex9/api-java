@@ -1,6 +1,6 @@
 package ca.magex.crm.amnesia.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.Lookups;
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.test.AbstractLookupServiceTests;
 import ca.magex.crm.test.TestConfig;
@@ -24,7 +24,7 @@ import ca.magex.crm.test.TestConfig;
 public class AmnesiaLookupServiceTests extends AbstractLookupServiceTests {
 
 	@Autowired
-	private AmnesiaDB db;
+	private CrmInitializationService initializationService;
 
 	@Autowired 
 	private CrmLookupService lookupService;
@@ -33,10 +33,10 @@ public class AmnesiaLookupServiceTests extends AbstractLookupServiceTests {
 	public CrmLookupService getLookupService() {
 		return lookupService;
 	}
-
+	
 	@Override
-	public void reset() {
-		db.reset();
+	public CrmInitializationService getInitializationService() {
+		return initializationService;
 	}
 	
 	@Test

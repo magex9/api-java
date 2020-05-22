@@ -195,7 +195,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	private OrganizationDetails validate(OrganizationDetails organization) {
-		return new StructureValidationService(lookupService, permissionService, this, locationService).validate(organization);
+		return new StructureValidationService(lookupService, permissionService, this, locationService, personService).validate(organization);
 	}
 
 	@Override

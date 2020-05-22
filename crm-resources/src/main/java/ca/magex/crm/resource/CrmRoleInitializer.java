@@ -13,31 +13,31 @@ public class CrmRoleInitializer {
 
 	public static void initialize(CrmPermissionService permissions) {
 		LOG.info("Creating SYS Roles");
-		Group systemRoles = permissions.createGroup("SYS", new Localized("System", "Systeme"));
+		Group systemRoles = permissions.createGroup(new Localized("SYS", "System", "Systeme"));
 		// application shutdown (os user)
-		permissions.createRole(systemRoles.getGroupId(), "SYS_ADMIN", new Localized("System Admin", "Administrateur du systeme"));
+		permissions.createRole(systemRoles.getGroupId(), new Localized("SYS_ADMIN", "System Admin", "Administrateur du systeme"));
 		// monitoring and services (monitoring tool)
-		permissions.createRole(systemRoles.getGroupId(), "SYS_ACTUATOR", new Localized("System Actuator", "Actuator du systeme"));
+		permissions.createRole(systemRoles.getGroupId(), new Localized("SYS_ACTUATOR", "System Actuator", "Actuator du systeme"));
 		// managing groups and roles (service desk)
-		permissions.createRole(systemRoles.getGroupId(), "SYS_ACCESS", new Localized("System Access", "Access du systeme"));
+		permissions.createRole(systemRoles.getGroupId(), new Localized("SYS_ACCESS", "System Access", "Access du systeme"));
 
 		LOG.info("Creating APP Roles");
-		Group applicationRoles = permissions.createGroup("APP", new Localized("Application", "Application"));
+		Group applicationRoles = permissions.createGroup(new Localized("APP", "Application", "Application"));
 		// token verification (application background user)
-		permissions.createRole(applicationRoles.getGroupId(), "APP_AUTH_REQUEST", new Localized("Authorization Requestor", "Demandeur d'Autorisation"));
+		permissions.createRole(applicationRoles.getGroupId(), new Localized("APP_AUTH_REQUEST", "Authorization Requestor", "Demandeur d'Autorisation"));
 
 		LOG.info("Creating CRM Roles");
-		Group crmRoles = permissions.createGroup("CRM", new Localized("Customer Relationship Management"));
+		Group crmRoles = permissions.createGroup(new Localized("CRM", "Customer Relationship Management", "Gestion de la relation client"));
 		// create and management all organizations
-		permissions.createRole(crmRoles.getGroupId(), "CRM_ADMIN", new Localized("CRM Admin", "Administrateur GRC"));
+		permissions.createRole(crmRoles.getGroupId(), new Localized("CRM_ADMIN", "CRM Admin", "Administrateur GRC"));
 		// user of a single organization
-		permissions.createRole(crmRoles.getGroupId(), "CRM_USER", new Localized("CRM Viewer", "Visionneuse GRC"));
+		permissions.createRole(crmRoles.getGroupId(), new Localized("CRM_USER", "CRM Viewer", "Visionneuse GRC"));
 		
 		LOG.info("Creating ORG Roles");
-		Group orgRoles = permissions.createGroup("ORG", new Localized("Organization Management"));
+		Group orgRoles = permissions.createGroup(new Localized("ORG", "Organization Management", "Gestion de l'organisation"));
 		// create and management all organizations
-		permissions.createRole(orgRoles.getGroupId(), "ORG_ADMIN", new Localized("Organization Admin", "Administrateur GRC"));
-		permissions.createRole(orgRoles.getGroupId(), "ORG_USER", new Localized("Organization Viewer", "Visionneuse GRC"));
+		permissions.createRole(orgRoles.getGroupId(), new Localized("ORG_ADMIN", "Organization Admin", "Administrateur GRC"));
+		permissions.createRole(orgRoles.getGroupId(), new Localized("ORG_USER", "Organization Viewer", "Visionneuse GRC"));
 	}
 	
 }

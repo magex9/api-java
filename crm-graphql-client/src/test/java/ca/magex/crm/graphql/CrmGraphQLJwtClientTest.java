@@ -24,7 +24,7 @@ public class CrmGraphQLJwtClientTest {
 	@LocalServerPort private int randomPort;
 
 	@Test
-	public void runTests() {
+	public void runTests() throws Exception {
 		/* we are running these tests with an embedded authentication server so everything is on the same servlet */
 		CrmServicesGraphQLClientImpl crmServices = new CrmServicesGraphQLClientImpl("http://localhost:" + randomPort + "/crm/graphql");
 		crmServices.authenticateJwt("http://localhost:" + randomPort + "/crm/authenticate", "admin", "admin");

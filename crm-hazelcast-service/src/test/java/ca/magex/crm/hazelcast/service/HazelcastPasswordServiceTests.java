@@ -7,10 +7,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.hazelcast.core.HazelcastInstance;
-
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.test.AbstractPasswordServiceTests;
 import ca.magex.crm.test.TestConfig;
 
@@ -19,9 +18,14 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastPasswordServiceTests extends AbstractPasswordServiceTests {
 
+	@Autowired private CrmInitializationService hzInitializationService;
 	@Autowired private CrmPasswordService hzPasswordService;
-	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private PasswordEncoder passwordEncoder;
+	
+	@Override
+	public CrmInitializationService getInitializationService() {
+		return hzInitializationService;
+	}
 	
 	@Override
 	public PasswordEncoder getPasswordEncoder() {
@@ -32,9 +36,5 @@ public class HazelcastPasswordServiceTests extends AbstractPasswordServiceTests 
 	public CrmPasswordService getPasswordService() {
 		return hzPasswordService;
 	}
-	
-	@Override
-	public void reset() {
-		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();
-	}
+
 }

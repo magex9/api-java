@@ -1,6 +1,7 @@
 package ca.magex.crm.api.filters;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
@@ -35,19 +36,20 @@ public class Paging implements Pageable, Serializable {
 
 	public Paging(int pageNumber, int pageSize, Sort sort) {
 		super();
-		this.offset = pageSize * (pageNumber - 1);
+		this.pageNumber = (pageNumber < 1 ? 1 : pageNumber); // if we ask for a page before 1, return the first page
 		this.pageSize = pageSize;
-		this.pageNumber = pageNumber;
 		this.sort = sort;
+		/* calculate the offset */
+		this.offset = this.pageSize * (this.pageNumber - 1);
 	}
 
-	public Paging(long offset, int pageSize, Sort sort) {
-		super();
-		this.offset = offset;
-		this.pageSize = pageSize;
-		this.pageNumber = (int) Math.floor(offset / pageSize);
-		this.sort = sort;
-	}
+//	public Paging(long offset, int pageSize, Sort sort) {
+//		super();
+//		this.offset = offset;
+//		this.pageSize = pageSize;
+//		this.pageNumber = (int) Math.floor(offset / pageSize);
+//		this.sort = sort;
+//	}
 
 	public Paging(Sort sort) {
 		this(1, 10, sort);
@@ -70,15 +72,19 @@ public class Paging implements Pageable, Serializable {
 	public Paging withPageSize(int pageSize) {
 		return new Paging(pageNumber, pageSize, sort);
 	}
+	
+	public Paging allItems() {
+		return new Paging(1, Integer.MAX_VALUE, sort);
+	}
 
 	@Override
 	public long getOffset() {
 		return offset;
 	}
 
-	public Paging withOffset(long offset) {
-		return new Paging(offset, pageSize, sort);
-	}
+//	public Paging withOffset(long offset) {
+//		return new Paging(offset, pageSize, sort);
+//	}
 
 	@Override
 	public Sort getSort() {
@@ -96,17 +102,17 @@ public class Paging implements Pageable, Serializable {
 
 	@Override
 	public Paging next() {
-		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
+		return new Paging(getPageNumber() + 1, getPageSize(), getSort());
 	}
 
 	@Override
 	public Paging previousOrFirst() {
-		return new Paging(getOffset() - getPageSize() < 0 ? 0 : getOffset() - getPageSize(), getPageSize(), getSort());
+		return new Paging(getPageNumber() - 1, getPageSize(), getSort());
 	}
 
 	@Override
 	public Paging first() {
-		return new Paging(getOffset() + getPageSize(), getPageSize(), getSort());
+		return new Paging(1, getPageSize(), getSort());
 	}
 
 	/**
@@ -126,15 +132,24 @@ public class Paging implements Pageable, Serializable {
 			while (iterator.hasNext()) {
 				Order order = iterator.next();
 				String propertyName = order.getProperty();
+				if ("englishName".contentEquals(propertyName)) {
+					propertyName = "name:" + Lang.ENGLISH;
+				}
+				else if ("frenchName".contentEquals(propertyName)) {
+					propertyName = "name:" + Lang.FRENCH;
+				}
+				else if ("code".contentEquals(propertyName)) {					
+					propertyName = "name:" + Lang.ROOT;
+				}
 				String propertyKey = null;
-				if (propertyName.indexOf(":") > 0) {
+				if (propertyName.indexOf(":") > -1) {
 					String[] vals = propertyName.split(":");
 					propertyName = vals[0];
-					propertyKey = vals[1];
+					propertyKey = (vals.length == 1 ? "" : vals[1]); // ROOT has no property key
 				}					
 				try {					
-					Object val1 = pub.getProperty(o1, propertyName);
-					Object val2 = pub.getProperty(o2, propertyName);
+					Object val1 = propertyName.equals("") ? o1 : pub.getProperty(o1, propertyName);
+					Object val2 = propertyName.equals("") ? o2 : pub.getProperty(o2, propertyName);
 					/* localized use the key */
 					if (Localized.class.isAssignableFrom(val1.getClass())) {
 						if (propertyKey == null) {
@@ -143,16 +158,32 @@ public class Paging implements Pageable, Serializable {
 						Localized lVal1 = (Localized) val1;
 						Localized lVal2 = (Localized) val2;
 						Locale locale = Lang.parse(propertyKey);
-						int compare = StringUtils.compare(lVal1.get(locale), lVal2.get(locale));
-						if (compare != 0) {
-							return compare;
+						Collator collator = Collator.getInstance();
+						collator.setStrength(Collator.NO_DECOMPOSITION);
+						int compare = collator.compare(lVal1.get(locale), lVal2.get(locale));
+						if (compare == 0) {
+							compare = StringUtils.compare(lVal1.get(locale), lVal2.get(locale));
 						}
-					} else if (Comparable.class.isAssignableFrom(val1.getClass())) {
+						if (compare != 0) {
+							return order.isAscending() ? compare : -compare;
+						}
+					} else if (String.class.isAssignableFrom(val1.getClass())) {
+						Collator collator = Collator.getInstance();
+						collator.setStrength(Collator.NO_DECOMPOSITION);
+						int compare = collator.compare((String) val1, (String) val2);
+						if (compare == 0) {
+							compare = StringUtils.compare((String) val1, (String) val2);
+						}
+						if (compare != 0) {
+							return order.isAscending() ? compare : -compare;
+						}
+					}
+					else if (Comparable.class.isAssignableFrom(val1.getClass())) {
 						Comparable<Object> cVal1 = (Comparable<Object>) val1;
 						Comparable<Object> cVal2 = (Comparable<Object>) val2;
 						int compare = cVal1.compareTo(cVal2);
 						if (compare != 0) {
-							return compare;
+							return order.isAscending() ? compare : -compare;
 						}
 					}
 				}

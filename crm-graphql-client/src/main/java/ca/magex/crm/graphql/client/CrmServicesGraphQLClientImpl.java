@@ -561,7 +561,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Group createGroup(String code, Localized name) {
+	public Group createGroup(Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -603,7 +603,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, String code, Localized name) {
+	public Role createRole(Identifier groupId, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}

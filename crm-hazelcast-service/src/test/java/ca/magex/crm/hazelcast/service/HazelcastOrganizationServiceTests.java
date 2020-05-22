@@ -6,10 +6,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.hazelcast.core.HazelcastInstance;
-
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -21,12 +21,22 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastOrganizationServiceTests extends AbstractOrganizationServiceTests {
 
+	@Autowired private CrmInitializationService hzInitializationService;
+	@Autowired private CrmLookupService hzLookupService;
+	@Autowired private CrmPermissionService hzPermissionService;
 	@Autowired private CrmOrganizationService hzOrganizationService;
 	@Autowired private CrmLocationService hzLocationService;
 	@Autowired private CrmPersonService hzPersonService;
-	@Autowired private CrmPermissionService hzPermissionService;
-	@Autowired private HazelcastInstance hzInstance;
+	
+	@Override
+	public CrmInitializationService getInitializationService() {
+		return hzInitializationService;
+	}
 
+	@Override
+	public CrmLookupService getLookupService() {
+		return hzLookupService;
+	}
 	
 	@Override
 	public CrmLocationService getLocationService() {
@@ -47,13 +57,5 @@ public class HazelcastOrganizationServiceTests extends AbstractOrganizationServi
 	public CrmPersonService getPersonService() {
 		return hzPersonService;
 	}
-
-	@Override
-	public void reset() {
-		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
-		hzInstance.getMap(HazelcastLocationService.HZ_LOCATION_KEY).clear();
-		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
-		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
-		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
-	}
+	
 }

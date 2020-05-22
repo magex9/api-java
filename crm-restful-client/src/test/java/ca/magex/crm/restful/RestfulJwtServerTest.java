@@ -1,5 +1,7 @@
 package ca.magex.crm.restful;
 
+import static ca.magex.crm.test.CrmAsserts.CANADA;
+import static ca.magex.crm.test.CrmAsserts.ONTARIO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -29,9 +31,9 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataParser;
 import ca.magex.crm.test.restful.RestfulCrmClient;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonParser;
 
 @Ignore
 public class RestfulJwtServerTest {
@@ -62,9 +64,9 @@ public class RestfulJwtServerTest {
 	@Test
 	public void testConfigJson() throws Exception {
 		String config = getConfig();
-		DataObject data = DataParser.parseObject(config);
+		JsonObject data = JsonParser.parseObject(config);
 		assertEquals("3.0.0", data.getString("openapi"));
-		assertTrue(data.getObject("paths").contains("/organizations", DataObject.class));
+		assertTrue(data.getObject("paths").contains("/organizations", JsonObject.class));
 	}
 	
 	@Test
@@ -94,7 +96,7 @@ public class RestfulJwtServerTest {
 		assertEquals(initialOrgCount + 1, organizations2.getContent().size());
 		
 		LocationDetails locationA1 = crm.createLocation(organizationA1.getOrganizationId(), "Location " + time, "LOC_A",
-				new MailingAddress("123 Main St", "Ottawa", "Ontario", "Canada", "K1K1K1"));
+				new MailingAddress("123 Main St", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K1K1K1"));
 		
 		assertEquals(organizationA1.getOrganizationId(), locationA1.getOrganizationId());
 		OrganizationDetails organizationA2 = crm.findOrganizationDetails(organizationA1.getOrganizationId());
@@ -129,8 +131,8 @@ public class RestfulJwtServerTest {
 		return key;
 	}
 //	
-//	private DataArray getAllOrganizations() throws Exception {
-//		return DataParser.parseArray(Unirest.get(server + "/api/organizations")
+//	private JsonArray getAllOrganizations() throws Exception {
+//		return JsonParser.parseArray(Unirest.get(server + "/api/organizations")
 //			.header("Content-Type", "application/json")
 //			.header("Authorization", "Bearer " + getToken())
 //			.asString()
@@ -138,9 +140,9 @@ public class RestfulJwtServerTest {
 //	}
 //	
 //	private OrganizationDetails createOrganization(String displayName) throws Exception {
-//		DataObject body = new DataObject()
+//		JsonObject body = new JsonObject()
 //			.with("displayName", displayName);
-//		DataObject result = DataParser.parseObject(Unirest.post(server + "/api/organizations")
+//		JsonObject result = JsonParser.parseObject(Unirest.post(server + "/api/organizations")
 //			.header("Content-Type", "application/json")
 //			.header("Authorization", "Bearer " + getToken())
 //			.body(body.toString())
@@ -154,7 +156,7 @@ public class RestfulJwtServerTest {
 //	}
 //	
 //	private OrganizationDetails getOrganizationDetails(Identifier organzationId) throws Exception {
-//		DataObject result = DataParser.parseObject(Unirest.get(server + "/api/organizations/" + organzationId)
+//		JsonObject result = JsonParser.parseObject(Unirest.get(server + "/api/organizations/" + organzationId)
 //			.header("Content-Type", "application/json")
 //			.header("Authorization", "Bearer " + getToken())
 //			.asString()
@@ -167,7 +169,7 @@ public class RestfulJwtServerTest {
 //	}
 //	
 //	private OrganizationSummary getOrganizationSummary(Identifier organzationId) throws Exception {
-//		DataObject result = DataParser.parseObject(Unirest.get(server + "/api/organizations/" + organzationId + "/summary")
+//		JsonObject result = JsonParser.parseObject(Unirest.get(server + "/api/organizations/" + organzationId + "/summary")
 //			.header("Content-Type", "application/json")
 //			.header("Authorization", "Bearer " + getToken())
 //			.asString()
@@ -179,10 +181,10 @@ public class RestfulJwtServerTest {
 //	}
 //	
 //	private OrganizationDetails updateOrganization(Identifier organizationId, String displayName, Identifier locationId) throws Exception {
-//		DataObject body = new DataObject()
+//		JsonObject body = new JsonObject()
 //			.with("displayName", displayName)
 //			.with("mainLocationId", locationId.toString());
-//		DataObject result = DataParser.parseObject(Unirest.patch(server + "/api/organizations/" + organizationId)
+//		JsonObject result = JsonParser.parseObject(Unirest.patch(server + "/api/organizations/" + organizationId)
 //			.header("Content-Type", "application/json")
 //			.header("Authorization", "Bearer " + getToken())
 //			.body(body.toString())
@@ -197,17 +199,17 @@ public class RestfulJwtServerTest {
 //
 //
 //	private LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) throws Exception {
-//		DataObject body = new DataObject()
+//		JsonObject body = new JsonObject()
 //			.with("organizationId", organizationId.toString())
 //			.with("reference", reference)
 //			.with("displayName", displayName)
-//			.with("address", new DataObject()
+//			.with("address", new JsonObject()
 //				.with("street", address.getStreet())
 //				.with("city", address.getCity())
 //				.with("province", address.getProvince())
 //				.with("country", address.getCountry().getName(locale))
 //				.with("postalCode", address.getPostalCode()));
-//		DataObject result = DataParser.parseObject(Unirest.post(server + "/api/locations")
+//		JsonObject result = JsonParser.parseObject(Unirest.post(server + "/api/locations")
 //			.header("Content-Type", "application/json")
 //			.header("Authorization", "Bearer " + getToken())
 //			.body(body.toString())

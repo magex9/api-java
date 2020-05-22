@@ -11,18 +11,19 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.services.CrmInitializationService;
 
 public abstract class AbstractPasswordServiceTests {
+
+	public abstract CrmInitializationService getInitializationService();
 
 	public abstract CrmPasswordService getPasswordService();
 	
 	public abstract PasswordEncoder getPasswordEncoder();
 
-	public abstract void reset();
-
 	@Before
 	public void setup() {
-		reset();
+		getInitializationService().reset();
 	}
 	
 	@After

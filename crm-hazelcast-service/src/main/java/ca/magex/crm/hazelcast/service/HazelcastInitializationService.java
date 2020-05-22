@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -110,5 +111,53 @@ public class HazelcastInitializationService implements CrmInitializationService 
 			return initialUser;
 		}
 		return hzUserService.findUserByUsername(username);
+	}
+	
+	@Override
+	public boolean reset() {
+		hzInstance.getList("statuses").clear();
+		hzInstance.getList("countries").clear();
+		hzInstance.getList("languages").clear();
+		hzInstance.getList("salutations").clear();
+		hzInstance.getList("sectors").clear();
+		hzInstance.getList("units").clear();
+		hzInstance.getList("classifications").clear();
+		
+		hzInstance.getMap(HazelcastLocationService.HZ_LOCATION_KEY).clear();
+		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
+		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();
+		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
+		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
+		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
+		hzInstance.getMap(HazelcastUserService.HZ_USER_KEY).clear();
+		
+		return true;
+	}
+	
+	@Override
+	public void dump(OutputStream os) {
+		List<String> keys = List.of(
+			HazelcastLocationService.HZ_LOCATION_KEY,
+			HazelcastOrganizationService.HZ_ORGANIZATION_KEY,
+			HazelcastPasswordService.HZ_PASSWORDS_KEY,
+			HazelcastPermissionService.HZ_GROUP_KEY,
+			HazelcastPermissionService.HZ_ROLE_KEY,
+			HazelcastPersonService.HZ_PERSON_KEY,
+			HazelcastUserService.HZ_USER_KEY
+		);
+		
+		for (String map : keys) {
+			Map<Identifier, Object> data = hzInstance.getMap(map);
+			data.keySet()
+				.stream()
+				.sorted((x, y) -> x.toString().compareTo(y.toString()))
+				.forEach(key -> {
+					try {
+						os.write(new String(key + " => " + data.get(key) + "\n").getBytes());
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+		}
 	}
 }

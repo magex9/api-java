@@ -1,8 +1,9 @@
 package ca.magex.crm.restful.controllers;
 	
-import static ca.magex.crm.restful.controllers.ContentExtractor.*;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractDisplayName;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractLocale;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractOrganizationId;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractReference;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractStatus;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
 
@@ -23,11 +24,11 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataText;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
 
 @Controller
 public class LookupsController {
@@ -43,33 +44,33 @@ public class LookupsController {
 	public void findCountries(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Locale locale = extractLocale(req);
 		List<Country> countries = crm.findCountries();
-		DataObject data = new DataObject()
+		JsonObject data = new JsonObject()
 			.with("total", countries.size())
-			.with("content", new DataArray(countries.stream().map(c -> transformLookup(c, locale)).collect(Collectors.toList())));
+			.with("content", new JsonArray(countries.stream().map(c -> transformLookup(c, locale)).collect(Collectors.toList())));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/lookup/salutations")
 	public void findSalutations(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Locale locale = extractLocale(req);
 		List<Salutation> salutations = crm.findSalutations();
-		DataObject data = new DataObject()
+		JsonObject data = new JsonObject()
 			.with("total", salutations.size())
-			.with("content", new DataArray(salutations.stream().map(c -> transformLookup(c, locale)).collect(Collectors.toList())));
+			.with("content", new JsonArray(salutations.stream().map(c -> transformLookup(c, locale)).collect(Collectors.toList())));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
-	public DataElement transformLookup(Object obj, Locale locale) {
+	public JsonElement transformLookup(Object obj, Locale locale) {
 		if (obj == null)
 			return null;
 		try {
 			if (locale != null)
-				return new DataText((String)obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { locale }));
-			return new DataObject()
+				return new JsonText((String)obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { locale }));
+			return new JsonObject()
 				.with("@value", obj.getClass().getMethod("getCode", new Class[] { }).invoke(obj, new Object[] { }))
 				.with("@en", obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { Lang.ENGLISH }))
 				.with("@fr", obj.getClass().getMethod("getName", new Class[] { Locale.class }).invoke(obj, new Object[] { Lang.FRENCH }));

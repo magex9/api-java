@@ -1,5 +1,6 @@
 package ca.magex.crm.mapping.json;
 
+import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -18,11 +19,11 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.crm.rest.transformers.JsonTransformer;
 import ca.magex.crm.test.TestConfig;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class })
@@ -35,18 +36,17 @@ public class OrganizationTransformerTest {
 	public void testOrganizationJson() throws Exception {
 
 		Identifier organizationId = new Identifier("abc");
-		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("locationRef");
 		Identifier mainContactId = new Identifier("contactRef");
 		List<String> groups = new ArrayList<String>();
-		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
+		groups.add(new Group(new Identifier("group"), Status.ACTIVE, GROUP).getCode());
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);
 
-		DataObject obj = transformer.formatOrganizationDetails(organization);
-		String json = DataFormatter.formatted(obj);
+		JsonObject obj = transformer.formatOrganizationDetails(organization);
+		String json = JsonFormatter.formatted(obj);
 
 		assertEquals("{\n" + 
 				"  \"organizationId\": \"abc\",\n" + 
@@ -54,7 +54,7 @@ public class OrganizationTransformerTest {
 				"  \"displayName\": \"Junit Test\",\n" + 
 				"  \"mainLocationId\": \"locationRef\",\n" + 
 				"  \"mainContactId\": \"contactRef\",\n" + 
-				"  \"groupIds\": [\"group\"]\n" + 
+				"  \"groups\": [\"GRP\"]\n" + 
 				"}", json);
 
 		OrganizationDetails reloaded = transformer.parseOrganizationDetails(obj);
@@ -66,21 +66,20 @@ public class OrganizationTransformerTest {
 	}
 
 	@Test
-	public void testOrganizationLinkedData() throws Exception {
+	public void testOrganizationLinkedJson() throws Exception {
 
 		Identifier organizationId = new Identifier("abc");
-		String code = "org";
 		Status status = Status.ACTIVE;
 		String displayName = "Junit Test";
 		Identifier mainLocationId = new Identifier("locationRef");
 		Identifier mainContactId = new Identifier("contactRef");
 		List<String> groups = new ArrayList<String>();
-		groups.add(new Group(new Identifier("group"), code, Status.ACTIVE, new Localized("Group Name")).getCode());
+		groups.add(new Group(new Identifier("group"), Status.ACTIVE, GROUP).getCode());
 		OrganizationDetails organization = new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, true);
 
-		DataObject obj = transformer.formatOrganizationDetails(organization);
-		String json = DataFormatter.formatted(obj);
+		JsonObject obj = transformer.formatOrganizationDetails(organization);
+		String json = JsonFormatter.formatted(obj);
 
 		assertEquals("{\n" + 
 				"  \"@context\": \"http://magex9.github.io/api/\",\n" + 
@@ -98,13 +97,10 @@ public class OrganizationTransformerTest {
 				"    \"@id\": \"locationRef\"\n" + 
 				"  },\n" + 
 				"  \"mainContactId\": {\n" + 
-				"    \"@type\": \"LocationDetails\",\n" + 
+				"    \"@type\": \"PersonDetails\",\n" + 
 				"    \"@id\": \"contactRef\"\n" + 
 				"  },\n" + 
-				"  \"groupIds\": [{\n" + 
-				"    \"@type\": \"Group\",\n" + 
-				"    \"@id\": \"group\"\n" + 
-				"  }]\n" + 
+				"  \"groups\": [\"GRP\"]\n" + 
 				"}", json);
 
 		OrganizationDetails reloaded = transformer.parseOrganizationDetails(obj);

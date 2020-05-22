@@ -19,7 +19,6 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
@@ -32,8 +31,6 @@ public class AmnesiaLookupService implements CrmLookupService {
 	private CrmLookupLoader lookupLoader;
 
 	private Lookups<Status, String> statuses;
-	
-	private Lookups<Role, String> roles;
 	
 	private Lookups<Country, String> countries;
 	

@@ -19,7 +19,7 @@ public class AmnesiaCrmServicesTests {
 	@Autowired private CrmServicesTestSuite crmServicesTest;
 	
 	@Test
-	public void testCrmServices() {
+	public void testCrmServices() throws Exception {
 		crmServicesTest.runAllTests();
 	}
 	

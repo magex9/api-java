@@ -1,6 +1,6 @@
 package ca.magex.crm.amnesia.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,7 @@ import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.test.AbstractPasswordServiceTests;
 import ca.magex.crm.test.TestConfig;
 
@@ -26,10 +27,14 @@ public class AmnesiaPasswordServiceTests extends AbstractPasswordServiceTests {
 	private AmnesiaDB db;
 	
 	@Autowired
+	private CrmInitializationService initializationService;
+	
+	@Autowired
 	private CrmPasswordService passwordService;
 	
-	public void reset() {
-		db.reset();
+	@Override
+	public CrmInitializationService getInitializationService() {
+		return initializationService;
 	}
 
 	@Override

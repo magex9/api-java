@@ -12,26 +12,30 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 
 public interface CrmPermissionService {
-
-	FilteredPage<Group> findGroups(
-		@NotNull GroupsFilter filter,
-		@NotNull Paging paging
-	);
 	
 	default GroupsFilter defaultGroupsFilter() {
 		return new GroupsFilter();
 	};
 	
+	FilteredPage<Group> findGroups(
+		@NotNull GroupsFilter filter,
+		@NotNull Paging paging
+	);
+	
 	Group findGroup(
 		@NotNull Identifier groupId
 	);
 
-	Group findGroupByCode(
+	default Group findGroupByCode(
 		@NotNull String code
-	);
+	) {
+		return findGroups(
+			defaultGroupsFilter().withCode(code), 
+			GroupsFilter.getDefaultPaging()
+		).getSingleItem();
+	};
 
 	Group createGroup(
-		@NotNull String code, 
 		@NotNull Localized name
 	);
 
@@ -61,13 +65,17 @@ public interface CrmPermissionService {
 		@NotNull Identifier roleId
 	);
 
-	Role findRoleByCode(
+	default Role findRoleByCode(
 		@NotNull String code
-	);
+	) {
+		return findRoles(
+			defaultRolesFilter().withCode(code), 
+			RolesFilter.getDefaultPaging()
+		).getSingleItem();
+	};
 
 	Role createRole(
 		@NotNull Identifier groupId, 
-		@NotNull String code, 
 		@NotNull Localized name
 	);
 

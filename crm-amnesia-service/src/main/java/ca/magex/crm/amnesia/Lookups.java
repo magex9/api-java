@@ -55,6 +55,8 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 	}
 
 	public LOOKUP findByName(Locale locale, String name) {
+		if (Lang.ROOT.equals(locale))
+			return mapByCode.get(name);
 		if (!mapByName.containsKey(locale))
 			throw new ItemNotFoundException(lookupClass.getSimpleName() + "[" + locale + "] '" + name + "'");
 		if (!mapByName.get(locale).containsKey(name))

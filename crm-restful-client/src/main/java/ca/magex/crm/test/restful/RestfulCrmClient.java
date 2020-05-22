@@ -1,5 +1,6 @@
 package ca.magex.crm.test.restful;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,10 +43,10 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataParser;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonParser;
 
 public class RestfulCrmClient implements CrmClient {
 
@@ -77,40 +78,40 @@ public class RestfulCrmClient implements CrmClient {
 			.getBody();
 	}
 
-	public DataArray list(String endpoint) {
+	public JsonArray list(String endpoint) {
 		try {
 			String body = Unirest.get(server + endpoint)
 				.header("Content-Type", contentType)
 				.header("Locale", locale.toString())
 				.asString()
 				.getBody();
-			return DataParser.parseArray(body);
+			return JsonParser.parseArray(body);
 		} catch (Exception e) {
 			throw new RuntimeException("Problem getting to endpoint: " + endpoint, e);
 		}
 	}
 
-	public DataObject get(String endpoint) {
-		return get(endpoint, new DataObject());
+	public JsonObject get(String endpoint) {
+		return get(endpoint, new JsonObject());
 	}
 	
-	public DataObject get(String endpoint, DataObject data) {
+	public JsonObject get(String endpoint, JsonObject data) {
 		try {
 			String body = Unirest.get(server + endpoint)
 				.header("Content-Type", contentType)
 				.header("Locale", locale.toString())
-				.queryString(data.stream().collect(Collectors.toMap(p -> p.key(), p -> DataElement.unwrap(p.value()))))
+				.queryString(data.stream().collect(Collectors.toMap(p -> p.key(), p -> JsonElement.unwrap(p.value()))))
 				.asString()
 				.getBody();
-			return DataParser.parseObject(body);
+			return JsonParser.parseObject(body);
 		} catch (Exception e) {
 			throw new RuntimeException("Problem getting to endpoint: " + endpoint, e);
 		}
 	}
 	
-	public DataObject post(String endpoint, DataObject data) {
+	public JsonObject post(String endpoint, JsonObject data) {
 		try {
-			return DataParser.parseObject(Unirest.post(server + endpoint)
+			return JsonParser.parseObject(Unirest.post(server + endpoint)
 				.header("Content-Type", contentType)
 				.header("Locale", locale.toString())
 				.body(data.toString())
@@ -121,13 +122,13 @@ public class RestfulCrmClient implements CrmClient {
 		}
 	}
 
-	public DataObject put(String endpoint) {
-		return put(endpoint, new DataObject());
+	public JsonObject put(String endpoint) {
+		return put(endpoint, new JsonObject());
 	}
 
-	public DataObject put(String endpoint, DataObject data) {
+	public JsonObject put(String endpoint, JsonObject data) {
 		try {
-			return DataParser.parseObject(Unirest.post(server + endpoint)
+			return JsonParser.parseObject(Unirest.post(server + endpoint)
 				.header("Content-Type", contentType)
 				.header("Locale", locale.toString())
 				.body(data.toString())
@@ -138,9 +139,9 @@ public class RestfulCrmClient implements CrmClient {
 		}
 	}
 	
-	public DataObject patch(String endpoint, DataObject data) {
+	public JsonObject patch(String endpoint, JsonObject data) {
 		try {
-			return DataParser.parseObject(Unirest.patch(server + endpoint)
+			return JsonParser.parseObject(Unirest.patch(server + endpoint)
 				.header("Content-Type", contentType)
 				.header("Locale", locale.toString())
 				.body(data.toString())
@@ -154,25 +155,25 @@ public class RestfulCrmClient implements CrmClient {
 	@Override
 	public List<Status> findStatuses() {
 		return get("/api/lookup/statuses").getArray("options").stream()
-			.map(o -> Status.valueOf(((DataObject)o).getString("code")))
+			.map(o -> Status.valueOf(((JsonObject)o).getString("code")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public Status findStatusByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/statuses", new DataObject().
+		return get("/api/lookup/statuses", new JsonObject().
 				with("code", code))
 			.getArray("options").stream()
-			.map(o -> Status.valueOf(((DataObject)o).getString("code")))
+			.map(o -> Status.valueOf(((JsonObject)o).getString("code")))
 			.findFirst().get();
 	}
 
 	@Override
 	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return get("/api/lookup/statuses", new DataObject().
+		return get("/api/lookup/statuses", new JsonObject().
 				with("name", name))
 			.getArray("options").stream()
-			.map(o -> Status.valueOf(((DataObject)o).getString("code")))
+			.map(o -> Status.valueOf(((JsonObject)o).getString("code")))
 			.findFirst().get();
 	}
 
@@ -180,21 +181,21 @@ public class RestfulCrmClient implements CrmClient {
 	public List<Country> findCountries() {
 		return get("/api/lookup/countries").getArray("content").stream()
 			.map(o -> new Country(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
-		DataObject obj = get("/api/lookup/countries", new DataObject().with("code", code));
+		JsonObject obj = get("/api/lookup/countries", new JsonObject().with("code", code));
 		return new Country(obj.getString("@value"),obj.getString("@en"), obj.getString("@fr"));
 	}
 
 	@Override
 	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		DataObject obj = get("/api/lookup/countries", new DataObject().with("name", name));
+		JsonObject obj = get("/api/lookup/countries", new JsonObject().with("name", name));
 		return new Country(obj.getString("@value"),obj.getString("@en"), obj.getString("@fr"));
 	}
 
@@ -202,33 +203,33 @@ public class RestfulCrmClient implements CrmClient {
 	public List<Language> findLanguages() {
 		return get("/api/lookup/languages").getArray("options").stream()
 			.map(o -> new Language(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/languages", new DataObject().
+		return get("/api/lookup/languages", new JsonObject().
 				with("code", code))
 			.getArray("options").stream()
 			.map(o -> new Language(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
 	@Override
 	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return get("/api/lookup/languages", new DataObject().
+		return get("/api/lookup/languages", new JsonObject().
 				with("name", name))
 			.getArray("options").stream()
 			.map(o -> new Language(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
@@ -236,33 +237,33 @@ public class RestfulCrmClient implements CrmClient {
 	public List<Salutation> findSalutations() {
 		return get("/api/lookup/salutations").getArray("options").stream()
 			.map(o -> new Salutation(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/salutations", new DataObject().
+		return get("/api/lookup/salutations", new JsonObject().
 				with("code", code))
 			.getArray("options").stream()
 			.map(o -> new Salutation(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
 	@Override
 	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return get("/api/lookup/salutations", new DataObject().
+		return get("/api/lookup/salutations", new JsonObject().
 				with("name", name))
 			.getArray("options").stream()
 			.map(o -> new Salutation(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
@@ -270,33 +271,33 @@ public class RestfulCrmClient implements CrmClient {
 	public List<BusinessSector> findBusinessSectors() {
 		return get("/api/lookup/businessSector").getArray("options").stream()
 			.map(o -> new BusinessSector(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/businessSector", new DataObject().
+		return get("/api/lookup/businessSector", new JsonObject().
 				with("code", code))
 			.getArray("options").stream()
 			.map(o -> new BusinessSector(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return get("/api/lookup/businessSector", new DataObject().
+		return get("/api/lookup/businessSector", new JsonObject().
 				with("name", name))
 			.getArray("options").stream()
 			.map(o -> new BusinessSector(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
@@ -304,33 +305,33 @@ public class RestfulCrmClient implements CrmClient {
 	public List<BusinessUnit> findBusinessUnits() {
 		return get("/api/lookup/businessUnit").getArray("options").stream()
 			.map(o -> new BusinessUnit(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/businessUnit", new DataObject().
+		return get("/api/lookup/businessUnit", new JsonObject().
 				with("code", code))
 			.getArray("options").stream()
 			.map(o -> new BusinessUnit(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return get("/api/lookup/businessUnit", new DataObject().
+		return get("/api/lookup/businessUnit", new JsonObject().
 				with("name", name))
 			.getArray("options").stream()
 			.map(o -> new BusinessUnit(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
@@ -338,40 +339,40 @@ public class RestfulCrmClient implements CrmClient {
 	public List<BusinessClassification> findBusinessClassifications() {
 		return get("/api/lookup/businessClassification").getArray("options").stream()
 			.map(o -> new BusinessClassification(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
-		return get("/api/lookup/businessClassification", new DataObject().
+		return get("/api/lookup/businessClassification", new JsonObject().
 				with("code", code))
 			.getArray("options").stream()
 			.map(o -> new BusinessClassification(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name)
 			throws ItemNotFoundException {
-		return get("/api/lookup/businessClassification", new DataObject().
+		return get("/api/lookup/businessClassification", new JsonObject().
 				with("name", name))
 			.getArray("options").stream()
 			.map(o -> new BusinessClassification(
-				((DataObject)o).getString("@value"), 
-				((DataObject)o).getString("@en"), 
-				((DataObject)o).getString("@fr")))
+				((JsonObject)o).getString("@value"), 
+				((JsonObject)o).getString("@en"), 
+				((JsonObject)o).getString("@fr")))
 			.findFirst().get();
 	}
 
 	@Override
 	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
-		DataObject result = post("/api/organizations", new DataObject()
+		JsonObject result = post("/api/organizations", new JsonObject()
 			.with("displayName", displayName));
 		return new OrganizationDetails(
 			new Identifier(result.getString("organizationId")),
@@ -384,7 +385,7 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
-		DataObject result = get("/api/organizations/" + organizationId + "/summary");
+		JsonObject result = get("/api/organizations/" + organizationId + "/summary");
 		return new OrganizationSummary(
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
@@ -393,7 +394,7 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
-		DataObject result = get("/api/organizations/" + organizationId);
+		JsonObject result = get("/api/organizations/" + organizationId);
 		return new OrganizationDetails(
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
@@ -405,7 +406,7 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String displayName) {
-		DataObject result = patch("/api/organizations/" + organizationId, new DataObject()
+		JsonObject result = patch("/api/organizations/" + organizationId, new JsonObject()
 			.with("displayName", displayName));
 		return new OrganizationDetails(
 			new Identifier(result.getString("organizationId")),
@@ -418,7 +419,7 @@ public class RestfulCrmClient implements CrmClient {
 	
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		DataObject result = patch("/api/organizations/" + organizationId, new DataObject()
+		JsonObject result = patch("/api/organizations/" + organizationId, new JsonObject()
 			.with("mainLocationId", locationId.toString()));
 		return new OrganizationDetails(
 			new Identifier(result.getString("organizationId")),
@@ -431,7 +432,7 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		DataObject result = put("/api/organizations/" + organizationId + "/enable");
+		JsonObject result = put("/api/organizations/" + organizationId + "/enable");
 		return new OrganizationSummary(
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
@@ -440,7 +441,7 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		DataObject result = put("/api/organizations/" + organizationId + "/disable");
+		JsonObject result = put("/api/organizations/" + organizationId + "/disable");
 		return new OrganizationSummary(
 			new Identifier(result.getString("organizationId")),
 			Status.valueOf(result.getString("status").toUpperCase()),
@@ -449,7 +450,7 @@ public class RestfulCrmClient implements CrmClient {
 	
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
-		return get("/api/organizations/count", new DataObject()
+		return get("/api/organizations/count", new JsonObject()
 				.with("displayName", filter.getDisplayName())
 				.with("status", filter.getStatus().toString().toLowerCase()))
 			.getLong("total");
@@ -457,13 +458,13 @@ public class RestfulCrmClient implements CrmClient {
 	
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		DataObject result = get("/api/organizations", new DataObject()
+		JsonObject result = get("/api/organizations", new JsonObject()
 			.with("displayName", filter.getDisplayName())
 			.with("status", filter.getStatus().toString().toLowerCase())
 			.with("page", paging.getPageNumber())
 			.with("limit", paging.getPageSize()));
 		List<OrganizationSummary> items = result.getArray("content").stream()
-					.map(item -> (DataObject)item)
+					.map(item -> (JsonObject)item)
 					.map(item -> new OrganizationSummary(
 				new Identifier(item.getString("organizationId")),
 				Status.valueOf(item.getString("status").toUpperCase()),
@@ -475,13 +476,13 @@ public class RestfulCrmClient implements CrmClient {
 	
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		DataObject result = get("/api/organizations", new DataObject()
+		JsonObject result = get("/api/organizations", new JsonObject()
 			.with("displayName", filter.getDisplayName())
 			.with("status", filter.getStatus() != null ? filter.getStatus().toString().toLowerCase() : null)
 			.with("page", paging.getPageNumber())
 			.with("limit", paging.getPageSize()));
 		List<OrganizationDetails> items = result.getArray("content").stream()
-					.map(item -> (DataObject)item)
+					.map(item -> (JsonObject)item)
 					.map(item -> new OrganizationDetails(
 				new Identifier(item.getString("organizationId")),
 				Status.valueOf(item.getString("status").toUpperCase()),
@@ -496,11 +497,11 @@ public class RestfulCrmClient implements CrmClient {
 	
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) {
-		DataObject result = post("/api/locations", new DataObject()
+		JsonObject result = post("/api/locations", new JsonObject()
 			.with("organizationId", organizationId.toString())
 			.with("reference", reference)
 			.with("displayName", displayName)
-			.with("address", new DataObject()
+			.with("address", new JsonObject()
 				.with("street", address.getStreet())
 				.with("city", address.getCity())
 				.with("province", address.getProvince())
@@ -515,7 +516,7 @@ public class RestfulCrmClient implements CrmClient {
 				result.getObject("address").getString("street"),
 				result.getObject("address").getString("city"),
 				result.getObject("address").getString("province"),
-				findCountryByLocalizedName(locale, result.getObject("address").getString("country")).getCode(),
+				result.getObject("address").getString("country"),
 				result.getObject("address").getString("postalCode")));
 	}
 
@@ -713,7 +714,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Group createGroup(String code, Localized name) {
+	public Group createGroup(Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -755,7 +756,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, String code, Localized name) {
+	public Role createRole(Identifier groupId, Localized name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -814,6 +815,18 @@ public class RestfulCrmClient implements CrmClient {
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean reset() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public void dump(OutputStream os) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -1024,6 +1037,18 @@ public class RestfulCrmClient implements CrmClient {
 	public boolean canViewPermissions() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public Group validate(Group group) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Role validate(Role role) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

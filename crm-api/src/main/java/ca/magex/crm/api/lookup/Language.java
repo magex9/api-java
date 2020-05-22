@@ -7,30 +7,25 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
-public class Language implements CrmLookupItem {
+public class Language extends Localized implements CrmLookupItem {
 
 	private static final long serialVersionUID = 1L;
 
-	private String code;
-	
-	private Localized name;
-
 	public Language(String code, String english, String french) {
-		super();
-		this.code = code;
-		this.name = new Localized(english, french);
+		super(code, english, french);
 	}
 	
 	@Override
 	public String getCode() {
-		return code;
+		return get(Lang.ROOT);
 	}
 	
 	@Override
 	public String getName(Locale locale) {
-		return name.get(locale);
+		return get(locale);
 	}
 	
 	@Override

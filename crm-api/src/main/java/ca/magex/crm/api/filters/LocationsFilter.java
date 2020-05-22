@@ -3,12 +3,15 @@ package ca.magex.crm.api.filters;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -41,6 +44,20 @@ public class LocationsFilter implements Serializable {
 		this.displayName = displayName;
 		this.reference = reference;
 		this.status = status;
+	}
+	
+	public LocationsFilter(Map<String,Object> filterCriteria) {
+		this.displayName = (String) filterCriteria.get("displayName");
+		this.reference = (String) filterCriteria.get("reference");
+		this.organizationId = filterCriteria.keySet().contains("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")): null;
+		this.status = null;
+		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+			try {
+				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+			} catch (IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
 	}
 
 	public LocationsFilter() {

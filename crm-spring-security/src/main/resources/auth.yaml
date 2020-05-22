@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: CRM Authentication
+security:
+  - bearerAuth: []
+servers:
+  - url: http://${serverAddress}:${serverPort}${contextPath}
+    description: Local development (uses test data)
+paths:
+  /authenticate:
+    post:
+      summary: Request an Authorization Token
+      operationId: authenticate
+      tags:
+        - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: 
+                - username
+                - password
+              properties:
+                username:
+                  description: The username to use for authentication
+                  type: string
+                  example: admin
+                password:
+                  description: The password credentials to use for authentication
+                  type: string
+                  example: admin
+      responses:
+        "200":
+          description: A forward response to the newly created organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtToken'
+        "400":
+          description: Invalid JSON format provided.
+        "401":
+          description: Invalid credentials provided.
+        default:
+          description: An error occurred processing the request.          
+  /validate:
+    post:
+      summary: retrives the authorization details for the token
+      operationId: validate
+      tags:
+        - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JwtToken'
+      responses:
+        "200":
+          description: Successfully validated the token, and retrieved the authorization details associated with the token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthDetails'
+        "400":
+          description: Invalid JSON format provided.
+        "401":
+          description: The current user does not have permissions.
+        "422":
+          description: The token provided is not valid.
+        default:
+          description: System error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reason:
+                    type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    JwtToken:
+      description: The json web token information
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+    AuthDetails:
+      description: The authorization details associated to a json web token
+      type: object
+      required:
+        - username
+        - expiration
+        - grantedAuthorities
+      properties:
+        username:
+          type: string
+        expiration:
+          description: when the token expires.
+          type: string
+        grantedAuthorities:
+          type: array
+          items: 
+            type: string
+         

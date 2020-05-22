@@ -6,8 +6,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -20,7 +20,7 @@ import ca.magex.crm.test.TestConfig;
 public class AmnesiaPersonServiceTests extends AbstractPersonServiceTests {
 
 	@Autowired
-	private AmnesiaDB db;
+	private CrmInitializationService initializationService;
 
 	@Autowired 
 	private CrmPersonService personService;
@@ -32,8 +32,8 @@ public class AmnesiaPersonServiceTests extends AbstractPersonServiceTests {
 	private CrmOrganizationService organizationService;
 	
 	@Override
-	public void reset() {
-		db.reset();
+	public CrmInitializationService getInitializationService() {
+		return initializationService;
 	}
 	
 	@Override

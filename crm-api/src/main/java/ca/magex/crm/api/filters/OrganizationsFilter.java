@@ -3,11 +3,14 @@ package ca.magex.crm.api.filters;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Status;
 
@@ -29,6 +32,18 @@ public class OrganizationsFilter implements Serializable {
 	public OrganizationsFilter(String displayName, Status status) {
 		this.displayName = displayName;
 		this.status = status;
+	}
+	
+	public OrganizationsFilter(Map<String, Object> filterCriteria) {
+		this.displayName = (String) filterCriteria.get("displayName");
+		this.status = null;
+		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+			try {
+				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+			} catch (IllegalArgumentException e) {
+				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+			}
+		}
 	}
 
 	public OrganizationsFilter() {

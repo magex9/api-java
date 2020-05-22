@@ -10,18 +10,15 @@ public enum Status implements CrmLookupItem {
 	INACTIVE("Inactive", "Inactif"), 
 	PENDING("Pending", "En attente");
 	
-	private String code;
-	
 	private Localized name;
 
 	private Status(String english, String french) {
-		this.code = toString().toLowerCase();
-		this.name = new Localized(english, french);
+		this.name = new Localized(toString().toLowerCase(), english, french);
 	}
 	
 	@Override
 	public String getCode() {
-		return code;
+		return name.get(Lang.ROOT);
 	}
 	
 	@Override

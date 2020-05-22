@@ -18,8 +18,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CrmGraphQLController {
 
 	@PostMapping("/graphql")
-	public ResponseEntity<Object> doQuery(@RequestBody String request, HttpServletRequest req, HttpServletResponse res) throws JSONException;
+	public ResponseEntity<Object> doQuery(
+			@RequestBody String request, 
+			HttpServletRequest req, 
+			HttpServletResponse res) throws JSONException;
 	
 	@GetMapping("/graphql")
-	public ResponseEntity<Object> doQueryAsGet(@RequestParam String query, HttpServletRequest req, HttpServletResponse res) throws JSONException;
+	public ResponseEntity<Object> doQueryAsGet(
+			@RequestParam String query,
+			@RequestParam(required = false) String variables, 
+			HttpServletRequest req, 
+			HttpServletResponse res) throws JSONException;
 }

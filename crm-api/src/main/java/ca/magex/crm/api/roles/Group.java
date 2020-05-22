@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
@@ -19,16 +20,13 @@ public class Group implements Serializable {
 
 	private Identifier groupId;
 	
-	private String code;
-	
 	private Status status;
 	
 	private Localized name;
 
-	public Group(Identifier groupId, String code, Status status, Localized name) {
+	public Group(Identifier groupId, Status status, Localized name) {
 		super();
 		this.groupId = groupId;
-		this.code = code;
 		this.status = status;
 		this.name = name;
 	}
@@ -38,7 +36,7 @@ public class Group implements Serializable {
 	}
 	
 	public String getCode() {
-		return code;
+		return name.get(Lang.ROOT);
 	}
 	
 	public Status getStatus() {
@@ -46,7 +44,7 @@ public class Group implements Serializable {
 	}
 	
 	public Group withStatus(Status status) {
-		return new Group(groupId, code, status, name);
+		return new Group(groupId, status, name);
 	}
 	
 	public Localized getName() {
@@ -58,7 +56,7 @@ public class Group implements Serializable {
 	}
 	
 	public Group withName(Localized name) {
-		return new Group(groupId, code, status, name);
+		return new Group(groupId, status, name);
 	}
 	
 	@Override

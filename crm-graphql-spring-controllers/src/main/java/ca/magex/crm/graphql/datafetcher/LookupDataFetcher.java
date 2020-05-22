@@ -43,19 +43,19 @@ public class LookupDataFetcher extends AbstractDataFetcher {
 				} else {
 					return Arrays.asList(crm.findLanguageByCode(code));
 				}
-			case "BUSINESSSECTOR":
+			case "SECTOR":
 				if (StringUtils.isBlank(code)) {
 					return crm.findBusinessSectors().stream().map((c) -> (CrmLookupItem) c).collect(Collectors.toList());
 				} else {
 					return Arrays.asList(crm.findBusinessSectorByCode(code));
 				}
-			case "BUSINESSUNIT":
+			case "UNIT":
 				if (StringUtils.isBlank(code)) {
 					return crm.findBusinessUnits().stream().map((c) -> (CrmLookupItem) c).collect(Collectors.toList());
 				} else {
 					return Arrays.asList(crm.findBusinessUnitByCode(code));
 				}
-			case "BUSINESSCLASSIFICATION":
+			case "CLASSIFICATION":
 				if (StringUtils.isBlank(code)) {
 					return crm.findBusinessClassifications().stream().map((c) -> (CrmLookupItem) c).collect(Collectors.toList());
 				} else {
@@ -68,7 +68,7 @@ public class LookupDataFetcher extends AbstractDataFetcher {
 					return Arrays.asList(Status.valueOf(StringUtils.upperCase(code)));
 				}
 			default:
-				throw new ItemNotFoundException("invalid category: " + category);
+				throw new ItemNotFoundException("invalid category '" + category + "'");
 			}
 		};
 	}

@@ -10,7 +10,7 @@ public class Lang {
 	
 	public static final Locale FRENCH = Locale.CANADA_FRENCH;
 	
-	public static final Locale BILINGUAL = Locale.ROOT;
+	public static final Locale ROOT = Locale.ROOT;
 	
 	public static final List<Locale> SUPPORTED = Arrays.asList(ENGLISH, FRENCH);
 	
@@ -25,13 +25,19 @@ public class Lang {
 	}
 	
 	public static Locale parse(String lang) {
-		if (lang == null)
+		if (lang == null) {
 			return null;
-		if (lang.equals("en") || lang.equals("eng") || lang.equals(ENGLISH.toString()))
+		}
+		if (lang.contentEquals("")) {
+			return ROOT;
+		}
+		if (lang.equals("en") || lang.equals("eng") || lang.equals(ENGLISH.toString())) {
 			return ENGLISH;
-		if (lang.equals("fr") || lang.equals("fra") || lang.equals(FRENCH.toString()))
+		}
+		if (lang.equals("fr") || lang.equals("fra") || lang.equals(FRENCH.toString())) {
 			return FRENCH;
-		throw new IllegalArgumentException("Locale is not english or french");
+		}
+		throw new IllegalArgumentException("Locale is not english or french or root");
 	}
 	
 }

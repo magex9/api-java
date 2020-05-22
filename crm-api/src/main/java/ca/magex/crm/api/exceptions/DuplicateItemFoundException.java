@@ -11,7 +11,7 @@ public class DuplicateItemFoundException extends ApiException {
 	}
 
 	@Override
-	public int getErrorCode() {
+	public Integer getErrorCode() {
 		return 404;
 	}
 	

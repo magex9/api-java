@@ -1,5 +1,10 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.CANADA;
+import static ca.magex.crm.test.CrmAsserts.ENGLISH;
+import static ca.magex.crm.test.CrmAsserts.ONTARIO;
+import static ca.magex.crm.test.CrmAsserts.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +33,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
@@ -72,14 +78,21 @@ public class CrmServicesTestSuite {
 	@Autowired private CrmUserService userService;
 	@Autowired private CrmPermissionService permissionService;
 
-	public void runAllTests() {
+	public void runAllTests() throws Exception {
+		initializationService.reset();
 		if (!initializationService.isInitialized())
 			initializationService.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
+		initializationService.dump();
 		runLookupServiceTests();
-		Identifier orgIdentifier = runOrganizationServiceTests();
-		runLocationServiceTests(orgIdentifier);
-		Identifier personIdentifer = runPersonServiceTests(orgIdentifier);
-		runUserServiceTests(personIdentifer);
+		try {
+			runCreatePermissions();
+			Identifier orgIdentifier = runOrganizationServiceTests();
+			runLocationServiceTests(orgIdentifier);
+			Identifier personIdentifer = runPersonServiceTests(orgIdentifier);
+			runUserServiceTests(personIdentifer);
+		} catch (BadRequestException e) {
+			e.printMessages(System.out);
+		}
 	}
 
 	private void runLookupServiceTests() {
@@ -116,6 +129,13 @@ public class CrmServicesTestSuite {
 		}
 		logger.info("Running lookup tests for " + item.getName() + " Passed");
 	}
+	
+	private void runCreatePermissions() {
+		Identifier sysId = permissionService.createGroup(SYS).getGroupId();
+		permissionService.createRole(sysId, SYS_ADMIN);
+		Identifier orgId = permissionService.createGroup(ORG).getGroupId();
+		permissionService.createRole(orgId, ORG_ADMIN);
+	}
 
 	private Identifier runOrganizationServiceTests() {
 		logger.info("----------------------------------");
@@ -139,7 +159,7 @@ public class CrmServicesTestSuite {
 
 		/* create and verify new location for organization */
 		logger.info("Creating main Location");
-		MailingAddress address = new MailingAddress("54 fifth street", "Toronto", "Ontario", "Canada", "T5R5X3");
+		MailingAddress address = new MailingAddress("54 fifth street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
 		LocationDetails locDetails = locationService.createLocation(
 				orgId,
 				"HeadQuarters",
@@ -266,7 +286,7 @@ public class CrmServicesTestSuite {
 
 		/* update and verify the location address */
 		logger.info("Updating Location Address");
-		MailingAddress newAddress = new MailingAddress("55 second street", "Toronto", "Ontario", "Canada", "T5R5X3");
+		MailingAddress newAddress = new MailingAddress("55 second street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
 		locDetails = locationService.updateLocationAddress(locId, newAddress);
 		verifyLocationDetails(locDetails, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName, newAddress);
 
@@ -318,8 +338,8 @@ public class CrmServicesTestSuite {
 		logger.info("----------------------------");
 		long personCount = personService.countPersons(new PersonsFilter());
 		final PersonName originalName = new PersonName("Mr.", "Mike", "Peter", "Johns");
-		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", "Ontario", "Canada", "K4J9O9");
-		final Communication originalComms = new Communication("Engineer", "English", "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
+		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
+		final Communication originalComms = new Communication("Engineer", ENGLISH.getCode(), "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
 		final BusinessPosition originalPosition = new BusinessPosition("IM/IT", "Solutions", "Team Lead");
 
 		/* create a person and verify results */
@@ -368,7 +388,7 @@ public class CrmServicesTestSuite {
 
 		/* update person address and verify */
 		logger.info("Updating Person Address");
-		final MailingAddress newAddress = new MailingAddress("15 fourth street", "Ottawa", "Ontario", "Canada", "K4J9O9");
+		final MailingAddress newAddress = new MailingAddress("15 fourth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
 		personDetails = personService.updatePersonAddress(personDetails.getPersonId(), newAddress);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition);
 
@@ -380,7 +400,7 @@ public class CrmServicesTestSuite {
 
 		/* update person communications and verify */
 		logger.info("Updating Person Communiation");
-		final Communication newComms = new Communication("Supervisor", "English", "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
+		final Communication newComms = new Communication("Supervisor", ENGLISH.getCode(), "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
 		personDetails = personService.updatePersonCommunication(personDetails.getPersonId(), newComms);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition);
 
@@ -454,7 +474,7 @@ public class CrmServicesTestSuite {
 		 * add user role (first time we add a role it will generate a user name for us)
 		 */
 		logger.info("Updating User Role");
-		Role r1 = permissionService.findRoleByCode("CRM_ADMIN");
+		Role r1 = permissionService.findRoleByCode("ORG_ADMIN");
 		user = userService.updateUserRoles(user.getUserId(), List.of(r1.getCode()));
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
 
