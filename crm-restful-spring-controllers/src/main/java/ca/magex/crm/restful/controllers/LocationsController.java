@@ -2,10 +2,11 @@ package ca.magex.crm.restful.controllers;
 	
 import static ca.magex.crm.restful.controllers.ContentExtractor.action;
 import static ca.magex.crm.restful.controllers.ContentExtractor.createPage;
-import static ca.magex.crm.restful.controllers.ContentExtractor.*;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractBody;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractDisplayName;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractOrganizationId;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractPaging;
+import static ca.magex.crm.restful.controllers.ContentExtractor.extractReference;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractStatus;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getTransformer;
@@ -32,11 +33,11 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.json.JsonTransformer;
+import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
 
 @Controller
 public class LocationsController {
@@ -49,24 +50,24 @@ public class LocationsController {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(req.getParameter("org"));
 		Page<LocationSummary> page = crm.findLocationSummaries(extractLocationFilter(req), extractPaging(req));
-		DataObject data = createPage(page, e -> transformer.formatLocationSummary(e).with("_links", formatLocationActions(e.getLocationId())))
+		JsonObject data = createPage(page, e -> transformer.formatLocationSummary(e).with("_links", formatLocationActions(e.getLocationId())))
 				.with("actions", formatLocationsActions(organizationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
-	private DataArray formatLocationsActions(Identifier organizationId) {
-		List<DataElement> actions = new ArrayList<DataElement>();
+	private JsonArray formatLocationsActions(Identifier organizationId) {
+		List<JsonElement> actions = new ArrayList<JsonElement>();
 		if (crm.canCreateLocationForOrganization(organizationId)) {
 			actions.add(action("create", "Create Location", "post", "/api/locations"));
 		}
-		return new DataArray(actions);
+		return new JsonArray(actions);
 		
 	}
 	
-	private DataArray formatLocationActions(Identifier locationId) {
-		List<DataElement> actions = new ArrayList<DataElement>();
+	private JsonArray formatLocationActions(Identifier locationId) {
+		List<JsonElement> actions = new ArrayList<JsonElement>();
 		if (crm.canUpdateLocation(locationId)) {
 			actions.add(action("edit", "Edit", "get", "/api/locations/" + locationId + "/edit"));
 		} else if (crm.canViewLocation(locationId)) {
@@ -78,7 +79,7 @@ public class LocationsController {
 		if (crm.canEnableLocation(locationId)) {
 			actions.add(action("enable", "Activate", "put", "/api/locations/" + locationId + "/enable"));
 		}
-		return new DataArray(actions);
+		return new JsonArray(actions);
 	}
 	
 	public LocationsFilter extractLocationFilter(HttpServletRequest req) throws BadRequestException {
@@ -88,15 +89,15 @@ public class LocationsController {
 	@PostMapping("/api/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		Identifier organizationId = new Identifier(body.getString("organizationId"));
 		String displayName = body.getString("displayName");
 		String reference = body.getString("reference");
 		MailingAddress address = transformer.parseMailingAddress("address", body);
-		DataElement data = transformer.formatLocationDetails(crm.createLocation(organizationId, displayName, reference, address));
+		JsonElement data = transformer.formatLocationDetails(crm.createLocation(organizationId, displayName, reference, address));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/locations/{locationId}")
@@ -104,10 +105,10 @@ public class LocationsController {
 			@PathVariable("locationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
+		JsonElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PatchMapping("/api/locations/{locationId}")
@@ -115,15 +116,15 @@ public class LocationsController {
 			@PathVariable("locationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		if (body.contains("displayName"))
 			crm.updateLocationName(locationId, body.getString("displayName"));
 		if (body.contains("address"))
 			crm.updateLocationAddress(locationId, transformer.parseMailingAddress("address", body));
-		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
+		JsonElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/locations/{locationId}/summary")
@@ -131,10 +132,10 @@ public class LocationsController {
 			@PathVariable("locationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataElement data = transformer.formatLocationSummary(crm.findLocationDetails(locationId));
+		JsonElement data = transformer.formatLocationSummary(crm.findLocationDetails(locationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/locations/{locationId}/address")
@@ -142,10 +143,10 @@ public class LocationsController {
 			@PathVariable("locationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId)).getObject("address");
+		JsonElement data = transformer.formatLocationDetails(crm.findLocationDetails(locationId)).getObject("address");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/locations/{locationId}/enable")
@@ -153,10 +154,10 @@ public class LocationsController {
 			@PathVariable("locationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataElement data = transformer.formatLocationSummary(crm.enableLocation(locationId));
+		JsonElement data = transformer.formatLocationSummary(crm.enableLocation(locationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/locations/{locationId}/disable")
@@ -164,10 +165,10 @@ public class LocationsController {
 			@PathVariable("locationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier locationId = new Identifier(id);
-		DataElement data = transformer.formatLocationSummary(crm.disableLocation(locationId));
+		JsonElement data = transformer.formatLocationSummary(crm.disableLocation(locationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 }

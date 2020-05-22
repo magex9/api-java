@@ -24,12 +24,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.secured.SecuredCrmServices;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataBoolean;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataParser;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonBoolean;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonParser;
 
 @Controller
 public class ConfigController {
@@ -55,7 +55,7 @@ public class ConfigController {
 			ObjectMapper jsonWriter = new ObjectMapper();
 			String json = jsonWriter.writeValueAsString(obj);
 			res.setStatus(200);
-			res.getWriter().write(DataFormatter.formatted((DataObject)DataParser.parse(json)));
+			res.getWriter().write(JsonFormatter.formatted((JsonObject)JsonParser.parse(json)));
 		} catch (IOException ioe) {
 			throw new RuntimeException("Error loading crm.yaml");
 		}
@@ -64,28 +64,28 @@ public class ConfigController {
 	@GetMapping("/api")
 	public void dashboard(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String currentUserId = "asdfasdf";
-		List<DataElement> actions = new ArrayList<DataElement>();
+		List<JsonElement> actions = new ArrayList<JsonElement>();
 		actions.add(action("organizations", "Organizations", "get", "/api/organizations"));
 		actions.add(action("locations", "Locations", "get", "/api/locations"));
 		actions.add(action("persons", "People", "get", "/api/persons"));
 		actions.add(action("account", "Account", "get", "/api/persons/" + currentUserId));
-		DataObject data = new DataObject().with("_links", new DataArray(actions));
+		JsonObject data = new JsonObject().with("_links", new JsonArray(actions));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
 	@GetMapping("/initialized")
 	public void initialized(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(new DataBoolean(crm.isInitialized())));
+		res.getWriter().write(JsonFormatter.formatted(new JsonBoolean(crm.isInitialized())));
 	}
 	
 	@PostMapping("/initialize")
 	public void initialize(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		if (!crm.isInitialized()) {
-			DataObject body = extractBody(req);
+			JsonObject body = extractBody(req);
 			String organization = body.getString("displayName");
 			PersonName name = getTransformer(req, crm).parsePersonName("legalName", body);
 			String email = body.getString("email");
@@ -95,7 +95,7 @@ public class ConfigController {
 		}
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(new DataBoolean(true)));
+		res.getWriter().write(JsonFormatter.formatted(new JsonBoolean(true)));
 	}
 	
 }

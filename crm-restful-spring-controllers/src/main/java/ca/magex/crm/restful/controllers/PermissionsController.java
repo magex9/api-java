@@ -1,6 +1,5 @@
 package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.restful.controllers.ContentExtractor.extractBody;
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractPaging;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getTransformer;
@@ -30,12 +29,12 @@ import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataParser;
-import ca.magex.crm.mapping.json.JsonTransformer;
+import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonParser;
 
 @Controller
 public class PermissionsController {
@@ -47,10 +46,10 @@ public class PermissionsController {
 	public void findGroups(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Page<Group> page = crm.findGroups(extractGroupsFilter(req), extractPaging(req));
-		DataObject data = createPage(page, e -> transformer.formatGroup(e));
+		JsonObject data = createPage(page, e -> transformer.formatGroup(e));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
 	public GroupsFilter extractGroupsFilter(HttpServletRequest req) throws BadRequestException {
@@ -64,15 +63,15 @@ public class PermissionsController {
 	@PostMapping("/api/groups")
 	public void createGroup(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		String code = body.getString("code");
 		String englishName = body.getString("englishName");
 		String frenchName = body.getString("frenchName");
 		Localized name = new Localized(code, englishName, frenchName);
-		DataElement data = transformer.formatGroup(crm.createGroup(name));
+		JsonElement data = transformer.formatGroup(crm.createGroup(name));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/groups/{groupId}")
@@ -80,10 +79,10 @@ public class PermissionsController {
 			@PathVariable("groupId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier groupId = new Identifier(id);
-		DataElement data = transformer.formatGroup(crm.findGroup(groupId));
+		JsonElement data = transformer.formatGroup(crm.findGroup(groupId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PatchMapping("/api/groups/{groupId}")
@@ -91,31 +90,31 @@ public class PermissionsController {
 			@PathVariable("groupId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier groupId = new Identifier(id);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		String code = body.getString("code");
 		String englishName = body.getString("englishName");
 		String frenchName = body.getString("frenchName");
 		Localized name = new Localized(code, englishName, frenchName);
 		crm.updateGroupName(groupId, name);
-		DataElement data = transformer.formatGroup(crm.findGroup(groupId));
+		JsonElement data = transformer.formatGroup(crm.findGroup(groupId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
-	public <T> DataObject createPage(Page<T> page, Function<T, DataElement> mapper) {
-		return new DataObject()
+	public <T> JsonObject createPage(Page<T> page, Function<T, JsonElement> mapper) {
+		return new JsonObject()
 			.with("page", page.getNumber())
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.hasPrevious())
-			.with("content", new DataArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
+			.with("content", new JsonArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
 	}
 	
-	public static DataObject extractBody(HttpServletRequest req) throws IOException {
+	public static JsonObject extractBody(HttpServletRequest req) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		StreamUtils.copy(req.getInputStream(), baos);		
-		return DataParser.parseObject(new String(baos.toByteArray()));
+		return JsonParser.parseObject(new String(baos.toByteArray()));
 	}
 
 }

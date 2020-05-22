@@ -20,12 +20,12 @@ import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataPair;
-import ca.magex.crm.mapping.data.DataParser;
-import ca.magex.crm.mapping.json.JsonTransformer;
+import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonPair;
+import ca.magex.json.model.JsonParser;
 
 public class ContentExtractor {
 
@@ -93,28 +93,28 @@ public class ContentExtractor {
 		return new Paging(page, limit, Sort.by(Direction.fromString(direction), order));
 	}
 	
-	public static DataObject extractBody(HttpServletRequest req) throws IOException {
+	public static JsonObject extractBody(HttpServletRequest req) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		StreamUtils.copy(req.getInputStream(), baos);		
-		return DataParser.parseObject(new String(baos.toByteArray()));
+		return JsonParser.parseObject(new String(baos.toByteArray()));
 	}
 
-	public static DataObject action(String name, String title, String method, String href) {
-		List<DataPair> pairs = new ArrayList<DataPair>();
-		pairs.add(new DataPair("name", name));
-		pairs.add(new DataPair("title", title));
-		pairs.add(new DataPair("method", method));
-		pairs.add(new DataPair("href", href));
-		return new DataObject(pairs);
+	public static JsonObject action(String name, String title, String method, String href) {
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		pairs.add(new JsonPair("name", name));
+		pairs.add(new JsonPair("title", title));
+		pairs.add(new JsonPair("method", method));
+		pairs.add(new JsonPair("href", href));
+		return new JsonObject(pairs);
 	}
 	
-	public static <T> DataObject createPage(Page<T> page, Function<T, DataElement> mapper) {
-		return new DataObject()
+	public static <T> JsonObject createPage(Page<T> page, Function<T, JsonElement> mapper) {
+		return new JsonObject()
 			.with("page", page.getNumber())
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.getNumber() > 1)
-			.with("content", new DataArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
+			.with("content", new JsonArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
 	}
 	
 }

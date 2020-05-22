@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataObject;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonObject;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -34,8 +34,7 @@ public class PermissionsControllerTests {
 	
 	@Test
 	public void testCreateGroup() throws Exception {
-
-		DataObject json = new DataObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
@@ -45,13 +44,13 @@ public class PermissionsControllerTests {
 		assertEquals(0, json.getInt("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(DataArray.class, json.get("content").getClass());
+		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(0, json.getArray("content").size());
 		
-		json = new DataObject(mockMvc.perform(MockMvcRequestBuilders
+		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/api/groups")
 			.header("Locale", Lang.ENGLISH)
-			.content(new DataObject()
+			.content(new JsonObject()
 				.with("code", "GRP")
 				.with("englishName", "Group")
 				.with("frenchName", "Groupe")
@@ -63,7 +62,7 @@ public class PermissionsControllerTests {
 		assertEquals("Active", json.getString("status"));
 		Identifier groupId = new Identifier(json.getString("groupId"));
 		
-		json = new DataObject(mockMvc.perform(MockMvcRequestBuilders
+		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
@@ -74,7 +73,7 @@ public class PermissionsControllerTests {
 		assertEquals("Active", json.getString("status"));
 		assertEquals("Group", json.getString("name"));
 
-		json = new DataObject(mockMvc.perform(MockMvcRequestBuilders
+		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.FRENCH))
 			.andDo(MockMvcResultHandlers.print())
@@ -85,7 +84,7 @@ public class PermissionsControllerTests {
 		assertEquals("Actif", json.getString("status"));
 		assertEquals("Groupe", json.getString("name"));
 
-		json = new DataObject(mockMvc.perform(MockMvcRequestBuilders
+		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -94,7 +93,7 @@ public class PermissionsControllerTests {
 		assertEquals("active", json.getString("status"));
 		assertEquals("GRP", json.getString("name"));
 
-		json = new DataObject(mockMvc.perform(MockMvcRequestBuilders
+		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
@@ -104,7 +103,7 @@ public class PermissionsControllerTests {
 		assertEquals(1, json.getInt("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(DataArray.class, json.get("content").getClass());
+		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(1, json.getArray("content").size());
 		assertEquals(groupId.toString(), json.getArray("content").getObject(0).getString("groupId"));
 		assertEquals("active", json.getArray("content").getObject(0).getString("status"));

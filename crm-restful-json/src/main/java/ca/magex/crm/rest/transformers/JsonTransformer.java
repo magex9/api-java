@@ -1,4 +1,4 @@
-package ca.magex.crm.mapping.json;
+package ca.magex.crm.rest.transformers;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,11 +29,11 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataPair;
-import ca.magex.crm.mapping.data.DataText;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonPair;
+import ca.magex.json.model.JsonText;
 
 public class JsonTransformer {
 	
@@ -57,24 +57,24 @@ public class JsonTransformer {
 		return cls.getSimpleName();
 	}
 	
-	public DataObject formatGroup(Group group) {
+	public JsonObject formatGroup(Group group) {
 		if (group == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatIdentifier(pairs, "groupId", group, Group.class);
 		formatStatus(pairs, "status", group);
 		formatLocalized(pairs, "name", group);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 	
-	public DataObject formatLocationDetails(LocationDetails location) {
+	public JsonObject formatLocationDetails(LocationDetails location) {
 		if (location == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		if (linked) {
-			pairs.add(new DataPair("@context", getContext(LocationDetails.class)));
-			pairs.add(new DataPair("@type", getType(LocationDetails.class)));
-			pairs.add(new DataPair("@id", location.getLocationId().toString()));
+			pairs.add(new JsonPair("@context", getContext(LocationDetails.class)));
+			pairs.add(new JsonPair("@type", getType(LocationDetails.class)));
+			pairs.add(new JsonPair("@id", location.getLocationId().toString()));
 		} else {
 			formatIdentifier(pairs, "locationId", location, LocationSummary.class);
 		}
@@ -83,10 +83,10 @@ public class JsonTransformer {
 		formatText(pairs, "reference", location);
 		formatText(pairs, "displayName", location);
 		formatMailingAddress(pairs, "address", location);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 
-	public LocationDetails parseLocationDetails(DataObject data) {
+	public LocationDetails parseLocationDetails(JsonObject data) {
 		Identifier locationId = parseIdentifier("locationId", data);
 		Identifier organizationId = parseIdentifier("organizationId", data);
 		Status status = parseStatus("status", data);
@@ -96,14 +96,14 @@ public class JsonTransformer {
 		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
 	}
 	
-	public DataObject formatLocationSummary(LocationSummary location) {
+	public JsonObject formatLocationSummary(LocationSummary location) {
 		if (location == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		if (linked) {
-			pairs.add(new DataPair("@context", getContext(LocationSummary.class)));
-			pairs.add(new DataPair("@type", getType(LocationSummary.class)));
-			pairs.add(new DataPair("@id", location.getLocationId().toString()));
+			pairs.add(new JsonPair("@context", getContext(LocationSummary.class)));
+			pairs.add(new JsonPair("@type", getType(LocationSummary.class)));
+			pairs.add(new JsonPair("@id", location.getLocationId().toString()));
 		} else {
 			formatIdentifier(pairs, "locationId", location, LocationSummary.class);
 		}
@@ -111,10 +111,10 @@ public class JsonTransformer {
 		formatStatus(pairs, "status", location);
 		formatText(pairs, "reference", location);
 		formatText(pairs, "displayName", location);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 
-	public LocationSummary parseLocationSummary(DataObject data) {
+	public LocationSummary parseLocationSummary(JsonObject data) {
 		Identifier locationId = parseIdentifier("locationId", data);
 		Identifier organizationId = parseIdentifier("organizationId", data);
 		Status status = parseStatus("status", data);
@@ -123,65 +123,66 @@ public class JsonTransformer {
 		return new LocationSummary(locationId, organizationId, status, reference, displayName);
 	}
 	
-	public DataObject formatOrganizationDetails(OrganizationDetails organization) {
+	public JsonObject formatOrganizationDetails(OrganizationDetails organization) {
 		if (organization == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		if (linked) {
-			pairs.add(new DataPair("@context", getContext(OrganizationDetails.class)));
-			pairs.add(new DataPair("@type", getType(OrganizationDetails.class)));
-			pairs.add(new DataPair("@id", organization.getOrganizationId().toString()));
+			pairs.add(new JsonPair("@context", getContext(OrganizationDetails.class)));
+			pairs.add(new JsonPair("@type", getType(OrganizationDetails.class)));
+			pairs.add(new JsonPair("@id", organization.getOrganizationId().toString()));
 		} else {
 			formatIdentifier(pairs, "organizationId", organization, OrganizationDetails.class);
 		}
 		formatStatus(pairs, "status", organization);
 		formatText(pairs, "displayName", organization);
 		formatIdentifier(pairs, "mainLocationId", organization, LocationDetails.class);
-		formatIdentifiers(pairs, "groupIds", organization, Group.class);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		formatIdentifier(pairs, "mainContactId", organization, PersonDetails.class);
+		formatTexts(pairs, "groups", organization, Group.class);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 
-	public OrganizationDetails parseOrganizationDetails(DataObject data) {
+	public OrganizationDetails parseOrganizationDetails(JsonObject data) {
 		Identifier organizationId = parseIdentifier("organizationId", data);
 		Status status = parseStatus("status", data);
 		String displayName = parseText("displayName", data);
 		Identifier mainLocationId = parseIdentifier("mainLocationId", data);
 		Identifier mainContactId = parseIdentifier("mainContactId", data);
-		List<String> groups = parseTexts("groupIds", data);
+		List<String> groups = parseTexts("groups", data);
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
 	
-	public DataObject formatOrganizationSummary(OrganizationSummary organization) {
+	public JsonObject formatOrganizationSummary(OrganizationSummary organization) {
 		if (organization == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		if (linked) {
-			pairs.add(new DataPair("@context", getContext(OrganizationSummary.class)));
-			pairs.add(new DataPair("@type", getType(OrganizationSummary.class)));
-			pairs.add(new DataPair("@id", organization.getOrganizationId().toString()));
+			pairs.add(new JsonPair("@context", getContext(OrganizationSummary.class)));
+			pairs.add(new JsonPair("@type", getType(OrganizationSummary.class)));
+			pairs.add(new JsonPair("@id", organization.getOrganizationId().toString()));
 		} else {
 			formatIdentifier(pairs, "organizationId", organization, OrganizationSummary.class);
 		}
 		formatStatus(pairs, "status", organization);
 		formatText(pairs, "displayName", organization);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 
-	public OrganizationSummary parseOrganizationSummary(DataObject data) {
+	public OrganizationSummary parseOrganizationSummary(JsonObject data) {
 		Identifier organizationId = data.contains("organizationId") ? new Identifier(data.getString("organizationId")) : null;
 		Status status = data.contains("status") ? Status.valueOf(data.getString("status").toUpperCase()) : null;
 		String displayName = data.getString("displayName");
 		return new OrganizationSummary(organizationId, status, displayName);
 	}
 	
-	public DataObject formatPersonDetails(PersonDetails person) {
+	public JsonObject formatPersonDetails(PersonDetails person) {
 		if (person == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		if (linked) {
-			pairs.add(new DataPair("@context", getContext(PersonDetails.class)));
-			pairs.add(new DataPair("@type", getType(PersonDetails.class)));
-			pairs.add(new DataPair("@id", person.getPersonId().toString()));
+			pairs.add(new JsonPair("@context", getContext(PersonDetails.class)));
+			pairs.add(new JsonPair("@type", getType(PersonDetails.class)));
+			pairs.add(new JsonPair("@id", person.getPersonId().toString()));
 		} else {
 			formatIdentifier(pairs, "personId", person, PersonDetails.class);
 		}
@@ -192,11 +193,10 @@ public class JsonTransformer {
 		formatMailingAddress(pairs, "address", person);
 		formatCommunication(pairs, "communication", person);
 		formatBusinessPosition(pairs, "position", person);
-		formatUser(pairs, "user", person);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 
-	public PersonDetails parsePersonDetails(DataObject data) {
+	public PersonDetails parsePersonDetails(JsonObject data) {
 		Identifier personId = parseIdentifier("personId", data);
 		Identifier organizationId = parseIdentifier("organizationId", data);
 		Status status = parseStatus("status", data);
@@ -208,24 +208,24 @@ public class JsonTransformer {
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
 	}
 	
-	public DataObject formatPersonSummary(PersonSummary person) {
+	public JsonObject formatPersonSummary(PersonSummary person) {
 		if (person == null)
 			return null;
-		List<DataPair> pairs = new ArrayList<DataPair>();
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		if (linked) {
-			pairs.add(new DataPair("@context", getContext(PersonSummary.class)));
-			pairs.add(new DataPair("@type", getType(PersonSummary.class)));
-			pairs.add(new DataPair("@id", person.getOrganizationId().toString()));
+			pairs.add(new JsonPair("@context", getContext(PersonSummary.class)));
+			pairs.add(new JsonPair("@type", getType(PersonSummary.class)));
+			pairs.add(new JsonPair("@id", person.getOrganizationId().toString()));
 		} else {
 			formatIdentifier(pairs, "personId", person, OrganizationDetails.class);
 		}
 		formatIdentifier(pairs, "organizationId", person, OrganizationSummary.class);
 		formatStatus(pairs, "status", person);
 		formatText(pairs, "displayName", person);
-		return pairs.isEmpty() ? null : new DataObject(pairs);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 
-	public PersonSummary parsePersonSummary(DataObject data) {
+	public PersonSummary parsePersonSummary(JsonObject data) {
 		Identifier personId = parseIdentifier("personId", data);
 		Identifier organizationId = parseIdentifier("organizationId", data);
 		Status status = parseStatus("status", data);
@@ -233,8 +233,8 @@ public class JsonTransformer {
 		return new PersonSummary(personId, organizationId, status, displayName);
 	}
 	
-	public User parseUser(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
+	public User parseUser(String key, JsonObject parent) {
+		JsonObject data = parent.getObject(key);
 		if (data == null)
 			return null;
 		Identifier userId = parseIdentifier("userId", data);
@@ -244,7 +244,7 @@ public class JsonTransformer {
 		return new User(userId, username, crm.findPersonSummary(personId), Status.ACTIVE, roles);
 	}	
 
-	public void formatText(List<DataPair> parent, String key, Object obj) {
+	public void formatText(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -252,14 +252,14 @@ public class JsonTransformer {
 					throw new IllegalArgumentException("Unexpected return codes, expected String but got: " + m.getReturnType().getName());
 				String text = (String)m.invoke(obj, new Object[] { });
 				if (text != null)
-					parent.add(new DataPair(key, new DataText(text.toString())));
+					parent.add(new JsonPair(key, new JsonText(text.toString())));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void formatIdentifier(List<DataPair> parent, String key, Object obj, Class<?> type) {
+	public void formatIdentifier(List<JsonPair> parent, String key, Object obj, Class<?> type) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -268,13 +268,13 @@ public class JsonTransformer {
 				Identifier identifier = (Identifier)m.invoke(obj, new Object[] { });
 				if (identifier != null) {
 					if (linked) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(type)));
-						pairs.add(new DataPair("@type", getType(type)));
-						pairs.add(new DataPair("@id", identifier.toString()));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(type)));
+						pairs.add(new JsonPair("@type", getType(type)));
+						pairs.add(new JsonPair("@id", identifier.toString()));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					} else {
-						parent.add(new DataPair(key, new DataText(identifier.toString())));
+						parent.add(new JsonPair(key, new JsonText(identifier.toString())));
 					}
 				}
 			} catch (Exception e) {
@@ -284,35 +284,56 @@ public class JsonTransformer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void formatIdentifiers(List<DataPair> parent, String key, Object obj, Class<?> type) {
+	public void formatTexts(List<JsonPair> parent, String key, Object obj, Class<?> type) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
 				if (!m.getReturnType().equals(List.class))
 					throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
-				List<Identifier> list = (List<Identifier>)m.invoke(obj, new Object[] { });
-				List<DataElement> elements = new ArrayList<DataElement>();
+				List<String> list = (List<String>)m.invoke(obj, new Object[] { });
+				List<JsonElement> elements = new ArrayList<JsonElement>();
 				if (list != null) {
-					for (Identifier identifier : list) {
-						if (linked) {
-							List<DataPair> pairs = new ArrayList<DataPair>();
-							pairs.add(new DataPair("@context", getContext(type)));
-							pairs.add(new DataPair("@type", getType(type)));
-							pairs.add(new DataPair("@id", identifier.toString()));
-							elements.add(new DataObject(pairs));
-						} else {
-							elements.add(new DataText(identifier.toString()));
-						}
+					for (String text : list) {
+						elements.add(new JsonText(text));
 					}
 				}
-				parent.add(new DataPair(key, new DataArray(elements)));
+				parent.add(new JsonPair(key, new JsonArray(elements)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void formatStatus(List<DataPair> parent, String key, Object obj) {
+	@SuppressWarnings("unchecked")
+	public void formatIdentifiers(List<JsonPair> parent, String key, Object obj, Class<?> type) {
+		if (obj != null) {
+			try {
+				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
+				if (!m.getReturnType().equals(List.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
+				List<Identifier> list = (List<Identifier>)m.invoke(obj, new Object[] { });
+				List<JsonElement> elements = new ArrayList<JsonElement>();
+				if (list != null) {
+					for (Identifier identifier : list) {
+						if (linked) {
+							List<JsonPair> pairs = new ArrayList<JsonPair>();
+							pairs.add(new JsonPair("@context", getContext(type)));
+							pairs.add(new JsonPair("@type", getType(type)));
+							pairs.add(new JsonPair("@id", identifier.toString()));
+							elements.add(new JsonObject(pairs));
+						} else {
+							elements.add(new JsonText(identifier.toString()));
+						}
+					}
+				}
+				parent.add(new JsonPair(key, new JsonArray(elements)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void formatStatus(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -321,17 +342,17 @@ public class JsonTransformer {
 				Status status = (Status)m.invoke(obj, new Object[] { });
 				if (status != null) {
 					if (linked) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(Status.class)));
-						pairs.add(new DataPair("@type", getType(Status.class)));
-						pairs.add(new DataPair("@value", status.getCode()));
-						pairs.add(new DataPair("@en", status.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", status.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(Status.class)));
+						pairs.add(new JsonPair("@type", getType(Status.class)));
+						pairs.add(new JsonPair("@value", status.getCode()));
+						pairs.add(new JsonPair("@en", status.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", status.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					} else if (locale == null) {
-						parent.add(new DataPair(key, new DataText(status.getCode())));
+						parent.add(new JsonPair(key, new JsonText(status.getCode())));
 					} else {
-						parent.add(new DataPair(key, new DataText(status.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(status.getName(locale))));
 					}
 				}
 			} catch (Exception e) {
@@ -340,7 +361,7 @@ public class JsonTransformer {
 		}
 	}
 	
-	public void formatLocalized(List<DataPair> parent, String key, Object obj) {
+	public void formatLocalized(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -348,7 +369,7 @@ public class JsonTransformer {
 					throw new IllegalArgumentException("Unexpected return codes, expected Status but got: " + m.getReturnType().getName());
 				Localized localized = (Localized)m.invoke(obj, new Object[] { });
 				if (localized != null) {
-					parent.add(new DataPair(key, new DataText(localized.get(locale))));
+					parent.add(new JsonPair(key, new JsonText(localized.get(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -356,7 +377,7 @@ public class JsonTransformer {
 		}
 	}
 	
-	public void formatSalutation(List<DataPair> parent, String key, Object obj) {
+	public void formatSalutation(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -365,20 +386,20 @@ public class JsonTransformer {
 				Salutation salutation = crm.findSalutationByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (salutation != null) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(Salutation.class)));
-						pairs.add(new DataPair("@type", getType(Salutation.class)));
-						pairs.add(new DataPair("@value", salutation.getCode()));
-						pairs.add(new DataPair("@en", salutation.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", salutation.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(Salutation.class)));
+						pairs.add(new JsonPair("@type", getType(Salutation.class)));
+						pairs.add(new JsonPair("@value", salutation.getCode()));
+						pairs.add(new JsonPair("@en", salutation.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", salutation.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					}
 				} else if (locale == null) {
 					if (salutation != null && salutation.getCode() != null)
-						parent.add(new DataPair(key, new DataText(salutation.getCode())));
+						parent.add(new JsonPair(key, new JsonText(salutation.getCode())));
 				} else {
 					if (salutation != null && salutation.getName(locale) != null)
-						parent.add(new DataPair(key, new DataText(salutation.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(salutation.getName(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -386,7 +407,7 @@ public class JsonTransformer {
 		}
 	}
 
-	public void formatCountry(List<DataPair> parent, String key, Object obj) {
+	public void formatCountry(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -395,20 +416,20 @@ public class JsonTransformer {
 				Country country = crm.findCountryByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (country != null) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(Country.class)));
-						pairs.add(new DataPair("@type", getType(Country.class)));
-						pairs.add(new DataPair("@value", country.getCode()));
-						pairs.add(new DataPair("@en", country.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", country.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(Country.class)));
+						pairs.add(new JsonPair("@type", getType(Country.class)));
+						pairs.add(new JsonPair("@value", country.getCode()));
+						pairs.add(new JsonPair("@en", country.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", country.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					}
 				} else if (locale == null) {
 					if (country != null && country.getCode() != null)
-						parent.add(new DataPair(key, new DataText(country.getCode())));
+						parent.add(new JsonPair(key, new JsonText(country.getCode())));
 				} else {
 					if (country != null && country.getName(locale) != null)
-						parent.add(new DataPair(key, new DataText(country.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(country.getName(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -416,7 +437,7 @@ public class JsonTransformer {
 		}
 	}
 
-	public void formatLanguage(List<DataPair> parent, String key, Object obj) {
+	public void formatLanguage(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -425,20 +446,20 @@ public class JsonTransformer {
 				Language language = crm.findLanguageByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (language != null) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(Language.class)));
-						pairs.add(new DataPair("@type", getType(Language.class)));
-						pairs.add(new DataPair("@value", language.getCode()));
-						pairs.add(new DataPair("@en", language.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", language.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(Language.class)));
+						pairs.add(new JsonPair("@type", getType(Language.class)));
+						pairs.add(new JsonPair("@value", language.getCode()));
+						pairs.add(new JsonPair("@en", language.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", language.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					}
 				} else if (locale == null) {
 					if (language != null && language.getCode() != null)
-						parent.add(new DataPair(key, new DataText(language.getCode())));
+						parent.add(new JsonPair(key, new JsonText(language.getCode())));
 				} else {
 					if (language != null && language.getName(locale) != null)
-						parent.add(new DataPair(key, new DataText(language.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(language.getName(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -446,7 +467,7 @@ public class JsonTransformer {
 		}
 	}
 	
-	public void formatBusinessSector(List<DataPair> parent, String key, Object obj) {
+	public void formatBusinessSector(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -455,20 +476,20 @@ public class JsonTransformer {
 				BusinessSector sector = crm.findBusinessSectorByLocalizedName(locale, (String)m.invoke(obj, new Object[] { }));
 				if (linked) {
 					if (sector != null) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(BusinessSector.class)));
-						pairs.add(new DataPair("@type", getType(BusinessSector.class)));
-						pairs.add(new DataPair("@value", sector.getCode()));
-						pairs.add(new DataPair("@en", sector.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", sector.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(BusinessSector.class)));
+						pairs.add(new JsonPair("@type", getType(BusinessSector.class)));
+						pairs.add(new JsonPair("@value", sector.getCode()));
+						pairs.add(new JsonPair("@en", sector.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", sector.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					}
 				} else if (locale == null) {
 					if (sector != null && sector.getCode() != null)
-						parent.add(new DataPair(key, new DataText(sector.getCode())));
+						parent.add(new JsonPair(key, new JsonText(sector.getCode())));
 				} else {
 					if (sector != null && sector.getName(locale) != null)
-						parent.add(new DataPair(key, new DataText(sector.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(sector.getName(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -476,7 +497,7 @@ public class JsonTransformer {
 		}
 	}
 	
-	public void formatBusinessUnit(List<DataPair> parent, String key, Object obj) {
+	public void formatBusinessUnit(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -485,20 +506,20 @@ public class JsonTransformer {
 				BusinessUnit unit = (BusinessUnit)m.invoke(obj, new Object[] { });
 				if (linked) {
 					if (unit != null) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(BusinessUnit.class)));
-						pairs.add(new DataPair("@type", getType(BusinessUnit.class)));
-						pairs.add(new DataPair("@value", unit.getCode()));
-						pairs.add(new DataPair("@en", unit.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", unit.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(BusinessUnit.class)));
+						pairs.add(new JsonPair("@type", getType(BusinessUnit.class)));
+						pairs.add(new JsonPair("@value", unit.getCode()));
+						pairs.add(new JsonPair("@en", unit.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", unit.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					}
 				} else if (locale == null) {
 					if (unit != null && unit.getCode() != null)
-						parent.add(new DataPair(key, new DataText(unit.getCode())));
+						parent.add(new JsonPair(key, new JsonText(unit.getCode())));
 				} else {
 					if (unit != null && unit.getName(locale) != null)
-						parent.add(new DataPair(key, new DataText(unit.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(unit.getName(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -506,7 +527,7 @@ public class JsonTransformer {
 		}
 	}
 	
-	public void formatBusinessClassification(List<DataPair> parent, String key, Object obj) {
+	public void formatBusinessClassification(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -515,20 +536,20 @@ public class JsonTransformer {
 				BusinessClassification classification = (BusinessClassification)m.invoke(obj, new Object[] { });
 				if (linked) {
 					if (classification != null) {
-						List<DataPair> pairs = new ArrayList<DataPair>();
-						pairs.add(new DataPair("@context", getContext(BusinessClassification.class)));
-						pairs.add(new DataPair("@type", getType(BusinessClassification.class)));
-						pairs.add(new DataPair("@value", classification.getCode()));
-						pairs.add(new DataPair("@en", classification.getName(Lang.ENGLISH)));
-						pairs.add(new DataPair("@fr", classification.getName(Lang.FRENCH)));
-						parent.add(new DataPair(key, new DataObject(pairs)));
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", getContext(BusinessClassification.class)));
+						pairs.add(new JsonPair("@type", getType(BusinessClassification.class)));
+						pairs.add(new JsonPair("@value", classification.getCode()));
+						pairs.add(new JsonPair("@en", classification.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", classification.getName(Lang.FRENCH)));
+						parent.add(new JsonPair(key, new JsonObject(pairs)));
 					}
 				} else if (locale == null) {
 					if (classification != null && classification.getCode() != null)
-						parent.add(new DataPair(key, new DataText(classification.getCode())));
+						parent.add(new JsonPair(key, new JsonText(classification.getCode())));
 				} else {
 					if (classification != null && classification.getName(locale) != null)
-						parent.add(new DataPair(key, new DataText(classification.getName(locale))));
+						parent.add(new JsonPair(key, new JsonText(classification.getName(locale))));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -536,46 +557,46 @@ public class JsonTransformer {
 		}
 	}
 
-	public void formatPersonName(List<DataPair> parent, String key, Object obj) {
+	public void formatPersonName(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
 				if (!m.getReturnType().equals(PersonName.class))
 					throw new IllegalArgumentException("Unexpected return codes, expected PersonName but got: " + m.getReturnType().getName());
 				PersonName name = (PersonName)m.invoke(obj, new Object[] { });
-				List<DataPair> pairs = new ArrayList<DataPair>();
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
 				if (linked) {
-					pairs.add(new DataPair("@context", getContext(PersonName.class)));
-					pairs.add(new DataPair("@type", getType(PersonName.class)));
+					pairs.add(new JsonPair("@context", getContext(PersonName.class)));
+					pairs.add(new JsonPair("@type", getType(PersonName.class)));
 				}
 				formatSalutation(pairs, "salutation", name);
 				formatText(pairs, "firstName", name);
 				formatText(pairs, "middleName", name);
 				formatText(pairs, "lastName", name);
 				if (!pairs.isEmpty())
-					parent.add(new DataPair(key, new DataObject(pairs)));
+					parent.add(new JsonPair(key, new JsonObject(pairs)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void formatTelephone(List<DataPair> parent, String key, Object obj) {
+	public void formatTelephone(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
 				if (!m.getReturnType().equals(Telephone.class))
 					throw new IllegalArgumentException("Unexpected return codes, expected Telephone but got: " + m.getReturnType().getName());
 				Telephone telephone = (Telephone)m.invoke(obj, new Object[] { });
-				List<DataPair> pairs = new ArrayList<DataPair>();
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
 				if (linked) {
-					pairs.add(new DataPair("@context", getContext(Telephone.class)));
-					pairs.add(new DataPair("@type", getType(Telephone.class)));
+					pairs.add(new JsonPair("@context", getContext(Telephone.class)));
+					pairs.add(new JsonPair("@type", getType(Telephone.class)));
 				}
 				formatText(pairs, "number", telephone);
 				formatText(pairs, "extension", telephone);
 				if (!pairs.isEmpty())
-					parent.add(new DataPair(key, new DataObject(pairs)));
+					parent.add(new JsonPair(key, new JsonObject(pairs)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -583,17 +604,17 @@ public class JsonTransformer {
 	}
 
 
-	public void formatMailingAddress(List<DataPair> parent, String key, Object obj) {
+	public void formatMailingAddress(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
 				if (!m.getReturnType().equals(MailingAddress.class))
 					throw new IllegalArgumentException("Unexpected return codes, expected MailingAddress but got: " + m.getReturnType().getName());
 				MailingAddress address = (MailingAddress)m.invoke(obj, new Object[] { });
-				List<DataPair> pairs = new ArrayList<DataPair>();
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
 				if (linked) {
-					pairs.add(new DataPair("@context", getContext(MailingAddress.class)));
-					pairs.add(new DataPair("@type", getType(MailingAddress.class)));
+					pairs.add(new JsonPair("@context", getContext(MailingAddress.class)));
+					pairs.add(new JsonPair("@type", getType(MailingAddress.class)));
 				}
 				formatText(pairs, "street", address);
 				formatText(pairs, "city", address);
@@ -601,24 +622,24 @@ public class JsonTransformer {
 				formatCountry(pairs, "country", address);
 				formatText(pairs, "postalCode", address);
 				if (!pairs.isEmpty())
-					parent.add(new DataPair(key, new DataObject(pairs)));
+					parent.add(new JsonPair(key, new JsonObject(pairs)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void formatCommunication(List<DataPair> parent, String key, Object obj) {
+	public void formatCommunication(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
 				if (!m.getReturnType().equals(Communication.class))
 					throw new IllegalArgumentException("Unexpected return codes, expected Communication but got: " + m.getReturnType().getName());
 				Communication communication = (Communication)m.invoke(obj, new Object[] { });
-				List<DataPair> pairs = new ArrayList<DataPair>();
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
 				if (linked) {
-					pairs.add(new DataPair("@context", getContext(Communication.class)));
-					pairs.add(new DataPair("@type", getType(Communication.class)));
+					pairs.add(new JsonPair("@context", getContext(Communication.class)));
+					pairs.add(new JsonPair("@type", getType(Communication.class)));
 				}
 				formatText(pairs, "email", communication);
 				formatText(pairs, "jobTitle", communication);
@@ -626,61 +647,40 @@ public class JsonTransformer {
 				formatTelephone(pairs, "homePhone", communication);
 				formatText(pairs, "faxNumber", communication);
 				if (!pairs.isEmpty())
-					parent.add(new DataPair(key, new DataObject(pairs)));
+					parent.add(new JsonPair(key, new JsonObject(pairs)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void formatBusinessPosition(List<DataPair> parent, String key, Object obj) {
+	public void formatBusinessPosition(List<JsonPair> parent, String key, Object obj) {
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
 				if (!m.getReturnType().equals(BusinessPosition.class))
 					throw new IllegalArgumentException("Unexpected return codes, expected BusinessPosition but got: " + m.getReturnType().getName());
 				BusinessPosition position = (BusinessPosition)m.invoke(obj, new Object[] { });
-				List<DataPair> pairs = new ArrayList<DataPair>();
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
 				if (linked) {
-					pairs.add(new DataPair("@context", getContext(BusinessPosition.class)));
-					pairs.add(new DataPair("@type", getType(BusinessPosition.class)));
+					pairs.add(new JsonPair("@context", getContext(BusinessPosition.class)));
+					pairs.add(new JsonPair("@type", getType(BusinessPosition.class)));
 				}
 				formatBusinessSector(pairs, "sector", position);
 				formatBusinessUnit(pairs, "unit", position);
 				formatBusinessClassification(pairs, "classification", position);
 				if (!pairs.isEmpty())
-					parent.add(new DataPair(key, new DataObject(pairs)));
+					parent.add(new JsonPair(key, new JsonObject(pairs)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void formatUser(List<DataPair> parent, String key, Object obj) {
-		if (obj != null) {
-			try {
-				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(User.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected User but got: " + m.getReturnType().getName());
-				User user = (User)m.invoke(obj, new Object[] { });
-				List<DataPair> pairs = new ArrayList<DataPair>();
-				if (linked) {
-					pairs.add(new DataPair("@context", getContext(User.class)));
-					pairs.add(new DataPair("@type", getType(User.class)));
-				}
-				formatText(pairs, "personId", user.getPerson());
-				if (!pairs.isEmpty())
-					parent.add(new DataPair(key, new DataObject(pairs)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public Identifier parseIdentifier(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public Identifier parseIdentifier(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			return new Identifier(data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
+		} else if (data.contains(key, JsonObject.class)) {
 			return new Identifier(data.getObject(key).getString("@id"));
 		} else if (data.contains(key)) {
 			throw new IllegalArgumentException("Unexpected data type for Identifier: " + data.get(key).getClass());
@@ -690,13 +690,13 @@ public class JsonTransformer {
 		return null;
 	}
 
-	public List<Identifier> parseIdentifiers(String key, DataObject data) {
+	public List<Identifier> parseIdentifiers(String key, JsonObject data) {
 		List<Identifier> ids = new ArrayList<Identifier>();
-		for (DataElement child : data.getArray(key).values()) {
-			if (child instanceof DataText) {
-				ids.add(new Identifier(((DataText)child).value()));
-			} else if (child instanceof DataObject) {
-				ids.add(new Identifier(((DataObject)child).getString("@id")));
+		for (JsonElement child : data.getArray(key).values()) {
+			if (child instanceof JsonText) {
+				ids.add(new Identifier(((JsonText)child).value()));
+			} else if (child instanceof JsonObject) {
+				ids.add(new Identifier(((JsonObject)child).getString("@id")));
 			} else {
 				throw new IllegalArgumentException("Unexpected data type for child: " + child.getClass());
 			}
@@ -704,11 +704,11 @@ public class JsonTransformer {
 		return ids;
 	}
 	
-	public Status parseStatus(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public Status parseStatus(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			return Status.valueOf(data.getString(key).toUpperCase());
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Status"))
 				throw new IllegalArgumentException("Unexpected link data type for Status: " + ld.getString("@type"));
 			return Status.valueOf(ld.getString("@value").toUpperCase());
@@ -718,17 +718,17 @@ public class JsonTransformer {
 		return null;
 	}
 		
-	public String parseText(String key, DataObject data) {
+	public String parseText(String key, JsonObject data) {
 		return data.contains(key) ? data.getString(key) : null;
 	}
 	
-	public List<String> parseTexts(String key, DataObject data) {
+	public List<String> parseTexts(String key, JsonObject data) {
 		List<String> list = new ArrayList<String>();
-		for (DataElement child : data.getArray(key).values()) {
-			if (child instanceof DataText) {
-				list.add(((DataText)child).value());
-			} else if (child instanceof DataObject) {
-				list.add(((DataObject)child).getString("@id"));
+		for (JsonElement child : data.getArray(key).values()) {
+			if (child instanceof JsonText) {
+				list.add(((JsonText)child).value());
+			} else if (child instanceof JsonObject) {
+				list.add(((JsonObject)child).getString("@id"));
 			} else {
 				throw new IllegalArgumentException("Unexpected data type for child: " + child.getClass());
 			}
@@ -736,13 +736,13 @@ public class JsonTransformer {
 		return list;
 	}
 	
-	public Salutation parseSalutation(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public Salutation parseSalutation(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return crm.findSalutationByCode(data.getString(key));
 			return crm.findSalutationByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Salutation"))
 				throw new IllegalArgumentException("Unexpected link data type for Salutation: " + ld.getString("@type"));
 			return crm.findSalutationByCode(ld.getString("@value")); 
@@ -750,13 +750,13 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public Localized parseProvince(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public Localized parseProvince(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return new Localized(Lang.ROOT, data.getString(key));
 			return crm.findCountryByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Country"))
 				throw new IllegalArgumentException("Unexpected link data type for Country: " + ld.getString("@type"));
 			return new Localized(Lang.ROOT, ld.getString("@value")); 
@@ -764,13 +764,13 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public Country parseCountry(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public Country parseCountry(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return crm.findCountryByCode(data.getString(key));
 			return crm.findCountryByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Country"))
 				throw new IllegalArgumentException("Unexpected link data type for Country: " + ld.getString("@type"));
 			return crm.findCountryByCode(ld.getString("@value")); 
@@ -778,13 +778,13 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public Language parseLanguage(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public Language parseLanguage(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return crm.findLanguageByCode(data.getString(key));
 			return crm.findLanguageByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("Language"))
 				throw new IllegalArgumentException("Unexpected link data type for Language: " + ld.getString("@type"));
 			return crm.findLanguageByCode(ld.getString("@value")); 
@@ -792,13 +792,13 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public BusinessSector parseBusinessSector(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public BusinessSector parseBusinessSector(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return crm.findBusinessSectorByCode(data.getString(key));
 			return crm.findBusinessSectorByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessSector"))
 				throw new IllegalArgumentException("Unexpected link data type for BusinessSector: " + ld.getString("@type"));
 			return crm.findBusinessSectorByCode(ld.getString("@value")); 
@@ -806,13 +806,13 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public BusinessUnit parseBusinessUnit(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public BusinessUnit parseBusinessUnit(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return crm.findBusinessUnitByCode(data.getString(key));
 			return crm.findBusinessUnitByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessUnit"))
 				throw new IllegalArgumentException("Unexpected link data type for BusinessUnit: " + ld.getString("@type"));
 			return crm.findBusinessUnitByCode(ld.getString("@value")); 
@@ -820,13 +820,13 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public BusinessClassification parseBusinessClassification(String key, DataObject data) {
-		if (data.contains(key, DataText.class)) {
+	public BusinessClassification parseBusinessClassification(String key, JsonObject data) {
+		if (data.contains(key, JsonText.class)) {
 			if (locale == null)
 				return crm.findBusinessClassificationByCode(data.getString(key));
 			return crm.findBusinessClassificationByLocalizedName(locale, data.getString(key));
-		} else if (data.contains(key, DataObject.class)) {
-			DataObject ld = data.getObject(key);
+		} else if (data.contains(key, JsonObject.class)) {
+			JsonObject ld = data.getObject(key);
 			if (!ld.getString("@type").equals("BusinessClassification"))
 				throw new IllegalArgumentException("Unexpected link data type for BusinessClassification: " + ld.getString("@type"));
 			return crm.findBusinessClassificationByCode(ld.getString("@value")); 
@@ -834,8 +834,8 @@ public class JsonTransformer {
 		return null;
 	}
 	
-	public PersonName parsePersonName(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
+	public PersonName parsePersonName(String key, JsonObject parent) {
+		JsonObject data = parent.getObject(key);
 		if (data == null)
 			return null;
 		Salutation salutation = parseSalutation("salutation", data);
@@ -845,8 +845,8 @@ public class JsonTransformer {
 		return new PersonName(salutation.getName(locale), firstName, middleName, lastName);
 	}
 	
-	public Telephone parseTelephone(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
+	public Telephone parseTelephone(String key, JsonObject parent) {
+		JsonObject data = parent.getObject(key);
 		if (data == null)
 			return null;
 		String number = parseText("number", data);
@@ -854,20 +854,21 @@ public class JsonTransformer {
 		return new Telephone(number, extension);
 	}
 	
-	public MailingAddress parseMailingAddress(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
+	public MailingAddress parseMailingAddress(String key, JsonObject parent) {
+		JsonObject data = parent.getObject(key);
 		if (data == null)
 			return null;
 		String street = parseText("street", data);
 		String city = parseText("city", data);
-		Localized province = parseProvince("province", data);
+		//Localized province = parseProvince("province", data);
+		String province = parseText("province", data);
 		Country country = parseCountry("country", data);
 		String postalCode = parseText("postalCode", data);
-		return new MailingAddress(street, city, province.getCode(), country.getCode(), postalCode);	
+		return new MailingAddress(street, city, province, country.get(locale), postalCode);	
 	}
 	
-	public Communication parseCommunication(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
+	public Communication parseCommunication(String key, JsonObject parent) {
+		JsonObject data = parent.getObject(key);
 		if (data == null)
 			return null;
 		String email = parseText("email", data);
@@ -875,11 +876,11 @@ public class JsonTransformer {
 		Language language = parseLanguage("language", data);
 		Telephone homePhone = parseTelephone("homePhone", data);
 		String faxNumber = parseText("faxNumber", data);
-		return new Communication(jobTitle, language.getCode(), email, homePhone, faxNumber);
+		return new Communication(jobTitle, language.get(locale), email, homePhone, faxNumber);
 	}
 	
-	public BusinessPosition parseBusinessPosition(String key, DataObject parent) {
-		DataObject data = parent.getObject(key);
+	public BusinessPosition parseBusinessPosition(String key, JsonObject parent) {
+		JsonObject data = parent.getObject(key);
 		if (data == null)
 			return null;
 		BusinessSector sector = parseBusinessSector("sector", data);

@@ -31,11 +31,11 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.json.JsonTransformer;
+import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
 
 @Controller
 public class PersonsController {
@@ -47,46 +47,46 @@ public class PersonsController {
 		return new PersonsFilter(extractOrganizationId(req), extractDisplayName(req), extractStatus(req));
 	}
 	
-	public PersonName extractLegalName(HttpServletRequest req, DataObject body) {
+	public PersonName extractLegalName(HttpServletRequest req, JsonObject body) {
 		return getTransformer(req, crm).parsePersonName("legalName", body);
 	}
 
-	public MailingAddress extractAddress(HttpServletRequest req, DataObject body) {
+	public MailingAddress extractAddress(HttpServletRequest req, JsonObject body) {
 		return getTransformer(req, crm).parseMailingAddress("address", body);
 	}
 
-	public Communication extractCommunication(HttpServletRequest req, DataObject body) {
+	public Communication extractCommunication(HttpServletRequest req, JsonObject body) {
 		return getTransformer(req, crm).parseCommunication("communication", body);
 	}
 
-	public BusinessPosition extractPosition(HttpServletRequest req, DataObject body) {
+	public BusinessPosition extractPosition(HttpServletRequest req, JsonObject body) {
 		return getTransformer(req, crm).parseBusinessPosition("position", body);
 	}
 	
-	public User extractUser(HttpServletRequest req, DataObject body) {
+	public User extractUser(HttpServletRequest req, JsonObject body) {
 		return getTransformer(req, crm).parseUser("user", body);
 	}
 	
 	@GetMapping("/api/persons")
 	public void findPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataElement data = new DataArray(crm.findPersonSummaries(extractPersonFilter(req), extractPaging(req)).getContent().stream()
+		JsonElement data = new JsonArray(crm.findPersonSummaries(extractPersonFilter(req), extractPaging(req)).getContent().stream()
 				.map(e -> transformer.formatPersonSummary(e)).collect(Collectors.toList()));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
 	@PostMapping("/api/persons")
 	public void createPerson(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		Identifier organizationId = new Identifier(body.getString("organizationId"));
-		DataElement data = transformer.formatPersonDetails(crm.createPerson(organizationId, 
+		JsonElement data = transformer.formatPersonDetails(crm.createPerson(organizationId, 
 				extractLegalName(req, body), extractAddress(req, body), extractCommunication(req, body), extractPosition(req, body)));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}")
@@ -94,10 +94,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId));
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PatchMapping("/api/persons/{personId}")
@@ -105,7 +105,7 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		if (body.contains("legalName"))
 			crm.updatePersonName(personId, extractLegalName(req, body));
 		if (body.contains("address"))
@@ -114,10 +114,10 @@ public class PersonsController {
 			crm.updatePersonCommunication(personId, extractCommunication(req, body));
 		if (body.contains("position"))
 			crm.updatePersonBusinessPosition(personId, extractPosition(req, body));
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId));
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/summary")
@@ -125,10 +125,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonSummary(crm.findPersonDetails(personId));
+		JsonElement data = transformer.formatPersonSummary(crm.findPersonDetails(personId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/legalName")
@@ -136,10 +136,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("legalName");
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("legalName");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/address")
@@ -147,10 +147,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("address");
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("address");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/communication")
@@ -158,10 +158,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("communication");
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("communication");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/position")
@@ -169,10 +169,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("position");
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("position");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/user")
@@ -180,10 +180,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("user");
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(personId)).getObject("user");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/persons/{personId}/enable")
@@ -191,10 +191,10 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonSummary(crm.enablePerson(personId));
+		JsonElement data = transformer.formatPersonSummary(crm.enablePerson(personId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/persons/{personId}/disable")
@@ -202,31 +202,31 @@ public class PersonsController {
 			@PathVariable("personId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier personId = new Identifier(id);
-		DataElement data = transformer.formatPersonSummary(crm.disablePerson(personId));
+		JsonElement data = transformer.formatPersonSummary(crm.disablePerson(personId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/persons/{personId}/roles")
 	public void getUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") String personId) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataElement data = transformer.formatPersonDetails(crm.findPersonDetails(new Identifier(personId))).getObject("user").getArray("roles");
+		JsonElement data = transformer.formatPersonDetails(crm.findPersonDetails(new Identifier(personId))).getObject("user").getArray("roles");
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
 //	@PostMapping("/api/persons/{personId}/roles")
 //	public void setUserRoles(HttpServletRequest req, HttpServletResponse res, 
 //			@PathVariable("personId") String personId) throws IOException {
 //		JsonTransformer transformer = getTransformer(req, crm);
-//		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((DataText)r).value()).getCode()).collect(Collectors.toList()));
-//		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
+//		PersonDetails details = crm.setUserRoles(new Identifier(personId), extractBody(req).getArray("roles").stream().map(r -> crm.findRoleByCode(((JsonText)r).value()).getCode()).collect(Collectors.toList()));
+//		JsonElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 //		res.setStatus(200);
 //		res.setContentType(getContentType(req));
-//		res.getWriter().write(DataFormatter.formatted(data));
+//		res.getWriter().write(JsonFormatter.formatted(data));
 //	}
 //	
 //	@PostMapping("/api/persons/{personId}/roles/{roleId}")
@@ -234,10 +234,10 @@ public class PersonsController {
 //			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
 //		JsonTransformer transformer = getTransformer(req, crm);
 //		PersonDetails details = crm.addUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
-//		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
+//		JsonElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 //		res.setStatus(200);
 //		res.setContentType(getContentType(req));
-//		res.getWriter().write(DataFormatter.formatted(data));
+//		res.getWriter().write(JsonFormatter.formatted(data));
 //	}
 //	
 //	@DeleteMapping("/api/persons/{personId}/roles/{roleId}")
@@ -245,10 +245,10 @@ public class PersonsController {
 //			@PathVariable("personId") String personId, @PathVariable("roleId") String roleId) throws IOException {
 //		JsonTransformer transformer = getTransformer(req, crm);
 //		PersonDetails details = crm.removeUserRole(new Identifier(personId), crm.findRoleByCode(roleId).getCode());
-//		DataElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
+//		JsonElement data = transformer.formatPersonDetails(details).getObject("user").getArray("roles");
 //		res.setStatus(200);
 //		res.setContentType(getContentType(req));
-//		res.getWriter().write(DataFormatter.formatted(data));
+//		res.getWriter().write(JsonFormatter.formatted(data));
 //	}
 
 }

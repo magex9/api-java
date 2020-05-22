@@ -29,12 +29,12 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.mapping.data.DataArray;
-import ca.magex.crm.mapping.data.DataElement;
-import ca.magex.crm.mapping.data.DataFormatter;
-import ca.magex.crm.mapping.data.DataObject;
-import ca.magex.crm.mapping.data.DataText;
-import ca.magex.crm.mapping.json.JsonTransformer;
+import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonFormatter;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
 
 @Controller
 public class OrganizationsController {
@@ -46,19 +46,19 @@ public class OrganizationsController {
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Page<OrganizationSummary> page = crm.findOrganizationSummaries(extractOrganizationFilter(req), extractPaging(req));
-		DataObject data = createPage(page, e -> transformer.formatOrganizationSummary(e));
+		JsonObject data = createPage(page, e -> transformer.formatOrganizationSummary(e));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 	
-	public <T> DataObject createPage(Page<T> page, Function<T, DataElement> mapper) {
-		return new DataObject()
+	public <T> JsonObject createPage(Page<T> page, Function<T, JsonElement> mapper) {
+		return new JsonObject()
 			.with("page", page.getNumber())
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", !page.isFirst())
-			.with("content", new DataArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
+			.with("content", new JsonArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
 	}
 	
 	public OrganizationsFilter extractOrganizationFilter(HttpServletRequest req) throws BadRequestException {
@@ -68,13 +68,13 @@ public class OrganizationsController {
 	@PostMapping("/api/organizations")
 	public void createOrganization(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		String displayName = body.getString("displayName");
-		List<String> groups = body.getArray("groups").stream().map(e -> ((DataText)e).value()).collect(Collectors.toList());
-		DataElement data = transformer.formatOrganizationDetails(crm.createOrganization(displayName, groups));
+		List<String> groups = body.getArray("groups").stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
+		JsonElement data = transformer.formatOrganizationDetails(crm.createOrganization(displayName, groups));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/organizations/{organizationId}")
@@ -82,10 +82,10 @@ public class OrganizationsController {
 			@PathVariable("organizationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
+		JsonElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PatchMapping("/api/organizations/{organizationId}")
@@ -93,15 +93,15 @@ public class OrganizationsController {
 			@PathVariable("organizationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(id);
-		DataObject body = extractBody(req);
+		JsonObject body = extractBody(req);
 		if (body.contains("displayName"))
 			crm.updateOrganizationDisplayName(organizationId, body.getString("displayName"));
 		if (body.contains("mainLocationId"))
 			crm.updateOrganizationMainLocation(organizationId, new Identifier(body.getString("mainLocationId")));
-		DataElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
+		JsonElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/organizations/{organizationId}/summary")
@@ -109,10 +109,10 @@ public class OrganizationsController {
 			@PathVariable("organizationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
+		JsonElement data = transformer.formatOrganizationDetails(crm.findOrganizationDetails(organizationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@GetMapping("/api/organizations/{organizationId}/mainLocation")
@@ -120,10 +120,10 @@ public class OrganizationsController {
 			@PathVariable("organizationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.formatLocationDetails(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()));
+		JsonElement data = transformer.formatLocationDetails(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/organizations/{organizationId}/enable")
@@ -131,10 +131,10 @@ public class OrganizationsController {
 			@PathVariable("organizationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.formatOrganizationSummary(crm.enableOrganization(organizationId));
+		JsonElement data = transformer.formatOrganizationSummary(crm.enableOrganization(organizationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 	@PutMapping("/api/organizations/{organizationId}/disable")
@@ -142,10 +142,10 @@ public class OrganizationsController {
 			@PathVariable("organizationId") String id) throws IOException {
 		JsonTransformer transformer = getTransformer(req, crm);
 		Identifier organizationId = new Identifier(id);
-		DataElement data = transformer.formatOrganizationSummary(crm.disableOrganization(organizationId));
+		JsonElement data = transformer.formatOrganizationSummary(crm.disableOrganization(organizationId));
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
-		res.getWriter().write(DataFormatter.formatted(data));
+		res.getWriter().write(JsonFormatter.formatted(data));
 	}
 
 }
