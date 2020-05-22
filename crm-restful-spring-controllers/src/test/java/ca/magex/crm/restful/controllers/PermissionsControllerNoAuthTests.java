@@ -1,9 +1,9 @@
 package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.test.CrmAsserts.*;
+import static ca.magex.crm.test.CrmAsserts.GROUP;
+import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTED_ENGLISH_ASC;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTED_FRENCH_ASC;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTING_OPTIONS;
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
@@ -41,7 +40,7 @@ import ca.magex.json.model.JsonObject;
 		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
 		MagexCrmProfiles.CRM_NO_AUTH
 })
-public class PermissionsControllerTests {
+public class PermissionsControllerNoAuthTests {
 	
 	@Autowired private CrmInitializationService initiailziation;
 
