@@ -22,7 +22,7 @@ stages:
             
     - task: Maven@3
       inputs:
-        goals: 'package'
+        goals: 'install'
         mavenPomFile: 'pom.xml'
         options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
