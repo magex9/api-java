@@ -26,6 +26,7 @@ import graphql.ExecutionInput;
 
 @RestController
 public class GraphQLController implements CrmGraphQLController {
+	
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
 	@Autowired @Qualifier("graphQLOrganizationService") private GraphQLCrmServices graphQLService;
@@ -84,29 +85,36 @@ public class GraphQLController implements CrmGraphQLController {
 	public ResponseEntity<Object> doQueryAsGet(String query, String variables, HttpServletRequest req, HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
 		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
-		
-		/* 
-		 * we need to parse the request ourselves because mapping to the GraphQLRequest object is broken for variables, 
-		 * and we want to catch json exceptions and return a 400 instead of a 500 
-		 */
-			MapBuilder variablesBuilder = new MapBuilder();
-//			if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {
-//				JSONObject variables = jsonRequest.getJSONObject("variables");
-//				if (variables.length() > 0) {
-//					JSONArray variableNames = variables.names();
-//					for (int i=0; i<variableNames.length(); i++) {
-//						variablesBuilder.withEntry(variableNames.getString(i), variables.get(variableNames.getString(i)));
-//					}
-//				}
-//			}
-	
-			ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-					.query(URLDecoder.decode(query, Charset.forName("UTF8")))
-					.variables(variablesBuilder.build())
-					.context(req)
-					.build();
-	
-			return new ResponseEntity<>(graphQLService.getGraphQL().execute(executionInput), HttpStatus.OK);
-		
+		/* do not accept mutations over GET */
+		if (query.contains("mutation")) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.ALLOW, "POST");
+			return new ResponseEntity<Object>("Cannot process mutation over GET method", headers, HttpStatus.METHOD_NOT_ALLOWED);
+		}
+				
+		MapBuilder variablesBuilder = new MapBuilder();
+		try {
+			if (variables != null) {
+				JSONObject jsonVariables = new JSONObject(variables);			
+				if (jsonVariables.length() > 0) {
+					JSONArray variableNames = jsonVariables.names();
+					for (int i=0; i<variableNames.length(); i++) {
+						variablesBuilder.withEntry(variableNames.getString(i), jsonVariables.get(variableNames.getString(i)));
+					}
+				}
+			}
+		}
+		catch(JSONException jsone) {
+			logger.warn("Non parseable variables provided: " + jsone.getMessage());
+			return new ResponseEntity<Object>("Non parseable variables provided", HttpStatus.BAD_REQUEST);
+		}
+			
+		ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+				.query(URLDecoder.decode(query, Charset.forName("UTF8")))
+				.variables(variablesBuilder.build())
+				.context(req)
+				.build();
+
+		return new ResponseEntity<>(graphQLService.getGraphQL().execute(executionInput), HttpStatus.OK);
 	}
 }

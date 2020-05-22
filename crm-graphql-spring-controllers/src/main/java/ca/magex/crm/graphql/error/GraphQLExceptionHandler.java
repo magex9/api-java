@@ -16,9 +16,13 @@ import graphql.execution.SimpleDataFetcherExceptionHandler;
  * @author Jonny
  *
  */
-public class ApiDataFetcherExceptionHandler implements DataFetcherExceptionHandler {
+public class GraphQLExceptionHandler implements DataFetcherExceptionHandler {
 
-	private SimpleDataFetcherExceptionHandler delegate = new SimpleDataFetcherExceptionHandler();
+	private DataFetcherExceptionHandler delegate = new SimpleDataFetcherExceptionHandler();
+	
+	public GraphQLExceptionHandler(DataFetcherExceptionHandler delegate) {
+		this.delegate = delegate;
+	}
 	
 	@Override
 	public DataFetcherExceptionHandlerResult onException(DataFetcherExceptionHandlerParameters handlerParameters) {
