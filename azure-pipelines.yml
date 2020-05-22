@@ -19,18 +19,10 @@ stages:
   jobs:
   - job: Build
     steps:
-    #- task: DownloadSecureFile@1
-    #  name: m2settings
-    #  inputs:
-    #    secureFile: 'm2settings'
-    #- script: |
-    #    echo Installing $(m2settings.secureFilePath) to the .m2 directory...
-    #    mkdir -p ~/.m2
-    #    cp $(m2settings.secureFilePath) ~/.m2/settings.xml
-    #    ls -la ~/.m2/settings.xml
-        
+            
     - task: Maven@3
       inputs:
+        goals: 'package'
         mavenPomFile: 'pom.xml'
         options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
@@ -46,7 +38,16 @@ stages:
    
     - task: Maven@3
       inputs:
-        mavenPomFile: 'pom.xml'
+        mavenPomFile: 'crm-helloworld/pom.xml'
+        goals: 'deploy'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.11'
+        mavenVersionOption: 'Default'
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'crm-graphql-spring-boot-server/pom.xml'
         goals: 'deploy'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -54,9 +55,3 @@ stages:
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
 
-    #- template: azure-package.yml
-    #  parameters:
-    #    application_name: crm-helloworld
-    #- template: azure-package.yml
-    #  parameters:
-    #    application_name: crm-activemq-spring-boot-server
