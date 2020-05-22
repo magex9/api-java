@@ -63,6 +63,7 @@ public class JsonTransformer {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatIdentifier(pairs, "groupId", group, Group.class);
 		formatStatus(pairs, "status", group);
+		formatText(pairs, "code", group);
 		formatLocalized(pairs, "name", group);
 		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}

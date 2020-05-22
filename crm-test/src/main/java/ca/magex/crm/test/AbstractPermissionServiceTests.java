@@ -620,7 +620,7 @@ public abstract class AbstractPermissionServiceTests {
 		assertEquals(4, page4.getNumber());
 		assertEquals(true, page4.hasPrevious());
 		assertEquals(false, page4.hasNext());
-		assertEquals(5, page4.getContent().size());
+		assertEquals(4, page4.getContent().size());
 		
 		
 	}

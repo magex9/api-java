@@ -123,7 +123,7 @@ public class CrmAsserts {
 		new Localized("A_B_", "** Footnote", "Jusqu’à ce que"),
 		new Localized("AB_C", "* Astrix", "œil"),
 		new Localized("XYZ", "XYZ", "XYZ"),
-		GROUP, ADMIN, SYS, ENGLISH, FRENCH
+		ENGLISH, FRENCH
 	);
 	
 	public static final List<String> LOCALIZED_SORTED_ENGLISH_ASC = List.of(
@@ -145,13 +145,11 @@ public class CrmAsserts {
 		"AaAb",
 		"AaaB",
 		"aaAB",
-		"Admin",
 		"Æther",
 		"æther",
 		"Boy",
 		"English",
 		"French",
-		"Group",
 		"Java",
 		"Montreal",
 		"Montréal",
@@ -159,7 +157,6 @@ public class CrmAsserts {
 		"resume",
 		"résumé",
 		" space first",
-		"System",
 		"XYZ",
 		"Zzzz"
 	);
@@ -179,7 +176,6 @@ public class CrmAsserts {
 		"ÂÂ",
 		"ÄAÄ",
 		"äaÄ",
-		"Admin",		
 		"Anglais",
 		"énorme",
 		"était",
@@ -188,7 +184,6 @@ public class CrmAsserts {
 		"français",
 		"Garçon",
 		"garçon",
-		"Groupe",
 		"Île",
 		"Jusqu’à ce que",
 		"mère",
@@ -196,7 +191,6 @@ public class CrmAsserts {
 		"Où",
 		"se dépêcher",
 		" space first",		
-		"Système",
 		"Tout",
 		"tout à fait",
 		"Tout le",

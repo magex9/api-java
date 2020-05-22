@@ -100,7 +100,7 @@ public class GroupsFilter implements Serializable {
 	}
 	
 	public static Sort getDefaultSort() {
-		return Sort.by(Direction.ASC, "name");
+		return Sort.by(Direction.ASC, "code");
 	}
 
 	public static Paging getDefaultPaging() {

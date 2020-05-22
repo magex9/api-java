@@ -73,6 +73,13 @@ public class StructureValidationService implements CrmValidation {
 			messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Group code must match: [A-Z0-9_]{1,20}")));
 		}
 		
+		// Make sure the existing code didnt change
+		try {
+			Group existing = permissions.findGroup(group.getGroupId());
+			if (!existing.getCode().equals(group.getCode()))
+				messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Group code must not change during updates")));
+		} catch (ItemNotFoundException e) { }
+
 		// Make sure the code is unique
 		FilteredPage<Group> groups = permissions.findGroups(permissions.defaultGroupsFilter().withCode(group.getCode()), GroupsFilter.getDefaultPaging().allItems());
 		for (Group existing : groups.getContent()) {
