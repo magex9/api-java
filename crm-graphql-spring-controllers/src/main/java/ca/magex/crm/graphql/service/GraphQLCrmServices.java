@@ -20,9 +20,11 @@ import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PermissionDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.datafetcher.UserDataFetcher;
-import ca.magex.crm.graphql.error.ApiDataFetcherExceptionHandler;
+import ca.magex.crm.graphql.error.GraphQLExceptionHandler;
 import graphql.GraphQL;
 import graphql.execution.AsyncExecutionStrategy;
+import graphql.execution.DataFetcherExceptionHandler;
+import graphql.execution.SimpleDataFetcherExceptionHandler;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -64,11 +66,12 @@ public class GraphQLCrmServices {
 		}
 
 		/* create our graphQL engine */
+		DataFetcherExceptionHandler delegate = new SimpleDataFetcherExceptionHandler();
 		graphQL = GraphQL
 				.newGraphQL(graphQLSchema)
-				.queryExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
-				.mutationExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
-				.subscriptionExecutionStrategy(new AsyncExecutionStrategy(new ApiDataFetcherExceptionHandler()))
+				.queryExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
+				.mutationExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
+				.subscriptionExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
 				.build();
 	}
 

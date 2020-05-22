@@ -106,8 +106,8 @@ public class PermissionsControllerTests {
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(1, json.getArray("content").size());
 		assertEquals(groupId.toString(), json.getArray("content").getObject(0).getString("groupId"));
-		assertEquals("active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("GRP", json.getArray("content").getObject(0).getString("name"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
+		assertEquals("Group", json.getArray("content").getObject(0).getString("name"));
 			
 
 	}
