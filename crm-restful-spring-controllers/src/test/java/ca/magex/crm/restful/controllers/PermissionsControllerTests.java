@@ -1,6 +1,6 @@
 package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTED_ENGLISH_ASC;
+import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTED_FRENCH_ASC;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTING_OPTIONS;
 import static org.junit.Assert.*;
@@ -30,6 +30,7 @@ import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
@@ -364,6 +365,66 @@ public class PermissionsControllerTests {
 		assertEquals(1, inativeEnglishAsc.getArray("content").size());
 		assertEquals(List.of("A"), inativeEnglishAsc.getArray("content").stream()
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
+	}
+	
+	@Test
+	public void testEnableDisable() throws Exception {
+		Identifier groupId = permissions.createGroup(GROUP).getGroupId();
+		assertEquals(Status.ACTIVE, permissions.findGroup(groupId).getStatus());
+
+		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/disable")
+			.header("Locale", Lang.ENGLISH))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), error1.getObject(0).getString("identifier"));
+		assertEquals("error", error1.getObject(0).getString("type"));
+		assertEquals("confirm", error1.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, permissions.findGroup(groupId).getStatus());
+
+		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/disable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", true)
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), disable.getString("groupId"));
+		assertEquals("Inactive", disable.getString("status"));
+		assertEquals("GRP", disable.getString("code"));
+		assertEquals("Group", disable.getString("name"));
+		assertEquals(Status.INACTIVE, permissions.findGroup(groupId).getStatus());
+		
+		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/enable")
+			.header("Locale", Lang.ENGLISH))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), error2.getObject(0).getString("identifier"));
+		assertEquals("error", error2.getObject(0).getString("type"));
+		assertEquals("confirm", error2.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, permissions.findGroup(groupId).getStatus());
+	
+		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/enable")
+			.header("Locale", Lang.FRENCH)
+			.content(new JsonObject()
+				.with("confirm", true)
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), enable.getString("groupId"));
+		assertEquals("Actif", enable.getString("status"));
+		assertEquals("GRP", enable.getString("code"));
+		assertEquals("Groupe", enable.getString("name"));
+		assertEquals(Status.ACTIVE, permissions.findGroup(groupId).getStatus());
 	}
 
 }

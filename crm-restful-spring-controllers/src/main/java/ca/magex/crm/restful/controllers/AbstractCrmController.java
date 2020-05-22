@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,8 +97,11 @@ public abstract class AbstractCrmController {
 	protected JsonObject extractBody(HttpServletRequest req) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			StreamUtils.copy(req.getInputStream(), baos);		
-			return JsonParser.parseObject(new String(baos.toByteArray()));
+			StreamUtils.copy(req.getInputStream(), baos);
+			String json = new String(baos.toByteArray());
+			if (StringUtils.isBlank(json))
+				return new JsonObject();
+			return JsonParser.parseObject(json);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to extract body from request", e);
 		}

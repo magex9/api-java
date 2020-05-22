@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -83,6 +84,30 @@ public class PermissionsController extends AbstractCrmController {
 			String frenchName = body.getString("frenchName");
 			Localized name = new Localized(code, englishName, frenchName);
 			crm.updateGroupName(new Identifier(groupId), name);
+			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
+		});
+	}
+
+	@PutMapping("/api/groups/{groupId}/enable")
+	public void enableGroup(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("groupId") String groupId) throws IOException {
+		handle(req, res, () -> {
+			JsonObject body = extractBody(req);
+			if (!body.contains("confirm") || !body.getBoolean("confirm"))
+				throw new BadRequestException("No confirmation message", new Identifier(groupId), "error", "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message"));
+			crm.enableGroup(new Identifier(groupId));
+			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
+		});
+	}
+
+	@PutMapping("/api/groups/{groupId}/disable")
+	public void disableGroup(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("groupId") String groupId) throws IOException {
+		handle(req, res, () -> {
+			JsonObject body = extractBody(req);
+			if (!body.contains("confirm") || !body.getBoolean("confirm"))
+				throw new BadRequestException("No confirmation message", new Identifier(groupId), "error", "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message"));
+			crm.disableGroup(new Identifier(groupId));
 			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
 	}
