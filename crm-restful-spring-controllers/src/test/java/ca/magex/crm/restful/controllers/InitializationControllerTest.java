@@ -1,9 +1,10 @@
 package ca.magex.crm.restful.controllers;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,6 +152,11 @@ public class InitializationControllerTest {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		initiailziation.dump(baos);
+		String[] lines = baos.toString().split("\n");
+		assertEquals(15, lines.length);
 	}
 	
 }

@@ -2,7 +2,6 @@ package ca.magex.crm.restful.controllers;
 
 import static ca.magex.crm.restful.controllers.ContentExtractor.extractBody;
 import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
-import static ca.magex.crm.restful.controllers.ContentExtractor.getTransformer;
 
 import java.io.IOException;
 import java.io.InputStream;
