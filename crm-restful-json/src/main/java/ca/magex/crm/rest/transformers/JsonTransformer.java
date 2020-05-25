@@ -23,6 +23,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
@@ -65,6 +66,18 @@ public class JsonTransformer {
 		formatStatus(pairs, "status", group);
 		formatText(pairs, "code", group);
 		formatLocalized(pairs, "name", group);
+		return pairs.isEmpty() ? null : new JsonObject(pairs);
+	}
+	
+	public JsonObject formatRole(Role role) {
+		if (role == null)
+			return null;
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		formatIdentifier(pairs, "roleId", role, Role.class);
+		formatIdentifier(pairs, "groupId", role, Group.class);
+		formatStatus(pairs, "status", role);
+		formatText(pairs, "code", role);
+		formatLocalized(pairs, "name", role);
 		return pairs.isEmpty() ? null : new JsonObject(pairs);
 	}
 	

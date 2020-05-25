@@ -18,7 +18,7 @@ public class JsonPairTest {
 			fail("Key cannot be null");
 		} catch (InvocationTargetException e) {
 			assertEquals(IllegalArgumentException.class, e.getTargetException().getClass());
-			assertEquals("Key cannot be null", e.getTargetException().getMessage());
+			assertEquals("Key cannot be blank", e.getTargetException().getMessage());
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class JsonPairTest {
 			fail("Key cannot be null");
 		} catch (InvocationTargetException e) {
 			assertEquals(IllegalArgumentException.class, e.getTargetException().getClass());
-			assertEquals("Key cannot be null", e.getTargetException().getMessage());
+			assertEquals("Key cannot be blank", e.getTargetException().getMessage());
 		}
 	}
 	

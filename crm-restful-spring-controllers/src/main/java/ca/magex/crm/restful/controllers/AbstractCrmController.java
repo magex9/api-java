@@ -73,6 +73,18 @@ public abstract class AbstractCrmController {
 			throw new BadRequestException("User input validation errors", messages);
 	}
 	
+	protected Identifier getIdentifier(JsonObject json, String key, Identifier defaultValue, Identifier identifier, List<Message> messages) {
+		try {
+			return new Identifier(json.getString(key));
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			return defaultValue;
+		}
+	}
+	
 	protected String getString(JsonObject json, String key, String defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getString(key);

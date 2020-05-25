@@ -131,6 +131,13 @@ public class StructureValidationService implements CrmValidation {
 			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must match: [A-Z0-9_]{1,20}")));
 		}
 		
+		// Make sure the existing code didnt change
+		try {
+			Role existing = permissions.findRole(role.getRoleId());
+			if (!existing.getCode().equals(role.getCode()))
+				messages.add(new Message(role.getRoleId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must not change during updates")));
+		} catch (ItemNotFoundException e) { }
+
 		// Make sure the code is unique
 		FilteredPage<Role> roles = permissions.findRoles(permissions.defaultRolesFilter().withCode(role.getCode()), RolesFilter.getDefaultPaging().allItems());
 		for (Role existing : roles.getContent()) {
@@ -139,12 +146,18 @@ public class StructureValidationService implements CrmValidation {
 		}
 		
 		// Make sure there is an English description
-		if (StringUtils.isBlank(role.getName(Lang.ENGLISH)))
-			messages.add(new Message(role.getGroupId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
+		if (StringUtils.isBlank(role.getName(Lang.ENGLISH))) {
+			messages.add(new Message(role.getRoleId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
+		} else if (role.getName(Lang.ENGLISH).length() > 50) {
+			messages.add(new Message(role.getRoleId(), "error", "englishName", new Localized(Lang.ENGLISH, "English name must be 50 characters or less")));
+		}
 		
 		// Make sure there is a French description
-		if (StringUtils.isBlank(role.getName(Lang.FRENCH)))
-			messages.add(new Message(role.getGroupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
+		if (StringUtils.isBlank(role.getName(Lang.FRENCH))) {
+			messages.add(new Message(role.getRoleId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
+		} else if (role.getName(Lang.FRENCH).length() > 50) {
+			messages.add(new Message(role.getRoleId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
+		}
 		
 		if (!messages.isEmpty())
 			throw new BadRequestException("Group has validation errors", messages);
