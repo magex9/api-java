@@ -88,12 +88,18 @@ public class StructureValidationService implements CrmValidation {
 		}
 		
 		// Make sure there is an English description
-		if (StringUtils.isBlank(group.getName(Lang.ENGLISH)))
+		if (StringUtils.isBlank(group.getName(Lang.ENGLISH))) {
 			messages.add(new Message(group.getGroupId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
+		} else if (group.getName(Lang.ENGLISH).length() > 50) {
+			messages.add(new Message(group.getGroupId(), "error", "englishName", new Localized(Lang.ENGLISH, "English name must be 50 characters or less")));
+		}
 		
 		// Make sure there is a French description
-		if (StringUtils.isBlank(group.getName(Lang.FRENCH)))
+		if (StringUtils.isBlank(group.getName(Lang.FRENCH))) {
 			messages.add(new Message(group.getGroupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
+		} else if (group.getName(Lang.FRENCH).length() > 50) {
+			messages.add(new Message(group.getGroupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
+		}
 		
 		if (!messages.isEmpty())
 			throw new BadRequestException("Group has validation errors", messages);

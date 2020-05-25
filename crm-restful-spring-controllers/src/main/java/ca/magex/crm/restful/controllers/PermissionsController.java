@@ -20,19 +20,17 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.model.JsonText;
 
 @Controller
 public class PermissionsController extends AbstractCrmController {
 
 	@GetMapping("/api/groups")
 	public void findGroups(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, () -> { 
+		handle(req, res, (messages, transformer) -> { 
 			return createPage(crm.findGroups(
-					extractGroupsFilter(extractLocale(req), req), 
-					extractPaging(GroupsFilter.getDefaultPaging(), req)), 
-					e -> getTransformer(req, crm)
-				.formatGroup(e));
+				extractGroupsFilter(extractLocale(req), req), 
+				extractPaging(GroupsFilter.getDefaultPaging(), req)), 
+				e -> transformer.formatGroup(e));
 		});
 	}
 	
@@ -57,55 +55,57 @@ public class PermissionsController extends AbstractCrmController {
 
 	@PostMapping("/api/groups")
 	public void createGroup(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, () -> {
+		handle(req, res, (messages, transformer) -> {
 			JsonObject body = extractBody(req);
-			String code = body.getString("code", "");
-			String englishName = body.getString("englishName");
-			String frenchName = body.getString("frenchName");
+			String code = getString(body, "code", "", null, messages);
+			String englishName = getString(body, "englishName", "", null, messages);
+			String frenchName = getString(body, "frenchName", "", null, messages);
 			Localized name = new Localized(code, englishName, frenchName);
-			return getTransformer(req, crm).formatGroup(crm.createGroup(name));
+			validate(messages);
+			return transformer.formatGroup(crm.createGroup(name));
 		});
 	}
 
 	@GetMapping("/api/groups/{groupId}")
 	public void getGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") String groupId) throws IOException {
-		handle(req, res, () -> {
-			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
+		handle(req, res, (messages, transformer) -> {
+			return transformer.formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
 	}
 
 	@PatchMapping("/api/groups/{groupId}")
 	public void updateGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") String groupId) throws IOException {
-		handle(req, res, () -> {
+		handle(req, res, (messages, transformer) -> {
 			JsonObject body = extractBody(req);
-			String code = body.getString("code");
-			String englishName = body.getString("englishName");
-			String frenchName = body.getString("frenchName");
+			String code = getString(body, "code", "", null, messages);
+			String englishName = getString(body, "englishName", "", null, messages);
+			String frenchName = getString(body, "frenchName", "", null, messages);
 			Localized name = new Localized(code, englishName, frenchName);
+			validate(messages);
 			crm.updateGroupName(new Identifier(groupId), name);
-			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
+			return transformer.formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
 	}
 
 	@PutMapping("/api/groups/{groupId}/enable")
 	public void enableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") String groupId) throws IOException {
-		handle(req, res, () -> {
-			confirm(extractBody(req), new Identifier(groupId));
+		handle(req, res, (messages, transformer) -> {
+			confirm(extractBody(req), new Identifier(groupId), messages);
 			crm.enableGroup(new Identifier(groupId));
-			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
+			return transformer.formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
 	}
 
 	@PutMapping("/api/groups/{groupId}/disable")
 	public void disableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") String groupId) throws IOException {
-		handle(req, res, () -> {
-			confirm(extractBody(req), new Identifier(groupId));
+		handle(req, res, (messages, transformer) -> {
+			confirm(extractBody(req), new Identifier(groupId), messages);
 			crm.disableGroup(new Identifier(groupId));
-			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
+			return transformer.formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
 	}
 
