@@ -46,7 +46,7 @@
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
- 		<module>crm-hazelcast-service</module>
+ 		<!-- <module>crm-hazelcast-service</module> -->
 		
 		<!-- Policy Implementations -->
 		<module>crm-policies</module>		
@@ -69,7 +69,7 @@
 		<module>crm-restful-json</module>
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
-		<module>crm-restful-client</module>
+		<!-- <module>crm-restful-client</module> -->
 	</modules>
 
 </project>
