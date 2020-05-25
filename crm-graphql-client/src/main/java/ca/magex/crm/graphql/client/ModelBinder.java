@@ -111,7 +111,7 @@ public class ModelBinder {
 				locationId = new Identifier(json.getJSONObject("mainLocation").getString("locationId"));
 			}
 			if (json.has("mainContact") && json.get("mainContact") != JSONObject.NULL) {
-				locationId = new Identifier(json.getJSONObject("mainContact").getString("personId"));
+				contactId = new Identifier(json.getJSONObject("mainContact").getString("personId"));
 			}
 			return new OrganizationDetails(
 					new Identifier(json.getString("organizationId")),
@@ -119,7 +119,7 @@ public class ModelBinder {
 					json.getString("displayName"),
 					locationId,
 					contactId,
-					toStringList(json.getJSONArray("groups")));
+					toStringList(json.getJSONArray("groups"), "code"));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing OrganizationDetails from: " + json.toString(), jsone);
 		}
@@ -240,7 +240,7 @@ public class ModelBinder {
 					json.getString("username"),
 					toPersonSummary(json.getJSONObject("person")),
 					Status.valueOf(json.getString("status")),
-					toStringList(json.getJSONArray("roles")));
+					toStringList(json.getJSONArray("roles"), "code"));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);
 		}
@@ -322,11 +322,16 @@ public class ModelBinder {
 		}
 	}
 	
-	public static List<String> toStringList(JSONArray jsonArray) {
+	public static List<String> toStringList(JSONArray jsonArray, String fieldId) {
 		try {
 			List<String> list = new ArrayList<>();
 			for (int i=0; i<jsonArray.length(); i++) {
-				list.add(jsonArray.getString(i));
+				if (fieldId == null) {
+					list.add(jsonArray.getString(i));
+				}
+				else {
+					list.add(jsonArray.getJSONObject(i).getString(fieldId));
+				}
 			}
 			return list;
 		} catch (Exception jsone) {

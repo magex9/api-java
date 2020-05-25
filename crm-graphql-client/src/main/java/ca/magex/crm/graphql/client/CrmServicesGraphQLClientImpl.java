@@ -74,49 +74,65 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public OrganizationDetails enableOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
-				"enableOrganization",
-				"enableOrganization",
-				organizationId));
-	}
-
-	@Override
-	public OrganizationDetails disableOrganization(Identifier organizationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
-				"disableOrganization",
-				"disableOrganization",
-				organizationId));
-	}
-
-	@Override
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
 				"updateOrganizationDisplayName",
 				"updateOrganization",
-				organizationId,
-				name));
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.withEntry("displayName", name)
+						.build()));
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
 				"updateOrganizationMainLocation",
 				"updateOrganization",
-				organizationId,
-				locationId));
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.withEntry("locId", locationId.toString())
+						.build()));
 	}
-
+	
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
+				"updateOrganizationMainContact",
+				"updateOrganization",
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.withEntry("personId", personId.toString())
+						.build()));
+	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
+				"updateOrganizationGroups",
+				"updateOrganization",
+				organizationId,
+				groups));				
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		// TODO Auto-generated method stub
-		return null;
+	public OrganizationDetails enableOrganization(Identifier organizationId) {
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
+				"enableOrganization",
+				"updateOrganization",
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.build()));
+	}
+
+	@Override
+	public OrganizationDetails disableOrganization(Identifier organizationId) {
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
+				"disableOrganization",
+				"updateOrganization",
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.build()));
 	}
 
 	@Override
@@ -124,7 +140,9 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toOrganizationSummary(performGraphQLQueryWithVariables(
 				"findOrganizationSummary",
 				"findOrganization",
-				new MapBuilder().withEntry("id", organizationId.toString()).build()));
+				new MapBuilder()
+					.withEntry("orgId", organizationId.toString())
+					.build()));
 	}
 
 	@Override
@@ -132,26 +150,40 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
 				"findOrganization",
 				"findOrganization",
-				new MapBuilder().withEntry("id", organizationId.toString()).build()));
+				new MapBuilder()
+					.withEntry("orgId", organizationId.toString())
+					.build()));
 	}
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
+		List<String> filterComponents = new ArrayList<String>();
+		if (filter.getDisplayName() != null) {
+			filterComponents.add("displayName: \"" + filter.getDisplayName() + "\"");
+		}
+		if (filter.getStatus() != null) {
+			filterComponents.add("status: \"" + filter.getStatus() + "\"");
+		}
 		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countOrganizations",
 				"countOrganizations",
-				filter.getDisplayName(),
-				filter.getStatus()));
+				StringUtils.join(filterComponents, ", ")));
 	}
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		List<String> filterComponents = new ArrayList<String>();
+		if (filter.getDisplayName() != null) {
+			filterComponents.add("displayName: \"" + filter.getDisplayName() + "\"");
+		}
+		if (filter.getStatus() != null) {
+			filterComponents.add("status: \"" + filter.getStatus() + "\"");
+		}
 		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationSummary, performGraphQLQueryWithSubstitution(
 				"findOrganizationSummaries",
 				"findOrganizations",
-				filter.getDisplayName(),
-				filter.getStatus(),
+				StringUtils.join(filterComponents, ", "),
 				paging.getPageNumber(),
 				paging.getPageSize(),
 				sortInfo.getFirst(),
@@ -161,11 +193,17 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		List<String> filterComponents = new ArrayList<String>();
+		if (filter.getDisplayName() != null) {
+			filterComponents.add("displayName: \"" + filter.getDisplayName() + "\"");
+		}
+		if (filter.getStatus() != null) {
+			filterComponents.add("status: \"" + filter.getStatus() + "\"");
+		}
 		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationDetails, performGraphQLQueryWithSubstitution(
 				"findOrganizationDetails",
 				"findOrganizations",
-				filter.getDisplayName(),
-				filter.getStatus(),
+				StringUtils.join(filterComponents, ", "),
 				paging.getPageNumber(),
 				paging.getPageSize(),
 				sortInfo.getFirst(),
@@ -538,7 +576,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 						.withEntry("frenchName", name.getFrenchName())
 						.build()));
 	}
-	
+
 	@Override
 	public Group updateGroupName(Identifier groupId, Localized name) {
 		return ModelBinder.toGroup(performGraphQLQueryWithVariables(
@@ -623,7 +661,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				paging.getPageSize(),
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
-	}	
+	}
 
 	@Override
 	public Role createRole(Identifier groupId, Localized name) {
@@ -637,7 +675,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 						.withEntry("frenchName", name.getFrenchName())
 						.build()));
 	}
-	
+
 	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
 		return ModelBinder.toRole(performGraphQLQueryWithVariables(
@@ -649,14 +687,14 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 						.withEntry("frenchName", name.getFrenchName())
 						.build()));
 	}
-	
+
 	@Override
 	public Role enableRole(Identifier roleId) {
 		return ModelBinder.toRole(performGraphQLQueryWithVariables(
 				"enableRole",
 				"updateRole",
 				new MapBuilder()
-						.withEntry("roleId", roleId.toString())						
+						.withEntry("roleId", roleId.toString())
 						.build()));
 	}
 
@@ -666,7 +704,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				"disableRole",
 				"updateRole",
 				new MapBuilder()
-						.withEntry("roleId", roleId.toString())						
+						.withEntry("roleId", roleId.toString())
 						.build()));
 	}
 
@@ -676,7 +714,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				"findRole",
 				"findRole",
 				new MapBuilder()
-						.withEntry("roleId", roleId.toString())						
+						.withEntry("roleId", roleId.toString())
 						.build()));
 	}
 
@@ -727,7 +765,6 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getSecond()));
 	}
 
-	
 	/*
 	 * ----------------------------------------------------------------------------- ----------
 	 */
