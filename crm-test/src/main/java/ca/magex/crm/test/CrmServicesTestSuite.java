@@ -179,7 +179,7 @@ public class CrmServicesTestSuite {
 		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of("SYS"));
 		Identifier orgId = orgDetails.getOrganizationId();
 		logger.info("Generated OrgId: " + orgId);
-		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null);
+		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null, null, List.of("SYS"));
 
 		/* verify that we our organization count incremented by 1 */
 		long newOrgCount = organizationService.countOrganizations(new OrganizationsFilter());
@@ -201,13 +201,15 @@ public class CrmServicesTestSuite {
 		/* set and verify organization main location */
 		logger.info("Updating Organization main Location");
 		orgDetails = organizationService.updateOrganizationMainLocation(orgDetails.getOrganizationId(), locDetails.getLocationId());
-		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", locId);
+		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", locId, null, List.of("SYS"));
+		
+		/* set and verify organization main contact TODO */
 
 		/* update and verify organization name */
 		logger.info("Updating Organization name");
 		String newName = "ABC" + System.currentTimeMillis();
 		orgDetails = organizationService.updateOrganizationDisplayName(orgDetails.getOrganizationId(), newName);
-		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId);
+		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId, null, List.of("SYS"));
 
 		/* disable and verify organization */
 		logger.info("Disabling Organization");
@@ -218,7 +220,7 @@ public class CrmServicesTestSuite {
 		verifyOrgSummary(orgSummary, orgId, Status.INACTIVE, newName);
 
 		orgDetails = organizationService.findOrganizationDetails(orgDetails.getOrganizationId());
-		verifyOrgDetails(orgDetails, orgId, Status.INACTIVE, newName, locId);
+		verifyOrgDetails(orgDetails, orgId, Status.INACTIVE, newName, locId, null, List.of("SYS"));
 
 		/* enable and verify organization */
 		logger.info("Enabling Organization");
@@ -229,7 +231,7 @@ public class CrmServicesTestSuite {
 		verifyOrgSummary(orgSummary, orgId, Status.ACTIVE, newName);
 
 		orgDetails = organizationService.findOrganizationDetails(orgDetails.getOrganizationId());
-		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId);
+		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId, null, List.of("SYS"));
 
 		/* validate details paging with 1 match on name filter */
 		logger.info("Finding Organization Details with Name Match");
@@ -559,12 +561,14 @@ public class CrmServicesTestSuite {
 		logger.info("Verifying Role Details " + roleId + " Passed");
 	}
 	
-	private void verifyOrgDetails(OrganizationDetails orgDetails, Identifier orgId, Status status, String displayName, Identifier mainLocationIdentifier) {
+	private void verifyOrgDetails(OrganizationDetails orgDetails, Identifier orgId, Status status, String displayName, Identifier mainLocationIdentifier, Identifier mainContactIdentifier, List<String> groups) {
 		Assert.assertNotNull(orgDetails.getOrganizationId());
 		Assert.assertEquals(orgId, orgDetails.getOrganizationId());
 		Assert.assertEquals(status, orgDetails.getStatus());
 		Assert.assertEquals(displayName, orgDetails.getDisplayName());
 		Assert.assertEquals(mainLocationIdentifier, orgDetails.getMainLocationId());
+		Assert.assertEquals(mainContactIdentifier, orgDetails.getMainContactId());
+		Assert.assertTrue(groups.size() == orgDetails.getGroups().size() && groups.containsAll(orgDetails.getGroups()) && orgDetails.getGroups().containsAll(groups));
 		logger.info("Verifying Organization Details " + orgId + " Passed");
 	}
 
