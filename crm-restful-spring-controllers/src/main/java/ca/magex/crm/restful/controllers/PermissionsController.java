@@ -20,6 +20,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
 
 @Controller
 public class PermissionsController extends AbstractCrmController {
@@ -58,7 +59,7 @@ public class PermissionsController extends AbstractCrmController {
 	public void createGroup(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, () -> {
 			JsonObject body = extractBody(req);
-			String code = body.getString("code");
+			String code = body.getString("code", "");
 			String englishName = body.getString("englishName");
 			String frenchName = body.getString("frenchName");
 			Localized name = new Localized(code, englishName, frenchName);
@@ -92,9 +93,7 @@ public class PermissionsController extends AbstractCrmController {
 	public void enableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") String groupId) throws IOException {
 		handle(req, res, () -> {
-			JsonObject body = extractBody(req);
-			if (!body.contains("confirm") || !body.getBoolean("confirm"))
-				throw new BadRequestException("No confirmation message", new Identifier(groupId), "error", "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message"));
+			confirm(extractBody(req), new Identifier(groupId));
 			crm.enableGroup(new Identifier(groupId));
 			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
@@ -104,9 +103,7 @@ public class PermissionsController extends AbstractCrmController {
 	public void disableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") String groupId) throws IOException {
 		handle(req, res, () -> {
-			JsonObject body = extractBody(req);
-			if (!body.contains("confirm") || !body.getBoolean("confirm"))
-				throw new BadRequestException("No confirmation message", new Identifier(groupId), "error", "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message"));
+			confirm(extractBody(req), new Identifier(groupId));
 			crm.disableGroup(new Identifier(groupId));
 			return getTransformer(req, crm).formatGroup(crm.findGroup(new Identifier(groupId)));
 		});
