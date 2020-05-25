@@ -65,11 +65,12 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	 * --------------------------------------------------------------------------------------- ORGANIZATION SERVICE ---------------------------------------------------------------------------------------
 	 */
 	@Override
-	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
+	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
 				"createOrganization",
 				"createOrganization",
-				organizationDisplayName));
+				displayName,
+				groups));
 	}
 
 	@Override
