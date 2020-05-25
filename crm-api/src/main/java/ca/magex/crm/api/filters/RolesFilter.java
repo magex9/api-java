@@ -54,7 +54,7 @@ public class RolesFilter implements Serializable {
 	}
 	
 	public RolesFilter(Map<String, Object> filterCriteria) {
-		this.groupId = new Identifier((String) filterCriteria.get("groupId"));
+		this.groupId = filterCriteria.containsKey("groupId") ? new Identifier((String) filterCriteria.get("groupId")) : null;
 		this.englishName = (String) filterCriteria.get("englishName");
 		this.frenchName = (String) filterCriteria.get("frenchName");
 		this.code = (String) filterCriteria.get("code");
@@ -113,7 +113,7 @@ public class RolesFilter implements Serializable {
 	}
 	
 	public static Sort getDefaultSort() {
-		return Sort.by(Direction.ASC, "name");
+		return Sort.by(Direction.ASC, "code");
 	}
 
 	public static Paging getDefaultPaging() {

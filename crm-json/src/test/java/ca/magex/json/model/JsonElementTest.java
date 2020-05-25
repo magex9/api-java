@@ -31,13 +31,13 @@ public class JsonElementTest {
 			JsonElement.validateKey(null);
 			fail("Keys must be not null");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Key cannot be null", e.getMessage());
+			assertEquals("Key cannot be blank", e.getMessage());
 		}
 		try {
 			JsonElement.validateKey("");
 			fail("Keys must not be blank");
 		} catch (IllegalArgumentException e) { 
-			assertEquals("Invalid key: ", e.getMessage());
+			assertEquals("Key cannot be blank", e.getMessage());
 		}
 	}
 	
@@ -57,7 +57,7 @@ public class JsonElementTest {
 
 	@Test
 	public void testDateKey() throws Exception {
-		assertFalse(isValidKey("2020-01-01"));
+		assertTrue(isValidKey("2020-01-01"));
 	}
 	
 	@Test
@@ -69,9 +69,9 @@ public class JsonElementTest {
 		assertTrue(isValidKey(buildString(100, "abcde")));
 		assertTrue(isValidKey(buildString(200, "abcde")));
 		assertTrue(isValidKey(buildString(255, "abcde")));
-		assertFalse(isValidKey(buildString(256, "abcde")));
-		assertFalse(isValidKey(buildString(300, "abcde")));
-		assertFalse(isValidKey(buildString(400, "abcde")));
+		assertTrue(isValidKey(buildString(256, "abcde")));
+		assertTrue(isValidKey(buildString(300, "abcde")));
+		assertTrue(isValidKey(buildString(400, "abcde")));
 	}
 	
 	public String buildString(int length, String text) {
