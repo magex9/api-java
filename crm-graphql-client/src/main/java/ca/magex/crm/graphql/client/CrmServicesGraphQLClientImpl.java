@@ -1,11 +1,14 @@
 package ca.magex.crm.graphql.client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.util.Pair;
 
 import ca.magex.crm.api.common.BusinessPosition;
@@ -59,15 +62,8 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * --------------------------------------------------------------------------------------- ORGANIZATION SERVICE ---------------------------------------------------------------------------------------
 	 */
-	/* ORGANIZATION SERVICE */
-	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
-	 */
-
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
@@ -176,13 +172,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 	/* LOCATION SERVICE */
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 
 	@Override
@@ -292,13 +286,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 	/* PERSON SERVICE */
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 
 	@Override
@@ -447,13 +439,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 	/* USER SERVICE */
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 
 	@Override
@@ -532,108 +522,217 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getSecond()));
 	}
 
-	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
-	 */
-	/* PERMISSIONS SERVICE */
-	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
-	 */
-
-	@Override
-	public Group findGroupByCode(String code) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Group findGroup(Identifier groupId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	/* ------------------ */
+	/* Permission Service */
+	/* ------------------ */
 
 	@Override
 	public Group createGroup(Localized name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toGroup(performGraphQLQueryWithVariables(
+				"createGroup",
+				"createGroup",
+				new MapBuilder()
+						.withEntry("code", name.getCode())
+						.withEntry("englishName", name.getEnglishName())
+						.withEntry("frenchName", name.getFrenchName())
+						.build()));
 	}
-
+	
 	@Override
 	public Group updateGroupName(Identifier groupId, Localized name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toGroup(performGraphQLQueryWithVariables(
+				"updateGroupName",
+				"updateGroup",
+				new MapBuilder()
+						.withEntry("groupId", groupId.toString())
+						.withEntry("englishName", name.getEnglishName())
+						.withEntry("frenchName", name.getFrenchName())
+						.build()));
 	}
 
 	@Override
 	public Group enableGroup(Identifier groupId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toGroup(performGraphQLQueryWithVariables(
+				"enableGroup",
+				"updateGroup",
+				new MapBuilder()
+						.withEntry("groupId", groupId.toString())
+						.build()));
 	}
 
 	@Override
 	public Group disableGroup(Identifier groupId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toGroup(performGraphQLQueryWithVariables(
+				"disableGroup",
+				"updateGroup",
+				new MapBuilder()
+						.withEntry("groupId", groupId.toString())
+						.build()));
 	}
 
 	@Override
-	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+	public Group findGroup(Identifier groupId) {
+		return ModelBinder.toGroup(performGraphQLQueryWithVariables(
+				"findGroup",
+				"findGroup",
+				new MapBuilder()
+						.withEntry("groupId", groupId.toString())
+						.build()));
 	}
 
 	@Override
-	public Role findRole(Identifier roleId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Group findGroupByCode(String code) {
+		try {
+			JSONObject json = performGraphQLQueryWithVariables(
+					"findGroupByCode",
+					"findGroups",
+					new MapBuilder()
+							.withEntry("code", code)
+							.build());
+			if (json.getInt("totalElements") != 1) {
+				throw new ItemNotFoundException("Unable to find group for code '" + code + "'");
+			}
+			return ModelBinder.toGroup(json.getJSONArray("content").getJSONObject(0));
+		} catch (JSONException j) {
+			throw new RuntimeException(j);
+		}
 	}
 
 	@Override
-	public Role findRoleByCode(String code) throws ItemNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		List<String> filterComponents = new ArrayList<String>();
+		if (filter.getCode() != null) {
+			filterComponents.add("code: \"" + filter.getCode() + "\"");
+		}
+		if (filter.getEnglishName() != null) {
+			filterComponents.add("englishName: \"" + filter.getEnglishName() + "\"");
+		}
+		if (filter.getFrenchName() != null) {
+			filterComponents.add("frenchName: \"" + filter.getFrenchName() + "\"");
+		}
+		if (filter.getStatus() != null) {
+			filterComponents.add("status: \"" + filter.getStatus() + "\"");
+		}
+		return ModelBinder.toPage(filter, paging, ModelBinder::toGroup, performGraphQLQueryWithSubstitution(
+				"findGroups",
+				"findGroups",
+				StringUtils.join(filterComponents, ", "),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
+	}	
 
 	@Override
 	public Role createRole(Identifier groupId, Localized name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toRole(performGraphQLQueryWithVariables(
+				"createRole",
+				"createRole",
+				new MapBuilder()
+						.withEntry("groupId", groupId.toString())
+						.withEntry("code", name.getCode())
+						.withEntry("englishName", name.getEnglishName())
+						.withEntry("frenchName", name.getFrenchName())
+						.build()));
 	}
-
+	
 	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toRole(performGraphQLQueryWithVariables(
+				"updateRoleName",
+				"updateRole",
+				new MapBuilder()
+						.withEntry("roleId", roleId.toString())
+						.withEntry("englishName", name.getEnglishName())
+						.withEntry("frenchName", name.getFrenchName())
+						.build()));
 	}
-
+	
 	@Override
 	public Role enableRole(Identifier roleId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toRole(performGraphQLQueryWithVariables(
+				"enableRole",
+				"updateRole",
+				new MapBuilder()
+						.withEntry("roleId", roleId.toString())						
+						.build()));
 	}
 
 	@Override
 	public Role disableRole(Identifier roleId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toRole(performGraphQLQueryWithVariables(
+				"disableRole",
+				"updateRole",
+				new MapBuilder()
+						.withEntry("roleId", roleId.toString())						
+						.build()));
 	}
 
+	@Override
+	public Role findRole(Identifier roleId) {
+		return ModelBinder.toRole(performGraphQLQueryWithVariables(
+				"findRole",
+				"findRole",
+				new MapBuilder()
+						.withEntry("roleId", roleId.toString())						
+						.build()));
+	}
+
+	@Override
+	public Role findRoleByCode(String code) throws ItemNotFoundException {
+		try {
+			JSONObject json = performGraphQLQueryWithVariables(
+					"findRoleByCode",
+					"findRoles",
+					new MapBuilder()
+							.withEntry("code", code)
+							.build());
+			if (json.getInt("totalElements") != 1) {
+				throw new ItemNotFoundException("Unable to find role for code '" + code + "'");
+			}
+			return ModelBinder.toRole(json.getJSONArray("content").getJSONObject(0));
+		} catch (JSONException j) {
+			throw new RuntimeException(j);
+		}
+	}
+
+	@Override
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		List<String> filterComponents = new ArrayList<String>();
+		if (filter.getGroupId() != null) {
+			filterComponents.add("groupId: \"" + filter.getGroupId() + "\"");
+		}
+		if (filter.getCode() != null) {
+			filterComponents.add("code: \"" + filter.getCode() + "\"");
+		}
+		if (filter.getEnglishName() != null) {
+			filterComponents.add("englishName: \"" + filter.getEnglishName() + "\"");
+		}
+		if (filter.getFrenchName() != null) {
+			filterComponents.add("frenchName: \"" + filter.getFrenchName() + "\"");
+		}
+		if (filter.getStatus() != null) {
+			filterComponents.add("status: \"" + filter.getStatus() + "\"");
+		}
+		return ModelBinder.toPage(filter, paging, ModelBinder::toRole, performGraphQLQueryWithSubstitution(
+				"findRoles",
+				"findRoles",
+				StringUtils.join(filterComponents, ", "),
+				paging.getPageNumber(),
+				paging.getPageSize(),
+				sortInfo.getFirst(),
+				sortInfo.getSecond()));
+	}
+
+	
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 	/* LOOKUP SERVICE */
 	/*
-	 * -----------------------------------------------------------------------------
-	 * ----------
+	 * ----------------------------------------------------------------------------- ----------
 	 */
 
 	@Override
@@ -729,7 +828,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups",
 				"findCodeLookups",
-				"BusinessSector"));
+				"Sector"));
 	}
 
 	@Override
@@ -737,7 +836,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup",
 				"findCodeLookups",
-				"BusinessSector",
+				"Sector",
 				code)).get(0);
 	}
 
@@ -751,7 +850,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups",
 				"findCodeLookups",
-				"BusinessUnit"));
+				"Unit"));
 	}
 
 	@Override
@@ -759,7 +858,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup",
 				"findCodeLookups",
-				"BusinessUnit",
+				"Unit",
 				code)).get(0);
 	}
 
@@ -773,7 +872,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
 				"findAllCodeLookups",
 				"findCodeLookups",
-				"BusinessClassification"));
+				"Classification"));
 	}
 
 	@Override
@@ -781,7 +880,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
 				"findSpecificCodeLookup",
 				"findCodeLookups",
-				"BusinessClassification",
+				"Classification",
 				code)).get(0);
 	}
 

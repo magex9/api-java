@@ -3,7 +3,10 @@ package ca.magex.crm.test;
 import static ca.magex.crm.test.CrmAsserts.CANADA;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.ONTARIO;
-import static ca.magex.crm.test.CrmAsserts.*;
+import static ca.magex.crm.test.CrmAsserts.ORG;
+import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.SYS;
+import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,10 +38,12 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -46,6 +51,7 @@ import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
@@ -55,8 +61,10 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 /**
@@ -131,8 +139,29 @@ public class CrmServicesTestSuite {
 	}
 	
 	private void runCreatePermissions() {
-		Identifier sysId = permissionService.createGroup(SYS).getGroupId();
-		permissionService.createRole(sysId, SYS_ADMIN);
+		Group system = permissionService.createGroup(SYS);
+		Identifier sysId = system.getGroupId();
+		verifyGroupDetails(system, sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		Assert.assertEquals(system, permissionService.findGroup(sysId));
+		Assert.assertEquals(system, permissionService.findGroupByCode(SYS.getCode()));
+		verifyGroupDetails(permissionService.disableGroup(sysId), sysId, Status.INACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		verifyGroupDetails(permissionService.enableGroup(sysId), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		verifyGroupDetails(permissionService.updateGroupName(sysId, new Localized(SYS.getCode(), "ENGLISH", "FRENCH")), sysId, Status.ACTIVE, SYS.getCode(), "ENGLISH", "FRENCH");
+		verifyGroupDetails(permissionService.updateGroupName(sysId, new Localized(SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName())), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		FilteredPage<Group> groupPage = permissionService.findGroups(new GroupsFilter(null, null, SYS.getCode(), null), new Paging(Sort.by("code")));
+		Assert.assertEquals(1, groupPage.getContent().size());				
+				
+		Role sysadmin = permissionService.createRole(sysId, SYS_ADMIN);
+		verifyRoleDetails(sysadmin, sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());		
+		verifyRoleDetails(permissionService.disableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.INACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(permissionService.enableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), "ENGLISH", "FRENCH")), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), "ENGLISH", "FRENCH");
+		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName())), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(permissionService.findRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(permissionService.findRoleByCode(sysadmin.getCode()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		FilteredPage<Role> rolePage = permissionService.findRoles(new RolesFilter(null, null, null, SYS_ADMIN.getCode(), null), new Paging(Sort.by("code")));
+		Assert.assertEquals(1, rolePage.getContent().size());
+		
 		Identifier orgId = permissionService.createGroup(ORG).getGroupId();
 		permissionService.createRole(orgId, ORG_ADMIN);
 	}
@@ -509,6 +538,27 @@ public class CrmServicesTestSuite {
 		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
 	}
 
+	private void verifyGroupDetails(Group group, Identifier groupId, Status status, String code, String englishName, String frenchName) {
+		Assert.assertNotNull(group.getGroupId());
+		Assert.assertEquals(groupId, group.getGroupId());
+		Assert.assertEquals(status, group.getStatus());
+		Assert.assertEquals(code, group.getCode());
+		Assert.assertEquals(englishName, group.getName().getEnglishName());
+		Assert.assertEquals(frenchName, group.getName().getFrenchName());
+		logger.info("Verifying Group Details " + groupId + " Passed");
+	}
+	
+	private void verifyRoleDetails(Role role, Identifier groupId, Identifier roleId, Status status, String code, String englishName, String frenchName) {
+		Assert.assertNotNull(role.getRoleId());
+		Assert.assertEquals(groupId, role.getGroupId());
+		Assert.assertEquals(roleId, role.getRoleId());
+		Assert.assertEquals(status, role.getStatus());
+		Assert.assertEquals(code, role.getCode());
+		Assert.assertEquals(englishName, role.getName().getEnglishName());
+		Assert.assertEquals(frenchName, role.getName().getFrenchName());
+		logger.info("Verifying Role Details " + roleId + " Passed");
+	}
+	
 	private void verifyOrgDetails(OrganizationDetails orgDetails, Identifier orgId, Status status, String displayName, Identifier mainLocationIdentifier) {
 		Assert.assertNotNull(orgDetails.getOrganizationId());
 		Assert.assertEquals(orgId, orgDetails.getOrganizationId());
