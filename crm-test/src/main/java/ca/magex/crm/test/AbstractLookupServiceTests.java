@@ -72,6 +72,7 @@ public abstract class AbstractLookupServiceTests {
 		Assert.assertTrue(values.size() > 0);
 		for (T value : values) {
 			Assert.assertEquals(value, codeLookup.apply(value.getCode()));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.ROOT, value.getName(Lang.ROOT)));
 			Assert.assertEquals(value, localizedLookup.apply(Lang.ENGLISH, value.getName(Lang.ENGLISH)));
 			Assert.assertEquals(value, localizedLookup.apply(Lang.FRENCH, value.getName(Lang.FRENCH)));
 			try {

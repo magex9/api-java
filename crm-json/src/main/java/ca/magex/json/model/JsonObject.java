@@ -98,40 +98,120 @@ public final class JsonObject extends JsonElement {
 		return map.get(key);
 	}
 	
+	public JsonElement get(String key, Class<? extends JsonElement> cls) {
+		if (!contains(key))
+			throw new NoSuchElementException("Unable to find: " + key);
+		if (!map.get(key).getClass().equals(cls))
+			throw new ClassCastException("Invalid type of object: " + map.get(key).getClass());
+		return map.get(key);
+	}
+	
 	public JsonObject getObject(String key) {
-		return ((JsonObject)get(key));
+		return getObject(key, null);
+	}
+
+	public JsonObject getObject(String key, JsonObject defaultValue) {
+		try {
+			return ((JsonObject)get(key));
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 
 	public JsonArray getArray(String key) {
-		return ((JsonArray)get(key));
+		return getArray(key, null);
+	}
+
+	public JsonArray getArray(String key, JsonArray defaultValue) {
+		try {
+			return ((JsonArray)get(key));
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 
 	public String getString(String key) {
-		return ((JsonText)get(key)).value();
+		return getString(key, null);
+	}
+	
+	public String getString(String key, String defaultValue) {
+		try {
+			return ((JsonText)get(key)).value();
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Integer getInt(String key) {
-		return ((JsonNumber)get(key)).value().intValue();
+		return getInt(key, null);
+	}
+	
+	public Integer getInt(String key, Integer defaultValue) {
+		try {
+			return ((JsonNumber)get(key)).value().intValue();
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Long getLong(String key) {
-		return ((JsonNumber)get(key)).value().longValue();
+		return getLong(key, null);
+	}
+	
+	public Long getLong(String key, Long defaultValue) {
+		try {
+			return ((JsonNumber)get(key)).value().longValue();
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Float getFloat(String key) {
-		return ((JsonNumber)get(key)).value().floatValue();
+		return getFloat(key, null);
+	}
+	
+	public Float getFloat(String key, Float defaultValue) {
+		try {
+			return ((JsonNumber)get(key)).value().floatValue();
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Boolean getBoolean(String key) {
-		return ((JsonBoolean)get(key)).value();
+		return getBoolean(key, null);
+	}
+	
+	public Boolean getBoolean(String key, Boolean defaultValue) {
+		try {
+			return ((JsonBoolean)get(key)).value();
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 	public LocalDate getDate(String key) {
-		return LocalDate.parse(((JsonText)get(key)).value(), DateTimeFormatter.ISO_DATE);
+		return getDate(key, null);
+	}
+	
+	public LocalDate getDate(String key, LocalDate defaultValue) {
+		try {
+			return LocalDate.parse(((JsonText)get(key)).value(), DateTimeFormatter.ISO_DATE);
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 	public LocalDateTime getDateTime(String key) {
-		return LocalDateTime.parse(((JsonText)get(key)).value(), DateTimeFormatter.ISO_DATE_TIME);
+		return getDateTime(key, null);
+	}
+	
+	public LocalDateTime getDateTime(String key, LocalDateTime defaultValue) {
+		try {
+			return LocalDateTime.parse(((JsonText)get(key)).value(), DateTimeFormatter.ISO_DATE_TIME);
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
 	}
 	
 }

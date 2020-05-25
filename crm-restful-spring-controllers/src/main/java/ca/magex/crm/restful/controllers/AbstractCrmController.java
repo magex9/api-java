@@ -27,6 +27,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.secured.SecuredCrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.rest.transformers.JsonTransformer;
@@ -104,6 +105,15 @@ public abstract class AbstractCrmController {
 			return JsonParser.parseObject(json);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to extract body from request", e);
+		}
+	}
+
+	protected void confirm(JsonObject body, Identifier identifier) {
+		try {
+			if (!body.contains("confirm") || !body.getBoolean("confirm"))
+				throw new BadRequestException("No confirmation message", identifier, "error", "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message"));
+		} catch (ClassCastException e) {
+			throw new BadRequestException("Confirmation not a boolean", identifier, "error", "confirm", new Localized(Lang.ENGLISH, "Confirmation message must be a boolean"));
 		}
 	}
 	

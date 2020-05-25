@@ -134,6 +134,67 @@ public class PermissionsControllerNoAuthTests {
 	}
 	
 	@Test
+	public void testCreateEnglishNameTests() throws Exception {
+		JsonObject missing = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/groups")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("code", "GRP")
+				//.with("englishName", "Group")
+				.with("frenchName", "Groupe")
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		assertTrue(missing.getString("groupId").matches("[A-Za-z0-9]+"));
+		assertEquals("Active", missing.getString("status"));
+			
+		JsonObject spaces = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/groups")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("code", "GRP")
+				.with("englishName", "  ")
+				.with("frenchName", "Groupe")
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		assertTrue(spaces.getString("groupId").matches("[A-Za-z0-9]+"));
+		assertEquals("Active", spaces.getString("status"));
+				
+		JsonObject classCast = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/groups")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("code", "GRP")
+				.with("englishName", true)
+				.with("frenchName", "Groupe")
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		assertTrue(classCast.getString("groupId").matches("[A-Za-z0-9]+"));
+		assertEquals("Active", classCast.getString("status"));
+					
+		JsonObject maxLength = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/groups")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("code", "GRP")
+				.with("englishName", true)
+				.with("frenchName", "Groupe")
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertTrue(maxLength.getString("groupId").matches("[A-Za-z0-9]+"));
+		assertEquals("Active", maxLength.getString("status"));
+					
+		
+	}
+	
+	@Test
 	public void testFirstPageEnglishSort() throws Exception {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> permissions.createGroup(l));
 		
@@ -383,6 +444,36 @@ public class PermissionsControllerNoAuthTests {
 		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, permissions.findGroup(groupId).getStatus());
 
+		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/disable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", false)
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), error2.getObject(0).getString("identifier"));
+		assertEquals("error", error2.getObject(0).getString("type"));
+		assertEquals("confirm", error2.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, permissions.findGroup(groupId).getStatus());
+
+		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/disable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", "Test")
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), error3.getObject(0).getString("identifier"));
+		assertEquals("error", error3.getObject(0).getString("type"));
+		assertEquals("confirm", error3.getObject(0).getString("path"));
+		assertEquals("Confirmation message must be a boolean", error3.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, permissions.findGroup(groupId).getStatus());
+
 		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/groups/" + groupId + "/disable")
 			.header("Locale", Lang.ENGLISH)
@@ -398,16 +489,46 @@ public class PermissionsControllerNoAuthTests {
 		assertEquals("Group", disable.getString("name"));
 		assertEquals(Status.INACTIVE, permissions.findGroup(groupId).getStatus());
 		
-		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/groups/" + groupId + "/enable")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(groupId.toString(), error2.getObject(0).getString("identifier"));
-		assertEquals("error", error2.getObject(0).getString("type"));
-		assertEquals("confirm", error2.getObject(0).getString("path"));
-		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
+		assertEquals(groupId.toString(), error4.getObject(0).getString("identifier"));
+		assertEquals("error", error4.getObject(0).getString("type"));
+		assertEquals("confirm", error4.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error4.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, permissions.findGroup(groupId).getStatus());
+		
+		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/enable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", false)
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), error5.getObject(0).getString("identifier"));
+		assertEquals("error", error5.getObject(0).getString("type"));
+		assertEquals("confirm", error5.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error5.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, permissions.findGroup(groupId).getStatus());
+		
+		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/groups/" + groupId + "/enable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", "test")
+				.toString()))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(groupId.toString(), error6.getObject(0).getString("identifier"));
+		assertEquals("error", error6.getObject(0).getString("type"));
+		assertEquals("confirm", error6.getObject(0).getString("path"));
+		assertEquals("Confirmation message must be a boolean", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, permissions.findGroup(groupId).getStatus());
 	
 		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
