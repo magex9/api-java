@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import ca.magex.crm.amnesia.generator.LoremIpsumGenerator;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmPermissionService;
@@ -40,7 +41,7 @@ import ca.magex.json.model.JsonObject;
 		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
 		MagexCrmProfiles.CRM_NO_AUTH
 })
-public class PermissionsControllerNoAuthTests {
+public class PermissionsControllerTests {
 	
 	@Autowired private CrmInitializationService initiailziation;
 
@@ -135,7 +136,7 @@ public class PermissionsControllerNoAuthTests {
 	
 	@Test
 	public void testCreateEnglishNameTests() throws Exception {
-		JsonObject missing = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonArray missing = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.post("/api/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
@@ -146,10 +147,12 @@ public class PermissionsControllerNoAuthTests {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
-		assertTrue(missing.getString("groupId").matches("[A-Za-z0-9]+"));
-		assertEquals("Active", missing.getString("status"));
+		assertEquals(1, missing.size());
+		assertEquals("error", missing.getObject(0).getString("type"));
+		assertEquals("englishName", missing.getObject(0).getString("path"));
+		assertEquals("Field is mandatory", missing.getObject(0).getString("reason"));
 			
-		JsonObject spaces = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonArray spaces = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.post("/api/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
@@ -160,10 +163,12 @@ public class PermissionsControllerNoAuthTests {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
-		assertTrue(spaces.getString("groupId").matches("[A-Za-z0-9]+"));
-		assertEquals("Active", spaces.getString("status"));
+		assertEquals(1, spaces.size());
+		assertEquals("error", spaces.getObject(0).getString("type"));
+		assertEquals("englishName", spaces.getObject(0).getString("path"));
+		assertEquals("An English description is required", spaces.getObject(0).getString("reason"));
 				
-		JsonObject classCast = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonArray classCast = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.post("/api/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
@@ -174,24 +179,26 @@ public class PermissionsControllerNoAuthTests {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
-		assertTrue(classCast.getString("groupId").matches("[A-Za-z0-9]+"));
-		assertEquals("Active", classCast.getString("status"));
+		assertEquals(1, classCast.size());
+		assertEquals("error", classCast.getObject(0).getString("type"));
+		assertEquals("englishName", classCast.getObject(0).getString("path"));
+		assertEquals("Invalid format", classCast.getObject(0).getString("reason"));
 					
-		JsonObject maxLength = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonArray maxLength = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.post("/api/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "GRP")
-				.with("englishName", true)
+				.with("englishName", LoremIpsumGenerator.buildWords(20))
 				.with("frenchName", "Groupe")
 				.toString()))
 			.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
-		assertTrue(maxLength.getString("groupId").matches("[A-Za-z0-9]+"));
-		assertEquals("Active", maxLength.getString("status"));
-					
-		
+		assertEquals(1, maxLength.size());
+		assertEquals("error", maxLength.getObject(0).getString("type"));
+		assertEquals("englishName", maxLength.getObject(0).getString("path"));
+		assertEquals("English name must be 50 characters or less", maxLength.getObject(0).getString("reason"));
 	}
 	
 	@Test
@@ -384,47 +391,73 @@ public class PermissionsControllerNoAuthTests {
 		assertEquals(4, inativeEnglishAsc.getArray("content").size());
 		assertEquals(List.of("$ Store", "Montreal", "French", "resume"), inativeEnglishAsc.getArray("content").stream()
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
+
+		JsonObject englishNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/groups")
+			.queryParam("englishName", "re")
+			.header("Locale", Lang.ENGLISH))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(inativeEnglishAsc, englishNameFilter);
 	}
 	
 	@Test
 	public void testGroupFilterByFrenchName() throws Exception {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> permissions.createGroup(l));
 		
-		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonObject inativeFrenchAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.queryParam("name", "ou")
 			.header("Locale", Lang.FRENCH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(1, inativeEnglishAsc.getInt("page"));
-		assertEquals(3, inativeEnglishAsc.getInt("total"));
-		assertEquals(false, inativeEnglishAsc.getBoolean("hasNext"));
-		assertEquals(false, inativeEnglishAsc.getBoolean("hasPrevious"));
-		assertEquals(JsonArray.class, inativeEnglishAsc.get("content").getClass());
-		assertEquals(3, inativeEnglishAsc.getArray("content").size());
-		assertEquals(List.of("Tout", "tout à fait", "Tout le"), inativeEnglishAsc.getArray("content").stream()
+		assertEquals(1, inativeFrenchAsc.getInt("page"));
+		assertEquals(3, inativeFrenchAsc.getInt("total"));
+		assertEquals(false, inativeFrenchAsc.getBoolean("hasNext"));
+		assertEquals(false, inativeFrenchAsc.getBoolean("hasPrevious"));
+		assertEquals(JsonArray.class, inativeFrenchAsc.get("content").getClass());
+		assertEquals(3, inativeFrenchAsc.getArray("content").size());
+		assertEquals(List.of("Tout", "tout à fait", "Tout le"), inativeFrenchAsc.getArray("content").stream()
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
+		
+		JsonObject frenchNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/groups")
+			.queryParam("frenchName", "ou")
+			.header("Locale", Lang.FRENCH))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(inativeFrenchAsc, frenchNameFilter);
 	}
 	
 	@Test
 	public void testGroupFilterByCode() throws Exception {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> permissions.createGroup(l));
 		
-		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+		JsonObject activeCodeAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.queryParam("name", "A"))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(1, inativeEnglishAsc.getInt("page"));
-		assertEquals(1, inativeEnglishAsc.getInt("total"));
-		assertEquals(false, inativeEnglishAsc.getBoolean("hasNext"));
-		assertEquals(false, inativeEnglishAsc.getBoolean("hasPrevious"));
-		assertEquals(JsonArray.class, inativeEnglishAsc.get("content").getClass());
-		assertEquals(1, inativeEnglishAsc.getArray("content").size());
-		assertEquals(List.of("A"), inativeEnglishAsc.getArray("content").stream()
+		assertEquals(1, activeCodeAsc.getInt("page"));
+		assertEquals(1, activeCodeAsc.getInt("total"));
+		assertEquals(false, activeCodeAsc.getBoolean("hasNext"));
+		assertEquals(false, activeCodeAsc.getBoolean("hasPrevious"));
+		assertEquals(JsonArray.class, activeCodeAsc.get("content").getClass());
+		assertEquals(1, activeCodeAsc.getArray("content").size());
+		assertEquals(List.of("A"), activeCodeAsc.getArray("content").stream()
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
+		
+		JsonObject codeFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/groups")
+			.queryParam("code", "A"))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(activeCodeAsc, codeFilter);
 	}
 	
 	@Test
