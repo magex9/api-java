@@ -104,7 +104,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 				}
 			}
 
-			return crm.findOrganizationDetails(organizationId);
+			return org;
 		};
 	}
 }

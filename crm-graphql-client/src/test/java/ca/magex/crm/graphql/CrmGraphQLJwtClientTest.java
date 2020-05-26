@@ -1,5 +1,6 @@
 package ca.magex.crm.graphql;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ import ca.magex.crm.test.CrmServicesTestSuite;
 	MagexCrmProfiles.CRM_AUTH,
 	MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED
 })
+@Ignore
 public class CrmGraphQLJwtClientTest {
 
 	@LocalServerPort private int randomPort;

@@ -10,6 +10,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.graphql.util.MapBuilder;
 
 public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 
@@ -32,11 +33,12 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 
 	@Test
 	public void organizationDataFetching() throws Exception {
-		JSONObject johnnuy = execute(
+		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation { createOrganization(displayName: %s, groups: %s) { organizationId status displayName mainLocation { locationId } mainContact { personId } groups { englishName frenchName } } }",
-				"Johnnuy",
-				List.of("DEV", "OPS"));
+				"mutation ($displayName: String!, $groups: [String]!) { createOrganization(displayName: $displayName, groups: $groups) { organizationId status displayName mainLocation { locationId } mainContact { personId } groups { englishName frenchName } } }",
+				new MapBuilder().withEntry("displayName", "Johnnuy").withEntry("groups", List.of("DEV", "OPS")).build()
+				);
+	
 		Identifier johnnuyId = new Identifier(johnnuy.getString("organizationId"));
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));

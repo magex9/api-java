@@ -65,15 +65,16 @@ public interface CrmPersonService {
 		@NotNull PersonsFilter filter
 	);
 
-	FilteredPage<PersonDetails> findPersonDetails(
-		@NotNull PersonsFilter filter, 
-		@NotNull Paging paging
-	);
-
 	FilteredPage<PersonSummary> findPersonSummaries(
 		@NotNull PersonsFilter filter, 
 		@NotNull Paging paging
 	);
+	
+	FilteredPage<PersonDetails> findPersonDetails(
+		@NotNull PersonsFilter filter, 
+		@NotNull Paging paging
+	);
+	
 	
 	default Page<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
 		return findPersonDetails(filter, PersonsFilter.getDefaultPaging());
@@ -90,5 +91,4 @@ public interface CrmPersonService {
 	default PersonsFilter defaultPersonsFilter() {
 		return new PersonsFilter();
 	};
-	
 }

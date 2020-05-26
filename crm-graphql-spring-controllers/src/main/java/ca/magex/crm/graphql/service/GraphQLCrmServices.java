@@ -112,7 +112,9 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countUsers", userDataFetcher.countUsers()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUsers", userDataFetcher.findUsers()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createUser", userDataFetcher.createUser()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateUser", userDataFetcher.updateUser()))				
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateUser", userDataFetcher.updateUser()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("resetUserPassword", userDataFetcher.resetUserPassword()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("changeUserPassword", userDataFetcher.changeUserPassword()))
 				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
 				.type("User", typeWiring -> typeWiring.dataFetcher("roles", permissionDataFetcher.rolesByUser()))
 

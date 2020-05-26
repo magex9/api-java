@@ -230,7 +230,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 				"inactive");
 		Assert.assertEquals(0, userCount);
 		
-		/* find organization paging */
+		/* find users paging */
 		JSONObject users = execute(
 				"findUsers",
 				"{ findUsers(filter: {organizationId: %s, personId: %s, status: %s, role: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { userId status username } } }",
@@ -251,5 +251,30 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(userId.toString(), userContents.getJSONObject(0).get("userId"));
 		Assert.assertEquals("jbigford", userContents.getJSONObject(0).get("username"));
 		Assert.assertEquals("ACTIVE", userContents.getJSONObject(0).get("status"));
+		
+		/* reset user password */
+		String tempPassword = execute(
+				"resetUserPassword",
+				"mutation { resetUserPassword(userId: %s) }",
+				userId);
+		Assert.assertNotNull(tempPassword);
+		
+		/* change user password from temporary password */		
+		Boolean success = execute(
+				"changeUserPassword",
+				"mutation { changeUserPassword(userId: %s, currentPassword: %s, newPassword: %s) }",
+				userId,
+				tempPassword,
+				"JungleGym2020!");
+		Assert.assertTrue(success);
+		
+		/* change user password with wrong current password */
+		success = execute(
+				"changeUserPassword",
+				"mutation { changeUserPassword(userId: %s, currentPassword: %s, newPassword: %s) }",
+				userId,
+				tempPassword,
+				"JungleGym2020!");
+		Assert.assertFalse(success);
 	}
 }

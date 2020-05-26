@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -41,6 +45,10 @@ public class UsersFilter implements Serializable {
 
 	private String role;
 
+	public UsersFilter() {
+		this(null, null, null, null, null);
+	}
+	
 	public UsersFilter(Identifier organizationId, Identifier personId, Status status, String username, String role) {
 		this.organizationId = organizationId;
 		this.personId = personId;
@@ -65,16 +73,12 @@ public class UsersFilter implements Serializable {
 		}
 	}
 
-	public UsersFilter() {
-		this(null, null, null, null, null);
-	}
-	
 	public Identifier getPersonId() {
 		return personId;
 	}
 	
 	public UsersFilter withPersonId(Identifier personId) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public Identifier getOrganizationId() {
@@ -82,7 +86,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withOrganizationId(Identifier organizationId) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public Status getStatus() {
@@ -90,7 +94,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withStatus(Status status) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 	
 	public String getUsername() {
@@ -98,7 +102,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withUsername(String username) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public String getRole() {
@@ -106,7 +110,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withRole(String role) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public static List<Sort> getSortOptions() {
@@ -125,4 +129,18 @@ public class UsersFilter implements Serializable {
 		return paging.new PagingComparator<User>();
 	}
 
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
 }
