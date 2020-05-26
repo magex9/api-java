@@ -2,6 +2,7 @@ package ca.magex.crm.graphql.datafetcher;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +25,7 @@ import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
 import ca.magex.crm.test.TestConfig;
+import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,6 +66,28 @@ public abstract class AbstractDataFetcherTests {
 		Assert.assertEquals(StringUtils.join(result.getErrors(), '\n'), 0, result.getErrors().size());
 		String resultAsJsonString = objectMapper.writeValueAsString(result.getData());
 		log.info(formattedQuery + " --> " + resultAsJsonString);
+		JSONObject json = new JSONObject(resultAsJsonString);
+		Object o = json.get(queryName);
+		if (o == JSONObject.NULL) {
+			return null;
+		}
+		return (T) o;
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected <T> T executeWithVariables(String queryName, String query, Map<String,Object> variables) throws Exception {		
+		ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+				.query(query)
+				.variables(variables)
+				.build();		
+		ExecutionResult result = graphQl.getGraphQL().execute(executionInput);
+		if (result.getErrors().size() > 0) {
+			String messages = result.getErrors().stream().map((e) -> e.getMessage()).collect(Collectors.joining());
+			throw new ApiException("Errors encountered during " + queryName + " - " + messages);
+		}
+		Assert.assertEquals(StringUtils.join(result.getErrors(), '\n'), 0, result.getErrors().size());
+		String resultAsJsonString = objectMapper.writeValueAsString(result.getData());
+		log.info(queryName + " --> " + resultAsJsonString);
 		JSONObject json = new JSONObject(resultAsJsonString);
 		Object o = json.get(queryName);
 		if (o == JSONObject.NULL) {
