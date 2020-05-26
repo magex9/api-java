@@ -1,5 +1,8 @@
 package ca.magex.crm.api.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.constraints.NotNull;
 
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -10,6 +13,7 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Status;
 
 public interface CrmPermissionService {
 	
@@ -21,6 +25,13 @@ public interface CrmPermissionService {
 		@NotNull GroupsFilter filter,
 		@NotNull Paging paging
 	);
+	
+	default List<String> findActiveGroupCodes() {
+		return findGroups(
+			defaultGroupsFilter().withStatus(Status.ACTIVE), 
+			GroupsFilter.getDefaultPaging().allItems()
+		).stream().map(g -> g.getCode()).collect(Collectors.toList());
+	}
 	
 	Group findGroup(
 		@NotNull Identifier groupId
@@ -56,6 +67,22 @@ public interface CrmPermissionService {
 		@NotNull RolesFilter filter, 
 		@NotNull Paging paging
 	);
+	
+	default List<Role> findRoles() {
+		return findRoles(
+			defaultRolesFilter(), 
+			RolesFilter.getDefaultPaging().allItems()
+		).getContent();
+	}
+	
+	default List<String> findActiveRoleCodesForGroup(String group) {
+		return findRoles(
+			defaultRolesFilter()
+				.withStatus(Status.ACTIVE)
+				.withGroupId(findGroupByCode(group).getGroupId()), 
+			RolesFilter.getDefaultPaging().allItems()
+		).stream().map(r -> r.getCode()).collect(Collectors.toList());
+	}
 	
 	default RolesFilter defaultRolesFilter() {
 		return new RolesFilter();
