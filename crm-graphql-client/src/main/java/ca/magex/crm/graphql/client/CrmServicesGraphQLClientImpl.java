@@ -282,23 +282,19 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
-		// TODO use FilterBinder
 		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countLocations",
 				"countLocations",
-				filter.getDisplayName(),
-				filter.getStatus()));
+				FilterBinder.toFilterString(filter)));
 	}
 
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		// TODO use FilterBinder
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
 		return ModelBinder.toPage(filter, paging, ModelBinder::toLocationDetails, performGraphQLQueryWithSubstitution(
 				"findLocationDetails",
 				"findLocations",
-				filter.getDisplayName(),
-				filter.getStatus(),
+				FilterBinder.toFilterString(filter),
 				paging.getPageNumber(),
 				paging.getPageSize(),
 				sortInfo.getFirst(),
@@ -307,13 +303,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
-		// TODO use FilterBinder
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
 		return ModelBinder.toPage(filter, paging, ModelBinder::toLocationSummary, performGraphQLQueryWithSubstitution(
 				"findLocationSummaries",
 				"findLocations",
-				filter.getDisplayName(),
-				filter.getStatus(),
+				FilterBinder.toFilterString(filter),
 				paging.getPageNumber(),
 				paging.getPageSize(),
 				sortInfo.getFirst(),
@@ -440,23 +434,19 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public long countPersons(PersonsFilter filter) {
-		// TODO use FilterBinder
 		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countPersons",
 				"countPersons",
-				filter.getDisplayName(),
-				filter.getStatus()));
+				FilterBinder.toFilterString(filter)));
 	}
 
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		// TODO use FilterBinder
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
 		return ModelBinder.toPage(filter, paging, ModelBinder::toPersonSummary, performGraphQLQueryWithSubstitution(
 				"findPersonSummaries",
 				"findPersons",
-				filter.getDisplayName(),
-				filter.getStatus(),
+				FilterBinder.toFilterString(filter),
 				paging.getPageNumber(),
 				paging.getPageSize(),
 				sortInfo.getFirst(),
@@ -465,13 +455,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		// TODO use FilterBinder
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
 		return ModelBinder.toPage(filter, paging, ModelBinder::toPersonDetails, performGraphQLQueryWithSubstitution(
 				"findPersonDetails",
 				"findPersons",
-				filter.getDisplayName(),
-				filter.getStatus(),
+				FilterBinder.toFilterString(filter),
 				paging.getPageNumber(),
 				paging.getPageSize(),
 				sortInfo.getFirst(),
