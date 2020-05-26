@@ -3,6 +3,8 @@ package ca.magex.json.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,8 @@ public class JsonElement {
 			return new JsonElement();
 		} else if (el instanceof JsonElement) {
 			return (JsonElement)el;
+		} else if (el instanceof List) {
+			return new JsonArray(((List<?>)el).stream().map(e -> cast(e)).collect(Collectors.toList()));
 		} else if (el instanceof String) {
 			return new JsonText((String)el);
 		} else if (el instanceof Number) {
