@@ -50,11 +50,11 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainLocationId(db.findLocation(locationId).getLocationId())));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainLocationId(locationId == null ? null : db.findLocation(locationId).getLocationId())));
 	}
 	
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainContactId(db.findPerson(personId).getPersonId())));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainContactId(personId == null ? null : db.findPerson(personId).getPersonId())));
 	}
 
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
