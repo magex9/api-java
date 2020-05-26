@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -34,6 +36,7 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -792,6 +795,25 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	@Override
 	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return findByLocalizedName(locale, name, this::findCountries);
+	}
+	
+	@Override
+	public List<Province> findProvinces(String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
+			@NotNull String country) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

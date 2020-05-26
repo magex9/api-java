@@ -3,6 +3,8 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.Locale;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -18,6 +20,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
@@ -85,6 +88,25 @@ public class HazelcastLookupService implements CrmLookupService {
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Country[" + locale + "] '" + name + "'"));
+	}
+	
+	@Override
+	public List<Province> findProvinces(String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
+			@NotNull String country) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

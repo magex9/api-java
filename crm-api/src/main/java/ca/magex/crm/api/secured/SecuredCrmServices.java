@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
+import javax.validation.constraints.NotNull;
+
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -29,6 +31,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
@@ -153,6 +156,22 @@ public final class SecuredCrmServices implements Crm {
 	@Override
 	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return lookupService.findCountryByLocalizedName(locale, name);
+	}
+	
+	@Override
+	public List<Province> findProvinces(String country) {
+		return lookupService.findProvinces(country);
+	}
+	
+	@Override
+	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+		return lookupService.findProvinceByCode(province, country);
+	}
+	
+	@Override
+	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
+			@NotNull String country) {
+		return lookupService.findProvinceByLocalizedName(locale, province, country);
 	}
 	
 	@Override

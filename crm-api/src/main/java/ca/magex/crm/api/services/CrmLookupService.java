@@ -10,6 +10,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.system.Status;
 
@@ -28,7 +29,6 @@ public interface CrmLookupService {
 	
 	List<Country> findCountries();
 	
-	
 	Country findCountryByCode(
 		@NotNull String code
 	);
@@ -38,6 +38,19 @@ public interface CrmLookupService {
 		@NotNull String name
 	);
 	
+	List<Province> findProvinces(String country);
+	
+	Province findProvinceByCode(
+		@NotNull String province,
+		@NotNull String country
+	);
+		
+	Province findProvinceByLocalizedName(
+		@NotNull Locale locale,
+		@NotNull String province,
+		@NotNull String country
+	);
+		
 	List<Language> findLanguages();
 	
 	Language findLanguageByCode(

@@ -34,6 +34,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -1071,6 +1072,25 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Province> findProvinces(String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
+			@NotNull String country) {
 		// TODO Auto-generated method stub
 		return null;
 	}
