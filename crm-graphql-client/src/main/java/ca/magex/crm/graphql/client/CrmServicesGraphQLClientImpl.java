@@ -63,19 +63,21 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	/* ------------------------------------------------------------------------------------------ */
 	/*                                                                                            */
-	/*                             Organization Service Implementation                            */
+	/*                        Organization Service Implementation                                 */
 	/*                                                                                            */
 	/* ------------------------------------------------------------------------------------------ */
-	
+
 	@Override
 	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
 				"createOrganization",
 				"createOrganization",
-				displayName,
-				groups));
+				new MapBuilder()
+						.withEntry("displayName", displayName)
+						.withEntry("groups", groups)
+						.build()));
 	}
-	
+
 	@Override
 	public OrganizationDetails enableOrganization(Identifier organizationId) {
 		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
@@ -131,11 +133,13 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toOrganizationDetails(performGraphQLQueryWithVariables(
 				"updateOrganizationGroups",
 				"updateOrganization",
-				organizationId,
-				groups));
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.withEntry("groups", groups)
+						.build()));
 	}
 
 	@Override
@@ -215,25 +219,27 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	/* -------------------------------------------------------------------------------------- */
 	/*                                                                                        */
-	/*                             Location Service Implementation                            */
+	/*                       Location Service Implementation                                  */
 	/*                                                                                        */
 	/* -------------------------------------------------------------------------------------- */
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
-		return ModelBinder.toLocationDetails(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toLocationDetails(performGraphQLQueryWithVariables(
 				"createLocation",
 				"createLocation",
-				organizationId,
-				locationName,
-				locationReference,
-				address == null ? null : address.getStreet(),
-				address == null ? null : address.getCity(),
-				address == null ? null : address.getProvince(),
-				address == null ? null : address.getCountry(),
-				address == null ? null : address.getPostalCode()));
+				new MapBuilder()
+						.withEntry("orgId", organizationId.toString())
+						.withEntry("name", locationName)
+						.withEntry("ref", locationReference)
+						.withEntry("street", address.getStreet())
+						.withEntry("city", address.getCity())
+						.withEntry("province", address.getProvince())
+						.withEntry("country", address.getCountry())
+						.withEntry("postal", address.getPostalCode())
+						.build()));
 	}
-	
+
 	@Override
 	public LocationSummary enableLocation(Identifier locationId) {
 		return ModelBinder.toLocationSummary(performGraphQLQueryWithVariables(
@@ -335,7 +341,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	/* ------------------------------------------------------------------------------------ */
 	/*                                                                                      */
-	/*                             Person Service Implementation                            */
+	/*                           Person Service Implementation                              */
 	/*                                                                                      */
 	/* ------------------------------------------------------------------------------------ */
 
@@ -503,7 +509,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				username,
 				roles));
 	}
-	
+
 	@Override
 	public User enableUser(Identifier userId) {
 		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
@@ -519,7 +525,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				"updateUser",
 				userId));
 	}
-	
+
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
 		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
@@ -528,17 +534,27 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				userId,
 				roles));
 	}
-	
-	@Override
-	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public String resetPassword(Identifier userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return performGraphQLQueryWithVariables(
+				"resetUserPassword",
+				"resetUserPassword",
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build());
+	}
+
+	@Override
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		return performGraphQLQueryWithVariables(
+				"changeUserPassword",
+				"changeUserPassword",
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.withEntry("currentPassword", currentPassword)
+						.withEntry("newPassword", newPassword)
+						.build());
 	}
 
 	@Override
@@ -551,8 +567,11 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public User findUserByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
+		FilteredPage<User> users = findUsers(new UsersFilter().withUsername(username), Paging.singleInstance());
+		if (users.getContent().size() == 0) {
+			throw new ItemNotFoundException("Username '" + username + "'");
+		}
+		return users.getContent().get(0);
 	}
 
 	@Override
@@ -607,10 +626,10 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 				sortInfo.getFirst(),
 				sortInfo.getSecond()));
 	}
-	
+
 	/* ---------------------------------------------------------------------------------------- */
 	/*                                                                                          */
-	/*                             Permission Service Implementation                            */
+	/*                       Permission Service Implementation                                  */
 	/*                                                                                          */
 	/* ---------------------------------------------------------------------------------------- */
 
@@ -816,7 +835,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	/* ------------------------------------------------------------------------------------ */
 	/*                                                                                      */
-	/*                             Lookup Service Implementation                            */
+	/*                           Lookup Service Implementation                              */
 	/*                                                                                      */
 	/* ------------------------------------------------------------------------------------ */
 

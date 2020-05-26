@@ -182,10 +182,10 @@ public class CrmServicesTestSuite {
 
 		/* create and verify new organization */
 		logger.info("Creating new Organiztion");
-		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of("SYS"));
+		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of(SYS.getCode()));
 		Identifier orgId = orgDetails.getOrganizationId();
 		logger.info("Generated OrgId: " + orgId);
-		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null, null, List.of("SYS"));
+		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null, null, List.of("SYS"));		
 
 		/* verify that we our organization count incremented by 1 */
 		long newOrgCount = organizationService.countOrganizations(new OrganizationsFilter());
@@ -568,9 +568,25 @@ public class CrmServicesTestSuite {
 		logger.info("Setting User Roles");
 		user = userService.updateUserRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
-
-		/* find and verify user */
+		
+		/* reset password */
+		String tempPassword = userService.resetPassword(user.getUserId());
+		Assert.assertNotNull(tempPassword);
+		
+		/* change password using temp password */
+		Boolean success = userService.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
+		Assert.assertTrue(success);
+		
+		success = userService.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
+		Assert.assertFalse(success);
+		
+		
+		/* find and verify user by id */
 		user = userService.findUser(user.getUserId());
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
+		
+		/* find and verify user by username */
+		user = userService.findUserByUsername(user.getUsername());
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 
 		/* find users */
