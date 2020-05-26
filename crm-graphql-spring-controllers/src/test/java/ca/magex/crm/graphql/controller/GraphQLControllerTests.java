@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -89,6 +90,7 @@ public class GraphQLControllerTests {
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
 		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+				
 	}
 
 	@Test
@@ -164,6 +166,35 @@ public class GraphQLControllerTests {
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
 		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+		
+		/* add an array variable */
+		query = "mutation ($displayName: String!, $groups: [String]!) { createOrganization(displayName: $displayName, groups: $groups) { organizationId } }";
+		variables = new JSONObject();
+		variables.put("displayName", "MyOrg");
+		JSONArray jsonArray = new JSONArray();
+		jsonArray.put("DEV");
+		variables.put("groups", jsonArray);
+		
+		request = new JSONObject();
+		request.put("query", query);
+		request.put("variables", variables);
+		
+		postQueryRequest = MockMvcRequestBuilders
+				.post("/graphql")
+				.header(HttpHeaders.CONTENT_TYPE, "application/json")
+				.content(request.toString(3));
+		
+		response = mockMvc.perform(postQueryRequest)
+				.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		
+		/* parse response */
+		jsonResponse = new JSONObject(response);
+		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
+		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOrganization"));
+		
 	}
 
 	@Test
@@ -307,7 +338,7 @@ public class GraphQLControllerTests {
 		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findGroups"));
 		
 		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findGroups");
-		Assert.assertEquals(1, page.getJSONArray("content").length());
+		Assert.assertEquals(1, page.getJSONArray("content").length());		
 	}
 	
 	@Test
