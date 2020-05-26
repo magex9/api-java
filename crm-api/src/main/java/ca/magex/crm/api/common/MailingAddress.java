@@ -35,21 +35,46 @@ public class MailingAddress implements Serializable {
 	public String getStreet() {
 		return street;
 	}
+	
+	public MailingAddress withStreet(String street) {
+		this.street = street;
+		return new MailingAddress(street, city, province, country, postalCode);
+	}
 
 	public String getCity() {
 		return city;
+	}
+	
+	public MailingAddress withCity(String city) {
+		this.city = city;
+		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
 	public String getProvince() {
 		return province;
 	}
+	
+	public MailingAddress withProvince(String province) {
+		this.province = province;
+		return new MailingAddress(street, city, province, country, postalCode);
+	}
 
 	public String getCountry() {
 		return country;
 	}
+	
+	public MailingAddress withCountry(String country) {
+		this.country = country;
+		return new MailingAddress(street, city, province, country, postalCode);
+	}
 
 	public String getPostalCode() {
 		return postalCode;
+	}
+	
+	public MailingAddress withPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
 	@Override
