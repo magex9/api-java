@@ -50,6 +50,7 @@ input OrganizationFilter {
 input LocationFilter {
 	organizationId: String
 	displayName: String
+	reference: String
 	status: String
 }
 
