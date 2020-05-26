@@ -76,6 +76,10 @@ public final class JsonObject extends JsonElement {
 		return pairs.stream().map(p -> p.value()).collect(Collectors.toList());
 	}
 	
+	public boolean isNull(String key) {
+		return map.get(key) != null && map.get(key).getClass().equals(JsonElement.class);
+	}
+	
 	public boolean contains(String key) {
 		return map.get(key) != null && !map.get(key).getClass().equals(JsonElement.class);
 	}
