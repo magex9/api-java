@@ -113,7 +113,7 @@ type Query {
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
 	# Lookup Queries
-	findCodeLookups(category: String!, code: String): [CodeLookup]
+	findCodeLookups(category: String!, qualifier: String, code: String): [CodeLookup]
 }
 
 type Mutation {
