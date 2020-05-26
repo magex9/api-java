@@ -38,6 +38,7 @@ import ca.magex.json.model.JsonFormatter;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonParser;
+import ca.magex.json.model.JsonText;
 
 public abstract class AbstractCrmController {
 
@@ -88,6 +89,18 @@ public abstract class AbstractCrmController {
 	protected String getString(JsonObject json, String key, String defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getString(key);
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			return defaultValue;
+		}
+	}
+	
+	protected List<String> getStrings(JsonObject json, String key, List<String> defaultValue, Identifier identifier, List<Message> messages) {
+		try {
+			return json.getArray(key).stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
 			return defaultValue;

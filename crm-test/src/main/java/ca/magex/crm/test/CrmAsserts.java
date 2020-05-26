@@ -90,6 +90,14 @@ public class CrmAsserts {
 	
 	public static final PersonName PERSON_NAME = new PersonName("Mr.", "Chris", "P", "Bacon");
 	
+	public static final String PERSON_EMAIL = "crhis@bacon.com";
+	
+	public static final String PERSON_TITLE = "Professional Tester";
+	
+	public static final Telephone PERSON_TELEPHONE = new Telephone("6135551234", null);
+	
+	public static final String PERSON_FAX = "6138884567";
+	
 	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567"), null);
 	
 	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition("Corporate Services", "Development", "Developer");
