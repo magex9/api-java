@@ -7,12 +7,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
 public class Country extends Localized implements CrmLookupItem {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public Country(String code, String english, String french) {
 		super(code, english, french);
