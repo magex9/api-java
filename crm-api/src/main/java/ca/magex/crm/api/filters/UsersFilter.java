@@ -74,7 +74,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withPersonId(Identifier personId) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public Identifier getOrganizationId() {
@@ -82,7 +82,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withOrganizationId(Identifier organizationId) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public Status getStatus() {
@@ -90,7 +90,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withStatus(Status status) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 	
 	public String getUsername() {
@@ -98,7 +98,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withUsername(String username) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public String getRole() {
@@ -106,7 +106,7 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter withRole(String role) {
-		return new UsersFilter(personId, personId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 
 	public static List<Sort> getSortOptions() {

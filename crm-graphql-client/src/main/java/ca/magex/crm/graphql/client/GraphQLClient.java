@@ -168,6 +168,9 @@ public abstract class GraphQLClient {
 	private GraphQLRequest constructRequestWithSubstitution(String queryName, Object... params) {
 		GraphQLRequest request = new GraphQLRequest();
 		String query = queries.getProperty(queryName);
+		if (query == null) {
+			throw new RuntimeException("Unable to locate query with name '" + queryName + "'");
+		}
 		for (int param = 0; param < params.length; param++) {
 			query = query.replace("${" + param + "}", toVariableReplacementValue(params[param]));
 		}

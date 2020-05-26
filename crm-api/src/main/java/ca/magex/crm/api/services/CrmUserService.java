@@ -29,20 +29,12 @@ public interface CrmUserService {
 	User disableUser(
 		@NotNull Identifier userId
 	);
-
-    User findUser(
-    	@NotNull Identifier userId
-    );
-    
-    User findUserByUsername(
-    	@NotNull String username
-    );
 	
 	User updateUserRoles(
 		@NotNull Identifier userId, 
 		@NotNull List<String> roles
 	);
-	
+
 	boolean changePassword(
 		@NotNull Identifier userId, 
 		@NotNull String currentPassword, 
@@ -52,16 +44,24 @@ public interface CrmUserService {
 	String resetPassword(
 		@NotNull Identifier userId
 	);
-
-	long countUsers(
-		@NotNull UsersFilter filter
-	);
-
-	FilteredPage<User> findUsers(
-		@NotNull UsersFilter filter, 
-		@NotNull Paging paging
-	);
 	
+	User findUser(
+	  	@NotNull Identifier userId
+	);
+    
+    User findUserByUsername(
+    	@NotNull String username
+    );
+    
+    long countUsers(
+   		@NotNull UsersFilter filter
+   	);
+    
+    FilteredPage<User> findUsers(
+    	@NotNull UsersFilter filter, 
+    	@NotNull Paging paging
+    );	
+
 	default boolean isValidPasswordFormat(String password) {
 		if (StringUtils.isBlank(password))
 			return false;
@@ -87,5 +87,4 @@ public interface CrmUserService {
 	default Paging defaultUsersPaging() {
 		return new Paging(UsersFilter.getSortOptions().get(0));
 	}
-	
 }
