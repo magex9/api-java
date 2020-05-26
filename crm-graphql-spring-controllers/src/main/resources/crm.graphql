@@ -138,7 +138,9 @@ type Mutation {
 		
 	# User Maintenance
 	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(userId: String!, status: String, roles: [String]): User		
+	updateUser(userId: String!, status: String, roles: [String]): User
+	resetUserPassword(userId: String!): String
+	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean	
 }
 
 # Main Types
