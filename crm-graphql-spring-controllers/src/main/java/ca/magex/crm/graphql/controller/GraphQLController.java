@@ -3,6 +3,8 @@ package ca.magex.crm.graphql.controller;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,13 +53,7 @@ public class GraphQLController implements CrmGraphQLController {
 				JSONObject jsonRequest = new JSONObject(request);
 				query = jsonRequest.getString("query");
 				if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {
-					JSONObject variables = jsonRequest.getJSONObject("variables");
-					if (variables.length() > 0) {
-						JSONArray variableNames = variables.names();
-						for (int i=0; i<variableNames.length(); i++) {
-							variablesBuilder.withEntry(variableNames.getString(i), variables.get(variableNames.getString(i)));
-						}
-					}
+					parseVariables(variablesBuilder, jsonRequest.getJSONObject("variables"));
 				}
 			}
 			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains("application/graphql")) {
@@ -84,29 +80,24 @@ public class GraphQLController implements CrmGraphQLController {
 	@Override
 	public ResponseEntity<Object> doQueryAsGet(String query, String variables, HttpServletRequest req, HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
-		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
-		/* do not accept mutations over GET */
-		if (query.contains("mutation")) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.ALLOW, "POST");
-			return new ResponseEntity<Object>("Cannot process mutation over GET method", headers, HttpStatus.METHOD_NOT_ALLOWED);
-		}
+		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));		
 				
 		MapBuilder variablesBuilder = new MapBuilder();
 		try {
 			if (variables != null) {
-				JSONObject jsonVariables = new JSONObject(variables);			
-				if (jsonVariables.length() > 0) {
-					JSONArray variableNames = jsonVariables.names();
-					for (int i=0; i<variableNames.length(); i++) {
-						variablesBuilder.withEntry(variableNames.getString(i), jsonVariables.get(variableNames.getString(i)));
-					}
-				}
+				parseVariables(variablesBuilder, new JSONObject(variables));
 			}
 		}
 		catch(JSONException jsone) {
 			logger.warn("Non parseable variables provided: " + jsone.getMessage());
 			return new ResponseEntity<Object>("Non parseable variables provided", HttpStatus.BAD_REQUEST);
+		}
+		
+		/* do not accept mutations over GET */
+		if (query.contains("mutation")) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.ALLOW, "POST");
+			return new ResponseEntity<Object>("Cannot process mutation over GET method", headers, HttpStatus.METHOD_NOT_ALLOWED);
 		}
 			
 		ExecutionInput executionInput = ExecutionInput.newExecutionInput()
@@ -116,5 +107,34 @@ public class GraphQLController implements CrmGraphQLController {
 				.build();
 
 		return new ResponseEntity<>(graphQLService.getGraphQL().execute(executionInput), HttpStatus.OK);
+	}
+	
+	/**
+	 * helper method for parsing the variables sent in as json format
+	 * @param variablesBuilder
+	 * @param jsonVariables
+	 * @return
+	 * @throws JSONException
+	 */
+	private MapBuilder parseVariables(MapBuilder variablesBuilder, JSONObject jsonVariables) throws JSONException {
+		if (jsonVariables.length() > 0) {
+			JSONArray variableNames = jsonVariables.names();
+			for (int i=0; i<variableNames.length(); i++) {
+				Object variable = jsonVariables.get(variableNames.getString(i));
+				/* here we need to handle an array variable */
+				if (variable instanceof JSONArray) {
+					JSONArray variableArray = (JSONArray) variable;
+					List<Object> variableList = new ArrayList<>();
+					for (int j=0; j<variableArray.length(); j++) {
+						variableList.add(variableArray.get(j));
+					}
+					variablesBuilder.withEntry(variableNames.getString(i), variableList);
+				}
+				else {
+					variablesBuilder.withEntry(variableNames.getString(i), variable);
+				}
+			}
+		}
+		return variablesBuilder;
 	}
 }

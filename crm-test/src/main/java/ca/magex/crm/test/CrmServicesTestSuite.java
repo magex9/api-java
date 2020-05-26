@@ -44,6 +44,7 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.RolesFilter;
+import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -137,7 +138,7 @@ public class CrmServicesTestSuite {
 		}
 		logger.info("Running lookup tests for " + item.getName() + " Passed");
 	}
-	
+
 	private void runCreatePermissions() {
 		Group system = permissionService.createGroup(SYS);
 		Identifier sysId = system.getGroupId();
@@ -149,24 +150,25 @@ public class CrmServicesTestSuite {
 		verifyGroupDetails(permissionService.updateGroupName(sysId, new Localized(SYS.getCode(), "ENGLISH", "FRENCH")), sysId, Status.ACTIVE, SYS.getCode(), "ENGLISH", "FRENCH");
 		verifyGroupDetails(permissionService.updateGroupName(sysId, new Localized(SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName())), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
 		FilteredPage<Group> groupPage = permissionService.findGroups(new GroupsFilter(null, null, SYS.getCode(), null), new Paging(Sort.by("code")));
-		Assert.assertEquals(1, groupPage.getContent().size());				
-				
+		Assert.assertEquals(1, groupPage.getContent().size());
+
 		Role sysadmin = permissionService.createRole(sysId, SYS_ADMIN);
-		verifyRoleDetails(sysadmin, sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());		
+		verifyRoleDetails(sysadmin, sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.disableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.INACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.enableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), "ENGLISH", "FRENCH")), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), "ENGLISH", "FRENCH");
-		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName())), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName())), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(),
+				SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.findRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.findRoleByCode(sysadmin.getCode()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		FilteredPage<Role> rolePage = permissionService.findRoles(new RolesFilter(null, null, null, SYS_ADMIN.getCode(), null), new Paging(Sort.by("code")));
 		Assert.assertEquals(1, rolePage.getContent().size());
-		
+
 		Identifier orgId = permissionService.createGroup(ORG).getGroupId();
 		permissionService.createRole(orgId, ORG_ADMIN);
-		
+
 		/* create a second group */
-		Group dev = permissionService.createGroup(new Localized("DEV", "developers", "developeurs"));		
+		Group dev = permissionService.createGroup(new Localized("DEV", "developers", "developeurs"));
 		permissionService.createRole(dev.getGroupId(), new Localized("JAVA", "java", "java"));
 	}
 
@@ -180,10 +182,10 @@ public class CrmServicesTestSuite {
 
 		/* create and verify new organization */
 		logger.info("Creating new Organiztion");
-		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of("SYS"));
+		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of(SYS.getCode()));
 		Identifier orgId = orgDetails.getOrganizationId();
 		logger.info("Generated OrgId: " + orgId);
-		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null, null, List.of("SYS"));
+		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null, null, List.of("SYS"));		
 
 		/* verify that we our organization count incremented by 1 */
 		long newOrgCount = organizationService.countOrganizations(new OrganizationsFilter());
@@ -205,7 +207,7 @@ public class CrmServicesTestSuite {
 		logger.info("Updating Organization main Location");
 		orgDetails = organizationService.updateOrganizationMainLocation(orgDetails.getOrganizationId(), locDetails.getLocationId());
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", locId, null, List.of("SYS"));
-		
+
 		/* set and verify organization main contact */
 		logger.info("Creating main Contact");
 		PersonDetails personDetails = personService.createPerson(
@@ -216,18 +218,18 @@ public class CrmServicesTestSuite {
 				CrmAsserts.BUSINESS_POSITION);
 		Identifier personId = personDetails.getPersonId();
 		logger.info("Generated personId: " + personId);
-		
+
 		/* set and verify organization main contact */
 		logger.info("Updating Organization main Contact");
 		orgDetails = organizationService.updateOrganizationMainContact(orgDetails.getOrganizationId(), personDetails.getPersonId());
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", locId, personId, List.of("SYS"));
-				
+
 		/* update and verify organization name */
 		logger.info("Updating Organization name");
 		String newName = "ABC" + System.currentTimeMillis();
 		orgDetails = organizationService.updateOrganizationDisplayName(orgDetails.getOrganizationId(), newName);
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId, personId, List.of("SYS"));
-		
+
 		/* update and verify organization groups */
 		logger.info("Updating Organization groups");
 		orgDetails = organizationService.updateOrganizationGroups(orgDetails.getOrganizationId(), List.of("SYS", "DEV"));
@@ -517,11 +519,23 @@ public class CrmServicesTestSuite {
 	}
 
 	private void runUserServiceTests(Identifier personId) {
+		Assert.assertEquals(0, userService.countUsers(new UsersFilter().withPersonId(personId)));
 		
 		logger.info("Creating User");
 		User user = userService.createUser(personId, "tonka", Collections.emptyList());
 		Identifier userId = user.getUserId();
-		verifyUser(user, personId, userId, "tonka", Collections.emptyList());
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Collections.emptyList());		
+		Assert.assertEquals(1, userService.countUsers(new UsersFilter().withPersonId(personId)));
+
+		/* disable and verify the user */
+		logger.info("Disabling User");
+		user = userService.disableUser(userId);
+		verifyUser(user, personId, userId, "tonka", Status.INACTIVE, Collections.emptyList());
+
+		/* enable and verify the user */
+		logger.info("enabling User");
+		user = userService.enableUser(userId);
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Collections.emptyList());
 
 		/*
 		 * add user role (first time we add a role it will generate a user name for us)
@@ -529,37 +543,59 @@ public class CrmServicesTestSuite {
 		logger.info("Updating User Role");
 		Role r1 = permissionService.findRoleByCode("ORG_ADMIN");
 		user = userService.updateUserRoles(user.getUserId(), List.of(r1.getCode()));
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode()));
 
 		user = userService.findUser(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode()));
-		
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode()));
+
 		/* add another role and verify */
 		logger.info("Updating User Role");
 		Role r2 = permissionService.findRoleByCode("SYS_ADMIN");
 		user = userService.updateUserRoles(user.getUserId(), List.of(r1.getCode(), r2.getCode()));
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));		
-		
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
+
 		user = userService.findUser(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
-		
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
+
 		/* remove a role and verify */
 		logger.info("Removing User Role");
 		user = userService.updateUserRoles(user.getUserId(), List.of(r2.getCode()));
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r2.getCode()));
 		user = userService.findUser(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r2.getCode()));
-		
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r2.getCode()));
+
 		/* set roles and verify */
 		logger.info("Setting User Roles");
 		user = userService.updateUserRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
-
-
-		user = userService.findUser(user.getUserId());
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 		
-		verifyUser(user, personId, userId, "tonka", Arrays.asList(r1.getCode(), r2.getCode()));
+		/* reset password */
+		String tempPassword = userService.resetPassword(user.getUserId());
+		Assert.assertNotNull(tempPassword);
+		
+		/* change password using temp password */
+		Boolean success = userService.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
+		Assert.assertTrue(success);
+		
+		success = userService.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
+		Assert.assertFalse(success);
+		
+		
+		/* find and verify user by id */
+		user = userService.findUser(user.getUserId());
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
+		
+		/* find and verify user by username */
+		user = userService.findUserByUsername(user.getUsername());
+		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
+
+		/* find users */
+		Page<User> userPage = userService.findUsers(new UsersFilter().withOrganizationId(user.getPerson().getOrganizationId()));
+		Assert.assertEquals(1, userPage.getNumber());
+		Assert.assertEquals(1, userPage.getTotalPages());
+		Assert.assertEquals(1, userPage.getNumberOfElements());
+		Assert.assertEquals(1, userPage.getTotalElements());
+		Assert.assertEquals(1, userPage.getContent().size());
 	}
 
 	private void verifyGroupDetails(Group group, Identifier groupId, Status status, String code, String englishName, String frenchName) {
@@ -571,7 +607,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(frenchName, group.getName().getFrenchName());
 		logger.info("Verifying Group Details " + groupId + " Passed");
 	}
-	
+
 	private void verifyRoleDetails(Role role, Identifier groupId, Identifier roleId, Status status, String code, String englishName, String frenchName) {
 		Assert.assertNotNull(role.getRoleId());
 		Assert.assertEquals(groupId, role.getGroupId());
@@ -582,7 +618,7 @@ public class CrmServicesTestSuite {
 		Assert.assertEquals(frenchName, role.getName().getFrenchName());
 		logger.info("Verifying Role Details " + roleId + " Passed");
 	}
-	
+
 	private void verifyOrgDetails(OrganizationDetails orgDetails, Identifier orgId, Status status, String displayName, Identifier mainLocationIdentifier, Identifier mainContactIdentifier, List<String> groups) {
 		Assert.assertNotNull(orgDetails.getOrganizationId());
 		Assert.assertEquals(orgId, orgDetails.getOrganizationId());
@@ -645,12 +681,13 @@ public class CrmServicesTestSuite {
 		logger.info("Verifying Person Summary " + personId + " Passed");
 	}
 
-	private void verifyUser(User user, Identifier personId, Identifier userId, String username, List<String> roles) {
+	private void verifyUser(User user, Identifier personId, Identifier userId, String username, Status status, List<String> roles) {
 		Assert.assertNotNull(user.getUserId());
 		Assert.assertEquals(personId, user.getPerson().getPersonId());
 		Assert.assertEquals(userId, user.getUserId());
 		Assert.assertEquals(username, user.getUsername());
-		Assert.assertTrue("user roles: " + user.getRoles() + ", expected roles: " + roles, 
+		Assert.assertEquals(status, user.getStatus());
+		Assert.assertTrue("user roles: " + user.getRoles() + ", expected roles: " + roles,
 				user.getRoles().size() == roles.size() && user.getRoles().containsAll(roles) && roles.containsAll(user.getRoles()));
 		logger.info("Verifying User " + userId + " Passed");
 	}

@@ -50,6 +50,7 @@ input OrganizationFilter {
 input LocationFilter {
 	organizationId: String
 	displayName: String
+	reference: String
 	status: String
 }
 
@@ -62,6 +63,7 @@ input PersonFilter {
 input UserFilter {
 	organizationId: String
 	personId: String
+	username: String
 	status: String
 	role: String	
 }
@@ -137,7 +139,9 @@ type Mutation {
 		
 	# User Maintenance
 	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(userId: String!, status: String, roles: [String]): User		
+	updateUser(userId: String!, status: String, roles: [String]): User
+	resetUserPassword(userId: String!): String
+	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean	
 }
 
 # Main Types

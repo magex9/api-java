@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
@@ -29,6 +33,10 @@ public class OrganizationsFilter implements Serializable {
 
 	private Status status;
 
+	public OrganizationsFilter() {
+		this(null, null);
+	}
+	
 	public OrganizationsFilter(String displayName, Status status) {
 		this.displayName = displayName;
 		this.status = status;
@@ -44,10 +52,6 @@ public class OrganizationsFilter implements Serializable {
 				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 			}
 		}
-	}
-
-	public OrganizationsFilter() {
-		this(null, null);
 	}
 
 	public Status getStatus() {
@@ -81,5 +85,19 @@ public class OrganizationsFilter implements Serializable {
 	public Comparator<OrganizationSummary> getComparator(Paging paging) {
 		return paging.new PagingComparator<OrganizationSummary>();		
 	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
 	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
 }

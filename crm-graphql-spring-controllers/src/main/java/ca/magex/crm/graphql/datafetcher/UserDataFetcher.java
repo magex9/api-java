@@ -92,4 +92,22 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			return user;
 		};
 	}
+	
+	public DataFetcher<String> resetUserPassword() {
+		return (environment) -> {
+			logger.info("Entering resetPassword@" + UserDataFetcher.class.getSimpleName());
+			Identifier userId = new Identifier((String) environment.getArgument("userId"));
+			return crm.resetPassword(userId);			
+		};
+	}
+	
+	public DataFetcher<Boolean> changeUserPassword() {
+		return (environment) -> {
+			logger.info("Entering changePassword@" + UserDataFetcher.class.getSimpleName());
+			Identifier userId = new Identifier((String) environment.getArgument("userId"));
+			String currentPassword = environment.getArgument("currentPassword");
+			String newPassword = environment.getArgument("newPassword");
+			return crm.changePassword(userId, currentPassword, newPassword);			
+		};
+	}
 }
