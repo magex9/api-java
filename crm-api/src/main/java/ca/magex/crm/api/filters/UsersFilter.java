@@ -45,6 +45,10 @@ public class UsersFilter implements Serializable {
 
 	private String role;
 
+	public UsersFilter() {
+		this(null, null, null, null, null);
+	}
+	
 	public UsersFilter(Identifier organizationId, Identifier personId, Status status, String username, String role) {
 		this.organizationId = organizationId;
 		this.personId = personId;
@@ -69,10 +73,6 @@ public class UsersFilter implements Serializable {
 		}
 	}
 
-	public UsersFilter() {
-		this(null, null, null, null, null);
-	}
-	
 	public Identifier getPersonId() {
 		return personId;
 	}

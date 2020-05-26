@@ -33,6 +33,10 @@ public class OrganizationsFilter implements Serializable {
 
 	private Status status;
 
+	public OrganizationsFilter() {
+		this(null, null);
+	}
+	
 	public OrganizationsFilter(String displayName, Status status) {
 		this.displayName = displayName;
 		this.status = status;
@@ -48,10 +52,6 @@ public class OrganizationsFilter implements Serializable {
 				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 			}
 		}
-	}
-
-	public OrganizationsFilter() {
-		this(null, null);
 	}
 
 	public Status getStatus() {

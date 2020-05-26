@@ -37,6 +37,10 @@ public class PersonsFilter implements Serializable {
 
 	private Status status;
 
+	public PersonsFilter() {
+		this(null, null, null);
+	}
+	
 	public PersonsFilter(Identifier organizationId, String displayName, Status status) {
 		this.organizationId = organizationId;
 		this.displayName = displayName;
@@ -55,10 +59,6 @@ public class PersonsFilter implements Serializable {
 				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 			}
 		}
-	}
-
-	public PersonsFilter() {
-		this(null, null, null);
 	}
 
 	public Identifier getOrganizationId() {

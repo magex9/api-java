@@ -12,6 +12,11 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 
+/**
+ * Utility class used to convert Filter objects into a json structure to be used for the graphql filter queries
+ * 
+ * @author Jonny
+ */
 public class FilterBinder {
 
 	public static String toFilterString(OrganizationsFilter filter) {
