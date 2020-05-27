@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ca.magex.crm.api.services.Crm;
 
-public class Identifier implements Serializable {
+public class Identifier implements CharSequence, Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -29,6 +29,21 @@ public class Identifier implements Serializable {
 	public Identifier(Identifier identifier) {
 		this(identifier.id);
 	}
+
+	@Override
+	public int length() {
+		return id.length();
+	}
+
+	@Override
+	public char charAt(int index) {
+		return id.charAt(index);
+	}
+
+	@Override
+	public CharSequence subSequence(int start, int end) {
+		return id.subSequence(start, end);
+	}
 	
 	@Override
 	public String toString() {
@@ -44,5 +59,4 @@ public class Identifier implements Serializable {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-	
 }

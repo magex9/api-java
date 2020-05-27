@@ -31,6 +31,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -265,6 +266,14 @@ public class ModelBinder {
 	public static Country toCountry(JSONObject json) {
 		try {
 			return new Country(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+		} catch (JSONException jsone) {
+			throw new RuntimeException("Error constructing Country from: " + json.toString(), jsone);
+		}
+	}
+	
+	public static Province toProvince(JSONObject json) {
+		try {
+			return new Province(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
 		} catch (JSONException jsone) {
 			throw new RuntimeException("Error constructing Country from: " + json.toString(), jsone);
 		}

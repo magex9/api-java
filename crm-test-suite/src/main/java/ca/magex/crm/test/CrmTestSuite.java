@@ -57,7 +57,7 @@ public class CrmTestSuite {
 
 		logger.info("Asserting that the server has not been setup yet");
 		assertFalse(crm.isInitialized());
-		
+		   
 		logger.info("Setting up the initial user");
 		crm.initializeSystem("DevOps", new PersonName(null, "System", null, "Admin"), "scott@magex.ca", "admin", "admin");
 		assertTrue(crm.isInitialized());

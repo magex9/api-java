@@ -1,4 +1,4 @@
-package ca.magex.crm.api.secured;
+package ca.magex.crm.api.services;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +9,9 @@ import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmUserPolicy;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
 
 @Configuration
-public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServices> {
+public class CrmFactoryBean implements FactoryBean<Crm> {
 
 	/* autowired services */
 	@Autowired private CrmInitializationService initializationService;	
@@ -37,8 +30,8 @@ public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServ
 	@Autowired private CrmPermissionPolicy permissionPolicy;
 	
 	@Override
-	public SecuredCrmServices getObject() throws Exception {
-		return new SecuredCrmServices(
+	public Crm getObject() throws Exception {
+		return new Crm(
 			initializationService, lookupService, 
 			organizationService, organizationPolicy,
 			locationService, locationPolicy,
@@ -49,6 +42,6 @@ public class SecuredCrmServicesFactoryBean implements FactoryBean<SecuredCrmServ
 	
 	@Override
 	public Class<?> getObjectType() {
-		return SecuredCrmServices.class;
+		return Crm.class;
 	}
 }

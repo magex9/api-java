@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -18,6 +19,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
@@ -31,6 +33,12 @@ public class AmnesiaLookupService implements CrmLookupService {
 	private CrmLookupLoader lookupLoader;
 
 	private Lookups<Status, String> statuses;
+	
+	private Lookups<Province, String> caProvinces;
+	
+	private Lookups<Province, String> usProvinces;
+	
+	private Lookups<Province, String> mxProvinces;
 	
 	private Lookups<Country, String> countries;
 	
@@ -51,6 +59,9 @@ public class AmnesiaLookupService implements CrmLookupService {
 	@PostConstruct
 	public AmnesiaLookupService initialize() {
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
+		caProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "CaProvince.csv"), Province.class, String.class);
+		usProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "UsProvince.csv"), Province.class, String.class);
+		mxProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "MxProvince.csv"), Province.class, String.class);
 		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
 		salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
 		languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);
@@ -82,6 +93,47 @@ public class AmnesiaLookupService implements CrmLookupService {
 	
 	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
 		return countries.findByName(locale, name);
+	}
+
+	@Override
+	public List<Province> findProvinces(String country) {
+		if (country.equals("CA")) {
+			return caProvinces.getOptions();
+		} else if (country.equals("US")) {
+			return usProvinces.getOptions();
+		} else if (country.equals("MX")) {
+			return mxProvinces.getOptions();
+		} else {
+			throw new IllegalArgumentException("No list of provinces for country: " + country);
+		}
+	}
+
+	@Override
+	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+		if (country.equals("CA")) {
+			return caProvinces.findByCode(province);
+		} else if (country.equals("US")) {
+			return usProvinces.findByCode(province);
+		} else if (country.equals("MX")) {
+			return mxProvinces.findByCode(province);
+		} else {
+			throw new IllegalArgumentException("No list of provinces for country: " + country);
+		}
+	}
+
+	@Override
+	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
+			@NotNull String country) {
+		String code = findCountryByLocalizedName(locale, country).getCode();
+		if (code.equals("CA")) {
+			return caProvinces.findByName(locale, province);
+		} else if (code.equals("US")) {
+			return usProvinces.findByName(locale, province);
+		} else if (code.equals("MX")) {
+			return mxProvinces.findByName(locale, province);
+		} else {
+			throw new IllegalArgumentException("No list of provinces for country: " + country);
+		}
 	}
 
 	public List<Salutation> findSalutations() {

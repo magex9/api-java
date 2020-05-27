@@ -29,7 +29,7 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.rest.transformers.JsonTransformer;
 import ca.magex.json.model.JsonArray;
@@ -41,7 +41,7 @@ import ca.magex.json.model.JsonObject;
 public class PersonsController {
 
 	@Autowired
-	private SecuredCrmServices crm;
+	private Crm crm;
 	
 	public PersonsFilter extractPersonFilter(HttpServletRequest req) throws BadRequestException {
 		return new PersonsFilter(extractOrganizationId(req), extractDisplayName(req), extractStatus(req));

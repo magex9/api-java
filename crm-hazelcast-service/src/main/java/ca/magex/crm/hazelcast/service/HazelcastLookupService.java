@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,6 +19,7 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
@@ -25,6 +27,7 @@ import ca.magex.crm.api.system.Status;
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@SuppressWarnings("unchecked")
 public class HazelcastLookupService implements CrmLookupService {
 
 	public static String HZ_STATUS_KEY = "statuses";
@@ -34,8 +37,9 @@ public class HazelcastLookupService implements CrmLookupService {
 	public static String HZ_SECTOR_KEY = "sectors";
 	public static String HZ_UNIT_KEY = "units";
 	public static String HZ_CLASSIFICATION_KEY = "classifications";
+	public static String HZ_PROVINCES_KEY = "classifications";
 		
-	@Autowired private HazelcastInstance hzInstance;		
+	@Autowired private HazelcastInstance hzInstance;
 	
 	@Override
 	public List<Status> findStatuses() {
@@ -85,6 +89,30 @@ public class HazelcastLookupService implements CrmLookupService {
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Country[" + locale + "] '" + name + "'"));
+	}	
+	
+	@Override
+	public List<Province> findProvinces(String country) {
+		return (List<Province>) hzInstance.getMap(HZ_PROVINCES_KEY).getOrDefault(StringUtils.upperCase(country), new ArrayList<Province>());
+	}
+	
+	@Override
+	public Province findProvinceByCode(String province, String country) {
+		return findProvinces(country)
+				.stream()
+				.filter((p) -> StringUtils.equalsIgnoreCase(p.getCode(), province))
+				.findFirst()
+				.orElseThrow(() -> new ItemNotFoundException("Province '" + province + "' for Country '" + country + "'"));
+	}
+	
+	@Override
+	public Province findProvinceByLocalizedName(Locale locale, String province, String country) {
+		String code = findCountryByLocalizedName(locale, country).getCode();
+		return findProvinces(code)
+			.stream()
+			.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
+			.findFirst()
+			.orElseThrow(() -> new ItemNotFoundException("Province[" + locale + "] '" + province + "' for country '" + country + "'"));
 	}
 
 	@Override

@@ -23,6 +23,18 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"COUNTRY",
 				"CA");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"COUNTRY",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for country lookup", api.getMessage());
+		}
 
 		/* salutation lookups */
 		lookups = execute(
@@ -37,6 +49,18 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"SALUTATION",
 				"1");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"SALUTATION",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for salutation lookup", api.getMessage());
+		}
 
 		/* language lookups */
 		lookups = execute(
@@ -52,6 +76,18 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"LANGUAGE",
 				"en");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"LANGUAGE",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for language lookup", api.getMessage());
+		}
 
 		/* sector lookups */
 		lookups = execute(
@@ -67,6 +103,18 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"SECTOR",
 				"1");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"SECTOR",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for sector lookup", api.getMessage());
+		}
 
 		/* unit lookups */
 		lookups = execute(
@@ -81,6 +129,18 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"UNIT",
 				"1");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"UNIT",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for unit lookup", api.getMessage());
+		}
 
 		/* classification lookups */
 		lookups = execute(
@@ -95,6 +155,18 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"CLASSIFICATION",
 				"1");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"CLASSIFICATION",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for classification lookup", api.getMessage());
+		}
 
 		/* status lookups */
 		lookups = execute(
@@ -109,6 +181,45 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"STATUS",
 				"active");
 		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+					"STATUS",
+					"ABC");
+			Assert.fail("should fail with qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier not required for status lookup", api.getMessage());
+		}
+		
+		/* province lookups */
+		lookups = execute(
+				"findCodeLookups",
+				"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+				"PROVINCE",
+				"CA");
+		Assert.assertNotNull(lookups);
+		
+		lookups = execute(
+				"findCodeLookups",
+				"{ findCodeLookups(category: %s, qualifier: %s, code: %s) { code englishName frenchName } }",
+				"PROVINCE",
+				"CA",
+				"ON");
+		Assert.assertNotNull(lookups);
+		
+		try {
+			execute(
+					"findCodeLookups",
+					"{ findCodeLookups(category: %s) { code englishName frenchName } }",
+					"PROVINCE");
+			Assert.fail("should fail without qualifier provided");
+		}
+		catch (ApiException api) {
+			Assert.assertEquals("Errors encountered during findCodeLookups - qualifier required for province lookup", api.getMessage());
+		}
 		
 		/* invalid lookup */
 		try {

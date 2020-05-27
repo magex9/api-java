@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -104,8 +103,6 @@ public class AmnesiaPersonService implements CrmPersonService {
 
 	private Stream<PersonDetails> applyFilter(PersonsFilter filter) {
 		return db.findByType(PersonDetails.class)
-				.filter(person -> StringUtils.isNotBlank(filter.getDisplayName()) ? person.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(person -> filter.getStatus() != null ? filter.getStatus().equals(person.getStatus()) : true)
-				.filter(person -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(person.getOrganizationId()) : true);
+				.filter(p -> filter.apply(p));
 	}
 }

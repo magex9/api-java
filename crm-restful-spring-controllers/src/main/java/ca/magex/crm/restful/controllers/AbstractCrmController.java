@@ -25,7 +25,7 @@ import org.springframework.util.StreamUtils;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -38,13 +38,14 @@ import ca.magex.json.model.JsonFormatter;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonParser;
+import ca.magex.json.model.JsonText;
 
 public abstract class AbstractCrmController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCrmController.class);
 	
 	@Autowired
-	protected SecuredCrmServices crm;
+	protected Crm crm;
 	
 	protected void handle(HttpServletRequest req, HttpServletResponse res, BiFunction<List<Message>, JsonTransformer, JsonElement> func) throws IOException {
 		List<Message> messages = new ArrayList<Message>();
@@ -88,6 +89,18 @@ public abstract class AbstractCrmController {
 	protected String getString(JsonObject json, String key, String defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getString(key);
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			return defaultValue;
+		}
+	}
+	
+	protected List<String> getStrings(JsonObject json, String key, List<String> defaultValue, Identifier identifier, List<Message> messages) {
+		try {
+			return json.getArray(key).stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
 			return defaultValue;
@@ -149,7 +162,7 @@ public abstract class AbstractCrmController {
 		validate(messages);
 	}
 	
-	public JsonTransformer getTransformer(HttpServletRequest req, SecuredCrmServices crm) {
+	public JsonTransformer getTransformer(HttpServletRequest req, Crm crm) {
 		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
 		return new JsonTransformer(crm, extractLocale(req), linked);
 	}

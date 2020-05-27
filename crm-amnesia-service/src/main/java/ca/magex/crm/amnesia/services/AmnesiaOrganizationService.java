@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -50,11 +49,11 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainLocationId(db.findLocation(locationId).getLocationId())));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainLocationId(locationId == null ? null : db.findLocation(locationId).getLocationId())));
 	}
 	
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainContactId(db.findPerson(personId).getPersonId())));
+		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainContactId(personId == null ? null : db.findPerson(personId).getPersonId())));
 	}
 
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
@@ -76,8 +75,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	
 	public Stream<OrganizationDetails> apply(OrganizationsFilter filter) {
 		return db.findByType(OrganizationDetails.class)
-			.filter(org -> StringUtils.isNotBlank(filter.getDisplayName()) ? org.getDisplayName().contains(filter.getDisplayName()) : true)
-			.filter(org -> filter.getStatus() != null ? org.getStatus().equals(filter.getStatus()) : true);
+			.filter(o -> filter.apply(o));
 	}
 	
 	@Override
@@ -100,5 +98,4 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
-
 }

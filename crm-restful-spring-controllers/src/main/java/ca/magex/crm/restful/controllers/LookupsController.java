@@ -22,7 +22,7 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
@@ -34,7 +34,7 @@ import ca.magex.json.model.JsonText;
 public class LookupsController {
 
 	@Autowired
-	private SecuredCrmServices crm;
+	private Crm crm;
 	
 	public LocationsFilter extractLocationFilter(HttpServletRequest req) throws BadRequestException {
 		return new LocationsFilter(extractOrganizationId(req), extractDisplayName(req), extractReference(req), extractStatus(req));

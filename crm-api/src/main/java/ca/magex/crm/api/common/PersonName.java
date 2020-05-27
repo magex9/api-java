@@ -46,17 +46,33 @@ public class PersonName implements Serializable {
 	public String getSalutation() {
 		return salutation;
 	}
+	
+	public PersonName withSalutation(String salutation) {
+		return new PersonName(salutation, firstName, firstName, lastName);
+	}
 
 	public String getFirstName() {
 		return firstName;
+	}
+	
+	public PersonName withFirstName(String firstName) {
+		return new PersonName(salutation, firstName, firstName, lastName);
 	}
 
 	public String getMiddleName() {
 		return middleName;
 	}
+	
+	public PersonName withMiddleName(String middleName) {
+		return new PersonName(salutation, firstName, firstName, lastName);
+	}
 
 	public String getLastName() {
 		return lastName;
+	}
+	
+	public PersonName withLastName(String lastName) {
+		return new PersonName(salutation, firstName, firstName, lastName);
 	}
 
 	public String getDisplayName() {

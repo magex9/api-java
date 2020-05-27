@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -34,6 +36,7 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -162,7 +165,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public long countOrganizations(OrganizationsFilter filter) {		
+	public long countOrganizations(OrganizationsFilter filter) {
 		return ModelBinder.toLong(performGraphQLQueryWithSubstitution(
 				"countOrganizations",
 				"countOrganizations",
@@ -171,7 +174,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);		
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
 		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationSummary, performGraphQLQueryWithSubstitution(
 				"findOrganizationSummaries",
 				"findOrganizations",
@@ -474,37 +477,45 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"createUser",
 				"createUser",
-				personId,
-				username,
-				roles));
+				new MapBuilder()
+						.withEntry("personId", personId.toString())
+						.withEntry("username", username)
+						.withEntry("roles", roles)
+						.build()));
 	}
 
 	@Override
 	public User enableUser(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"enableUser",
 				"updateUser",
-				userId));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build()));
 	}
 
 	@Override
 	public User disableUser(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"disableUser",
 				"updateUser",
-				userId));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build()));
 	}
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"updateUserRoles",
 				"updateUser",
-				userId,
-				roles));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.withEntry("roles", roles)
+						.build()));
 	}
 
 	@Override
@@ -531,10 +542,12 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public User findUser(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"findUser",
 				"findUser",
-				userId));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build()));
 	}
 
 	@Override
@@ -733,7 +746,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
-		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);		
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
 		return ModelBinder.toPage(filter, paging, ModelBinder::toRole, performGraphQLQueryWithSubstitution(
 				"findRoles",
 				"findRoles",
@@ -752,19 +765,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public List<Status> findStatuses() {
-		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithVariables(
 				"findCodeLookups",
-				"Status"));
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "status")
+						.build()));
 	}
 
 	@Override
 	public Status findStatusByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toStatus, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Status",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "status")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override
@@ -774,19 +792,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public List<Country> findCountries() {
-		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithVariables(
 				"findCodeLookups",
-				"Country"));
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "country")
+						.build()));
 	}
 
 	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toCountry, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Country",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "country")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override
@@ -795,20 +818,57 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	}
 
 	@Override
-	public List<Salutation> findSalutations() {
-		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+	public List<Province> findProvinces(String country) {
+		return ModelBinder.toList(ModelBinder::toProvince, performGraphQLQueryWithVariables(
+				"findQualifiedCodeLookups",
 				"findCodeLookups",
-				"Salutation"));
+				new MapBuilder()
+						.withEntry("category", "province")
+						.withEntry("qualifier", country)
+						.build()));
+	}
+
+	@Override
+	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+		return ModelBinder.toList(ModelBinder::toProvince, performGraphQLQueryWithVariables(
+				"findQualifiedCodeLookup",
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "province")
+						.withEntry("code", province)
+						.withEntry("qualifier", country)
+						.build()))
+				.get(0);
+	}
+
+	@Override
+	public Province findProvinceByLocalizedName(
+			@NotNull Locale locale,
+			@NotNull String province,
+			@NotNull String country) {
+		return findByLocalizedName(locale, province, () -> findProvinces(findCountryByLocalizedName(locale, country).getCode()));
+	}
+
+	@Override
+	public List<Salutation> findSalutations() {
+		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithVariables(
+				"findCodeLookups",
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "salutation")
+						.build()));
 	}
 
 	@Override
 	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toSalutation, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Salutation",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "salutation")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override
@@ -818,19 +878,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public List<Language> findLanguages() {
-		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithVariables(
 				"findCodeLookups",
-				"Language"));
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "language")
+						.build()));
 	}
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toLanguage, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Language",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "language")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override
@@ -840,19 +905,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public List<BusinessSector> findBusinessSectors() {
-		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithVariables(
 				"findCodeLookups",
-				"Sector"));
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "sector")
+						.build()));
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toBusinessSector, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Sector",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "sector")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override
@@ -862,19 +932,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public List<BusinessUnit> findBusinessUnits() {
-		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithVariables(
 				"findCodeLookups",
-				"Unit"));
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "unit")
+						.build()));
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toBusinessUnit, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Unit",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "unit")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override
@@ -884,19 +959,24 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public List<BusinessClassification> findBusinessClassifications() {
-		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
-				"findAllCodeLookups",
+		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithVariables(
 				"findCodeLookups",
-				"Classification"));
+				"findCodeLookups",
+				new MapBuilder()
+						.withEntry("category", "classification")
+						.build()));
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
-		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithSubstitution(
-				"findSpecificCodeLookup",
+		return ModelBinder.toList(ModelBinder::toBusinessClassification, performGraphQLQueryWithVariables(
+				"findCodeLookup",
 				"findCodeLookups",
-				"Classification",
-				code)).get(0);
+				new MapBuilder()
+						.withEntry("category", "classification")
+						.withEntry("code", code)
+						.build()))
+				.get(0);
 	}
 
 	@Override

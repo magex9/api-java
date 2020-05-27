@@ -11,11 +11,11 @@ import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
-public class Language extends Localized implements CrmLookupItem {
+public class Province extends Localized implements CrmLookupItem {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
-	public Language(String code, String english, String french) {
+	public Province(String code, String english, String french) {
 		super(code, english, french);
 	}
 	
@@ -38,7 +38,7 @@ public class Language extends Localized implements CrmLookupItem {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);

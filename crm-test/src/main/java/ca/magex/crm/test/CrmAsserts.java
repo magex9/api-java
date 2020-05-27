@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -41,6 +40,8 @@ public class CrmAsserts {
 	public static final Localized SYS_ADMIN = new Localized("SYS_ADMIN", "System Administrator", "Adminstrator du système");
 	
 	public static final Localized ORG = new Localized("ORG", "Organization", "Organisation");
+	
+	public static final Localized ORG_NAME = new Localized("COTU", "Council of the Universe", "Conseil de l'Univers");
 	
 	public static final Localized ORG_ADMIN = new Localized("ORG_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
 	
@@ -88,7 +89,15 @@ public class CrmAsserts {
 	
 	public static final PersonName PERSON_NAME = new PersonName("Mr.", "Chris", "P", "Bacon");
 	
-	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567"), null);
+	public static final String PERSON_EMAIL = "crhis@bacon.com";
+	
+	public static final String PERSON_TITLE = "Professional Tester";
+	
+	public static final Telephone PERSON_TELEPHONE = new Telephone("6135551234", null);
+	
+	public static final String PERSON_FAX = "6138884567";
+	
+	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
 	
 	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition("Corporate Services", "Development", "Developer");
 	
@@ -202,9 +211,7 @@ public class CrmAsserts {
 	
 	public Stream<Localized> apply(LocalizedFilter filter) {
 		return LOCALIZED_SORTING_OPTIONS.stream()
-			.filter(g -> filter.getCode() == null || StringUtils.equalsIgnoreCase(filter.getCode(), g.getCode()))
-			.filter(g -> filter.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getEnglishName(), filter.getEnglishName()))
-			.filter(g -> filter.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getFrenchName(), filter.getFrenchName()));
+			.filter(g -> filter.apply(g));
 	}
 	
 	public long countLocalizedNames(LocalizedFilter filter) {

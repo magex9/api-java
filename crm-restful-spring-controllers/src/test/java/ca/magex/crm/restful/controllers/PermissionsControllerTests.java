@@ -1,12 +1,15 @@
 package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.test.CrmAsserts.*;
+import static ca.magex.crm.test.CrmAsserts.ADMIN;
+import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTED_ENGLISH_ASC;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTED_FRENCH_ASC;
 import static ca.magex.crm.test.CrmAsserts.LOCALIZED_SORTING_OPTIONS;
+import static ca.magex.crm.test.CrmAsserts.ORG;
+import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.ORG_ASSISTANT;
 import static ca.magex.crm.test.CrmAsserts.SYS;
 import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,21 +18,10 @@ import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.amnesia.generator.LoremIpsumGenerator;
-import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -37,20 +29,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles(value = {
-		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
-		MagexCrmProfiles.CRM_NO_AUTH
-})
-public class PermissionsControllerTests {
-	
-	@Autowired private CrmInitializationService initiailziation;
-
-	@Autowired private CrmPermissionService permissions;
-
-	@Autowired private MockMvc mockMvc;
+public class PermissionsControllerTests extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
@@ -63,7 +42,7 @@ public class PermissionsControllerTests {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
@@ -81,7 +60,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "Group")
 				.with("frenchName", "Groupe")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertTrue(json.getString("groupId").matches("[A-Za-z0-9]+"));
@@ -91,7 +70,7 @@ public class PermissionsControllerTests {
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 
@@ -103,7 +82,7 @@ public class PermissionsControllerTests {
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 
@@ -113,7 +92,7 @@ public class PermissionsControllerTests {
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), json.getString("groupId"));
@@ -123,7 +102,7 @@ public class PermissionsControllerTests {
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
@@ -147,7 +126,7 @@ public class PermissionsControllerTests {
 				//.with("englishName", "Group")
 				.with("frenchName", "Groupe")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, missing.size());
@@ -163,7 +142,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "  ")
 				.with("frenchName", "Groupe")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, spaces.size());
@@ -179,7 +158,7 @@ public class PermissionsControllerTests {
 				.with("englishName", true)
 				.with("frenchName", "Groupe")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, classCast.size());
@@ -195,7 +174,7 @@ public class PermissionsControllerTests {
 				.with("englishName", LoremIpsumGenerator.buildWords(20))
 				.with("frenchName", "Groupe")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, maxLength.size());
@@ -213,7 +192,7 @@ public class PermissionsControllerTests {
 			.queryParam("order", "englishName")
 			.queryParam("direction", "asc")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
@@ -236,7 +215,7 @@ public class PermissionsControllerTests {
 			.queryParam("order", "frenchName")
 			.queryParam("direction", "asc")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(2, page2.getInt("page"));
@@ -266,7 +245,7 @@ public class PermissionsControllerTests {
 			.get("/api/groups")
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeEnglishAsc.getInt("page"));
@@ -291,7 +270,7 @@ public class PermissionsControllerTests {
 			.queryParam("status", "inactive")
 			.queryParam("order", "code")
 			.queryParam("direction", "desc"))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeCodeDesc.getInt("page"));
@@ -311,7 +290,7 @@ public class PermissionsControllerTests {
 		JsonObject orig = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), orig.getString("groupId"));
@@ -327,7 +306,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "Updated")
 				.with("frenchName", "Second")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), updated.getString("groupId"));
@@ -338,7 +317,7 @@ public class PermissionsControllerTests {
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), english.getString("groupId"));
@@ -349,7 +328,7 @@ public class PermissionsControllerTests {
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups/" + groupId)
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), french.getString("groupId"));
@@ -365,7 +344,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "Invalid")
 				.with("frenchName", "Third")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, errors.size());
@@ -383,7 +362,7 @@ public class PermissionsControllerTests {
 			.get("/api/groups")
 			.queryParam("name", "re")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeEnglishAsc.getInt("page"));
@@ -399,7 +378,7 @@ public class PermissionsControllerTests {
 			.get("/api/groups")
 			.queryParam("englishName", "re")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(inativeEnglishAsc, englishNameFilter);
@@ -413,7 +392,7 @@ public class PermissionsControllerTests {
 			.get("/api/groups")
 			.queryParam("name", "ou")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeFrenchAsc.getInt("page"));
@@ -429,7 +408,7 @@ public class PermissionsControllerTests {
 			.get("/api/groups")
 			.queryParam("frenchName", "ou")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(inativeFrenchAsc, frenchNameFilter);
@@ -442,7 +421,7 @@ public class PermissionsControllerTests {
 		JsonObject activeCodeAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.queryParam("name", "A"))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, activeCodeAsc.getInt("page"));
@@ -457,7 +436,7 @@ public class PermissionsControllerTests {
 		JsonObject codeFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/groups")
 			.queryParam("code", "A"))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(activeCodeAsc, codeFilter);
@@ -471,7 +450,7 @@ public class PermissionsControllerTests {
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/groups/" + groupId + "/disable")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), error1.getObject(0).getString("identifier"));
@@ -486,7 +465,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", false)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), error2.getObject(0).getString("identifier"));
@@ -501,7 +480,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", "Test")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), error3.getObject(0).getString("identifier"));
@@ -516,7 +495,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", true)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), disable.getString("groupId"));
@@ -528,7 +507,7 @@ public class PermissionsControllerTests {
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/groups/" + groupId + "/enable")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), error4.getObject(0).getString("identifier"));
@@ -543,7 +522,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", false)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), error5.getObject(0).getString("identifier"));
@@ -558,7 +537,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", "test")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), error6.getObject(0).getString("identifier"));
@@ -573,7 +552,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", true)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(groupId.toString(), enable.getString("groupId"));
@@ -591,7 +570,7 @@ public class PermissionsControllerTests {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
@@ -610,7 +589,7 @@ public class PermissionsControllerTests {
 				.with("englishName", SYS_ADMIN.getEnglishName())
 				.with("frenchName", SYS_ADMIN.getFrenchName())
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertTrue(json.getString("groupId").matches("[A-Za-z0-9]+"));
@@ -620,7 +599,7 @@ public class PermissionsControllerTests {
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), json.getString("roleId"));
@@ -632,7 +611,7 @@ public class PermissionsControllerTests {
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles/" + roleId)
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), json.getString("roleId"));
@@ -642,7 +621,7 @@ public class PermissionsControllerTests {
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles/" + roleId))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), json.getString("roleId"));
@@ -653,7 +632,7 @@ public class PermissionsControllerTests {
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
@@ -680,7 +659,7 @@ public class PermissionsControllerTests {
 				//.with("englishName", SYS_ADMIN.getEnglishName())
 				.with("frenchName", SYS_ADMIN.getFrenchName())
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, missing.size());
@@ -697,7 +676,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "  ")
 				.with("frenchName", SYS_ADMIN.getFrenchName())
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, spaces.size());
@@ -714,7 +693,7 @@ public class PermissionsControllerTests {
 				.with("englishName", true)
 				.with("frenchName", SYS_ADMIN.getFrenchName())
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, classCast.size());
@@ -731,7 +710,7 @@ public class PermissionsControllerTests {
 				.with("englishName", LoremIpsumGenerator.buildWords(20))
 				.with("frenchName", SYS_ADMIN.getFrenchName())
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, maxLength.size());
@@ -750,7 +729,7 @@ public class PermissionsControllerTests {
 			.queryParam("order", "englishName")
 			.queryParam("direction", "asc")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
@@ -775,7 +754,7 @@ public class PermissionsControllerTests {
 			.queryParam("order", "frenchName")
 			.queryParam("direction", "asc")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(2, page2.getInt("page"));
@@ -807,7 +786,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeEnglishAsc.getInt("page"));
@@ -833,7 +812,7 @@ public class PermissionsControllerTests {
 		JsonObject all = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(4, all.getInt("total"));
@@ -842,7 +821,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inactive.getInt("total"));
@@ -852,7 +831,7 @@ public class PermissionsControllerTests {
 			.queryParam("groupId", orgId.toString())
 			.queryParam("status", "Actif")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(2, activeOrg.getInt("total"));
@@ -862,7 +841,7 @@ public class PermissionsControllerTests {
 			.queryParam("groupId", orgId.toString())
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(0, inactiveOrg.getInt("total"));
@@ -871,7 +850,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("groupId", orgId.toString())
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(2, allOrg.getInt("total"));
@@ -891,7 +870,7 @@ public class PermissionsControllerTests {
 			.queryParam("status", "inactive")
 			.queryParam("order", "code")
 			.queryParam("direction", "desc"))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeCodeDesc.getInt("page"));
@@ -912,7 +891,7 @@ public class PermissionsControllerTests {
 		JsonObject orig = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), orig.getString("roleId"));
@@ -928,7 +907,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "Updated")
 				.with("frenchName", "Second")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), updated.getString("roleId"));
@@ -939,7 +918,7 @@ public class PermissionsControllerTests {
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), english.getString("roleId"));
@@ -950,7 +929,7 @@ public class PermissionsControllerTests {
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles/" + roleId)
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), french.getString("roleId"));
@@ -966,7 +945,7 @@ public class PermissionsControllerTests {
 				.with("englishName", "Invalid")
 				.with("frenchName", "Third")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, errors.size());
@@ -985,7 +964,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("name", "re")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeEnglishAsc.getInt("page"));
@@ -1001,7 +980,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("englishName", "re")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(inativeEnglishAsc, englishNameFilter);
@@ -1016,7 +995,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("name", "ou")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeFrenchAsc.getInt("page"));
@@ -1032,7 +1011,7 @@ public class PermissionsControllerTests {
 			.get("/api/roles")
 			.queryParam("frenchName", "ou")
 			.header("Locale", Lang.FRENCH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(inativeFrenchAsc, frenchNameFilter);
@@ -1046,7 +1025,7 @@ public class PermissionsControllerTests {
 		JsonObject activeCodeAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles")
 			.queryParam("name", "A"))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, activeCodeAsc.getInt("page"));
@@ -1061,7 +1040,7 @@ public class PermissionsControllerTests {
 		JsonObject codeFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/roles")
 			.queryParam("code", "A"))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(activeCodeAsc, codeFilter);
@@ -1076,7 +1055,7 @@ public class PermissionsControllerTests {
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/roles/" + roleId + "/disable")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), error1.getObject(0).getString("identifier"));
@@ -1091,7 +1070,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", false)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), error2.getObject(0).getString("identifier"));
@@ -1106,7 +1085,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", "Test")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), error3.getObject(0).getString("identifier"));
@@ -1121,7 +1100,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", true)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), disable.getString("roleId"));
@@ -1133,7 +1112,7 @@ public class PermissionsControllerTests {
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/roles/" + roleId + "/enable")
 			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), error4.getObject(0).getString("identifier"));
@@ -1148,7 +1127,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", false)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), error5.getObject(0).getString("identifier"));
@@ -1163,7 +1142,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", "test")
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), error6.getObject(0).getString("identifier"));
@@ -1178,7 +1157,7 @@ public class PermissionsControllerTests {
 			.content(new JsonObject()
 				.with("confirm", true)
 				.toString()))
-			.andDo(MockMvcResultHandlers.print())
+			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), enable.getString("roleId"));

@@ -31,7 +31,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.rest.transformers.JsonTransformer;
 import ca.magex.json.model.JsonArray;
@@ -43,7 +43,7 @@ import ca.magex.json.model.JsonObject;
 public class LocationsController {
 
 	@Autowired
-	private SecuredCrmServices crm;
+	private Crm crm;
 	
 	@GetMapping("/api/locations")
 	public void findLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
