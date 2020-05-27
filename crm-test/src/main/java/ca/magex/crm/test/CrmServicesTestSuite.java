@@ -51,6 +51,7 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -67,6 +68,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.test.function.TriFunction;
 
 /**
  * Test suite for running an end to end test of the CRM Services
@@ -115,6 +117,10 @@ public class CrmServicesTestSuite {
 		runLookupTest(BusinessSector.class, lookupService::findBusinessSectors, lookupService::findBusinessSectorByCode, lookupService::findBusinessSectorByLocalizedName);
 		runLookupTest(BusinessUnit.class, lookupService::findBusinessUnits, lookupService::findBusinessUnitByCode, lookupService::findBusinessUnitByLocalizedName);
 		runLookupTest(BusinessClassification.class, lookupService::findBusinessClassifications, lookupService::findBusinessClassificationByCode, lookupService::findBusinessClassificationByLocalizedName);
+		runQualifiedLookupTest(Province.class, lookupService::findProvinces, "CA", lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, lookupService::findProvinces, "MX", lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, lookupService::findProvinces, "US", lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		
 	}
 
 	private <T extends CrmLookupItem> void runLookupTest(Class<T> item, Supplier<List<T>> supplier, Function<String, T> codeLookup, BiFunction<Locale, String, T> localizedLookup) {
@@ -132,6 +138,28 @@ public class CrmServicesTestSuite {
 
 			try {
 				localizedLookup.apply(Locale.GERMAN, "");
+				Assert.fail("Unsupported Country");
+			} catch (ItemNotFoundException e) {
+			}
+		}
+		logger.info("Running lookup tests for " + item.getName() + " Passed");
+	}
+	
+	private <T extends CrmLookupItem> void runQualifiedLookupTest(Class<T> item, Function<String, List<T>> supplier, String qualifier, BiFunction<String, String, T> codeLookup, TriFunction<Locale, String, String, T> localizedLookup) {
+		/* countries tests */
+		List<T> values = supplier.apply(qualifier);
+		for (T value : values) {
+			Assert.assertEquals(value, codeLookup.apply(value.getCode(), qualifier));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.ENGLISH, value.getName(Lang.ENGLISH), qualifier));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.FRENCH, value.getName(Lang.FRENCH), qualifier));
+			try {
+				localizedLookup.apply(Lang.ENGLISH, "????", qualifier);
+				Assert.fail("Unsupported Value");
+			} catch (ItemNotFoundException e) {
+			}
+
+			try {
+				localizedLookup.apply(Locale.GERMAN, "", qualifier);
 				Assert.fail("Unsupported Country");
 			} catch (ItemNotFoundException e) {
 			}
