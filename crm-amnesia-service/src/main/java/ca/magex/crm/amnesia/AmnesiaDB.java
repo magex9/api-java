@@ -14,12 +14,14 @@ import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.AmnesiaIdGenerator;
+import ca.magex.crm.amnesia.services.AmnesiaInitializationService;
 import ca.magex.crm.amnesia.services.AmnesiaLocationService;
 import ca.magex.crm.amnesia.services.AmnesiaLookupService;
 import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
 import ca.magex.crm.amnesia.services.AmnesiaPasswordService;
 import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
 import ca.magex.crm.amnesia.services.AmnesiaPersonService;
+import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.amnesia.services.AmnesiaUserService;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.PasswordDetails;
@@ -32,7 +34,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.resource.CrmLookupLoader;
@@ -49,6 +53,8 @@ public class AmnesiaDB {
 	private PasswordEncoder passwordEncoder;
 	
 	private StructureValidationService validation;
+	
+	private AmnesiaInitializationService initialization;
 	
 	private AmnesiaLookupService lookups;
 	
@@ -74,22 +80,34 @@ public class AmnesiaDB {
 	
 	private Map<String, User> usersByUsername;
 	
+	private AmnesiaServices services;
+	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 		idGenerator = new AmnesiaBase58IdGenerator();
 		lookups = new AmnesiaLookupService(new CrmLookupLoader()).initialize();
+		initialization = new AmnesiaInitializationService(this);
 		permissions = new AmnesiaPermissionService(this);
 		organizations = new AmnesiaOrganizationService(this);
 		locations = new AmnesiaLocationService(this);
 		persons = new AmnesiaPersonService(this);
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
+		services = new AmnesiaServices(this);
 		validation = new StructureValidationService(lookups, permissions, organizations, locations, persons);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
 		usersByUsername = new HashMap<String, User>();
+	}
+	
+	public CrmServices getServices() {
+		return services;
+	}
+	
+	public CrmInitializationService getInitialization() {
+		return initialization;
 	}
 	
 	public CrmLookupService getLookups() {

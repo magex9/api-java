@@ -25,7 +25,7 @@ import org.springframework.util.StreamUtils;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -45,7 +45,7 @@ public abstract class AbstractCrmController {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCrmController.class);
 	
 	@Autowired
-	protected SecuredCrmServices crm;
+	protected Crm crm;
 	
 	protected void handle(HttpServletRequest req, HttpServletResponse res, BiFunction<List<Message>, JsonTransformer, JsonElement> func) throws IOException {
 		List<Message> messages = new ArrayList<Message>();
@@ -162,7 +162,7 @@ public abstract class AbstractCrmController {
 		validate(messages);
 	}
 	
-	public JsonTransformer getTransformer(HttpServletRequest req, SecuredCrmServices crm) {
+	public JsonTransformer getTransformer(HttpServletRequest req, Crm crm) {
 		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
 		return new JsonTransformer(crm, extractLocale(req), linked);
 	}

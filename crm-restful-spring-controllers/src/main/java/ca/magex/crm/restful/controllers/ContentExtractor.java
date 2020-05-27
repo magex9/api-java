@@ -16,7 +16,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -36,7 +36,7 @@ public class ContentExtractor {
 		return "application/json";
 	}
 	
-	public static JsonTransformer getTransformer(HttpServletRequest req, SecuredCrmServices crm) {
+	public static JsonTransformer getTransformer(HttpServletRequest req, Crm crm) {
 		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
 		return new JsonTransformer(crm, extractLocale(req), linked);
 	}

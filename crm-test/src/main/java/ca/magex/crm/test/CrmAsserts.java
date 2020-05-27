@@ -98,7 +98,7 @@ public class CrmAsserts {
 	
 	public static final String PERSON_FAX = "6138884567";
 	
-	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567"), null);
+	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
 	
 	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition("Corporate Services", "Development", "Developer");
 	

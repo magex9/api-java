@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.json.model.JsonBoolean;
 import ca.magex.json.model.JsonFormatter;
 import ca.magex.json.model.JsonObject;
@@ -29,7 +29,7 @@ import ca.magex.json.model.JsonParser;
 public class InitializationController {
 
 	@Autowired
-	private SecuredCrmServices crm;
+	private Crm crm;
 
 	@GetMapping("/api.yaml")
 	public void getYamlConfig(HttpServletRequest req, HttpServletResponse res) throws IOException {
