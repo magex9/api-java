@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -67,9 +66,7 @@ public class AmnesiaLocationService implements CrmLocationService {
 	
 	public Stream<LocationDetails> apply(LocationsFilter filter) {
 		return db.findByType(LocationDetails.class)
-			.filter(loc -> StringUtils.isNotBlank(filter.getDisplayName()) ? loc.getDisplayName().contains(filter.getDisplayName()) : true)
-			.filter(loc -> filter.getStatus() != null ? loc.getStatus().equals(filter.getStatus()) : true)
-			.filter(loc -> filter.getOrganizationId() != null ? loc.getOrganizationId().equals(filter.getOrganizationId()) : true);
+			.filter(loc -> filter.apply(loc));
 	}
 	
 	public long countLocations(LocationsFilter filter) {

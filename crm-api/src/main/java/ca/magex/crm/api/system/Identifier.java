@@ -44,5 +44,4 @@ public class Identifier implements Serializable {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-	
 }

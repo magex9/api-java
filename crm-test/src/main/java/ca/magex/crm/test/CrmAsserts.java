@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -212,9 +211,7 @@ public class CrmAsserts {
 	
 	public Stream<Localized> apply(LocalizedFilter filter) {
 		return LOCALIZED_SORTING_OPTIONS.stream()
-			.filter(g -> filter.getCode() == null || StringUtils.equalsIgnoreCase(filter.getCode(), g.getCode()))
-			.filter(g -> filter.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getEnglishName(), filter.getEnglishName()))
-			.filter(g -> filter.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getFrenchName(), filter.getFrenchName()));
+			.filter(g -> filter.apply(g));
 	}
 	
 	public long countLocalizedNames(LocalizedFilter filter) {

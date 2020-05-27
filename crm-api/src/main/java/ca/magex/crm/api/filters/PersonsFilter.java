@@ -1,7 +1,5 @@
 package ca.magex.crm.api.filters;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +18,7 @@ import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class PersonsFilter implements Serializable {
+public class PersonsFilter implements CrmFilter<PersonSummary> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -85,8 +83,15 @@ public class PersonsFilter implements Serializable {
 		return new Paging(getDefaultSort());
 	}
 
-	public Comparator<PersonSummary> getComparator(Paging paging) {
-		return paging.new PagingComparator<PersonSummary>();
+	@Override
+	public boolean apply(PersonSummary instance) {
+		return List.of(instance)
+				.stream()
+				.filter(p -> this.getDisplayName() == null || StringUtils.equalsIgnoreCase(this.getDisplayName(), p.getDisplayName()))
+				.filter(p -> this.getStatus() == null || this.getStatus().equals(p.getStatus()))
+				.filter(p -> this.getOrganizationId() == null || this.getOrganizationId().equals(p.getOrganizationId()))
+				.findAny()
+				.isPresent();
 	}
 	
 	@Override

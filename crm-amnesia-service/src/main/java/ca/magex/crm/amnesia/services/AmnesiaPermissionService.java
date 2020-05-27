@@ -3,7 +3,6 @@ package ca.magex.crm.amnesia.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
@@ -37,10 +35,7 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	@Override
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		List<Group> allMatchingGroups = db.findByType(Group.class)
-			.filter(g -> filter.getCode() == null || StringUtils.equalsIgnoreCase(filter.getCode(), g.getCode()))
-			.filter(g -> filter.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.ENGLISH),filter.getEnglishName()))
-			.filter(g -> filter.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.FRENCH),filter.getFrenchName()))
-			.filter(g -> filter.getStatus() == null || filter.getStatus().equals(g.getStatus()))
+			.filter(g -> filter.apply(g))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
@@ -83,11 +78,7 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	@Override
 	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		List<Role> allRoles = db.findByType(Role.class)
-			.filter(r -> filter.getGroupId() == null || filter.getGroupId().equals(r.getGroupId()))
-			.filter(r -> filter.getCode() == null || StringUtils.equalsIgnoreCase(filter.getCode(), r.getCode()))
-			.filter(r -> filter.getEnglishName() == null || StringUtils.containsIgnoreCase(r.getName(Lang.ENGLISH),filter.getEnglishName()))
-			.filter(r -> filter.getFrenchName() == null || StringUtils.containsIgnoreCase(r.getName(Lang.FRENCH),filter.getFrenchName()))
-			.filter(r -> filter.getStatus() == null || filter.getStatus().equals(r.getStatus()))
+			.filter(r -> filter.apply(r))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allRoles, paging);
