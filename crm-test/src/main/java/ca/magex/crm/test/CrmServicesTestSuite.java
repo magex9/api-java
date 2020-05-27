@@ -117,9 +117,9 @@ public class CrmServicesTestSuite {
 		runLookupTest(BusinessSector.class, lookupService::findBusinessSectors, lookupService::findBusinessSectorByCode, lookupService::findBusinessSectorByLocalizedName);
 		runLookupTest(BusinessUnit.class, lookupService::findBusinessUnits, lookupService::findBusinessUnitByCode, lookupService::findBusinessUnitByLocalizedName);
 		runLookupTest(BusinessClassification.class, lookupService::findBusinessClassifications, lookupService::findBusinessClassificationByCode, lookupService::findBusinessClassificationByLocalizedName);
-		runQualifiedLookupTest(Province.class, lookupService::findProvinces, "CA", lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
-		runQualifiedLookupTest(Province.class, lookupService::findProvinces, "MX", lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
-		runQualifiedLookupTest(Province.class, lookupService::findProvinces, "US", lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, lookupService::findProvinces, lookupService.findCountryByCode("CA"), lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, lookupService::findProvinces, lookupService.findCountryByCode("MX"), lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, lookupService::findProvinces, lookupService.findCountryByCode("US"), lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
 		
 	}
 
@@ -145,21 +145,21 @@ public class CrmServicesTestSuite {
 		logger.info("Running lookup tests for " + item.getName() + " Passed");
 	}
 	
-	private <T extends CrmLookupItem> void runQualifiedLookupTest(Class<T> item, Function<String, List<T>> supplier, String qualifier, BiFunction<String, String, T> codeLookup, TriFunction<Locale, String, String, T> localizedLookup) {
+	private <T extends CrmLookupItem> void runQualifiedLookupTest(Class<T> item, Function<String, List<T>> supplier, CrmLookupItem qualifier, BiFunction<String, String, T> codeLookup, TriFunction<Locale, String, String, T> localizedLookup) {
 		/* countries tests */
-		List<T> values = supplier.apply(qualifier);
+		List<T> values = supplier.apply(qualifier.getCode());
 		for (T value : values) {
-			Assert.assertEquals(value, codeLookup.apply(value.getCode(), qualifier));
-			Assert.assertEquals(value, localizedLookup.apply(Lang.ENGLISH, value.getName(Lang.ENGLISH), qualifier));
-			Assert.assertEquals(value, localizedLookup.apply(Lang.FRENCH, value.getName(Lang.FRENCH), qualifier));
+			Assert.assertEquals(value, codeLookup.apply(value.getCode(), qualifier.getCode()));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.ENGLISH, value.getName(Lang.ENGLISH), qualifier.getName(Lang.ENGLISH)));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.FRENCH, value.getName(Lang.FRENCH), qualifier.getName(Lang.FRENCH)));
 			try {
-				localizedLookup.apply(Lang.ENGLISH, "????", qualifier);
+				localizedLookup.apply(Lang.ENGLISH, "????", qualifier.getName(Lang.ENGLISH));
 				Assert.fail("Unsupported Value");
 			} catch (ItemNotFoundException e) {
 			}
 
 			try {
-				localizedLookup.apply(Locale.GERMAN, "", qualifier);
+				localizedLookup.apply(Locale.GERMAN, "", "Hans");
 				Assert.fail("Unsupported Country");
 			} catch (ItemNotFoundException e) {
 			}

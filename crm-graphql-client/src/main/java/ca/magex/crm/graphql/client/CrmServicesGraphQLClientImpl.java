@@ -3,7 +3,6 @@ package ca.magex.crm.graphql.client;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.validation.constraints.NotNull;
@@ -837,7 +836,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 			@NotNull Locale locale,
 			@NotNull String province,
 			@NotNull String country) {
-		return findByLocalizedName(locale, province, () -> findProvinces(country));
+		return findByLocalizedName(locale, province, () -> findProvinces(findCountryByLocalizedName(locale, country).getCode()));
 	}
 
 	@Override

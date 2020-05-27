@@ -126,11 +126,11 @@ public class AmnesiaLookupService implements CrmLookupService {
 			@NotNull String country) {
 		String code = findCountryByLocalizedName(locale, country).getCode();
 		if (code.equals("CA")) {
-			return caProvinces.findByCode(province);
+			return caProvinces.findByName(locale, province);
 		} else if (code.equals("US")) {
-			return usProvinces.findByCode(province);
+			return usProvinces.findByName(locale, province);
 		} else if (code.equals("MX")) {
-			return mxProvinces.findByCode(province);
+			return mxProvinces.findByName(locale, province);
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
 		}
