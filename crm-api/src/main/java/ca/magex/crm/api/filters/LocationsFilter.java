@@ -113,7 +113,7 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 	public boolean apply(LocationSummary instance) {
 		return List.of(instance)
 				.stream()
-				.filter(l -> this.getDisplayName() == null || StringUtils.equalsIgnoreCase(this.getDisplayName(), l.getDisplayName()))
+				.filter(l -> this.getDisplayName() == null || StringUtils.contains(l.getDisplayName(), this.getDisplayName()))
 				.filter(l -> this.getStatus() == null || this.getStatus().equals(l.getStatus()))
 				.filter(l -> this.getOrganizationId() == null || this.getOrganizationId().equals(l.getOrganizationId()))
 				.findAny()

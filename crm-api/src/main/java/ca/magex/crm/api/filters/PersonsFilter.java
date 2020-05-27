@@ -87,7 +87,7 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 	public boolean apply(PersonSummary instance) {
 		return List.of(instance)
 				.stream()
-				.filter(p -> this.getDisplayName() == null || StringUtils.equalsIgnoreCase(this.getDisplayName(), p.getDisplayName()))
+				.filter(p -> this.getDisplayName() == null || StringUtils.contains(p.getDisplayName(), this.getDisplayName()))
 				.filter(p -> this.getStatus() == null || this.getStatus().equals(p.getStatus()))
 				.filter(p -> this.getOrganizationId() == null || this.getOrganizationId().equals(p.getOrganizationId()))
 				.findAny()

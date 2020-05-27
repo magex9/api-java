@@ -84,7 +84,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	public boolean apply(OrganizationSummary instance) {
 		return List.of(instance)
 				.stream()
-				.filter(g -> this.getDisplayName() == null || StringUtils.equalsIgnoreCase(this.getDisplayName(), g.getDisplayName()))				
+				.filter(g -> this.getDisplayName() == null || StringUtils.contains(g.getDisplayName(), this.getDisplayName()))				
 				.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
 				.findAny()
 				.isPresent();
