@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.lookup.BusinessClassification;
@@ -26,13 +25,10 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
@@ -45,13 +41,13 @@ public class HazelcastInitializationService implements CrmInitializationService 
 
 	private static final Logger LOG = LoggerFactory.getLogger(HazelcastInitializationService.class);
 	
-	@Autowired private HazelcastInstance hzInstance;
-	@Autowired private CrmLookupLoader lookupLoader;
-	@Autowired private CrmPermissionService hzPermissionService;
-	@Autowired private CrmOrganizationService hzOrganizationService;
-	@Autowired private CrmPersonService hzPersonService;
-	@Autowired private CrmUserService hzUserService;
-	@Autowired private CrmPasswordService hzPasswordService;
+	@Autowired private HazelcastInstance hzInstance;	
+	@Autowired private HazelcastPermissionService hzPermissionService;
+	@Autowired private CrmLookupLoader lookupLoader;	
+	@Autowired private HazelcastOrganizationService hzOrganizationService;
+	@Autowired private HazelcastPersonService hzPersonService;
+	@Autowired private HazelcastUserService hzUserService;
+	@Autowired private HazelcastPasswordService hzPasswordService;
 	@Autowired private PasswordEncoder passwordEncoder;
 	
 	private boolean shouldInitialize = false;
@@ -90,13 +86,16 @@ public class HazelcastInitializationService implements CrmInitializationService 
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (shouldInitialize) {
 			LOG.info("Initializing Lookups");
-			hzInstance.getList("statuses").addAll(Arrays.asList(Status.values()));
-			hzInstance.getList("countries").addAll(lookupLoader.loadLookup(Country.class, "Country.csv"));
-			hzInstance.getList("languages").addAll(lookupLoader.loadLookup(Language.class, "Language.csv"));
-			hzInstance.getList("salutations").addAll(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"));
-			hzInstance.getList("sectors").addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
-			hzInstance.getList("units").addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
-			hzInstance.getList("classifications").addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
+			hzInstance.getList(HazelcastLookupService.HZ_STATUS_KEY).addAll(Arrays.asList(Status.values()));
+			hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).addAll(lookupLoader.loadLookup(Country.class, "Country.csv"));
+			hzInstance.getList(HazelcastLookupService.HZ_LANGUAGE_KEY).addAll(lookupLoader.loadLookup(Language.class, "Language.csv"));
+			hzInstance.getList(HazelcastLookupService.HZ_SALUTATION_KEY).addAll(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"));
+			hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
+			hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
+			hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
+			hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(Province.class, "CaProvince.csv"));
+			hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(Province.class, "UsProvince.csv"));
+			hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(Province.class, "MxProvince.csv"));
 			
 			LOG.info("Initializing Permissions");
 			CrmRoleInitializer.initialize(hzPermissionService);			
@@ -115,13 +114,14 @@ public class HazelcastInitializationService implements CrmInitializationService 
 	
 	@Override
 	public boolean reset() {
-		hzInstance.getList("statuses").clear();
-		hzInstance.getList("countries").clear();
-		hzInstance.getList("languages").clear();
-		hzInstance.getList("salutations").clear();
-		hzInstance.getList("sectors").clear();
-		hzInstance.getList("units").clear();
-		hzInstance.getList("classifications").clear();
+		hzInstance.getList(HazelcastLookupService.HZ_STATUS_KEY).clear();
+		hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).clear();
+		hzInstance.getList(HazelcastLookupService.HZ_LANGUAGE_KEY).clear();
+		hzInstance.getList(HazelcastLookupService.HZ_SALUTATION_KEY).clear();
+		hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).clear();
+		hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).clear();
+		hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).clear();
+		hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).clear();
 		
 		hzInstance.getMap(HazelcastLocationService.HZ_LOCATION_KEY).clear();
 		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
@@ -131,6 +131,7 @@ public class HazelcastInitializationService implements CrmInitializationService 
 		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
 		hzInstance.getMap(HazelcastUserService.HZ_USER_KEY).clear();
 		
+		shouldInitialize = true;
 		return true;
 	}
 	

@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
@@ -31,13 +30,13 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
-@Validated
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastUserService implements CrmUserService {
 
@@ -45,13 +44,11 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private PasswordEncoder passwordEncoder;
-
-	// these need to be marked as lazy because spring proxies this class due to the @Validated annotation
-	// if these are not lazy then they are autowired before the proxy is created and we get a cyclic dependency
-	// so making them lazy allows the proxy to be created before autowiring
-	@Autowired @Lazy private CrmPasswordService passwordService;
-	@Autowired @Lazy private CrmPersonService personService;
-	@Autowired @Lazy private CrmPermissionService permissionService;
+	@Autowired private CrmPasswordService passwordService;
+	@Autowired private CrmPersonService personService;
+	@Autowired private CrmPermissionService permissionService;
+	
+	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public User createUser(

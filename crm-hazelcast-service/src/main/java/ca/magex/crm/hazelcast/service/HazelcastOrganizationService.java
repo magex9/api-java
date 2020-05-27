@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
@@ -28,7 +27,6 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -39,21 +37,17 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
-@Validated
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	public static String HZ_ORGANIZATION_KEY = "organizations";
 
 	@Autowired private HazelcastInstance hzInstance;
-
-	// these need to be marked as lazy because spring proxies this class due to the @Validated annotation
-	// if these are not lazy then they are autowired before the proxy is created and we get a cyclic dependency
-	// so making them lazy allows the proxy to be created before autowiring
-	@Autowired @Lazy private CrmLookupService lookupService;
-	@Autowired @Lazy private CrmPermissionService permissionService;
-	@Autowired @Lazy private CrmLocationService locationService;
-	@Autowired @Lazy private CrmPersonService personService;
+	@Autowired private CrmPermissionService permissionService;
+	@Autowired private CrmLocationService locationService;
+	@Autowired private CrmPersonService personService;
+	
+	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public OrganizationDetails createOrganization(
@@ -68,7 +62,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				null,
 				null,
 				groups);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(orgDetails.getOrganizationId(), orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -87,7 +81,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withDisplayName(name);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -110,7 +104,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainContactId(personId);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -133,7 +127,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainLocationId(locationId);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -155,7 +149,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withGroups(groups);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -172,7 +166,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.ACTIVE);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
@@ -189,13 +183,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.INACTIVE);
-		validate(orgDetails);
+		validationService.validate(orgDetails);
 		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
-	}
-
-	private OrganizationDetails validate(OrganizationDetails organization) {
-		return new StructureValidationService(lookupService, permissionService, this, locationService, personService).validate(organization);
 	}
 
 	@Override
@@ -221,8 +211,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		return organizations.values()
 				.stream()
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
+				.filter(o -> filter.apply(o))
 				.count();
 	}
 
@@ -233,8 +222,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationDetails> allMatchingOrgs = organizations.values()
 				.stream()
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
+				.filter(o -> filter.apply(o))
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
@@ -248,8 +236,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationSummary> allMatchingOrgs = organizations.values()
 				.stream()
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
+				.filter(o -> filter.apply(o))
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());

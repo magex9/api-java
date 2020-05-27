@@ -1,9 +1,8 @@
 package ca.magex.crm.hazelcast.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ import ca.magex.crm.api.system.Status;
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@SuppressWarnings("unchecked")
 public class HazelcastLookupService implements CrmLookupService {
 
 	public static String HZ_STATUS_KEY = "statuses";
@@ -37,8 +37,9 @@ public class HazelcastLookupService implements CrmLookupService {
 	public static String HZ_SECTOR_KEY = "sectors";
 	public static String HZ_UNIT_KEY = "units";
 	public static String HZ_CLASSIFICATION_KEY = "classifications";
+	public static String HZ_PROVINCES_KEY = "classifications";
 		
-	@Autowired private HazelcastInstance hzInstance;		
+	@Autowired private HazelcastInstance hzInstance;
 	
 	@Override
 	public List<Status> findStatuses() {
@@ -88,25 +89,30 @@ public class HazelcastLookupService implements CrmLookupService {
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Country[" + locale + "] '" + name + "'"));
-	}
+	}	
 	
 	@Override
 	public List<Province> findProvinces(String country) {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<Province>) hzInstance.getMap(HZ_PROVINCES_KEY).getOrDefault(StringUtils.upperCase(country), new ArrayList<Province>());
 	}
 	
 	@Override
-	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
-		// TODO Auto-generated method stub
-		return null;
+	public Province findProvinceByCode(String province, String country) {
+		return findProvinces(country)
+				.stream()
+				.filter((p) -> StringUtils.equalsIgnoreCase(p.getCode(), province))
+				.findFirst()
+				.orElseThrow(() -> new ItemNotFoundException("Province '" + province + "' for Country '" + country + "'"));
 	}
 	
 	@Override
-	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
-			@NotNull String country) {
-		// TODO Auto-generated method stub
-		return null;
+	public Province findProvinceByLocalizedName(Locale locale, String province, String country) {
+		String code = findCountryByLocalizedName(locale, country).getCode();
+		return findProvinces(code)
+			.stream()
+			.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
+			.findFirst()
+			.orElseThrow(() -> new ItemNotFoundException("Province[" + locale + "] '" + province + "' for country '" + country + "'"));
 	}
 
 	@Override
