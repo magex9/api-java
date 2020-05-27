@@ -19,7 +19,7 @@ import ca.magex.crm.api.MagexCrmProfiles;
 @Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
 public class SwaggerAuthenticationController {
 	
-	@Value("${server.address:localhost}") String serverAddress;
+	@Value("${server.external.address:localhost}") String serverAddress;
 	@Value("${server.port}") String serverPort;
 	@Value("${server.servlet.context-path}") String contextPath;
 	
