@@ -27,6 +27,7 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 			this.options = options;
 			this.mapByCode = new HashMap<KEY, LOOKUP>();
 			this.mapByName = new HashMap<Locale, Map<String, LOOKUP>>();
+			this.mapByName.put(Lang.ROOT, new HashMap<String, LOOKUP>());
 			for (Locale locale : Lang.SUPPORTED) {
 				mapByName.put(locale, new HashMap<String, LOOKUP>());
 			}
@@ -35,6 +36,7 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 				@SuppressWarnings("unchecked")
 				KEY key = (KEY)PropertyUtils.getProperty(option, "code");
 				mapByCode.put(key, option);
+				mapByName.get(Lang.ROOT).put((String)nameMethod.invoke(option, Lang.ROOT), option);
 				for (Locale locale : Lang.SUPPORTED) {
 					mapByName.get(locale).put((String)nameMethod.invoke(option, locale), option);
 				}
