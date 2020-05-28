@@ -67,7 +67,9 @@ public class AmnesiaPersonService implements CrmPersonService {
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		return db.savePerson(findPersonDetails(personId).withStatus(Status.INACTIVE));
+		PersonDetails person = findPersonDetails(personId);
+		return person.getStatus() == Status.INACTIVE ? person : 
+			db.savePerson(findPersonDetails(personId).withStatus(Status.INACTIVE));
 	}
 
 	@Override

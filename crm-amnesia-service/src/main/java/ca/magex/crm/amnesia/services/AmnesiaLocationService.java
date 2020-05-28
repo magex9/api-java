@@ -48,8 +48,10 @@ public class AmnesiaLocationService implements CrmLocationService {
 		return db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.ACTIVE)));
 	}
 
-	public LocationSummary disableLocation(Identifier locationId) {		
-		return db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.INACTIVE)));
+	public LocationSummary disableLocation(Identifier locationId) {
+		LocationDetails location = findLocationDetails(locationId);
+		return location.getStatus() == Status.INACTIVE ? location :
+			db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.INACTIVE)));
 	}
 	
 	public LocationSummary findLocationSummary(Identifier locationId) {

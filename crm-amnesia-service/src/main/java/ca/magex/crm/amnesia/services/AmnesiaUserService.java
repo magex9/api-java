@@ -50,7 +50,9 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public User disableUser(Identifier userId) {
-		return db.saveUser(db.findUser(userId).withStatus(Status.INACTIVE));
+		User user = findUser(userId);
+		return user.getStatus() == Status.INACTIVE ? user :
+			db.saveUser(db.findUser(userId).withStatus(Status.INACTIVE));
 	}
 
 	@Override
