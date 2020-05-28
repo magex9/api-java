@@ -43,14 +43,6 @@ public class Paging implements Pageable, Serializable {
 		this.offset = this.pageSize * (this.pageNumber - 1);
 	}
 
-//	public Paging(long offset, int pageSize, Sort sort) {
-//		super();
-//		this.offset = offset;
-//		this.pageSize = pageSize;
-//		this.pageNumber = (int) Math.floor(offset / pageSize);
-//		this.sort = sort;
-//	}
-
 	public Paging(Sort sort) {
 		this(1, 10, sort);
 	}
@@ -81,10 +73,6 @@ public class Paging implements Pageable, Serializable {
 	public long getOffset() {
 		return offset;
 	}
-
-//	public Paging withOffset(long offset) {
-//		return new Paging(offset, pageSize, sort);
-//	}
 
 	@Override
 	public Sort getSort() {
