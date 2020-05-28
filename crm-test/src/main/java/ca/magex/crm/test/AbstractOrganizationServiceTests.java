@@ -227,10 +227,7 @@ public abstract class AbstractOrganizationServiceTests {
 		OrganizationSummary os1 = getOrganizationService().disableOrganization(o1.getOrganizationId());
 		Assert.assertEquals("Toronto Maple Leafs", os1.getDisplayName());
 		Assert.assertEquals(Status.INACTIVE, os1.getStatus());
-		try {
-			Assert.assertEquals(os1, getOrganizationService().disableOrganization(os1.getOrganizationId()));
-			Assert.fail("Cannot disable inactive orgs");
-		} catch (BadRequestException expected) { }
+		Assert.assertEquals(os1, getOrganizationService().disableOrganization(os1.getOrganizationId()));
 		Assert.assertEquals(os1, getOrganizationService().findOrganizationSummary(os1.getOrganizationId()));
 
 		/* enable */
