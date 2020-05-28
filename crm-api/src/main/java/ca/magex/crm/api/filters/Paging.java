@@ -8,6 +8,10 @@ import java.util.Locale;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -102,6 +106,21 @@ public class Paging implements Pageable, Serializable {
 	public Paging first() {
 		return new Paging(1, getPageSize(), getSort());
 	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
 
 	/**
 	 * Creates a new Comparator based on this Paging Instance
@@ -111,6 +130,10 @@ public class Paging implements Pageable, Serializable {
 	 * @param <T>
 	 */
 	public class PagingComparator<T> implements Comparator<T> {
+		
+		Paging getPaging() {
+			return Paging.this;
+		}
 
 		@SuppressWarnings("unchecked")
 		@Override
