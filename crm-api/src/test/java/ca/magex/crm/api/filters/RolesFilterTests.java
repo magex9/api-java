@@ -42,6 +42,7 @@ public class RolesFilterTests {
 	@Test
 	public void testFilterConstructs() {
 		RolesFilter filter = new RolesFilter();
+		Assertions.assertNull(filter.getGroupId());
 		Assertions.assertNull(filter.getEnglishName());
 		Assertions.assertNull(filter.getFrenchName());
 		Assertions.assertNull(filter.getCode());
@@ -60,6 +61,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), null, null, null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withEnglishName("english");
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertNull(filter.getFrenchName());
 		Assertions.assertNull(filter.getCode());
@@ -69,6 +71,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", null, null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withFrenchName("french");
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertNull(filter.getCode());
@@ -78,6 +81,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", "french", null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withCode("code");
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertEquals("code", filter.getCode());
@@ -87,6 +91,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", "french", "code", null).hashCode(), filter.hashCode());
 		
 		filter = filter.withStatus(Status.ACTIVE);
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertEquals("code", filter.getCode());
@@ -120,6 +125,7 @@ public class RolesFilterTests {
 		
 		
 		filter = new RolesFilter(Map.of("groupId", "G1", "englishName", "english"));
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertNull(filter.getFrenchName());
 		Assertions.assertNull(filter.getCode());
@@ -129,6 +135,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", null, null, null).hashCode(), filter.hashCode());
 		
 		filter = new RolesFilter(Map.of("groupId", "G1", "englishName", "english", "frenchName", "french"));
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertNull(filter.getCode());
@@ -138,6 +145,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", "french", null, null).hashCode(), filter.hashCode());
 		
 		filter = new RolesFilter(Map.of("groupId", "G1", "englishName", "english", "frenchName", "french", "code", "code"));
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertEquals("code", filter.getCode());
@@ -147,6 +155,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", "french", "code", null).hashCode(), filter.hashCode());
 		
 		filter = new RolesFilter(Map.of("groupId", "G1", "englishName", "english", "frenchName", "french", "code", "code", "status", ""));
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertEquals("code", filter.getCode());
@@ -156,6 +165,7 @@ public class RolesFilterTests {
 		Assertions.assertEquals(new RolesFilter(new Identifier("G1"), "english", "french", "code", null).hashCode(), filter.hashCode());
 		
 		filter = new RolesFilter(Map.of("groupId", "G1", "englishName", "english", "frenchName", "french", "code", "code", "status", "active"));
+		Assertions.assertEquals(new Identifier("G1"), filter.getGroupId());
 		Assertions.assertEquals("english", filter.getEnglishName());
 		Assertions.assertEquals("french", filter.getFrenchName());
 		Assertions.assertEquals("code", filter.getCode());
