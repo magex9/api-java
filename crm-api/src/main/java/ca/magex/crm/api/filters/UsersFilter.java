@@ -1,7 +1,5 @@
 package ca.magex.crm.api.filters;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +18,7 @@ import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class UsersFilter implements Serializable {
+public class UsersFilter implements CrmFilter<User> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -58,18 +56,23 @@ public class UsersFilter implements Serializable {
 	}
 	
 	public UsersFilter(Map<String, Object> filterCriteria) {
-		this.personId = filterCriteria.containsKey("personId") ? new Identifier((String) filterCriteria.get("personId")) : null;
-		this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
-		this.role = (String) filterCriteria.get("role");
-		this.username = (String) filterCriteria.get("username");		
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+		try {
+			this.personId = filterCriteria.containsKey("personId") ? new Identifier((String) filterCriteria.get("personId")) : null;
+			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.role = (String) filterCriteria.get("role");
+			this.username = (String) filterCriteria.get("username");		
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				}
+				catch(IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate users filter", cce);
 		}
 	}
 
@@ -125,8 +128,17 @@ public class UsersFilter implements Serializable {
 		return new Paging(getDefaultSort());
 	}
 
-	public Comparator<User> getComparator(Paging paging) {
-		return paging.new PagingComparator<User>();
+	@Override
+	public boolean apply(User instance) {
+		return List.of(instance)
+				.stream()
+				.filter(u -> this.getUsername() == null || StringUtils.containsIgnoreCase(u.getUsername(), this.getUsername()))
+				.filter(u -> this.getRole() == null || u.getRoles().contains(this.getRole()))
+				.filter(u -> this.getStatus() == null || this.getStatus().equals(u.getStatus()))
+				.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPerson().getPersonId()))
+				.filter(u -> this.getOrganizationId() == null || this.getOrganizationId().equals(u.getPerson().getOrganizationId()))
+				.findAny()
+				.isPresent();
 	}
 
 	@Override

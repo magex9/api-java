@@ -1,7 +1,5 @@
 package ca.magex.crm.api.filters;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +18,7 @@ import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class PersonsFilter implements Serializable {
+public class PersonsFilter implements CrmFilter<PersonSummary> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -48,16 +46,21 @@ public class PersonsFilter implements Serializable {
 	}
 	
 	public PersonsFilter(Map<String, Object> filterCriteria) {
-		this.displayName = (String) filterCriteria.get("displayName");
-		this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+		try {
+			this.displayName = (String) filterCriteria.get("displayName");
+			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				}
+				catch(IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate persons filter", cce);
 		}
 	}
 
@@ -72,6 +75,18 @@ public class PersonsFilter implements Serializable {
 	public String getDisplayName() {
 		return displayName;
 	}
+	
+	public PersonsFilter withOrganizationId(Identifier organizationId) {
+		return new PersonsFilter(organizationId, displayName, status);
+	}
+
+	public PersonsFilter withDisplayName(String displayName) {
+		return new PersonsFilter(organizationId, displayName, status);
+	}
+
+	public PersonsFilter withStatus(Status status) {
+		return new PersonsFilter(organizationId, displayName, status);
+	}
 
 	public static List<Sort> getSortOptions() {
 		return SORT_OPTIONS;
@@ -85,8 +100,15 @@ public class PersonsFilter implements Serializable {
 		return new Paging(getDefaultSort());
 	}
 
-	public Comparator<PersonSummary> getComparator(Paging paging) {
-		return paging.new PagingComparator<PersonSummary>();
+	@Override
+	public boolean apply(PersonSummary instance) {
+		return List.of(instance)
+				.stream()
+				.filter(p -> this.getDisplayName() == null || StringUtils.containsIgnoreCase(p.getDisplayName(), this.getDisplayName()))
+				.filter(p -> this.getStatus() == null || this.getStatus().equals(p.getStatus()))
+				.filter(p -> this.getOrganizationId() == null || this.getOrganizationId().equals(p.getOrganizationId()))
+				.findAny()
+				.isPresent();
 	}
 	
 	@Override

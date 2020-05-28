@@ -17,11 +17,13 @@ import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.test.function.TriFunction;
 
 public abstract class AbstractLookupServiceTests {
 
@@ -56,6 +58,11 @@ public abstract class AbstractLookupServiceTests {
 		
 		/* test classification lookups */
 		runLookupTest(BusinessClassification.class, getLookupService()::findBusinessClassifications, getLookupService()::findBusinessClassificationByCode, getLookupService()::findBusinessClassificationByLocalizedName);
+		
+		/* test province lookups */
+		runQualifiedLookupTest(Province.class, getLookupService()::findProvinces, getLookupService().findCountryByCode("CA"), getLookupService()::findProvinceByCode, getLookupService()::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, getLookupService()::findProvinces, getLookupService().findCountryByCode("MX"), getLookupService()::findProvinceByCode, getLookupService()::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, getLookupService()::findProvinces, getLookupService().findCountryByCode("US"), getLookupService()::findProvinceByCode, getLookupService()::findProvinceByLocalizedName);
 	}
 
 	/**
@@ -94,6 +101,27 @@ public abstract class AbstractLookupServiceTests {
 				Assert.fail("should have failed here");
 			} catch (ItemNotFoundException e) {
 				Assert.assertEquals("Item not found: " + item.getSimpleName() + "[de] '???'", e.getMessage());
+			}
+		}
+	}
+	
+	private <T extends CrmLookupItem> void runQualifiedLookupTest(Class<T> item, Function<String, List<T>> supplier, CrmLookupItem qualifier, BiFunction<String, String, T> codeLookup, TriFunction<Locale, String, String, T> localizedLookup) {
+		/* countries tests */
+		List<T> values = supplier.apply(qualifier.getCode());
+		for (T value : values) {
+			Assert.assertEquals(value, codeLookup.apply(value.getCode(), qualifier.getCode()));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.ENGLISH, value.getName(Lang.ENGLISH), qualifier.getName(Lang.ENGLISH)));
+			Assert.assertEquals(value, localizedLookup.apply(Lang.FRENCH, value.getName(Lang.FRENCH), qualifier.getName(Lang.FRENCH)));
+			try {
+				localizedLookup.apply(Lang.ENGLISH, "????", qualifier.getName(Lang.ENGLISH));
+				Assert.fail("Unsupported Value");
+			} catch (ItemNotFoundException e) {
+			}
+
+			try {
+				localizedLookup.apply(Locale.GERMAN, "", "Hans");
+				Assert.fail("Unsupported Country");
+			} catch (ItemNotFoundException e) {
 			}
 		}
 	}

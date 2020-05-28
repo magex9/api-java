@@ -53,7 +53,7 @@ public class AmnesiaDB {
 	private PasswordEncoder passwordEncoder;
 	
 	private StructureValidationService validation;
-	
+
 	private AmnesiaInitializationService initialization;
 	
 	private AmnesiaLookupService lookups;

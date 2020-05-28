@@ -36,7 +36,7 @@ public abstract class GraphQLClient {
 	protected Properties queries;
 	
 	private String authToken;
-	private RestTemplate restTemplate = new RestTemplate();
+	private RestTemplate restTemplate;
 
 	/**
 	 * constructs a new Service for the given graphql endpoint
@@ -46,6 +46,7 @@ public abstract class GraphQLClient {
 	public GraphQLClient(String endpoint, String queryResource) {
 		this.endpoint = endpoint;
 		this.queries = new Properties();
+		this.restTemplate = new RestTemplate();		
 		try {
 			try (InputStream in = CrmServicesGraphQLClientImpl.class.getResource(queryResource).openStream()) {
 				this.queries.load(in);

@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
@@ -31,24 +30,22 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
-@Validated
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastPersonService implements CrmPersonService {
 
 	public static String HZ_PERSON_KEY = "persons";
 
 	@Autowired private HazelcastInstance hzInstance;
-
-	// these need to be marked as lazy because spring proxies this class due to the @Validated annotation
-	// if these are not lazy then they are autowired before the proxy is created and we get a cyclic dependency
-	// so making them lazy allows the proxy to be created before autowiring
-	@Autowired @Lazy private CrmOrganizationService organizationService;
+	@Autowired private CrmOrganizationService organizationService;
+	
+	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public PersonDetails createPerson(

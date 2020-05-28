@@ -8,11 +8,11 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import com.hazelcast.core.HazelcastInstance;
 
@@ -20,10 +20,10 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.services.StructureValidationService;
 
 @Service
 @Primary
-@Validated
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastPasswordService implements CrmPasswordService {
 
@@ -31,6 +31,8 @@ public class HazelcastPasswordService implements CrmPasswordService {
 	
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private PasswordEncoder passwordEncoder;
+	
+	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 	
 	private long expiration = TimeUnit.DAYS.toMillis(365);
 	

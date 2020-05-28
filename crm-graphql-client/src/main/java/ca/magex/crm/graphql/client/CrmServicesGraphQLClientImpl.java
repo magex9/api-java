@@ -477,37 +477,45 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"createUser",
 				"createUser",
-				personId,
-				username,
-				roles));
+				new MapBuilder()
+						.withEntry("personId", personId.toString())
+						.withEntry("username", username)
+						.withEntry("roles", roles)
+						.build()));
 	}
 
 	@Override
 	public User enableUser(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"enableUser",
 				"updateUser",
-				userId));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build()));
 	}
 
 	@Override
 	public User disableUser(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"disableUser",
 				"updateUser",
-				userId));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build()));
 	}
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"updateUserRoles",
 				"updateUser",
-				userId,
-				roles));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.withEntry("roles", roles)
+						.build()));
 	}
 
 	@Override
@@ -534,10 +542,12 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 
 	@Override
 	public User findUser(Identifier userId) {
-		return ModelBinder.toUser(performGraphQLQueryWithSubstitution(
+		return ModelBinder.toUser(performGraphQLQueryWithVariables(
 				"findUser",
 				"findUser",
-				userId));
+				new MapBuilder()
+						.withEntry("userId", userId.toString())
+						.build()));
 	}
 
 	@Override

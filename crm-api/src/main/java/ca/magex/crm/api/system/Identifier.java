@@ -59,5 +59,4 @@ public class Identifier implements CharSequence, Serializable {
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
-	
 }

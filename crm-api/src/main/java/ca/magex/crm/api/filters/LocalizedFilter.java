@@ -1,10 +1,13 @@
 package ca.magex.crm.api.filters;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -14,7 +17,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
-public class LocalizedFilter implements Serializable {
+public class LocalizedFilter implements CrmFilter<Localized> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -101,7 +104,29 @@ public class LocalizedFilter implements Serializable {
 		return new Paging(getDefaultSort());
 	}
 
-	public Comparator<Localized> getComparator(Paging paging) {
-		return paging.new PagingComparator<Localized>();
+	@Override
+	public boolean apply(Localized instance) {
+		return List.of(instance)
+				.stream()
+				.filter(g -> this.getCode() == null || StringUtils.equalsIgnoreCase(this.getCode(), g.getCode()))
+				.filter(g -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getEnglishName(), this.getEnglishName()))
+				.filter(g -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getFrenchName(), this.getFrenchName()))
+				.findAny()
+				.isPresent();
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 }

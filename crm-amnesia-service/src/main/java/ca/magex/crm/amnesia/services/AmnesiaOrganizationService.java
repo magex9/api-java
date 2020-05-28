@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -76,8 +75,7 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	
 	public Stream<OrganizationDetails> apply(OrganizationsFilter filter) {
 		return db.findByType(OrganizationDetails.class)
-			.filter(org -> StringUtils.isNotBlank(filter.getDisplayName()) ? org.getDisplayName().contains(filter.getDisplayName()) : true)
-			.filter(org -> filter.getStatus() != null ? org.getStatus().equals(filter.getStatus()) : true);
+			.filter(o -> filter.apply(o));
 	}
 	
 	@Override
@@ -100,5 +98,4 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 			.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
-
 }

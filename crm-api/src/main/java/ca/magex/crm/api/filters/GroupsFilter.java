@@ -1,7 +1,5 @@
 package ca.magex.crm.api.filters;
 
-import java.io.Serializable;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,15 +9,15 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 
-public class GroupsFilter implements Serializable {
+public class GroupsFilter implements CrmFilter<Group> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -54,16 +52,21 @@ public class GroupsFilter implements Serializable {
 	}
 	
 	public GroupsFilter(Map<String, Object> filterCriteria) {
-		this.englishName = (String) filterCriteria.get("englishName");
-		this.frenchName = (String) filterCriteria.get("frenchName");
-		this.code = (String) filterCriteria.get("code");
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
-			} catch (IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+		try {
+			this.englishName = (String) filterCriteria.get("englishName");
+			this.frenchName = (String) filterCriteria.get("frenchName");
+			this.code = (String) filterCriteria.get("code");
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				} catch (IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate groups filter", cce);
 		}
 	}
 	
@@ -104,15 +107,23 @@ public class GroupsFilter implements Serializable {
 	}
 	
 	public static Sort getDefaultSort() {
-		return Sort.by(Direction.ASC, "code");
+		return Sort.by(Order.asc("code"));
 	}
 
 	public static Paging getDefaultPaging() {
 		return new Paging(getDefaultSort());
 	}
 
-	public Comparator<Group> getComparator(Paging paging) {
-		return paging.new PagingComparator<Group>();
+	@Override
+	public boolean apply(Group instance) {
+		return List.of(instance)
+				.stream()
+				.filter(g -> this.getCode() == null || StringUtils.equalsIgnoreCase(this.getCode(), g.getCode()))
+				.filter(g -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.ENGLISH),this.getEnglishName()))
+				.filter(g -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.FRENCH),this.getFrenchName()))
+				.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
+				.findAny()
+				.isPresent();
 	}
 	
 	@Override

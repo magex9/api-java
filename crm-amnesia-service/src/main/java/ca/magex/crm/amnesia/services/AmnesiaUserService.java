@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -111,11 +110,6 @@ public class AmnesiaUserService implements CrmUserService {
 	
 	private Stream<User> applyFilter(UsersFilter filter) {
 		return db.findByType(User.class)
-			.filter(user -> StringUtils.isNotBlank(filter.getUsername()) ? user.getUsername().equals(filter.getUsername()) : true)
-			.filter(user -> StringUtils.isNotBlank(filter.getRole()) ? user.getRoles().contains(filter.getRole()) : true)
-			.filter(user -> filter.getStatus() != null ? filter.getStatus().equals(user.getStatus()) : true)
-			.filter(user -> filter.getPersonId() != null ? filter.getPersonId().equals(user.getPerson().getPersonId()) : true)
-			.filter(user -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(user.getPerson().getOrganizationId()) : true);
-	}
-	
+			.filter(user -> filter.apply(user));
+	}	
 }
