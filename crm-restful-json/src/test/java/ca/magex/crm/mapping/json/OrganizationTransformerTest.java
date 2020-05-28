@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -30,7 +30,7 @@ import ca.magex.json.model.JsonObject;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class OrganizationTransformerTest {
 
-	@Autowired private SecuredCrmServices crm;
+	@Autowired private Crm crm;
 	
 	@Test
 	public void testOrganizationJson() throws Exception {

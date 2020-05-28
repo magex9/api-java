@@ -1,13 +1,15 @@
 package ca.magex.json.util;
 
-import ca.magex.json.model.JsonObject;
+import java.util.Locale;
+
+import ca.magex.json.model.JsonElement;
 
 public interface Transformer<T extends Object> {
 	
 	public Class<T> getType();
 	
-	public JsonObject format(T obj);
+	public JsonElement format(T obj, Locale locale);
 	
-	public T parse(JsonObject data);
+	public T parse(JsonElement json, Locale locale);
 	
 }
