@@ -27,7 +27,7 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.secured.SecuredCrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -44,7 +44,7 @@ import ca.magex.json.model.JsonObject;
 })
 public class PersonTransformerTest {
 
-	@Autowired private SecuredCrmServices crm;
+	@Autowired private Crm crm;
 
 	@Test
 	public void testPersonJson() throws Exception {
