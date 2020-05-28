@@ -68,7 +68,9 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 
 	@Override
 	public Group disableGroup(Identifier groupId) {
-		return db.saveGroup(validate(findGroup(groupId).withStatus(Status.INACTIVE)));
+		Group group = findGroup(groupId);
+		return group.getStatus() == Status.INACTIVE ? group :
+			db.saveGroup(validate(group.withStatus(Status.INACTIVE)));
 	}
 
 	private Group validate(Group group) {
@@ -111,7 +113,9 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 
 	@Override
 	public Role disableRole(Identifier roleId) {
-		return db.saveRole(validate(findRole(roleId).withStatus(Status.INACTIVE)));
+		Role role = findRole(roleId);
+		return role.getStatus() == Status.INACTIVE ? role :
+			db.saveRole(validate(role.withStatus(Status.INACTIVE)));
 	}
 
 	private Role validate(Role role) {
