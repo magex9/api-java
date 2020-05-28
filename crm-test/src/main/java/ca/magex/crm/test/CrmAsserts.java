@@ -62,6 +62,8 @@ public class CrmAsserts {
 	
 	public static final Localized QUEBEC = new Localized("QC", "Quebec", "Québec");
 	
+	public static final Localized NEWFOUNDLAND = new Localized("NL", "Newfoundland and Labrador", "Terre-Neuve et Labrador");
+	
 	public static final Localized UNITED_STATES = new Localized("US", "United States", "États Unis");
 	
 	public static final Localized NEW_YORK = new Localized("NY", "United States", "États Unis");
@@ -69,6 +71,10 @@ public class CrmAsserts {
 	public static final Localized MASSACHUSETTS = new Localized("MA", "Massachusetts", "Massachusetts");
 	
 	public static final Localized ILLINOIS = new Localized("IL", "Illinois", "Illinois");
+	
+	public static final Localized MEXICO = new Localized("MX", "Mexico", "Mexique");
+	
+	public static final Localized NUEVO_LEON = new Localized("NL", "Nuevo Leon", "Nuevo Leon");
 	
 	public static final Localized ENGLAND = new Localized("GB", "England", "Angleterre");
 	
@@ -87,8 +93,22 @@ public class CrmAsserts {
 	public static final Localized RHINE = new Localized("RH", "North Rhine-Westphalia", "Rhénanie du Nord-Westphalie");
 	
 	public static final MailingAddress MAILING_ADDRESS = new MailingAddress("123 Main St", "Ottawa", QUEBEC.getCode(), CANADA.getCode(), "K1K1K1");
+
+	public static final MailingAddress CA_ADDRESS = new MailingAddress("111 Wellington Street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K1A 0A9");
 	
-	public static final PersonName PERSON_NAME = new PersonName("Mr.", "Chris", "P", "Bacon");
+	public static final MailingAddress NL_ADDRESS = new MailingAddress("90 Avalon Drive", "Labrador City", NEWFOUNDLAND.getCode(), CANADA.getCode(), "A2V 2Y2");
+
+	public static final MailingAddress US_ADDRESS = new MailingAddress("465 Huntington Ave", "Boston", MASSACHUSETTS.getCode(), UNITED_STATES.getCode(), "02115");
+	
+	public static final MailingAddress MX_ADDRESS = new MailingAddress("120 Col. Hipodromo Condesa", "Monterrey", NUEVO_LEON.getCode(), MEXICO.getCode(), "06100");
+	
+	public static final MailingAddress EN_ADDRESS = new MailingAddress("35 Tower Hill", "London", LONDON.getEnglishName(), ENGLAND.getCode(), "EC3N 4DR");
+	
+	public static final MailingAddress FR_ADDRESS = new MailingAddress("5 Avenue Anatole", "Paris", ILE_DE_FRANCE.getEnglishName(), FRANCE.getCode(), "75007");
+	
+	public static final MailingAddress DE_ADDRESS = new MailingAddress("Porschepl. 1", "Stuttgart", MIDI_PYRENESE.getEnglishName(), GERMANY.getCode(), "70435");
+	
+	public static final PersonName PERSON_NAME = new PersonName("3", "Chris", "P", "Bacon");
 	
 	public static final String PERSON_EMAIL = "crhis@bacon.com";
 	
