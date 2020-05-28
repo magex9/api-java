@@ -78,16 +78,16 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		return displayName;
 	}
 
-	public LocationsFilter withOrganizationId(Identifier organizationId) {
-		return new LocationsFilter(organizationId, displayName, reference, status);
-	}
-
 	public String getReference() {
 		return reference;
 	}
 
 	public Status getStatus() {
 		return status;
+	}
+	
+	public LocationsFilter withOrganizationId(Identifier organizationId) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 
 	public LocationsFilter withDisplayName(String displayName) {
