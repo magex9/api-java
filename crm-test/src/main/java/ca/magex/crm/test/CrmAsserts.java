@@ -113,7 +113,7 @@ public class CrmAsserts {
 	
 	public static final String PERSON_TITLE = "Professional Tester";
 	
-	public static final Telephone PERSON_TELEPHONE = new Telephone("6135551234", null);
+	public static final Telephone PERSON_TELEPHONE = new Telephone("6135551234", "42");
 	
 	public static final String PERSON_FAX = "6138884567";
 	
