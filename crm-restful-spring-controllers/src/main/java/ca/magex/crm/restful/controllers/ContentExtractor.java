@@ -16,11 +16,9 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.rest.transformers.JsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -30,15 +28,7 @@ import ca.magex.json.model.JsonParser;
 public class ContentExtractor {
 
 	public static String getContentType(HttpServletRequest req) {
-//		if (req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld")) {
-//			return "application/json+ld";
-//		}
 		return "application/json";
-	}
-	
-	public static JsonTransformer getTransformer(HttpServletRequest req, Crm crm) {
-		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
-		return new JsonTransformer(crm, extractLocale(req), linked);
 	}
 	
 	public static Locale extractLocale(HttpServletRequest req) {

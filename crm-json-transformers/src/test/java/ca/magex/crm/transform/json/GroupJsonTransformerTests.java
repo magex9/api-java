@@ -3,8 +3,6 @@ package ca.magex.crm.transform.json;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -17,27 +15,32 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class GroupJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<Group> transformer;
+	private Transformer<Group, JsonElement> transformer;
 	
 	private Group group;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new GroupJsonTransformer(crm);
+		transformer = new GroupJsonTransformer(crm,
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm),
+			new LocalizedJsonTransformer(crm)
+		);
 		group = new Group(new Identifier("abc"), Status.PENDING, GROUP);
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(Group.class, transformer.getType());
+		assertEquals(Group.class, transformer.getSourceType());
 	}
 
 	@Test
@@ -79,12 +82,6 @@ public class GroupJsonTransformerTests {
 		assertEquals("pending", root.getString("status"));
 		assertEquals("GRP", root.getString("code"));
 		assertEquals("GRP", root.getString("name"));
-		try {
-			assertEquals(group, transformer.parse(root, Lang.ROOT));
-			fail("Unable to build Localized objects");
-		} catch (UnsupportedOperationException e) {
-			assertTrue(e.getMessage().startsWith("Unable to parse: "));
-		}
 	}
 	
 	@Test
@@ -96,12 +93,6 @@ public class GroupJsonTransformerTests {
 		assertEquals("Pending", root.getString("status"));
 		assertEquals("GRP", root.getString("code"));
 		assertEquals("Group", root.getString("name"));
-		try {
-			assertEquals(group, transformer.parse(root, Lang.ENGLISH));
-			fail("Unable to build Localized objects");
-		} catch (UnsupportedOperationException e) {
-			assertTrue(e.getMessage().startsWith("Unable to parse: "));
-		}
 	}
 	
 	@Test
@@ -113,12 +104,6 @@ public class GroupJsonTransformerTests {
 		assertEquals("En attente", root.getString("status"));
 		assertEquals("GRP", root.getString("code"));
 		assertEquals("Groupe", root.getString("name"));
-		try {
-			assertEquals(group, transformer.parse(root, Lang.ENGLISH));
-			fail("Unable to build Localized objects");
-		} catch (UnsupportedOperationException e) {
-			assertTrue(e.getMessage().startsWith("Unable to parse: "));
-		}
 	}
 	
 }

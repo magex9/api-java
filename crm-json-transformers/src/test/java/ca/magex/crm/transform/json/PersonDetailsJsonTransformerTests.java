@@ -1,6 +1,8 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.*;
+import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -16,21 +18,40 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class PersonDetailsJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<PersonDetails> transformer;
+	private Transformer<PersonDetails, JsonElement> transformer;
 	
 	private PersonDetails person;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new PersonDetailsJsonTransformer(crm);
+		transformer = new PersonDetailsJsonTransformer(crm, 
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm),
+			new PersonNameJsonTransformer(crm, 
+				new SalutationJsonTransformer(crm)
+			),
+			new MailingAddressJsonTransformer(crm,
+				new CountryJsonTransformer(crm)
+			),
+			new CommunicationJsonTransformer(crm, 
+				new LanguageJsonTransformer(crm),
+				new TelephoneJsonTransformer(crm)
+			),
+			new BusinessPositionJsonTransformer(crm, 
+				new BusinessSectorJsonTransformer(crm),
+				new BusinessUnitJsonTransformer(crm), 
+				new BusinessClassificationJsonTransformer(crm)
+			)
+		);
 		BusinessPosition position = new BusinessPosition(
 				crm.findBusinessSectorByLocalizedName(Lang.ENGLISH, "Information Technology").getCode(),
 				crm.findBusinessUnitByLocalizedName(Lang.ENGLISH, "Solutions").getCode(),
@@ -42,7 +63,7 @@ public class PersonDetailsJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(PersonDetails.class, transformer.getType());
+		assertEquals(PersonDetails.class, transformer.getSourceType());
 	}
 
 	@Test

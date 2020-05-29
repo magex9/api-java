@@ -14,14 +14,15 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class PersonNameJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<PersonName> transformer;
+	private Transformer<PersonName, JsonElement> transformer;
 	
 	private Salutation salutation;
 	
@@ -30,14 +31,16 @@ public class PersonNameJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new PersonNameJsonTransformer(crm);
+		transformer = new PersonNameJsonTransformer(crm,
+			new SalutationJsonTransformer(crm)
+		);
 		salutation = crm.findSalutationByLocalizedName(Lang.ENGLISH, "Mr.");
 		personName = PERSON_NAME.withSalutation(salutation.getCode());
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(PersonName.class, transformer.getType());
+		assertEquals(PersonName.class, transformer.getSourceType());
 	}
 
 	@Test

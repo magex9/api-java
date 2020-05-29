@@ -1,14 +1,20 @@
 package ca.magex.crm.transform.json;
 
+import static ca.magex.crm.test.CrmAsserts.CANADA;
 import static ca.magex.crm.test.CrmAsserts.CA_ADDRESS;
-import static ca.magex.crm.test.CrmAsserts.*;
+import static ca.magex.crm.test.CrmAsserts.DE_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.EN_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.FRANCE;
 import static ca.magex.crm.test.CrmAsserts.FR_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.MEXICO;
 import static ca.magex.crm.test.CrmAsserts.MX_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.NEWFOUNDLAND;
 import static ca.magex.crm.test.CrmAsserts.NL_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.UNITED_STATES;
 import static ca.magex.crm.test.CrmAsserts.US_ADDRESS;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -19,24 +25,27 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class MailingAddressJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<MailingAddress> transformer;
+	private Transformer<MailingAddress, JsonElement> transformer;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new MailingAddressJsonTransformer(crm);
+		transformer = new MailingAddressJsonTransformer(crm,
+			new CountryJsonTransformer(crm)
+		);
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(MailingAddress.class, transformer.getType());
+		assertEquals(MailingAddress.class, transformer.getSourceType());
 	}
 
 	@Test

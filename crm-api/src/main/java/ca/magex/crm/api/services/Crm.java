@@ -47,7 +47,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
-public final class Crm implements CrmInitializationService, CrmServices, CrmPolicies, CrmValidation {
+public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, CrmValidation {
 	
 	public static final long SERIAL_UID_VERSION = 1l;
 

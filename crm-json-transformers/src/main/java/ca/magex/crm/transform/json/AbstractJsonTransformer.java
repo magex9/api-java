@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
-import ca.magex.json.util.Transformer;
 
-public abstract class AbstractJsonTransformer<T> implements Transformer<T> {
+public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonElement> {
 	
 	protected final CrmServices crm;
 	
@@ -27,8 +27,13 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T> {
 		return cls.getSimpleName();
 	}
 	
+	@Override
+	public Class<JsonElement> getTargetType() {
+		return JsonElement.class;
+	}
+	
 	public void formatType(List<JsonPair> parent) {
-		parent.add(new JsonPair("@type", getType().getSimpleName()));
+		parent.add(new JsonPair("@type", getSourceType().getSimpleName()));
 	}
 	
 	public final JsonElement format(T obj, Locale locale) {
@@ -61,20 +66,15 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T> {
 	}
 
 	public T parseJsonObject(JsonObject json, Locale locale) {
-		if (!json.getString("@type").equals(getType().getSimpleName()))
-			throw new IllegalArgumentException("Unexpected type for " + getType().getSimpleName() + ": " + json.getString("@type"));
+		if (!json.getString("@type").equals(getSourceType().getSimpleName()))
+			throw new IllegalArgumentException("Unexpected type for " + getSourceType().getSimpleName() + ": " + json.getString("@type"));
 		throw new UnsupportedOperationException("Unsupported json element: " + json.getClass().getSimpleName());
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <O> O parseObject(String key, JsonObject json, Class<O> objectClass, Class<?> transformerClass, Locale locale) {
+	public <O> O parseObject(String key, JsonObject json, Transformer<O, JsonElement> transformer, Locale locale) {
 		if (json == null)
 			return null;
-		try {
-			return ((Transformer<O>)transformerClass.getConstructor(new Class[] { CrmServices.class }).newInstance(new Object[] { crm })).parse(json.get(key), locale);
-		} catch (Exception e) {
-			throw new UnsupportedOperationException("Unable to parse: " + json);
-		}
+		return transformer.parse(json.get(key), locale);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -103,19 +103,19 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T> {
 			parent.add(new JsonPair(key, new JsonText(text)));
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void formatObject(List<JsonPair> parent, String key, Object obj, Class<?> type, Locale locale) {
-		if (obj == null)
-			return;
-		try {
-			Transformer<Object> transformer = (Transformer<Object>)type.getConstructor(new Class[] { CrmServices.class }).newInstance(new Object[] { crm });
-			Object property = getProperty(obj, key, transformer.getType());
-			if (property != null)
-				parent.add(new JsonPair(key, transformer.format(obj, locale)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	@SuppressWarnings("unchecked")
+//	public void formatObject(List<JsonPair> parent, String key, Object obj, Class<?> type, Locale locale) {
+//		if (obj == null)
+//			return;
+//		try {
+//			Transformer<Object> transformer = (Transformer<Object>)type.getConstructor(new Class[] { CrmServices.class }).newInstance(new Object[] { crm });
+//			Object property = getProperty(obj, key, transformer.getType());
+//			if (property != null)
+//				parent.add(new JsonPair(key, transformer.format(obj, locale)));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	@SuppressWarnings("unchecked")
 	public void formatTexts(List<JsonPair> parent, String key, Object obj, Class<?> type) {

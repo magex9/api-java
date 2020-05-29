@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
@@ -12,6 +14,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
+@Component
 public class LanguageJsonTransformer extends AbstractJsonTransformer<Language> {
 
 	public LanguageJsonTransformer(CrmServices crm) {
@@ -19,7 +22,7 @@ public class LanguageJsonTransformer extends AbstractJsonTransformer<Language> {
 	}
 
 	@Override
-	public Class<Language> getType() {
+	public Class<Language> getSourceType() {
 		return Language.class;
 	}
 

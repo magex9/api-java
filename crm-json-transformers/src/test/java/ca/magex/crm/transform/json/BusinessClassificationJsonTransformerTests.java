@@ -12,15 +12,16 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
-import ca.magex.json.util.Transformer;
 
 public class BusinessClassificationJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<BusinessClassification> transformer;
+	private Transformer<BusinessClassification, JsonElement> transformer;
 	
 	private BusinessClassification classification;
 	
@@ -33,7 +34,7 @@ public class BusinessClassificationJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(BusinessClassification.class, transformer.getType());
+		assertEquals(BusinessClassification.class, transformer.getSourceType());
 	}
 
 	@Test

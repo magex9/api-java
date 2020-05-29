@@ -14,28 +14,32 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class OrganizationDetailsJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<OrganizationDetails> transformer;
+	private Transformer<OrganizationDetails, JsonElement> transformer;
 	
 	private OrganizationDetails organization;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new OrganizationDetailsJsonTransformer(crm);
+		transformer = new OrganizationDetailsJsonTransformer(crm,
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm)
+		);
 		organization = new OrganizationDetails(new Identifier("org"), Status.ACTIVE, "Org Name", new Identifier("mainLoc"), new Identifier("mainContact"), List.of("G1", "G2"));
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(OrganizationDetails.class, transformer.getType());
+		assertEquals(OrganizationDetails.class, transformer.getSourceType());
 	}
 
 	@Test

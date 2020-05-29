@@ -4,21 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
+@Component
 public class CommunicationJsonTransformer extends AbstractJsonTransformer<Communication> {
+	
+	private LanguageJsonTransformer languageJsonTransformer;
+	
+	private TelephoneJsonTransformer telephoneJsonTransformer;
 
-	public CommunicationJsonTransformer(CrmServices crm) {
+	public CommunicationJsonTransformer(CrmServices crm, LanguageJsonTransformer languageJsonTransformer, 
+			TelephoneJsonTransformer telephoneJsonTransformer) {
 		super(crm);
+		this.languageJsonTransformer = languageJsonTransformer;
+		this.telephoneJsonTransformer = telephoneJsonTransformer;
 	}
 
 	@Override
-	public Class<Communication> getType() {
+	public Class<Communication> getSourceType() {
 		return Communication.class;
 	}
 	
@@ -33,12 +42,12 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 		formatType(pairs);
 		formatText(pairs, "jobTitle", communication);
 		if (communication.getLanguage() != null) {
-			pairs.add(new JsonPair("language", new LanguageJsonTransformer(crm)
+			pairs.add(new JsonPair("language", languageJsonTransformer
 				.format(crm.findLanguageByCode(communication.getLanguage()), locale)));
 		}
 		formatText(pairs, "email", communication);
 		if (communication.getHomePhone() != null) {
-			pairs.add(new JsonPair("homePhone", new TelephoneJsonTransformer(crm)
+			pairs.add(new JsonPair("homePhone", telephoneJsonTransformer
 				.format(communication.getHomePhone(), locale)));
 		}
 		formatText(pairs, "faxNumber", communication);
@@ -48,9 +57,9 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	@Override
 	public Communication parseJsonObject(JsonObject json, Locale locale) {
 		String jobTitle = parseText("jobTitle", json);
-		String language = parseObject("language", json, Language.class, LanguageJsonTransformer.class, locale).getCode();
+		String language = parseObject("language", json, languageJsonTransformer, locale).getCode();
 		String email = parseText("email", json);
-		Telephone homePhone = parseObject("homePhone", json, Telephone.class, TelephoneJsonTransformer.class, locale);
+		Telephone homePhone = parseObject("homePhone", json, telephoneJsonTransformer, locale);
 		String faxNumber = parseText("faxNumber", json);
 		return new Communication(jobTitle, language, email, homePhone, faxNumber);
 	}

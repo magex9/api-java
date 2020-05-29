@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
@@ -11,14 +13,22 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
+@Component
 public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<LocationSummary> {
 
-	public LocationSummaryJsonTransformer(CrmServices crm) {
+	private IdentifierJsonTransformer identifierJsonTransformer;
+	
+	private StatusJsonTransformer statusJsonTransformer;
+	
+	public LocationSummaryJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
+			StatusJsonTransformer statusJsonTransformer) {
 		super(crm);
+		this.identifierJsonTransformer = identifierJsonTransformer;
+		this.statusJsonTransformer = statusJsonTransformer;
 	}
 
 	@Override
-	public Class<LocationSummary> getType() {
+	public Class<LocationSummary> getSourceType() {
 		return LocationSummary.class;
 	}
 	
@@ -32,15 +42,15 @@ public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<Loca
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
 		if (location.getLocationId() != null) {
-			pairs.add(new JsonPair("locationId", new IdentifierJsonTransformer(crm)
+			pairs.add(new JsonPair("locationId", identifierJsonTransformer
 				.format(location.getLocationId(), locale)));
 		}
 		if (location.getOrganizationId() != null) {
-			pairs.add(new JsonPair("organizationId", new IdentifierJsonTransformer(crm)
+			pairs.add(new JsonPair("organizationId", identifierJsonTransformer
 				.format(location.getOrganizationId(), locale)));
 		}
 		if (location.getStatus() != null) {
-			pairs.add(new JsonPair("status", new StatusJsonTransformer(crm)
+			pairs.add(new JsonPair("status", statusJsonTransformer
 				.format(location.getStatus(), locale)));
 		}
 		formatText(pairs, "reference", location);
@@ -50,9 +60,9 @@ public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<Loca
 
 	@Override
 	public LocationSummary parseJsonObject(JsonObject json, Locale locale) {
-		Identifier locationId = parseObject("locationId", json, Identifier.class, IdentifierJsonTransformer.class, locale);
-		Identifier organizationId = parseObject("organizationId", json, Identifier.class, IdentifierJsonTransformer.class, locale);
-		Status status = parseObject("status", json, Status.class, StatusJsonTransformer.class, locale);
+		Identifier locationId = parseObject("locationId", json, identifierJsonTransformer, locale);
+		Identifier organizationId = parseObject("organizationId", json, identifierJsonTransformer, locale);
+		Status status = parseObject("status", json, statusJsonTransformer, locale);
 		String reference = parseText("reference", json);
 		String displayName = parseText("displayName", json);
 		return new LocationSummary(locationId, organizationId, status, reference, displayName);

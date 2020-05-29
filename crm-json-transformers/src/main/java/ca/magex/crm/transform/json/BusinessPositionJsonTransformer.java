@@ -4,22 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.common.BusinessPosition;
-import ca.magex.crm.api.lookup.BusinessClassification;
-import ca.magex.crm.api.lookup.BusinessSector;
-import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
+@Component
 public class BusinessPositionJsonTransformer extends AbstractJsonTransformer<BusinessPosition> {
 
-	public BusinessPositionJsonTransformer(CrmServices crm) {
+	private BusinessSectorJsonTransformer businessSectorJsonTransformer;
+	
+	private BusinessUnitJsonTransformer businessUnitJsonTransformer;
+	
+	private BusinessClassificationJsonTransformer businessClassificationJsonTransformer;
+	
+	public BusinessPositionJsonTransformer(CrmServices crm, BusinessSectorJsonTransformer businessSectorJsonTransformer, 
+			BusinessUnitJsonTransformer businessUnitJsonTransformer, BusinessClassificationJsonTransformer businessClassificationJsonTransformer) {
 		super(crm);
+		this.businessSectorJsonTransformer = businessSectorJsonTransformer;
+		this.businessUnitJsonTransformer = businessUnitJsonTransformer;
+		this.businessClassificationJsonTransformer = businessClassificationJsonTransformer;
 	}
 
 	@Override
-	public Class<BusinessPosition> getType() {
+	public Class<BusinessPosition> getSourceType() {
 		return BusinessPosition.class;
 	}
 	
@@ -33,15 +43,15 @@ public class BusinessPositionJsonTransformer extends AbstractJsonTransformer<Bus
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
 		if (name.getSector() != null) {
-			pairs.add(new JsonPair("sector", new BusinessSectorJsonTransformer(crm)
+			pairs.add(new JsonPair("sector", businessSectorJsonTransformer
 				.format(crm.findBusinessSectorByCode(name.getSector()), locale)));
 		}
 		if (name.getUnit() != null) {
-			pairs.add(new JsonPair("unit", new BusinessUnitJsonTransformer(crm)
+			pairs.add(new JsonPair("unit", businessUnitJsonTransformer
 				.format(crm.findBusinessUnitByCode(name.getUnit()), locale)));
 		}
 		if (name.getClassification() != null) {
-			pairs.add(new JsonPair("classification", new BusinessClassificationJsonTransformer(crm)
+			pairs.add(new JsonPair("classification", businessClassificationJsonTransformer
 				.format(crm.findBusinessClassificationByCode(name.getClassification()), locale)));
 		}
 		return new JsonObject(pairs);
@@ -49,9 +59,9 @@ public class BusinessPositionJsonTransformer extends AbstractJsonTransformer<Bus
 
 	@Override
 	public BusinessPosition parseJsonObject(JsonObject json, Locale locale) {
-		String sector = parseObject("sector", json, BusinessSector.class, BusinessSectorJsonTransformer.class, locale).getCode();
-		String unit = parseObject("unit", json, BusinessUnit.class, BusinessUnitJsonTransformer.class, locale).getCode();
-		String classification = parseObject("classification", json, BusinessClassification.class, BusinessClassificationJsonTransformer.class, locale).getCode();
+		String sector = parseObject("sector", json, businessSectorJsonTransformer, locale).getCode();
+		String unit = parseObject("unit", json, businessUnitJsonTransformer, locale).getCode();
+		String classification = parseObject("classification", json, businessClassificationJsonTransformer, locale).getCode();
 		return new BusinessPosition(sector, unit, classification);
 	}
 

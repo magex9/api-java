@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
@@ -12,6 +14,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
+@Component
 public class BusinessUnitJsonTransformer extends AbstractJsonTransformer<BusinessUnit> {
 
 	public BusinessUnitJsonTransformer(CrmServices crm) {
@@ -19,7 +22,7 @@ public class BusinessUnitJsonTransformer extends AbstractJsonTransformer<Busines
 	}
 
 	@Override
-	public Class<BusinessUnit> getType() {
+	public Class<BusinessUnit> getSourceType() {
 		return BusinessUnit.class;
 	}
 

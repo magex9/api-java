@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
@@ -16,7 +16,7 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
 @Component
-public class GroupJsonTransformer extends AbstractJsonTransformer<Group> {
+public class RoleJsonTransformer extends AbstractJsonTransformer<Role> {
 	
 	private IdentifierJsonTransformer identifierJsonTransformer;
 	
@@ -24,7 +24,7 @@ public class GroupJsonTransformer extends AbstractJsonTransformer<Group> {
 	
 	private LocalizedJsonTransformer localizedJsonTransformer;
 
-	public GroupJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
+	public RoleJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
 			StatusJsonTransformer statusJsonTransformer, LocalizedJsonTransformer localizedJsonTransformer) {
 		super(crm);
 		this.identifierJsonTransformer = identifierJsonTransformer;
@@ -33,43 +33,48 @@ public class GroupJsonTransformer extends AbstractJsonTransformer<Group> {
 	}
 
 	@Override
-	public Class<Group> getSourceType() {
-		return Group.class;
+	public Class<Role> getSourceType() {
+		return Role.class;
 	}
 
 	@Override
-	public JsonObject formatRoot(Group group) {
-		return formatLocalized(group, null);
+	public JsonObject formatRoot(Role role) {
+		return formatLocalized(role, null);
 	}
 	
 	@Override
-	public JsonObject formatLocalized(Group group, Locale locale) {
+	public JsonObject formatLocalized(Role role, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		if (group.getGroupId() != null) {
+		if (role.getRoleId() != null) {
+			pairs.add(new JsonPair("roleId", identifierJsonTransformer
+				.format(role.getRoleId(), locale)));
+		}
+		if (role.getGroupId() != null) {
 			pairs.add(new JsonPair("groupId", identifierJsonTransformer
-				.format(group.getGroupId(), locale)));
+				.format(role.getGroupId(), locale)));
 		}
-		if (group.getStatus() != null) {
+		if (role.getStatus() != null) {
 			pairs.add(new JsonPair("status", statusJsonTransformer
-				.format(group.getStatus(), locale)));
+				.format(role.getStatus(), locale)));
 		}
-		if (group.getCode() != null) {
-			pairs.add(new JsonPair("code", new JsonText(group.getCode())));
+		if (role.getCode() != null) {
+			pairs.add(new JsonPair("code", new JsonText(role.getCode())));
 		}
-		if (group.getName() != null) {
+		if (role.getName() != null) {
 			pairs.add(new JsonPair("name", localizedJsonTransformer
-				.format(group.getName(), locale)));
+				.format(role.getName(), locale)));
 		}
 		return new JsonObject(pairs);
 	}
 
 	@Override
-	public Group parseJsonObject(JsonObject json, Locale locale) {
+	public Role parseJsonObject(JsonObject json, Locale locale) {
+		Identifier roleId = parseObject("roleId", json, identifierJsonTransformer, locale);
 		Identifier groupId = parseObject("groupId", json, identifierJsonTransformer, locale);
 		Status status = parseObject("status", json, statusJsonTransformer, locale);
 		Localized name = parseObject("name", json, localizedJsonTransformer, locale);
-		return new Group(groupId, status, name);
+		return new Role(roleId, groupId, status, name);
 	}
 
 }

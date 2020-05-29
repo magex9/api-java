@@ -12,21 +12,26 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class BusinessPositionJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<BusinessPosition> transformer;
+	private Transformer<BusinessPosition, JsonElement> transformer;
 	
 	private BusinessPosition position;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new BusinessPositionJsonTransformer(crm);
+		transformer = new BusinessPositionJsonTransformer(crm, 
+			new BusinessSectorJsonTransformer(crm),
+			new BusinessUnitJsonTransformer(crm), 
+			new BusinessClassificationJsonTransformer(crm)
+		);
 		position = new BusinessPosition(
 				crm.findBusinessSectorByLocalizedName(Lang.ENGLISH, "Information Technology").getCode(),
 				crm.findBusinessUnitByLocalizedName(Lang.ENGLISH, "Solutions").getCode(),
@@ -36,7 +41,7 @@ public class BusinessPositionJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(BusinessPosition.class, transformer.getType());
+		assertEquals(BusinessPosition.class, transformer.getSourceType());
 	}
 
 	@Test

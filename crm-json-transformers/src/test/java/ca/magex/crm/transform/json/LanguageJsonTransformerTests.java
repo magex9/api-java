@@ -12,15 +12,16 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
-import ca.magex.json.util.Transformer;
 
 public class LanguageJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<Language> transformer;
+	private Transformer<Language, JsonElement> transformer;
 	
 	private Language language;
 	
@@ -33,7 +34,7 @@ public class LanguageJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(Language.class, transformer.getType());
+		assertEquals(Language.class, transformer.getSourceType());
 	}
 
 	@Test

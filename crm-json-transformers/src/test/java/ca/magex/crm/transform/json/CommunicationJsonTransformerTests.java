@@ -13,27 +13,31 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class CommunicationJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<Communication> transformer;
+	private Transformer<Communication, JsonElement> transformer;
 	
 	private Communication communication;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new CommunicationJsonTransformer(crm);
+		transformer = new CommunicationJsonTransformer(crm, 
+			new LanguageJsonTransformer(crm),
+			new TelephoneJsonTransformer(crm)
+		);
 		communication = COMMUNICATIONS;
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(Communication.class, transformer.getType());
+		assertEquals(Communication.class, transformer.getSourceType());
 	}
 
 	@Test

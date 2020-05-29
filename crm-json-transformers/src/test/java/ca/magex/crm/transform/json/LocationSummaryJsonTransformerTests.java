@@ -14,27 +14,31 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class LocationSummaryJsonTransformerTests {
 	
 	private CrmServices crm;
 	
-	private Transformer<LocationSummary> transformer;
+	private Transformer<LocationSummary, JsonElement> transformer;
 	
 	private LocationSummary location;
 	
 	@Before
 	public void setup() {
 		crm = new AmnesiaServices();
-		transformer = new LocationSummaryJsonTransformer(crm);
+		transformer = new LocationSummaryJsonTransformer(crm,
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm)
+		);
 		location = new LocationSummary(new Identifier("loc"), new Identifier("org"), Status.ACTIVE, "REF", "Location Name");
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(LocationSummary.class, transformer.getType());
+		assertEquals(LocationSummary.class, transformer.getSourceType());
 	}
 
 	@Test
