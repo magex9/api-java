@@ -74,7 +74,7 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"findCodeLookups",
 				"{ findCodeLookups(category: %s, code: %s) { code englishName frenchName } }",
 				"LANGUAGE",
-				"en");
+				"EN");
 		Assert.assertNotNull(lookups);
 		
 		try {
