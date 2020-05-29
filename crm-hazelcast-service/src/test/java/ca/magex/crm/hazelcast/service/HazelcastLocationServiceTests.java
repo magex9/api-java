@@ -1,5 +1,6 @@
 package ca.magex.crm.hazelcast.service;
 
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -12,6 +13,7 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.test.AbstractLocationServiceTests;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,6 +44,11 @@ public class HazelcastLocationServiceTests extends AbstractLocationServiceTests 
 	@Override
 	public CrmPermissionService getPermissionService() {
 		return hzPermissionService;
+	}
+	
+	@Before
+	public void loadResource() {
+		hzInitializationService.initializeSystem("JUnit", CrmAsserts.PERSON_NAME, "junit@junit.com", "admin", "admin");
 	}
 	
 }

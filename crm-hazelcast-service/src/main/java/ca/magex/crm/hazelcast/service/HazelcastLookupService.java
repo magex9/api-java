@@ -38,9 +38,9 @@ public class HazelcastLookupService implements CrmLookupService {
 	public static String HZ_UNIT_KEY = "units";
 	public static String HZ_CLASSIFICATION_KEY = "classifications";
 	public static String HZ_PROVINCES_KEY = "classifications";
-		
+
 	@Autowired private HazelcastInstance hzInstance;
-	
+
 	@Override
 	public List<Status> findStatuses() {
 		return hzInstance.getList(HZ_STATUS_KEY);
@@ -64,7 +64,7 @@ public class HazelcastLookupService implements CrmLookupService {
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Status[" + locale + "] '" + name + "'"));
-	}	
+	}
 
 	@Override
 	public List<Country> findCountries() {
@@ -89,13 +89,13 @@ public class HazelcastLookupService implements CrmLookupService {
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Country[" + locale + "] '" + name + "'"));
-	}	
-	
+	}
+
 	@Override
 	public List<Province> findProvinces(String country) {
 		return (List<Province>) hzInstance.getMap(HZ_PROVINCES_KEY).getOrDefault(StringUtils.upperCase(country), new ArrayList<Province>());
 	}
-	
+
 	@Override
 	public Province findProvinceByCode(String province, String country) {
 		return findProvinces(country)
@@ -104,15 +104,15 @@ public class HazelcastLookupService implements CrmLookupService {
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Province '" + province + "' for Country '" + country + "'"));
 	}
-	
+
 	@Override
 	public Province findProvinceByLocalizedName(Locale locale, String province, String country) {
 		String code = findCountryByLocalizedName(locale, country).getCode();
 		return findProvinces(code)
-			.stream()
-			.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
-			.findFirst()
-			.orElseThrow(() -> new ItemNotFoundException("Province[" + locale + "] '" + province + "' for country '" + country + "'"));
+				.stream()
+				.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
+				.findFirst()
+				.orElseThrow(() -> new ItemNotFoundException("Province[" + locale + "] '" + province + "' for country '" + country + "'"));
 	}
 
 	@Override

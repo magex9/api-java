@@ -3,8 +3,6 @@ package ca.magex.crm.hazelcast.service;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -39,26 +37,23 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	public static String HZ_ROLE_KEY = "roles";
 
 	@Autowired private HazelcastInstance hzInstance;
-	
+
 	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
-	public Group createGroup(
-			@NotNull Localized name) {
+	public Group createGroup(Localized name) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_GROUP_KEY);
 		Group group = new Group(
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				Status.ACTIVE,
 				name);
-		validationService.validate(group);
-		groups.put(group.getGroupId(), group);
+		groups.put(group.getGroupId(), validationService.validate(group));
 		return SerializationUtils.clone(group);
 	}
 
 	@Override
-	public Group findGroup(
-			@NotNull Identifier groupId) {
+	public Group findGroup(Identifier groupId) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		Group group = groups.get(groupId);
 		if (group == null) {
@@ -68,16 +63,17 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Group findGroupByCode(
-			@NotNull String code) {
+	public Group findGroupByCode(String code) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
-		return groups.values().stream().filter((g) -> g.getCode().equals(code)).findFirst().orElseThrow(() -> new ItemNotFoundException("Group Code '" + code + "'"));
+		return groups.values().stream()
+				.filter((g) -> g.getCode().equals(code))
+				.map((g) -> SerializationUtils.clone(g))
+				.findFirst()
+				.orElseThrow(() -> new ItemNotFoundException("Group Code '" + code + "'"));
 	}
 
 	@Override
-	public Group updateGroupName(
-			@NotNull Identifier groupId,
-			@NotNull Localized name) {
+	public Group updateGroupName(Identifier groupId, Localized name) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		Group group = groups.get(groupId);
 		if (group == null) {
@@ -87,14 +83,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(group);
 		}
 		group = group.withName(name);
-		validationService.validate(group);
-		groups.put(group.getGroupId(), group);
+		groups.put(group.getGroupId(), validationService.validate(group));
 		return SerializationUtils.clone(group);
 	}
 
 	@Override
-	public Group enableGroup(
-			@NotNull Identifier groupId) {
+	public Group enableGroup(Identifier groupId) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		Group group = groups.get(groupId);
 		if (group == null) {
@@ -104,14 +98,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(group);
 		}
 		group = group.withStatus(Status.ACTIVE);
-		validationService.validate(group);
-		groups.put(group.getGroupId(), group);
+		groups.put(group.getGroupId(), validationService.validate(group));
 		return SerializationUtils.clone(group);
 	}
 
 	@Override
-	public Group disableGroup(
-			@NotNull Identifier groupId) {
+	public Group disableGroup(Identifier groupId) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		Group group = groups.get(groupId);
 		if (group == null) {
@@ -121,27 +113,23 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(group);
 		}
 		group = group.withStatus(Status.INACTIVE);
-		validationService.validate(group);
-		groups.put(group.getGroupId(), group);
+		groups.put(group.getGroupId(), validationService.validate(group));
 		return SerializationUtils.clone(group);
 	}
 
 	@Override
-	public FilteredPage<Group> findGroups(
-			@NotNull GroupsFilter filter,
-			@NotNull Paging paging) {
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		return PageBuilder.buildPageFor(filter, groups.values().stream()
 				.filter(g -> filter.apply(g))
+				.map((g) -> SerializationUtils.clone(g))
 				.sorted(paging.new PagingComparator<Group>())
 				.collect(Collectors.toList()),
 				paging);
 	}
 
 	@Override
-	public Role createRole(
-			@NotNull Identifier groupId,
-			@NotNull Localized name) {
+	public Role createRole(Identifier groupId, Localized name) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ROLE_KEY);
 		Role role = new Role(
@@ -149,14 +137,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 				groupId,
 				Status.ACTIVE,
 				name);
-		validationService.validate(role);
-		roles.put(role.getRoleId(), role);
+		roles.put(role.getRoleId(), validationService.validate(role));
 		return SerializationUtils.clone(role);
 	}
 
 	@Override
-	public Role findRole(
-			@NotNull Identifier roleId) {
+	public Role findRole(Identifier roleId) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
@@ -166,9 +152,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Role updateRoleName(
-			@NotNull Identifier roleId,
-			@NotNull Localized name) {
+	public Role updateRoleName(Identifier roleId, Localized name) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
@@ -178,14 +162,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(role);
 		}
 		role = role.withName(name);
-		validationService.validate(role);
-		roles.put(role.getRoleId(), role);
+		roles.put(role.getRoleId(), validationService.validate(role));
 		return SerializationUtils.clone(role);
 	}
 
 	@Override
-	public Role enableRole(
-			@NotNull Identifier roleId) {
+	public Role enableRole(Identifier roleId) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
@@ -195,14 +177,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(role);
 		}
 		role = role.withStatus(Status.ACTIVE);
-		validationService.validate(role);
-		roles.put(role.getRoleId(), role);
+		roles.put(role.getRoleId(), validationService.validate(role));
 		return SerializationUtils.clone(role);
 	}
 
 	@Override
-	public Role disableRole(
-			@NotNull Identifier roleId) {
+	public Role disableRole(Identifier roleId) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
@@ -212,27 +192,28 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(role);
 		}
 		role = role.withStatus(Status.INACTIVE);
-		validationService.validate(role);
-		roles.put(role.getRoleId(), role);
+		roles.put(role.getRoleId(), validationService.validate(role));
 		return SerializationUtils.clone(role);
 	}
 
 	@Override
-	public FilteredPage<Role> findRoles(
-			@NotNull RolesFilter filter,
-			@NotNull Paging paging) {
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		return PageBuilder.buildPageFor(filter, roles.values().stream()
-				.filter(r -> filter.apply(r))				
+				.filter(r -> filter.apply(r))
+				.map(r -> SerializationUtils.clone(r))
 				.sorted(paging.new PagingComparator<Role>())
 				.collect(Collectors.toList()),
 				paging);
 	}
 
 	@Override
-	public Role findRoleByCode(
-			@NotNull String code) {
+	public Role findRoleByCode(String code) {
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
-		return roles.values().stream().filter((r) -> r.getCode().equals(code)).findFirst().orElseThrow(() -> new ItemNotFoundException("Role Code '" + code + "'"));
+		return roles.values().stream()
+				.filter((r) -> r.getCode().equals(code))
+				.map(r -> SerializationUtils.clone(r))
+				.findFirst()
+				.orElseThrow(() -> new ItemNotFoundException("Role Code '" + code + "'"));
 	}
 }

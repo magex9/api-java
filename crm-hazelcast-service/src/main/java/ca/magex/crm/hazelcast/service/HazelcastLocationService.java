@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +39,11 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmOrganizationService organizationService;
-	
+
 	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
-	public LocationDetails createLocation(
-			@NotNull Identifier organizationId, 
-			@NotNull String locationName, 
-			@NotNull String locationReference, 
-			@NotNull MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		/* run a find on the organizationId to ensure it exists */
 		organizationService.findOrganizationSummary(organizationId);
 		/* create our new location for this organizationId */
@@ -62,14 +56,12 @@ public class HazelcastLocationService implements CrmLocationService {
 				locationReference,
 				locationName,
 				address);
-		locations.put(locDetails.getLocationId(), locDetails);
+		locations.put(locDetails.getLocationId(), validationService.validate(locDetails));
 		return SerializationUtils.clone(locDetails);
 	}
 
 	@Override
-	public LocationDetails updateLocationName(
-			@NotNull Identifier locationId, 
-			@NotNull String displayName) {
+	public LocationDetails updateLocationName(Identifier locationId, String displayName) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
@@ -79,14 +71,12 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withDisplayName(displayName);
-		locations.put(locationId, locDetails);
+		locations.put(locationId, validationService.validate(locDetails));
 		return SerializationUtils.clone(locDetails);
 	}
 
 	@Override
-	public LocationDetails updateLocationAddress(
-			@NotNull Identifier locationId, 
-			@NotNull MailingAddress address) {
+	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
@@ -96,13 +86,12 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withAddress(address);
-		locations.put(locationId, locDetails);
+		locations.put(locationId, validationService.validate(locDetails));
 		return SerializationUtils.clone(locDetails);
 	}
 
 	@Override
-	public LocationSummary enableLocation(
-			@NotNull Identifier locationId) {
+	public LocationSummary enableLocation(Identifier locationId) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
@@ -112,13 +101,12 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withStatus(Status.ACTIVE);
-		locations.put(locationId, locDetails);
+		locations.put(locationId, validationService.validate(locDetails));
 		return SerializationUtils.clone(locDetails);
 	}
 
 	@Override
-	public LocationSummary disableLocation(
-			@NotNull Identifier locationId) {
+	public LocationSummary disableLocation(Identifier locationId) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
@@ -128,43 +116,38 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withStatus(Status.INACTIVE);
-		locations.put(locationId, locDetails);
+		locations.put(locationId, validationService.validate(locDetails));
 		return SerializationUtils.clone(locDetails);
 	}
 
 	@Override
-	public LocationSummary findLocationSummary(
-			@NotNull Identifier locationId) {
+	public LocationSummary findLocationSummary(Identifier locationId) {
 		return findLocationDetails(locationId);
 	}
 
 	@Override
-	public LocationDetails findLocationDetails(
-			@NotNull Identifier locationId) {
+	public LocationDetails findLocationDetails(Identifier locationId) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		}
-		return locDetails;
+		return SerializationUtils.clone(locDetails);
 	}
 
 	@Override
-	public long countLocations(
-			@NotNull LocationsFilter filter) {
+	public long countLocations(LocationsFilter filter) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		return locations.values()
-			.stream()
-			.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-			.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
-			.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
-			.count();
+				.stream()
+				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
+				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
+				.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
+				.count();
 	}
 
 	@Override
-	public FilteredPage<LocationDetails> findLocationDetails(
-			@NotNull LocationsFilter filter, 
-			@NotNull Paging paging) {
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		List<LocationDetails> allMatchingLocations = locations.values()
 				.stream()
@@ -178,9 +161,7 @@ public class HazelcastLocationService implements CrmLocationService {
 	}
 
 	@Override
-	public FilteredPage<LocationSummary> findLocationSummaries(
-			@NotNull LocationsFilter filter, 
-			@NotNull Paging paging) {
+	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
 		List<LocationSummary> allMatchingLocations = locations.values()
 				.stream()

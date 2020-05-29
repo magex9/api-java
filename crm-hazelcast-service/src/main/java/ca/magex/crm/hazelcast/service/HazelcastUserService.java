@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +45,11 @@ public class HazelcastUserService implements CrmUserService {
 	@Autowired private CrmPasswordService passwordService;
 	@Autowired private CrmPersonService personService;
 	@Autowired private CrmPermissionService permissionService;
-	
+
 	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
-	public User createUser(
-			@NotNull Identifier personId,
-			@NotNull String username,
-			@NotNull List<String> roles) {
+	public User createUser(Identifier personId, String username, List<String> roles) {
 		roles.forEach((role) -> {
 			permissionService.findRoleByCode(role); // ensure each role exists
 		});
@@ -76,13 +71,12 @@ public class HazelcastUserService implements CrmUserService {
 				person,
 				Status.ACTIVE,
 				roles);
-		users.put(user.getUserId(), user);
+		users.put(user.getUserId(), validationService.validate(user));
 		return SerializationUtils.clone(user);
 	}
 
 	@Override
-	public User findUser(
-			@NotNull Identifier userId) {
+	public User findUser(Identifier userId) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -92,8 +86,7 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User findUserByUsername(
-			@NotNull String username) {
+	public User findUserByUsername(String username) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.values().stream()
 				.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
@@ -105,9 +98,7 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User updateUserRoles(
-			@NotNull Identifier userId,
-			@NotNull List<String> roles) {
+	public User updateUserRoles(Identifier userId, List<String> roles) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -117,13 +108,12 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withRoles(roles);
-		users.put(user.getUserId(), user);
+		users.put(user.getUserId(), validationService.validate(user));
 		return SerializationUtils.clone(user);
 	}
 
 	@Override
-	public User enableUser(
-			@NotNull Identifier userId) {
+	public User enableUser(Identifier userId) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -133,13 +123,12 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withStatus(Status.ACTIVE);
-		users.put(user.getUserId(), user);
+		users.put(user.getUserId(), validationService.validate(user));
 		return SerializationUtils.clone(user);
 	}
 
 	@Override
-	public User disableUser(
-			@NotNull Identifier userId) {
+	public User disableUser(Identifier userId) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -149,17 +138,15 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withStatus(Status.INACTIVE);
-		users.put(user.getUserId(), user);
+		users.put(user.getUserId(), validationService.validate(user));
 		return SerializationUtils.clone(user);
 	}
 
 	@Override
-	public boolean changePassword(
-			@NotNull Identifier userId,
-			@NotNull String currentPassword,
-			@NotNull String newPassword) {
-		if (!isValidPasswordFormat(newPassword))
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		if (!isValidPasswordFormat(newPassword)) {
 			return false;
+		}
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -168,15 +155,13 @@ public class HazelcastUserService implements CrmUserService {
 		if (passwordService.verifyPassword(user.getUsername(), currentPassword)) {
 			passwordService.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	@Override
-	public String resetPassword(
-			@NotNull Identifier userId) {
+	public String resetPassword(Identifier userId) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		User user = users.get(userId);
 		if (user == null) {
@@ -187,7 +172,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public long countUsers(
-			@NotNull UsersFilter filter) {
+			UsersFilter filter) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		return users.values()
 				.stream()
@@ -201,8 +186,8 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public FilteredPage<User> findUsers(
-			@NotNull UsersFilter filter,
-			@NotNull Paging paging) {
+			UsersFilter filter,
+			Paging paging) {
 		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
 		List<User> allMatchingUsers = users.values()
 				.stream()

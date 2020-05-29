@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +42,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
-	public OrganizationDetails createOrganization(
-			@NotNull String organizationDisplayName,
-			@NotNull List<String> groups) {
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = new OrganizationDetails(
@@ -56,15 +52,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				null,
 				null,
 				groups);
-		validationService.validate(orgDetails);
-		organizations.put(orgDetails.getOrganizationId(), orgDetails);
+		organizations.put(orgDetails.getOrganizationId(), validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationDisplayName(
-			@NotNull Identifier organizationId,
-			@NotNull String name) {
+	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -75,15 +68,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withDisplayName(name);
-		validationService.validate(orgDetails);
-		organizations.put(organizationId, orgDetails);
+		organizations.put(organizationId, validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainContact(
-			@NotNull Identifier organizationId,
-			@NotNull Identifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -94,15 +84,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainContactId(personId);
-		validationService.validate(orgDetails);
-		organizations.put(organizationId, orgDetails);
+		organizations.put(organizationId, validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainLocation(
-			@NotNull Identifier organizationId,
-			@NotNull Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -113,15 +100,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainLocationId(locationId);
-		validationService.validate(orgDetails);
-		organizations.put(organizationId, orgDetails);
+		organizations.put(organizationId, validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationGroups(
-			@NotNull Identifier organizationId,
-			@NotNull List<String> groups) {
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -135,14 +119,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withGroups(groups);
-		validationService.validate(orgDetails);
-		organizations.put(organizationId, orgDetails);
+		organizations.put(organizationId, validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationSummary enableOrganization(
-			@NotNull Identifier organizationId) {
+	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -152,14 +134,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.ACTIVE);
-		validationService.validate(orgDetails);
-		organizations.put(organizationId, orgDetails);
+		organizations.put(organizationId, validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationSummary disableOrganization(
-			@NotNull Identifier organizationId) {
+	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -169,20 +149,17 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.INACTIVE);
-		validationService.validate(orgDetails);
-		organizations.put(organizationId, orgDetails);
+		organizations.put(organizationId, validationService.validate(orgDetails));
 		return SerializationUtils.clone(orgDetails);
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(
-			@NotNull Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		return findOrganizationDetails(organizationId);
 	}
 
 	@Override
-	public OrganizationDetails findOrganizationDetails(
-			@NotNull Identifier organizationId) {
+	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
@@ -192,8 +169,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public long countOrganizations(
-			@NotNull OrganizationsFilter filter) {
+	public long countOrganizations(OrganizationsFilter filter) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		return organizations.values()
 				.stream()
@@ -202,9 +178,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public FilteredPage<OrganizationDetails> findOrganizationDetails(
-			@NotNull OrganizationsFilter filter,
-			@NotNull Paging paging) {
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationDetails> allMatchingOrgs = organizations.values()
 				.stream()
@@ -216,9 +190,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public FilteredPage<OrganizationSummary> findOrganizationSummaries(
-			@NotNull OrganizationsFilter filter,
-			@NotNull Paging paging) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationSummary> allMatchingOrgs = organizations.values()
 				.stream()
