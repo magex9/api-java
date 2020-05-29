@@ -132,7 +132,6 @@ public class PersonDetailsJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(person, Lang.ROOT);
-		System.out.println(root);
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), root.keys());
 		assertEquals("PersonDetails", root.getString("@type"));
 		assertEquals("prsn", root.getString("personId"));

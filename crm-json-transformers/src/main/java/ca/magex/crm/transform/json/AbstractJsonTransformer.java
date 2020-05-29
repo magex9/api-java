@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
@@ -116,27 +117,27 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T> {
 		}
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	public void formatTexts(List<JsonPair> parent, String key, Object obj, Class<?> type) {
-//		if (obj != null) {
-//			try {
-//				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-//				if (!m.getReturnType().equals(List.class))
-//					throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
-//				List<String> list = (List<String>)m.invoke(obj, new Object[] { });
-//				List<JsonElement> elements = new ArrayList<JsonElement>();
-//				if (list != null) {
-//					for (String text : list) {
-//						elements.add(new JsonText(text));
-//					}
-//				}
-//				parent.add(new JsonPair(key, new JsonArray(elements)));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-//	
+	@SuppressWarnings("unchecked")
+	public void formatTexts(List<JsonPair> parent, String key, Object obj, Class<?> type) {
+		if (obj != null) {
+			try {
+				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
+				if (!m.getReturnType().equals(List.class))
+					throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
+				List<String> list = (List<String>)m.invoke(obj, new Object[] { });
+				List<JsonElement> elements = new ArrayList<JsonElement>();
+				if (list != null) {
+					for (String text : list) {
+						elements.add(new JsonText(text));
+					}
+				}
+				parent.add(new JsonPair(key, new JsonArray(elements)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 //	@SuppressWarnings("unchecked")
 //	public void formatIdentifiers(List<JsonPair> parent, String key, Object obj, Class<?> type) {
 //		if (obj != null) {
