@@ -1,6 +1,5 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 

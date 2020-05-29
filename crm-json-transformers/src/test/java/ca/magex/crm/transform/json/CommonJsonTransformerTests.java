@@ -1,7 +1,8 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.GROUP;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,7 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.transform.json.AbstractJsonTransformer;
-import ca.magex.crm.transform.json.GroupJsonTransformer;
 import ca.magex.json.model.JsonPair;
 
 public class CommonJsonTransformerTests {
