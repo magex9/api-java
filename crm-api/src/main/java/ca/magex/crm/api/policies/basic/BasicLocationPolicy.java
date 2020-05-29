@@ -27,6 +27,7 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	 * @param locationService
 	 */
 	public BasicLocationPolicy(CrmOrganizationService organizationService, CrmLocationService locationService) {
+		this.organizationService = organizationService;
 		this.locationService = locationService;
 	}
 	

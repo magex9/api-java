@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.policies.basic.BasicUserPolicy;
 import ca.magex.crm.api.roles.User;
@@ -23,97 +22,129 @@ public class AuthenticatedUserPolicy extends BaseAuthenticatedPolicy implements 
 	private CrmUserService userService;
 	private CrmPersonService personService;
 
+	/**
+	 * Authenticated User Policy handles roles and association checks required for policy approval
+	 * 
+	 * @param authenticationService
+	 * @param personService
+	 * @param userService
+	 */
 	public AuthenticatedUserPolicy(
 			CrmAuthenticationService authenticationService,
 			CrmPersonService personService,
 			CrmUserService userService) {
 		super(authenticationService, userService);
+		this.basicPolicy = new BasicUserPolicy(userService, personService);
 		this.personService = personService;
 		this.userService = userService;
-		this.basicPolicy = new BasicUserPolicy();
+		
 	}
 	
 	@Override
 	public boolean canCreateUserForPerson(Identifier personId) {
+		if (!basicPolicy.canCreateUserForPerson(personId)) {
+			return false;
+		}
 		User currentUser = getCurrentUser();
 		/* if the user is a CRM Admin then return true */
 		if (isCrmAdmin(currentUser)) {
-			return basicPolicy.canCreateUserForPerson(personId);
+			return true;
 		}
-		/*
-		 * if the person belongs to the organization, then return true if they are an RE
-		 * Admin
-		 */
-		PersonSummary person = personService.findPersonSummary(personId);
-		if (currentUser.getPerson().getOrganizationId().equals(person.getOrganizationId())) {
-			return isReAdmin(currentUser) && basicPolicy.canCreateUserForPerson(personId);
+		/* ensure the current user is associated with the organization the person belongs to */
+		if (currentUser.getPerson().getOrganizationId().equals(personService.findPersonSummary(personId).getOrganizationId())) {
+			return isReAdmin(currentUser);
 		}
-		/* not part of the organization that the personId belongs to */
+		/* current user not associated to the organization of the person */
 		return false;
 	}
 
 	@Override
 	public boolean canViewUser(Identifier userId) {
+		if (!basicPolicy.canViewUser(userId)) {
+			return false;
+		}
 		User currentUser = getCurrentUser();
 		/* if the user is a CRM Admin then return true */
 		if (isCrmAdmin(currentUser)) {
-			return basicPolicy.canViewUser(userId);
+			return true;
 		}
-		/* check if the target user belongs to the same organization */
-		User user = userService.findUser(userId);
-		return currentUser.getPerson().getOrganizationId().equals(user.getPerson().getOrganizationId()) && basicPolicy.canViewUser(userId);
+		/* ensure the current user is associated to the users organization */
+		return currentUser.getPerson().getOrganizationId().equals(userService.findUser(userId).getPerson().getOrganizationId());
 	}
 
 	@Override
 	public boolean canUpdateUserRole(Identifier userId) {
+		if (!basicPolicy.canUpdateUserRole(userId)) {
+			return false;
+		}
 		User currentUser = getCurrentUser();
 		/* if the user is a CRM Admin then return true */
 		if (isCrmAdmin(currentUser)) {
-			return basicPolicy.canUpdateUserRole(userId);
+			return true;
 		}
-		/*
-		 * if the person belongs to the organization, then return true if they are an RE
-		 * Admin
-		 */
-		User user = userService.findUser(userId);
-		if (currentUser.getPerson().getOrganizationId().equals(user.getPerson().getOrganizationId())) {
-			return isReAdmin(currentUser) && basicPolicy.canUpdateUserRole(userId);
+		/* ensure the current user is associated to the users organization */
+		if (currentUser.getPerson().getOrganizationId().equals(userService.findUser(userId).getPerson().getOrganizationId())) {
+			return isReAdmin(currentUser);
 		}
-		/* not part of the organization that the personId belongs to */
+		/* ensure the current user is associated to the users organization */
 		return false;
 	}
 
 	@Override
 	public boolean canUpdateUserPassword(Identifier userId) {
+		if (!basicPolicy.canUpdateUserPassword(userId)) {
+			return false;
+		}
 		User currentUser = getCurrentUser();
 		/* if the user is a CRM Admin then return true */
 		if (isCrmAdmin(currentUser)) {
-			return basicPolicy.canUpdateUserPassword(userId);
+			return true;
 		}
 		/* current user can update their own password */
 		if (currentUser.getUserId().equals(userId)) {
-			return basicPolicy.canUpdateUserPassword(userId);
+			return true;
+		}		
+		/* ensure the current user is associated to the users organization */
+		if (currentUser.getPerson().getOrganizationId().equals(userService.findUser(userId).getPerson().getOrganizationId())) {
+			return isReAdmin(currentUser);
 		}
-		
-		/*
-		 * if the person belongs to the organization, then return true if they are an RE
-		 * Admin
-		 */
-		User user = userService.findUser(userId);
-		if (currentUser.getPerson().getOrganizationId().equals(user.getPerson().getOrganizationId())) {
-			return isReAdmin(currentUser) && basicPolicy.canUpdateUserPassword(userId);
-		}
-		/* not part of the organization that the personId belongs to */
+		/* ensure the current user is associated to the users organization */
 		return false;
 	}
 
 	@Override
 	public boolean canEnableUser(Identifier userId) {
-		return basicPolicy.canEnableUser(userId);
+		if (!basicPolicy.canEnableUser(userId)) {
+			return false;
+		}
+		User currentUser = getCurrentUser();
+		/* if the user is a CRM Admin then return true */
+		if (isCrmAdmin(currentUser)) {
+			return true;
+		}
+		/* ensure the current user is associated to the users organization */
+		if (currentUser.getPerson().getOrganizationId().equals(userService.findUser(userId).getPerson().getOrganizationId())) {
+			return isReAdmin(currentUser);
+		}
+		/* ensure the current user is associated to the users organization */
+		return false;
 	}
 
 	@Override
 	public boolean canDisableUser(Identifier userId) {
-		return basicPolicy.canDisableUser(userId);
+		if (!basicPolicy.canDisableUser(userId)) {
+			return false;
+		}
+		User currentUser = getCurrentUser();
+		/* if the user is a CRM Admin then return true */
+		if (isCrmAdmin(currentUser)) {
+			return true;
+		}
+		/* ensure the current user is associated to the users organization */
+		if (currentUser.getPerson().getOrganizationId().equals(userService.findUser(userId).getPerson().getOrganizationId())) {
+			return isReAdmin(currentUser);
+		}
+		/* ensure the current user is associated to the users organization */
+		return false;
 	}
 }
