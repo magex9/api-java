@@ -46,6 +46,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.validation.CrmValidation;
+import ca.magex.crm.api.validation.StructureValidationService;
 
 public final class Crm implements CrmInitializationService, CrmServices, CrmPolicies, CrmValidation {
 	
@@ -547,6 +549,11 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 
 	public PersonDetails validate(PersonDetails person) {
 		return validationService.validate(person);
+	}
+	
+	@Override
+	public User validate(User user) throws BadRequestException {
+		return validationService.validate(user);
 	}
 
 	public List<String> validate(List<String> roles, Identifier personId) {

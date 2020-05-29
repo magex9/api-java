@@ -20,21 +20,21 @@ import ca.magex.crm.api.system.Status;
 public class BasicLocationPolicyTests {
 
 	private CrmOrganizationService organizationService;
-	private CrmLocationService locationService;	
+	private CrmLocationService locationService;
 	private BasicLocationPolicy policy;
-	
+
 	@BeforeAll
-	public void initializeMocks() {	
+	public void initializeMocks() {
 		organizationService = Mockito.mock(CrmOrganizationService.class);
 		locationService = Mockito.mock(CrmLocationService.class);
 		policy = new BasicLocationPolicy(organizationService, locationService);
 	}
-	
+
 	@BeforeEach
 	public void resetMocks() {
 		Mockito.reset(organizationService, locationService);
 	}
-	
+
 	@Test
 	public void testCanCreateLocationForOrganization() {
 		Identifier orgId = new Identifier("O1");
@@ -52,5 +52,25 @@ public class BasicLocationPolicyTests {
 		Assertions.assertFalse(policy.canCreateLocationForOrganization(orgId2));
 		/* should not be able to create a location for an org that doesn't exist */
 		Assertions.assertFalse(policy.canCreateLocationForOrganization(orgId3));
-	}	
+	}
+
+	@Test
+	public void testCanViewLocation() {
+		// TODO
+	}
+
+	@Test
+	public void testCanUpdateLocation() {
+		// TODO
+	}
+
+	@Test
+	public void testCanEnableLocation() {
+		// TODO
+	}
+
+	@Test
+	public void testCanDisableLocation() {
+		// TODO
+	}
 }

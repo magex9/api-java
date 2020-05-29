@@ -20,7 +20,7 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.services.StructureValidationService;
+import ca.magex.crm.api.validation.StructureValidationService;
 
 @Service
 @Primary

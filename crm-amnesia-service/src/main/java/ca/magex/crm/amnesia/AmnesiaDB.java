@@ -37,8 +37,8 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.validation.StructureValidationService;
 import ca.magex.crm.resource.CrmLookupLoader;
 import ca.magex.crm.resource.CrmRoleInitializer;
 

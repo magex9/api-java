@@ -30,10 +30,10 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.validation.StructureValidationService;
 
 @Service
 @Primary

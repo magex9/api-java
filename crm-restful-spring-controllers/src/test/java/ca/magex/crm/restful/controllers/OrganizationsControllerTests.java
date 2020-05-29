@@ -6,7 +6,8 @@ import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,7 +18,6 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;

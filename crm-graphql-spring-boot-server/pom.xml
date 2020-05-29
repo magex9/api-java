@@ -33,12 +33,6 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-policies</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-spring-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>

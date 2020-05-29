@@ -34,11 +34,11 @@ import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.validation.StructureValidationService;
 
 public abstract class AbstractPermissionServiceTests {
 
@@ -429,14 +429,8 @@ public abstract class AbstractPermissionServiceTests {
 	}	
 	
 	@Test
-	public void testCreatingGroupWithInvalidStatuses() throws Exception {
-		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
-		try {
-			validation.validate(new Group(new Identifier("group"), Status.INACTIVE, GROUP));
-			fail("Should fail validation");
-		} catch(BadRequestException e) {
-			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Cannot create a new group that is inactive");
-		}
+	public void testCreatingGroupWithoutStatuses() throws Exception {
+		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());		
 		try {
 			validation.validate(new Group(new Identifier("group"), null, GROUP));
 			fail("Should fail validation");
@@ -513,19 +507,13 @@ public abstract class AbstractPermissionServiceTests {
 	}	
 	
 	@Test
-	public void testCreatingRoleWithInvalidStatuses() throws Exception {
-		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
-		try {
-			validation.validate(new Role(new Identifier("role"), new Identifier("group"), Status.INACTIVE, GROUP));
-			fail("Should fail validation");
-		} catch(BadRequestException e) {
-			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Cannot create a new role that is inactive");
-		}
+	public void testCreatingRoleWithoutStatus() throws Exception {
+		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());		
 		try {
 			validation.validate(new Role(new Identifier("role"), new Identifier("group"), null, GROUP));
 			fail("Should fail validation");
 		} catch(BadRequestException e) {
-			assertBadRequestMessage(e, new Identifier("group"), "error", "status", "Status is mandatory for a role");
+			assertBadRequestMessage(e, new Identifier("role"), "error", "status", "Status is mandatory for a role");
 		}
 	}
 	

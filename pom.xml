@@ -25,10 +25,10 @@
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
-<!-- 		<module>crm-hazelcast-service</module> -->
+		<module>crm-hazelcast-service</module>
 		
 		<!-- Policy Implementations -->
-		<module>crm-policies</module>		
+<!-- 		<module>crm-policies</module>		 -->
 		
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>

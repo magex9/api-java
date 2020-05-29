@@ -37,11 +37,11 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.services.CrmValidation;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.validation.CrmValidation;
 
 public class AmnesiaServices implements CrmServices, CrmInitializationService, CrmValidation {
 
@@ -203,14 +203,17 @@ public class AmnesiaServices implements CrmServices, CrmInitializationService, C
 		return db.getLookups().findBusinessClassificationByLocalizedName(locale, name);
 	}
 	
+	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
 		return db.getOrganizations().createOrganization(organizationDisplayName, groups);
 	}
 
+	@Override
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		return db.getOrganizations().updateOrganizationDisplayName(organizationId, name);
 	}
 
+	@Override
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
 		return db.getOrganizations().updateOrganizationMainLocation(organizationId, locationId);
 	}
@@ -220,123 +223,153 @@ public class AmnesiaServices implements CrmServices, CrmInitializationService, C
 		return db.getOrganizations().updateOrganizationMainContact(organizationId, personId);
 	}
 	
+	@Override
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> group) {
 		return db.getOrganizations().updateOrganizationGroups(organizationId, group);
 	}
 
+	@Override
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		return db.getOrganizations().enableOrganization(organizationId);
 	}
 
+	@Override
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		return db.getOrganizations().disableOrganization(organizationId);
 	}
 	
+	@Override
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		return db.getOrganizations().findOrganizationDetails(organizationId);
 	}
 	
+	@Override
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
 		return db.getOrganizations().findOrganizationDetails(organizationId);
 	}
 	
+	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
 		return db.getOrganizations().countOrganizations(filter);
 	}
 	
+	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		return db.getOrganizations().findOrganizationDetails(filter, paging);
 	}
 
+	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		return db.getOrganizations().findOrganizationSummaries(filter, paging);
 	}
 
+	@Override
 	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference,
 			MailingAddress address) {
 		return db.getLocations().createLocation(organizationId, displayName, reference, address);
 	}
 
+	@Override
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
 		return db.getLocations().updateLocationName(locationId, locationName);
 	}
 
+	@Override
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		return db.getLocations().updateLocationAddress(locationId, address);
 	}
 
+	@Override
 	public LocationSummary enableLocation(Identifier locationId) {
 		return db.getLocations().enableLocation(locationId);
 	}
 
+	@Override
 	public LocationSummary disableLocation(Identifier locationId) {
 		return db.getLocations().disableLocation(locationId);
 	}
 
+	@Override
 	public LocationSummary findLocationSummary(Identifier locationId) {
 		return db.getLocations().findLocationSummary(locationId);
 	}
 	
+	@Override
 	public LocationDetails findLocationDetails(Identifier locationId) {
 		return db.getLocations().findLocationDetails(locationId);
 	}
 	
+	@Override
 	public long countLocations(LocationsFilter filter) {
 		return db.getLocations().countLocations(filter);
 	}
 	
+	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		return db.getLocations().findLocationDetails(filter, paging);
 	}
 	
+	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		return db.getLocations().findLocationSummaries(filter, paging);
 	}
 
+	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		return db.getPersons().createPerson(organizationId, name, address, communication, position);
 	}
 
+	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
 		return db.getPersons().updatePersonName(personId, name);
 	}
 
+	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
 		return db.getPersons().updatePersonAddress(personId, address);
 	}
 
+	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
 		return db.getPersons().updatePersonCommunication(personId, communication);
 	}
 	
+	@Override
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
 		return db.getPersons().updatePersonBusinessPosition(personId, position);
 	}
 
+	@Override
 	public PersonSummary enablePerson(Identifier personId) {
 		return db.getPersons().enablePerson(personId);
 	}
 
+	@Override
 	public PersonSummary disablePerson(Identifier personId) {
 		return db.getPersons().disablePerson(personId);
 	}
 
+	@Override
 	public PersonSummary findPersonSummary(Identifier personId) {
 		return db.getPersons().findPersonSummary(personId);
 	}
 	
+	@Override
 	public PersonDetails findPersonDetails(Identifier personId) {
 		return db.getPersons().findPersonDetails(personId);
 	}
 	
+	@Override
 	public long countPersons(PersonsFilter filter) {
 		return db.getPersons().countPersons(filter);
 	}
 	
+	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		return db.getPersons().findPersonDetails(filter, paging);
 	}
 	
+	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return db.getPersons().findPersonSummaries(filter, paging);
 	}
@@ -392,7 +425,7 @@ public class AmnesiaServices implements CrmServices, CrmInitializationService, C
 	}
 
 	@Override
-	public Group validate(Group group) throws BadRequestException {
+	public Group validate(Group group) {
 		return db.getValidation().validate(group);
 	}
 	
@@ -401,18 +434,27 @@ public class AmnesiaServices implements CrmServices, CrmInitializationService, C
 		return db.getValidation().validate(role);
 	}
 	
+	@Override
 	public OrganizationDetails validate(OrganizationDetails organization) {
 		return db.getValidation().validate(organization);
 	}
 
+	@Override
 	public LocationDetails validate(LocationDetails location) {
 		return db.getValidation().validate(location);
 	}
 
+	@Override
 	public PersonDetails validate(PersonDetails person) {
 		return db.getValidation().validate(person);
 	}
+	
+	@Override
+	public User validate(User user) {
+		return db.getValidation().validate(user);
+	}
 
+	@Override
 	public List<String> validate(List<String> roles, Identifier personId) {
 		return db.getValidation().validate(roles, personId);
 	}

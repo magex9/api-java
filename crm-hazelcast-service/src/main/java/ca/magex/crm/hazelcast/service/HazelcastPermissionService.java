@@ -24,11 +24,11 @@ import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.validation.StructureValidationService;
 
 @Service
 @Primary
