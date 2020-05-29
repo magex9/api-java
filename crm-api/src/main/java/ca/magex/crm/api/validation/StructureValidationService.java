@@ -270,6 +270,55 @@ public class StructureValidationService implements CrmValidation {
 		}
 		return location;
 	}
+	
+	@Override
+	public PersonDetails validate(PersonDetails person) throws BadRequestException {
+		List<Message> messages = new ArrayList<Message>();
+
+		// Organization
+		if (person.getOrganizationId() == null) {
+			messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization cannot be null")));
+		} else {
+			try {
+				organizations.findOrganizationDetails(person.getOrganizationId());
+			} catch (ItemNotFoundException e) {
+				messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization does not exist")));
+			}
+		}
+
+		// Status
+		if (person.getStatus() == null)
+			messages.add(new Message(person.getPersonId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a person")));
+
+		// Display Name
+		if (StringUtils.isBlank(person.getDisplayName())) {
+			messages.add(new Message(person.getPersonId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for a person")));
+		} else if (person.getDisplayName().length() > 60) {
+			messages.add(new Message(person.getPersonId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+		}
+
+		// Legal Name
+		if (person.getLegalName() == null) {
+			messages.add(new Message(person.getPersonId(), "error", "legalName", new Localized(Lang.ENGLISH, "Legal name is mandatory for a person")));
+		} else {
+			validatePersonName(person.getLegalName(), messages, person.getPersonId(), "legalName");
+		}
+
+		// Address
+		if (person.getAddress() != null) {
+			validateMailingAddress(person.getAddress(), messages, person.getPersonId(), "address");
+		}
+
+		if (!messages.isEmpty())
+			throw new BadRequestException("Person has validation errors", messages);
+		return person;
+	}
+
+	@Override
+	public User validate(User user) throws BadRequestException {
+		// do validation here
+		return user;
+	}
 
 	/**
 	 * helper method for validating an address
@@ -321,6 +370,7 @@ public class StructureValidationService implements CrmValidation {
 		}
 	}
 
+	
 	private void validatePersonName(PersonName name, List<Message> messages, Identifier identifier, String prefix) {
 		// Salutation
 		if (name.getSalutation() == null) {
@@ -355,53 +405,7 @@ public class StructureValidationService implements CrmValidation {
 		}
 	}
 
-	public PersonDetails validate(PersonDetails person) throws BadRequestException {
-		List<Message> messages = new ArrayList<Message>();
-
-		// Organization
-		if (person.getOrganizationId() == null) {
-			messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization cannot be null")));
-		} else {
-			try {
-				organizations.findOrganizationDetails(person.getOrganizationId());
-			} catch (ItemNotFoundException e) {
-				messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization does not exist")));
-			}
-		}
-
-		// Status
-		if (person.getStatus() == null)
-			messages.add(new Message(person.getPersonId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a person")));
-
-		// Display Name
-		if (StringUtils.isBlank(person.getDisplayName())) {
-			messages.add(new Message(person.getPersonId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for a person")));
-		} else if (person.getDisplayName().length() > 60) {
-			messages.add(new Message(person.getPersonId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
-		}
-
-		// Legal Name
-		if (person.getLegalName() == null) {
-			messages.add(new Message(person.getPersonId(), "error", "legalName", new Localized(Lang.ENGLISH, "Legal name is mandatory for a person")));
-		} else {
-			validatePersonName(person.getLegalName(), messages, person.getPersonId(), "legalName");
-		}
-
-		// Address
-		if (person.getAddress() != null) {
-			validateMailingAddress(person.getAddress(), messages, person.getPersonId(), "address");
-		}
-
-		if (!messages.isEmpty())
-			throw new BadRequestException("Person has validation errors", messages);
-		return person;
-	}
-
-	@Override
-	public User validate(User user) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
