@@ -32,26 +32,33 @@ stages:
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
 
-    - task: MavenAuthenticate@0
-      inputs:
-        artifactsFeeds: 'finapplicationdevelopment-snapshots'
-   
-    - task: Maven@3
-      inputs:
-        mavenPomFile: 'crm-helloworld/pom.xml'
-        goals: 'deploy'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.11'
-        mavenVersionOption: 'Default'
-    - task: Maven@3
-      inputs:
-        mavenPomFile: 'crm-graphql-spring-boot-server/pom.xml'
-        goals: 'deploy'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.11'
-        mavenVersionOption: 'Default'
+    #- task: MavenAuthenticate@0
+    #  inputs:
+    #    artifactsFeeds: 'finapplicationdevelopment-snapshots'
+  
+    - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
+      artifact: crm-graphql-spring-boot-server
+
+    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
+      artifact: crm-helloworld
+  
+    #- task: Maven@3
+    #  inputs:
+    #    mavenPomFile: 'crm-helloworld/pom.xml'
+    #    goals: 'deploy'
+    #    publishJUnitResults: true
+    #    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    #    javaHomeOption: 'JDKVersion'
+    #    jdkVersionOption: '1.11'
+    #    mavenVersionOption: 'Default'
+    
+    #- task: Maven@3
+    #  inputs:
+    #    mavenPomFile: 'crm-graphql-spring-boot-server/pom.xml'
+    #    goals: 'deploy'
+    #    publishJUnitResults: true
+    #    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    #    javaHomeOption: 'JDKVersion'
+    #    jdkVersionOption: '1.11'
+    #    mavenVersionOption: 'Default'
 
