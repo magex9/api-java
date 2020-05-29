@@ -18,18 +18,14 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
-import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
@@ -44,14 +40,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmPermissionService permissionService;
-	@Autowired private CrmLocationService locationService;
-	@Autowired private CrmPersonService personService;
-	
+
 	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public OrganizationDetails createOrganization(
-			@NotNull String organizationDisplayName, 
+			@NotNull String organizationDisplayName,
 			@NotNull List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
@@ -66,10 +60,10 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		organizations.put(orgDetails.getOrganizationId(), orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
-	
+
 	@Override
 	public OrganizationDetails updateOrganizationDisplayName(
-			@NotNull Identifier organizationId, 
+			@NotNull Identifier organizationId,
 			@NotNull String name) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
@@ -88,16 +82,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(
-			@NotNull Identifier organizationId, 
+			@NotNull Identifier organizationId,
 			@NotNull Identifier personId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
-		}
-		PersonSummary personSummary = personService.findPersonSummary(personId); // ensure the person exists
-		if (!personSummary.getOrganizationId().equals(organizationId)) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		}
 		/* nothing to update here */
 		if (orgDetails.getMainContactId() != null && orgDetails.getMainContactId().equals(personId)) {
@@ -111,16 +101,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(
-			@NotNull Identifier organizationId, 
+			@NotNull Identifier organizationId,
 			@NotNull Identifier locationId) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
-		}
-		LocationSummary locationSummary = locationService.findLocationSummary(locationId); // ensure the location exists
-		if (!locationSummary.getOrganizationId().equals(organizationId)) {
-			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		}
 		/* nothing to update here */
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
@@ -134,7 +120,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public OrganizationDetails updateOrganizationGroups(
-			@NotNull Identifier organizationId, 
+			@NotNull Identifier organizationId,
 			@NotNull List<String> groups) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = organizations.get(organizationId);
@@ -231,7 +217,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(
-			@NotNull OrganizationsFilter filter, 
+			@NotNull OrganizationsFilter filter,
 			@NotNull Paging paging) {
 		Map<Identifier, OrganizationDetails> organizations = hzInstance.getMap(HZ_ORGANIZATION_KEY);
 		List<OrganizationSummary> allMatchingOrgs = organizations.values()

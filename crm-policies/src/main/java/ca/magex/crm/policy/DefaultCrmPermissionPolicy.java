@@ -58,7 +58,7 @@ public class DefaultCrmPermissionPolicy implements CrmPermissionPolicy {
 	}
 
 	@Override
-	public boolean canCreateRole() {
+	public boolean canCreateRole(Identifier groupId) {
 		return true; 
 	}
 
@@ -89,11 +89,6 @@ public class DefaultCrmPermissionPolicy implements CrmPermissionPolicy {
 
 	@Override
 	public boolean canDisableRole(Identifier roleId) {
-		return true;
-	}
-
-	@Override
-	public boolean canViewPermissions() {
 		return true;
 	}
 

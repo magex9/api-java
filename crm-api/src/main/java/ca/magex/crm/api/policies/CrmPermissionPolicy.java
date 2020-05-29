@@ -11,14 +11,11 @@ public interface CrmPermissionPolicy {
     boolean canEnableGroup(Identifier groupId);
     boolean canDisableGroup(Identifier groupId);
 
-    boolean canCreateRole();
+    boolean canCreateRole(Identifier groupId);
     boolean canViewRoles();
     boolean canViewRole(String code);
     boolean canViewRole(Identifier roleId);
     boolean canUpdateRole(Identifier roleId);
     boolean canEnableRole(Identifier roleId);
-    boolean canDisableRole(Identifier roleId);
-    
-    boolean canViewPermissions();
-    
+    boolean canDisableRole(Identifier roleId);    
 }

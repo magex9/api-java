@@ -688,8 +688,8 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 
 	@Override
 	public Role createRole(Identifier groupId, Localized name) {
-		if (!canCreateRole())
-			throw new PermissionDeniedException("addRole: " + groupId);
+		if (!canCreateRole(groupId))
+			throw new PermissionDeniedException("createRole: " + groupId);
 		return permissionsService.createRole(groupId, name);
 	}
 
@@ -745,13 +745,13 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public boolean canCreateRole() {
-		return permissionsPolicy.canCreateRole();
+	public boolean canCreateRole(Identifier groupId) {
+		return permissionsPolicy.canCreateRole(groupId);
 	}
 	
 	@Override
 	public boolean canViewRoles() {
-		return permissionsPolicy.canCreateRole();
+		return permissionsPolicy.canViewRoles();
 	}
 
 	@Override
@@ -778,10 +778,4 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	public boolean canDisableRole(Identifier roleId) {
 		return permissionsPolicy.canDisableRole(roleId);
 	}
-
-	@Override
-	public boolean canViewPermissions() {
-		return permissionsPolicy.canViewPermissions();
-	}
-	
 }

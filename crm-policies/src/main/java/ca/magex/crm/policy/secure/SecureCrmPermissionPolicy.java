@@ -58,7 +58,7 @@ public class SecureCrmPermissionPolicy extends AbstractSecureCrmPolicy implement
 	}
 
 	@Override
-	public boolean canCreateRole() {
+	public boolean canCreateRole(Identifier groupId) {
 		return isCrmAdmin(getCurrentUser());
 	}
 
@@ -98,11 +98,6 @@ public class SecureCrmPermissionPolicy extends AbstractSecureCrmPolicy implement
 		} catch (ItemNotFoundException e) {
 			return false;
 		}
-	}
-
-	@Override
-	public boolean canViewPermissions() {
-		return isCrmAdmin(getCurrentUser());
 	}
 
 }
