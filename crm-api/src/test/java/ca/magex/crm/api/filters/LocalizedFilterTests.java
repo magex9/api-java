@@ -4,9 +4,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import ca.magex.crm.api.system.Localized;
 
+@TestInstance(Lifecycle.PER_METHOD)
 public class LocalizedFilterTests {
 
 	@Test
