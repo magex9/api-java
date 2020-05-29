@@ -11,25 +11,22 @@ import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
-public class BusinessSector implements CrmLookupItem {
+public class BusinessSector extends Localized implements CrmLookupItem {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
-	private Localized name;
-
 	public BusinessSector(String code, String english, String french) {
-		super();
-		this.name = new Localized(code, english, french);
+		super(code, english, french);
 	}
 	
 	@Override
 	public String getCode() {
-		return name.get(Lang.ROOT);
+		return get(Lang.ROOT);
 	}
 	
 	@Override
 	public String getName(Locale locale) {
-		return name.get(locale);
+		return get(locale);
 	}
 	
 	@Override
