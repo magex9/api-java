@@ -20,57 +20,57 @@ import ca.magex.json.model.JsonPair;
 
 public class CommonJsonTransformerTests {
 
-//	@Test
-//	public void testFormatTextNull() throws Exception {
-//		CrmServices crm = new AmnesiaServices();
-//		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm, Lang.ENGLISH);
-//		transformer.formatText(null, null, null);
-//	}
-//	
-//	@Test
-//	public void testFormatTextKey() throws Exception {
-//		CrmServices crm = new AmnesiaServices();
-//		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm, Lang.ENGLISH);
-//		List<JsonPair> pairs = new ArrayList<JsonPair>();
-//		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
-//		transformer.formatText(pairs, "code", group);
-//	}
-//	
-//	@Test
-//	public void testGetPropertyOptions() throws Exception {
-//		CrmServices crm = new AmnesiaServices();
-//		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm, Lang.ENGLISH);
-//		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
-//		try {
-//			transformer.getProperty(null, "code", String.class);
-//			fail("Illegal arguments");
-//		} catch (IllegalArgumentException e) {
-//			assertEquals("Object cannot be null", e.getMessage());
-//		}
-//		try {
-//			transformer.getProperty(group, null, String.class);
-//			fail("Illegal arguments");
-//		} catch (IllegalArgumentException e) {
-//			assertEquals("Key cannot be null", e.getMessage());
-//		}
-//		try {
-//			transformer.getProperty(group, "code", null);
-//			fail("Illegal arguments");
-//		} catch (IllegalArgumentException e) {
-//			assertEquals("Type cannot be null", e.getMessage());
-//		}
-//		try {
-//			transformer.getProperty(group, "code", Group.class);
-//			fail("Illegal arguments");
-//		} catch (IllegalArgumentException e) {
-//			assertEquals("Unexpected return code, expected", e.getMessage());
-//		}
-//		try {
-//			transformer.getProperty(group, "invalid", String.class);
-//			fail("Illegal arguments");
-//		} catch (IllegalArgumentException e) {
-//			assertEquals("Unexpected return code, expected", e.getMessage());
-//		}
-//	}
+	@Test
+	public void testFormatTextNull() throws Exception {
+		CrmServices crm = new AmnesiaServices();
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		transformer.formatText(null, null, null);
+	}
+	
+	@Test
+	public void testFormatTextKey() throws Exception {
+		CrmServices crm = new AmnesiaServices();
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
+		transformer.formatText(pairs, "code", group);
+	}
+	
+	@Test
+	public void testGetPropertyOptions() throws Exception {
+		CrmServices crm = new AmnesiaServices();
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
+		try {
+			transformer.getProperty(null, "code", String.class);
+			fail("Illegal arguments");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Object cannot be null", e.getMessage());
+		}
+		try {
+			transformer.getProperty(group, null, String.class);
+			fail("Illegal arguments");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Key cannot be null", e.getMessage());
+		}
+		try {
+			transformer.getProperty(group, "code", null);
+			fail("Illegal arguments");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Type cannot be null", e.getMessage());
+		}
+		try {
+			transformer.getProperty(group, "code", Group.class);
+			fail("Illegal arguments");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Unable to get code from {\"groupId\":\"g\",\"status\":\"ACTIVE\",\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+		}
+		try {
+			transformer.getProperty(group, "invalid", String.class);
+			fail("Illegal arguments");
+		} catch (IllegalArgumentException e) {
+			assertEquals("Unable to get invalid from {\"groupId\":\"g\",\"status\":\"ACTIVE\",\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+		}
+	}
 	
 }
