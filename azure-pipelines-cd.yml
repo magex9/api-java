@@ -8,20 +8,16 @@ pool:
 
 resources:
   pipelines:
-  - pipeline: "crm pipeline"   # Name of the pipeline resource
-    source: security-lib-ci # Name of the triggering pipeline
+  - pipeline: "api-java CD"   # Name of the pipeline resource
+    source: "magex9 Api-java Build" # Name of the triggering pipeline
     trigger: 
       branches:
-      - releases/*
+      - azure*
       - master
 
-#variables:
-#  - application_name ... application_name variable is defined as a pipeline input variable
-#                         To use it in bash , it must be referred as ${APPLICATION_NAME}
 variables:
 - group: ut-server-info
 
-#test
 #Stages Configuration (to be ran sequentially)
 stages:
 
@@ -36,29 +32,38 @@ stages:
           deploy:
             steps:
             
-            - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+            - checkout: ADLC  # self represents the repo where the initial Pipelines YAML file was found
               clean: true  # whether to fetch clean each time
               fetchDepth: 1  # the depth of commits to ask Git to fetch
               lfs: false  # whether to download Git-LFS files
               submodules: false  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
               path: adlc  # path to check out source code, relative to the agent's build directory (e.g. \_work\1)
               persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
-            - task: DownloadPackage@1
-              inputs:
-                packageType: 'maven'
+            #- task: DownloadPackage@1
+            #  inputs:
+            #    packageType: 'maven'
 
                 #Feed: finapplicationdevelopment-snapshots
-                feed: '/6a9b2f21-1be7-4983-8a58-2a56ae2e0f27'
+            #    feed: '/6a9b2f21-1be7-4983-8a58-2a56ae2e0f27'
 
                 #view: local
-                view: 'cf2d4deb-464a-43b4-bd97-6d82dcc1a1d5'
+            #    view: 'cf2d4deb-464a-43b4-bd97-6d82dcc1a1d5'
 
                 #definition: ca.magex.crm:crm-graphql-spring-boot-server
-                definition: 'eafdba44-8024-47c8-8d04-8964d0e18768'
-                files: '*-bootable.jar'
-                version: '1.0.0-snapshot'
-                downloadPath: '$(System.ArtifactsDirectory)'
-
+            #    definition: 'eafdba44-8024-47c8-8d04-8964d0e18768'
+            #    files: '*-bootable.jar'
+            #    version: '1.0.0-snapshot'
+            #    downloadPath: '$(System.ArtifactsDirectory)'
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: 'specific'
+                project: '1e70bdc5-5a38-4ac5-8334-cca6004f1b06'
+                definition: '3'
+                specificBuildWithTriggering: true
+                buildVersionToDownload: 'latest'
+                artifactName: 'crm-graphql-spring-boot-server'
+                itemPattern: '*.jar'
+                targetPath: '$(Pipeline.Workspace)'
             - template: azure-deploy.yml
               parameters:
                 environment: 'ut'
