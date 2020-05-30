@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaServices;
+import ca.magex.crm.amnesia.services.AmnesiaCrm;
 import ca.magex.crm.api.crm.LocationSummary;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -20,7 +20,7 @@ import ca.magex.json.model.JsonObject;
 
 public class LocationSummaryJsonTransformerTests {
 	
-	private CrmServices crm;
+	private Crm crm;
 	
 	private Transformer<LocationSummary, JsonElement> transformer;
 	
@@ -28,7 +28,7 @@ public class LocationSummaryJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaServices();
+		crm = new AmnesiaCrm();
 		transformer = new LocationSummaryJsonTransformer(crm,
 			new IdentifierJsonTransformer(crm),
 			new StatusJsonTransformer(crm)

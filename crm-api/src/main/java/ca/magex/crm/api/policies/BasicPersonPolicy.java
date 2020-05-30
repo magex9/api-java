@@ -1,22 +1,29 @@
-package ca.magex.crm.policy;
+package ca.magex.crm.api.policies;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class DefaultCrmPersonPolicy implements CrmPersonPolicy {
+@Component
+@Primary
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class BasicPersonPolicy implements CrmPersonPolicy {
 
-	@Autowired private CrmOrganizationService organizationService;
-	@Autowired private CrmPersonService personService;
+	private CrmOrganizationService organizationService;
+	
+	private CrmPersonService personService;
+	
+	public BasicPersonPolicy(CrmOrganizationService organizationService, CrmPersonService personService) {
+		this.organizationService = organizationService;
+		this.personService = personService;
+	}
 
 	@Override
 	public boolean canCreatePersonForOrganization(Identifier organizationId) {

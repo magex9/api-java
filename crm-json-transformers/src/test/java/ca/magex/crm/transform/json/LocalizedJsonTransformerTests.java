@@ -10,7 +10,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaServices;
+import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.transform.Transformer;
@@ -20,11 +21,14 @@ import ca.magex.json.model.JsonText;
 
 public class LocalizedJsonTransformerTests {
 	
+	private Crm crm;
+	
 	private Transformer<Localized, JsonElement> transformer;
 	
 	@Before
 	public void setup() {
-		transformer = new LocalizedJsonTransformer(new AmnesiaServices());
+		crm = new AmnesiaCrm();
+		transformer = new LocalizedJsonTransformer(crm);
 	}
 	
 	@Test

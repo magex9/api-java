@@ -1,20 +1,25 @@
-package ca.magex.crm.policy;
+package ca.magex.crm.api.policies;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class DefaultCrmOrganizationPolicy implements CrmOrganizationPolicy {
+@Component
+@Primary
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 
-	@Autowired private CrmOrganizationService organizationService;
+	private CrmOrganizationService organizationService;
+	
+	public BasicOrganizationPolicy(CrmOrganizationService organizationService) {
+		this.organizationService = organizationService;
+	}
 
 	@Override
 	public boolean canCreateOrganization() {

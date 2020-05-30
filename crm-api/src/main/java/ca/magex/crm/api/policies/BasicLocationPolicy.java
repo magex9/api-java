@@ -1,21 +1,26 @@
-package ca.magex.crm.policy;
+package ca.magex.crm.api.policies;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class DefaultCrmLocationPolicy implements CrmLocationPolicy {
+@Component
+@Primary
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class BasicLocationPolicy implements CrmLocationPolicy {
 
-	@Autowired private CrmLocationService locationService;
+	private CrmLocationService locationService;
 	
+	public BasicLocationPolicy(CrmLocationService locationService) {
+		this.locationService = locationService;
+	}
+
 	@Override
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
 		return true;

@@ -1,21 +1,27 @@
-package ca.magex.crm.policy;
+package ca.magex.crm.api.policies;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-public class DefaultCrmPermissionPolicy implements CrmPermissionPolicy {
+@Component
+@Primary
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class BasicPermissionPolicy implements CrmPermissionPolicy {
 
-	@Autowired private CrmPermissionService permissionService;
+	private CrmPermissionService permissionService;
 	
+	public BasicPermissionPolicy(CrmPermissionService permissionService) {
+		super();
+		this.permissionService = permissionService;
+	}
+
 	@Override
 	public boolean canCreateGroup() {
 		return true;

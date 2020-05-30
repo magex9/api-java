@@ -9,9 +9,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaServices;
+import ca.magex.crm.amnesia.services.AmnesiaCrm;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonElement;
@@ -19,7 +19,7 @@ import ca.magex.json.model.JsonObject;
 
 public class TelephoneJsonTransformerTests {
 	
-	private CrmServices crm;
+	private Crm crm;
 	
 	private Transformer<Telephone, JsonElement> transformer;
 	
@@ -27,7 +27,7 @@ public class TelephoneJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaServices();
+		crm = new AmnesiaCrm();
 		transformer = new TelephoneJsonTransformer(crm);
 		telephone = PERSON_TELEPHONE;
 	}

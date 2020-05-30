@@ -32,12 +32,12 @@ public class CrmFactoryBean implements FactoryBean<Crm> {
 	@Override
 	public Crm getObject() throws Exception {
 		return new Crm(
-			initializationService, lookupService, 
+			initializationService, lookupService,
+			permissionService, permissionPolicy, 
 			organizationService, organizationPolicy,
 			locationService, locationPolicy,
 			personService, personPolicy,
-			userService, userPolicy,
-			permissionService, permissionPolicy);
+			userService, userPolicy);
 	}
 	
 	@Override

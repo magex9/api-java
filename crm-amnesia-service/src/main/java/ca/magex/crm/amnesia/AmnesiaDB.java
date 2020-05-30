@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import ca.magex.crm.amnesia.generator.AmnesiaBase58IdGenerator;
 import ca.magex.crm.amnesia.generator.AmnesiaIdGenerator;
+import ca.magex.crm.amnesia.services.AmnesiaCrm;
 import ca.magex.crm.amnesia.services.AmnesiaInitializationService;
 import ca.magex.crm.amnesia.services.AmnesiaLocationService;
 import ca.magex.crm.amnesia.services.AmnesiaLookupService;
@@ -21,7 +22,6 @@ import ca.magex.crm.amnesia.services.AmnesiaOrganizationService;
 import ca.magex.crm.amnesia.services.AmnesiaPasswordService;
 import ca.magex.crm.amnesia.services.AmnesiaPermissionService;
 import ca.magex.crm.amnesia.services.AmnesiaPersonService;
-import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.amnesia.services.AmnesiaUserService;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.PasswordDetails;
@@ -34,9 +34,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.resource.CrmLookupLoader;
@@ -80,7 +80,7 @@ public class AmnesiaDB {
 	
 	private Map<String, User> usersByUsername;
 	
-	private AmnesiaServices services;
+	private AmnesiaCrm crm;
 	
 	public AmnesiaDB(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
@@ -93,7 +93,7 @@ public class AmnesiaDB {
 		persons = new AmnesiaPersonService(this);
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
-		services = new AmnesiaServices(this);
+		crm = new AmnesiaCrm(this);
 		validation = new StructureValidationService(lookups, permissions, organizations, locations, persons);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
@@ -102,8 +102,8 @@ public class AmnesiaDB {
 		usersByUsername = new HashMap<String, User>();
 	}
 	
-	public CrmServices getServices() {
-		return services;
+	public Crm getCrm() {
+		return crm;
 	}
 	
 	public CrmInitializationService getInitialization() {
