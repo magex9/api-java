@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +30,8 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonFormatter;
@@ -47,10 +47,13 @@ public abstract class AbstractCrmController {
 	@Autowired
 	protected Crm crm;
 	
-	protected void handle(HttpServletRequest req, HttpServletResponse res, BiFunction<List<Message>, JsonTransformer, JsonElement> func) throws IOException {
+	@Autowired
+	private JsonTransformerFactory jsonTransformerFactory;
+	
+	protected <T> void handle(HttpServletRequest req, HttpServletResponse res, Class<T> type, BiFunction<List<Message>, Transformer<T, JsonElement>, JsonElement> func) throws IOException {
 		List<Message> messages = new ArrayList<Message>();
 		try {
-			JsonElement json = func.apply(messages, getTransformer(req, crm));
+			JsonElement json = func.apply(messages, jsonTransformerFactory.findByClass(type));
 			res.setStatus(200);
 			res.setContentType(getContentType(req));
 			res.getWriter().write(JsonFormatter.formatted(json));
@@ -111,20 +114,17 @@ public abstract class AbstractCrmController {
 	}
 
 	public String getContentType(HttpServletRequest req) {
-//		if (req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld")) {
-//			return "application/json+ld";
-//		}
 		return "application/json";
 	}
 
-	protected <T> JsonObject createPage(Page<T> page, Function<T, JsonElement> mapper) {
+	protected <T> JsonObject createPage(Page<T> page, Transformer<T, JsonElement> transfomer, Locale locale) {
 		return new JsonObject()
 			.with("page", page.getNumber())
 			.with("limit", page.getNumberOfElements())
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.hasPrevious())
-			.with("content", new JsonArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
+			.with("content", new JsonArray(page.getContent().stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
 	}
 	
 	protected JsonArray createErrorMessages(Locale locale, BadRequestException e) {
@@ -160,11 +160,6 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, "error", "confirm", new Localized(Lang.ENGLISH, "Confirmation message must be a boolean")));
 		}
 		validate(messages);
-	}
-	
-	public JsonTransformer getTransformer(HttpServletRequest req, Crm crm) {
-		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
-		return new JsonTransformer(crm, extractLocale(req), linked);
 	}
 	
 	public Locale extractLocale(HttpServletRequest req) {

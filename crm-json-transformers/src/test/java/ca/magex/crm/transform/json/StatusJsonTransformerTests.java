@@ -11,13 +11,14 @@ import org.junit.Test;
 import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
-import ca.magex.json.util.Transformer;
 
 public class StatusJsonTransformerTests {
 	
-	private Transformer<Status> transformer;
+	private Transformer<Status, JsonElement> transformer;
 	
 	@Before
 	public void setup() {
@@ -26,7 +27,7 @@ public class StatusJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(Status.class, transformer.getType());
+		assertEquals(Status.class, transformer.getSourceType());
 	}
 
 	@Test

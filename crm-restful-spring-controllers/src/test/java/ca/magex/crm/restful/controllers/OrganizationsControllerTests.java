@@ -59,7 +59,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -72,7 +73,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertEquals(organizationId.toString(), json.getString("organizationId"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -84,7 +86,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertEquals(organizationId.toString(), json.getString("organizationId"));
 		assertEquals("Actif", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -95,7 +98,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertEquals(organizationId.toString(), json.getString("organizationId"));
 		assertEquals("active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -117,7 +121,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		json.getArray("content").values().forEach(el -> {
 			assertEquals(JsonObject.class, el.getClass());
-			assertEquals(List.of("organizationId", "status", "displayName"), ((JsonObject)el).keys());
+			assertEquals(List.of("@type", "organizationId", "status", "displayName"), ((JsonObject)el).keys());
 		});
 		
 		assertEquals(organizationId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
@@ -142,7 +146,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName"), data.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName"), data.keys());
+		assertEquals("OrganizationSummary", data.getString("@type"));
 		assertTrue(data.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("active", data.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), data.getString("displayName"));
@@ -153,7 +158,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName"), english.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName"), english.keys());
+		assertEquals("OrganizationSummary", english.getString("@type"));
 		assertTrue(english.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), english.getString("displayName"));
@@ -164,7 +170,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("organizationId", "status", "displayName"), french.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName"), french.keys());
+		assertEquals("OrganizationSummary", french.getString("@type"));
 		assertTrue(french.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), french.getString("displayName"));
@@ -184,13 +191,15 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), data.keys());
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), data.keys());
+		assertEquals("LocationDetails", data.getString("@type"));
 		assertEquals(locationId.toString(), data.getString("locationId"));
 		assertEquals(organizationId.toString(), data.getString("organizationId"));
 		assertEquals("active", data.getString("status"));
 		assertEquals("Main Location", data.getString("displayName"));
 		assertEquals("MAIN", data.getString("reference"));
-		assertEquals(List.of("street", "city", "province", "country", "postalCode"), data.getObject("address").keys());
+		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), data.getObject("address").keys());
+		assertEquals("MailingAddress", data.getObject("address").getString("@type"));
 		assertEquals(MAILING_ADDRESS.getStreet(), data.getObject("address").getString("street"));
 		assertEquals(MAILING_ADDRESS.getCity(), data.getObject("address").getString("city"));
 		assertEquals("NL", data.getObject("address").getString("province"));
@@ -203,13 +212,15 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals("LocationDetails", english.getString("@type"));
 		assertEquals(locationId.toString(), english.getString("locationId"));
 		assertEquals(organizationId.toString(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Main Location", english.getString("displayName"));
 		assertEquals("MAIN", english.getString("reference"));
-		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
+		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
+		assertEquals("MailingAddress", data.getObject("address").getString("@type"));
 		assertEquals(MAILING_ADDRESS.getStreet(), english.getObject("address").getString("street"));
 		assertEquals(MAILING_ADDRESS.getCity(), english.getObject("address").getString("city"));
 		assertEquals("Newfoundland and Labrador", english.getObject("address").getString("province"));
@@ -222,13 +233,15 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals("LocationDetails", french.getString("@type"));
 		assertEquals(locationId.toString(), french.getString("locationId"));
 		assertEquals(organizationId.toString(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Main Location", french.getString("displayName"));
 		assertEquals("MAIN", french.getString("reference"));
-		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
+		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
+		assertEquals("MailingAddress", french.getObject("address").getString("@type"));
 		assertEquals(MAILING_ADDRESS.getStreet(), french.getObject("address").getString("street"));
 		assertEquals(MAILING_ADDRESS.getCity(), french.getObject("address").getString("city"));
 		assertEquals("Terre-Neuve et Labrador", french.getObject("address").getString("province"));
@@ -265,7 +278,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainLocationId", "mainContactId", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals("Updated name", json.getString("displayName"));
@@ -294,7 +308,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals("Updated name", json.getString("displayName"));
@@ -316,7 +331,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainLocationId", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -340,7 +356,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -363,7 +380,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("organizationId", "status", "displayName", "mainContactId", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainContactId", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
@@ -387,7 +405,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type"));
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));

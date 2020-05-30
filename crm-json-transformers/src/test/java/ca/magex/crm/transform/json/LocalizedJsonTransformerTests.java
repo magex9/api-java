@@ -1,7 +1,9 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.GROUP;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -11,13 +13,14 @@ import org.junit.Test;
 import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
-import ca.magex.json.util.Transformer;
 
 public class LocalizedJsonTransformerTests {
 	
-	private Transformer<Localized> transformer;
+	private Transformer<Localized, JsonElement> transformer;
 	
 	@Before
 	public void setup() {
@@ -26,7 +29,7 @@ public class LocalizedJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(Localized.class, transformer.getType());
+		assertEquals(Localized.class, transformer.getSourceType());
 	}
 
 	@Test

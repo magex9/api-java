@@ -178,7 +178,7 @@ public class PersonTransformerTest {
 				"    \"jobTitle\": \"Tester\",\n" + 
 				"    \"language\": {\n" + 
 				"      \"@type\": \"Language\",\n" + 
-				"      \"@value\": \"en\",\n" + 
+				"      \"@value\": \"EN\",\n" + 
 				"      \"@en\": \"English\",\n" + 
 				"      \"@fr\": \"Anglais\"\n" + 
 				"    },\n" + 

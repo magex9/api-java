@@ -1,7 +1,8 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.GROUP;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,7 @@ import ca.magex.crm.amnesia.services.AmnesiaServices;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.transform.json.AbstractJsonTransformer;
-import ca.magex.crm.transform.json.GroupJsonTransformer;
 import ca.magex.json.model.JsonPair;
 
 public class CommonJsonTransformerTests {
@@ -23,14 +21,22 @@ public class CommonJsonTransformerTests {
 	@Test
 	public void testFormatTextNull() throws Exception {
 		CrmServices crm = new AmnesiaServices();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm,
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm),
+			new LocalizedJsonTransformer(crm)
+		);
 		transformer.formatText(null, null, null);
 	}
 	
 	@Test
 	public void testFormatTextKey() throws Exception {
 		CrmServices crm = new AmnesiaServices();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm,
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm),
+			new LocalizedJsonTransformer(crm)
+		);
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
 		transformer.formatText(pairs, "code", group);
@@ -39,7 +45,11 @@ public class CommonJsonTransformerTests {
 	@Test
 	public void testGetPropertyOptions() throws Exception {
 		CrmServices crm = new AmnesiaServices();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm,
+			new IdentifierJsonTransformer(crm),
+			new StatusJsonTransformer(crm),
+			new LocalizedJsonTransformer(crm)
+		);
 		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
 		try {
 			transformer.getProperty(null, "code", String.class);
