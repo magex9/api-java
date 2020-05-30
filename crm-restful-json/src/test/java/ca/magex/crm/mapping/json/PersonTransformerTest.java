@@ -3,15 +3,11 @@ package ca.magex.crm.mapping.json;
 import static ca.magex.crm.test.CrmAsserts.CANADA;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.ONTARIO;
-import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
-import static ca.magex.crm.test.CrmAsserts.SYS;
-import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +22,6 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -45,6 +40,12 @@ import ca.magex.json.model.JsonObject;
 public class PersonTransformerTest {
 
 	@Autowired private Crm crm;
+	
+	@Before
+	public void init() {
+		crm.reset();
+		crm.initializeSystem("Amnesia", new PersonName("3", "Tom", "Tim", "Tam"), "ttt@amnesia.ca", "admin", "admin");
+	}
 
 	@Test
 	public void testPersonJson() throws Exception {
@@ -61,10 +62,6 @@ public class PersonTransformerTest {
 		String faxNumber = "4564564565";
 		Communication communication = new Communication(jobTitle, ENGLISH.get(locale), email, homePhone, faxNumber);
 		BusinessPosition unit = new BusinessPosition(crm.findBusinessSectors().get(0).getName(locale), null, null);
-		List<String> roles = new ArrayList<String>();
-		Group group = crm.createGroup(SYS);
-		roles.add(crm.createRole(group.getGroupId(), SYS_ADMIN).getRoleId().toString());
-		roles.add(crm.createRole(group.getGroupId(), ORG_ADMIN).getRoleId().toString());
 		
 		PersonDetails person = new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, unit);
 		JsonTransformer transformer = new JsonTransformer(crm, Lang.ENGLISH, false);

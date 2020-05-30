@@ -18,6 +18,7 @@
 			<artifactId>crm-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-json</artifactId>
@@ -50,13 +51,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-amnesia-service</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-policies</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

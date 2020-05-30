@@ -50,6 +50,7 @@ public class AmnesiaServices implements CrmServices, CrmInitializationService, C
 	
 	public AmnesiaServices() {
 		this(new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader()));
+		db.initialize("Amnesia", new PersonName("3", "Tom", "Tim", "Tam"), "ttt@amnesia.ca", "admin", "admin");
 	}
 	
 	public AmnesiaServices(AmnesiaDB db) {

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.services.Crm;
@@ -31,6 +33,12 @@ import ca.magex.json.model.JsonObject;
 public class OrganizationTransformerTest {
 
 	@Autowired private Crm crm;
+	
+	@Before
+	public void init() {
+		crm.reset();
+		crm.initializeSystem("Amnesia", new PersonName("3", "Tom", "Tim", "Tam"), "ttt@amnesia.ca", "admin", "admin");
+	}
 	
 	@Test
 	public void testOrganizationJson() throws Exception {

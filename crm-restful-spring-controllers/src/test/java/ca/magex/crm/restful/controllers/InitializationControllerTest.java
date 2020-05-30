@@ -23,7 +23,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
-		initiailziation.reset();
+		initialization.reset();
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 	
 	@Test
 	public void testInitialize() throws Exception {
-		assertFalse(initiailziation.isInitialized());
+		assertFalse(initialization.isInitialized());
 		
 		assertEquals(Long.valueOf(0), permissions.findGroups(permissions.defaultGroupsFilter(), GroupsFilter.getDefaultPaging()).getTotalElements());
 		assertEquals(Long.valueOf(0), permissions.findRoles(permissions.defaultRolesFilter(), RolesFilter.getDefaultPaging()).getTotalElements());
@@ -94,7 +94,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertTrue(initiailziation.isInitialized());
+		assertTrue(initialization.isInitialized());
 
 		assertEquals(List.of("APP", "CRM", "ORG", "SYS"), permissions.findGroups(permissions.defaultGroupsFilter(), GroupsFilter.getDefaultPaging()).stream().map(g -> g.getCode()).collect(Collectors.toList()));
 		assertEquals(List.of("APP_AUTH_REQUEST", "CRM_ADMIN", "CRM_USER", "ORG_ADMIN", "ORG_USER", "SYS_ACCESS", "SYS_ACTUATOR", "SYS_ADMIN"), permissions.findRoles(permissions.defaultRolesFilter(), RolesFilter.getDefaultPaging()).stream().map(r -> r.getCode()).collect(Collectors.toList()));
@@ -119,7 +119,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 			.andReturn().getResponse().getContentAsString());
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		initiailziation.dump(baos);
+		initialization.dump(baos);
 		String[] lines = baos.toString().split("\n");
 		assertEquals(15, lines.length);
 	}

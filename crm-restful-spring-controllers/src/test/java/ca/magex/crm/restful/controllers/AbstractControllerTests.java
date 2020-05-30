@@ -26,7 +26,7 @@ import static ca.magex.crm.test.CrmAsserts.*;
 })
 public abstract class AbstractControllerTests {
 	
-	@Autowired protected CrmInitializationService initiailziation;
+	@Autowired protected CrmInitializationService initialization;
 
 	@Autowired protected CrmPermissionService permissions;
 	
@@ -41,8 +41,8 @@ public abstract class AbstractControllerTests {
 	@Autowired protected MockMvc mockMvc;
 	
 	public void initialize() {
-		initiailziation.reset();
-		initiailziation.initializeSystem(SYS_ADMIN.getEnglishName(), PERSON_NAME, "admin@localhost", "system", "admin");
+		initialization.reset();
+		initialization.initializeSystem(SYS_ADMIN.getEnglishName(), PERSON_NAME, "admin@localhost", "system", "admin");
 	}
 	
 }

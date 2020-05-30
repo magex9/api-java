@@ -3,8 +3,6 @@ package ca.magex.crm.test;
 import static ca.magex.crm.test.CrmAsserts.CANADA;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.ONTARIO;
-import static ca.magex.crm.test.CrmAsserts.ORG;
-import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
 import static ca.magex.crm.test.CrmAsserts.SYS;
 import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
 
