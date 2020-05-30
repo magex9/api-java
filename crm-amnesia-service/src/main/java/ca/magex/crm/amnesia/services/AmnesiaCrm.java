@@ -2,6 +2,7 @@ package ca.magex.crm.amnesia.services;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
+import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.policies.BasicLocationPolicy;
 import ca.magex.crm.api.policies.BasicOrganizationPolicy;
 import ca.magex.crm.api.policies.BasicPermissionPolicy;
@@ -25,6 +26,7 @@ public class AmnesiaCrm extends Crm {
 				db.getPersons(), new BasicPersonPolicy(db.getOrganizations(), db.getPersons()), 
 				db.getUsers(), new BasicUserPolicy(db.getPersons(), db.getUsers()));
 		this.db = db;
+		this.db.initialize("Amnesia", new PersonName("3", "Chris", "P", "Bacon"), "admin@localhost", "system", "admin");
 	}
 	
 	public AmnesiaDB db() {
