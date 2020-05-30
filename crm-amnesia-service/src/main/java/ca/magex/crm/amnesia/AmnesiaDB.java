@@ -64,8 +64,6 @@ public class AmnesiaDB {
 	
 	private PasswordEncoder passwordEncoder;
 	
-	private CrmLookupLoader lookupLoader;
-	
 	private StructureValidationService validation;
 
 	private AmnesiaInitializationService initialization;
@@ -118,7 +116,6 @@ public class AmnesiaDB {
 	
 	public AmnesiaDB(PasswordEncoder passwordEncoder, CrmLookupLoader lookupLoader) {
 		this.passwordEncoder = passwordEncoder;
-		this.lookupLoader = lookupLoader;
 		idGenerator = new AmnesiaBase58IdGenerator();
 		lookups = new AmnesiaLookupService(this);
 		initialization = new AmnesiaInitializationService(this);
@@ -145,6 +142,18 @@ public class AmnesiaDB {
 		sectors = new Lookups<BusinessSector, String>(Collections.emptyList(), BusinessSector.class, String.class);
 		units = new Lookups<BusinessUnit, String>(Collections.emptyList(), BusinessUnit.class, String.class);
 		classifications = new Lookups<BusinessClassification, String>(Collections.emptyList(), BusinessClassification.class, String.class);
+				
+		/* initialize the lookups first, they are required for everything */
+		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
+		caProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "CaProvince.csv"), Province.class, String.class);
+		usProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "UsProvince.csv"), Province.class, String.class);
+		mxProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "MxProvince.csv"), Province.class, String.class);
+		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
+		salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
+		languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);
+		sectors = new Lookups<BusinessSector, String>(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"), BusinessSector.class, String.class);
+		units = new Lookups<BusinessUnit, String>(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"), BusinessUnit.class, String.class);
+		classifications = new Lookups<BusinessClassification, String>(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"), BusinessClassification.class, String.class);
 	}
 	
 	public CrmServices getServices() {
@@ -192,18 +201,7 @@ public class AmnesiaDB {
 	}
 	
 	public Identifier initialize(String organization, PersonName name, String email, String username, String password) {
-		if (systemId == null) {
-			/* initialize the lookups first, they are required for everything */
-			statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
-			caProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "CaProvince.csv"), Province.class, String.class);
-			usProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "UsProvince.csv"), Province.class, String.class);
-			mxProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "MxProvince.csv"), Province.class, String.class);
-			countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
-			salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
-			languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);
-			sectors = new Lookups<BusinessSector, String>(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"), BusinessSector.class, String.class);
-			units = new Lookups<BusinessUnit, String>(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"), BusinessUnit.class, String.class);
-			classifications = new Lookups<BusinessClassification, String>(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"), BusinessClassification.class, String.class);
+		if (systemId == null) {			
 			CrmRoleInitializer.initialize(permissions);
 			Identifier organizationId = organizations.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
 			Identifier personId = persons.createPerson(organizationId, name, new MailingAddress("123 Main Street", "Ottawa", "ON", "CA", "K4J0R8"), new Communication("Amin", "En", email, new Telephone("555-999-8888"), ""), null).getPersonId();
@@ -219,17 +217,7 @@ public class AmnesiaDB {
 		passwordData.clear();
 		groupsByCode.clear();
 		rolesByCode.clear();
-		usersByUsername.clear();
-		statuses = new Lookups<Status, String>(Collections.emptyList(), Status.class, String.class);
-		caProvinces = new Lookups<Province, String>(Collections.emptyList(), Province.class, String.class);
-		usProvinces = new Lookups<Province, String>(Collections.emptyList(), Province.class, String.class);
-		mxProvinces = new Lookups<Province, String>(Collections.emptyList(), Province.class, String.class);
-		countries = new Lookups<Country, String>(Collections.emptyList(), Country.class, String.class);
-		salutations = new Lookups<Salutation, String>(Collections.emptyList(), Salutation.class, String.class);
-		languages = new Lookups<Language, String>(Collections.emptyList(), Language.class, String.class);
-		sectors = new Lookups<BusinessSector, String>(Collections.emptyList(), BusinessSector.class, String.class);
-		units = new Lookups<BusinessUnit, String>(Collections.emptyList(), BusinessUnit.class, String.class);
-		classifications = new Lookups<BusinessClassification, String>(Collections.emptyList(), BusinessClassification.class, String.class);
+		usersByUsername.clear();		
 		systemId = null;
 	}
 	

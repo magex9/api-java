@@ -35,7 +35,6 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 	@Before
 	public void setup() {
 		initialization.reset();
-		initialization.initializeSystem("Amnesia", new PersonName("3", "Tom", "Tim", "Tam"), "ttt@amnesia.ca", "admin", "admin");
 	}
 	
 	@Test

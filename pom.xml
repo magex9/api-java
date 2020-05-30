@@ -43,7 +43,6 @@
 <!--  		<module>crm-graphql-spring-boot-feign-client</module> -->
 		
 		<!-- REST Endpoint Implementation -->
-		<module>crm-restful-json</module>
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
 <!-- 		<module>crm-restful-client</module> -->
