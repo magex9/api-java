@@ -10,6 +10,14 @@ pool:
 #  - application_name ... application_name variable is defined as a pipeline input variable
 #                         To use it in bash , it must be referred as ${APPLICATION_NAME}
 
+resources:
+  repositories:
+  - repository: "ADLC"  # identifier (A-Z, a-z, 0-9, and underscore)
+    type: "git"  # see the following "Type" topic
+    name: "ADLC/ADLC"  # repository name (format depends on `type`)
+    ref: "refs/heads/azure"  # ref name to use; defaults to 'refs/heads/master'
+    #endpoint: string  # name of the service connection to use (for types that aren't Azure Repos)
+
 trigger:
       - azure
 #test
@@ -32,33 +40,42 @@ stages:
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
 
-    #- task: MavenAuthenticate@0
-    #  inputs:
-    #    artifactsFeeds: 'finapplicationdevelopment-snapshots'
-  
     - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
       artifact: crm-graphql-spring-boot-server
 
     - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
       artifact: crm-helloworld
-  
-    #- task: Maven@3
-    #  inputs:
-    #    mavenPomFile: 'crm-helloworld/pom.xml'
-    #    goals: 'deploy'
-    #    publishJUnitResults: true
-    #    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    #    javaHomeOption: 'JDKVersion'
-    #    jdkVersionOption: '1.11'
-    #    mavenVersionOption: 'Default'
-    
-    #- task: Maven@3
-    #  inputs:
-    #    mavenPomFile: 'crm-graphql-spring-boot-server/pom.xml'
-    #    goals: 'deploy'
-    #    publishJUnitResults: true
-    #    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    #    javaHomeOption: 'JDKVersion'
-    #    jdkVersionOption: '1.11'
-    #    mavenVersionOption: 'Default'
 
+- stage: deployApplications
+  jobs:
+    - job: checkoutConfigurations
+      displayName: "Checkout Configurations"
+      steps:
+        - checkout: ADLC  # self represents the repo where the initial Pipelines YAML file was found
+          clean: true  # whether to fetch clean each time
+          fetchDepth: 1  # the depth of commits to ask Git to fetch
+          lfs: false  # whether to download Git-LFS files
+          submodules: false  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+          path: adlc  # path to check out source code, relative to the agent's build directory (e.g. \_work\1)
+          persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+    - deployment: Deploy
+      displayName: "Deploy Application"
+      environment: 'ut'
+      strategy:
+      # default deployment strategy, more coming...
+        runOnce:
+          deploy:
+            steps:    
+            - template: azure-deploy.yml
+              parameters:
+                environment: 'ut'
+                application_name: crm-graphql-spring-boot-server
+                application_version: 1.0.0-SNAPSHOT
+                sshEndpoint: 'ssh - RD3'
+            - template: azure-deploy.yml
+              parameters:
+                environment: 'ut'
+                application_name: crm-helloworld
+                application_version: 1.0.0-SNAPSHOT
+                sshEndpoint: 'ssh - RD3'    
