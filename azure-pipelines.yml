@@ -15,7 +15,7 @@ resources:
   - repository: "ADLC"  # identifier (A-Z, a-z, 0-9, and underscore)
     type: "git"  # see the following "Type" topic
     name: "ADLC/ADLC"  # repository name (format depends on `type`)
-    ref: "refs/heads/azure"  # ref name to use; defaults to 'refs/heads/master'
+    ref: "refs/heads/azure-pipelines"  # ref name to use; defaults to 'refs/heads/master'
     #endpoint: string  # name of the service connection to use (for types that aren't Azure Repos)
 
 trigger:
