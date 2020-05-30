@@ -373,9 +373,7 @@ public class StructureValidationService implements CrmValidation {
 	
 	private void validatePersonName(PersonName name, List<Message> messages, Identifier identifier, String prefix) {
 		// Salutation
-		if (name.getSalutation() == null) {
-			messages.add(new Message(identifier, "error", prefix + ".salutation", new Localized(Lang.ENGLISH, "Salutation is mandatory")));
-		} else {
+		if (StringUtils.isNotBlank(name.getSalutation())) {
 			try {
 				lookups.findSalutationByCode(name.getSalutation());
 			} catch (ItemNotFoundException e) {
@@ -391,9 +389,7 @@ public class StructureValidationService implements CrmValidation {
 		}
 
 		// Middle Name
-		if (StringUtils.isBlank(name.getFirstName())) {
-			messages.add(new Message(identifier, "error", prefix + ".middleName", new Localized(Lang.ENGLISH, "Middle name is required")));
-		} else if (name.getFirstName().length() > 30) {
+		if (name.getFirstName().length() > 30) {
 			messages.add(new Message(identifier, "error", prefix + ".middleName", new Localized(Lang.ENGLISH, "Middle name must be 60 characters or less")));
 		}
 
@@ -404,8 +400,6 @@ public class StructureValidationService implements CrmValidation {
 			messages.add(new Message(identifier, "error", prefix + ".lastName", new Localized(Lang.ENGLISH, "Last name must be 60 characters or less")));
 		}
 	}
-
-	
 
 	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();

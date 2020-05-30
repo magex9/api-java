@@ -4,7 +4,6 @@ import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ILLINOIS;
 import static ca.magex.crm.test.CrmAsserts.MASSACHUSETTS;
 import static ca.magex.crm.test.CrmAsserts.NEW_YORK;
-import static ca.magex.crm.test.CrmAsserts.ORG;
 import static ca.magex.crm.test.CrmAsserts.UNITED_STATES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -43,7 +42,7 @@ public abstract class AbstractLocationServiceTests {
 	@Before
 	public void setup() {
 		getInitializationService().reset();
-		getPermissionService().createGroup(ORG);
+		getInitializationService().initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
 	}
 	
 	@Test

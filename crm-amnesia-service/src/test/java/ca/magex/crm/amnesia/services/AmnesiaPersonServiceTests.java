@@ -50,5 +50,4 @@ public class AmnesiaPersonServiceTests extends AbstractPersonServiceTests {
 	public CrmOrganizationService getOrganizationService() {
 		return organizationService;
 	}
-
 }

@@ -49,8 +49,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 				+ "jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, position: {"
 				+ "sector: %s, unit: %s, classification: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
 				orgId,
-				"Jonny", "Michael", "Bigford", "Mr",
-				"99 Blue Jays Way", "Toronto", "Ontario", "Canada", "L9K5I9",
+				"Jonny", "Michael", "Bigford", "3",
+				"99 Blue Jays Way", "Toronto", "Ontario", "CA", "L9K5I9",
 				"Developer", "English", "jonny.bigford@johnnuy.org", "6135551212", "97", "6135551213",
 				"IT", "Solutions", "Senior Developer");
 		Identifier personId = new Identifier(person.getString("personId"));
@@ -59,11 +59,11 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Mr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -86,11 +86,11 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Mr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -113,11 +113,11 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Mr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -140,11 +140,11 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Mr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -167,11 +167,11 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Mr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -203,17 +203,17 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 				"Timothy",
 				"Baller",
 				"McNugget",
-				"Dr");
+				"2");
 		Assert.assertEquals("ACTIVE", person.getString("status"));
 		Assert.assertEquals("McNugget, Timothy Baller", person.getString("displayName"));
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -233,17 +233,17 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 				"Timothy",
 				"Baller",
 				"McNugget",
-				"Dr");
+				"2");
 		Assert.assertEquals("ACTIVE", person.getString("status"));
 		Assert.assertEquals("McNugget, Timothy Baller", person.getString("displayName"));
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
-		Assert.assertEquals("Canada", person.getJSONObject("address").getString("country"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
 		Assert.assertEquals("English", person.getJSONObject("communication").getString("language"));
@@ -270,7 +270,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -301,7 +301,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -333,7 +333,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -365,7 +365,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -394,7 +394,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -423,7 +423,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -449,7 +449,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("Dr", person.getJSONObject("legalName").getString("salutation"));
+		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
 		Assert.assertEquals("ON", person.getJSONObject("address").getString("province"));
@@ -470,7 +470,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 				"countPersons",
 				"{ countPersons(filter: { status: %s } ) }",
 				"active");
-		Assert.assertEquals(1, personCount);
+		Assert.assertEquals(2, personCount);
 		
 		personCount = execute(
 				"countPersons",

@@ -38,21 +38,21 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
-		User user = db.saveUser(new User(db.generateId(), username, db.findPerson(personId), Status.ACTIVE, roles));
+		User user = db.saveUser(validate(new User(db.generateId(), username, db.findPerson(personId), Status.ACTIVE, roles)));
 		updateUserRoles(user.getUserId(), roles);
 		return user;
 	}
 
 	@Override
 	public User enableUser(Identifier userId) {
-		return db.saveUser(db.findUser(userId).withStatus(Status.ACTIVE));
+		return db.saveUser(validate(db.findUser(userId).withStatus(Status.ACTIVE)));
 	}
 
 	@Override
 	public User disableUser(Identifier userId) {
 		User user = findUser(userId);
 		return user.getStatus() == Status.INACTIVE ? user :
-			db.saveUser(db.findUser(userId).withStatus(Status.INACTIVE));
+			db.saveUser(validate(db.findUser(userId).withStatus(Status.INACTIVE)));
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class AmnesiaUserService implements CrmUserService {
 		roles.forEach((role) -> {
 			db.findRoleByCode(role); // ensure role exists
 		});
-		return db.saveUser(user.withRoles(roles));
+		return db.saveUser(validate(user.withRoles(roles)));
 	}
 
 	@Override
@@ -108,6 +108,10 @@ public class AmnesiaUserService implements CrmUserService {
 			.map(i -> SerializationUtils.clone(i))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList()), paging);
+	}
+	
+	private User validate(User user) {
+		return db.getValidation().validate(user);
 	}
 	
 	private Stream<User> applyFilter(UsersFilter filter) {

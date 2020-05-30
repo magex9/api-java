@@ -57,6 +57,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Before
 	public void setup() {
 		getInitializationService().reset();
+		getInitializationService().initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
 		getPermissionService().createGroup(new Localized("NHL", "NHL", "LNH"));
 		getPermissionService().createGroup(new Localized("PLAYOFFS", "Playoffs", "Playoffs"));
 		getPermissionService().createGroup(new Localized("ONTARIO", "Ontario", "Ontario"));
@@ -153,7 +154,7 @@ public abstract class AbstractOrganizationServiceTests {
 		/* update main contact */
 		Identifier freddyId = getPersonService().createPerson(
 				o1.getOrganizationId(),
-				new PersonName("Mr.", "Freddy", "R", "Davis"),
+				new PersonName("1", "Freddy", "R", "Davis"),
 				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"),
 				COMMUNICATIONS,
 				BUSINESS_POSITION).getPersonId();
@@ -168,7 +169,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 		Identifier craigId = getPersonService().createPerson(
 				o2.getOrganizationId(),
-				new PersonName("Mr.", "Craig", null, "Phillips"),
+				new PersonName("3", "Craig", null, "Phillips"),
 				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5"),
 				COMMUNICATIONS,
 				BUSINESS_POSITION).getPersonId();
@@ -239,7 +240,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 		/* count organizations */
 		Assert.assertEquals(1, getOrganizationService().countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE)));
-		Assert.assertEquals(3, getOrganizationService().countOrganizations(new OrganizationsFilter(null, Status.ACTIVE)));
+		Assert.assertEquals(4, getOrganizationService().countOrganizations(new OrganizationsFilter(null, Status.ACTIVE)));
 		Assert.assertEquals(0, getOrganizationService().countOrganizations(new OrganizationsFilter(null, Status.INACTIVE)));
 		Assert.assertEquals(0, getOrganizationService().countOrganizations(new OrganizationsFilter("Edmonton Oilers", null)));
 		Assert.assertEquals(1, getOrganizationService().countOrganizations(new OrganizationsFilter("Ottawa Senators", null)));
@@ -261,7 +262,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(2, detailsPage.getSize());
 		Assert.assertEquals(2, detailsPage.getNumberOfElements());
 		Assert.assertEquals(2, detailsPage.getTotalPages());
-		Assert.assertEquals(3, detailsPage.getTotalElements());
+		Assert.assertEquals(4, detailsPage.getTotalElements());
 
 		detailsPage = getOrganizationService().findOrganizationDetails(
 				new OrganizationsFilter(null, Status.INACTIVE),
@@ -306,7 +307,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(2, summariesPage.getSize());
 		Assert.assertEquals(2, summariesPage.getNumberOfElements());
 		Assert.assertEquals(2, summariesPage.getTotalPages());
-		Assert.assertEquals(3, summariesPage.getTotalElements());
+		Assert.assertEquals(4, summariesPage.getTotalElements());
 
 		summariesPage = getOrganizationService().findOrganizationSummaries(
 				new OrganizationsFilter(null, Status.INACTIVE),

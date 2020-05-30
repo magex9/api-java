@@ -42,13 +42,14 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.validation.CrmValidation;
+import ca.magex.crm.resource.CrmLookupLoader;
 
 public class AmnesiaServices implements CrmServices, CrmInitializationService, CrmValidation {
 
 	private final AmnesiaDB db;
 	
 	public AmnesiaServices() {
-		this(new AmnesiaDB(new AmnesiaPasswordEncoder()));
+		this(new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader()));
 	}
 	
 	public AmnesiaServices(AmnesiaDB db) {

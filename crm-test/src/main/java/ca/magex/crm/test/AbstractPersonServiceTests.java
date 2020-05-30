@@ -1,15 +1,14 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.FRANCE;
 import static ca.magex.crm.test.CrmAsserts.FRENCH;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ILE_DE_FRANCE;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
-import static ca.magex.crm.test.CrmAsserts.ORG;
+import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -51,14 +50,14 @@ public abstract class AbstractPersonServiceTests {
 	@Before
 	public void setup() {
 		getInitializationService().reset();
-		getPermissionService().createGroup(ORG);
+		getInitializationService().initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
 	}
 
 	@Test
 	public void testPersons() {
 		Identifier blizzardId = getOrganizationService().createOrganization("Blizzard", List.of("ORG")).getOrganizationId();
 		
-		PersonName leroy = new PersonName("Mr", "Leroy", "MF", "Jenkins");
+		PersonName leroy = new PersonName("1", "Leroy", "MF", "Jenkins");
 		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007");
 		Communication comms = new Communication("Leader", ENGLISH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");
 		BusinessPosition position = new BusinessPosition("IT", "Tester", "Junior");
@@ -74,20 +73,20 @@ public abstract class AbstractPersonServiceTests {
 		
 		getPersonService().createPerson(
 			blizzardId, 
-			new PersonName("Ms", "Tammy", "GD", "Jones"), 
+			new PersonName("2", "Tammy", "GD", "Jones"), 
 			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007"), 
 			new Communication("Leader", ENGLISH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
 			new BusinessPosition("IT", "Tester", "Junior"));
 		
 		getPersonService().createPerson(
 			blizzardId, 
-			new PersonName("Mr", "James", "Earl", "Bond"), 
+			new PersonName("3", "James", "Earl", "Bond"), 
 			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007"), 
 			new Communication("Leader", FRENCH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
 			new BusinessPosition("IT", "Tester", "Junior"));
 		
 		/* update */
-		PersonName tommy = new PersonName("Mrs", "Michelle", "Pauline", "Smith");
+		PersonName tommy = new PersonName("1", "Michelle", "Pauline", "Smith");
 		p1 = getPersonService().updatePersonName(p1.getPersonId(), tommy);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
@@ -146,7 +145,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(ps1, getPersonService().enablePerson(p1.getPersonId()));
 		
 		/* count */
-		Assert.assertEquals(3, getPersonService().countPersons(new PersonsFilter(null, null, null)));
+		Assert.assertEquals(4, getPersonService().countPersons(new PersonsFilter(null, null, null)));
 		Assert.assertEquals(3, getPersonService().countPersons(new PersonsFilter(blizzardId, null, null)));
 		Assert.assertEquals(3, getPersonService().countPersons(new PersonsFilter(blizzardId, null, Status.ACTIVE)));
 		Assert.assertEquals(1, getPersonService().countPersons(new PersonsFilter(blizzardId, p1.getDisplayName(), Status.ACTIVE)));
@@ -159,9 +158,9 @@ public abstract class AbstractPersonServiceTests {
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5, detailsPage.getSize());
-		Assert.assertEquals(3, detailsPage.getNumberOfElements());		
+		Assert.assertEquals(4, detailsPage.getNumberOfElements());		
 		Assert.assertEquals(1, detailsPage.getTotalPages());
-		Assert.assertEquals(3, detailsPage.getTotalElements());
+		Assert.assertEquals(4, detailsPage.getTotalElements());
 		
 		detailsPage = getPersonService().findPersonDetails(
 				new PersonsFilter(blizzardId, null, null), 
@@ -214,9 +213,9 @@ public abstract class AbstractPersonServiceTests {
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5, summariesPage.getSize());
-		Assert.assertEquals(3, summariesPage.getNumberOfElements());		
+		Assert.assertEquals(4, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(1, summariesPage.getTotalPages());
-		Assert.assertEquals(3, summariesPage.getTotalElements());
+		Assert.assertEquals(4, summariesPage.getTotalElements());
 		
 		summariesPage = getPersonService().findPersonSummaries(
 				new PersonsFilter(blizzardId, null, null), 

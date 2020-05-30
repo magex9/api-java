@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.system.Identifier;
@@ -47,6 +48,7 @@ public abstract class AbstractDataFetcherTests {
 	@Before
 	public void before() {
 		initializationService.reset();
+		initializationService.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
 	}
 
 	@SuppressWarnings("unchecked")

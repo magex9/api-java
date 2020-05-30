@@ -1,16 +1,13 @@
 package ca.magex.crm.amnesia.services;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.amnesia.Lookups;
+import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.BusinessClassification;
@@ -22,86 +19,56 @@ import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.resource.CrmLookupLoader;
 
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLookupService implements CrmLookupService {
 	
-	private CrmLookupLoader lookupLoader;
+	private AmnesiaDB amnesiaDb;
 
-	private Lookups<Status, String> statuses;
-	
-	private Lookups<Province, String> caProvinces;
-	
-	private Lookups<Province, String> usProvinces;
-	
-	private Lookups<Province, String> mxProvinces;
-	
-	private Lookups<Country, String> countries;
-	
-	private Lookups<Salutation, String> salutations;
-	
-	private Lookups<Language, String> languages;
-	
-	private Lookups<BusinessSector, String> sectors;
-	
-	private Lookups<BusinessUnit, String> units;
-	
-	private Lookups<BusinessClassification, String> classifications;
-
-	public AmnesiaLookupService(CrmLookupLoader lookupLoader) {
-		this.lookupLoader = lookupLoader;
+	public AmnesiaLookupService(AmnesiaDB amnesiaDb) {
+		this.amnesiaDb = amnesiaDb;
 	}
 	
-	@PostConstruct
-	public AmnesiaLookupService initialize() {
-		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
-		caProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "CaProvince.csv"), Province.class, String.class);
-		usProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "UsProvince.csv"), Province.class, String.class);
-		mxProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "MxProvince.csv"), Province.class, String.class);
-		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
-		salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
-		languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);
-		sectors = new Lookups<BusinessSector, String>(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"), BusinessSector.class, String.class);
-		units = new Lookups<BusinessUnit, String>(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"), BusinessUnit.class, String.class);
-		classifications = new Lookups<BusinessClassification, String>(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"), BusinessClassification.class, String.class);
-		return this;
-	}
-	
+	@Override
 	public List<Status> findStatuses() {
-		return statuses.getOptions();
+		return amnesiaDb.getStatuses().getOptions();
 	}
 	
+	@Override
 	public Status findStatusByCode(String code) throws ItemNotFoundException {
-		return statuses.findByCode(code);
+		return amnesiaDb.getStatuses().findByCode(code);
 	}
 	
+	@Override
 	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return statuses.findByName(locale, name);
+		return amnesiaDb.getStatuses().findByName(locale, name);
 	}
 
+	@Override
 	public List<Country> findCountries() {
-		return countries.getOptions();
+		return amnesiaDb.getCountries().getOptions();
 	}
 	
+	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
-		return countries.findByCode(code);
+		return amnesiaDb.getCountries().findByCode(code);
 	}
 	
+	@Override
 	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return countries.findByName(locale, name);
+		return amnesiaDb.getCountries().findByName(locale, name);
 	}
 
 	@Override
 	public List<Province> findProvinces(String country) {
 		if (country.equals("CA")) {
-			return caProvinces.getOptions();
+			return amnesiaDb.getCaProvinces().getOptions();
 		} else if (country.equals("US")) {
-			return usProvinces.getOptions();
+			return amnesiaDb.getUsProvinces().getOptions();
 		} else if (country.equals("MX")) {
-			return mxProvinces.getOptions();
+			return amnesiaDb.getMxProvinces().getOptions();
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
 		}
@@ -110,11 +77,11 @@ public class AmnesiaLookupService implements CrmLookupService {
 	@Override
 	public Province findProvinceByCode(String province, String country) {
 		if (country.equals("CA")) {
-			return caProvinces.findByCode(province);
+			return amnesiaDb.getCaProvinces().findByCode(province);
 		} else if (country.equals("US")) {
-			return usProvinces.findByCode(province);
+			return amnesiaDb.getUsProvinces().findByCode(province);
 		} else if (country.equals("MX")) {
-			return mxProvinces.findByCode(province);
+			return amnesiaDb.getMxProvinces().findByCode(province);
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
 		}
@@ -125,87 +92,88 @@ public class AmnesiaLookupService implements CrmLookupService {
 			String country) {
 		String code = findCountryByLocalizedName(locale, country).getCode();
 		if (code.equals("CA")) {
-			return caProvinces.findByName(locale, province);
+			return amnesiaDb.getCaProvinces().findByName(locale, province);
 		} else if (code.equals("US")) {
-			return usProvinces.findByName(locale, province);
+			return amnesiaDb.getUsProvinces().findByName(locale, province);
 		} else if (code.equals("MX")) {
-			return mxProvinces.findByName(locale, province);
+			return amnesiaDb.getMxProvinces().findByName(locale, province);
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
 		}
 	}
 
+	@Override
 	public List<Salutation> findSalutations() {
-		return salutations.getOptions();
+		return amnesiaDb.getSalutations().getOptions();
 	}
 	
+	@Override
 	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
-		return salutations.findByCode(code);
+		return amnesiaDb.getSalutations().findByCode(code);
 	}
 	
+	@Override
 	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return salutations.findByName(locale, name);
+		return amnesiaDb.getSalutations().findByName(locale, name);
 	}
 
 	@Override
 	public List<Language> findLanguages() {
-		return languages.getOptions();
+		return amnesiaDb.getLanguages().getOptions();
 	}
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
-		return languages.findByCode(code);
+		return amnesiaDb.getLanguages().findByCode(code);
 	}
 
 	@Override
 	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return languages.findByName(locale, name);
+		return amnesiaDb.getLanguages().findByName(locale, name);
 	}
 
 	@Override
 	public List<BusinessSector> findBusinessSectors() {
-		return sectors.getOptions();
+		return amnesiaDb.getSectors().getOptions();
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
-		return sectors.findByCode(code);
+		return amnesiaDb.getSectors().findByCode(code);
 	}
 
 	@Override
 	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return sectors.findByName(locale, name);
+		return amnesiaDb.getSectors().findByName(locale, name);
 	}
 
 	@Override
 	public List<BusinessUnit> findBusinessUnits() {
-		return units.getOptions();
+		return amnesiaDb.getUnits().getOptions();
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
-		return units.findByCode(code);
+		return amnesiaDb.getUnits().findByCode(code);
 	}
 
 	@Override
 	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
-		return units.findByName(locale, name);
+		return amnesiaDb.getUnits().findByName(locale, name);
 	}
 
 	@Override
 	public List<BusinessClassification> findBusinessClassifications() {
-		return classifications.getOptions();
+		return amnesiaDb.getClassifications().getOptions();
 	}
 
 	@Override
 	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
-		return classifications.findByCode(code);
+		return amnesiaDb.getClassifications().findByCode(code);
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name)
-			throws ItemNotFoundException {
-		return classifications.findByName(locale, name);
+	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+		return amnesiaDb.getClassifications().findByName(locale, name);
 	}
-
 }

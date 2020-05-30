@@ -57,8 +57,8 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 				+ "jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, position: {"
 				+ "sector: %s, unit: %s, classification: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
 				orgId,
-				"Jonny", "Michael", "Bigford", "Mr",
-				"99 Blue Jays Way", "Toronto", "Ontario", "Canada", "L9K5I9",
+				"Jonny", "Michael", "Bigford", "3",
+				"99 Blue Jays Way", "Toronto", "Ontario", "CA", "L9K5I9",
 				"Developer", "English", "jonny.bigford@johnnuy.org", "6135551212", "97", "6135551213",
 				"IT", "Solutions", "Senior Developer");
 		personId = person.getString("personId");
@@ -222,7 +222,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 				"countUsers",
 				"{ countUsers(filter: { status: %s } ) }",
 				"active");
-		Assert.assertEquals(1, userCount);
+		Assert.assertEquals(2, userCount);
 		
 		userCount = execute(
 				"countUsers",

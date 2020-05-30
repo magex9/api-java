@@ -41,7 +41,7 @@ public class CrmAsserts {
 	
 	public static final Localized ORG = new Localized("ORG", "Organization", "Organisation");
 	
-	public static final Localized ORG_NAME = new Localized("COTU", "Council of the Universe", "Conseil de l'Univers");
+	public static final Localized ORG_NAME = new Localized("ORG", "Organization", "Organisation");
 	
 	public static final Localized ORG_ADMIN = new Localized("ORG_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
 	

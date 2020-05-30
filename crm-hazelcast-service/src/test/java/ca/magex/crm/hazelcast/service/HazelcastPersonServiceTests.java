@@ -48,6 +48,6 @@ public class HazelcastPersonServiceTests extends AbstractPersonServiceTests {
 
 	@Before
 	public void loadResource() {
-		hzInitializationService.initializeSystem("JUnit", CrmAsserts.PERSON_NAME, "junit@junit.com", "admin", "admin");
+//		hzInitializationService.initializeSystem("JUnit", CrmAsserts.PERSON_NAME, "junit@junit.com", "admin", "admin");
 	}
 }

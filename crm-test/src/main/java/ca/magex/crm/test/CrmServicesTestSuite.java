@@ -168,7 +168,7 @@ public class CrmServicesTestSuite {
 	}
 
 	private void runCreatePermissions() {
-		Group system = permissionService.createGroup(SYS);
+		Group system = permissionService.findGroupByCode(SYS.getCode());
 		Identifier sysId = system.getGroupId();
 		verifyGroupDetails(system, sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
 		Assert.assertEquals(system, permissionService.findGroup(sysId));
@@ -180,7 +180,7 @@ public class CrmServicesTestSuite {
 		FilteredPage<Group> groupPage = permissionService.findGroups(new GroupsFilter(null, null, SYS.getCode(), null), new Paging(Sort.by("code")));
 		Assert.assertEquals(1, groupPage.getContent().size());
 
-		Role sysadmin = permissionService.createRole(sysId, SYS_ADMIN);
+		Role sysadmin = permissionService.findRoleByCode(SYS_ADMIN.getCode());
 		verifyRoleDetails(sysadmin, sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.disableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.INACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		verifyRoleDetails(permissionService.enableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
@@ -191,9 +191,6 @@ public class CrmServicesTestSuite {
 		verifyRoleDetails(permissionService.findRoleByCode(sysadmin.getCode()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 		FilteredPage<Role> rolePage = permissionService.findRoles(new RolesFilter(null, null, null, SYS_ADMIN.getCode(), null), new Paging(Sort.by("code")));
 		Assert.assertEquals(1, rolePage.getContent().size());
-
-		Identifier orgId = permissionService.createGroup(ORG).getGroupId();
-		permissionService.createRole(orgId, ORG_ADMIN);
 
 		/* create a second group */
 		Group dev = permissionService.createGroup(new Localized("DEV", "developers", "developeurs"));
@@ -420,7 +417,7 @@ public class CrmServicesTestSuite {
 		logger.info("Running Person Service Tests");
 		logger.info("----------------------------");
 		long personCount = personService.countPersons(new PersonsFilter());
-		final PersonName originalName = new PersonName("Mr.", "Mike", "Peter", "Johns");
+		final PersonName originalName = new PersonName("3", "Mike", "Peter", "Johns");
 		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
 		final Communication originalComms = new Communication("Engineer", ENGLISH.getCode(), "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
 		final BusinessPosition originalPosition = new BusinessPosition("IM/IT", "Solutions", "Team Lead");
@@ -459,7 +456,7 @@ public class CrmServicesTestSuite {
 
 		/* update person name and verify */
 		logger.info("Updating Person Name");
-		final PersonName newName = new PersonName("Mrs", "Susan", System.currentTimeMillis() + "", "Anderson");
+		final PersonName newName = new PersonName("2", "Susan", System.currentTimeMillis() + "", "Anderson");
 		personDetails = personService.updatePersonName(personDetails.getPersonId(), newName);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition);
 
