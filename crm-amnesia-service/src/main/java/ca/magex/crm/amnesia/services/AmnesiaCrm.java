@@ -26,7 +26,11 @@ public class AmnesiaCrm extends Crm {
 				db.getPersons(), new BasicPersonPolicy(db.getOrganizations(), db.getPersons()), 
 				db.getUsers(), new BasicUserPolicy(db.getPersons(), db.getUsers()));
 		this.db = db;
-		this.db.initialize("Amnesia", new PersonName("3", "Chris", "P", "Bacon"), "admin@localhost", "system", "admin");
+	}
+	
+	public AmnesiaCrm initialize() {
+		db.initialize("Amnesia", new PersonName("3", "Chris", "P", "Bacon"), "admin@localhost", "system", "admin");
+		return this;
 	}
 	
 	public AmnesiaDB db() {
