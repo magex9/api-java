@@ -38,7 +38,7 @@ public class HazelcastLookupService implements CrmLookupService {
 	public static String HZ_UNIT_KEY = "units";
 	public static String HZ_CLASSIFICATION_KEY = "classifications";
 	public static String HZ_PROVINCES_KEY = "classifications";
-
+	
 	@Autowired private HazelcastInstance hzInstance;
 
 	@Override
