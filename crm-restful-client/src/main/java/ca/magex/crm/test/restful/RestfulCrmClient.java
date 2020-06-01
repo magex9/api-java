@@ -993,12 +993,6 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public boolean canCreateRole() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean canViewRoles() {
 		// TODO Auto-generated method stub
 		return false;
@@ -1030,12 +1024,6 @@ public class RestfulCrmClient implements CrmClient {
 
 	@Override
 	public boolean canDisableRole(Identifier roleId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean canViewPermissions() {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -1091,6 +1079,18 @@ public class RestfulCrmClient implements CrmClient {
 	@Override
 	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
 			@NotNull String country) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canCreateRole(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public User validate(User user) throws BadRequestException {
 		// TODO Auto-generated method stub
 		return null;
 	}
