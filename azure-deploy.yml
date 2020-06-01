@@ -35,9 +35,9 @@ steps:
     application_package_name=${{parameters.application_name}}-${{parameters.application_version}}.tar.gz
     echo "##vso[task.setvariable variable=application_package_name]${{parameters.application_name}}-${{parameters.application_version}}.tar.gz"
 
-    echo "application_package_source_dir=${SYSTEM_ARTIFACTSDIRECTORY}"
-    application_package_source_dir=${SYSTEM_ARTIFACTSDIRECTORY}/
-    echo "##vso[task.setvariable variable=application_package_source_dir]${SYSTEM_ARTIFACTSDIRECTORY}/"
+    echo "application_package_source_dir=${PIPELINE_WORKSPACE}/${{parameters.application_name}}"
+    application_package_source_dir="${PIPELINE_WORKSPACE}/${{parameters.application_name}}""
+    echo "##vso[task.setvariable variable=application_package_source_dir]${PIPELINE_WORKSPACE}/${{parameters.application_name}}"
     
     #-----------------------------------------------------
     # BUILD Directory -> where we assemble all pieces to create a package    
