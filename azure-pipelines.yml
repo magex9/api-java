@@ -47,7 +47,7 @@ stages:
       artifact: crm-helloworld
 
 - stage: deployApplications
-  conditions: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure')
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure'))
   jobs:
 
     - deployment: Deploy
