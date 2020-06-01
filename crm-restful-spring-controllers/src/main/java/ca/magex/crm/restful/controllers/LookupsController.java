@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
@@ -50,7 +51,8 @@ public class LookupsController extends AbstractCrmController {
 	}
 
 	@GetMapping("/api/lookup/countries/{country}/provinces")
-	public void findCountries(HttpServletRequest req, HttpServletResponse res, String country) throws Exception {
+	public void findCountries(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("country") String country) throws Exception {
 		handle(req, res, Province.class, (messages, transformer) -> { 
 			return createList(crm.findProvinces(country), transformer, extractLocale(req));
 		});

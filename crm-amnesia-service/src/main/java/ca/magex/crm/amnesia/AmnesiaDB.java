@@ -145,10 +145,10 @@ public class AmnesiaDB {
 				
 		/* initialize the lookups first, they are required for everything */
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
-		caProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "CaProvince.csv"), Province.class, String.class);
-		usProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "UsProvince.csv"), Province.class, String.class);
-		mxProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(Province.class, "MxProvince.csv"), Province.class, String.class);
 		countries = new Lookups<Country, String>(lookupLoader.loadLookup(Country.class, "Country.csv"), Country.class, String.class);
+		caProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(countries.findByCode("CA"), Province.class, "CaProvince.csv"), Province.class, String.class);
+		usProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(countries.findByCode("US"), Province.class, "UsProvince.csv"), Province.class, String.class);
+		mxProvinces = new Lookups<Province, String>(lookupLoader.loadLookup(countries.findByCode("MX"), Province.class, "MxProvince.csv"), Province.class, String.class);
 		salutations = new Lookups<Salutation, String>(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"), Salutation.class, String.class);
 		languages = new Lookups<Language, String>(lookupLoader.loadLookup(Language.class, "Language.csv"), Language.class, String.class);
 		sectors = new Lookups<BusinessSector, String>(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"), BusinessSector.class, String.class);

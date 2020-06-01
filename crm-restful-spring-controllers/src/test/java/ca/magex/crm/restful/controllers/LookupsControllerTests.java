@@ -1,5 +1,6 @@
 package ca.magex.crm.restful.controllers;
 
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Before;
@@ -217,6 +218,22 @@ public class LookupsControllerTests extends AbstractControllerTests {
 		assertEquals("Albanie", json.getArray("content").getString(5));
 		assertEquals("Zimbabwe", json.getArray("content").getString(251));
 		assertEquals("Autre", json.getArray("content").getString(252));
+	}
+	
+	@Test
+	public void testListRootCanadianProvinces() throws Exception {
+		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/lookup/countries/ca/provinces"))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		System.out.println(json);
+		assertEquals(253, json.getInt("total"));
+		assertEquals(JsonArray.class, json.get("content").getClass());
+		assertEquals(253, json.getArray("content").size());
+		assertEquals("CA", json.getArray("content").getString(0));
+		assertEquals("US", json.getArray("content").getString(1));
+		assertEquals("MX", json.getArray("content").getString(2));
 	}
 	
 }

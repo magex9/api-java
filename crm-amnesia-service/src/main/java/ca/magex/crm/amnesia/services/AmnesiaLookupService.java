@@ -63,11 +63,11 @@ public class AmnesiaLookupService implements CrmLookupService {
 
 	@Override
 	public List<Province> findProvinces(String country) {
-		if (country.equals("CA")) {
+		if (country.equalsIgnoreCase("CA")) {
 			return db.getCaProvinces().getOptions();
-		} else if (country.equals("US")) {
+		} else if (country.equalsIgnoreCase("US")) {
 			return db.getUsProvinces().getOptions();
-		} else if (country.equals("MX")) {
+		} else if (country.equalsIgnoreCase("MX")) {
 			return db.getMxProvinces().getOptions();
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
@@ -76,11 +76,11 @@ public class AmnesiaLookupService implements CrmLookupService {
 
 	@Override
 	public Province findProvinceByCode(String province, String country) {
-		if (country.equals("CA")) {
+		if (country.equalsIgnoreCase("CA")) {
 			return db.getCaProvinces().findByCode(province);
-		} else if (country.equals("US")) {
+		} else if (country.equalsIgnoreCase("US")) {
 			return db.getUsProvinces().findByCode(province);
-		} else if (country.equals("MX")) {
+		} else if (country.equalsIgnoreCase("MX")) {
 			return db.getMxProvinces().findByCode(province);
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
@@ -91,11 +91,11 @@ public class AmnesiaLookupService implements CrmLookupService {
 	public Province findProvinceByLocalizedName(Locale locale, String province,
 			String country) {
 		String code = findCountryByLocalizedName(locale, country).getCode();
-		if (code.equals("CA")) {
+		if (code.equalsIgnoreCase("CA")) {
 			return db.getCaProvinces().findByName(locale, province);
-		} else if (code.equals("US")) {
+		} else if (code.equalsIgnoreCase("US")) {
 			return db.getUsProvinces().findByName(locale, province);
-		} else if (code.equals("MX")) {
+		} else if (code.equalsIgnoreCase("MX")) {
 			return db.getMxProvinces().findByName(locale, province);
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);

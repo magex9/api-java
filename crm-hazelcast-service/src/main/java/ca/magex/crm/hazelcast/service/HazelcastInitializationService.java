@@ -75,9 +75,10 @@ public class HazelcastInitializationService implements CrmInitializationService 
 				hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
 				hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
 				hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
-				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(Province.class, "CaProvince.csv"));
-				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(Province.class, "UsProvince.csv"));
-				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(Province.class, "MxProvince.csv"));
+				// FIXME update to proper countries
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(new Country("CA", "CA", "CA"), Province.class, "CaProvince.csv"));
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(new Country("US", "US", "US"), Province.class, "UsProvince.csv"));
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(new Country("MX", "MX", "MX"), Province.class, "MxProvince.csv"));
 				initMap.put("started", System.currentTimeMillis());
 				return;
 			}
