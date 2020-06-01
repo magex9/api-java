@@ -648,13 +648,13 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testCreateRoleEnglishNameTests() throws Exception {
-		permissions.createGroup(SYS);
+		Identifier groupId = permissions.createGroup(SYS).getGroupId();
 		
 		JsonArray missing = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.post("/api/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", SYS.getCode())
+				.with("groupId", groupId.toString())
 				.with("code", SYS_ADMIN.getCode())
 				//.with("englishName", SYS_ADMIN.getEnglishName())
 				.with("frenchName", SYS_ADMIN.getFrenchName())
@@ -671,7 +671,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.post("/api/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", SYS.getCode())
+				.with("groupId", groupId.toString())
 				.with("code", SYS_ADMIN.getCode())
 				.with("englishName", "  ")
 				.with("frenchName", SYS_ADMIN.getFrenchName())
@@ -688,7 +688,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.post("/api/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", SYS.getCode())
+				.with("groupId", groupId.toString())
 				.with("code", SYS_ADMIN.getCode())
 				.with("englishName", true)
 				.with("frenchName", SYS_ADMIN.getFrenchName())
@@ -705,7 +705,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.post("/api/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", SYS.getCode())
+				.with("groupId", groupId.toString())
 				.with("code", SYS_ADMIN.getCode())
 				.with("englishName", LoremIpsumGenerator.buildWords(20))
 				.with("frenchName", SYS_ADMIN.getFrenchName())

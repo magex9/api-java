@@ -17,8 +17,9 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicUserPolicy implements CrmUserPolicy {
 
-	private CrmUserService userService;
 	private CrmPersonService personService;
+
+	private CrmUserService userService;
 
 	/**
 	 * Basic User Policy handles presence and status checks require for policy approval
@@ -27,8 +28,8 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	 * @param personService
 	 */
 	public BasicUserPolicy(
-			CrmUserService userService,
-			CrmPersonService personService) {
+			CrmPersonService personService,
+			CrmUserService userService) {
 		this.userService = userService;
 		this.personService = personService;
 	}

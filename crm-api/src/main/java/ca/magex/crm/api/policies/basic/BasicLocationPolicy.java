@@ -17,8 +17,9 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicLocationPolicy implements CrmLocationPolicy {
 
-	private CrmLocationService locationService;
 	private CrmOrganizationService organizationService;
+	
+	private CrmLocationService locationService;
 	
 	/**
 	 * Basic Location Policy handles presence and status checks require for policy approval

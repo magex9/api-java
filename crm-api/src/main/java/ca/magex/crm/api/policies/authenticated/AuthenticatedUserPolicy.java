@@ -19,7 +19,9 @@ import ca.magex.crm.api.system.Identifier;
 public class AuthenticatedUserPolicy extends BaseAuthenticatedPolicy implements CrmUserPolicy {
 
 	private CrmUserPolicy basicPolicy;
+	
 	private CrmUserService userService;
+	
 	private CrmPersonService personService;
 
 	/**
@@ -34,7 +36,7 @@ public class AuthenticatedUserPolicy extends BaseAuthenticatedPolicy implements 
 			CrmPersonService personService,
 			CrmUserService userService) {
 		super(authenticationService, userService);
-		this.basicPolicy = new BasicUserPolicy(userService, personService);
+		this.basicPolicy = new BasicUserPolicy(personService, userService);
 		this.personService = personService;
 		this.userService = userService;
 		
