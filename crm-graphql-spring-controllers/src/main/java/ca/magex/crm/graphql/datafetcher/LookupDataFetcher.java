@@ -20,6 +20,14 @@ public class LookupDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LookupDataFetcher.class);
 
+	public DataFetcher<CrmLookupItem> findParent() {
+		return (environment) -> {
+			logger.info("Entering findParent@" + LookupDataFetcher.class.getSimpleName());
+			CrmLookupItem item = environment.getSource();
+			return item.getParent();
+		};
+	}
+	
 	public DataFetcher<List<CrmLookupItem>> findCodeLookups() {
 		return (environment) -> {
 			logger.info("Entering findCodeLookups@" + LookupDataFetcher.class.getSimpleName());

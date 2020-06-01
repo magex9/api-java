@@ -138,6 +138,7 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
 				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Lang.ENGLISH)))
 				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Lang.FRENCH)))
+				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("parent", lookupDataFetcher.findParent()))
 
 				.build();
 	}

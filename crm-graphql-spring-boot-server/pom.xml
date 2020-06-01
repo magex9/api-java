@@ -13,11 +13,11 @@
 	<description>Spring Boot Server using JWT for securing the GraphQL API</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-hazelcast-service</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>${project.groupId}</groupId> -->
+<!-- 			<artifactId>crm-hazelcast-service</artifactId> -->
+<!-- 			<version>${project.version}</version> -->
+<!-- 		</dependency> -->
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
