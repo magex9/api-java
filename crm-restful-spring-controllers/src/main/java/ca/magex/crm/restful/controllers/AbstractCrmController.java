@@ -176,8 +176,11 @@ public abstract class AbstractCrmController {
 	}
 	
 	public Locale extractLocale(HttpServletRequest req) {
-		if (req.getHeader("Locale") == null)
+		if (req.getHeader("Locale") == null) {
+			if (getContentType(req).contentEquals("application/json+ld"))
+				return null;
 			return Lang.ROOT;
+		}
 		return Lang.parse(req.getHeader("Locale"));
 	}
 	
