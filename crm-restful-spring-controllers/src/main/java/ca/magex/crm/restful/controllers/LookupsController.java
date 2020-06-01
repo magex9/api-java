@@ -38,14 +38,14 @@ public class LookupsController extends AbstractCrmController {
 	@GetMapping("/api/lookup/languages")
 	public void findLanguages(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		handle(req, res, Language.class, (messages, transformer) -> { 
-			return createList(crm.findLanguages(), transformer, extractLocale(req), new Localized.Comparator(extractLocale(req), List.of("EN", "FR"), List.of()));
+			return createList(crm.findLanguages(), transformer, extractLocale(req), new Localized.Comparator<Language>(extractLocale(req), List.of("EN", "FR"), List.of()));
 		});
 	}
 
 	@GetMapping("/api/lookup/countries")
 	public void findCountries(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		handle(req, res, Country.class, (messages, transformer) -> { 
-			return createList(crm.findCountries(), transformer, extractLocale(req), new Localized.Comparator(extractLocale(req), List.of("CA", "US", "MX"), List.of()));
+			return createList(crm.findCountries(), transformer, extractLocale(req), new Localized.Comparator<Country>(extractLocale(req), List.of("CA", "US", "MX"), List.of("ZZ")));
 		});
 	}
 

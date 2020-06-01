@@ -1,10 +1,12 @@
 package ca.magex.crm.api.system;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -63,7 +65,7 @@ public class Localized implements Serializable {
 		return sb.toString();
 	}
 	
-	public static class Comparator implements java.util.Comparator<Localized> {
+	public static class Comparator<T extends Localized> implements java.util.Comparator<T> {
 
 		private Locale sortBy;
 		
@@ -82,16 +84,29 @@ public class Localized implements Serializable {
 		}
 		
 		@Override
-		public int compare(Localized o1, Localized o2) {
+		public int compare(T o1, T o2) {
+			if (startCodes.contains(o1.getCode()) && startCodes.contains(o2.getCode()))
+				return Integer.compare(startCodes.indexOf(o1.getCode()), startCodes.indexOf(o2.getCode()));
 			if (startCodes.contains(o1.getCode()) && !startCodes.contains(o2.getCode()))
 				return -1;
 			if (startCodes.contains(o2.getCode()) && !startCodes.contains(o1.getCode()))
 				return 1;
+			if (endCodes.contains(o1.getCode()) && endCodes.contains(o2.getCode()))
+				return Integer.compare(endCodes.indexOf(o1.getCode()), endCodes.indexOf(o2.getCode()));
 			if (endCodes.contains(o1.getCode()) && !endCodes.contains(o2.getCode()))
 				return 1;
 			if (endCodes.contains(o2.getCode()) && !endCodes.contains(o1.getCode()))
 				return -1;
-			return o1.get(sortBy).compareTo(o2.get(sortBy));
+			
+			Collator collator = Collator.getInstance();
+			collator.setStrength(Collator.NO_DECOMPOSITION);
+			String lVal1 = o1.get(sortBy);
+			String lVal2 = o2.get(sortBy);
+			int compare = collator.compare(lVal1, lVal2);
+			if (compare == 0) {
+				compare = StringUtils.compare(lVal1, lVal2);
+			}
+			return compare;
 		}
 		
 	}

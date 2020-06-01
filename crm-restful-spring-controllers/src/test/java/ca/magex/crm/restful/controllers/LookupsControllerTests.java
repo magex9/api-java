@@ -25,7 +25,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(3, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(3, json.getArray("content").size());
@@ -42,7 +41,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(3, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(3, json.getArray("content").size());
@@ -59,7 +57,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(3, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(3, json.getArray("content").size());
@@ -75,7 +72,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(3, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(3, json.getArray("content").size());
@@ -92,7 +88,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(3, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(3, json.getArray("content").size());
@@ -109,7 +104,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(3, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(3, json.getArray("content").size());
@@ -125,7 +119,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(2, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(2, json.getArray("content").size());
@@ -141,7 +134,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(2, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(2, json.getArray("content").size());
@@ -157,7 +149,6 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
 		assertEquals(2, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(2, json.getArray("content").size());
@@ -172,16 +163,17 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
-		assertEquals(252, json.getInt("total"));
+		assertEquals(253, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(252, json.getArray("content").size());
+		assertEquals(253, json.getArray("content").size());
 		assertEquals("CA", json.getArray("content").getString(0));
 		assertEquals("US", json.getArray("content").getString(1));
 		assertEquals("MX", json.getArray("content").getString(2));
 		assertEquals("AD", json.getArray("content").getString(3));
 		assertEquals("AE", json.getArray("content").getString(4));
-		assertEquals("BB", json.getArray("content").getString(5));
+		assertEquals("AF", json.getArray("content").getString(5));
+		assertEquals("ZW", json.getArray("content").getString(251));
+		assertEquals("ZZ", json.getArray("content").getString(252));
 	}
 	
 	@Test
@@ -192,16 +184,18 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
-		assertEquals(252, json.getInt("total"));
+		assertEquals(253, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(252, json.getArray("content").size());
+		assertEquals(253, json.getArray("content").size());
 		assertEquals("Canada", json.getArray("content").getString(0));
 		assertEquals("United States", json.getArray("content").getString(1));
 		assertEquals("Mexico", json.getArray("content").getString(2));
-		assertEquals("Albania...", json.getArray("content").getString(3));
-		assertEquals("Andorra...", json.getArray("content").getString(4));
-		assertEquals("B...", json.getArray("content").getString(5));
+		assertEquals("Afghanistan", json.getArray("content").getString(3));
+		assertEquals("Åland Islands", json.getArray("content").getString(4));
+		assertEquals("Albania", json.getArray("content").getString(5));
+		assertEquals("Algeria", json.getArray("content").getString(6));
+		assertEquals("Zimbabwe", json.getArray("content").getString(251));
+		assertEquals("Other", json.getArray("content").getString(252));
 	}
 	
 	@Test
@@ -212,16 +206,17 @@ public class LookupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		System.out.println(json);
-		assertEquals(252, json.getInt("total"));
+		assertEquals(253, json.getInt("total"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(252, json.getArray("content").size());
+		assertEquals(253, json.getArray("content").size());
 		assertEquals("Canada", json.getArray("content").getString(0));
-		assertEquals("Etats Unis... ", json.getArray("content").getString(1));
-		assertEquals("Mexico FR", json.getArray("content").getString(2));
-		assertEquals("Albania...", json.getArray("content").getString(3));
-		assertEquals("Andorra...", json.getArray("content").getString(4));
-		assertEquals("B...", json.getArray("content").getString(5));
+		assertEquals("États-Unis d'Amérique", json.getArray("content").getString(1));
+		assertEquals("Mexique", json.getArray("content").getString(2));
+		assertEquals("Afghanistan", json.getArray("content").getString(3));
+		assertEquals("Afrique du Sud", json.getArray("content").getString(4));
+		assertEquals("Albanie", json.getArray("content").getString(5));
+		assertEquals("Zimbabwe", json.getArray("content").getString(251));
+		assertEquals("Autre", json.getArray("content").getString(252));
 	}
 	
 }
