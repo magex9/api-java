@@ -126,6 +126,18 @@ public abstract class AbstractCrmController {
 			.with("hasPrevious", page.hasPrevious())
 			.with("content", new JsonArray(page.getContent().stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
 	}
+
+	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale) {
+		return createList(list, transfomer, locale, new Localized.Comparator(locale));
+	}
+	
+	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale, Localized.Comparator comparator) {
+//		if (comparator != null)
+//			Collections.sort(list, comparator);
+		return new JsonObject()
+			.with("total", list.size())
+			.with("content", new JsonArray(list.stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
+	}
 	
 	protected JsonArray createErrorMessages(Locale locale, BadRequestException e) {
 		List<JsonElement> elements = new ArrayList<JsonElement>();
