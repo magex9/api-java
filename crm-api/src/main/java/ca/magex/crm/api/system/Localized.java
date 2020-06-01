@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -60,6 +61,39 @@ public class Localized implements Serializable {
 		sb.append(getFrenchName());
 		sb.append("\"}");
 		return sb.toString();
+	}
+	
+	public static class Comparator implements java.util.Comparator<Localized> {
+
+		private Locale sortBy;
+		
+		private List<String> startCodes;
+		
+		private List<String> endCodes;
+		
+		public Comparator(Locale locale) {
+			this(locale, List.of(), List.of());
+		}
+		
+		public Comparator(Locale sortBy, List<String> startCodes, List<String> endCodes) {
+			this.sortBy = sortBy;
+			this.startCodes = startCodes;
+			this.endCodes = endCodes;
+		}
+		
+		@Override
+		public int compare(Localized o1, Localized o2) {
+			if (startCodes.contains(o1.getCode()) && !startCodes.contains(o2.getCode()))
+				return -1;
+			if (startCodes.contains(o2.getCode()) && !startCodes.contains(o1.getCode()))
+				return 1;
+			if (endCodes.contains(o1.getCode()) && !endCodes.contains(o2.getCode()))
+				return 1;
+			if (endCodes.contains(o2.getCode()) && !endCodes.contains(o1.getCode()))
+				return -1;
+			return o1.get(sortBy).compareTo(o2.get(sortBy));
+		}
+		
 	}
 	
 	@Override
