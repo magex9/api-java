@@ -50,7 +50,7 @@ import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
+import ca.magex.crm.api.validation.CrmValidation;
 import ca.magex.crm.resource.CrmLookupLoader;
 import ca.magex.crm.resource.CrmRoleInitializer;
 
@@ -64,7 +64,7 @@ public class AmnesiaDB {
 	
 	private PasswordEncoder passwordEncoder;
 	
-	private StructureValidationService validation;
+	private CrmValidation validation;
 
 	private AmnesiaInitializationService initialization;
 	
@@ -126,7 +126,7 @@ public class AmnesiaDB {
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
 		crm = new AmnesiaCrm(this);
-		validation = new StructureValidationService(lookups, permissions, organizations, locations, persons);
+		validation = new CrmValidation(lookups, permissions, organizations, locations, persons);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
@@ -188,7 +188,7 @@ public class AmnesiaDB {
 		return users;
 	}
 	
-	public StructureValidationService getValidation() {
+	public CrmValidation getValidation() {
 		return validation;
 	}
 	

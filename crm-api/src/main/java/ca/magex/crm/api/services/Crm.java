@@ -47,9 +47,9 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.validation.CrmValidation;
-import ca.magex.crm.api.validation.StructureValidationService;
+import ca.magex.crm.api.validation.CrmValidation;
 
-public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, CrmValidation {
+public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	
 	public static final long SERIAL_UID_VERSION = 1l;
 
@@ -65,7 +65,9 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 
 	private final CrmLookupService lookupService;
 	
-	private final CrmValidation validationService;
+	private final CrmPermissionService permissionsService;
+	
+	private final CrmPermissionPolicy permissionsPolicy;
 	
 	private final CrmOrganizationService organizationService;
 	
@@ -83,9 +85,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	
 	private final CrmUserPolicy userPolicy;
 	
-	private final CrmPermissionService permissionsService;
-	
-	private final CrmPermissionPolicy permissionsPolicy;
+	private final CrmValidation validationService;
 	
 	public Crm(CrmInitializationService initializationService, CrmLookupService lookupService,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy, 
@@ -94,7 +94,6 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
 			CrmUserService userService, CrmUserPolicy userPolicy) {
 		super();
-		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService, personService);
 		this.initializationService = initializationService;
 		this.lookupService = lookupService;
 		this.organizationService = organizationService;
@@ -107,6 +106,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		this.userPolicy = userPolicy;
 		this.permissionsService = permissionsService;
 		this.permissionsPolicy = permissionsPolicy;
+		this.validationService = new CrmValidation(this);
 	}
 
 	@Override
@@ -324,18 +324,19 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
-		return locationService.createLocation(organizationId, displayName, reference, address);
+		return locationService.createLocation(validate(prototypeLocation(organizationId, displayName, reference, address)));
 	}
 
-	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
+	public LocationDetails updateLocationName(Identifier locationId, String displayName) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationName: " + locationId);
-		return locationService.updateLocationName(locationId, locationName);
+		return locationService.updateLocationName(locationId, validate(locationService.findLocationDetails(locationId).withDisplayName(displayName)).getDisplayName());
 	}
 
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationAddress: " + locationId);
+		validationService.validate(findLocationDetails(locationId).withAddress(address));
 		return locationService.updateLocationAddress(locationId, address);
 	}
 
@@ -529,37 +530,6 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		return userPolicy.canUpdateUserPassword(userId);
 	}
 	
-	@Override
-	public Group validate(Group group) throws BadRequestException {
-		return validationService.validate(group);
-	}
-	
-	@Override
-	public Role validate(Role role) throws BadRequestException {
-		return validationService.validate(role);
-	}
-	
-	public OrganizationDetails validate(OrganizationDetails organization) {
-		return validationService.validate(organization);
-	}
-
-	public LocationDetails validate(LocationDetails location) {
-		return validationService.validate(location);
-	}
-
-	public PersonDetails validate(PersonDetails person) {
-		return validationService.validate(person);
-	}
-	
-	@Override
-	public User validate(User user) throws BadRequestException {
-		return validationService.validate(user);
-	}
-
-	public List<String> validate(List<String> roles, Identifier personId) {
-		return validationService.validate(roles, personId);
-	}
-
 	public boolean canCreateOrganization() {
 		return organizationPolicy.canCreateOrganization();
 	}

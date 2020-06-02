@@ -38,7 +38,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
+import ca.magex.crm.api.validation.CrmValidation;
 
 public abstract class AbstractOrganizationServiceTests {
 
@@ -550,7 +550,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
 		getPermissionService().createGroup(GROUP).getGroupId();
-		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
+		CrmValidation validation = new CrmValidation(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());
 		try {
 			validation.validate(new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
 			fail("Should fail validation");

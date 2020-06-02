@@ -38,7 +38,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
+import ca.magex.crm.api.validation.CrmValidation;
 
 public abstract class AbstractPermissionServiceTests {
 
@@ -430,7 +430,7 @@ public abstract class AbstractPermissionServiceTests {
 	
 	@Test
 	public void testCreatingGroupWithoutStatuses() throws Exception {
-		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());		
+		CrmValidation validation = new CrmValidation(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());		
 		try {
 			validation.validate(new Group(new Identifier("group"), null, GROUP));
 			fail("Should fail validation");
@@ -508,7 +508,7 @@ public abstract class AbstractPermissionServiceTests {
 	
 	@Test
 	public void testCreatingRoleWithoutStatus() throws Exception {
-		StructureValidationService validation = new StructureValidationService(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());		
+		CrmValidation validation = new CrmValidation(getLookupService(), getPermissionService(), getOrganizationService(), getLocationService(), getPersonService());		
 		try {
 			validation.validate(new Role(new Identifier("role"), new Identifier("group"), null, GROUP));
 			fail("Should fail validation");

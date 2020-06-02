@@ -33,25 +33,25 @@ public class AmnesiaLocationService implements CrmLocationService {
 	}
 	
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
-		return db.saveLocation(validate(new LocationDetails(db.generateId(), db.findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address)));
+		return db.saveLocation(new LocationDetails(db.generateId(), db.findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address));
 	}
 
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
-		return db.saveLocation(validate(findLocationDetails(locationId).withDisplayName(locationName)));
+		return db.saveLocation(findLocationDetails(locationId).withDisplayName(locationName));
 	}
 
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
-		return db.saveLocation(validate(findLocationDetails(locationId).withAddress(address)));
+		return db.saveLocation(findLocationDetails(locationId).withAddress(address));
 	}
 
 	public LocationSummary enableLocation(Identifier locationId) {		
-		return db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.ACTIVE)));
+		return db.saveLocation(findLocationDetails(locationId).withStatus(Status.ACTIVE));
 	}
 
 	public LocationSummary disableLocation(Identifier locationId) {
 		LocationDetails location = findLocationDetails(locationId);
 		return location.getStatus() == Status.INACTIVE ? location :
-			db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.INACTIVE)));
+			db.saveLocation(location.withStatus(Status.INACTIVE));
 	}
 	
 	public LocationSummary findLocationSummary(Identifier locationId) {
@@ -60,10 +60,6 @@ public class AmnesiaLocationService implements CrmLocationService {
 	
 	public LocationDetails findLocationDetails(Identifier locationId) {
 		return db.findLocation(locationId);
-	}
-	
-	private LocationDetails validate(LocationDetails location) {
-		return db.getValidation().validate(location);
 	}
 	
 	public Stream<LocationDetails> apply(LocationsFilter filter) {
