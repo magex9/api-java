@@ -233,7 +233,8 @@ public class StructureValidationService implements CrmValidation {
 			messages.add(new Message(location.getLocationId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization cannot be null")));
 		} else {
 			try {
-				organizations.findOrganizationDetails(location.getOrganizationId());
+				if (organizations.findOrganizationDetails(location.getOrganizationId()).getStatus() != Status.ACTIVE)
+					messages.add(new Message(location.getLocationId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization is not active")));
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(location.getLocationId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization does not exist")));
 			}
@@ -280,7 +281,8 @@ public class StructureValidationService implements CrmValidation {
 			messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization cannot be null")));
 		} else {
 			try {
-				organizations.findOrganizationDetails(person.getOrganizationId());
+				if (organizations.findOrganizationDetails(person.getOrganizationId()).getStatus() != Status.ACTIVE)
+					messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization is not active")));
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization does not exist")));
 			}
