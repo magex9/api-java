@@ -41,6 +41,8 @@ public class CrmValidation {
 		// Status
 		if (group.getStatus() == null) {
 			messages.add(new Message(group.getGroupId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a group")));
+		} else if (group.getStatus() == Status.PENDING && group.getGroupId() != null) {
+			messages.add(new Message(group.getGroupId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
 		}
 
 		// Must be a valid group code
@@ -90,6 +92,8 @@ public class CrmValidation {
 		// Status
 		if (role.getStatus() == null) {
 			messages.add(new Message(role.getRoleId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a role")));
+		} else if (role.getStatus() == Status.PENDING && role.getRoleId() != null) {
+			messages.add(new Message(role.getRoleId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
 		}
 
 		// Must be a valid role code
@@ -139,6 +143,8 @@ public class CrmValidation {
 		// Status
 		if (organization.getStatus() == null) {
 			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for an organization")));
+		} else if (organization.getStatus() == Status.PENDING && organization.getOrganizationId() != null) {
+			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
 		}
 
 		// Display Name
@@ -209,6 +215,8 @@ public class CrmValidation {
 		// Status
 		if (location.getStatus() == null) {
 			messages.add(new Message(location.getLocationId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a location")));
+		} else if (location.getStatus() == Status.PENDING && location.getLocationId() != null) {
+			messages.add(new Message(location.getLocationId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
 		}
 
 		// Reference
@@ -250,8 +258,11 @@ public class CrmValidation {
 		}
 
 		// Status
-		if (person.getStatus() == null)
+		if (person.getStatus() == null) {
 			messages.add(new Message(person.getPersonId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a person")));
+		} else if (person.getStatus() == Status.PENDING && person.getPersonId() != null) {
+			messages.add(new Message(person.getPersonId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+		}
 
 		// Display Name
 		if (StringUtils.isBlank(person.getDisplayName())) {
@@ -277,8 +288,47 @@ public class CrmValidation {
 
 	public List<Message> validate(User user) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
-		
-		// do validation here
+
+		// Status
+		if (user.getStatus() == null) {
+			messages.add(new Message(user.getUserId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a person")));
+		} else if (user.getStatus() == Status.PENDING && user.getUserId() != null) {
+			messages.add(new Message(user.getUserId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+		}
+
+		// Organization
+		if (user.getPerson() == null || user.getPerson().getPersonId() == null) {
+			messages.add(new Message(null, "error", "person", new Localized(Lang.ENGLISH, "Person cannot be null")));
+		} else {
+			try {
+				crm.findPersonDetails(user.getPerson().getPersonId());
+			} catch (ItemNotFoundException e) {
+				messages.add(new Message(user.getPerson().getPersonId(), "error", "person", new Localized(Lang.ENGLISH, "Person does not exist")));
+			}
+		}
+
+		// Display Name
+		if (StringUtils.isBlank(user.getUsername())) {
+			messages.add(new Message(user.getUserId(), "error", "username", new Localized(Lang.ENGLISH, "Username is mandatory for a user")));
+		} else if (user.getUsername().length() > 20) {
+			messages.add(new Message(user.getUserId(), "error", "username", new Localized(Lang.ENGLISH, "Username must be 20 characters or less")));
+		}
+
+		// Roles
+		if (user.getRoles().isEmpty()) {
+			messages.add(new Message(user.getUserId(), "error", "roles", new Localized(Lang.ENGLISH, "Users must have a permission role assigned to them")));
+		} else {
+			for (int i = 0; i < user.getRoles().size(); i++) {
+				String role = user.getRoles().get(i);
+				try {
+					if (!crm.findRoleByCode(role).getStatus().equals(Status.ACTIVE))
+						messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role is not active: " + role)));
+				} catch (ItemNotFoundException e) {
+					messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role does not exist: " + role)));
+				}
+			}
+		}
+
 		return messages;
 	}
 

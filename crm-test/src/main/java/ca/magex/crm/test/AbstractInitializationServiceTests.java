@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
@@ -36,7 +37,10 @@ public abstract class AbstractInitializationServiceTests {
 		assertFalse(crm.isInitialized());
 		Identifier systemId = crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId();
 		assertTrue(crm.isInitialized());
-		assertEquals(systemId, crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId());
+		try {
+			assertEquals(systemId, crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId());
+			fail("System is already initialized");
+		} catch (DuplicateItemFoundException expected) { }
 	}
 	
 	@Test

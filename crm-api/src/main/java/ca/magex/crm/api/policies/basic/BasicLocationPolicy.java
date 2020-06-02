@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -34,54 +33,34 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	
 	@Override
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
-		try {
-			/* can only create a location for the organization, if the organization exists, and is active */
-			return organizationService.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
-		} catch (ItemNotFoundException i) {
-			return false;
-		}
+		/* can only create a location for the organization, if the organization exists, and is active */
+		return organizationService.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canViewLocation(Identifier locationId) {
-		try {
-			/* can only view a location if it exists */
-			locationService.findLocationSummary(locationId);
-		} catch (ItemNotFoundException i) {
-			return false;
-		}
+		/* can only view a location if it exists */
+		locationService.findLocationSummary(locationId);
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateLocation(Identifier locationId) {
-		try {
-			/* can only update a location if it exists, and is active */
-			return locationService.findLocationSummary(locationId).getStatus() == Status.ACTIVE;
-		} catch (ItemNotFoundException i) {
-			return false;
-		}
+		/* can only update a location if it exists, and is active */
+		return locationService.findLocationSummary(locationId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableLocation(Identifier locationId) {
-		try {
-			/* can only enable a location if it exists */
-			locationService.findLocationSummary(locationId);
-			return true;
-		} catch (ItemNotFoundException i) {
-			return false;
-		}
+		/* can only enable a location if it exists */
+		locationService.findLocationSummary(locationId);
+		return true;
 	}
 
 	@Override
 	public boolean canDisableLocation(Identifier locationId) {
-		try {
-			/* can only disable a location if it exists */
-			locationService.findLocationSummary(locationId);
-			return true;
-		} catch (ItemNotFoundException i) {
-			return false;
-		}
+		/* can only disable a location if it exists */
+		locationService.findLocationSummary(locationId);
+		return true;
 	}
 }

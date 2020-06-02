@@ -1,6 +1,6 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.CANADA;
 import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
@@ -32,6 +32,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.validation.CrmValidation;
 
@@ -540,12 +541,9 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
 		crm.createGroup(GROUP).getGroupId();
 		CrmValidation validation = new CrmValidation(crm);
-		try {
-			validation.validate(new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
-			fail("Should fail validation");
-		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, new Identifier("org"), "error", "status", "Status is mandatory for an organization");
-		}
+		List<Message> messages = validation.validate(new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
+		assertEquals(1, messages.size());
+		assertMessage(messages.get(0), new Identifier("org"), "error", "status", "Status is mandatory for an organization");
 	}
 
 }

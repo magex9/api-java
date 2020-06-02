@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
@@ -23,8 +22,7 @@ public class BasicPermissionPolicy implements CrmPermissionPolicy {
 	 * 
 	 * @param permissionService
 	 */
-	public BasicPermissionPolicy(
-			CrmPermissionService permissionService) {
+	public BasicPermissionPolicy(CrmPermissionService permissionService) {
 		this.permissionService = permissionService;
 	}
 	
@@ -36,70 +34,43 @@ public class BasicPermissionPolicy implements CrmPermissionPolicy {
 
 	@Override
 	public boolean canViewGroup(String group) {
-		try {
-			/* can view a group if it exists */
-			permissionService.findGroupByCode(group);
-			return true;
-		}
-		catch(ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a group if it exists */
+		permissionService.findGroupByCode(group);
+		return true;
 	}
 
 	@Override
 	public boolean canViewGroup(Identifier groupId) {
-		try {
-			/* can view a group if it exists */
-			permissionService.findGroup(groupId);
-			return true;
-		}
-		catch(ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a group if it exists */
+		permissionService.findGroup(groupId);
+		return true;
 	}
 
 	@Override
 	public boolean canUpdateGroup(Identifier groupId) {
-		try {
-			/* can update a group if it exists and is active */
-			return permissionService.findGroup(groupId).getStatus() == Status.ACTIVE;
-		}
-		catch(ItemNotFoundException e) {
-			return false;
-		}
+		/* can update a group if it exists and is active */
+		return permissionService.findGroup(groupId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableGroup(Identifier groupId) {
-		try {
-			/* can enable a group if it exists */
-			permissionService.findGroup(groupId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can enable a group if it exists */
+		permissionService.findGroup(groupId);
+		return true;
 	}
 
 	@Override
 	public boolean canDisableGroup(Identifier groupId) {
-		try {
-			/* can disable a group if it exists */
-			permissionService.findGroup(groupId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can disable a group if it exists */
+		permissionService.findGroup(groupId);
+		return true;
 	}
 
 	@Override
 	public boolean canCreateRole(Identifier groupId) {
-		try {
-			/* can create a role for this group if it exists */
-			permissionService.findGroup(groupId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can create a role for this group if it exists */
+		permissionService.findGroup(groupId);
+		return true;
 	}
 
 	@Override
@@ -110,55 +81,36 @@ public class BasicPermissionPolicy implements CrmPermissionPolicy {
 
 	@Override
 	public boolean canViewRole(String code) {		
-		try {
-			/* can view a specific role if it exists */
-			permissionService.findRoleByCode(code);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a specific role if it exists */
+		permissionService.findRoleByCode(code);
+		return true;
 	}
 
 	@Override
 	public boolean canViewRole(Identifier roleId) {
-		try {
-			/* can view a specific role if it exists */
-			permissionService.findRole(roleId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a specific role if it exists */
+		permissionService.findRole(roleId);
+		return true;
 	}
 
 	@Override
 	public boolean canUpdateRole(Identifier roleId) {
-		try {
-			/* can view a specific role if it exists and is active */
-			return permissionService.findRole(roleId).getStatus() == Status.ACTIVE;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a specific role if it exists and is active */
+		return permissionService.findRole(roleId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableRole(Identifier roleId) {
-		try {
-			/* can enable a specific role if it exists */
-			permissionService.findRole(roleId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can enable a specific role if it exists */
+		permissionService.findRole(roleId);
+		return true;
 	}
 
 	@Override
 	public boolean canDisableRole(Identifier roleId) {
-		try {
-			/* can disable a specific role if it exists */
-			permissionService.findRole(roleId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can disable a specific role if it exists */
+		permissionService.findRole(roleId);
+		return true;
 	}
+	
 }

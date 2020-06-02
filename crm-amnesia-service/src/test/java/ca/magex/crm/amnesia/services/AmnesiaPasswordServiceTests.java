@@ -21,12 +21,12 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPasswordServiceTests extends AbstractPasswordServiceTests {
 
-	public AmnesiaPasswordServiceTests(CrmPasswordService passwords) {
-		this(new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader()), passwords);
+	public AmnesiaPasswordServiceTests() {
+		this(new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader()));
 	}
-
-	public AmnesiaPasswordServiceTests(AmnesiaDB db, CrmPasswordService passwords) {
-		super(db.getCrm(), passwords, db.getPasswordEncoder());
+	
+	private AmnesiaPasswordServiceTests(AmnesiaDB db) {
+		super(db.getCrm(), new AmnesiaPasswordService(db), db.getPasswordEncoder());
 	}
 
 	@Test

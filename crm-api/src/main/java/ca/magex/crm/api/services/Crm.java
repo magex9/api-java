@@ -17,6 +17,7 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -117,7 +118,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (isInitialized())
-			throw new RuntimeException("The system is already initialized");
+			throw new DuplicateItemFoundException("The system is already initialized");
 		return initializationService.initializeSystem(organization, name, email, username, password); 
 	}
 	
@@ -445,7 +446,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	public PersonSummary disablePerson(Identifier personId) {
 		if (!canDisablePerson(personId))
 			throw new PermissionDeniedException("disablePerson: " + personId);
-		return personService.enablePerson(
+		return personService.disablePerson(
 			validate(personService.findPersonDetails(personId).withStatus(Status.INACTIVE)).getPersonId());
 	}
 
