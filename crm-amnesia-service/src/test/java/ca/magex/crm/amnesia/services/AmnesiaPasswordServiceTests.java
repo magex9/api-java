@@ -11,7 +11,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.resource.CrmLookupLoader;
 import ca.magex.crm.test.AbstractPasswordServiceTests;
 import ca.magex.crm.test.TestConfig;

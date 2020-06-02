@@ -68,13 +68,16 @@ import ca.magex.crm.test.function.TriFunction;
  * @author Jonny
  *
  */
-@Component
 public class CrmServicesTestSuite {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrmServicesTestSuite.class);
 
-	@Autowired private Crm crm;
+	private Crm crm;
 
+	public CrmServicesTestSuite(Crm crm) {
+		this.crm = crm;
+	}
+	
 	public void runAllTests() throws Exception {
 		crm.reset();
 		if (!crm.isInitialized())
