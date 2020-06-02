@@ -64,8 +64,6 @@ public class AmnesiaDB {
 	
 	private PasswordEncoder passwordEncoder;
 	
-	private CrmValidation validation;
-
 	private AmnesiaInitializationService initialization;
 	
 	private AmnesiaLookupService lookups;
@@ -126,7 +124,6 @@ public class AmnesiaDB {
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
 		crm = new AmnesiaCrm(this);
-		validation = new CrmValidation(lookups, permissions, organizations, locations, persons);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
@@ -186,10 +183,6 @@ public class AmnesiaDB {
 	
 	public AmnesiaUserService getUsers() {
 		return users;
-	}
-	
-	public CrmValidation getValidation() {
-		return validation;
 	}
 	
 	public PasswordEncoder getPasswordEncoder() {
