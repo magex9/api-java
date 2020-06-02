@@ -18,7 +18,7 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.validation.StructureValidationService;
+import ca.magex.crm.api.validation.CrmValidation;
 
 @Service
 @Primary
@@ -30,7 +30,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private PasswordEncoder passwordEncoder;
 
-	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
+	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
 
 	private long expiration = TimeUnit.DAYS.toMillis(365);
 
