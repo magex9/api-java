@@ -14,39 +14,40 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmPermissionService;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 
 public abstract class AbstractInitializationServiceTests {
 
-	public abstract CrmInitializationService getInitializationService();
-
-	public abstract CrmPermissionService getPermissionService();
+	private Crm crm;
+	
+	public AbstractInitializationServiceTests(Crm crm) {
+		this.crm = crm;
+	}
 	
 	@Before
 	public void setup() {
-		getInitializationService().reset();
+		crm.reset();
 	}
 	
 	@Test
 	public void testSystemInitiailization() throws Exception {
-		assertFalse(getInitializationService().isInitialized());
-		Identifier systemId = getInitializationService().initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId();
-		assertTrue(getInitializationService().isInitialized());
-		assertEquals(systemId, getInitializationService().initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId());
+		assertFalse(crm.isInitialized());
+		Identifier systemId = crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId();
+		assertTrue(crm.isInitialized());
+		assertEquals(systemId, crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin").getUserId());
 	}
 	
 	@Test
 	public void testDataDump() throws Exception {
-		getPermissionService().createGroup(new Localized("A", "A", "A"));
-		getPermissionService().createGroup(new Localized("B", "B", "B"));
-		getPermissionService().createGroup(new Localized("C", "C", "C"));
-		getPermissionService().createGroup(new Localized("D", "D", "D"));
+		crm.createGroup(new Localized("A", "A", "A"));
+		crm.createGroup(new Localized("B", "B", "B"));
+		crm.createGroup(new Localized("C", "C", "C"));
+		crm.createGroup(new Localized("D", "D", "D"));
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		System.out.println(baos.toString());
-		getInitializationService().dump(baos);
+		crm.dump(baos);
 		String[] lines = baos.toString().split("\n");
 		assertEquals(4, lines.length);
 		for (String line : lines) {
@@ -61,9 +62,9 @@ public abstract class AbstractInitializationServiceTests {
 	
 	@Test
 	public void testDataDumpToInvalidFile() throws Exception {
-		getPermissionService().createGroup(GROUP);
+		crm.createGroup(GROUP);
 		try {
-			getInitializationService().dump(null);
+			crm.dump(null);
 			fail("Exception will be thrown");
 		} catch (Exception e) { }
 	}

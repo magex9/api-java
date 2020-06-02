@@ -19,51 +19,52 @@ import ca.magex.crm.api.lookup.CrmLookupItem;
 import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.test.function.TriFunction;
 
 public abstract class AbstractLookupServiceTests {
 
-	public abstract CrmInitializationService getInitializationService();
-
-	public abstract CrmLookupService getLookupService();
+	private Crm crm;
+	
+	public AbstractLookupServiceTests(Crm crm) {
+		this.crm = crm;
+	}
 
 	@Before
 	public void setup() {
-		getInitializationService().reset();
-		getInitializationService().initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
+		crm.reset();
+		crm.initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
 	}
 	
 	@Test
 	public void testLookups() {
 		/* test status lookups */
-		runLookupTest(Status.class, getLookupService()::findStatuses, getLookupService()::findStatusByCode, getLookupService()::findStatusByLocalizedName);
+		runLookupTest(Status.class, crm::findStatuses, crm::findStatusByCode, crm::findStatusByLocalizedName);
 		
 		/* test country lookups */
-		runLookupTest(Country.class, getLookupService()::findCountries, getLookupService()::findCountryByCode, getLookupService()::findCountryByLocalizedName);
+		runLookupTest(Country.class, crm::findCountries, crm::findCountryByCode, crm::findCountryByLocalizedName);
 		
 		/* test language lookups */
-		runLookupTest(Language.class, getLookupService()::findLanguages, getLookupService()::findLanguageByCode, getLookupService()::findLanguageByLocalizedName);
+		runLookupTest(Language.class, crm::findLanguages, crm::findLanguageByCode, crm::findLanguageByLocalizedName);
 		
 		/* test salutation lookups */
-		runLookupTest(Salutation.class, getLookupService()::findSalutations, getLookupService()::findSalutationByCode, getLookupService()::findSalutationByLocalizedName);
+		runLookupTest(Salutation.class, crm::findSalutations, crm::findSalutationByCode, crm::findSalutationByLocalizedName);
 		
 		/* test sector lookups */
-		runLookupTest(BusinessSector.class, getLookupService()::findBusinessSectors, getLookupService()::findBusinessSectorByCode, getLookupService()::findBusinessSectorByLocalizedName);
+		runLookupTest(BusinessSector.class, crm::findBusinessSectors, crm::findBusinessSectorByCode, crm::findBusinessSectorByLocalizedName);
 		
 		/* test unit lookups */
-		runLookupTest(BusinessUnit.class, getLookupService()::findBusinessUnits, getLookupService()::findBusinessUnitByCode, getLookupService()::findBusinessUnitByLocalizedName);
+		runLookupTest(BusinessUnit.class, crm::findBusinessUnits, crm::findBusinessUnitByCode, crm::findBusinessUnitByLocalizedName);
 		
 		/* test classification lookups */
-		runLookupTest(BusinessClassification.class, getLookupService()::findBusinessClassifications, getLookupService()::findBusinessClassificationByCode, getLookupService()::findBusinessClassificationByLocalizedName);
+		runLookupTest(BusinessClassification.class, crm::findBusinessClassifications, crm::findBusinessClassificationByCode, crm::findBusinessClassificationByLocalizedName);
 		
 		/* test province lookups */
-		runQualifiedLookupTest(Province.class, getLookupService()::findProvinces, getLookupService().findCountryByCode("CA"), getLookupService()::findProvinceByCode, getLookupService()::findProvinceByLocalizedName);
-		runQualifiedLookupTest(Province.class, getLookupService()::findProvinces, getLookupService().findCountryByCode("MX"), getLookupService()::findProvinceByCode, getLookupService()::findProvinceByLocalizedName);
-		runQualifiedLookupTest(Province.class, getLookupService()::findProvinces, getLookupService().findCountryByCode("US"), getLookupService()::findProvinceByCode, getLookupService()::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, crm::findProvinces, crm.findCountryByCode("CA"), crm::findProvinceByCode, crm::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, crm::findProvinces, crm.findCountryByCode("MX"), crm::findProvinceByCode, crm::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, crm::findProvinces, crm.findCountryByCode("US"), crm::findProvinceByCode, crm::findProvinceByLocalizedName);
 	}
 
 	/**

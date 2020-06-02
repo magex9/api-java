@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
@@ -15,6 +16,20 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmUserService {
+	
+	default User prototypeUser(
+			@NotNull Identifier personId, 
+			@NotNull String username, 
+			@NotNull List<String> roles) {
+		return new User(null, username, new PersonSummary(personId, null, null, null), Status.PENDING, roles);
+	};
+	
+	default User createUser(User prototype) {
+		return createUser(
+			prototype.getPerson().getPersonId(), 
+			prototype.getUsername(), 
+			prototype.getRoles());
+	}
 
 	User createUser(
 		@NotNull Identifier personId, 

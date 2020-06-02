@@ -35,7 +35,7 @@ public class CrmValidation {
 		this.crm = crm;
 	}
 
-	public Group validate(Group group) {
+	public List<Message> validate(Group group) {
 		List<Message> messages = new ArrayList<Message>();
 
 		// Status
@@ -81,13 +81,10 @@ public class CrmValidation {
 			messages.add(new Message(group.getGroupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
 		}
 
-		if (!messages.isEmpty()) {
-			throw new BadRequestException("Group has validation errors", messages);
-		}
-		return group;
+		return messages;
 	}
 
-	public Role validate(Role role) {
+	public List<Message> validate(Role role) {
 		List<Message> messages = new ArrayList<Message>();
 
 		// Status
@@ -133,13 +130,10 @@ public class CrmValidation {
 			messages.add(new Message(role.getRoleId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
 		}
 
-		if (!messages.isEmpty()) {
-			throw new BadRequestException("Group has validation errors", messages);
-		}
-		return role;
+		return messages;
 	}
 
-	public OrganizationDetails validate(OrganizationDetails organization) {
+	public List<Message> validate(OrganizationDetails organization) {
 		List<Message> messages = new ArrayList<Message>();
 
 		// Status
@@ -195,13 +189,10 @@ public class CrmValidation {
 			}
 		}
 
-		if (!messages.isEmpty()) {
-			throw new BadRequestException("Organization has validation errors", messages);
-		}
-		return organization;
+		return messages;
 	}
 
-	public LocationDetails validate(LocationDetails location) {
+	public List<Message> validate(LocationDetails location) {
 		List<Message> messages = new ArrayList<Message>();
 
 		// Organization
@@ -241,13 +232,10 @@ public class CrmValidation {
 			validateMailingAddress(location.getAddress(), messages, location.getLocationId(), "address");
 		}
 
-		if (!messages.isEmpty()) {
-			throw new BadRequestException("Location has validation errors", messages);
-		}
-		return location;
+		return messages;
 	}
 	
-	public PersonDetails validate(PersonDetails person) throws BadRequestException {
+	public List<Message> validate(PersonDetails person) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
 
 		// Organization
@@ -284,14 +272,14 @@ public class CrmValidation {
 			validateMailingAddress(person.getAddress(), messages, person.getPersonId(), "address");
 		}
 
-		if (!messages.isEmpty())
-			throw new BadRequestException("Person has validation errors", messages);
-		return person;
+		return messages;
 	}
 
-	public User validate(User user) throws BadRequestException {
+	public List<Message> validate(User user) throws BadRequestException {
+		List<Message> messages = new ArrayList<Message>();
+		
 		// do validation here
-		return user;
+		return messages;
 	}
 
 	/**
@@ -374,7 +362,7 @@ public class CrmValidation {
 		}
 	}
 
-	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
+	public List<Message> validate(List<String> roles, Identifier personId) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
 
 		for (String role : roles) {
@@ -385,9 +373,7 @@ public class CrmValidation {
 			}
 		}
 
-		if (!messages.isEmpty())
-			throw new BadRequestException("Roles has validation errors", messages);
-		return roles;
+		return messages;
 	}
 
 }
