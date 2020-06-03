@@ -29,6 +29,7 @@ import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -54,7 +55,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();		
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = new OrganizationDetails(
 				new Identifier(Long.toHexString(idGenerator.newId())),
@@ -182,18 +183,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		return organizations.values()
-				.stream()
-				.filter(o -> filter.apply(o))
-				.count();
+		return organizations.values(new CrmFilterPredicate<OrganizationSummary>(filter)).size();				
 	}
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		List<OrganizationDetails> allMatchingOrgs = organizations.values()
-				.stream()
-				.filter(o -> filter.apply(o))
+		List<OrganizationDetails> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationSummary>(filter))
+				.stream()				
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
@@ -203,9 +200,8 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		List<OrganizationSummary> allMatchingOrgs = organizations.values()
+		List<OrganizationSummary> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationSummary>(filter))
 				.stream()
-				.filter(o -> filter.apply(o))
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());

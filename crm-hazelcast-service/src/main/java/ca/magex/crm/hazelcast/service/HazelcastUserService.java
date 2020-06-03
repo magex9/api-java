@@ -34,6 +34,7 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -189,17 +190,9 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public long countUsers(
-			UsersFilter filter) {
+	public long countUsers(UsersFilter filter) {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
-		return users.values()
-				.stream()
-				.filter(u -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(u.getPerson().getOrganizationId()) : true)
-				.filter(u -> filter.getStatus() != null ? filter.getStatus().equals(u.getStatus()) : true)
-				.filter(u -> filter.getPersonId() != null ? filter.getPersonId().equals(u.getPerson().getPersonId()) : true)
-				.filter(u -> filter.getRole() != null ? u.getRoles().contains(filter.getRole()) : true)
-				.filter(u -> filter.getUsername() != null ? StringUtils.equals(filter.getUsername(), u.getUsername()) : true)
-				.count();
+		return users.values(new CrmFilterPredicate<User>(filter)).size();
 	}
 
 	@Override
@@ -207,13 +200,8 @@ public class HazelcastUserService implements CrmUserService {
 			UsersFilter filter,
 			Paging paging) {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
-		List<User> allMatchingUsers = users.values()
+		List<User> allMatchingUsers = users.values(new CrmFilterPredicate<User>(filter))
 				.stream()
-				.filter(u -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(u.getPerson().getOrganizationId()) : true)
-				.filter(u -> filter.getStatus() != null ? filter.getStatus().equals(u.getStatus()) : true)
-				.filter(u -> filter.getPersonId() != null ? filter.getPersonId().equals(u.getPerson().getPersonId()) : true)
-				.filter(u -> filter.getRole() != null ? u.getRoles().contains(filter.getRole()) : true)
-				.filter(u -> filter.getUsername() != null ? StringUtils.equals(filter.getUsername(), u.getUsername()) : true)
 				.map(u -> SerializationUtils.clone(u))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
@@ -229,14 +217,14 @@ public class HazelcastUserService implements CrmUserService {
 	public Page<User> findUsers(UsersFilter filter) {
 		return CrmUserService.super.findUsers(filter);
 	}
-	
+
 	@Override
-	public User createUser(User prototype) {	
+	public User createUser(User prototype) {
 		return CrmUserService.super.createUser(prototype);
 	}
-	
+
 	@Override
-	public User prototypeUser(@NotNull Identifier personId, @NotNull String username, @NotNull List<String> roles) {	
+	public User prototypeUser(@NotNull Identifier personId, @NotNull String username, @NotNull List<String> roles) {
 		return CrmUserService.super.prototypeUser(personId, username, roles);
 	}
 }

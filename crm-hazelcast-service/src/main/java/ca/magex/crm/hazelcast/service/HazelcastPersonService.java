@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -34,6 +33,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -185,22 +185,14 @@ public class HazelcastPersonService implements CrmPersonService {
 	@Override
 	public long countPersons(PersonsFilter filter) {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
-		return persons.values()
-				.stream()
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
-				.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
-				.count();
+		return persons.values(new CrmFilterPredicate<PersonSummary>(filter)).size();				
 	}
 
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
-		List<PersonDetails> allMatchingPersons = persons.values()
+		List<PersonDetails> allMatchingPersons = persons.values(new CrmFilterPredicate<PersonSummary>(filter))
 				.stream()
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
-				.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
@@ -210,11 +202,8 @@ public class HazelcastPersonService implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
-		List<PersonSummary> allMatchingPersons = persons.values()
+		List<PersonSummary> allMatchingPersons = persons.values(new CrmFilterPredicate<PersonSummary>(filter))
 				.stream()
-				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
-				.filter(i -> filter.getStatus() != null ? i.getStatus().equals(filter.getStatus()) : true)
-				.filter(j -> filter.getOrganizationId() != null ? j.getOrganizationId().equals(filter.getOrganizationId()) : true)
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
@@ -235,14 +224,14 @@ public class HazelcastPersonService implements CrmPersonService {
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter) {
 		return CrmPersonService.super.findPersonSummaries(filter);
 	}
-	
+
 	@Override
-	public PersonDetails createPerson(PersonDetails prototype) {	
+	public PersonDetails createPerson(PersonDetails prototype) {
 		return CrmPersonService.super.createPerson(prototype);
 	}
-	
+
 	@Override
-	public PersonDetails prototypePerson(@NotNull Identifier organizationId, @NotNull PersonName name, @NotNull MailingAddress address, @NotNull Communication communication, @NotNull BusinessPosition position) {	
+	public PersonDetails prototypePerson(@NotNull Identifier organizationId, @NotNull PersonName name, @NotNull MailingAddress address, @NotNull Communication communication, @NotNull BusinessPosition position) {
 		return CrmPersonService.super.prototypePerson(organizationId, name, address, communication, position);
 	}
 }
