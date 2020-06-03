@@ -53,7 +53,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 	
 	@Override
 	public Country findCountryByCode(String code) throws ItemNotFoundException {
-		return db.getCountries().findByCode(code);
+		return db.getCountries().findByCode(code.toUpperCase());
 	}
 	
 	@Override
@@ -77,11 +77,11 @@ public class AmnesiaLookupService implements CrmLookupService {
 	@Override
 	public Province findProvinceByCode(String province, String country) {
 		if (country.equalsIgnoreCase("CA")) {
-			return db.getCaProvinces().findByCode(province);
+			return db.getCaProvinces().findByCode(province.toUpperCase());
 		} else if (country.equalsIgnoreCase("US")) {
-			return db.getUsProvinces().findByCode(province);
+			return db.getUsProvinces().findByCode(province.toUpperCase());
 		} else if (country.equalsIgnoreCase("MX")) {
-			return db.getMxProvinces().findByCode(province);
+			return db.getMxProvinces().findByCode(province.toUpperCase());
 		} else {
 			throw new IllegalArgumentException("No list of provinces for country: " + country);
 		}
@@ -124,7 +124,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 
 	@Override
 	public Language findLanguageByCode(String code) throws ItemNotFoundException {
-		return db.getLanguages().findByCode(code);
+		return db.getLanguages().findByCode(code.toUpperCase());
 	}
 
 	@Override
