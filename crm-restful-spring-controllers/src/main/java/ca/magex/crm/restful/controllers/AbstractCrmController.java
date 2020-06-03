@@ -31,7 +31,6 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 import ca.magex.json.model.JsonArray;
@@ -119,6 +118,8 @@ public abstract class AbstractCrmController {
 	}
 
 	public String getContentType(HttpServletRequest req) {
+		if (req.getContentType() != null)
+			return req.getContentType();
 		return "application/json";
 	}
 
@@ -180,43 +181,13 @@ public abstract class AbstractCrmController {
 	}
 	
 	public Locale extractLocale(HttpServletRequest req) {
-		if (req.getHeader("Locale") == null) {
-			if (getContentType(req).contentEquals("application/json+ld"))
-				return null;
+		if (getContentType(req).contentEquals("application/json+ld"))
+			return null;
+		if (req.getHeader("Locale") == null)
 			return Lang.ROOT;
-		}
 		return Lang.parse(req.getHeader("Locale"));
 	}
 
-	public String extractDisplayName(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("displayName");
-		if (value == null)
-			return null;
-		if (value.length() > 60)
-			throw new IllegalArgumentException("The display name must be under 60 characters");
-		return value;
-	}
-
-	public String extractReference(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("reference");
-		if (value == null)
-			return null;
-		if (value.length() > 60)
-			throw new IllegalArgumentException("The reference must be under 60 characters");
-		return value;
-	}
-	
-	public Status extractStatus(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("status");
-		if (value == null)
-			return null;
-		try {
-			return Status.valueOf(value.toUpperCase());
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Invalid status requested: " + value);
-		}
-	}
-	
 	public Paging extractPaging(Paging paging, HttpServletRequest req) {
 		if (req.getParameter("page") != null)
 			paging = paging.withPageNumber(Integer.parseInt(req.getParameter("page")));

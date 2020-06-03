@@ -1,11 +1,15 @@
 package ca.magex.crm.restful.controllers;
 
+import static ca.magex.crm.test.CrmAsserts.GROUP;
+
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
@@ -14,30 +18,33 @@ import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Status;
+import ca.magex.json.model.JsonObject;
 
 @Controller
 public class JunitController extends AbstractCrmController {
 
-//	@PostMapping("/api/junit")
-//	public void createJunit(HttpServletRequest req, HttpServletResponse res) throws IOException {
-//		handle(req, res, Group.class, (messages, transformer) -> { 
-//			JsonObject body = extractBody(req);
-//			String code = getString(body, "code", "", null, messages);
-//			String englishName = getString(body, "englishName", "", null, messages);
-//			String frenchName = getString(body, "frenchName", "", null, messages);
-//			Localized name = new Localized(code, englishName, frenchName);
-//			validate(messages);
-//			return transformer.format(crm.createGroup(name), extractLocale(req));
-//		});
-//	}
-//
-//	@GetMapping("/api/junit/{testId}")
-//	public void getJunit(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("testId") Identifier testId) throws IOException {
-//		handle(req, res, Group.class, (messages, transformer) -> {
-//			return transformer.format(new Group(testId, Status.ACTIVE, new Localized(Locale.ENGLISH, "Test: " + testId)), extractLocale(req));
-//		});
-//	}
+	@PostMapping("/api/junit/identifier/{key}")
+	public void getIdentifier(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("key") String key) throws IOException {
+		handle(req, res, Group.class, (messages, transformer) -> {
+			JsonObject body = extractBody(req);
+			Identifier identifier = getIdentifier(body, key, null, null, messages);
+			validate(messages);
+			return transformer.format(new Group(identifier, Status.ACTIVE, GROUP), extractLocale(req));
+		});
+	}
+
+	@PostMapping("/api/junit/strings/{key}")
+	public void getStrings(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("key") String key) throws IOException {
+		handle(req, res, Group.class, (messages, transformer) -> {
+			JsonObject body = extractBody(req);
+			getStrings(body, key, null, null, messages);
+			validate(messages);
+			return transformer.format(new Group(new Identifier("test"), Status.ACTIVE, GROUP), extractLocale(req));
+		});
+	}
 
 	@PostMapping("/api/junit/400")
 	public void createBadRequestException(HttpServletRequest req, HttpServletResponse res) throws IOException {

@@ -21,6 +21,7 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonObject;
 
 @Controller
@@ -39,7 +40,9 @@ public class OrganizationsController extends AbstractCrmController {
 	}
 	
 	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
-		return new OrganizationsFilter(extractDisplayName(req), extractStatus(req));
+		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
+		String displayName = req.getParameter("displayName");
+		return new OrganizationsFilter(displayName, status);
 	}
 
 	@PostMapping("/api/organizations")
