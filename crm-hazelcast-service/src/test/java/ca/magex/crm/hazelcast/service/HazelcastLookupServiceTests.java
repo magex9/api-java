@@ -19,8 +19,8 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class HazelcastLookupServiceTests extends AbstractLookupServiceTests {
 
-	@Autowired private HazelcastInitializationService hzInitializationService;
-	@Autowired private HazelcastLookupService hzLookupService;
+	@Autowired private CrmInitializationService hzInitializationService;
+	@Autowired private CrmLookupService hzLookupService;
 	
 	@Override
 	public CrmLookupService getLookupService() {

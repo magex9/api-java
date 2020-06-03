@@ -54,7 +54,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 	public abstract CrmPermissionService getPermissionService();
 
-	@Before
+	@Before	
 	public void setup() {
 		getInitializationService().reset();
 		getInitializationService().initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
