@@ -2,7 +2,6 @@ package ca.magex.crm.amnesia.services;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,11 +15,9 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaCrmServicesTests {
 
-	@Autowired private CrmServicesTestSuite crmServicesTest;
-	
 	@Test
 	public void testCrmServices() throws Exception {
-		crmServicesTest.runAllTests();
+		new CrmServicesTestSuite(new AmnesiaCrm()).runAllTests();
 	}
 	
 }

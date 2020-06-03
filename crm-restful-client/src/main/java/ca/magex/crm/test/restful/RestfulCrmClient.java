@@ -1029,42 +1029,6 @@ public class RestfulCrmClient implements CrmClient {
 	}
 	
 	@Override
-	public Group validate(Group group) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public Role validate(Role role) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocationDetails validate(LocationDetails location) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PersonDetails validate(PersonDetails person) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<Province> findProvinces(String country) {
 		// TODO Auto-generated method stub
 		return null;
@@ -1087,12 +1051,6 @@ public class RestfulCrmClient implements CrmClient {
 	public boolean canCreateRole(Identifier groupId) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public User validate(User user) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }

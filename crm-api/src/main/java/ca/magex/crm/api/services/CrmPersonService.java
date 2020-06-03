@@ -17,6 +17,24 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmPersonService {
+	
+	default PersonDetails prototypePerson(
+			@NotNull Identifier organizationId, 
+			@NotNull PersonName name, 
+			@NotNull MailingAddress address, 
+			@NotNull Communication communication, 
+			@NotNull BusinessPosition position) {
+		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, position);
+	};
+	
+	default PersonDetails createPerson(PersonDetails prototype) {
+		return createPerson(
+			prototype.getOrganizationId(), 
+			prototype.getLegalName(), 
+			prototype.getAddress(),
+			prototype.getCommunication(),
+			prototype.getPosition());
+	}
 
 	PersonDetails createPerson(
 		@NotNull Identifier organizationId, 

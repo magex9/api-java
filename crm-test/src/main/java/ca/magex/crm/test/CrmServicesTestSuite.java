@@ -17,11 +17,9 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
@@ -54,13 +52,7 @@ import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -74,24 +66,21 @@ import ca.magex.crm.test.function.TriFunction;
  * @author Jonny
  *
  */
-@Component
 public class CrmServicesTestSuite {
 
 	private static final Logger logger = LoggerFactory.getLogger(CrmServicesTestSuite.class);
 
-	@Autowired private CrmInitializationService initializationService;
-	@Autowired private CrmLookupService lookupService;
-	@Autowired private CrmOrganizationService organizationService;
-	@Autowired private CrmLocationService locationService;
-	@Autowired private CrmPersonService personService;
-	@Autowired private CrmUserService userService;
-	@Autowired private CrmPermissionService permissionService;
+	private Crm crm;
 
+	public CrmServicesTestSuite(Crm crm) {
+		this.crm = crm;
+	}
+	
 	public void runAllTests() throws Exception {
-		initializationService.reset();
-		if (!initializationService.isInitialized())
-			initializationService.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
-		initializationService.dump();
+		crm.reset();
+		if (!crm.isInitialized())
+			crm.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
+		crm.dump();
 		runLookupServiceTests();
 		try {
 			runCreatePermissions();
@@ -108,16 +97,16 @@ public class CrmServicesTestSuite {
 		logger.info("----------------------------");
 		logger.info("Running Lookup Service Tests");
 		logger.info("----------------------------");
-		runLookupTest(Status.class, lookupService::findStatuses, lookupService::findStatusByCode, lookupService::findStatusByLocalizedName);
-		runLookupTest(Country.class, lookupService::findCountries, lookupService::findCountryByCode, lookupService::findCountryByLocalizedName);
-		runLookupTest(Language.class, lookupService::findLanguages, lookupService::findLanguageByCode, lookupService::findLanguageByLocalizedName);
-		runLookupTest(Salutation.class, lookupService::findSalutations, lookupService::findSalutationByCode, lookupService::findSalutationByLocalizedName);
-		runLookupTest(BusinessSector.class, lookupService::findBusinessSectors, lookupService::findBusinessSectorByCode, lookupService::findBusinessSectorByLocalizedName);
-		runLookupTest(BusinessUnit.class, lookupService::findBusinessUnits, lookupService::findBusinessUnitByCode, lookupService::findBusinessUnitByLocalizedName);
-		runLookupTest(BusinessClassification.class, lookupService::findBusinessClassifications, lookupService::findBusinessClassificationByCode, lookupService::findBusinessClassificationByLocalizedName);
-		runQualifiedLookupTest(Province.class, lookupService::findProvinces, lookupService.findCountryByCode("CA"), lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
-		runQualifiedLookupTest(Province.class, lookupService::findProvinces, lookupService.findCountryByCode("MX"), lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
-		runQualifiedLookupTest(Province.class, lookupService::findProvinces, lookupService.findCountryByCode("US"), lookupService::findProvinceByCode, lookupService::findProvinceByLocalizedName);
+		runLookupTest(Status.class, crm::findStatuses, crm::findStatusByCode, crm::findStatusByLocalizedName);
+		runLookupTest(Country.class, crm::findCountries, crm::findCountryByCode, crm::findCountryByLocalizedName);
+		runLookupTest(Language.class, crm::findLanguages, crm::findLanguageByCode, crm::findLanguageByLocalizedName);
+		runLookupTest(Salutation.class, crm::findSalutations, crm::findSalutationByCode, crm::findSalutationByLocalizedName);
+		runLookupTest(BusinessSector.class, crm::findBusinessSectors, crm::findBusinessSectorByCode, crm::findBusinessSectorByLocalizedName);
+		runLookupTest(BusinessUnit.class, crm::findBusinessUnits, crm::findBusinessUnitByCode, crm::findBusinessUnitByLocalizedName);
+		runLookupTest(BusinessClassification.class, crm::findBusinessClassifications, crm::findBusinessClassificationByCode, crm::findBusinessClassificationByLocalizedName);
+		runQualifiedLookupTest(Province.class, crm::findProvinces, crm.findCountryByCode("CA"), crm::findProvinceByCode, crm::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, crm::findProvinces, crm.findCountryByCode("MX"), crm::findProvinceByCode, crm::findProvinceByLocalizedName);
+		runQualifiedLookupTest(Province.class, crm::findProvinces, crm.findCountryByCode("US"), crm::findProvinceByCode, crm::findProvinceByLocalizedName);
 		
 	}
 
@@ -166,33 +155,33 @@ public class CrmServicesTestSuite {
 	}
 
 	private void runCreatePermissions() {
-		Group system = permissionService.findGroupByCode(SYS.getCode());
+		Group system = crm.findGroupByCode(SYS.getCode());
 		Identifier sysId = system.getGroupId();
 		verifyGroupDetails(system, sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
-		Assert.assertEquals(system, permissionService.findGroup(sysId));
-		Assert.assertEquals(system, permissionService.findGroupByCode(SYS.getCode()));
-		verifyGroupDetails(permissionService.disableGroup(sysId), sysId, Status.INACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
-		verifyGroupDetails(permissionService.enableGroup(sysId), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
-		verifyGroupDetails(permissionService.updateGroupName(sysId, new Localized(SYS.getCode(), "ENGLISH", "FRENCH")), sysId, Status.ACTIVE, SYS.getCode(), "ENGLISH", "FRENCH");
-		verifyGroupDetails(permissionService.updateGroupName(sysId, new Localized(SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName())), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
-		FilteredPage<Group> groupPage = permissionService.findGroups(new GroupsFilter(null, null, SYS.getCode(), null), new Paging(Sort.by("code")));
+		Assert.assertEquals(system, crm.findGroup(sysId));
+		Assert.assertEquals(system, crm.findGroupByCode(SYS.getCode()));
+		verifyGroupDetails(crm.disableGroup(sysId), sysId, Status.INACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		verifyGroupDetails(crm.enableGroup(sysId), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		verifyGroupDetails(crm.updateGroupName(sysId, new Localized(SYS.getCode(), "ENGLISH", "FRENCH")), sysId, Status.ACTIVE, SYS.getCode(), "ENGLISH", "FRENCH");
+		verifyGroupDetails(crm.updateGroupName(sysId, new Localized(SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName())), sysId, Status.ACTIVE, SYS.getCode(), SYS.getEnglishName(), SYS.getFrenchName());
+		FilteredPage<Group> groupPage = crm.findGroups(new GroupsFilter(null, null, SYS.getCode(), null), new Paging(Sort.by("code")));
 		Assert.assertEquals(1, groupPage.getContent().size());
 
-		Role sysadmin = permissionService.findRoleByCode(SYS_ADMIN.getCode());
+		Role sysadmin = crm.findRoleByCode(SYS_ADMIN.getCode());
 		verifyRoleDetails(sysadmin, sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
-		verifyRoleDetails(permissionService.disableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.INACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
-		verifyRoleDetails(permissionService.enableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
-		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), "ENGLISH", "FRENCH")), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), "ENGLISH", "FRENCH");
-		verifyRoleDetails(permissionService.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName())), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(),
+		verifyRoleDetails(crm.disableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.INACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(crm.enableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(crm.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), "ENGLISH", "FRENCH")), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), "ENGLISH", "FRENCH");
+		verifyRoleDetails(crm.updateRoleName(sysadmin.getRoleId(), new Localized(SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName())), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(),
 				SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
-		verifyRoleDetails(permissionService.findRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
-		verifyRoleDetails(permissionService.findRoleByCode(sysadmin.getCode()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
-		FilteredPage<Role> rolePage = permissionService.findRoles(new RolesFilter(null, null, null, SYS_ADMIN.getCode(), null), new Paging(Sort.by("code")));
+		verifyRoleDetails(crm.findRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		verifyRoleDetails(crm.findRoleByCode(sysadmin.getCode()), sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
+		FilteredPage<Role> rolePage = crm.findRoles(new RolesFilter(null, null, null, SYS_ADMIN.getCode(), null), new Paging(Sort.by("code")));
 		Assert.assertEquals(1, rolePage.getContent().size());
 
 		/* create a second group */
-		Group dev = permissionService.createGroup(new Localized("DEV", "developers", "developeurs"));
-		permissionService.createRole(dev.getGroupId(), new Localized("JAVA", "java", "java"));
+		Group dev = crm.createGroup(new Localized("DEV", "developers", "developeurs"));
+		crm.createRole(dev.getGroupId(), new Localized("JAVA", "java", "java"));
 	}
 
 	private Identifier runOrganizationServiceTests() {
@@ -200,25 +189,25 @@ public class CrmServicesTestSuite {
 		logger.info("Running Organization Service Tests");
 		logger.info("----------------------------------");
 		/* get initial organization count */
-		long orgCount = organizationService.countOrganizations(new OrganizationsFilter());
+		long orgCount = crm.countOrganizations(new OrganizationsFilter());
 		logger.info("Organization Count: " + orgCount);
 
 		/* create and verify new organization */
 		logger.info("Creating new Organiztion");
-		OrganizationDetails orgDetails = organizationService.createOrganization("ABC", List.of(SYS.getCode()));
+		OrganizationDetails orgDetails = crm.createOrganization("ABC", List.of(SYS.getCode()));
 		Identifier orgId = orgDetails.getOrganizationId();
 		logger.info("Generated OrgId: " + orgId);
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", null, null, List.of("SYS"));		
 
 		/* verify that we our organization count incremented by 1 */
-		long newOrgCount = organizationService.countOrganizations(new OrganizationsFilter());
+		long newOrgCount = crm.countOrganizations(new OrganizationsFilter());
 		logger.info("Organization Count: " + newOrgCount);
 		Assert.assertEquals(orgCount + 1, newOrgCount);
 
 		/* create and verify new location for organization */
 		logger.info("Creating main Location");
 		MailingAddress address = new MailingAddress("54 fifth street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
-		LocationDetails locDetails = locationService.createLocation(
+		LocationDetails locDetails = crm.createLocation(
 				orgId,
 				"HeadQuarters",
 				"HQ",
@@ -228,12 +217,12 @@ public class CrmServicesTestSuite {
 
 		/* set and verify organization main location */
 		logger.info("Updating Organization main Location");
-		orgDetails = organizationService.updateOrganizationMainLocation(orgDetails.getOrganizationId(), locDetails.getLocationId());
+		orgDetails = crm.updateOrganizationMainLocation(orgDetails.getOrganizationId(), locDetails.getLocationId());
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", locId, null, List.of("SYS"));
 
 		/* set and verify organization main contact */
 		logger.info("Creating main Contact");
-		PersonDetails personDetails = personService.createPerson(
+		PersonDetails personDetails = crm.createPerson(
 				orgId,
 				CrmAsserts.PERSON_NAME,
 				CrmAsserts.MAILING_ADDRESS,
@@ -244,45 +233,45 @@ public class CrmServicesTestSuite {
 
 		/* set and verify organization main contact */
 		logger.info("Updating Organization main Contact");
-		orgDetails = organizationService.updateOrganizationMainContact(orgDetails.getOrganizationId(), personDetails.getPersonId());
+		orgDetails = crm.updateOrganizationMainContact(orgDetails.getOrganizationId(), personDetails.getPersonId());
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, "ABC", locId, personId, List.of("SYS"));
 
 		/* update and verify organization name */
 		logger.info("Updating Organization name");
 		String newName = "ABC" + System.currentTimeMillis();
-		orgDetails = organizationService.updateOrganizationDisplayName(orgDetails.getOrganizationId(), newName);
+		orgDetails = crm.updateOrganizationDisplayName(orgDetails.getOrganizationId(), newName);
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId, personId, List.of("SYS"));
 
 		/* update and verify organization groups */
 		logger.info("Updating Organization groups");
-		orgDetails = organizationService.updateOrganizationGroups(orgDetails.getOrganizationId(), List.of("SYS", "DEV"));
+		orgDetails = crm.updateOrganizationGroups(orgDetails.getOrganizationId(), List.of("SYS", "DEV"));
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId, personId, List.of("SYS", "DEV"));
 
 		/* disable and verify organization */
 		logger.info("Disabling Organization");
-		OrganizationSummary orgSummary = organizationService.disableOrganization(orgDetails.getOrganizationId());
+		OrganizationSummary orgSummary = crm.disableOrganization(orgDetails.getOrganizationId());
 		verifyOrgSummary(orgSummary, orgId, Status.INACTIVE, newName);
 
-		orgSummary = organizationService.findOrganizationSummary(orgDetails.getOrganizationId());
+		orgSummary = crm.findOrganizationSummary(orgDetails.getOrganizationId());
 		verifyOrgSummary(orgSummary, orgId, Status.INACTIVE, newName);
 
-		orgDetails = organizationService.findOrganizationDetails(orgDetails.getOrganizationId());
+		orgDetails = crm.findOrganizationDetails(orgDetails.getOrganizationId());
 		verifyOrgDetails(orgDetails, orgId, Status.INACTIVE, newName, locId, personId, List.of("SYS", "DEV"));
 
 		/* enable and verify organization */
 		logger.info("Enabling Organization");
-		orgSummary = organizationService.enableOrganization(orgDetails.getOrganizationId());
+		orgSummary = crm.enableOrganization(orgDetails.getOrganizationId());
 		verifyOrgSummary(orgSummary, orgId, Status.ACTIVE, newName);
 
-		orgSummary = organizationService.findOrganizationSummary(orgDetails.getOrganizationId());
+		orgSummary = crm.findOrganizationSummary(orgDetails.getOrganizationId());
 		verifyOrgSummary(orgSummary, orgId, Status.ACTIVE, newName);
 
-		orgDetails = organizationService.findOrganizationDetails(orgDetails.getOrganizationId());
+		orgDetails = crm.findOrganizationDetails(orgDetails.getOrganizationId());
 		verifyOrgDetails(orgDetails, orgId, Status.ACTIVE, newName, locId, personId, List.of("SYS", "DEV"));
 
 		/* validate details paging with 1 match on name filter */
 		logger.info("Finding Organization Details with Name Match");
-		Page<OrganizationDetails> orgDetailsPage = organizationService.findOrganizationDetails(new OrganizationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<OrganizationDetails> orgDetailsPage = crm.findOrganizationDetails(new OrganizationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgDetailsPage.getNumber());
 		Assert.assertEquals(1, orgDetailsPage.getTotalPages());
 		Assert.assertEquals(1, orgDetailsPage.getNumberOfElements());
@@ -292,7 +281,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with no match on name filter */
 		logger.info("Finding Organization Details without Name Match");
-		orgDetailsPage = organizationService.findOrganizationDetails(new OrganizationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		orgDetailsPage = crm.findOrganizationDetails(new OrganizationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgDetailsPage.getNumber());
 		Assert.assertEquals(0, orgDetailsPage.getTotalPages());
 		Assert.assertEquals(0, orgDetailsPage.getNumberOfElements());
@@ -301,7 +290,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with 1 match on name filter */
 		logger.info("Finding Organization Summary without Name Match");
-		Page<OrganizationSummary> orgSummaryPage = organizationService.findOrganizationSummaries(new OrganizationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<OrganizationSummary> orgSummaryPage = crm.findOrganizationSummaries(new OrganizationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgSummaryPage.getNumber());
 		Assert.assertEquals(1, orgSummaryPage.getTotalPages());
 		Assert.assertEquals(1, orgSummaryPage.getNumberOfElements());
@@ -311,7 +300,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with no match on name filter */
 		logger.info("Finding Organization Summary without Name Match");
-		orgSummaryPage = organizationService.findOrganizationSummaries(new OrganizationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		orgSummaryPage = crm.findOrganizationSummaries(new OrganizationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgSummaryPage.getNumber());
 		Assert.assertEquals(0, orgSummaryPage.getTotalPages());
 		Assert.assertEquals(0, orgSummaryPage.getNumberOfElements());
@@ -325,55 +314,55 @@ public class CrmServicesTestSuite {
 		logger.info("------------------------------");
 		logger.info("Running Location Service Tests");
 		logger.info("------------------------------");
-		OrganizationDetails orgDetails = organizationService.findOrganizationDetails(orgId);
+		OrganizationDetails orgDetails = crm.findOrganizationDetails(orgId);
 		Identifier locId = orgDetails.getMainLocationId();
 
 		/* retrieve the location details */
-		final LocationDetails originalLocationDetails = locationService.findLocationDetails(locId);
+		final LocationDetails originalLocationDetails = crm.findLocationDetails(locId);
 
 		/* disable location and verify the result */
 		logger.info("Disabling Location");
-		LocationSummary locSummary = locationService.disableLocation(orgDetails.getMainLocationId());
+		LocationSummary locSummary = crm.disableLocation(orgDetails.getMainLocationId());
 		verifyLocationSummary(locSummary, orgId, locId, Status.INACTIVE, originalLocationDetails.getReference(), originalLocationDetails.getDisplayName());
 
-		locSummary = locationService.findLocationSummary(locId);
+		locSummary = crm.findLocationSummary(locId);
 		verifyLocationSummary(locSummary, orgId, locId, Status.INACTIVE, originalLocationDetails.getReference(), originalLocationDetails.getDisplayName());
 
-		LocationDetails locDetails = locationService.findLocationDetails(locId);
+		LocationDetails locDetails = crm.findLocationDetails(locId);
 		verifyLocationDetails(locDetails, orgId, locId, Status.INACTIVE, originalLocationDetails.getReference(), originalLocationDetails.getDisplayName(), originalLocationDetails.getAddress());
 
 		/* enable location and verify the result */
 		logger.info("Enabling Location");
-		locSummary = locationService.enableLocation(orgDetails.getMainLocationId());
+		locSummary = crm.enableLocation(orgDetails.getMainLocationId());
 		verifyLocationSummary(locSummary, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), originalLocationDetails.getDisplayName());
 
-		locSummary = locationService.findLocationSummary(locId);
+		locSummary = crm.findLocationSummary(locId);
 		verifyLocationSummary(locSummary, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), originalLocationDetails.getDisplayName());
 
-		locDetails = locationService.findLocationDetails(locId);
+		locDetails = crm.findLocationDetails(locId);
 		verifyLocationDetails(locDetails, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), originalLocationDetails.getDisplayName(), originalLocationDetails.getAddress());
 
 		/* update and verify the location name */
 		logger.info("Updating Location Name");
 		String newName = originalLocationDetails.getDisplayName() + System.currentTimeMillis();
-		locDetails = locationService.updateLocationName(locId, newName);
+		locDetails = crm.updateLocationName(locId, newName);
 		verifyLocationDetails(locDetails, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName, originalLocationDetails.getAddress());
 
-		locSummary = locationService.findLocationSummary(locId);
+		locSummary = crm.findLocationSummary(locId);
 		verifyLocationSummary(locSummary, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName);
 
 		/* update and verify the location address */
 		logger.info("Updating Location Address");
 		MailingAddress newAddress = new MailingAddress("55 second street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
-		locDetails = locationService.updateLocationAddress(locId, newAddress);
+		locDetails = crm.updateLocationAddress(locId, newAddress);
 		verifyLocationDetails(locDetails, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName, newAddress);
 
-		locSummary = locationService.findLocationSummary(locId);
+		locSummary = crm.findLocationSummary(locId);
 		verifyLocationSummary(locSummary, orgId, locId, Status.ACTIVE, originalLocationDetails.getReference(), newName);
 
 		/* validate details paging with 1 match on name filter */
 		logger.info("Finding Location Details with Name Match");
-		Page<LocationDetails> locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName, null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<LocationDetails> locDetailsPage = crm.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName, null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locDetailsPage.getNumber());
 		Assert.assertEquals(1, locDetailsPage.getTotalPages());
 		Assert.assertEquals(1, locDetailsPage.getNumberOfElements());
@@ -383,7 +372,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with no match on name filter */
 		logger.info("Finding Location Details without Name Match");
-		locDetailsPage = locationService.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		locDetailsPage = crm.findLocationDetails(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locDetailsPage.getNumber());
 		Assert.assertEquals(0, locDetailsPage.getTotalPages());
 		Assert.assertEquals(0, locDetailsPage.getNumberOfElements());
@@ -392,7 +381,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with 1 match on name filter */
 		logger.info("Finding Location Summary without Name Match");
-		Page<LocationSummary> locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName, null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<LocationSummary> locSummaryPage = crm.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName, null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locSummaryPage.getNumber());
 		Assert.assertEquals(1, locSummaryPage.getTotalPages());
 		Assert.assertEquals(1, locSummaryPage.getNumberOfElements());
@@ -402,7 +391,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with no match on name filter */
 		logger.info("Finding Location Summary without Name Match");
-		locSummaryPage = locationService.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		locSummaryPage = crm.findLocationSummaries(new LocationsFilter(orgDetails.getOrganizationId(), newName + "00", null, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, locSummaryPage.getNumber());
 		Assert.assertEquals(0, locSummaryPage.getTotalPages());
 		Assert.assertEquals(0, locSummaryPage.getNumberOfElements());
@@ -414,7 +403,7 @@ public class CrmServicesTestSuite {
 		logger.info("----------------------------");
 		logger.info("Running Person Service Tests");
 		logger.info("----------------------------");
-		long personCount = personService.countPersons(new PersonsFilter());
+		long personCount = crm.countPersons(new PersonsFilter());
 		final PersonName originalName = new PersonName("3", "Mike", "Peter", "Johns");
 		final MailingAddress originalAddress = new MailingAddress("12 ninth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
 		final Communication originalComms = new Communication("Engineer", ENGLISH.getCode(), "Mike.Johns@ABC.ca", new Telephone("6135554545"), "6135554545");
@@ -422,87 +411,87 @@ public class CrmServicesTestSuite {
 
 		/* create a person and verify results */
 		logger.info("Creating new Person");
-		PersonDetails personDetails = personService.createPerson(orgId,
+		PersonDetails personDetails = crm.createPerson(orgId,
 				originalName,
 				originalAddress,
 				originalComms,
 				originalPosition);
-		Assert.assertEquals(personCount + 1, personService.countPersons(new PersonsFilter()));
+		Assert.assertEquals(personCount + 1, crm.countPersons(new PersonsFilter()));
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition);
 
 		/* disable and verify the results */
 		logger.info("Disabling Person");
-		PersonSummary personSummary = personService.disablePerson(personDetails.getPersonId());
+		PersonSummary personSummary = crm.disablePerson(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.INACTIVE, originalName.getDisplayName());
 
-		personSummary = personService.findPersonSummary(personDetails.getPersonId());
+		personSummary = crm.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.INACTIVE, originalName.getDisplayName());
 
-		personDetails = personService.findPersonDetails(personDetails.getPersonId());
+		personDetails = crm.findPersonDetails(personDetails.getPersonId());
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.INACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition);
 
 		/* enable and verify the results */
 		logger.info("Enabling Person");
-		personSummary = personService.enablePerson(personDetails.getPersonId());
+		personSummary = crm.enablePerson(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName());
 
-		personSummary = personService.findPersonSummary(personDetails.getPersonId());
+		personSummary = crm.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName());
 
-		personDetails = personService.findPersonDetails(personDetails.getPersonId());
+		personDetails = crm.findPersonDetails(personDetails.getPersonId());
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, originalName.getDisplayName(), originalName, originalAddress, originalComms, originalPosition);
 
 		/* update person name and verify */
 		logger.info("Updating Person Name");
 		final PersonName newName = new PersonName("2", "Susan", System.currentTimeMillis() + "", "Anderson");
-		personDetails = personService.updatePersonName(personDetails.getPersonId(), newName);
+		personDetails = crm.updatePersonName(personDetails.getPersonId(), newName);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition);
 
-		personSummary = personService.findPersonSummary(personDetails.getPersonId());
+		personSummary = crm.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 
-		personDetails = personService.findPersonDetails(personDetails.getPersonId());
+		personDetails = crm.findPersonDetails(personDetails.getPersonId());
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, originalAddress, originalComms, originalPosition);
 
 		/* update person address and verify */
 		logger.info("Updating Person Address");
 		final MailingAddress newAddress = new MailingAddress("15 fourth street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K4J9O9");
-		personDetails = personService.updatePersonAddress(personDetails.getPersonId(), newAddress);
+		personDetails = crm.updatePersonAddress(personDetails.getPersonId(), newAddress);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition);
 
-		personSummary = personService.findPersonSummary(personDetails.getPersonId());
+		personSummary = crm.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 
-		personDetails = personService.findPersonDetails(personDetails.getPersonId());
+		personDetails = crm.findPersonDetails(personDetails.getPersonId());
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, originalComms, originalPosition);
 
 		/* update person communications and verify */
 		logger.info("Updating Person Communiation");
 		final Communication newComms = new Communication("Supervisor", ENGLISH.getCode(), "Susan.Anderson@ABC.ca", new Telephone("6135554543", ""), "6135554543");
-		personDetails = personService.updatePersonCommunication(personDetails.getPersonId(), newComms);
+		personDetails = crm.updatePersonCommunication(personDetails.getPersonId(), newComms);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition);
 
-		personSummary = personService.findPersonSummary(personDetails.getPersonId());
+		personSummary = crm.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 
-		personDetails = personService.findPersonDetails(personDetails.getPersonId());
+		personDetails = crm.findPersonDetails(personDetails.getPersonId());
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, originalPosition);
 
 		/* update person position and verify */
 		logger.info("Updating Person Business Position");
 		final BusinessPosition newPosition = new BusinessPosition("IM/IT", "Solutions", "Developer");
-		personDetails = personService.updatePersonBusinessPosition(personDetails.getPersonId(), newPosition);
+		personDetails = crm.updatePersonBusinessPosition(personDetails.getPersonId(), newPosition);
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition);
 
-		personSummary = personService.findPersonSummary(personDetails.getPersonId());
+		personSummary = crm.findPersonSummary(personDetails.getPersonId());
 		verifyPersonSummary(personSummary, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName());
 
-		personDetails = personService.findPersonDetails(personDetails.getPersonId());
+		personDetails = crm.findPersonDetails(personDetails.getPersonId());
 		verifyPersonDetails(personDetails, orgId, personDetails.getPersonId(), Status.ACTIVE, newName.getDisplayName(), newName, newAddress, newComms, newPosition);
 
 		/* validate details paging with 1 match on name filter */
 		logger.info("Finding Person Details with Name Match");
-		Page<PersonDetails> personDetailsPage = personService.findPersonDetails(new PersonsFilter(orgId, newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<PersonDetails> personDetailsPage = crm.findPersonDetails(new PersonsFilter(orgId, newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personDetailsPage.getNumber());
 		Assert.assertEquals(1, personDetailsPage.getTotalPages());
 		Assert.assertEquals(1, personDetailsPage.getNumberOfElements());
@@ -512,7 +501,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with no match on name filter */
 		logger.info("Finding Person Details without Name Match");
-		personDetailsPage = personService.findPersonDetails(new PersonsFilter(orgId, newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		personDetailsPage = crm.findPersonDetails(new PersonsFilter(orgId, newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personDetailsPage.getNumber());
 		Assert.assertEquals(0, personDetailsPage.getTotalPages());
 		Assert.assertEquals(0, personDetailsPage.getNumberOfElements());
@@ -521,7 +510,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with 1 match on name filter */
 		logger.info("Finding Person Summary with Name Match");
-		Page<PersonSummary> personSummaryPage = personService.findPersonSummaries(new PersonsFilter(orgId, newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<PersonSummary> personSummaryPage = crm.findPersonSummaries(new PersonsFilter(orgId, newName.getDisplayName(), Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personSummaryPage.getNumber());
 		Assert.assertEquals(1, personSummaryPage.getTotalPages());
 		Assert.assertEquals(1, personSummaryPage.getNumberOfElements());
@@ -531,7 +520,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with no match on name filter */
 		logger.info("Finding Person Summary without Name Match");
-		personSummaryPage = personService.findPersonSummaries(new PersonsFilter(orgId, newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		personSummaryPage = crm.findPersonSummaries(new PersonsFilter(orgId, newName.getDisplayName() + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, personSummaryPage.getNumber());
 		Assert.assertEquals(0, personSummaryPage.getTotalPages());
 		Assert.assertEquals(0, personSummaryPage.getNumberOfElements());
@@ -542,78 +531,78 @@ public class CrmServicesTestSuite {
 	}
 
 	private void runUserServiceTests(Identifier personId) {
-		Assert.assertEquals(0, userService.countUsers(new UsersFilter().withPersonId(personId)));
+		Assert.assertEquals(0, crm.countUsers(new UsersFilter().withPersonId(personId)));
 		
 		logger.info("Creating User");
-		User user = userService.createUser(personId, "tonka", Collections.emptyList());
+		User user = crm.createUser(personId, "tonka", Collections.emptyList());
 		Identifier userId = user.getUserId();
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Collections.emptyList());		
-		Assert.assertEquals(1, userService.countUsers(new UsersFilter().withPersonId(personId)));
+		Assert.assertEquals(1, crm.countUsers(new UsersFilter().withPersonId(personId)));
 
 		/* disable and verify the user */
 		logger.info("Disabling User");
-		user = userService.disableUser(userId);
+		user = crm.disableUser(userId);
 		verifyUser(user, personId, userId, "tonka", Status.INACTIVE, Collections.emptyList());
 
 		/* enable and verify the user */
 		logger.info("enabling User");
-		user = userService.enableUser(userId);
+		user = crm.enableUser(userId);
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Collections.emptyList());
 
 		/*
 		 * add user role (first time we add a role it will generate a user name for us)
 		 */
 		logger.info("Updating User Role");
-		Role r1 = permissionService.findRoleByCode("ORG_ADMIN");
-		user = userService.updateUserRoles(user.getUserId(), List.of(r1.getCode()));
+		Role r1 = crm.findRoleByCode("ORG_ADMIN");
+		user = crm.updateUserRoles(user.getUserId(), List.of(r1.getCode()));
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode()));
 
-		user = userService.findUser(user.getUserId());
+		user = crm.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode()));
 
 		/* add another role and verify */
 		logger.info("Updating User Role");
-		Role r2 = permissionService.findRoleByCode("SYS_ADMIN");
-		user = userService.updateUserRoles(user.getUserId(), List.of(r1.getCode(), r2.getCode()));
+		Role r2 = crm.findRoleByCode("SYS_ADMIN");
+		user = crm.updateUserRoles(user.getUserId(), List.of(r1.getCode(), r2.getCode()));
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 
-		user = userService.findUser(user.getUserId());
+		user = crm.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 
 		/* remove a role and verify */
 		logger.info("Removing User Role");
-		user = userService.updateUserRoles(user.getUserId(), List.of(r2.getCode()));
+		user = crm.updateUserRoles(user.getUserId(), List.of(r2.getCode()));
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r2.getCode()));
-		user = userService.findUser(user.getUserId());
+		user = crm.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r2.getCode()));
 
 		/* set roles and verify */
 		logger.info("Setting User Roles");
-		user = userService.updateUserRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
+		user = crm.updateUserRoles(user.getUserId(), Arrays.asList(r1.getCode(), r2.getCode()));
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 		
 		/* reset password */
-		String tempPassword = userService.resetPassword(user.getUserId());
+		String tempPassword = crm.resetPassword(user.getUserId());
 		Assert.assertNotNull(tempPassword);
 		
 		/* change password using temp password */
-		Boolean success = userService.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
+		Boolean success = crm.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
 		Assert.assertTrue(success);
 		
-		success = userService.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
+		success = crm.changePassword(user.getUserId(), tempPassword, "SonyPlaystation");
 		Assert.assertFalse(success);
 		
 		
 		/* find and verify user by id */
-		user = userService.findUser(user.getUserId());
+		user = crm.findUser(user.getUserId());
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 		
 		/* find and verify user by username */
-		user = userService.findUserByUsername(user.getUsername());
+		user = crm.findUserByUsername(user.getUsername());
 		verifyUser(user, personId, userId, "tonka", Status.ACTIVE, Arrays.asList(r1.getCode(), r2.getCode()));
 
 		/* find users */
-		Page<User> userPage = userService.findUsers(new UsersFilter().withOrganizationId(user.getPerson().getOrganizationId()));
+		Page<User> userPage = crm.findUsers(new UsersFilter().withOrganizationId(user.getPerson().getOrganizationId()));
 		Assert.assertEquals(1, userPage.getNumber());
 		Assert.assertEquals(1, userPage.getTotalPages());
 		Assert.assertEquals(1, userPage.getNumberOfElements());

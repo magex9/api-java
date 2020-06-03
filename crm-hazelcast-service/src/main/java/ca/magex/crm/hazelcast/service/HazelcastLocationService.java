@@ -32,7 +32,6 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -48,17 +47,14 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	private XATransactionAwareHazelcastInstance hzInstance;
 	private CrmOrganizationService organizationService;	
-	private StructureValidationService validationService;
 	
 	public HazelcastLocationService(
 			XATransactionAwareHazelcastInstance hzInstance, 
-			@Lazy CrmOrganizationService organizationService,
-			@Lazy StructureValidationService validationService) {
+			@Lazy CrmOrganizationService organizationService) {
 		this.hzInstance = hzInstance;
 		this.organizationService = organizationService;
-		this.validationService = validationService;
 	}
-	
+
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		/* run a find on the organizationId to ensure it exists */
@@ -73,7 +69,7 @@ public class HazelcastLocationService implements CrmLocationService {
 				locationReference,
 				locationName,
 				address);
-		locations.put(locDetails.getLocationId(), validationService.validate(locDetails));
+		locations.put(locDetails.getLocationId(), locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -88,7 +84,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withDisplayName(displayName);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -103,7 +99,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withAddress(address);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -118,7 +114,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withStatus(Status.ACTIVE);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -133,7 +129,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withStatus(Status.INACTIVE);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -204,5 +200,15 @@ public class HazelcastLocationService implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {	
 		return CrmLocationService.super.findLocationSummaries(filter);
+	}
+	
+	@Override
+	public LocationDetails createLocation(LocationDetails prototype) {	
+		return CrmLocationService.super.createLocation(prototype);
+	}
+	
+	@Override
+	public LocationDetails prototypeLocation(@NotNull Identifier organizationId, @NotNull String displayName, @NotNull String reference, @NotNull MailingAddress address) {	
+		return CrmLocationService.super.prototypeLocation(organizationId, displayName, reference, address);
 	}
 }

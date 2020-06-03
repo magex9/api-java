@@ -17,6 +17,7 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -45,11 +46,11 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.validation.CrmValidation;
-import ca.magex.crm.api.validation.StructureValidationService;
 
-public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, CrmValidation {
+public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	
 	public static final long SERIAL_UID_VERSION = 1l;
 
@@ -65,7 +66,9 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 
 	private final CrmLookupService lookupService;
 	
-	private final CrmValidation validationService;
+	private final CrmPermissionService permissionsService;
+	
+	private final CrmPermissionPolicy permissionsPolicy;
 	
 	private final CrmOrganizationService organizationService;
 	
@@ -83,9 +86,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	
 	private final CrmUserPolicy userPolicy;
 	
-	private final CrmPermissionService permissionsService;
-	
-	private final CrmPermissionPolicy permissionsPolicy;
+	private final CrmValidation validation;
 	
 	public Crm(CrmInitializationService initializationService, CrmLookupService lookupService,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy, 
@@ -94,7 +95,6 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
 			CrmUserService userService, CrmUserPolicy userPolicy) {
 		super();
-		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService, personService);
 		this.initializationService = initializationService;
 		this.lookupService = lookupService;
 		this.organizationService = organizationService;
@@ -107,8 +107,9 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		this.userPolicy = userPolicy;
 		this.permissionsService = permissionsService;
 		this.permissionsPolicy = permissionsPolicy;
+		this.validation = new CrmValidation(this);
 	}
-
+	
 	@Override
 	public boolean isInitialized() {
 		return initializationService.isInitialized();
@@ -117,7 +118,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (isInitialized())
-			throw new RuntimeException("The system is already initialized");
+			throw new DuplicateItemFoundException("The system is already initialized");
 		return initializationService.initializeSystem(organization, name, email, username, password); 
 	}
 	
@@ -252,48 +253,62 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 			throws ItemNotFoundException {
 		return lookupService.findBusinessClassificationByLocalizedName(locale, name);
 	}
+
+	public OrganizationDetails validate(OrganizationDetails organization) {
+		List<Message> messages = validation.validate(organization);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Organization has validation errors", messages);
+		return organization;
+	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
+	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
-		return organizationService.createOrganization(organizationDisplayName, groups);
+		return organizationService.createOrganization(
+			validate(prototypeOrganization(displayName, groups)));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationDisplayName: " + organizationId);
-		return organizationService.updateOrganizationDisplayName(organizationId, name);
+		return organizationService.updateOrganizationDisplayName(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withDisplayName(name)).getDisplayName());
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
-		return organizationService.updateOrganizationMainLocation(organizationId, locationId);
+		return organizationService.updateOrganizationMainLocation(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(locationId)).getMainLocationId());
 	}
 	
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
-		return organizationService.updateOrganizationMainContact(organizationId, personId);
+		return organizationService.updateOrganizationMainContact(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());
 	}
 	
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> group) {
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + group);
-		return organizationService.updateOrganizationGroups(organizationId, group);
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groups);
+		return organizationService.updateOrganizationGroups(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withGroups(groups)).getGroups());
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		if (!canEnableOrganization(organizationId))
 			throw new PermissionDeniedException("enableOrganization: " + organizationId);
-		return organizationService.enableOrganization(organizationId);
+		return organizationService.enableOrganization(
+			validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.ACTIVE)).getOrganizationId());
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		if (!canDisableOrganization(organizationId))
 			throw new PermissionDeniedException("disableOrganization: " + organizationId);
-		return organizationService.disableOrganization(organizationId);
+		return organizationService.disableOrganization(
+			validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)).getOrganizationId());
 	}
 	
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
@@ -320,35 +335,44 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		return organizationService.findOrganizationSummaries(filter, paging);
 	}
 
+	public LocationDetails validate(LocationDetails location) {
+		List<Message> messages = validation.validate(location);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Location has validation errors", messages);
+		return location;
+	}
+	
 	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference,
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
-		return locationService.createLocation(organizationId, displayName, reference, address);
+		return locationService.createLocation(validate(prototypeLocation(organizationId, displayName, reference, address)));
 	}
 
-	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
+	public LocationDetails updateLocationName(Identifier locationId, String displayName) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationName: " + locationId);
-		return locationService.updateLocationName(locationId, locationName);
+		return locationService.updateLocationName(locationId, validate(locationService.findLocationDetails(locationId).withDisplayName(displayName)).getDisplayName());
 	}
 
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationAddress: " + locationId);
-		return locationService.updateLocationAddress(locationId, address);
+		return locationService.updateLocationAddress(locationId, validate(findLocationDetails(locationId).withAddress(address)).getAddress());
 	}
 
 	public LocationSummary enableLocation(Identifier locationId) {
 		if (!canEnableLocation(locationId))
 			throw new PermissionDeniedException("enableLocation: " + locationId);
-		return locationService.enableLocation(locationId);
+		return locationService.enableLocation(
+			validate(locationService.findLocationDetails(locationId).withStatus(Status.ACTIVE)).getLocationId());
 	}
 
 	public LocationSummary disableLocation(Identifier locationId) {
 		if (!canDisableLocation(locationId))
 			throw new PermissionDeniedException("disableLocation: " + locationId);
-		return locationService.disableLocation(locationId);
+		return locationService.disableLocation(
+			validate(locationService.findLocationDetails(locationId).withStatus(Status.INACTIVE)).getLocationId());
 	}
 
 	public LocationSummary findLocationSummary(Identifier locationId) {
@@ -375,46 +399,55 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		return locationService.findLocationSummaries(filter, paging);
 	}
 
+	public PersonDetails validate(PersonDetails person) {
+		List<Message> messages = validation.validate(person);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Person has validation errors", messages);
+		return person;
+	}
+
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
-		return personService.createPerson(organizationId, name, address, communication, position);
+		return personService.createPerson(validate(prototypePerson(organizationId, name, address, communication, position)));
 	}
 
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonName: " + personId);
-		return personService.updatePersonName(personId, name);
+		return personService.updatePersonName(personId, validate(findPersonDetails(personId).withLegalName(name)).getLegalName());
 	}
 
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonAddress: " + personId);
-		return personService.updatePersonAddress(personId, address);
+		return personService.updatePersonAddress(personId, validate(findPersonDetails(personId).withAddress(address)).getAddress());
 	}
 
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonCommunication: " + personId);
-		return personService.updatePersonCommunication(personId, communication);
+		return personService.updatePersonCommunication(personId, validate(findPersonDetails(personId).withCommunication(communication)).getCommunication());
 	}
 	
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
-		return personService.updatePersonBusinessPosition(personId, position);
+		return personService.updatePersonBusinessPosition(personId, validate(findPersonDetails(personId).withPosition(position)).getPosition());
 	}
 
 	public PersonSummary enablePerson(Identifier personId) {
 		if (!canEnablePerson(personId))
 			throw new PermissionDeniedException("enablePerson: " + personId);
-		return personService.enablePerson(personId);
+		return personService.enablePerson(
+			validate(personService.findPersonDetails(personId).withStatus(Status.ACTIVE)).getPersonId());
 	}
 
 	public PersonSummary disablePerson(Identifier personId) {
 		if (!canDisablePerson(personId))
 			throw new PermissionDeniedException("disablePerson: " + personId);
-		return personService.disablePerson(personId);
+		return personService.disablePerson(
+			validate(personService.findPersonDetails(personId).withStatus(Status.INACTIVE)).getPersonId());
 	}
 
 	public PersonSummary findPersonSummary(Identifier personId) {
@@ -440,26 +473,35 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return personService.findPersonSummaries(filter, paging);
 	}
+
+	public User validate(User user) {
+		List<Message> messages = validation.validate(user);
+		if (!messages.isEmpty())
+			throw new BadRequestException("User has validation errors", messages);
+		return user;
+	}
 	
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
-		return userService.createUser(personId, username, roles);
+		return userService.createUser(validate(prototypeUser(personId, username, roles)));
 	}
 
 	@Override
 	public User enableUser(Identifier userId) {
 		if (!canEnableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
-		return userService.enableUser(userId);
+		return userService.enableUser(
+			validate(userService.findUser(userId).withStatus(Status.ACTIVE)).getUserId());
 	}
 
 	@Override
 	public User disableUser(Identifier userId) {
 		if (!canDisableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
-		return userService.disableUser(userId);
+		return userService.disableUser(
+			validate(userService.findUser(userId).withStatus(Status.INACTIVE)).getUserId());
 	}
 
 	@Override
@@ -478,10 +520,10 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	}
 
 	@Override
-	public User updateUserRoles(Identifier userId, List<String> roleIds) {
+	public User updateUserRoles(Identifier userId, List<String> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, roleIds);
+		return userService.updateUserRoles(userId, validate(findUser(userId).withRoles(roles)).getRoles());
 	}
 
 	@Override
@@ -529,37 +571,6 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		return userPolicy.canUpdateUserPassword(userId);
 	}
 	
-	@Override
-	public Group validate(Group group) throws BadRequestException {
-		return validationService.validate(group);
-	}
-	
-	@Override
-	public Role validate(Role role) throws BadRequestException {
-		return validationService.validate(role);
-	}
-	
-	public OrganizationDetails validate(OrganizationDetails organization) {
-		return validationService.validate(organization);
-	}
-
-	public LocationDetails validate(LocationDetails location) {
-		return validationService.validate(location);
-	}
-
-	public PersonDetails validate(PersonDetails person) {
-		return validationService.validate(person);
-	}
-	
-	@Override
-	public User validate(User user) throws BadRequestException {
-		return validationService.validate(user);
-	}
-
-	public List<String> validate(List<String> roles, Identifier personId) {
-		return validationService.validate(roles, personId);
-	}
-
 	public boolean canCreateOrganization() {
 		return organizationPolicy.canCreateOrganization();
 	}
@@ -625,6 +636,20 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 		return userPolicy.canCreateUserForPerson(personId);
 	}
 
+	public Group validate(Group group) {
+		List<Message> messages = validation.validate(group);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Group has validation errors", messages);
+		return group;
+	}
+
+	@Override
+	public Group createGroup(Localized name) {
+		if (!canCreateGroup())
+			throw new PermissionDeniedException("createGroup: " + name);
+		return permissionsService.createGroup(validate(prototypeGroup(name)));
+	}
+
 	@Override
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		return permissionsService.findGroups(filter, paging);
@@ -645,31 +670,33 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	}
 
 	@Override
-	public Group createGroup(Localized name) {
-		if (!canCreateGroup())
-			throw new PermissionDeniedException("createGroup: " + name);
-		return permissionsService.createGroup(name);
-	}
-
-	@Override
 	public Group updateGroupName(Identifier groupId, Localized name) {
 		if (!canUpdateGroup(groupId))
 			throw new PermissionDeniedException("updateGroupName: " + groupId);
-		return permissionsService.updateGroupName(groupId, name);
+		return permissionsService.updateGroupName(groupId, validate(findGroup(groupId).withName(name)).getName());
 	}
 
 	@Override
 	public Group enableGroup(Identifier groupId) {
 		if (!canEnableGroup(groupId))
 			throw new PermissionDeniedException("enableGroup: " + groupId);
-		return permissionsService.enableGroup(groupId);
+		return permissionsService.enableGroup(
+			validate(findGroup(groupId).withStatus(Status.ACTIVE)).getGroupId());
 	}
 
 	@Override
 	public Group disableGroup(Identifier groupId) {
 		if (!canDisableGroup(groupId))
 			throw new PermissionDeniedException("disableGroup: " + groupId);
-		return permissionsService.disableGroup(groupId);
+		return permissionsService.disableGroup(
+			validate(findGroup(groupId).withStatus(Status.INACTIVE)).getGroupId());
+	}
+
+	public Role validate(Role role) {
+		List<Message> messages = validation.validate(role);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Role has validation errors", messages);
+		return role;
 	}
 
 	@Override
@@ -697,28 +724,30 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies, 
 	public Role createRole(Identifier groupId, Localized name) {
 		if (!canCreateRole(groupId))
 			throw new PermissionDeniedException("createRole: " + groupId);
-		return permissionsService.createRole(groupId, name);
+		return permissionsService.createRole(validate(prototypeRole(groupId, name)));
 	}
 
 	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
 		if (!canUpdateRole(roleId))
 			throw new PermissionDeniedException("updateRoleName: " + roleId);
-		return permissionsService.updateRoleName(roleId, name);
+		return permissionsService.updateRoleName(roleId, validate(findRole(roleId).withName(name)).getName());
 	}
 
 	@Override
 	public Role enableRole(Identifier roleId) {
 		if (!canEnableRole(roleId))
 			throw new PermissionDeniedException("enableRole: " + roleId);
-		return permissionsService.enableRole(roleId);
+		return permissionsService.enableRole(
+			validate(findRole(roleId).withStatus(Status.ACTIVE)).getRoleId());
 	}
 
 	@Override
 	public Role disableRole(Identifier roleId) {
 		if (!canDisableRole(roleId))
 			throw new PermissionDeniedException("disableRole: " + roleId);
-		return permissionsService.disableRole(roleId);
+		return permissionsService.disableRole(
+			validate(findRole(roleId).withStatus(Status.INACTIVE)).getRoleId());
 	}
 
 	@Override

@@ -3,9 +3,10 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,6 @@ import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -44,15 +44,12 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	private XATransactionAwareHazelcastInstance hzInstance;
 	private CrmPermissionService permissionService;
-	private StructureValidationService validationService; // needs to be lazy because it depends on other services
-	
+
 	public HazelcastOrganizationService(
-			XATransactionAwareHazelcastInstance hzInstance, 
-			CrmPermissionService permissionService,
-			@Lazy StructureValidationService validationService) {
+			XATransactionAwareHazelcastInstance hzInstance,
+			CrmPermissionService permissionService) {
 		this.hzInstance = hzInstance;
 		this.permissionService = permissionService;
-		this.validationService = validationService;
 	}
 
 	@Override
@@ -66,7 +63,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				null,
 				null,
 				groups);
-		organizations.put(orgDetails.getOrganizationId(), validationService.validate(orgDetails));
+		organizations.put(orgDetails.getOrganizationId(), orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -82,7 +79,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withDisplayName(name);
-		organizations.put(organizationId, validationService.validate(orgDetails));
+		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -98,7 +95,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainContactId(personId);
-		organizations.put(organizationId, validationService.validate(orgDetails));
+		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -114,7 +111,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withMainLocationId(locationId);
-		organizations.put(organizationId, validationService.validate(orgDetails));
+		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -133,7 +130,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withGroups(groups);
-		organizations.put(organizationId, validationService.validate(orgDetails));
+		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -148,7 +145,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.ACTIVE);
-		organizations.put(organizationId, validationService.validate(orgDetails));
+		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -163,7 +160,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 			return SerializationUtils.clone(orgDetails);
 		}
 		orgDetails = orgDetails.withStatus(Status.INACTIVE);
-		organizations.put(organizationId, validationService.validate(orgDetails));
+		organizations.put(organizationId, orgDetails);
 		return SerializationUtils.clone(orgDetails);
 	}
 
@@ -214,19 +211,29 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
-	
+
 	@Override
 	public OrganizationDetails findOrganizationByDisplayName(String displayName) {
 		return CrmOrganizationService.super.findOrganizationByDisplayName(displayName);
 	}
-	
+
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
 		return CrmOrganizationService.super.findOrganizationDetails(filter);
 	}
+
+	@Override
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
+		return CrmOrganizationService.super.findOrganizationSummaries(filter);
+	}
 	
 	@Override
-	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {	
-		return CrmOrganizationService.super.findOrganizationSummaries(filter);
+	public OrganizationDetails createOrganization(OrganizationDetails prototype) {	
+		return CrmOrganizationService.super.createOrganization(prototype);
+	}
+	
+	@Override
+	public OrganizationDetails prototypeOrganization(@NotNull String displayName, @NotNull List<String> groups) {	
+		return CrmOrganizationService.super.prototypeOrganization(displayName, groups);
 	}
 }

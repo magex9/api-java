@@ -3,9 +3,10 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,6 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -52,21 +52,18 @@ public class HazelcastUserService implements CrmUserService {
 	private CrmPasswordService passwordService;
 	private CrmPersonService personService;
 	private CrmPermissionService permissionService;
-	private StructureValidationService validationService; // needs to be lazy because it depends on other services
-	
+
 	public HazelcastUserService(
 			XATransactionAwareHazelcastInstance hzInstance,
 			PasswordEncoder passwordEncoder,
 			CrmPasswordService passwordService,
 			CrmPersonService personService,
-			CrmPermissionService permissionService,
-			@Lazy StructureValidationService validationService) {
+			CrmPermissionService permissionService) {
 		this.hzInstance = hzInstance;
 		this.passwordEncoder = passwordEncoder;
 		this.passwordService = passwordService;
 		this.personService = personService;
 		this.permissionService = permissionService;
-		this.validationService = validationService;
 	}
 
 	@Override
@@ -92,7 +89,7 @@ public class HazelcastUserService implements CrmUserService {
 				person,
 				Status.ACTIVE,
 				roles);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -129,7 +126,7 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withRoles(roles);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -144,7 +141,7 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withStatus(Status.ACTIVE);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -159,7 +156,7 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withStatus(Status.INACTIVE);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -222,14 +219,24 @@ public class HazelcastUserService implements CrmUserService {
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingUsers, paging);
 	}
-	
+
 	@Override
 	public Page<User> findActiveUserForOrg(Identifier organizationId) {
 		return CrmUserService.super.findActiveUserForOrg(organizationId);
 	}
-	
+
 	@Override
 	public Page<User> findUsers(UsersFilter filter) {
 		return CrmUserService.super.findUsers(filter);
+	}
+	
+	@Override
+	public User createUser(User prototype) {	
+		return CrmUserService.super.createUser(prototype);
+	}
+	
+	@Override
+	public User prototypeUser(@NotNull Identifier personId, @NotNull String username, @NotNull List<String> roles) {	
+		return CrmUserService.super.prototypeUser(personId, username, roles);
 	}
 }

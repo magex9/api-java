@@ -33,9 +33,9 @@ public class HazelcastPasswordService implements CrmPasswordService {
 
 	private XATransactionAwareHazelcastInstance hzInstance;
 	private PasswordEncoder passwordEncoder;
-	
+
 	private long expiration = TimeUnit.DAYS.toMillis(365);
-	
+
 	public HazelcastPasswordService(
 			XATransactionAwareHazelcastInstance hzInstance,
 			PasswordEncoder passwordEncoder) {
@@ -113,7 +113,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
 		passwords.put(username, passwordDetails.withPassword(encodedPassword));
-	}	
+	}
 
 	/**
 	 * ensures the expiration date is in the future

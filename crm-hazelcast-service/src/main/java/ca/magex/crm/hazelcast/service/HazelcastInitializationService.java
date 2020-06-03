@@ -112,6 +112,7 @@ public class HazelcastInitializationService implements CrmInitializationService 
 				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("US")).findFirst().get(), Province.class, "UsProvince.csv"));
 				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("MX")).findFirst().get(), Province.class, "MxProvince.csv"));
 				initMap.put("started", System.currentTimeMillis());
+				LOG.info("Hazelcast CRM Started on: " + new Date((Long) initMap.get("started")));
 				return;
 			}
 			else if (startedTimestamp.equals(Long.valueOf(0))) {
@@ -130,7 +131,7 @@ public class HazelcastInitializationService implements CrmInitializationService 
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		Map<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
-		if (initMap.containsKey("initialized")) {
+		if (initMap.get("initialized") != null) {
 			waitForInitialization(initMap);
 			return hzUserService.findUserByUsername(username);
 		}
@@ -169,7 +170,6 @@ public class HazelcastInitializationService implements CrmInitializationService 
 			return true;
 		}
 		else {
-			initMap.put("initialized", 0L);
 			return false;
 		}
 	}
@@ -177,7 +177,7 @@ public class HazelcastInitializationService implements CrmInitializationService 
 	@Override
 	public boolean reset() {
 		Map<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
-		initMap.remove("initialized");		
+		initMap.remove("initialized");
 		hzInstance.getMap(HazelcastLocationService.HZ_LOCATION_KEY).clear();
 		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
 		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();

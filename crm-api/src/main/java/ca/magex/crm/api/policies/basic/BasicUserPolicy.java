@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
@@ -17,84 +16,59 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicUserPolicy implements CrmUserPolicy {
 
-	private CrmPersonService personService;
+	private CrmPersonService persons;
 
-	private CrmUserService userService;
+	private CrmUserService users;
 
 	/**
 	 * Basic User Policy handles presence and status checks require for policy approval
 	 * 
-	 * @param userService
-	 * @param personService
+	 * @param users
+	 * @param persons
 	 */
-	public BasicUserPolicy(
-			CrmPersonService personService,
-			CrmUserService userService) {
-		this.userService = userService;
-		this.personService = personService;
+	public BasicUserPolicy(CrmPersonService persons, CrmUserService users) {
+		this.users = users;
+		this.persons = persons;
 	}
 
 	@Override
 	public boolean canCreateUserForPerson(Identifier personId) {
-		try {
-			/* can create a user for a given person if the person exists */
-			personService.findPersonSummary(personId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can create a user for a given person if the person exists */
+		persons.findPersonSummary(personId);
+		return true;
 	}
 
 	@Override
 	public boolean canViewUser(Identifier userId) {
-		try {
-			/* can view a user if it exists */
-			userService.findUser(userId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a user if it exists */
+		users.findUser(userId);
+		return true;
 	}
 
 	@Override
 	public boolean canUpdateUserRole(Identifier userId) {
-		try {
-			/* can view a user if it exists and is active */
-			return userService.findUser(userId).getStatus() == Status.ACTIVE;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a user if it exists and is active */
+		return users.findUser(userId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canUpdateUserPassword(Identifier userId) {
-		try {
-			/* can view a user password if it exists and is active */
-			return userService.findUser(userId).getStatus() == Status.ACTIVE;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can view a user password if it exists and is active */
+		return users.findUser(userId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableUser(Identifier userId) {
-		try {
-			/* can enable a user if it exists */
-			userService.findUser(userId).getStatus();
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can enable a user if it exists */
+		users.findUser(userId).getStatus();
+		return true;
 	}
 
 	@Override
 	public boolean canDisableUser(Identifier userId) {
-		try {
-			/* can disable a user if it exists */
-			userService.findUser(userId).getStatus();
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can disable a user if it exists */
+		users.findUser(userId).getStatus();
+		return true;
 	}
+	
 }

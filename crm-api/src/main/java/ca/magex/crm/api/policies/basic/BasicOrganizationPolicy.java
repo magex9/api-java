@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
@@ -16,16 +15,15 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 
-	private CrmOrganizationService organizationService;
+	private CrmOrganizationService organizations;
 
 	/**
 	 * Basic Organization Policy handles presence and status checks require for policy approval
 	 * 
-	 * @param organizationService
+	 * @param organizations
 	 */
-	public BasicOrganizationPolicy(
-			CrmOrganizationService organizationService) {
-		this.organizationService = organizationService;
+	public BasicOrganizationPolicy(CrmOrganizationService organizations) {
+		this.organizations = organizations;
 	}
 	
 	@Override
@@ -36,44 +34,28 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 
 	@Override
 	public boolean canViewOrganization(Identifier organizationId) {
-		try {
-			/* can only view an organization if it exists */
-			organizationService.findOrganizationSummary(organizationId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can only view an organization if it exists */
+		organizations.findOrganizationSummary(organizationId);
+		return true;
 	}
 
 	@Override
 	public boolean canUpdateOrganization(Identifier organizationId) {
-		try {
-			/* can only update an organization if it exists, and is active */
-			return organizationService.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can only update an organization if it exists, and is active */
+		return organizations.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableOrganization(Identifier organizationId) {
-		try {
-			/* can only enable an organization if it exists */
-			organizationService.findOrganizationSummary(organizationId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can only enable an organization if it exists */
+		organizations.findOrganizationSummary(organizationId);
+		return true;
 	}
 
 	@Override
 	public boolean canDisableOrganization(Identifier organizationId) {
-		try {
-			/* can only disable an organization if it exists */
-			organizationService.findOrganizationSummary(organizationId);
-			return true;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		/* can only disable an organization if it exists */
+		organizations.findOrganizationSummary(organizationId);
+		return true;
 	}
 }

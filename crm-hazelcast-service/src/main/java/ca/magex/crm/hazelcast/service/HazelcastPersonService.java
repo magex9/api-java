@@ -3,9 +3,10 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,6 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -49,15 +49,12 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	private XATransactionAwareHazelcastInstance hzInstance;
 	private CrmOrganizationService organizationService;
-	private StructureValidationService validationService;
-	
+
 	public HazelcastPersonService(
 			XATransactionAwareHazelcastInstance hzInstance,
-			CrmOrganizationService organizationService,
-			@Lazy StructureValidationService validationService) {
+			CrmOrganizationService organizationService) {
 		this.hzInstance = hzInstance;
 		this.organizationService = organizationService;
-		this.validationService = validationService;
 	}
 
 	@Override
@@ -76,7 +73,7 @@ public class HazelcastPersonService implements CrmPersonService {
 				address,
 				communication,
 				position);
-		persons.put(personDetails.getPersonId(), validationService.validate(personDetails));
+		persons.put(personDetails.getPersonId(), personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -91,7 +88,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withLegalName(name).withDisplayName(name.getDisplayName());
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -106,7 +103,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withAddress(address);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -121,7 +118,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withCommunication(communication);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -136,7 +133,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withPosition(position);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -151,7 +148,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withStatus(Status.ACTIVE);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -166,7 +163,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withStatus(Status.INACTIVE);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -223,19 +220,29 @@ public class HazelcastPersonService implements CrmPersonService {
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingPersons, paging);
 	}
-	
+
 	@Override
 	public Page<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
 		return CrmPersonService.super.findActivePersonSummariesForOrg(organizationId);
 	}
-	
+
 	@Override
 	public Page<PersonDetails> findPersonDetails(PersonsFilter filter) {
 		return CrmPersonService.super.findPersonDetails(filter);
 	}
-	
+
 	@Override
 	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter) {
 		return CrmPersonService.super.findPersonSummaries(filter);
+	}
+	
+	@Override
+	public PersonDetails createPerson(PersonDetails prototype) {	
+		return CrmPersonService.super.createPerson(prototype);
+	}
+	
+	@Override
+	public PersonDetails prototypePerson(@NotNull Identifier organizationId, @NotNull PersonName name, @NotNull MailingAddress address, @NotNull Communication communication, @NotNull BusinessPosition position) {	
+		return CrmPersonService.super.prototypePerson(organizationId, name, address, communication, position);
 	}
 }

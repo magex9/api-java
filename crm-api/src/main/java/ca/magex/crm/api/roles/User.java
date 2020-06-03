@@ -65,6 +65,10 @@ public class User implements Serializable {
 		return new User(userId, username, person, status, roles);
 	}
 	
+	public boolean isInRole(String role) {
+		return roles.contains(role);
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
