@@ -15,11 +15,13 @@ import ca.magex.crm.api.services.Crm;
 
 public abstract class AbstractPasswordServiceTests {
 
-	private Crm crm;
+	protected Crm crm;
 	
-	private CrmPasswordService passwords;
+	protected CrmPasswordService passwords;
 	
-	private PasswordEncoder encoder;
+	protected PasswordEncoder encoder;
+	
+	protected AbstractPasswordServiceTests() {}
 	
 	public AbstractPasswordServiceTests(Crm crm, CrmPasswordService passwords, PasswordEncoder encoder) {
 		super();

@@ -41,11 +41,12 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 public abstract class AbstractPermissionServiceTests {
 
-	private Crm crm;
+	protected Crm crm;
+	
+	protected AbstractPermissionServiceTests() {}
 	
 	public AbstractPermissionServiceTests(Crm crm) {
 		this.crm = crm;

@@ -38,7 +38,9 @@ import ca.magex.crm.api.validation.CrmValidation;
 
 public abstract class AbstractOrganizationServiceTests {
 
-	private Crm crm;
+	protected Crm crm;
+	
+	protected AbstractOrganizationServiceTests() {}
 	
 	public AbstractOrganizationServiceTests(Crm crm) {
 		this.crm = crm;

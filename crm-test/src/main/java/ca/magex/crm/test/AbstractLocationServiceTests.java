@@ -28,7 +28,9 @@ import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractLocationServiceTests {
 
-	private Crm crm;
+	protected Crm crm;
+	
+	protected AbstractLocationServiceTests() {}
 	
 	public AbstractLocationServiceTests(Crm crm) {
 		this.crm = crm;

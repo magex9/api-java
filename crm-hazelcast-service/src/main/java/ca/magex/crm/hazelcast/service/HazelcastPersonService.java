@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 @Service
 @Primary
@@ -42,8 +40,6 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmOrganizationService organizationService;
-
-	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position) {
@@ -61,7 +57,7 @@ public class HazelcastPersonService implements CrmPersonService {
 				address,
 				communication,
 				position);
-		persons.put(personDetails.getPersonId(), validationService.validate(personDetails));
+		persons.put(personDetails.getPersonId(), personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -76,7 +72,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withLegalName(name).withDisplayName(name.getDisplayName());
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -91,7 +87,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withAddress(address);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -106,7 +102,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withCommunication(communication);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -121,7 +117,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withPosition(position);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -136,7 +132,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withStatus(Status.ACTIVE);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 
@@ -151,7 +147,7 @@ public class HazelcastPersonService implements CrmPersonService {
 			return SerializationUtils.clone(personDetails);
 		}
 		personDetails = personDetails.withStatus(Status.INACTIVE);
-		persons.put(personId, validationService.validate(personDetails));
+		persons.put(personId, personDetails);
 		return SerializationUtils.clone(personDetails);
 	}
 

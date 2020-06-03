@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +30,6 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 @Service
 @Primary
@@ -45,8 +43,6 @@ public class HazelcastUserService implements CrmUserService {
 	@Autowired private CrmPasswordService passwordService;
 	@Autowired private CrmPersonService personService;
 	@Autowired private CrmPermissionService permissionService;
-
-	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
@@ -71,7 +67,7 @@ public class HazelcastUserService implements CrmUserService {
 				person,
 				Status.ACTIVE,
 				roles);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -108,7 +104,7 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withRoles(roles);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -123,7 +119,7 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withStatus(Status.ACTIVE);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 
@@ -138,7 +134,7 @@ public class HazelcastUserService implements CrmUserService {
 			return SerializationUtils.clone(user);
 		}
 		user = user.withStatus(Status.INACTIVE);
-		users.put(user.getUserId(), validationService.validate(user));
+		users.put(user.getUserId(), user);
 		return SerializationUtils.clone(user);
 	}
 

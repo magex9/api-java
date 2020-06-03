@@ -33,7 +33,9 @@ import ca.magex.crm.api.system.Status;
 
 public abstract class AbstractUserServiceTests {
 
-	private Crm crm;
+	protected Crm crm;
+	
+	protected AbstractUserServiceTests() {}
 	
 	public AbstractUserServiceTests(Crm crm) {
 		this.crm = crm;
