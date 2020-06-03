@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
+import com.hazelcast.query.impl.predicates.EqualPredicate;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.BadRequestException;
@@ -29,6 +30,7 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
@@ -77,8 +79,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	@Override
 	public Group findGroupByCode(String code) {
 		TransactionalMap<Identifier, Group> groups = hzInstance.getGroupsMap();
-		return groups.values().stream()
-				.filter((g) -> g.getCode().equals(code))
+		return groups.values(new EqualPredicate("code", code)).stream()
 				.map((g) -> SerializationUtils.clone(g))
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Group Code '" + code + "'"));
@@ -132,8 +133,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	@Override
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, Group> groups = hzInstance.getGroupsMap();
-		return PageBuilder.buildPageFor(filter, groups.values().stream()
-				.filter(g -> filter.apply(g))
+		return PageBuilder.buildPageFor(filter, groups.values(new CrmFilterPredicate<Group>(filter)).stream()
 				.map((g) -> SerializationUtils.clone(g))
 				.sorted(paging.new PagingComparator<Group>())
 				.collect(Collectors.toList()),
@@ -214,8 +214,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	@Override
 	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
 		TransactionalMap<Identifier, Role> roles = hzInstance.getRolesMap();
-		return PageBuilder.buildPageFor(filter, roles.values().stream()
-				.filter(r -> filter.apply(r))
+		return PageBuilder.buildPageFor(filter, roles.values(new CrmFilterPredicate<Role>(filter)).stream()
 				.map(r -> SerializationUtils.clone(r))
 				.sorted(paging.new PagingComparator<Role>())
 				.collect(Collectors.toList()),
