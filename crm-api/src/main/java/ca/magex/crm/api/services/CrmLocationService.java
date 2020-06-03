@@ -14,6 +14,22 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmLocationService {
+	
+	default LocationDetails prototypeLocation(
+			@NotNull Identifier organizationId, 
+			@NotNull String displayName, 
+			@NotNull String reference, 
+			@NotNull MailingAddress address) {
+		return new LocationDetails(null, organizationId, Status.PENDING, reference, displayName, address);
+	};
+	
+	default LocationDetails createLocation(LocationDetails prototype) {
+		return createLocation(
+			prototype.getOrganizationId(), 
+			prototype.getDisplayName(), 
+			prototype.getReference(), 
+			prototype.getAddress());
+	}
 
 	LocationDetails createLocation(
 		@NotNull Identifier organizationId, 

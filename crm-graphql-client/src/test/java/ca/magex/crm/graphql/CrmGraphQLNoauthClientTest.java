@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.graphql.client.CrmServicesGraphQLClientImpl;
 import ca.magex.crm.test.CrmServicesTestSuite;
@@ -25,21 +26,21 @@ public class CrmGraphQLNoauthClientTest {
 
 	@LocalServerPort private int randomPort;
 
-	@Autowired CrmInitializationService initializationService;
+	@Autowired Crm crm;
 
 	@Test
 	public void runTests() throws Exception {
 		/* we are running these tests with an embedded authentication server so everything is on the same servlet */
 		CrmServicesGraphQLClientImpl crmServices = new CrmServicesGraphQLClientImpl("http://localhost:" + randomPort + "/crm/graphql");
 
-		CrmServicesTestSuite testSuite = new CrmServicesTestSuite();
-		ReflectionTestUtils.setField(testSuite, "initializationService", initializationService);
-		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);
-		ReflectionTestUtils.setField(testSuite, "organizationService", crmServices);
-		ReflectionTestUtils.setField(testSuite, "locationService", crmServices);
-		ReflectionTestUtils.setField(testSuite, "personService", crmServices);
-		ReflectionTestUtils.setField(testSuite, "userService", crmServices);
-		ReflectionTestUtils.setField(testSuite, "permissionService", crmServices);
+		CrmServicesTestSuite testSuite = new CrmServicesTestSuite(crm);
+//		ReflectionTestUtils.setField(testSuite, "initializationService", crm);
+//		ReflectionTestUtils.setField(testSuite, "lookupService", crmServices);
+//		ReflectionTestUtils.setField(testSuite, "organizationService", crmServices);
+//		ReflectionTestUtils.setField(testSuite, "locationService", crmServices);
+//		ReflectionTestUtils.setField(testSuite, "personService", crmServices);
+//		ReflectionTestUtils.setField(testSuite, "userService", crmServices);
+//		ReflectionTestUtils.setField(testSuite, "permissionService", crmServices);
 
 		testSuite.runAllTests();
 	}

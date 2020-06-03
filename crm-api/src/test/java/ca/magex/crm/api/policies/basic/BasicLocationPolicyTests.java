@@ -51,7 +51,10 @@ public class BasicLocationPolicyTests {
 		/* should not be able to create a location for an inactive org */
 		Assertions.assertFalse(policy.canCreateLocationForOrganization(orgId2));
 		/* should not be able to create a location for an org that doesn't exist */
-		Assertions.assertFalse(policy.canCreateLocationForOrganization(orgId3));
+		try {
+			policy.canCreateLocationForOrganization(orgId3);
+			Assertions.fail("Item was not found");
+		} catch (ItemNotFoundException expected) { } 
 	}
 
 	@Test

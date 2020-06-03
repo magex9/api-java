@@ -31,7 +31,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.StructureValidationService;
+import ca.magex.crm.api.validation.CrmValidation;
 
 @Service
 @Primary
@@ -43,7 +43,7 @@ public class HazelcastPersonService implements CrmPersonService {
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmOrganizationService organizationService;
 
-	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
+	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position) {

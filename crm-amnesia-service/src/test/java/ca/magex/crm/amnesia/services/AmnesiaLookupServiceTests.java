@@ -6,15 +6,12 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.amnesia.Lookups;
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.test.AbstractLookupServiceTests;
 import ca.magex.crm.test.TestConfig;
 
@@ -23,20 +20,8 @@ import ca.magex.crm.test.TestConfig;
 @ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLookupServiceTests extends AbstractLookupServiceTests {
 
-	@Autowired
-	private CrmInitializationService initializationService;
-
-	@Autowired 
-	private CrmLookupService lookupService;
-
-	@Override
-	public CrmLookupService getLookupService() {
-		return lookupService;
-	}
-	
-	@Override
-	public CrmInitializationService getInitializationService() {
-		return initializationService;
+	public AmnesiaLookupServiceTests() {
+		super(new AmnesiaCrm());
 	}
 	
 	@Test

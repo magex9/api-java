@@ -37,39 +37,37 @@ public class AmnesiaPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
-		return db.savePerson(validate(new PersonDetails(db.generateId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, unit)));
+		return db.savePerson(new PersonDetails(db.generateId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, unit));
 	}
 
 	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName legalName) {
-		return db.savePerson(validate(findPersonDetails(personId).withLegalName(legalName).withDisplayName(legalName.getDisplayName())));
+		return db.savePerson(findPersonDetails(personId).withLegalName(legalName).withDisplayName(legalName.getDisplayName()));
 	}
 
 	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
-		return db.savePerson(validate(findPersonDetails(personId).withAddress(address)));
+		return db.savePerson(findPersonDetails(personId).withAddress(address));
 	}
 
 	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
-		return db.savePerson(validate(findPersonDetails(personId).withCommunication(communication)));
+		return db.savePerson(findPersonDetails(personId).withCommunication(communication));
 	}
 
 	@Override
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
-		return db.savePerson(validate(findPersonDetails(personId).withPosition(position)));
+		return db.savePerson(findPersonDetails(personId).withPosition(position));
 	}
 
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
-		return db.savePerson(validate(findPersonDetails(personId).withStatus(Status.ACTIVE)));
+		return db.savePerson(findPersonDetails(personId).withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		PersonDetails person = findPersonDetails(personId);
-		return person.getStatus() == Status.INACTIVE ? person : 
-			db.savePerson(validate(findPersonDetails(personId).withStatus(Status.INACTIVE)));
+		return db.savePerson(findPersonDetails(personId).withStatus(Status.INACTIVE));
 	}
 
 	@Override
@@ -90,25 +88,21 @@ public class AmnesiaPersonService implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, applyFilter(filter)
-				.map(i -> SerializationUtils.clone(i))
-				.sorted(filter.getComparator(paging))
-				.collect(Collectors.toList()), paging);
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList()), paging);
 	}
 
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, applyFilter(filter)
-				.map(i -> SerializationUtils.clone(i))
-				.sorted(filter.getComparator(paging))
-				.collect(Collectors.toList()), paging);
-	}
-	
-	private PersonDetails validate(PersonDetails person) {
-		return db.getValidation().validate(person);
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList()), paging);
 	}
 
 	private Stream<PersonDetails> applyFilter(PersonsFilter filter) {
 		return db.findByType(PersonDetails.class)
-				.filter(p -> filter.apply(p));
+			.filter(p -> filter.apply(p));
 	}
 }
