@@ -18,7 +18,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
-		initialization.reset();
+		crm.reset();
 	}
 	
 	@Test

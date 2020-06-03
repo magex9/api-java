@@ -28,6 +28,11 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
+import ca.magex.json.util.FormattedStringBuilder;
 
 public class CrmAsserts {
 	
@@ -327,4 +332,59 @@ public class CrmAsserts {
 		assertEquals(e.getMessages().stream().map((m) -> m.toString()).collect(Collectors.joining()), 1, e.getMessages().size());
 		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
 	}
+	
+	public void printLookupAsserts(JsonObject json) {
+		System.out.println("====================================================");
+		System.out.println("\t\t//printLookupAsserts(json);");
+		System.out.println("\t\tassertEquals(" + json.getArray("content").size() + ", json.getInt(\"total\"));");
+		System.out.println("\t\tassertEquals(JsonArray.class, json.get(\"content\").getClass());");
+		System.out.println("\t\tassertEquals(" + json.getArray("content").size() + ", json.getArray(\"content\").size());");
+		for (int i = 0; i < json.getArray("content").size(); i++) {
+			System.out.println("\t\tassertEquals(\"" + json.getArray("content").getString(i) + "\", json.getArray(\"content\").getString(" + i + "));");
+		}
+		System.out.println("====================================================");
+	}
+	
+	public static void printLinkedDataAsserts(JsonObject json, String name) {
+		System.out.println("====================================================");
+		System.out.println(json);
+		System.out.println("====================================================");
+		System.out.println("\t\t//CrmAsserts.printLinkedDataAsserts(" + name + ", \"" + name + "\");");
+		System.out.println("\t\t" + buildLinkedDataAsserts(json, name, new FormattedStringBuilder()));
+		System.out.println("====================================================");
+	}
+
+	private static String buildLinkedDataAsserts(JsonObject json, String prefix, FormattedStringBuilder sb) {
+		StringBuilder keys = new StringBuilder();
+		for (String key : json.keys()) {
+			keys.append(", \"" + key + "\"");
+		}
+		sb.append("\t\tassertEquals(List.of(" + keys.substring(2) + "), " + prefix + ".keys());");
+		for (String key : json.keys()) {
+			JsonElement el = json.get(key);
+			if (el instanceof JsonObject) {
+				buildLinkedDataAsserts((JsonObject)el, prefix + ".getObject(\"" + key + "\")", sb);
+			} else if (el instanceof JsonText) {
+				sb.append("\t\tassertEquals(\"" + json.getString(key) + "\", " + prefix + ".getString(\"" + key + "\"));");
+			} else {
+				sb.append("\t\tassertEquals(" + json.get(key) + ", " + prefix + ".get(\"" + key + "\"));");
+			}
+		}
+		return sb.toString().trim();
+	}
+	
+	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
+			String reason) {
+		assertEquals(1, json.size());
+		if (identifier == null) {
+			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
+		} else {
+			assertEquals(List.of("identifier", "type", "path", "reason"), json.getObject(0).keys());
+			assertEquals(identifier, new Identifier(json.getObject(0).getString("identifier")));
+		}
+		assertEquals(type, json.getObject(0).getString("type"));
+		assertEquals(path, json.getObject(0).getString("path"));
+		assertEquals(reason, json.getObject(0).getString("reason"));
+	}
+
 }

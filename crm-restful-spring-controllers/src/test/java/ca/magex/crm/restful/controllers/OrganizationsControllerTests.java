@@ -1,7 +1,7 @@
 package ca.magex.crm.restful.controllers;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import ca.magex.crm.amnesia.generator.LoremIpsumGenerator;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -134,11 +135,11 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetOrganizationSummary() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = locations.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		Identifier personId = persons.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-		organizations.updateOrganizationMainLocation(organizationId, locationId);
-		organizations.updateOrganizationMainContact(organizationId, personId);
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		crm.updateOrganizationMainLocation(organizationId, locationId);
+		crm.updateOrganizationMainContact(organizationId, personId);
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/organizations/" + organizationId + "/summary")
@@ -179,11 +180,11 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetMainLocation() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = locations.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS.withProvince("NL")).getLocationId();
-		Identifier personId = persons.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-		organizations.updateOrganizationMainLocation(organizationId, locationId);
-		organizations.updateOrganizationMainContact(organizationId, personId);
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS.withProvince("NL")).getLocationId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		crm.updateOrganizationMainLocation(organizationId, locationId);
+		crm.updateOrganizationMainContact(organizationId, personId);
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/organizations/" + organizationId + "/mainLocation")
@@ -256,11 +257,11 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingFullOrganization() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = locations.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		Identifier personId = persons.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		
-		OrganizationDetails org = organizations.findOrganizationDetails(organizationId);
+		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
 		assertEquals(organizationId, org.getOrganizationId());
 		assertEquals(ORG_NAME.getEnglishName(), org.getDisplayName());
 		assertNull(org.getMainLocationId());
@@ -287,7 +288,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(personId.toString(), json.getString("mainContactId"));
 		assertEquals(new JsonArray().with("ORG"), json.getArray("groups"));
 		
-		org = organizations.findOrganizationDetails(organizationId);
+		org = crm.findOrganizationDetails(organizationId);
 		assertEquals(organizationId, org.getOrganizationId());
 		assertEquals("Updated name", org.getDisplayName());
 		assertEquals(locationId, org.getMainLocationId());
@@ -296,7 +297,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingDisplayName() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -318,8 +319,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingMainLocation() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = locations.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -342,9 +343,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingMainLocationAsNull() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = locations.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		organizations.updateOrganizationMainLocation(organizationId, locationId);
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		crm.updateOrganizationMainLocation(organizationId, locationId);
 
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -367,8 +368,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingMainContact() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier personId = persons.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -391,9 +392,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingMainContactAsNull() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier personId = persons.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-		organizations.updateOrganizationMainContact(organizationId, personId);
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		crm.updateOrganizationMainContact(organizationId, personId);
 
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -416,8 +417,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testEnableDisableOrganization() throws Exception {
-		Identifier organizationId = organizations.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		assertEquals(Status.ACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/disable")
@@ -429,7 +430,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/disable")
@@ -444,7 +445,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/disable")
@@ -459,7 +460,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Confirmation message must be a boolean", error3.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/disable")
@@ -474,7 +475,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(organizationId.toString(), disable.getString("organizationId"));
 		assertEquals("Inactive", disable.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
-		assertEquals(Status.INACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/enable")
@@ -486,7 +487,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("You must send in the confirmation message", error4.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/enable")
@@ -501,7 +502,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("You must send in the confirmation message", error5.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/enable")
@@ -516,7 +517,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Confirmation message must be a boolean", error6.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 	
 		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/organizations/" + organizationId + "/enable")
@@ -530,7 +531,36 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(organizationId.toString(), enable.getString("organizationId"));
 		assertEquals("Actif", enable.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
-		assertEquals(Status.ACTIVE, organizations.findOrganizationSummary(organizationId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
+	}
+	
+	@Test
+	public void testOrganizationWithLongName() throws Exception {
+		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/organizations")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("displayName", LoremIpsumGenerator.buildWords(20))
+				.with("groups", List.of("ORG"))
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		assertSingleJsonMessage(json, null, "error", "displayName", "Display name must be 60 characters or less");
+	}
+
+	@Test
+	public void testOrganizationWithNoName() throws Exception {
+		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/organizations")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("groups", List.of("ORG"))
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		assertSingleJsonMessage(json, null, "error", "displayName", "Field is mandatory");
 	}
 	
 }
