@@ -16,9 +16,9 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 	
 	private SalutationJsonTransformer salutationJsonTransformer;
 
-	public PersonNameJsonTransformer(CrmServices crm, SalutationJsonTransformer salutationJsonTransformer) {
+	public PersonNameJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.salutationJsonTransformer = salutationJsonTransformer;
+		this.salutationJsonTransformer = new SalutationJsonTransformer(crm);
 	}
 
 	@Override

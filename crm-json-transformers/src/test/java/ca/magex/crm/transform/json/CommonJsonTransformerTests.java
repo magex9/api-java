@@ -21,22 +21,14 @@ public class CommonJsonTransformerTests {
 	@Test
 	public void testFormatTextNull() throws Exception {
 		CrmServices crm = new AmnesiaCrm();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new LocalizedJsonTransformer(crm)
-		);
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
 		transformer.formatText(null, null, null);
 	}
 	
 	@Test
 	public void testFormatTextKey() throws Exception {
 		CrmServices crm = new AmnesiaCrm();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new LocalizedJsonTransformer(crm)
-		);
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
 		transformer.formatText(pairs, "code", group);
@@ -45,11 +37,7 @@ public class CommonJsonTransformerTests {
 	@Test
 	public void testGetPropertyOptions() throws Exception {
 		CrmServices crm = new AmnesiaCrm();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new LocalizedJsonTransformer(crm)
-		);
+		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
 		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
 		try {
 			transformer.getProperty(null, "code", String.class);

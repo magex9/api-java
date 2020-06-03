@@ -24,12 +24,11 @@ public class RoleJsonTransformer extends AbstractJsonTransformer<Role> {
 	
 	private LocalizedJsonTransformer localizedJsonTransformer;
 
-	public RoleJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
-			StatusJsonTransformer statusJsonTransformer, LocalizedJsonTransformer localizedJsonTransformer) {
+	public RoleJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = identifierJsonTransformer;
-		this.statusJsonTransformer = statusJsonTransformer;
-		this.localizedJsonTransformer = localizedJsonTransformer;
+		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
+		this.statusJsonTransformer = new StatusJsonTransformer(crm);
+		this.localizedJsonTransformer = new LocalizedJsonTransformer(crm);
 	}
 
 	@Override

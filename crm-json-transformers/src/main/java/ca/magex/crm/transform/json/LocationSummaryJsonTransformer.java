@@ -20,11 +20,10 @@ public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<Loca
 	
 	private StatusJsonTransformer statusJsonTransformer;
 	
-	public LocationSummaryJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
-			StatusJsonTransformer statusJsonTransformer) {
+	public LocationSummaryJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = identifierJsonTransformer;
-		this.statusJsonTransformer = statusJsonTransformer;
+		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
+		this.statusJsonTransformer = new StatusJsonTransformer(crm);
 	}
 
 	@Override

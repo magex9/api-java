@@ -22,11 +22,10 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 	
 	private StatusJsonTransformer statusJsonTransformer;
 	
-	public OrganizationDetailsJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
-			StatusJsonTransformer statusJsonTransformer) {
+	public OrganizationDetailsJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = identifierJsonTransformer;
-		this.statusJsonTransformer = statusJsonTransformer;
+		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
+		this.statusJsonTransformer = new StatusJsonTransformer(crm);
 	}
 
 	@Override

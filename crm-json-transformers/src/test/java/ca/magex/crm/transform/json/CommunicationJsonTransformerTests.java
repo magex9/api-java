@@ -28,10 +28,7 @@ public class CommunicationJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new CommunicationJsonTransformer(crm, 
-			new LanguageJsonTransformer(crm),
-			new TelephoneJsonTransformer(crm)
-		);
+		transformer = new CommunicationJsonTransformer(crm);
 		communication = COMMUNICATIONS;
 	}
 	

@@ -33,29 +33,11 @@ public class PersonDetailsJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new PersonDetailsJsonTransformer(crm, 
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new PersonNameJsonTransformer(crm, 
-				new SalutationJsonTransformer(crm)
-			),
-			new MailingAddressJsonTransformer(crm,
-				new CountryJsonTransformer(crm)
-			),
-			new CommunicationJsonTransformer(crm, 
-				new LanguageJsonTransformer(crm),
-				new TelephoneJsonTransformer(crm)
-			),
-			new BusinessPositionJsonTransformer(crm, 
-				new BusinessSectorJsonTransformer(crm),
-				new BusinessUnitJsonTransformer(crm), 
-				new BusinessClassificationJsonTransformer(crm)
-			)
-		);
+		transformer = new PersonDetailsJsonTransformer(crm);
 		BusinessPosition position = new BusinessPosition(
-				crm.findBusinessSectorByLocalizedName(Lang.ENGLISH, "Information Technology").getCode(),
-				crm.findBusinessUnitByLocalizedName(Lang.ENGLISH, "Solutions").getCode(),
-				crm.findBusinessClassificationByLocalizedName(Lang.ENGLISH, "Developer").getCode()
+			crm.findBusinessSectorByLocalizedName(Lang.ENGLISH, "Information Technology").getCode(),
+			crm.findBusinessUnitByLocalizedName(Lang.ENGLISH, "Solutions").getCode(),
+			crm.findBusinessClassificationByLocalizedName(Lang.ENGLISH, "Developer").getCode()
 		);
 		person = new PersonDetails(new Identifier("prsn"), new Identifier("org"), Status.ACTIVE, 
 				PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, position);

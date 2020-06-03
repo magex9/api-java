@@ -30,13 +30,7 @@ public class LocationDetailsJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new LocationDetailsJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new MailingAddressJsonTransformer(crm, 
-				new CountryJsonTransformer(crm)
-			)
-		);
+		transformer = new LocationDetailsJsonTransformer(crm);
 		location = new LocationDetails(new Identifier("loc"), new Identifier("org"), Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS);
 	}
 	

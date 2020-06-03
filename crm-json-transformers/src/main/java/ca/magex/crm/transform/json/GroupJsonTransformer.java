@@ -24,12 +24,11 @@ public class GroupJsonTransformer extends AbstractJsonTransformer<Group> {
 	
 	private LocalizedJsonTransformer localizedJsonTransformer;
 
-	public GroupJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
-			StatusJsonTransformer statusJsonTransformer, LocalizedJsonTransformer localizedJsonTransformer) {
+	public GroupJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = identifierJsonTransformer;
-		this.statusJsonTransformer = statusJsonTransformer;
-		this.localizedJsonTransformer = localizedJsonTransformer;
+		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
+		this.statusJsonTransformer = new StatusJsonTransformer(crm);
+		this.localizedJsonTransformer = new LocalizedJsonTransformer(crm);
 	}
 
 	@Override

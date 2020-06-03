@@ -30,10 +30,7 @@ public class PersonSummaryJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new PersonSummaryJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm)
-		);
+		transformer = new PersonSummaryJsonTransformer(crm);
 		person = new PersonSummary(new Identifier("prsn"), new Identifier("org"), Status.ACTIVE, PERSON_NAME.getDisplayName());
 	}
 	

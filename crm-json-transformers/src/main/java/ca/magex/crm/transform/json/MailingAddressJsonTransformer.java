@@ -21,9 +21,9 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	
 	private CountryJsonTransformer countryJsonTransformer;
 
-	public MailingAddressJsonTransformer(CrmServices crm, CountryJsonTransformer countryJsonTransformer) {
+	public MailingAddressJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.countryJsonTransformer = countryJsonTransformer;
+		this.countryJsonTransformer = new CountryJsonTransformer(crm);
 	}
 
 	@Override

@@ -38,9 +38,7 @@ public class MailingAddressJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new MailingAddressJsonTransformer(crm,
-			new CountryJsonTransformer(crm)
-		);
+		transformer = new MailingAddressJsonTransformer(crm);
 	}
 	
 	@Test

@@ -32,18 +32,14 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 	
 	private BusinessPositionJsonTransformer businessPositionJsonTransformer;
 
-	public PersonDetailsJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
-			StatusJsonTransformer statusJsonTransformer, PersonNameJsonTransformer personNameJsonTransformer,
-			MailingAddressJsonTransformer mailingAddressJsonTransformer,
-			CommunicationJsonTransformer communicationJsonTransformer,
-			BusinessPositionJsonTransformer businessPositionJsonTransformer) {
+	public PersonDetailsJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = identifierJsonTransformer;
-		this.statusJsonTransformer = statusJsonTransformer;
-		this.personNameJsonTransformer = personNameJsonTransformer;
-		this.mailingAddressJsonTransformer = mailingAddressJsonTransformer;
-		this.communicationJsonTransformer = communicationJsonTransformer;
-		this.businessPositionJsonTransformer = businessPositionJsonTransformer;
+		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
+		this.statusJsonTransformer = new StatusJsonTransformer(crm);
+		this.personNameJsonTransformer = new PersonNameJsonTransformer(crm);
+		this.mailingAddressJsonTransformer = new MailingAddressJsonTransformer(crm);
+		this.communicationJsonTransformer = new CommunicationJsonTransformer(crm);
+		this.businessPositionJsonTransformer = new BusinessPositionJsonTransformer(crm);
 	}
 
 	@Override

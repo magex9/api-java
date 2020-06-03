@@ -20,12 +20,11 @@ public class BusinessPositionJsonTransformer extends AbstractJsonTransformer<Bus
 	
 	private BusinessClassificationJsonTransformer businessClassificationJsonTransformer;
 	
-	public BusinessPositionJsonTransformer(CrmServices crm, BusinessSectorJsonTransformer businessSectorJsonTransformer, 
-			BusinessUnitJsonTransformer businessUnitJsonTransformer, BusinessClassificationJsonTransformer businessClassificationJsonTransformer) {
+	public BusinessPositionJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.businessSectorJsonTransformer = businessSectorJsonTransformer;
-		this.businessUnitJsonTransformer = businessUnitJsonTransformer;
-		this.businessClassificationJsonTransformer = businessClassificationJsonTransformer;
+		this.businessSectorJsonTransformer = new BusinessSectorJsonTransformer(crm);
+		this.businessUnitJsonTransformer = new BusinessUnitJsonTransformer(crm);
+		this.businessClassificationJsonTransformer = new BusinessClassificationJsonTransformer(crm);
 	}
 
 	@Override

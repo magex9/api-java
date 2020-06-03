@@ -31,9 +31,7 @@ public class PersonNameJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new PersonNameJsonTransformer(crm,
-			new SalutationJsonTransformer(crm)
-		);
+		transformer = new PersonNameJsonTransformer(crm);
 		salutation = crm.findSalutationByLocalizedName(Lang.ENGLISH, "Mr.");
 		personName = PERSON_NAME.withSalutation(salutation.getCode());
 	}

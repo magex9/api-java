@@ -29,10 +29,7 @@ public class LocationSummaryJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new LocationSummaryJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm)
-		);
+		transformer = new LocationSummaryJsonTransformer(crm);
 		location = new LocationSummary(new Identifier("loc"), new Identifier("org"), Status.ACTIVE, "REF", "Location Name");
 	}
 	

@@ -27,15 +27,11 @@ public class BusinessPositionJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new BusinessPositionJsonTransformer(crm, 
-			new BusinessSectorJsonTransformer(crm),
-			new BusinessUnitJsonTransformer(crm), 
-			new BusinessClassificationJsonTransformer(crm)
-		);
+		transformer = new BusinessPositionJsonTransformer(crm);
 		position = new BusinessPosition(
-				crm.findBusinessSectorByLocalizedName(Lang.ENGLISH, "Information Technology").getCode(),
-				crm.findBusinessUnitByLocalizedName(Lang.ENGLISH, "Solutions").getCode(),
-				crm.findBusinessClassificationByLocalizedName(Lang.ENGLISH, "Developer").getCode()
+			crm.findBusinessSectorByLocalizedName(Lang.ENGLISH, "Information Technology").getCode(),
+			crm.findBusinessUnitByLocalizedName(Lang.ENGLISH, "Solutions").getCode(),
+			crm.findBusinessClassificationByLocalizedName(Lang.ENGLISH, "Developer").getCode()
 		);
 	}
 	

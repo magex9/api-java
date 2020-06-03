@@ -30,11 +30,7 @@ public class GroupJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new GroupJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new LocalizedJsonTransformer(crm)
-		);
+		transformer = new GroupJsonTransformer(crm);
 		group = new Group(new Identifier("abc"), Status.PENDING, GROUP);
 	}
 	

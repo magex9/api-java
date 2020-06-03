@@ -23,12 +23,11 @@ public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<Loca
 	
 	private MailingAddressJsonTransformer mailingAddressJsonTransformer;
 
-	public LocationDetailsJsonTransformer(CrmServices crm, IdentifierJsonTransformer identifierJsonTransformer,
-			StatusJsonTransformer statusJsonTransformer, MailingAddressJsonTransformer mailingAddressJsonTransformer) {
+	public LocationDetailsJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = identifierJsonTransformer;
-		this.statusJsonTransformer = statusJsonTransformer;
-		this.mailingAddressJsonTransformer = mailingAddressJsonTransformer;
+		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
+		this.statusJsonTransformer = new StatusJsonTransformer(crm);
+		this.mailingAddressJsonTransformer = new MailingAddressJsonTransformer(crm);
 	}
 
 	@Override

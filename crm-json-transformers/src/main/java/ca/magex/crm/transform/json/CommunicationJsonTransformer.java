@@ -19,11 +19,10 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	
 	private TelephoneJsonTransformer telephoneJsonTransformer;
 
-	public CommunicationJsonTransformer(CrmServices crm, LanguageJsonTransformer languageJsonTransformer, 
-			TelephoneJsonTransformer telephoneJsonTransformer) {
+	public CommunicationJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.languageJsonTransformer = languageJsonTransformer;
-		this.telephoneJsonTransformer = telephoneJsonTransformer;
+		this.languageJsonTransformer = new LanguageJsonTransformer(crm);
+		this.telephoneJsonTransformer = new TelephoneJsonTransformer(crm);
 	}
 
 	@Override

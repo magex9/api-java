@@ -30,11 +30,7 @@ public class RoleJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new RoleJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm),
-			new LocalizedJsonTransformer(crm)
-		);
+		transformer = new RoleJsonTransformer(crm);
 		role = new Role(new Identifier("abc"), new Identifier("grp"), Status.PENDING, ORG_ADMIN);
 	}
 	

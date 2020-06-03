@@ -29,10 +29,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	@Before
 	public void setup() {
 		crm = new AmnesiaCrm();
-		transformer = new OrganizationSummaryJsonTransformer(crm,
-			new IdentifierJsonTransformer(crm),
-			new StatusJsonTransformer(crm)
-		);
+		transformer = new OrganizationSummaryJsonTransformer(crm);
 		organization = new OrganizationSummary(new Identifier("org"), Status.ACTIVE, "Org Name");
 	}
 	
