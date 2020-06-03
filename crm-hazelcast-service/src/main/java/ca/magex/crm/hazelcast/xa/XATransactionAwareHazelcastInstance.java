@@ -8,6 +8,7 @@ import javax.transaction.TransactionManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -15,6 +16,7 @@ import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import com.hazelcast.transaction.HazelcastXAResource;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -32,6 +34,7 @@ import ca.magex.crm.hazelcast.service.HazelcastPersonService;
 import ca.magex.crm.hazelcast.service.HazelcastUserService;
 
 @Component
+@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class XATransactionAwareHazelcastInstance {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(XATransactionAwareHazelcastInstance.class);
