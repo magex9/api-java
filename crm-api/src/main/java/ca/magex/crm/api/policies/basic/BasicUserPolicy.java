@@ -16,58 +16,58 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicUserPolicy implements CrmUserPolicy {
 
-	private CrmPersonService personService;
+	private CrmPersonService persons;
 
-	private CrmUserService userService;
+	private CrmUserService users;
 
 	/**
 	 * Basic User Policy handles presence and status checks require for policy approval
 	 * 
-	 * @param userService
-	 * @param personService
+	 * @param users
+	 * @param persons
 	 */
-	public BasicUserPolicy(CrmPersonService personService, CrmUserService userService) {
-		this.userService = userService;
-		this.personService = personService;
+	public BasicUserPolicy(CrmPersonService persons, CrmUserService users) {
+		this.users = users;
+		this.persons = persons;
 	}
 
 	@Override
 	public boolean canCreateUserForPerson(Identifier personId) {
 		/* can create a user for a given person if the person exists */
-		personService.findPersonSummary(personId);
+		persons.findPersonSummary(personId);
 		return true;
 	}
 
 	@Override
 	public boolean canViewUser(Identifier userId) {
 		/* can view a user if it exists */
-		userService.findUser(userId);
+		users.findUser(userId);
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateUserRole(Identifier userId) {
 		/* can view a user if it exists and is active */
-		return userService.findUser(userId).getStatus() == Status.ACTIVE;
+		return users.findUser(userId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canUpdateUserPassword(Identifier userId) {
 		/* can view a user password if it exists and is active */
-		return userService.findUser(userId).getStatus() == Status.ACTIVE;
+		return users.findUser(userId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableUser(Identifier userId) {
 		/* can enable a user if it exists */
-		userService.findUser(userId).getStatus();
+		users.findUser(userId).getStatus();
 		return true;
 	}
 
 	@Override
 	public boolean canDisableUser(Identifier userId) {
 		/* can disable a user if it exists */
-		userService.findUser(userId).getStatus();
+		users.findUser(userId).getStatus();
 		return true;
 	}
 	

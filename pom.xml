@@ -26,7 +26,7 @@
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
-		<module>crm-hazelcast-service</module>
+		<!-- <module>crm-hazelcast-service</module> -->
 
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>

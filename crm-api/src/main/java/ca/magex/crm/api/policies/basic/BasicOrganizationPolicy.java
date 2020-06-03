@@ -15,15 +15,15 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 
-	private CrmOrganizationService organizationService;
+	private CrmOrganizationService organizations;
 
 	/**
 	 * Basic Organization Policy handles presence and status checks require for policy approval
 	 * 
-	 * @param organizationService
+	 * @param organizations
 	 */
-	public BasicOrganizationPolicy(CrmOrganizationService organizationService) {
-		this.organizationService = organizationService;
+	public BasicOrganizationPolicy(CrmOrganizationService organizations) {
+		this.organizations = organizations;
 	}
 	
 	@Override
@@ -35,27 +35,27 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 	@Override
 	public boolean canViewOrganization(Identifier organizationId) {
 		/* can only view an organization if it exists */
-		organizationService.findOrganizationSummary(organizationId);
+		organizations.findOrganizationSummary(organizationId);
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateOrganization(Identifier organizationId) {
 		/* can only update an organization if it exists, and is active */
-		return organizationService.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
+		return organizations.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableOrganization(Identifier organizationId) {
 		/* can only enable an organization if it exists */
-		organizationService.findOrganizationSummary(organizationId);
+		organizations.findOrganizationSummary(organizationId);
 		return true;
 	}
 
 	@Override
 	public boolean canDisableOrganization(Identifier organizationId) {
 		/* can only disable an organization if it exists */
-		organizationService.findOrganizationSummary(organizationId);
+		organizations.findOrganizationSummary(organizationId);
 		return true;
 	}
 }

@@ -1,5 +1,7 @@
 package ca.magex.crm.api.policies.authenticated;
 
+import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -9,43 +11,42 @@ import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.basic.BasicPermissionPolicy;
 import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
 @Primary
 @Profile(MagexCrmProfiles.CRM_AUTH)
-public class AuthenticatedPermissionPolicy extends BaseAuthenticatedPolicy implements CrmPermissionPolicy {
+public class AuthenticatedPermissionPolicy implements CrmPermissionPolicy {
+	
+	private CrmAuthenticationService auth;
 
-	private CrmPermissionPolicy basicPolicy;
+	private CrmPermissionPolicy delegate;
 	
 	/**
 	 * Authenticated Permission Policy handles roles and association checks required for policy approval
 	 * 
-	 * @param authenticationService
-	 * @param permissionService
-	 * @param userService
+	 * @param auth
+	 * @param permissions
+	 * @param users
 	 */
 	public AuthenticatedPermissionPolicy(
-			CrmAuthenticationService authenticationService,
-			CrmPermissionService permissionService,
-			CrmUserService userService) {
-		super(authenticationService, userService);
-		this.basicPolicy = new BasicPermissionPolicy(permissionService);
+			CrmAuthenticationService auth,
+			CrmPermissionService permissions) {
+		this.delegate = new BasicPermissionPolicy(permissions);
 	}
 
 	@Override
 	public boolean canCreateGroup() {
-		if (!basicPolicy.canCreateGroup()) {
+		if (!delegate.canCreateGroup()) {
 			return false;
 		}
 		/* only a CRM Admin can create a Group */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canViewGroup(String group) {
-		if (!basicPolicy.canViewGroup(group)) {
+		if (!delegate.canViewGroup(group)) {
 			return false;
 		}
 		/* anybody can view a group */
@@ -54,7 +55,7 @@ public class AuthenticatedPermissionPolicy extends BaseAuthenticatedPolicy imple
 
 	@Override
 	public boolean canViewGroup(Identifier groupId) {
-		if (!basicPolicy.canViewGroup(groupId)) {
+		if (!delegate.canViewGroup(groupId)) {
 			return false;
 		}
 		/* anybody can view a group */
@@ -63,43 +64,43 @@ public class AuthenticatedPermissionPolicy extends BaseAuthenticatedPolicy imple
 
 	@Override
 	public boolean canUpdateGroup(Identifier groupId) {
-		if (!basicPolicy.canUpdateGroup(groupId)) {
+		if (!delegate.canUpdateGroup(groupId)) {
 			return false;
 		}
 		/* only a CRM Admin can update a Group */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canEnableGroup(Identifier groupId) {
-		if (!basicPolicy.canEnableGroup(groupId)) {
+		if (!delegate.canEnableGroup(groupId)) {
 			return false;
 		}
 		/* only a CRM Admin can enable a Group */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canDisableGroup(Identifier groupId) {
-		if (!basicPolicy.canDisableGroup(groupId)) {
+		if (!delegate.canDisableGroup(groupId)) {
 			return false;
 		}
 		/* only a CRM Admin can disable a Group */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canCreateRole(Identifier groupId) {
-		if (!basicPolicy.canCreateRole(groupId)) {
+		if (!delegate.canCreateRole(groupId)) {
 			return false;
 		}
 		/* only a CRM Admin can create a Role */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canViewRoles() {
-		if (!basicPolicy.canViewRoles()) {
+		if (!delegate.canViewRoles()) {
 			return false;
 		}
 		/* anybody can view roles */
@@ -108,7 +109,7 @@ public class AuthenticatedPermissionPolicy extends BaseAuthenticatedPolicy imple
 
 	@Override
 	public boolean canViewRole(String code) {
-		if (!basicPolicy.canViewRole(code)) {
+		if (!delegate.canViewRole(code)) {
 			return false;
 		}
 		/* anybody can view a role */
@@ -117,7 +118,7 @@ public class AuthenticatedPermissionPolicy extends BaseAuthenticatedPolicy imple
 
 	@Override
 	public boolean canViewRole(Identifier roleId) {
-		if (!basicPolicy.canViewRole(roleId)) {
+		if (!delegate.canViewRole(roleId)) {
 			return false;
 		}
 		/* anybody can view a role */
@@ -126,28 +127,28 @@ public class AuthenticatedPermissionPolicy extends BaseAuthenticatedPolicy imple
 
 	@Override
 	public boolean canUpdateRole(Identifier roleId) {
-		if (!basicPolicy.canUpdateRole(roleId)) {
+		if (!delegate.canUpdateRole(roleId)) {
 			return false;
 		}
 		/* only a CRM Admin can update a Role */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canEnableRole(Identifier roleId) {
-		if (!basicPolicy.canEnableRole(roleId)) {
+		if (!delegate.canEnableRole(roleId)) {
 			return false;
 		}
 		/* only a CRM Admin can enable a Role */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 
 	@Override
 	public boolean canDisableRole(Identifier roleId) {
-		if (!basicPolicy.canDisableRole(roleId)) {
+		if (!delegate.canDisableRole(roleId)) {
 			return false;
 		}
 		/* only a CRM Admin can disable a Role */
-		return isCrmAdmin(getCurrentUser());
+		return auth.isUserInRole(CRM_ADMIN);
 	}
 }

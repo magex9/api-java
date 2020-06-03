@@ -15,15 +15,15 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicPermissionPolicy implements CrmPermissionPolicy {
 
-	private CrmPermissionService permissionService;
+	private CrmPermissionService permissions;
 	
 	/**
 	 * Basic Permission Policy handles presence and status checks require for policy approval
 	 * 
-	 * @param permissionService
+	 * @param permissions
 	 */
-	public BasicPermissionPolicy(CrmPermissionService permissionService) {
-		this.permissionService = permissionService;
+	public BasicPermissionPolicy(CrmPermissionService permissions) {
+		this.permissions = permissions;
 	}
 	
 	@Override
@@ -35,41 +35,41 @@ public class BasicPermissionPolicy implements CrmPermissionPolicy {
 	@Override
 	public boolean canViewGroup(String group) {
 		/* can view a group if it exists */
-		permissionService.findGroupByCode(group);
+		permissions.findGroupByCode(group);
 		return true;
 	}
 
 	@Override
 	public boolean canViewGroup(Identifier groupId) {
 		/* can view a group if it exists */
-		permissionService.findGroup(groupId);
+		permissions.findGroup(groupId);
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateGroup(Identifier groupId) {
 		/* can update a group if it exists and is active */
-		return permissionService.findGroup(groupId).getStatus() == Status.ACTIVE;
+		return permissions.findGroup(groupId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableGroup(Identifier groupId) {
 		/* can enable a group if it exists */
-		permissionService.findGroup(groupId);
+		permissions.findGroup(groupId);
 		return true;
 	}
 
 	@Override
 	public boolean canDisableGroup(Identifier groupId) {
 		/* can disable a group if it exists */
-		permissionService.findGroup(groupId);
+		permissions.findGroup(groupId);
 		return true;
 	}
 
 	@Override
 	public boolean canCreateRole(Identifier groupId) {
 		/* can create a role for this group if it exists */
-		permissionService.findGroup(groupId);
+		permissions.findGroup(groupId);
 		return true;
 	}
 
@@ -82,34 +82,34 @@ public class BasicPermissionPolicy implements CrmPermissionPolicy {
 	@Override
 	public boolean canViewRole(String code) {		
 		/* can view a specific role if it exists */
-		permissionService.findRoleByCode(code);
+		permissions.findRoleByCode(code);
 		return true;
 	}
 
 	@Override
 	public boolean canViewRole(Identifier roleId) {
 		/* can view a specific role if it exists */
-		permissionService.findRole(roleId);
+		permissions.findRole(roleId);
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateRole(Identifier roleId) {
 		/* can view a specific role if it exists and is active */
-		return permissionService.findRole(roleId).getStatus() == Status.ACTIVE;
+		return permissions.findRole(roleId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableRole(Identifier roleId) {
 		/* can enable a specific role if it exists */
-		permissionService.findRole(roleId);
+		permissions.findRole(roleId);
 		return true;
 	}
 
 	@Override
 	public boolean canDisableRole(Identifier roleId) {
 		/* can disable a specific role if it exists */
-		permissionService.findRole(roleId);
+		permissions.findRole(roleId);
 		return true;
 	}
 	

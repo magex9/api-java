@@ -16,51 +16,51 @@ import ca.magex.crm.api.system.Status;
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicLocationPolicy implements CrmLocationPolicy {
 
-	private CrmOrganizationService organizationService;
+	private CrmOrganizationService organizations;
 	
-	private CrmLocationService locationService;
+	private CrmLocationService locations;
 	
 	/**
 	 * Basic Location Policy handles presence and status checks require for policy approval
 	 * 
-	 * @param organizationService
-	 * @param locationService
+	 * @param organizations
+	 * @param locations
 	 */
-	public BasicLocationPolicy(CrmOrganizationService organizationService, CrmLocationService locationService) {
-		this.organizationService = organizationService;
-		this.locationService = locationService;
+	public BasicLocationPolicy(CrmOrganizationService organizations, CrmLocationService locations) {
+		this.organizations = organizations;
+		this.locations = locations;
 	}
 	
 	@Override
 	public boolean canCreateLocationForOrganization(Identifier organizationId) {
 		/* can only create a location for the organization, if the organization exists, and is active */
-		return organizationService.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
+		return organizations.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canViewLocation(Identifier locationId) {
 		/* can only view a location if it exists */
-		locationService.findLocationSummary(locationId);
+		locations.findLocationSummary(locationId);
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateLocation(Identifier locationId) {
 		/* can only update a location if it exists, and is active */
-		return locationService.findLocationSummary(locationId).getStatus() == Status.ACTIVE;
+		return locations.findLocationSummary(locationId).getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableLocation(Identifier locationId) {
 		/* can only enable a location if it exists */
-		locationService.findLocationSummary(locationId);
+		locations.findLocationSummary(locationId);
 		return true;
 	}
 
 	@Override
 	public boolean canDisableLocation(Identifier locationId) {
 		/* can only disable a location if it exists */
-		locationService.findLocationSummary(locationId);
+		locations.findLocationSummary(locationId);
 		return true;
 	}
 }
