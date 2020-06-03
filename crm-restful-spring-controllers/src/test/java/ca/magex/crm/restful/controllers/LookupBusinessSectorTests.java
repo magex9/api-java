@@ -1,7 +1,6 @@
 package ca.magex.crm.restful.controllers;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +17,7 @@ public class LookupBusinessSectorTests extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
-		initialization.reset();
+		crm.reset();
 	}
 	
 	@Test

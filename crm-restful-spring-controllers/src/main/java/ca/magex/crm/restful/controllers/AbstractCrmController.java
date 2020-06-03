@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.Crm;
@@ -67,6 +68,9 @@ public abstract class AbstractCrmController {
 		} catch (PermissionDeniedException e) {
 			logger.warn("Permission denied:" + req.getPathInfo(), e);
 			res.setStatus(403);
+		} catch (ItemNotFoundException e) {
+			logger.info("Item not found:" + req.getPathInfo(), e);
+			res.setStatus(404);
 		} catch (Exception e) {
 			logger.error("Exception handling request:" + req.getPathInfo(), e);
 			res.setStatus(500);
@@ -182,15 +186,6 @@ public abstract class AbstractCrmController {
 			return Lang.ROOT;
 		}
 		return Lang.parse(req.getHeader("Locale"));
-	}
-	
-	public Identifier extractOrganizationId(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("organizationId");
-		if (value == null)
-			return null;
-		if (value.length() > 60)
-			throw new IllegalArgumentException("The organizationId name must be under 60 characters");
-		return new Identifier(value);
 	}
 
 	public String extractDisplayName(HttpServletRequest req) throws IllegalArgumentException {
