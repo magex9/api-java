@@ -1,23 +1,27 @@
 package ca.magex.crm.hazelcast.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.PageBuilder;
@@ -30,19 +34,37 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastUserService implements CrmUserService {
 
 	public static String HZ_USER_KEY = "users";
 
-	@Autowired private HazelcastInstance hzInstance;
-	@Autowired private PasswordEncoder passwordEncoder;
-	@Autowired private CrmPasswordService passwordService;
-	@Autowired private CrmPersonService personService;
-	@Autowired private CrmPermissionService permissionService;
+	private XATransactionAwareHazelcastInstance hzInstance;
+	private PasswordEncoder passwordEncoder;
+	private CrmPasswordService passwordService;
+	private CrmPersonService personService;
+	private CrmPermissionService permissionService;
+
+	public HazelcastUserService(
+			XATransactionAwareHazelcastInstance hzInstance,
+			PasswordEncoder passwordEncoder,
+			CrmPasswordService passwordService,
+			CrmPersonService personService,
+			CrmPermissionService permissionService) {
+		this.hzInstance = hzInstance;
+		this.passwordEncoder = passwordEncoder;
+		this.passwordService = passwordService;
+		this.personService = personService;
+		this.permissionService = permissionService;
+	}
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
@@ -52,7 +74,7 @@ public class HazelcastUserService implements CrmUserService {
 		/* run a find on the personId to ensure it exists */
 		PersonSummary person = personService.findPersonSummary(personId);
 		/* create our new user */
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_USER_KEY);
 		/* ensure the user name doen't exist */
 		if (users.values().stream()
@@ -73,7 +95,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User findUser(Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -83,7 +105,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User findUserByUsername(String username) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.values().stream()
 				.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
 				.findFirst()
@@ -95,7 +117,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -110,7 +132,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User enableUser(Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -125,7 +147,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public User disableUser(Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -143,7 +165,7 @@ public class HazelcastUserService implements CrmUserService {
 		if (!isValidPasswordFormat(newPassword)) {
 			return false;
 		}
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -158,7 +180,7 @@ public class HazelcastUserService implements CrmUserService {
 
 	@Override
 	public String resetPassword(Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -169,7 +191,7 @@ public class HazelcastUserService implements CrmUserService {
 	@Override
 	public long countUsers(
 			UsersFilter filter) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		return users.values()
 				.stream()
 				.filter(u -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(u.getPerson().getOrganizationId()) : true)
@@ -184,7 +206,7 @@ public class HazelcastUserService implements CrmUserService {
 	public FilteredPage<User> findUsers(
 			UsersFilter filter,
 			Paging paging) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		List<User> allMatchingUsers = users.values()
 				.stream()
 				.filter(u -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(u.getPerson().getOrganizationId()) : true)
@@ -196,5 +218,25 @@ public class HazelcastUserService implements CrmUserService {
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingUsers, paging);
+	}
+
+	@Override
+	public Page<User> findActiveUserForOrg(Identifier organizationId) {
+		return CrmUserService.super.findActiveUserForOrg(organizationId);
+	}
+
+	@Override
+	public Page<User> findUsers(UsersFilter filter) {
+		return CrmUserService.super.findUsers(filter);
+	}
+	
+	@Override
+	public User createUser(User prototype) {	
+		return CrmUserService.super.createUser(prototype);
+	}
+	
+	@Override
+	public User prototypeUser(@NotNull Identifier personId, @NotNull String username, @NotNull List<String> roles) {	
+		return CrmUserService.super.prototypeUser(personId, username, roles);
 	}
 }

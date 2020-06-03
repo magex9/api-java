@@ -13,11 +13,11 @@
 	<description>Spring Boot Server using JWT for securing the GraphQL API</description>
 
 	<dependencies>
-<!-- 		<dependency> -->
-<!-- 			<groupId>${project.groupId}</groupId> -->
-<!-- 			<artifactId>crm-hazelcast-service</artifactId> -->
-<!-- 			<version>${project.version}</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>${project.groupId}</groupId> -->
+		<!-- <artifactId>crm-hazelcast-service</artifactId> -->
+		<!-- <version>${project.version}</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -67,6 +67,12 @@
 			<groupId>com.graphql-java-kickstart</groupId>
 			<artifactId>graphiql-spring-boot-starter</artifactId>
 			<version>7.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>me.snowdrop</groupId>
+			<artifactId>narayana-spring-boot-starter</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 
 		<dependency>

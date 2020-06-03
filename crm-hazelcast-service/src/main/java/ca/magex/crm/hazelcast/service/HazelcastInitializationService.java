@@ -11,17 +11,21 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -31,6 +35,10 @@ import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
@@ -39,23 +47,46 @@ import ca.magex.crm.resource.CrmRoleInitializer;
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastInitializationService implements CrmInitializationService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HazelcastInitializationService.class);
 	
 	public static String HZ_INIT_KEY = "init";
 	
-	@Autowired private HazelcastInstance hzInstance;	
-	@Autowired private HazelcastPermissionService hzPermissionService;
-	@Autowired private CrmLookupLoader lookupLoader;	
-	@Autowired private HazelcastOrganizationService hzOrganizationService;
-	@Autowired private HazelcastPersonService hzPersonService;
-	@Autowired private HazelcastUserService hzUserService;
-	@Autowired private HazelcastPasswordService hzPasswordService;
-	@Autowired private PasswordEncoder passwordEncoder;
+	private HazelcastInstance hzInstance;	
+	private CrmPermissionService hzPermissionService;
+	private CrmLookupLoader lookupLoader;	
+	private CrmOrganizationService hzOrganizationService;
+	private CrmPersonService hzPersonService;
+	private CrmUserService hzUserService;
+	private CrmPasswordService hzPasswordService;
+	private PasswordEncoder passwordEncoder;
 	
-	Long initializedTimestamp = null;
-	Long startedTimestamp = null;	
+	private Long initializedTimestamp = null;
+	private Long startedTimestamp = null;	
+	
+	public HazelcastInitializationService(
+			HazelcastInstance hzInstance,
+			CrmPermissionService hzPermissionService,			
+			CrmOrganizationService hzOrganizationService,
+			CrmPersonService hzPersonService,
+			CrmUserService hzUserService,
+			CrmPasswordService hzPasswordService,
+			CrmLookupLoader lookupLoader,
+			PasswordEncoder passwordEncoder) {
+		this.hzInstance = hzInstance;
+		this.hzPermissionService = hzPermissionService;
+		this.hzOrganizationService = hzOrganizationService;
+		this.hzPersonService = hzPersonService;
+		this.hzUserService = hzUserService;
+		this.hzPasswordService = hzPasswordService;
+		this.passwordEncoder = passwordEncoder;
+		this.lookupLoader = lookupLoader;		
+	}
 
 	@PostConstruct
 	public void start() {
@@ -68,17 +99,18 @@ public class HazelcastInitializationService implements CrmInitializationService 
 			startedTimestamp = (Long) initMap.put("started", 0L); 
 			if (startedTimestamp == null) {
 				LOG.info("Loading Lookups");
+				List<Country> countries = lookupLoader.loadLookup(Country.class, "Country.csv");
 				hzInstance.getList(HazelcastLookupService.HZ_STATUS_KEY).addAll(Arrays.asList(Status.values()));
-				hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).addAll(lookupLoader.loadLookup(Country.class, "Country.csv"));
+				hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).addAll(countries);
 				hzInstance.getList(HazelcastLookupService.HZ_LANGUAGE_KEY).addAll(lookupLoader.loadLookup(Language.class, "Language.csv"));
 				hzInstance.getList(HazelcastLookupService.HZ_SALUTATION_KEY).addAll(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"));
 				hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
 				hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
 				hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
-				// FIXME update to proper countries
-				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(new Country("CA", "CA", "CA"), Province.class, "CaProvince.csv"));
-				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(new Country("US", "US", "US"), Province.class, "UsProvince.csv"));
-				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(new Country("MX", "MX", "MX"), Province.class, "MxProvince.csv"));
+				// FIXME update to proper countries				
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("CA")).findFirst().get(), Province.class, "CaProvince.csv"));
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("US")).findFirst().get(), Province.class, "UsProvince.csv"));
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("MX")).findFirst().get(), Province.class, "MxProvince.csv"));
 				initMap.put("started", System.currentTimeMillis());
 				LOG.info("Hazelcast CRM Started on: " + new Date((Long) initMap.get("started")));
 				return;

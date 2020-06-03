@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,11 @@ public class HazelcastLookupService implements CrmLookupService {
 	public static String HZ_CLASSIFICATION_KEY = "classifications";
 	public static String HZ_PROVINCES_KEY = "classifications";
 	
-	@Autowired private HazelcastInstance hzInstance;
+	private HazelcastInstance hzInstance;
+	
+	public HazelcastLookupService(HazelcastInstance hzInstance) {
+		this.hzInstance = hzInstance;
+	}
 
 	@Override
 	public List<Status> findStatuses() {

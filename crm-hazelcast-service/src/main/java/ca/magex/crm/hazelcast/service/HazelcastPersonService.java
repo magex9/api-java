@@ -1,17 +1,20 @@
 package ca.magex.crm.hazelcast.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
@@ -21,6 +24,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
@@ -30,23 +34,35 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastPersonService implements CrmPersonService {
 
 	public static String HZ_PERSON_KEY = "persons";
 
-	@Autowired private HazelcastInstance hzInstance;
-	@Autowired private CrmOrganizationService organizationService;
+	private XATransactionAwareHazelcastInstance hzInstance;
+	private CrmOrganizationService organizationService;
+
+	public HazelcastPersonService(
+			XATransactionAwareHazelcastInstance hzInstance,
+			CrmOrganizationService organizationService) {
+		this.hzInstance = hzInstance;
+		this.organizationService = organizationService;
+	}
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position) {
 		/* run a find on the organizationId to ensure it exists */
 		organizationService.findOrganizationDetails(organizationId);
 		/* create our new person for this organizationId */
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_PERSON_KEY);
 		PersonDetails personDetails = new PersonDetails(
 				new Identifier(Long.toHexString(idGenerator.newId())),
@@ -63,7 +79,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -78,7 +94,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -93,7 +109,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -108,7 +124,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -123,7 +139,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -138,7 +154,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -158,7 +174,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails findPersonDetails(Identifier personId) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -168,7 +184,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public long countPersons(PersonsFilter filter) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		return persons.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -179,7 +195,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		Map<Identifier, PersonDetails> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		List<PersonDetails> allMatchingPersons = persons.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -193,7 +209,7 @@ public class HazelcastPersonService implements CrmPersonService {
 
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		Map<Identifier, PersonSummary> persons = hzInstance.getMap(HZ_PERSON_KEY);
+		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		List<PersonSummary> allMatchingPersons = persons.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -203,5 +219,30 @@ public class HazelcastPersonService implements CrmPersonService {
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingPersons, paging);
+	}
+
+	@Override
+	public Page<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
+		return CrmPersonService.super.findActivePersonSummariesForOrg(organizationId);
+	}
+
+	@Override
+	public Page<PersonDetails> findPersonDetails(PersonsFilter filter) {
+		return CrmPersonService.super.findPersonDetails(filter);
+	}
+
+	@Override
+	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter) {
+		return CrmPersonService.super.findPersonSummaries(filter);
+	}
+	
+	@Override
+	public PersonDetails createPerson(PersonDetails prototype) {	
+		return CrmPersonService.super.createPerson(prototype);
+	}
+	
+	@Override
+	public PersonDetails prototypePerson(@NotNull Identifier organizationId, @NotNull PersonName name, @NotNull MailingAddress address, @NotNull Communication communication, @NotNull BusinessPosition position) {	
+		return CrmPersonService.super.prototypePerson(organizationId, name, address, communication, position);
 	}
 }

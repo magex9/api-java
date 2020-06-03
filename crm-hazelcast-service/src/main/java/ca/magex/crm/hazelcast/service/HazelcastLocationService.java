@@ -1,23 +1,28 @@
 package ca.magex.crm.hazelcast.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
@@ -27,23 +32,35 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastLocationService implements CrmLocationService {
 
 	public static String HZ_LOCATION_KEY = "locations";
 
-	@Autowired private HazelcastInstance hzInstance;
-	@Autowired private CrmOrganizationService organizationService;
+	private XATransactionAwareHazelcastInstance hzInstance;
+	private CrmOrganizationService organizationService;	
+	
+	public HazelcastLocationService(
+			XATransactionAwareHazelcastInstance hzInstance, 
+			@Lazy CrmOrganizationService organizationService) {
+		this.hzInstance = hzInstance;
+		this.organizationService = organizationService;
+	}
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
 		/* run a find on the organizationId to ensure it exists */
 		organizationService.findOrganizationSummary(organizationId);
 		/* create our new location for this organizationId */
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_LOCATION_KEY);
 		LocationDetails locDetails = new LocationDetails(
 				new Identifier(Long.toHexString(idGenerator.newId())),
@@ -58,7 +75,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public LocationDetails updateLocationName(Identifier locationId, String displayName) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
@@ -73,7 +90,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
@@ -88,7 +105,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public LocationSummary enableLocation(Identifier locationId) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
@@ -103,7 +120,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public LocationSummary disableLocation(Identifier locationId) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
@@ -123,7 +140,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public LocationDetails findLocationDetails(Identifier locationId) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
@@ -133,7 +150,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		return locations.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -144,7 +161,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		List<LocationDetails> allMatchingLocations = locations.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -158,7 +175,7 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
-		Map<Identifier, LocationDetails> locations = hzInstance.getMap(HZ_LOCATION_KEY);
+		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		List<LocationSummary> allMatchingLocations = locations.values()
 				.stream()
 				.filter(p -> StringUtils.isNotBlank(filter.getDisplayName()) ? p.getDisplayName().contains(filter.getDisplayName()) : true)
@@ -168,5 +185,30 @@ public class HazelcastLocationService implements CrmLocationService {
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingLocations, paging);
+	}
+	
+	@Override
+	public Page<LocationSummary> findActiveLocationSummariesForOrg(@NotNull Identifier organizationId) {	
+		return CrmLocationService.super.findActiveLocationSummariesForOrg(organizationId);
+	}
+	
+	@Override
+	public FilteredPage<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {	
+		return CrmLocationService.super.findLocationDetails(filter);
+	}
+	
+	@Override
+	public FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {	
+		return CrmLocationService.super.findLocationSummaries(filter);
+	}
+	
+	@Override
+	public LocationDetails createLocation(LocationDetails prototype) {	
+		return CrmLocationService.super.createLocation(prototype);
+	}
+	
+	@Override
+	public LocationDetails prototypeLocation(@NotNull Identifier organizationId, @NotNull String displayName, @NotNull String reference, @NotNull MailingAddress address) {	
+		return CrmLocationService.super.prototypeLocation(organizationId, displayName, reference, address);
 	}
 }

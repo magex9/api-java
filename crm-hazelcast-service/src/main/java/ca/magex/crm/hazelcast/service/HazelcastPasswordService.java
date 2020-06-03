@@ -1,42 +1,51 @@
 package ca.magex.crm.hazelcast.service;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.TransactionalMap;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.PasswordDetails;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.validation.CrmValidation;
+import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastPasswordService implements CrmPasswordService {
 
 	public static String HZ_PASSWORDS_KEY = "passwords";
 
-	@Autowired private HazelcastInstance hzInstance;
-	@Autowired private PasswordEncoder passwordEncoder;
-
-	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
+	private XATransactionAwareHazelcastInstance hzInstance;
+	private PasswordEncoder passwordEncoder;
 
 	private long expiration = TimeUnit.DAYS.toMillis(365);
 
+	public HazelcastPasswordService(
+			XATransactionAwareHazelcastInstance hzInstance,
+			PasswordEncoder passwordEncoder) {
+		this.hzInstance = hzInstance;
+		this.passwordEncoder = passwordEncoder;
+	}
+
 	@Override
 	public String getEncodedPassword(String username) {
-		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
+		TransactionalMap<String, PasswordDetails> passwords = hzInstance.getPasswordsMap();
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
@@ -46,7 +55,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Override
 	public boolean isExpiredPassword(String username) {
-		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
+		TransactionalMap<String, PasswordDetails> passwords = hzInstance.getPasswordsMap();
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
@@ -56,7 +65,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Override
 	public boolean isTempPassword(String username) {
-		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
+		TransactionalMap<String, PasswordDetails> passwords = hzInstance.getPasswordsMap();
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
@@ -66,7 +75,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Override
 	public boolean verifyPassword(String username, String rawPassword) {
-		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
+		TransactionalMap<String, PasswordDetails> passwords = hzInstance.getPasswordsMap();
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
@@ -76,7 +85,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Override
 	public String generateTemporaryPassword(String username) {
-		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
+		TransactionalMap<String, PasswordDetails> passwords = hzInstance.getPasswordsMap();
 		String tempPassword = RandomStringUtils.random(10, "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ");
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails != null) {
@@ -98,7 +107,7 @@ public class HazelcastPasswordService implements CrmPasswordService {
 
 	@Override
 	public void updatePassword(String username, String encodedPassword) {
-		Map<String, PasswordDetails> passwords = hzInstance.getMap(HZ_PASSWORDS_KEY);
+		TransactionalMap<String, PasswordDetails> passwords = hzInstance.getPasswordsMap();
 		PasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails == null) {
 			throw new ItemNotFoundException("Username '" + username + "'");
