@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 @Service
 @Primary
@@ -39,8 +37,6 @@ public class HazelcastLocationService implements CrmLocationService {
 
 	@Autowired private HazelcastInstance hzInstance;
 	@Autowired private CrmOrganizationService organizationService;
-
-	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
@@ -56,7 +52,7 @@ public class HazelcastLocationService implements CrmLocationService {
 				locationReference,
 				locationName,
 				address);
-		locations.put(locDetails.getLocationId(), validationService.validate(locDetails));
+		locations.put(locDetails.getLocationId(), locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -71,7 +67,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withDisplayName(displayName);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -86,7 +82,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withAddress(address);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -101,7 +97,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withStatus(Status.ACTIVE);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 
@@ -116,7 +112,7 @@ public class HazelcastLocationService implements CrmLocationService {
 			return locDetails;
 		}
 		locDetails = locDetails.withStatus(Status.INACTIVE);
-		locations.put(locationId, validationService.validate(locDetails));
+		locations.put(locationId, locDetails);
 		return SerializationUtils.clone(locDetails);
 	}
 

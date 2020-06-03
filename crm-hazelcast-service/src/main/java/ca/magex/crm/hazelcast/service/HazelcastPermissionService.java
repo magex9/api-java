@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 @Service
 @Primary
@@ -38,8 +36,6 @@ public class HazelcastPermissionService implements CrmPermissionService {
 
 	@Autowired private HazelcastInstance hzInstance;
 
-	@Autowired @Lazy private CrmValidation validationService; // needs to be lazy because it depends on other services
-
 	@Override
 	public Group createGroup(Localized name) {
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
@@ -48,12 +44,15 @@ public class HazelcastPermissionService implements CrmPermissionService {
 				new Identifier(Long.toHexString(idGenerator.newId())),
 				Status.ACTIVE,
 				name);
-		groups.put(group.getGroupId(), validationService.validate(group));
+		groups.put(group.getGroupId(), group);
 		return SerializationUtils.clone(group);
 	}
 
 	@Override
 	public Group findGroup(Identifier groupId) {
+		if (groupId == null) {
+			throw new ItemNotFoundException("Group ID '" + groupId + "'");
+		}
 		Map<Identifier, Group> groups = hzInstance.getMap(HZ_GROUP_KEY);
 		Group group = groups.get(groupId);
 		if (group == null) {
@@ -83,7 +82,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(group);
 		}
 		group = group.withName(name);
-		groups.put(group.getGroupId(), validationService.validate(group));
+		groups.put(group.getGroupId(), group);
 		return SerializationUtils.clone(group);
 	}
 
@@ -98,7 +97,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(group);
 		}
 		group = group.withStatus(Status.ACTIVE);
-		groups.put(group.getGroupId(), validationService.validate(group));
+		groups.put(group.getGroupId(), group);
 		return SerializationUtils.clone(group);
 	}
 
@@ -113,7 +112,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(group);
 		}
 		group = group.withStatus(Status.INACTIVE);
-		groups.put(group.getGroupId(), validationService.validate(group));
+		groups.put(group.getGroupId(), group);
 		return SerializationUtils.clone(group);
 	}
 
@@ -137,12 +136,15 @@ public class HazelcastPermissionService implements CrmPermissionService {
 				groupId,
 				Status.ACTIVE,
 				name);
-		roles.put(role.getRoleId(), validationService.validate(role));
+		roles.put(role.getRoleId(), role);
 		return SerializationUtils.clone(role);
 	}
 
 	@Override
 	public Role findRole(Identifier roleId) {
+		if (roleId == null) {
+			throw new ItemNotFoundException("Role ID '" + roleId + "'");
+		}
 		Map<Identifier, Role> roles = hzInstance.getMap(HZ_ROLE_KEY);
 		Role role = roles.get(roleId);
 		if (role == null) {
@@ -162,7 +164,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(role);
 		}
 		role = role.withName(name);
-		roles.put(role.getRoleId(), validationService.validate(role));
+		roles.put(role.getRoleId(), role);
 		return SerializationUtils.clone(role);
 	}
 
@@ -177,7 +179,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(role);
 		}
 		role = role.withStatus(Status.ACTIVE);
-		roles.put(role.getRoleId(), validationService.validate(role));
+		roles.put(role.getRoleId(), role);
 		return SerializationUtils.clone(role);
 	}
 
@@ -192,7 +194,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 			return SerializationUtils.clone(role);
 		}
 		role = role.withStatus(Status.INACTIVE);
-		roles.put(role.getRoleId(), validationService.validate(role));
+		roles.put(role.getRoleId(), role);
 		return SerializationUtils.clone(role);
 	}
 

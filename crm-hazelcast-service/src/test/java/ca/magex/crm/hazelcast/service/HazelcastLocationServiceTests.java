@@ -1,6 +1,5 @@
 package ca.magex.crm.hazelcast.service;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -8,47 +7,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.test.AbstractLocationServiceTests;
-import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class })
-@ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@ActiveProfiles(profiles =  {MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED, MagexCrmProfiles.CRM_NO_AUTH} )
 public class HazelcastLocationServiceTests extends AbstractLocationServiceTests {
-
-	@Autowired private CrmInitializationService hzInitializationService;
-	@Autowired private CrmPermissionService hzPermissionService;
-	@Autowired private CrmOrganizationService hzOrganizationService;
-	@Autowired private CrmLocationService hzLocationService;
 	
-	@Override
-	public CrmInitializationService getInitializationService() {
-		return hzInitializationService;
-	}
-	
-	@Override
-	public CrmLocationService getLocationService() {
-		return hzLocationService;
-	}
-	
-	@Override
-	public CrmOrganizationService getOrganizationService() {
-		return hzOrganizationService;
-	}
-	
-	@Override
-	public CrmPermissionService getPermissionService() {
-		return hzPermissionService;
-	}
-	
-	@Before
-	public void loadResource() {
-		hzInitializationService.initializeSystem("JUnit", CrmAsserts.PERSON_NAME, "junit@junit.com", "admin", "admin");
-	}
-	
+	@Autowired
+	public void setCrm(Crm crm) {
+		this.crm = crm;
+	}	
 }

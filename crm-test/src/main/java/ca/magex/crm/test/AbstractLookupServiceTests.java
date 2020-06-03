@@ -26,7 +26,9 @@ import ca.magex.crm.test.function.TriFunction;
 
 public abstract class AbstractLookupServiceTests {
 
-	private Crm crm;
+	protected Crm crm;
+	
+	protected AbstractLookupServiceTests() {}
 	
 	public AbstractLookupServiceTests(Crm crm) {
 		this.crm = crm;
