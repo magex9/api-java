@@ -23,13 +23,18 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocalizedFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.lookup.BusinessClassification;
+import ca.magex.crm.api.lookup.BusinessSector;
+import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonBoolean;
 import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonNumber;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 import ca.magex.json.util.FormattedStringBuilder;
@@ -124,7 +129,13 @@ public class CrmAsserts {
 	
 	public static final Communication COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
 	
-	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition("Corporate Services", "Development", "Developer");
+	public static final BusinessSector BUSINESS_SECTOR = new BusinessSector("1", "External", "External");
+	
+	public static final BusinessUnit BUSINESS_UNIT = new BusinessUnit("1", "Solutions", "Solutions");
+	
+	public static final BusinessClassification BUSINESS_CLASSIFICATION = new BusinessClassification("1", "Developer", "Développeur");
+	
+	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition(BUSINESS_SECTOR.getCode(), BUSINESS_UNIT.getCode(), BUSINESS_CLASSIFICATION.getCode());
 	
 	public static final List<Localized> LOCALIZED_SORTING_OPTIONS = List.of(
 		new Localized("A", "A", "A"),
@@ -364,8 +375,26 @@ public class CrmAsserts {
 			JsonElement el = json.get(key);
 			if (el instanceof JsonObject) {
 				buildLinkedDataAsserts((JsonObject)el, prefix + ".getObject(\"" + key + "\")", sb);
+			} else if (el instanceof JsonArray) {
+				JsonArray array = (JsonArray)el;
+				sb.append("\t\tassertEquals(" + array.size() + ", " + prefix + ".getArray(\"" + key + "\").size());");
+				for (int i = 0; i < array.size(); i++) {
+					if (array.get(i) instanceof JsonObject) {
+						buildLinkedDataAsserts((JsonObject)array.get(i), prefix + ".getArray(\"" + key + "\").getObject(" + i + ")", sb);
+					} else {
+						sb.append("\t\tassertEquals(" + array.get(i) + ", " + prefix + ".getArray(\"" + key + "\").get(" + i + "));");
+					}
+				}
+			} else if (el instanceof JsonNumber) {
+				sb.append("\t\tassertEquals(" + json.getNumber(key) + ", " + prefix + ".getNumber(\"" + key + "\"));");
+			} else if (el instanceof JsonBoolean) {
+				sb.append("\t\tassertEquals(" + json.getBoolean(key) + ", " + prefix + ".getBoolean(\"" + key + "\"));");
 			} else if (el instanceof JsonText) {
-				sb.append("\t\tassertEquals(\"" + json.getString(key) + "\", " + prefix + ".getString(\"" + key + "\"));");
+				if (key.endsWith("Id")) {
+					sb.append("\t\tassertEquals(" + key + ".toString(), " + prefix + ".getString(\"" + key + "\"));");
+				} else {
+					sb.append("\t\tassertEquals(\"" + json.getString(key) + "\", " + prefix + ".getString(\"" + key + "\"));");
+				}
 			} else {
 				sb.append("\t\tassertEquals(" + json.get(key) + ", " + prefix + ".get(\"" + key + "\"));");
 			}
