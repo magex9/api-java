@@ -88,11 +88,11 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	@Override
 	public boolean apply(OrganizationSummary instance) {
 		return List.of(instance)
-				.stream()
-				.filter(g -> this.getDisplayName() == null || StringUtils.containsIgnoreCase(g.getDisplayName(), this.getDisplayName()))				
-				.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
-				.findAny()
-				.isPresent();
+			.stream()
+			.filter(g -> this.getDisplayName() == null || containsIgnoreCaseAndAccent(g.getDisplayName(), this.getDisplayName()))				
+			.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
+			.findAny()
+			.isPresent();
 	}
 
 	@Override

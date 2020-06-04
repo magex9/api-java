@@ -126,7 +126,7 @@ public abstract class AbstractCrmController {
 	protected <T> JsonObject createPage(Page<T> page, Transformer<T, JsonElement> transfomer, Locale locale) {
 		return new JsonObject()
 			.with("page", page.getNumber())
-			.with("limit", page.getNumberOfElements())
+			.with("limit", page.getPageable().getPageSize())
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.hasPrevious())

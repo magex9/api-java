@@ -1,8 +1,5 @@
 package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.restful.controllers.ContentExtractor.extractBody;
-import static ca.magex.crm.restful.controllers.ContentExtractor.getContentType;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,7 +23,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonParser;
 
 @Controller
-public class InitializationController {
+public class InitializationController extends AbstractCrmController {
 
 	@Autowired
 	private Crm crm;

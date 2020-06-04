@@ -1,11 +1,12 @@
 package ca.magex.crm.restful.controllers;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.*;
+import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.assertSingleJsonMessage;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -252,7 +253,135 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetMainContact() throws Exception {
+		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		crm.updateOrganizationMainContact(organizationId, personId);
 		
+		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/organizations/" + organizationId + "/mainContact")
+				.header("Locale", Lang.ROOT))
+				//.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn().getResponse().getContentAsString());
+		//CrmAsserts.printLinkedDataAsserts(data, "data");
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), data.keys());
+		assertEquals("PersonDetails", data.getString("@type"));
+		assertEquals(personId.toString(), data.getString("personId"));
+		assertEquals(organizationId.toString(), data.getString("organizationId"));
+		assertEquals("active", data.getString("status"));
+		assertEquals("Bacon, Chris P", data.getString("displayName"));
+		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), data.getObject("legalName").keys());
+		assertEquals("PersonName", data.getObject("legalName").getString("@type"));
+		assertEquals("3", data.getObject("legalName").getString("salutation"));
+		assertEquals("Chris", data.getObject("legalName").getString("firstName"));
+		assertEquals("P", data.getObject("legalName").getString("middleName"));
+		assertEquals("Bacon", data.getObject("legalName").getString("lastName"));
+		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), data.getObject("address").keys());
+		assertEquals("MailingAddress", data.getObject("address").getString("@type"));
+		assertEquals("123 Main St", data.getObject("address").getString("street"));
+		assertEquals("Ottawa", data.getObject("address").getString("city"));
+		assertEquals("QC", data.getObject("address").getString("province"));
+		assertEquals("CA", data.getObject("address").getString("country"));
+		assertEquals("K1K1K1", data.getObject("address").getString("postalCode"));
+		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), data.getObject("communication").keys());
+		assertEquals("Communication", data.getObject("communication").getString("@type"));
+		assertEquals("Developer", data.getObject("communication").getString("jobTitle"));
+		assertEquals("EN", data.getObject("communication").getString("language"));
+		assertEquals("user@work.ca", data.getObject("communication").getString("email"));
+		assertEquals(List.of("@type", "number", "extension"), data.getObject("communication").getObject("homePhone").keys());
+		assertEquals("Telephone", data.getObject("communication").getObject("homePhone").getString("@type"));
+		assertEquals("5551234567", data.getObject("communication").getObject("homePhone").getString("number"));
+		assertEquals("42", data.getObject("communication").getObject("homePhone").getString("extension"));
+		assertEquals("8881234567", data.getObject("communication").getString("faxNumber"));
+		assertEquals(List.of("@type", "sector", "unit", "classification"), data.getObject("position").keys());
+		assertEquals("BusinessPosition", data.getObject("position").getString("@type"));
+		assertEquals("1", data.getObject("position").getString("sector"));
+		assertEquals("1", data.getObject("position").getString("unit"));
+		assertEquals("1", data.getObject("position").getString("classification"));
+
+		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/organizations/" + organizationId + "/mainContact")
+				.header("Locale", Lang.ENGLISH))
+				//.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn().getResponse().getContentAsString());
+		//CrmAsserts.printLinkedDataAsserts(english, "english");
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), english.keys());
+		assertEquals("PersonDetails", english.getString("@type"));
+		assertEquals(personId.toString(), english.getString("personId"));
+		assertEquals(organizationId.toString(), english.getString("organizationId"));
+		assertEquals("Active", english.getString("status"));
+		assertEquals("Bacon, Chris P", english.getString("displayName"));
+		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), english.getObject("legalName").keys());
+		assertEquals("PersonName", english.getObject("legalName").getString("@type"));
+		assertEquals("Mr.", english.getObject("legalName").getString("salutation"));
+		assertEquals("Chris", english.getObject("legalName").getString("firstName"));
+		assertEquals("P", english.getObject("legalName").getString("middleName"));
+		assertEquals("Bacon", english.getObject("legalName").getString("lastName"));
+		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
+		assertEquals("MailingAddress", english.getObject("address").getString("@type"));
+		assertEquals("123 Main St", english.getObject("address").getString("street"));
+		assertEquals("Ottawa", english.getObject("address").getString("city"));
+		assertEquals("Quebec", english.getObject("address").getString("province"));
+		assertEquals("Canada", english.getObject("address").getString("country"));
+		assertEquals("K1K1K1", english.getObject("address").getString("postalCode"));
+		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), english.getObject("communication").keys());
+		assertEquals("Communication", english.getObject("communication").getString("@type"));
+		assertEquals("Developer", english.getObject("communication").getString("jobTitle"));
+		assertEquals("English", english.getObject("communication").getString("language"));
+		assertEquals("user@work.ca", english.getObject("communication").getString("email"));
+		assertEquals(List.of("@type", "number", "extension"), english.getObject("communication").getObject("homePhone").keys());
+		assertEquals("Telephone", english.getObject("communication").getObject("homePhone").getString("@type"));
+		assertEquals("5551234567", english.getObject("communication").getObject("homePhone").getString("number"));
+		assertEquals("42", english.getObject("communication").getObject("homePhone").getString("extension"));
+		assertEquals("8881234567", english.getObject("communication").getString("faxNumber"));
+		assertEquals(List.of("@type", "sector", "unit", "classification"), english.getObject("position").keys());
+		assertEquals("BusinessPosition", english.getObject("position").getString("@type"));
+		assertEquals("External", english.getObject("position").getString("sector"));
+		assertEquals("Solutions", english.getObject("position").getString("unit"));
+		assertEquals("Developer", english.getObject("position").getString("classification"));
+		
+		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+				.get("/api/organizations/" + organizationId + "/mainContact")
+				.header("Locale", Lang.FRENCH))
+				//.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn().getResponse().getContentAsString());
+		//CrmAsserts.printLinkedDataAsserts(french, "french");
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), french.keys());
+		assertEquals("PersonDetails", french.getString("@type"));
+		assertEquals(personId.toString(), french.getString("personId"));
+		assertEquals(organizationId.toString(), french.getString("organizationId"));
+		assertEquals("Actif", french.getString("status"));
+		assertEquals("Bacon, Chris P", french.getString("displayName"));
+		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), french.getObject("legalName").keys());
+		assertEquals("PersonName", french.getObject("legalName").getString("@type"));
+		assertEquals("M.", french.getObject("legalName").getString("salutation"));
+		assertEquals("Chris", french.getObject("legalName").getString("firstName"));
+		assertEquals("P", french.getObject("legalName").getString("middleName"));
+		assertEquals("Bacon", french.getObject("legalName").getString("lastName"));
+		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
+		assertEquals("MailingAddress", french.getObject("address").getString("@type"));
+		assertEquals("123 Main St", french.getObject("address").getString("street"));
+		assertEquals("Ottawa", french.getObject("address").getString("city"));
+		assertEquals("Québec", french.getObject("address").getString("province"));
+		assertEquals("Canada", french.getObject("address").getString("country"));
+		assertEquals("K1K1K1", french.getObject("address").getString("postalCode"));
+		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), french.getObject("communication").keys());
+		assertEquals("Communication", french.getObject("communication").getString("@type"));
+		assertEquals("Developer", french.getObject("communication").getString("jobTitle"));
+		assertEquals("Anglais", french.getObject("communication").getString("language"));
+		assertEquals("user@work.ca", french.getObject("communication").getString("email"));
+		assertEquals(List.of("@type", "number", "extension"), french.getObject("communication").getObject("homePhone").keys());
+		assertEquals("Telephone", french.getObject("communication").getObject("homePhone").getString("@type"));
+		assertEquals("5551234567", french.getObject("communication").getObject("homePhone").getString("number"));
+		assertEquals("42", french.getObject("communication").getObject("homePhone").getString("extension"));
+		assertEquals("8881234567", french.getObject("communication").getString("faxNumber"));
+		assertEquals(List.of("@type", "sector", "unit", "classification"), french.getObject("position").keys());
+		assertEquals("BusinessPosition", french.getObject("position").getString("@type"));
+		assertEquals("External", french.getObject("position").getString("sector"));
+		assertEquals("Solutions", french.getObject("position").getString("unit"));
+		assertEquals("Développeur", french.getObject("position").getString("classification"));
 	}
 	
 	@Test

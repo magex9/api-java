@@ -3,7 +3,6 @@ package ca.magex.crm.restful.controllers;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
