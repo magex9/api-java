@@ -1,6 +1,7 @@
 package ca.magex.crm.restful.controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -209,5 +210,14 @@ public class JunitControllerTests extends AbstractControllerTests {
 			.andReturn().getResponse().getContentAsString());
 		CrmAsserts.assertSingleJsonMessage(json, null, "error", "groupId", "Invalid format");
 	}
+	
+	@Test
+	public void testBuildingActions() throws Exception {
+		JsonObject json = new JunitController().action("name", "title", "method", "href");
+		assertEquals(List.of("name", "title", "method", "href"), json.keys());
+		assertEquals("name", json.getString("name"));
+		assertEquals("title", json.getString("title"));
+		assertEquals("method", json.getString("method"));
+		assertEquals("href", json.getString("href"));	}
 	
 }

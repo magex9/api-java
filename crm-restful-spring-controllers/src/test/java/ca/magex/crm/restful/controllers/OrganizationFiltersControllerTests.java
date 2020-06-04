@@ -1,6 +1,7 @@
 package ca.magex.crm.restful.controllers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -13,7 +14,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.test.CrmAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class OrganizationFiltersControllerTests extends AbstractControllerTests {
@@ -118,7 +118,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		CrmAsserts.printLinkedDataAsserts(json, "json");
+		//CrmAsserts.printLinkedDataAsserts(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
@@ -199,7 +199,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/organizations")
 			.queryParam("status", "Actif")
-			.queryParam("order", "frenchName")
+			.queryParam("order", "displayName")
 			.queryParam("direction", "desc")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -215,9 +215,9 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 		assertEquals(3, json.getArray("content").size());
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(org0.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("A new org 1", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("System Administrator", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(1).getString("@type"));
 		assertEquals(org2.toString(), json.getArray("content").getObject(1).getString("organizationId"));
@@ -225,9 +225,9 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 		assertEquals("A néw org 2", json.getArray("content").getObject(1).getString("displayName"));
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).keys());
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(org0.toString(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(2).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(2).getString("status"));
-		assertEquals("System Administrator", json.getArray("content").getObject(2).getString("displayName"));
+		assertEquals("A new org 1", json.getArray("content").getObject(2).getString("displayName"));
 	}
 
 	@Test
