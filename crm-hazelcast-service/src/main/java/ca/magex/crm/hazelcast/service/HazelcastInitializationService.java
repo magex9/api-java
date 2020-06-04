@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
@@ -90,7 +91,7 @@ public class HazelcastInitializationService implements CrmInitializationService 
 
 	@PostConstruct
 	public void start() {
-		Map<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
+		IMap<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
 		if (initMap.containsKey("started")) {
 			waitForStartup(initMap);
 			return;
