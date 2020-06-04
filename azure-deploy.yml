@@ -21,13 +21,6 @@ parameters:
 
 ##########################################
 
-#variables:
-#    application_package_name: ${{parameters.application_name}}-${{parameters.application_version}}.tar
-#    application_package_source_dir: $(System.ArtifactsDirectory)/
-#    application_package_source_path: $(System.ArtifactsDirectory)/${{parameters.application_name}}-${{parameters.application_version}}.tar
-#    application_package_publish_dir: $(Pipeline.Workspace)/${{parameters.application_name}}/ 
-#    application_package_publish_path: $(Pipeline.Workspace)/${{parameters.application_name}}/${{parameters.application_name}}-${{parameters.application_version}}.tar
-
 steps:
       
 - bash: | 
@@ -62,10 +55,14 @@ steps:
     echo "config_dir=${config_dir}"
     admin_dir=${adlc_dir}/admin
     echo "admin_dir=${admin_dir}"
-
-    server_config_dir=${application_package_build_dir}/config
-    server_config_path=${server_config_dir}/server.cfg
     
+    application_confgid_dir=${application_package_build_dir}/config
+
+    
+    server_config_path=${application_config_dir}/server.cfg
+    
+    bootstrap_config_path=${application_config_dir}/bootstrap.properties
+
     #-----------------------------------------------------
     env      
     ls -la ${SYSTEM_ARTIFACTSDIRECTORY}/**
@@ -82,6 +79,11 @@ steps:
     echo "export SERVER_INTERNAL_IP=${SERVER_INTERNAL_IP}" >> ${server_config_path}
     echo "export SERVER_EXTERNAL_IP=${SERVER_EXTERNAL_IP}" >> ${server_config_path}
     echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${server_config_path}
+
+    #create springboot bootstrap configuration file
+    echo "spring.application.name=${{parameters.application_name}}" >> ${bootstrap_config_path}
+    echo "spring.cloud.config.uri=${CONFIG_SERVER_URI}" >> ${bootstrap_config_path}
+    echo "management.security.enabled=false" >> ${bootstrap_config_path}
 
     cp ${application_package_source_dir}/*.jar ${application_package_build_dir}/
     cp -r ${config_dir}/* ${application_package_build_dir}/

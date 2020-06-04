@@ -9,6 +9,8 @@ pool:
 #variables:
 #  - application_name ... application_name variable is defined as a pipeline input variable
 #                         To use it in bash , it must be referred as ${APPLICATION_NAME}
+variables:
+- group: ut-server-info
 
 resources:
   repositories:
