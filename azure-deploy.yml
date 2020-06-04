@@ -56,8 +56,7 @@ steps:
     admin_dir=${adlc_dir}/admin
     echo "admin_dir=${admin_dir}"
     
-    application_confgid_dir=${application_package_build_dir}/config
-
+    application_config_dir=${application_package_build_dir}/config
     
     server_config_path=${application_config_dir}/server.cfg
     
