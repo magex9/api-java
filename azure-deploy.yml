@@ -70,8 +70,8 @@ steps:
     mkdir -p ${application_package_publish_dir}
     mkdir -p ${application_package_build_dir}
 
-    if [ ! -d ${server_config_dir} ];then
-      mkdir -p ${server_config_dir}
+    if [ ! -d ${application_config_dir} ];then
+      mkdir -p ${application_config_dir}
     fi
 
     #setup server specific information
