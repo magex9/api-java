@@ -146,6 +146,18 @@ public final class JsonObject extends JsonElement {
 		}
 	}
 	
+	public Number getNumber(String key) {
+		return ((JsonNumber)get(key)).value();
+	}
+	
+	public Number getNumber(String key, Number defaultValue) {
+		try {
+			return getNumber(key);
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
+	}
+	
 	public Integer getInt(String key) {
 		return ((JsonNumber)get(key)).value().intValue();
 	}
