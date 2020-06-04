@@ -195,7 +195,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 	}
 	
 	@Test
-	public void testFilterByActifAsc() throws Exception {
+	public void testFilterByActifDesc() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/api/organizations")
 			.queryParam("status", "Actif")
