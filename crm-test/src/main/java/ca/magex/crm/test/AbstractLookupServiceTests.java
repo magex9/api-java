@@ -91,7 +91,7 @@ public abstract class AbstractLookupServiceTests {
 				Assert.fail("should have failed here");
 			}
 			catch(ItemNotFoundException e) {
-				Assert.assertEquals("Item not found: " + item.getSimpleName() + " '???'", e.getMessage());
+				Assert.assertEquals("Item not found: " + item.getSimpleName() + "[] '???'", e.getMessage());
 			}
 			try {
 				localizedLookup.apply(Lang.ENGLISH, "???");

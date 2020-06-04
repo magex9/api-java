@@ -38,8 +38,10 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 			CrmAuthenticationService auth,
 			CrmOrganizationService organizations,
 			CrmLocationService locations) {
-		this.delegate = new BasicLocationPolicy(organizations, locations);
+		this.auth = auth;
 		this.locations = locations;
+		this.delegate = new BasicLocationPolicy(organizations, locations);
+		
 	}
 
 	@Override

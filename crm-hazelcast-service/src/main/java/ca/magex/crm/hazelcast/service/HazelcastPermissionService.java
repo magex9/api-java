@@ -66,12 +66,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	@Override
 	public Group findGroup(Identifier groupId) {
 		if (groupId == null) {
-			throw new ItemNotFoundException("Group ID '" + groupId + "'");
+			return null;
 		}
 		TransactionalMap<Identifier, Group> groups = hzInstance.getGroupsMap();
 		Group group = groups.get(groupId);
 		if (group == null) {
-			throw new ItemNotFoundException("Group ID '" + groupId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(group);
 	}
@@ -90,7 +90,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		TransactionalMap<Identifier, Group> groups = hzInstance.getGroupsMap();
 		Group group = groups.get(groupId);
 		if (group == null) {
-			throw new ItemNotFoundException("Group ID '" + groupId + "'");
+			return null;
 		}
 		if (group.getName().equals(name)) {
 			return SerializationUtils.clone(group);
@@ -105,7 +105,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		TransactionalMap<Identifier, Group> groups = hzInstance.getGroupsMap();
 		Group group = groups.get(groupId);
 		if (group == null) {
-			throw new ItemNotFoundException("Group ID '" + groupId + "'");
+			return null;
 		}
 		if (group.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(group);
@@ -120,7 +120,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		TransactionalMap<Identifier, Group> groups = hzInstance.getGroupsMap();
 		Group group = groups.get(groupId);
 		if (group == null) {
-			throw new ItemNotFoundException("Group ID '" + groupId + "'");
+			return null;
 		}
 		if (group.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(group);
@@ -156,12 +156,12 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	@Override
 	public Role findRole(Identifier roleId) {
 		if (roleId == null) {
-			throw new ItemNotFoundException("Role ID '" + roleId + "'");
+			return null;
 		}
 		TransactionalMap<Identifier, Role> roles = hzInstance.getRolesMap();
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Role ID '" + roleId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(role);
 	}
@@ -171,7 +171,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		TransactionalMap<Identifier, Role> roles = hzInstance.getRolesMap();
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Role ID '" + roleId + "'");
+			return null;
 		}
 		if (role.getName().equals(name)) {
 			return SerializationUtils.clone(role);
@@ -186,7 +186,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		TransactionalMap<Identifier, Role> roles = hzInstance.getRolesMap();
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Role ID '" + roleId + "'");
+			return null;
 		}
 		if (role.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(role);
@@ -201,7 +201,7 @@ public class HazelcastPermissionService implements CrmPermissionService {
 		TransactionalMap<Identifier, Role> roles = hzInstance.getRolesMap();
 		Role role = roles.get(roleId);
 		if (role == null) {
-			throw new ItemNotFoundException("Role ID '" + roleId + "'");
+			return null;
 		}
 		if (role.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(role);

@@ -19,15 +19,15 @@ import ca.magex.crm.api.system.Identifier;
 @Primary
 @Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedUserPolicy implements CrmUserPolicy {
-	
+
 	private CrmAuthenticationService auth;
 
 	private CrmUserPolicy delegate;
-	
+
 	private CrmPersonService persons;
 
 	private CrmUserService users;
-	
+
 	/**
 	 * Authenticated User Policy handles roles and association checks required for policy approval
 	 * 
@@ -39,12 +39,12 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			CrmAuthenticationService auth,
 			CrmPersonService persons,
 			CrmUserService users) {
-		this.delegate = new BasicUserPolicy(persons, users);
 		this.auth = auth;
 		this.persons = persons;
 		this.users = users;
+		this.delegate = new BasicUserPolicy(persons, users);
 	}
-	
+
 	@Override
 	public boolean canCreateUserForPerson(Identifier personId) {
 		if (!delegate.canCreateUserForPerson(personId)) {
@@ -104,7 +104,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 		/* current user can update their own password */
 		if (auth.getUserId().equals(userId)) {
 			return true;
-		}		
+		}
 		/* ensure the current user is associated to the users organization */
 		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
