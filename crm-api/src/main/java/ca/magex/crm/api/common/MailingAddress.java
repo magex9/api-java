@@ -37,7 +37,6 @@ public class MailingAddress implements Serializable {
 	}
 	
 	public MailingAddress withStreet(String street) {
-		this.street = street;
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
@@ -46,7 +45,6 @@ public class MailingAddress implements Serializable {
 	}
 	
 	public MailingAddress withCity(String city) {
-		this.city = city;
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
@@ -55,7 +53,6 @@ public class MailingAddress implements Serializable {
 	}
 	
 	public MailingAddress withProvince(String province) {
-		this.province = province;
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
@@ -64,7 +61,6 @@ public class MailingAddress implements Serializable {
 	}
 	
 	public MailingAddress withCountry(String country) {
-		this.country = country;
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
@@ -73,7 +69,6 @@ public class MailingAddress implements Serializable {
 	}
 	
 	public MailingAddress withPostalCode(String postalCode) {
-		this.postalCode = postalCode;
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 

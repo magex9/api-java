@@ -212,6 +212,31 @@ public class JunitControllerTests extends AbstractControllerTests {
 	}
 	
 	@Test
+	public void testObjectClassCastException() throws Exception {
+		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/junit/object/status")
+			.header("Locale", Lang.ENGLISH))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		CrmAsserts.assertSingleJsonMessage(json, null, "error", "status", "Field is mandatory");
+	}
+	
+	@Test
+	public void testObjectNoSuchElementException() throws Exception {
+		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.post("/api/junit/object/groupId")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("groupId", false)
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn().getResponse().getContentAsString());
+		CrmAsserts.assertSingleJsonMessage(json, null, "error", "groupId", "Invalid format");
+	}
+	
+	@Test
 	public void testBuildingActions() throws Exception {
 		JsonObject json = new JunitController().action("name", "title", "method", "href");
 		assertEquals(List.of("name", "title", "method", "href"), json.keys());

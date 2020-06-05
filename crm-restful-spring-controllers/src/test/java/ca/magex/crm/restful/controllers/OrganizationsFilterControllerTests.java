@@ -16,7 +16,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.json.model.JsonObject;
 
-public class OrganizationFiltersControllerTests extends AbstractControllerTests {
+public class OrganizationsFilterControllerTests extends AbstractControllerTests {
 	
 	private Identifier org0;
 	

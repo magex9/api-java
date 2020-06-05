@@ -127,18 +127,18 @@ public class LocationsController extends AbstractCrmController {
 	@PutMapping("/api/locations/{locationId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), locationId, messages);
-			return transformer.format(crm.enableOrganization(locationId), locale);
+			return transformer.format(crm.enableLocation(locationId), locale);
 		});
 	}
 
 	@PutMapping("/api/locations/{locationId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), locationId, messages);
-			return transformer.format(crm.disableOrganization(locationId), locale);
+			return transformer.format(crm.disableLocation(locationId), locale);
 		});
 	}
 

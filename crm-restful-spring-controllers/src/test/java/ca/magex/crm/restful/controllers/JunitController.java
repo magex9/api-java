@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
@@ -40,6 +41,17 @@ public class JunitController extends AbstractCrmController {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			getStrings(body, key, null, null, messages);
+			validate(messages);
+			return transformer.format(new Group(new Identifier("test"), Status.ACTIVE, GROUP), locale);
+		});
+	}
+
+	@PostMapping("/api/junit/object/{key}")
+	public void getObject(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("key") String key) throws IOException {
+		handle(req, res, Group.class, (messages, transformer, locale) -> {
+			JsonObject body = extractBody(req);
+			getObject(MailingAddress.class, body, key, null, null, messages, locale);
 			validate(messages);
 			return transformer.format(new Group(new Identifier("test"), Status.ACTIVE, GROUP), locale);
 		});

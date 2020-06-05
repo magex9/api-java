@@ -339,6 +339,9 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingDisplayName() throws Exception {
 		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		System.out.println(MAILING_ADDRESS.getProvince());
+		System.out.println(MAILING_ADDRESS);
+		System.out.println(crm.findLocationDetails(locationId));
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/locations/" + locationId)
@@ -349,6 +352,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
+		System.out.println(crm.findLocationDetails(locationId));
 		
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
@@ -454,10 +458,14 @@ public class LocationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
+		//JsonAsserts.print(disable, "disable");
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), disable.keys());
+		assertEquals("LocationSummary", disable.getString("@type"));
 		assertEquals(locationId.toString(), disable.getString("locationId"));
+		assertEquals(organizationId.toString(), disable.getString("organizationId"));
 		assertEquals("Inactive", disable.getString("status"));
-		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
-		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
+		assertEquals("MAIN", disable.getString("reference"));
+		assertEquals("Main Location", disable.getString("displayName"));
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.put("/api/locations/" + locationId + "/enable")
@@ -510,10 +518,14 @@ public class LocationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
+		//JsonAsserts.print(enable, "enable");
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), enable.keys());
+		assertEquals("LocationSummary", enable.getString("@type"));
 		assertEquals(locationId.toString(), enable.getString("locationId"));
+		assertEquals(organizationId.toString(), enable.getString("organizationId"));
 		assertEquals("Actif", enable.getString("status"));
-		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
-		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
+		assertEquals("MAIN", enable.getString("reference"));
+		assertEquals("Main Location", enable.getString("displayName"));
 	}
 //	
 //	@Test
