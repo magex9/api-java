@@ -15,10 +15,11 @@ public interface CrmFilter<T> extends Serializable {
 	};
 	
 	default public boolean containsIgnoreCaseAndAccent(final CharSequence str, final CharSequence searchStr) {
-		return StringUtils.containsIgnoreCase(
-			Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""), 
-			Normalizer.normalize(searchStr, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-		);
+		return StringUtils.containsIgnoreCase(normalize(str), normalize(searchStr));
+	}
+	
+	default public String normalize(CharSequence text) {
+		return Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
 	}
 	
 }
