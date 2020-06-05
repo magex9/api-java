@@ -38,7 +38,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 			.startsWith("openapi: 3.0.0\n" + 
 				"info:\n" + 
 				"  version: 1.0.0\n" + 
-				"  title: API Reporting\n"));
+				"  title: Customer Relationship Management\n"));
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 					"  \"openapi\": \"3.0.0\",\n" + 
 					"  \"info\": {\n" + 
 					"    \"version\": \"1.0.0\",\n" + 
-					"    \"title\": \"API Reporting\"\n" + 
+					"    \"title\": \"Customer Relationship Management\"\n" + 
 					"  }"));
 	}
 	
