@@ -42,7 +42,8 @@ public class OrganizationsController extends AbstractCrmController {
 	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
 		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
 		String displayName = req.getParameter("displayName");
-		return new OrganizationsFilter(displayName, status);
+		String group = req.getParameter("group");
+		return new OrganizationsFilter(displayName, status, group);
 	}
 
 	@PostMapping("/api/organizations")

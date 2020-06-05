@@ -339,9 +339,6 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingDisplayName() throws Exception {
 		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		System.out.println(MAILING_ADDRESS.getProvince());
-		System.out.println(MAILING_ADDRESS);
-		System.out.println(crm.findLocationDetails(locationId));
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/locations/" + locationId)

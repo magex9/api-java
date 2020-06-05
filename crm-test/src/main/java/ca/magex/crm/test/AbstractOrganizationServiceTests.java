@@ -2,7 +2,7 @@ package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.CANADA;
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ONTARIO;
@@ -148,7 +148,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o1.getOrganizationId(),
 				new PersonName("1", "Freddy", "R", "Davis"),
 				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"),
-				COMMUNICATIONS,
+				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION).getPersonId();
 		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
@@ -163,7 +163,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o2.getOrganizationId(),
 				new PersonName("3", "Craig", null, "Phillips"),
 				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5"),
-				COMMUNICATIONS,
+				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION).getPersonId();
 		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
@@ -178,7 +178,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o3.getOrganizationId(),
 				new PersonName(null, "Carey", null, "Thomas"),
 				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"),
-				COMMUNICATIONS,
+				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION).getPersonId();
 		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
@@ -231,15 +231,15 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(os1, crm.findOrganizationSummary(os1.getOrganizationId()));
 
 		/* count organizations */
-		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE)));
-		Assert.assertEquals(4, crm.countOrganizations(new OrganizationsFilter(null, Status.ACTIVE)));
-		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter(null, Status.INACTIVE)));
-		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter("Edmonton Oilers", null)));
-		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Ottawa Senators", null)));
+		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, "NHL")));
+		Assert.assertEquals(4, crm.countOrganizations(new OrganizationsFilter(null, Status.ACTIVE, null)));
+		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter(null, Status.INACTIVE, null)));
+		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter("Edmonton Oilers", null, null)));
+		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Ottawa Senators", null, null)));
 
 		/* find pages of organization details */
 		Page<OrganizationDetails> detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE),
+				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null),
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5, detailsPage.getSize());
@@ -248,7 +248,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter(null, Status.ACTIVE),
+				new OrganizationsFilter(null, Status.ACTIVE, null),
 				new Paging(1, 2, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(2, detailsPage.getSize());
@@ -257,7 +257,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(4, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter(null, Status.INACTIVE),
+				new OrganizationsFilter(null, Status.INACTIVE, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -266,7 +266,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Edmonton Oilers", null),
+				new OrganizationsFilter("Edmonton Oilers", null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -275,7 +275,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Ottawa Senators", null),
+				new OrganizationsFilter("Ottawa Senators", null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -284,7 +284,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 
 		Page<OrganizationSummary> summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE),
+				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null),
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5, summariesPage.getSize());
@@ -293,7 +293,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter(null, Status.ACTIVE),
+				new OrganizationsFilter(null, Status.ACTIVE, null),
 				new Paging(1, 2, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(2, summariesPage.getSize());
@@ -302,7 +302,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(4, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter(null, Status.INACTIVE),
+				new OrganizationsFilter(null, Status.INACTIVE, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -311,7 +311,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Edmonton Oilers", null),
+				new OrganizationsFilter("Edmonton Oilers", null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -320,7 +320,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Ottawa Senators", null),
+				new OrganizationsFilter("Ottawa Senators", null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -498,7 +498,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCannotUpdateDisabledMainContact() throws Exception {
 		crm.createGroup(GROUP).getGroupId();
 		Identifier organizationId = crm.createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.disablePerson(personId);
 
 		try {
@@ -514,7 +514,7 @@ public abstract class AbstractOrganizationServiceTests {
 		crm.createGroup(GROUP).getGroupId();
 		Identifier organizationA = crm.createOrganization("A", List.of("GRP")).getOrganizationId();
 		Identifier organizationB = crm.createOrganization("B", List.of("GRP")).getOrganizationId();
-		Identifier personB = crm.createPerson(organizationB, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personB = crm.createPerson(organizationB, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 
 		try {
 			crm.updateOrganizationMainContact(organizationA, personB);

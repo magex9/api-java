@@ -100,7 +100,7 @@ public class PersonsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/persons/{personId}/legalName")
+	@GetMapping("/api/persons/{personId}/name")
 	public void getPersonLegalname(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") Identifier personId) throws IOException {
 		handle(req, res, PersonName.class, (messages, transformer, locale) -> {
@@ -135,18 +135,18 @@ public class PersonsController extends AbstractCrmController {
 	@PutMapping("/api/persons/{personId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") Identifier personId) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), personId, messages);
-			return transformer.format(crm.enableOrganization(personId), locale);
+			return transformer.format(crm.enablePerson(personId), locale);
 		});
 	}
 
 	@PutMapping("/api/persons/{personId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") Identifier personId) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), personId, messages);
-			return transformer.format(crm.disableOrganization(personId), locale);
+			return transformer.format(crm.disablePerson(personId), locale);
 		});
 	}
 

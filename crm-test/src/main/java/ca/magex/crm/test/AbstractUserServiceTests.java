@@ -1,7 +1,7 @@
 package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG;
 import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
@@ -64,14 +64,14 @@ public abstract class AbstractUserServiceTests {
 				tAndA.getOrganizationId(),
 				new PersonName("", "Adam", "", ""),
 				MAILING_ADDRESS,
-				COMMUNICATIONS,
+				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION);
 
 		bob = crm.createPerson(
 				tAndA.getOrganizationId(),
 				new PersonName("", "Bob", "", ""),
 				MAILING_ADDRESS,
-				COMMUNICATIONS,
+				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION);
 	}
 
@@ -318,7 +318,7 @@ public abstract class AbstractUserServiceTests {
 	@Test
 	public void testWrongIdentifiers() throws Exception {
 		Identifier organizationId = crm.createOrganization("Org Name", List.of(ORG.getCode())).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, new PersonName("1", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, new PersonName("1", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
 		Identifier userId = crm.createUser(personId, "user", List.of(ORG_ADMIN.getCode())).getUserId();
 
 		assertEquals(userId, crm.findUser(userId).getUserId());
@@ -333,7 +333,7 @@ public abstract class AbstractUserServiceTests {
 	@Test
 	public void testResetPassword() throws Exception {
 		Identifier organizationId = crm.createOrganization("Org Name", List.of(ORG.getCode())).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, new PersonName("1", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, new PersonName("1", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
 		Identifier userId = crm.createUser(personId, "user", List.of(ORG_ADMIN.getCode())).getUserId();
 
 		try {
@@ -349,7 +349,7 @@ public abstract class AbstractUserServiceTests {
 	@Test
 	public void testChangePassword() throws Exception {
 		Identifier organizationId = crm.createOrganization("Org Name", List.of(ORG.getCode())).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, new PersonName("1", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, new PersonName("1", "Chris", "P", "Bacon"), CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, CrmAsserts.BUSINESS_POSITION).getPersonId();
 		Identifier userId = crm.createUser(personId, "user", List.of(ORG_ADMIN.getCode())).getUserId();
 
 		assertTrue(crm.changePassword(userId, crm.resetPassword(userId), "pass1"));

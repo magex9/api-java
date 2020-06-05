@@ -1,6 +1,6 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -29,7 +29,7 @@ public class CommunicationJsonTransformerTests {
 	public void setup() {
 		crm = new AmnesiaCrm();
 		transformer = new CommunicationJsonTransformer(crm);
-		communication = COMMUNICATIONS;
+		communication = WORK_COMMUNICATIONS;
 	}
 	
 	@Test

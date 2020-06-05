@@ -1,6 +1,6 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static org.junit.Assert.assertEquals;
@@ -40,7 +40,7 @@ public class PersonDetailsJsonTransformerTests {
 			crm.findBusinessClassificationByLocalizedName(Lang.ENGLISH, "Developer").getCode()
 		);
 		person = new PersonDetails(new Identifier("prsn"), new Identifier("org"), Status.ACTIVE, 
-				PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, position);
+				PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, position);
 	}
 	
 	@Test

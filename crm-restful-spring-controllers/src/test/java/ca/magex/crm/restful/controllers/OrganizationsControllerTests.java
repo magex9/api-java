@@ -1,7 +1,7 @@
 package ca.magex.crm.restful.controllers;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
@@ -138,7 +138,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testGetOrganizationSummary() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
 		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 		crm.updateOrganizationMainContact(organizationId, personId);
 		
@@ -183,7 +183,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testGetMainLocation() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
 		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS.withProvince("NL")).getLocationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 		crm.updateOrganizationMainContact(organizationId, personId);
 		
@@ -254,7 +254,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testGetMainContact() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
@@ -388,7 +388,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testUpdatingFullOrganization() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
 		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		
 		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
 		assertEquals(organizationId, org.getOrganizationId());
@@ -498,7 +498,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingMainContact() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -522,7 +522,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingMainContactAsNull() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders

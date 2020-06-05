@@ -1052,5 +1052,53 @@ public class RestfulCrmClient implements CrmClient {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean canViewStatusLookup(String StatusLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewCountryLookup(String CountryLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewLanguageLookup(String languageLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewSalutationLookup(String salutationLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewBusinessUnitLookup(String unitLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

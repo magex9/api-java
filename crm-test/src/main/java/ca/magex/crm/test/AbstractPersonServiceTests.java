@@ -1,7 +1,7 @@
 package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.COMMUNICATIONS;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.FRANCE;
 import static ca.magex.crm.test.CrmAsserts.FRENCH;
@@ -291,7 +291,7 @@ public abstract class AbstractPersonServiceTests {
 		}
 		
 		try {
-			crm.updatePersonCommunication(new Identifier("abc"), COMMUNICATIONS);
+			crm.updatePersonCommunication(new Identifier("abc"), WORK_COMMUNICATIONS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
@@ -323,7 +323,7 @@ public abstract class AbstractPersonServiceTests {
 	public void testWrongIdentifiers() throws Exception {
 		Identifier groupId = crm.createGroup(GROUP).getGroupId();
 		Identifier organizationId = crm.createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 
 		assertEquals("Bacon, Chris P", crm.findPersonDetails(personId).getDisplayName());
 		assertEquals("Bacon, Chris P", crm.findPersonSummary(personId).getDisplayName());

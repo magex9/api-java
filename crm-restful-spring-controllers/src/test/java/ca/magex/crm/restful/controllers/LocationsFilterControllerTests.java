@@ -8,8 +8,6 @@ import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.MX_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.NL_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.US_ADDRESS;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -19,10 +17,8 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class LocationsFilterControllerTests extends AbstractControllerTests {
@@ -250,6 +246,56 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 		assertEquals("Inactif", json.getArray("content").getObject(1).getString("status"));
 		assertEquals("AMERICAN", json.getArray("content").getObject(1).getString("reference"));
 		assertEquals("American Location", json.getArray("content").getObject(1).getString("displayName"));
+	}
+	
+	@Test
+	public void testFilterByActiveDesc() throws Exception {
+		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/locations")
+			.queryParam("organization", org1.toString())
+			.queryParam("status", "active")
+			.queryParam("order", "displayName")
+			.queryParam("direction", "desc")
+			.header("Locale", Lang.ROOT))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
+		assertEquals(1, json.getNumber("page"));
+		assertEquals(10, json.getNumber("limit"));
+		assertEquals(4, json.getNumber("total"));
+		assertEquals(false, json.getBoolean("hasNext"));
+		assertEquals(false, json.getBoolean("hasPrevious"));
+		assertEquals(4, json.getArray("content").size());
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
+		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type"));
+		assertEquals(nlId.toString(), json.getArray("content").getObject(0).getString("locationId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals("active", json.getArray("content").getObject(0).getString("status"));
+		assertEquals("NEWFOUNDLAND", json.getArray("content").getObject(0).getString("reference"));
+		assertEquals("Newfoundland Location", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(1).keys());
+		assertEquals("LocationSummary", json.getArray("content").getObject(1).getString("@type"));
+		assertEquals(mxId.toString(), json.getArray("content").getObject(1).getString("locationId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals("active", json.getArray("content").getObject(1).getString("status"));
+		assertEquals("MEXICAN", json.getArray("content").getObject(1).getString("reference"));
+		assertEquals("Mexican Location", json.getArray("content").getObject(1).getString("displayName"));
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(2).keys());
+		assertEquals("LocationSummary", json.getArray("content").getObject(2).getString("@type"));
+		assertEquals(locId.toString(), json.getArray("content").getObject(2).getString("locationId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals("active", json.getArray("content").getObject(2).getString("status"));
+		assertEquals("MAIN", json.getArray("content").getObject(2).getString("reference"));
+		assertEquals("Main Location", json.getArray("content").getObject(2).getString("displayName"));
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(3).keys());
+		assertEquals("LocationSummary", json.getArray("content").getObject(3).getString("@type"));
+		assertEquals(caId.toString(), json.getArray("content").getObject(3).getString("locationId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(3).getString("organizationId"));
+		assertEquals("active", json.getArray("content").getObject(3).getString("status"));
+		assertEquals("CANADIAN", json.getArray("content").getObject(3).getString("reference"));
+		assertEquals("Canadian Location", json.getArray("content").getObject(3).getString("displayName"));		
 	}
 	
 	@Test
