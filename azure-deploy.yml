@@ -79,6 +79,7 @@ steps:
     echo "export SERVER_EXTERNAL_IP=${SERVER_EXTERNAL_IP}" >> ${application_config_path}
     echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${application_config_path}
     echo "export APPLICATION_NAME=${{parameters.application_name}}" >> ${application_config_path}
+    echo "export ENVIRONMENT=${{parameters.environment}}" >> ${application_config_path}
 
     #create springboot bootstrap configuration file
     echo "spring.application.name=${{parameters.application_name}}" >> ${bootstrap_config_path}
