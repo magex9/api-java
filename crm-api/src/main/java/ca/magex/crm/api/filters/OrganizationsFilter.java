@@ -11,12 +11,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Status;
 
-public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
+public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -30,14 +30,17 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	private String displayName;
 
 	private Status status;
+	
+	private String group;
 
 	public OrganizationsFilter() {
-		this(null, null);
+		this(null, null, null);
 	}
 	
-	public OrganizationsFilter(String displayName, Status status) {
+	public OrganizationsFilter(String displayName, Status status, String group) {
 		this.displayName = displayName;
 		this.status = status;
+		this.group = group;
 	}
 	
 	public OrganizationsFilter(Map<String, Object> filterCriteria) {
@@ -51,6 +54,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 				}
 			}
+			this.group = (String) filterCriteria.get("group");
 		}
 		catch(ClassCastException cce) {
 			throw new ApiException("Unable to instantiate organizations filter", cce);
@@ -62,7 +66,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	}
 	
 	public OrganizationsFilter withStatus(Status status) {
-		return new OrganizationsFilter(displayName, status);
+		return new OrganizationsFilter(displayName, status, group);
 	}
 
 	public String getDisplayName() {
@@ -70,7 +74,15 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	}
 	
 	public OrganizationsFilter withDisplayName(String displayName) {
-		return new OrganizationsFilter(displayName, status);
+		return new OrganizationsFilter(displayName, status, group);
+	}
+	
+	public String getGroup() {
+		return group;
+	}
+	
+	public OrganizationsFilter withGroup(String group) {
+		return new OrganizationsFilter(displayName, status, group);
 	}
 
 	public static List<Sort> getSortOptions() {
@@ -86,9 +98,10 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	}
 	
 	@Override
-	public boolean apply(OrganizationSummary instance) {
+	public boolean apply(OrganizationDetails instance) {
 		return List.of(instance)
 			.stream()
+			.filter(g -> this.getGroup() == null || g.getGroups().contains(this.getGroup()))
 			.filter(g -> this.getDisplayName() == null || containsIgnoreCaseAndAccent(g.getDisplayName(), this.getDisplayName()))				
 			.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
 			.findAny()
