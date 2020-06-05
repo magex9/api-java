@@ -7,21 +7,19 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.system.Lang;
 
 public class Lookups<LOOKUP extends Object, KEY extends Object> {
 
 	private List<LOOKUP> options;
-
-	private Map<KEY, LOOKUP> mapByCode;
-
+	
 	private Map<Locale, Map<String, LOOKUP>> mapByName;
 
 	public Lookups(List<LOOKUP> options, Class<?> lookupClass, Class<?> codeClass) {
 		try {
 			this.options = options;
-			this.mapByCode = new HashMap<KEY, LOOKUP>();
 			this.mapByName = new HashMap<Locale, Map<String, LOOKUP>>();
 			this.mapByName.put(Lang.ROOT, new HashMap<String, LOOKUP>());
 			for (Locale locale : Lang.SUPPORTED) {
@@ -31,8 +29,7 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 			for (LOOKUP option : options) {
 				@SuppressWarnings("unchecked")
 				KEY key = (KEY) PropertyUtils.getProperty(option, "code");
-				mapByCode.put(key, option);
-				mapByName.get(Lang.ROOT).put((String) nameMethod.invoke(option, Lang.ROOT), option);
+				mapByName.get(Lang.ROOT).put(StringUtils.upperCase(key.toString()), option);
 				for (Locale locale : Lang.SUPPORTED) {
 					mapByName.get(locale).put((String) nameMethod.invoke(option, locale), option);
 				}
@@ -47,15 +44,12 @@ public class Lookups<LOOKUP extends Object, KEY extends Object> {
 	}
 
 	public LOOKUP findByCode(KEY code) {
-		if (!mapByCode.containsKey(code)) {
-			return null;
-		}
-		return mapByCode.get(code);
+		return mapByName.get(Lang.ROOT).get(StringUtils.upperCase(code.toString()));
 	}
 
 	public LOOKUP findByName(Locale locale, String name) {
 		if (Lang.ROOT.equals(locale)) {
-			return mapByCode.get(name);
+			return mapByName.get(Lang.ROOT).get(StringUtils.upperCase(name));
 		}
 		if (!mapByName.containsKey(locale)) {
 			return null;

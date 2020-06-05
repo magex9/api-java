@@ -20,7 +20,6 @@ public class CrmFilterPredicate<T> implements Predicate<Identifier, T> {
 	@Override
 	public boolean apply(Entry<Identifier, T> mapEntry) {
 		T value = mapEntry.getValue();
-		System.out.println("Filtering Value: " + value);
 		return filter.apply(value);
 	}
 }

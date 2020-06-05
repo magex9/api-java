@@ -3,7 +3,6 @@ package ca.magex.crm.amnesia;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,17 +126,7 @@ public class AmnesiaDB {
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
 		rolesByCode = new HashMap<String, Role>();
-		usersByUsername = new HashMap<String, User>();
-		statuses = new Lookups<Status, String>(Collections.emptyList(), Status.class, String.class);
-		caProvinces = new Lookups<Province, String>(Collections.emptyList(), Province.class, String.class);
-		usProvinces = new Lookups<Province, String>(Collections.emptyList(), Province.class, String.class);
-		mxProvinces = new Lookups<Province, String>(Collections.emptyList(), Province.class, String.class);
-		countries = new Lookups<Country, String>(Collections.emptyList(), Country.class, String.class);
-		salutations = new Lookups<Salutation, String>(Collections.emptyList(), Salutation.class, String.class);
-		languages = new Lookups<Language, String>(Collections.emptyList(), Language.class, String.class);
-		sectors = new Lookups<BusinessSector, String>(Collections.emptyList(), BusinessSector.class, String.class);
-		units = new Lookups<BusinessUnit, String>(Collections.emptyList(), BusinessUnit.class, String.class);
-		classifications = new Lookups<BusinessClassification, String>(Collections.emptyList(), BusinessClassification.class, String.class);
+		usersByUsername = new HashMap<String, User>();		
 
 		/* initialize the lookups first, they are required for everything */
 		statuses = new Lookups<Status, String>(Arrays.asList(Status.values()), Status.class, String.class);
