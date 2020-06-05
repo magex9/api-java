@@ -356,52 +356,6 @@ public class CrmAsserts {
 		System.out.println("====================================================");
 	}
 	
-	public static void printLinkedDataAsserts(JsonObject json, String name) {
-		System.out.println("====================================================");
-		System.out.println(json);
-		System.out.println("====================================================");
-		System.out.println("\t\t//CrmAsserts.printLinkedDataAsserts(" + name + ", \"" + name + "\");");
-		System.out.println("\t\t" + buildLinkedDataAsserts(json, name, new FormattedStringBuilder()));
-		System.out.println("====================================================");
-	}
-
-	private static String buildLinkedDataAsserts(JsonObject json, String prefix, FormattedStringBuilder sb) {
-		StringBuilder keys = new StringBuilder();
-		for (String key : json.keys()) {
-			keys.append(", \"" + key + "\"");
-		}
-		sb.append("\t\tassertEquals(List.of(" + keys.substring(2) + "), " + prefix + ".keys());");
-		for (String key : json.keys()) {
-			JsonElement el = json.get(key);
-			if (el instanceof JsonObject) {
-				buildLinkedDataAsserts((JsonObject)el, prefix + ".getObject(\"" + key + "\")", sb);
-			} else if (el instanceof JsonArray) {
-				JsonArray array = (JsonArray)el;
-				sb.append("\t\tassertEquals(" + array.size() + ", " + prefix + ".getArray(\"" + key + "\").size());");
-				for (int i = 0; i < array.size(); i++) {
-					if (array.get(i) instanceof JsonObject) {
-						buildLinkedDataAsserts((JsonObject)array.get(i), prefix + ".getArray(\"" + key + "\").getObject(" + i + ")", sb);
-					} else {
-						sb.append("\t\tassertEquals(" + array.get(i) + ", " + prefix + ".getArray(\"" + key + "\").get(" + i + "));");
-					}
-				}
-			} else if (el instanceof JsonNumber) {
-				sb.append("\t\tassertEquals(" + json.getNumber(key) + ", " + prefix + ".getNumber(\"" + key + "\"));");
-			} else if (el instanceof JsonBoolean) {
-				sb.append("\t\tassertEquals(" + json.getBoolean(key) + ", " + prefix + ".getBoolean(\"" + key + "\"));");
-			} else if (el instanceof JsonText) {
-				if (key.endsWith("Id")) {
-					sb.append("\t\tassertEquals(" + key + ".toString(), " + prefix + ".getString(\"" + key + "\"));");
-				} else {
-					sb.append("\t\tassertEquals(\"" + json.getString(key) + "\", " + prefix + ".getString(\"" + key + "\"));");
-				}
-			} else {
-				sb.append("\t\tassertEquals(" + json.get(key) + ", " + prefix + ".get(\"" + key + "\"));");
-			}
-		}
-		return sb.toString().trim();
-	}
-	
 	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
 			String reason) {
 		assertEquals(1, json.size());
