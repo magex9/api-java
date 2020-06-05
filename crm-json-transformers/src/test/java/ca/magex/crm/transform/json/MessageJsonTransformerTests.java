@@ -50,7 +50,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(message, null);
-		//CrmAsserts.printLinkedDataAsserts(linked, "linked");
+		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), linked.keys());
 		assertEquals("Message", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("identifier").keys());
@@ -69,7 +69,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(message, Lang.ROOT);
-		//CrmAsserts.printLinkedDataAsserts(root, "root");
+		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), root.keys());
 		assertEquals("Message", root.getString("@type"));
 		assertEquals("abc", root.getString("identifier"));
@@ -81,7 +81,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(message, Lang.ENGLISH);
-		//CrmAsserts.printLinkedDataAsserts(english, "english");
+		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), english.keys());
 		assertEquals("Message", english.getString("@type"));
 		assertEquals("abc", english.getString("identifier"));
@@ -93,7 +93,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(message, Lang.FRENCH);
-		//CrmAsserts.printLinkedDataAsserts(french, "french");
+		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), french.keys());
 		assertEquals("Message", french.getString("@type"));
 		assertEquals("abc", french.getString("identifier"));

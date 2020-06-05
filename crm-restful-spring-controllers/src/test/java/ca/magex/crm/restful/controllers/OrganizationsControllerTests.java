@@ -263,7 +263,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(data, "data");
+		//JsonAsserts.print(data, "data");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), data.keys());
 		assertEquals("PersonDetails", data.getString("@type"));
 		assertEquals(personId.toString(), data.getString("personId"));
@@ -305,7 +305,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(english, "english");
+		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), english.keys());
 		assertEquals("PersonDetails", english.getString("@type"));
 		assertEquals(personId.toString(), english.getString("personId"));
@@ -347,7 +347,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(french, "french");
+		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), french.keys());
 		assertEquals("PersonDetails", french.getString("@type"));
 		assertEquals(personId.toString(), french.getString("personId"));

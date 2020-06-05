@@ -42,7 +42,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(json, "json");
+		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
@@ -80,7 +80,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(json, "json");
+		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
@@ -118,7 +118,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(json, "json");
+		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
@@ -163,6 +163,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 		String normalized = "cCaeiouyAEIOUYaeiouAEIOUaonaeiouyAEIOUAONaeiouAEIOU";
 		assertTrue(filter.containsIgnoreCaseAndAccent(accents, normalized));
 		assertTrue(filter.containsIgnoreCaseAndAccent(normalized, accents));
+		assertEquals(filter.normalize(accents), filter.normalize(normalized));
 	}
 	
 	@Test
@@ -174,7 +175,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(json, "json");
+		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
@@ -205,7 +206,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(json, "json");
+		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
@@ -239,7 +240,7 @@ public class OrganizationFiltersControllerTests extends AbstractControllerTests 
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		//CrmAsserts.printLinkedDataAsserts(json, "json");
+		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));

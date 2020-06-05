@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +30,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.transform.RequestHandler;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 import ca.magex.json.model.JsonArray;
@@ -49,12 +49,12 @@ public abstract class AbstractCrmController {
 	protected Crm crm;
 	
 	@Autowired
-	private JsonTransformerFactory jsonTransformerFactory;
+	protected JsonTransformerFactory jsonTransformerFactory;
 	
-	protected <T> void handle(HttpServletRequest req, HttpServletResponse res, Class<T> type, BiFunction<List<Message>, Transformer<T, JsonElement>, JsonElement> func) throws IOException {
+	protected <T> void handle(HttpServletRequest req, HttpServletResponse res, Class<T> type, RequestHandler<List<Message>, Transformer<T, JsonElement>, Locale, JsonElement> func) throws IOException {
 		List<Message> messages = new ArrayList<Message>();
 		try {
-			JsonElement json = func.apply(messages, jsonTransformerFactory.findByClass(type));
+			JsonElement json = func.apply(messages, jsonTransformerFactory.findByClass(type), extractLocale(req));
 			res.setStatus(200);
 			res.setContentType(getContentType(req));
 			res.getWriter().write(JsonFormatter.formatted(json));
@@ -108,6 +108,18 @@ public abstract class AbstractCrmController {
 	protected List<String> getStrings(JsonObject json, String key, List<String> defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getArray(key).stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			return defaultValue;
+		}
+	}
+	
+	protected <T> T getObject(Class<T> cls, JsonObject body, String key, T defaultValue, Identifier identifier, List<Message> messages, Locale locale) {
+		try {
+			return jsonTransformerFactory.findByClass(cls).parse(body.getObject(key), locale);
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
 			return defaultValue;
