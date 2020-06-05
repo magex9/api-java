@@ -3,6 +3,7 @@ package ca.magex.crm.transform.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,10 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 
 	@Override
 	public PersonName parseJsonObject(JsonObject json, Locale locale) {
-		String salutation = parseObject("salutation", json, salutationJsonTransformer, locale).getCode();
+		String salutation = null;
+		try {
+			salutation = parseObject("salutation", json, salutationJsonTransformer, locale).getCode();
+		} catch (NoSuchElementException e) { }
 		String firstName = parseText("firstName", json);
 		String middleName = parseText("middleName", json);
 		String lastName = parseText("lastName", json);

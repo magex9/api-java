@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
-import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.system.Identifier;
