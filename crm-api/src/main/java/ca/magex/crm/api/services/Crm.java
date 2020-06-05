@@ -87,6 +87,23 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	private final CrmUserPolicy userPolicy;
 	
 	private final CrmValidation validation;
+
+	public Crm(Crm crm) {
+		this(
+			crm.initializationService,
+			crm.lookupService,
+			crm.permissionsService,
+			crm.permissionsPolicy,
+			crm.organizationService,
+			crm.organizationPolicy,
+			crm.locationService,
+			crm.locationPolicy,
+			crm.personService,
+			crm.personPolicy,
+			crm.userService,
+			crm.userPolicy
+		);
+	}
 	
 	public Crm(CrmInitializationService initializationService, CrmLookupService lookupService,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy, 
@@ -97,7 +114,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 		super();
 		this.initializationService = initializationService;
 		this.lookupService = lookupService;
-		this.organizationService = organizationService;
+		this.organizationService =organizationService;
 		this.organizationPolicy = organizationPolicy;
 		this.locationService = locationService;
 		this.locationPolicy = locationPolicy;
