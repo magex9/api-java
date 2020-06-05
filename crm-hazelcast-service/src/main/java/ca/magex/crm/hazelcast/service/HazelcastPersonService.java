@@ -82,7 +82,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		if (personDetails.getLegalName().equals(name)) {
 			return SerializationUtils.clone(personDetails);
@@ -97,7 +97,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		if (personDetails.getAddress().equals(address)) {
 			return SerializationUtils.clone(personDetails);
@@ -112,7 +112,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		if (personDetails.getCommunication().equals(communication)) {
 			return SerializationUtils.clone(personDetails);
@@ -127,7 +127,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		if (personDetails.getPosition().equals(position)) {
 			return SerializationUtils.clone(personDetails);
@@ -142,7 +142,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		if (personDetails.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(personDetails);
@@ -157,7 +157,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		if (personDetails.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(personDetails);
@@ -177,7 +177,7 @@ public class HazelcastPersonService implements CrmPersonService {
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
-			throw new ItemNotFoundException("Person ID '" + personId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(personDetails);
 	}

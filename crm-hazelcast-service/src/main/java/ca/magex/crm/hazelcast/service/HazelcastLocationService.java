@@ -79,7 +79,7 @@ public class HazelcastLocationService implements CrmLocationService {
 		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
-			throw new ItemNotFoundException("Location ID '" + locationId + "'");
+			return null;
 		}
 		if (StringUtils.equals(displayName, locDetails.getDisplayName())) {
 			return locDetails;
@@ -94,7 +94,7 @@ public class HazelcastLocationService implements CrmLocationService {
 		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
-			throw new ItemNotFoundException("Location ID '" + locationId + "'");
+			return null;
 		}
 		if (locDetails.getAddress().equals(address)) {
 			return locDetails;
@@ -109,7 +109,7 @@ public class HazelcastLocationService implements CrmLocationService {
 		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
-			throw new ItemNotFoundException("Location ID '" + locationId + "'");
+			return null;
 		}
 		if (locDetails.getStatus() == Status.ACTIVE) {
 			return locDetails;
@@ -124,7 +124,7 @@ public class HazelcastLocationService implements CrmLocationService {
 		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
-			throw new ItemNotFoundException("Location ID '" + locationId + "'");
+			return null;
 		}
 		if (locDetails.getStatus() == Status.INACTIVE) {
 			return locDetails;
@@ -144,7 +144,7 @@ public class HazelcastLocationService implements CrmLocationService {
 		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
-			throw new ItemNotFoundException("Location ID '" + locationId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(locDetails);
 	}

@@ -4,8 +4,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
-import javax.validation.constraints.NotNull;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -18,7 +16,6 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -35,6 +32,7 @@ import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
+import ca.magex.crm.api.policies.CrmLookupPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
@@ -45,6 +43,7 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
@@ -65,6 +64,8 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	private final CrmInitializationService initializationService;
 
 	private final CrmLookupService lookupService;
+	
+	private final CrmLookupPolicy lookupPolicy;
 	
 	private final CrmPermissionService permissionsService;
 	
@@ -92,6 +93,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 		this(
 			crm.initializationService,
 			crm.lookupService,
+			crm.lookupPolicy,
 			crm.permissionsService,
 			crm.permissionsPolicy,
 			crm.organizationService,
@@ -105,16 +107,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 		);
 	}
 	
-	public Crm(CrmInitializationService initializationService, CrmLookupService lookupService,
+	public Crm(CrmInitializationService initializationService, 
+			CrmLookupService lookupService, CrmLookupPolicy lookupPolicy,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
 			CrmUserService userService, CrmUserPolicy userPolicy) {
 		super();
-		this.initializationService = initializationService;
+		this.initializationService = initializationService;		
 		this.lookupService = lookupService;
-		this.organizationService =organizationService;
+		this.lookupPolicy = lookupPolicy;
+		this.organizationService = organizationService;
 		this.organizationPolicy = organizationPolicy;
 		this.locationService = locationService;
 		this.locationPolicy = locationPolicy;
@@ -155,12 +159,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 	
 	@Override
-	public Status findStatusByCode(String code) throws ItemNotFoundException {
+	public Status findStatusByCode(String code) {
+		if (!lookupPolicy.canViewStatusLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findStatusByCode");
+		}
 		return lookupService.findStatusByCode(code);
 	}
 	
 	@Override
-	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Status findStatusByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewStatusLookup(name, locale)) {
+			throw new PermissionDeniedException("findStatusByLocalizedName");
+		}
 		return lookupService.findStatusByLocalizedName(locale, name);
 	}
 	
@@ -170,12 +180,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 	
 	@Override
-	public Country findCountryByCode(String code) throws ItemNotFoundException {
+	public Country findCountryByCode(String code) {
+		if (!lookupPolicy.canViewCountryLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findCountryByCode");
+		}
 		return lookupService.findCountryByCode(code);
 	}
 	
 	@Override
-	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Country findCountryByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewCountryLookup(name, locale)) {
+			throw new PermissionDeniedException("findCountryByLocalizedName");
+		}
 		return lookupService.findCountryByLocalizedName(locale, name);
 	}
 	
@@ -185,13 +201,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 	
 	@Override
-	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+	public Province findProvinceByCode(String province, String country) {
+		if (!lookupPolicy.canViewProvinceLookup(country, province, Lang.ROOT)) {
+			throw new PermissionDeniedException("findProvinceByCode");
+		}
 		return lookupService.findProvinceByCode(province, country);
 	}
 	
 	@Override
-	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
-			@NotNull String country) {
+	public Province findProvinceByLocalizedName(Locale locale, String province,String country) {
+		if (!lookupPolicy.canViewProvinceLookup(country, province, locale)) {
+			throw new PermissionDeniedException("findProvinceByLocalizedName");
+		}
 		return lookupService.findProvinceByLocalizedName(locale, province, country);
 	}
 	
@@ -201,12 +222,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 	
 	@Override
-	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
+	public Salutation findSalutationByCode(String code) {
+		if (!lookupPolicy.canViewSalutationLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findSalutationByCode");
+		}
 		return lookupService.findSalutationByCode(code);
 	}
 	
 	@Override
-	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Salutation findSalutationByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewSalutationLookup(name, locale)) {
+			throw new PermissionDeniedException("findSalutationByLocalizedName");
+		}
 		return lookupService.findSalutationByLocalizedName(locale, name);
 	}	
 	
@@ -216,12 +243,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 
 	@Override
-	public Language findLanguageByCode(String code) throws ItemNotFoundException {
+	public Language findLanguageByCode(String code) {
+		if (!lookupPolicy.canViewLanguageLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findLanguageByCode");
+		}
 		return lookupService.findLanguageByCode(code);
 	}
 
 	@Override
-	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Language findLanguageByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewLanguageLookup(name, locale)) {
+			throw new PermissionDeniedException("findLanguageByLocalizedName");
+		}
 		return lookupService.findLanguageByLocalizedName(locale, name);
 	}
 
@@ -231,12 +264,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByCode(String code) {
+		if (!lookupPolicy.canViewBusinessSectorLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findBusinessSectorByCode");
+		}
 		return lookupService.findBusinessSectorByCode(code);
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewBusinessSectorLookup(name, locale)) {
+			throw new PermissionDeniedException("findBusinessSectorByLocalizedName");
+		}
 		return lookupService.findBusinessSectorByLocalizedName(locale, name);
 	}
 
@@ -246,12 +285,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByCode(String code) {
+		if (!lookupPolicy.canViewBusinessUnitLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findBusinessUnitByCode");
+		}
 		return lookupService.findBusinessUnitByCode(code);
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewBusinessUnitLookup(name, locale)) {
+			throw new PermissionDeniedException("findBusinessUnitByLocalizedName");
+		}
 		return lookupService.findBusinessUnitByLocalizedName(locale, name);
 	}
 
@@ -261,13 +306,18 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByCode(String code) {
+		if (!lookupPolicy.canViewBusinessClassificationLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findBusinessClassificationByCode");
+		}
 		return lookupService.findBusinessClassificationByCode(code);
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name)
-			throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) {	
+		if (!lookupPolicy.canViewBusinessClassificationLookup(name, locale)) {
+			throw new PermissionDeniedException("findBusinessClassificationByLocalizedName");
+		}
 		return lookupService.findBusinessClassificationByLocalizedName(locale, name);
 	}
 
@@ -550,6 +600,9 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 
 	@Override
 	public String resetPassword(Identifier userId) {
+		if (!canUpdateUserPassword(userId)) {
+			throw new PermissionDeniedException("resetPassword:" + userId);
+		}
 		return userService.resetPassword(userId);
 	}
 
@@ -830,5 +883,45 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	@Override
 	public boolean canDisableRole(Identifier roleId) {
 		return permissionsPolicy.canDisableRole(roleId);
+	}
+	
+	@Override
+	public boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewBusinessUnitLookup(String unitLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewCountryLookup(String CountryLookup, Locale locale) {
+		return lookupPolicy.canViewCountryLookup(CountryLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewLanguageLookup(String languageLookup, Locale locale) {
+		return lookupPolicy.canViewLanguageLookup(languageLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale) {
+		return lookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewSalutationLookup(String salutationLookup, Locale locale) {
+		return lookupPolicy.canViewSalutationLookup(salutationLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewStatusLookup(String StatusLookup, Locale locale) {
+		return lookupPolicy.canViewStatusLookup(StatusLookup, locale);
 	}
 }

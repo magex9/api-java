@@ -99,7 +99,7 @@ public class HazelcastUserService implements CrmUserService {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(user);
 	}
@@ -121,7 +121,7 @@ public class HazelcastUserService implements CrmUserService {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		if (user.getRoles().containsAll(roles) && roles.containsAll(user.getRoles())) {
 			return SerializationUtils.clone(user);
@@ -136,7 +136,7 @@ public class HazelcastUserService implements CrmUserService {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		if (user.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(user);
@@ -151,7 +151,7 @@ public class HazelcastUserService implements CrmUserService {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		if (user.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(user);
@@ -169,7 +169,7 @@ public class HazelcastUserService implements CrmUserService {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return false;
 		}
 		if (passwordService.verifyPassword(user.getUsername(), currentPassword)) {
 			passwordService.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
@@ -184,7 +184,7 @@ public class HazelcastUserService implements CrmUserService {
 		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		return passwordService.generateTemporaryPassword(user.getUsername());
 	}

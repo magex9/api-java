@@ -4,6 +4,7 @@ import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.policies.basic.BasicLocationPolicy;
+import ca.magex.crm.api.policies.basic.BasicLookupPolicy;
 import ca.magex.crm.api.policies.basic.BasicOrganizationPolicy;
 import ca.magex.crm.api.policies.basic.BasicPermissionPolicy;
 import ca.magex.crm.api.policies.basic.BasicPersonPolicy;
@@ -20,7 +21,8 @@ public class AmnesiaCrm extends Crm {
 	}
 	
 	public AmnesiaCrm(AmnesiaDB db) {
-		super(db.getInitialization(), db.getLookups(), 
+		super(db.getInitialization(), 
+				db.getLookups(), new BasicLookupPolicy(db.getLookups()), 
 				db.getPermissions(), new BasicPermissionPolicy(db.getPermissions()),
 				db.getOrganizations(), new BasicOrganizationPolicy(db.getOrganizations()), 
 				db.getLocations(), new BasicLocationPolicy(db.getOrganizations(), db.getLocations()), 

@@ -1,8 +1,12 @@
 package ca.magex.crm.api.policies;
 
+import java.util.Locale;
+
 import ca.magex.crm.api.system.Identifier;
 
 public class CrmPolicyDelegate implements CrmPolicies {
+	
+	private CrmLookupPolicy lookupPolicy;
 	
 	private CrmPermissionPolicy permissionPolicy;
 	
@@ -15,11 +19,13 @@ public class CrmPolicyDelegate implements CrmPolicies {
 	private CrmUserPolicy userPolicy;
 	
 	public CrmPolicyDelegate(
+			CrmLookupPolicy lookupPolicy,
 			CrmPermissionPolicy permissionPolicy, 
 			CrmOrganizationPolicy organizationPolicy,
 			CrmLocationPolicy locationPolicy, 
 			CrmPersonPolicy personPolicy, 
 			CrmUserPolicy userPolicy) {
+		this.lookupPolicy = lookupPolicy;
 		this.permissionPolicy = permissionPolicy;
 		this.organizationPolicy = organizationPolicy;
 		this.locationPolicy = locationPolicy;
@@ -197,4 +203,43 @@ public class CrmPolicyDelegate implements CrmPolicies {
 		return permissionPolicy.canDisableRole(roleId);
 	}
 
+	@Override
+	public boolean canViewStatusLookup(String StatusLookup, Locale locale) {
+		return lookupPolicy.canViewStatusLookup(StatusLookup, locale);
+	}
+
+	@Override
+	public boolean canViewCountryLookup(String CountryLookup, Locale locale) {
+		return lookupPolicy.canViewCountryLookup(CountryLookup, locale);
+	}
+
+	@Override
+	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale) {
+		return lookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);
+	}
+
+	@Override
+	public boolean canViewLanguageLookup(String languageLookup, Locale locale) {
+		return lookupPolicy.canViewLanguageLookup(languageLookup, locale);
+	}
+
+	@Override
+	public boolean canViewSalutationLookup(String salutationLookup, Locale locale) {
+		return lookupPolicy.canViewSalutationLookup(salutationLookup, locale);
+	}
+
+	@Override
+	public boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);
+	}
+
+	@Override
+	public boolean canViewBusinessUnitLookup(String unitLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);
+	}
+
+	@Override
+	public boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);
+	}
 }

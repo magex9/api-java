@@ -19,13 +19,13 @@ import ca.magex.crm.api.system.Identifier;
 @Primary
 @Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
-	
+
 	private CrmAuthenticationService auth;
 
 	private CrmPersonPolicy delegate;
-	
+
 	private CrmPersonService persons;
-	
+
 	/**
 	 * Authenticated Person Policy handles roles and association checks required for policy approval
 	 * 
@@ -38,8 +38,9 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 			CrmAuthenticationService auth,
 			CrmOrganizationService organizations,
 			CrmPersonService persons) {
+		this.auth = auth;
+		this.persons = persons;
 		this.delegate = new BasicPersonPolicy(organizations, persons);
-		this.persons = persons;		
 	}
 
 	@Override

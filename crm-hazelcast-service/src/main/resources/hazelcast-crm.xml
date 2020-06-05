@@ -32,7 +32,7 @@
            http://www.hazelcast.com/schema/config/hazelcast-config-3.12.xsd">
 
     <group>
-        <name>dev</name>
+        <name>crm</name>
     </group>
     <management-center enabled="false">http://localhost:8080/hazelcast-mancenter</management-center>
     <network>
@@ -151,6 +151,7 @@
 
         <merge-policy batch-size="100">com.hazelcast.spi.merge.PutIfAbsentMergePolicy</merge-policy>
     </queue>
+    
     <map name="default">
         <!--
            Data type that will be used for storing recordMap.

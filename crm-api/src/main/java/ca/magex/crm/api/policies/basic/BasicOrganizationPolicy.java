@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
@@ -35,27 +37,39 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 	@Override
 	public boolean canViewOrganization(Identifier organizationId) {
 		/* can only view an organization if it exists */
-		organizations.findOrganizationSummary(organizationId);
+		if (organizations.findOrganizationSummary(organizationId) == null) {
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+		}
 		return true;
 	}
 
 	@Override
 	public boolean canUpdateOrganization(Identifier organizationId) {
 		/* can only update an organization if it exists, and is active */
-		return organizations.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;
+		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
+		if (summary == null) {
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+		}
+		return summary.getStatus() == Status.ACTIVE;
 	}
 
 	@Override
 	public boolean canEnableOrganization(Identifier organizationId) {
-		/* can only enable an organization if it exists */
-		organizations.findOrganizationSummary(organizationId);
+		/* can only update an organization if it exists, and is active */
+		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
+		if (summary == null) {
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+		}
 		return true;
 	}
 
 	@Override
 	public boolean canDisableOrganization(Identifier organizationId) {
-		/* can only disable an organization if it exists */
-		organizations.findOrganizationSummary(organizationId);
+		/* can only update an organization if it exists, and is active */
+		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
+		if (summary == null) {
+			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+		}
 		return true;
 	}
 }

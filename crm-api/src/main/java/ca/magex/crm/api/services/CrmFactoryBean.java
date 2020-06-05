@@ -2,15 +2,16 @@ package ca.magex.crm.api.services;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.policies.CrmLocationPolicy;
+import ca.magex.crm.api.policies.CrmLookupPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 
-@Configuration
+@Component
 public class CrmFactoryBean implements FactoryBean<Crm> {
 
 	/* autowired services */
@@ -23,6 +24,7 @@ public class CrmFactoryBean implements FactoryBean<Crm> {
 	@Autowired private CrmPermissionService permissionService;
 	
 	/* autowired policies */
+	@Autowired private CrmLookupPolicy lookupPolicy;
 	@Autowired private CrmOrganizationPolicy organizationPolicy;
 	@Autowired private CrmLocationPolicy locationPolicy;
 	@Autowired private CrmPersonPolicy personPolicy;
@@ -32,7 +34,8 @@ public class CrmFactoryBean implements FactoryBean<Crm> {
 	@Override
 	public Crm getObject() throws Exception {
 		return new Crm(
-			initializationService, lookupService,
+			initializationService, 
+			lookupService, lookupPolicy,
 			permissionService, permissionPolicy, 
 			organizationService, organizationPolicy,
 			locationService, locationPolicy,

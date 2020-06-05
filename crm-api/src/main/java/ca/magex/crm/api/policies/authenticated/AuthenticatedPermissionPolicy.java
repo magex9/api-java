@@ -32,6 +32,7 @@ public class AuthenticatedPermissionPolicy implements CrmPermissionPolicy {
 	public AuthenticatedPermissionPolicy(
 			CrmAuthenticationService auth,
 			CrmPermissionService permissions) {
+		this.auth = auth;
 		this.delegate = new BasicPermissionPolicy(permissions);
 	}
 

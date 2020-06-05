@@ -73,7 +73,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		/* nothing to update here */
 		if (StringUtils.equals(orgDetails.getDisplayName(), name)) {
@@ -89,7 +89,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		/* nothing to update here */
 		if (orgDetails.getMainContactId() != null && orgDetails.getMainContactId().equals(personId)) {
@@ -105,7 +105,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		/* nothing to update here */
 		if (orgDetails.getMainLocationId() != null && orgDetails.getMainLocationId().equals(locationId)) {
@@ -121,7 +121,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		for (String group : groups) {
 			permissionService.findGroupByCode(group); // ensure each group exists
@@ -140,7 +140,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		if (orgDetails.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(orgDetails);
@@ -155,7 +155,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		if (orgDetails.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(orgDetails);
@@ -175,7 +175,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
-			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(orgDetails);
 	}

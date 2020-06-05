@@ -34,6 +34,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 	public AuthenticatedOrganizationPolicy(
 			CrmAuthenticationService auth,
 			CrmOrganizationService organizations) {
+		this.auth = auth;
 		this.delegate = new BasicOrganizationPolicy(organizations);
 	}
 	
