@@ -58,8 +58,6 @@ steps:
     
     application_config_dir=${application_package_build_dir}/config
     
-    server_config_path=${application_config_dir}/server.cfg
-
     application_config_path=${application_config_dir}/application.cfg
     
     bootstrap_config_path=${application_config_dir}/bootstrap.properties
@@ -77,10 +75,9 @@ steps:
     fi
 
     #setup server specific information
-    echo "export SERVER_INTERNAL_IP=${SERVER_INTERNAL_IP}" >> ${server_config_path}
-    echo "export SERVER_EXTERNAL_IP=${SERVER_EXTERNAL_IP}" >> ${server_config_path}
-    echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${server_config_path}
-
+    echo "export SERVER_INTERNAL_IP=${SERVER_INTERNAL_IP}" >> ${application_config_path}
+    echo "export SERVER_EXTERNAL_IP=${SERVER_EXTERNAL_IP}" >> ${application_config_path}
+    echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${application_config_path}
     echo "export APPLICATION_NAME=${{parameters.application_name}}" >> ${application_config_path}
 
     #create springboot bootstrap configuration file
