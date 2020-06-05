@@ -2,11 +2,13 @@ package ca.magex.crm.restful.controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +30,25 @@ public class InitializationController extends AbstractCrmController {
 	@Autowired
 	private Crm crm;
 
+	@Value("${server.external.address:localhost}") 
+	private String serverAddress;
+	
+	@Value("${server.port:9002}") 
+	private String serverPort;
+	
+	@Value("${server.servlet.context-path:/}") 
+	private String contextPath;
+
 	@GetMapping("/api.yaml")
 	public void getYamlConfig(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		res.setStatus(200);
 		try (InputStream is = getClass().getResource("/public/crm.yaml").openStream()) {
-			StreamUtils.copy(is, res.getOutputStream());
+			String yamlContents = StreamUtils.copyToString(is, Charset.forName("UTF-8"));
+			yamlContents = yamlContents.replace("${serverAddress}", serverAddress);
+			yamlContents = yamlContents.replace("${serverPort}", serverPort);
+			yamlContents = yamlContents.replace("${contextPath}", contextPath);
+			res.getWriter().append(yamlContents);
+			res.getWriter().flush();
 		}
 	}
 
