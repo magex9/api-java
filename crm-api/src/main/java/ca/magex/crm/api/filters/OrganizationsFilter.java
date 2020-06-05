@@ -41,14 +41,19 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	}
 	
 	public OrganizationsFilter(Map<String, Object> filterCriteria) {
-		this.displayName = (String) filterCriteria.get("displayName");
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
-			} catch (IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+		try {
+			this.displayName = (String) filterCriteria.get("displayName");
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				} catch (IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate organizations filter", cce);
 		}
 	}
 
@@ -84,7 +89,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationSummary> {
 	public boolean apply(OrganizationSummary instance) {
 		return List.of(instance)
 				.stream()
-				.filter(g -> this.getDisplayName() == null || StringUtils.equalsIgnoreCase(this.getDisplayName(), g.getDisplayName()))				
+				.filter(g -> this.getDisplayName() == null || StringUtils.containsIgnoreCase(g.getDisplayName(), this.getDisplayName()))				
 				.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
 				.findAny()
 				.isPresent();

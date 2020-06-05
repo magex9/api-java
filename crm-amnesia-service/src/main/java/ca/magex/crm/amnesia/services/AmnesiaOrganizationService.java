@@ -41,7 +41,9 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)));
+		OrganizationDetails org = findOrganizationDetails(organizationId);
+		return org.getStatus() == Status.INACTIVE ? org :
+			db.saveOrganization(validate(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {

@@ -9,7 +9,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.exceptions.ApiException;
@@ -53,16 +52,21 @@ public class GroupsFilter implements CrmFilter<Group> {
 	}
 	
 	public GroupsFilter(Map<String, Object> filterCriteria) {
-		this.englishName = (String) filterCriteria.get("englishName");
-		this.frenchName = (String) filterCriteria.get("frenchName");
-		this.code = (String) filterCriteria.get("code");
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
-			} catch (IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+		try {
+			this.englishName = (String) filterCriteria.get("englishName");
+			this.frenchName = (String) filterCriteria.get("frenchName");
+			this.code = (String) filterCriteria.get("code");
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				} catch (IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate groups filter", cce);
 		}
 	}
 	
@@ -103,7 +107,7 @@ public class GroupsFilter implements CrmFilter<Group> {
 	}
 	
 	public static Sort getDefaultSort() {
-		return Sort.by(Direction.ASC, "code");
+		return Sort.by(Order.asc("code"));
 	}
 
 	public static Paging getDefaultPaging() {

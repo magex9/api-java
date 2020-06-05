@@ -184,7 +184,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("locationId", "organizationId", "status", "displayName", "reference", "address"), data.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), data.keys());
 		assertEquals(locationId.toString(), data.getString("locationId"));
 		assertEquals(organizationId.toString(), data.getString("organizationId"));
 		assertEquals("active", data.getString("status"));
@@ -203,7 +203,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("locationId", "organizationId", "status", "displayName", "reference", "address"), english.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
 		assertEquals(locationId.toString(), english.getString("locationId"));
 		assertEquals(organizationId.toString(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
@@ -222,7 +222,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString());
-		assertEquals(List.of("locationId", "organizationId", "status", "displayName", "reference", "address"), french.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
 		assertEquals(locationId.toString(), french.getString("locationId"));
 		assertEquals(organizationId.toString(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));

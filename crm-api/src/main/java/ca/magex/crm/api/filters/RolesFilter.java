@@ -56,17 +56,22 @@ public class RolesFilter implements CrmFilter<Role> {
 	}
 
 	public RolesFilter(Map<String, Object> filterCriteria) {
-		this.groupId = filterCriteria.containsKey("groupId") ? new Identifier((String) filterCriteria.get("groupId")) : null;
-		this.englishName = (String) filterCriteria.get("englishName");
-		this.frenchName = (String) filterCriteria.get("frenchName");
-		this.code = (String) filterCriteria.get("code");
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
-			} catch (IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+		try {
+			this.groupId = filterCriteria.containsKey("groupId") ? new Identifier((String) filterCriteria.get("groupId")) : null;
+			this.englishName = (String) filterCriteria.get("englishName");
+			this.frenchName = (String) filterCriteria.get("frenchName");
+			this.code = (String) filterCriteria.get("code");
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				} catch (IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate roles filter", cce);
 		}
 	}
 

@@ -56,18 +56,23 @@ public class UsersFilter implements CrmFilter<User> {
 	}
 	
 	public UsersFilter(Map<String, Object> filterCriteria) {
-		this.personId = filterCriteria.containsKey("personId") ? new Identifier((String) filterCriteria.get("personId")) : null;
-		this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
-		this.role = (String) filterCriteria.get("role");
-		this.username = (String) filterCriteria.get("username");		
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+		try {
+			this.personId = filterCriteria.containsKey("personId") ? new Identifier((String) filterCriteria.get("personId")) : null;
+			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.role = (String) filterCriteria.get("role");
+			this.username = (String) filterCriteria.get("username");		
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				}
+				catch(IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
-			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
-			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate users filter", cce);
 		}
 	}
 
@@ -127,7 +132,7 @@ public class UsersFilter implements CrmFilter<User> {
 	public boolean apply(User instance) {
 		return List.of(instance)
 				.stream()
-				.filter(u -> this.getUsername() == null || StringUtils.equalsIgnoreCase(this.getUsername(), u.getUsername()))
+				.filter(u -> this.getUsername() == null || StringUtils.containsIgnoreCase(u.getUsername(), this.getUsername()))
 				.filter(u -> this.getRole() == null || u.getRoles().contains(this.getRole()))
 				.filter(u -> this.getStatus() == null || this.getStatus().equals(u.getStatus()))
 				.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPerson().getPersonId()))

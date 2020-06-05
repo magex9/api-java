@@ -48,7 +48,7 @@ public class PersonName implements Serializable {
 	}
 	
 	public PersonName withSalutation(String salutation) {
-		return new PersonName(salutation, firstName, firstName, lastName);
+		return new PersonName(salutation, firstName, middleName, lastName);
 	}
 
 	public String getFirstName() {
@@ -56,7 +56,7 @@ public class PersonName implements Serializable {
 	}
 	
 	public PersonName withFirstName(String firstName) {
-		return new PersonName(salutation, firstName, firstName, lastName);
+		return new PersonName(salutation, firstName, middleName, lastName);
 	}
 
 	public String getMiddleName() {
@@ -64,7 +64,7 @@ public class PersonName implements Serializable {
 	}
 	
 	public PersonName withMiddleName(String middleName) {
-		return new PersonName(salutation, firstName, firstName, lastName);
+		return new PersonName(salutation, firstName, middleName, lastName);
 	}
 
 	public String getLastName() {
@@ -72,7 +72,7 @@ public class PersonName implements Serializable {
 	}
 	
 	public PersonName withLastName(String lastName) {
-		return new PersonName(salutation, firstName, firstName, lastName);
+		return new PersonName(salutation, firstName, middleName, lastName);
 	}
 
 	public String getDisplayName() {

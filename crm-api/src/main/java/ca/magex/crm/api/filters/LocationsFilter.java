@@ -52,16 +52,21 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 	}
 
 	public LocationsFilter(Map<String, Object> filterCriteria) {
-		this.displayName = (String) filterCriteria.get("displayName");
-		this.reference = (String) filterCriteria.get("reference");
-		this.organizationId = filterCriteria.keySet().contains("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
-		this.status = null;
-		if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
-			try {
-				this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
-			} catch (IllegalArgumentException e) {
-				throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+		try {
+			this.displayName = (String) filterCriteria.get("displayName");
+			this.reference = (String) filterCriteria.get("reference");
+			this.organizationId = filterCriteria.keySet().contains("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.status = null;
+			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
+				try {
+					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
+				} catch (IllegalArgumentException e) {
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+				}
 			}
+		}
+		catch(ClassCastException cce) {
+			throw new ApiException("Unable to instantiate locations filter", cce);
 		}
 	}
 
@@ -69,28 +74,28 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		return organizationId;
 	}
 
-	public LocationsFilter withOrganizationId(Identifier organizationId) {
-		return new LocationsFilter(organizationId, displayName, reference, status);
-	}
-
 	public String getDisplayName() {
 		return displayName;
-	}
-
-	public LocationsFilter withDisplayName(String displayName) {
-		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 
 	public String getReference() {
 		return reference;
 	}
 
-	public LocationsFilter setReference(String reference) {
+	public Status getStatus() {
+		return status;
+	}
+	
+	public LocationsFilter withOrganizationId(Identifier organizationId) {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 
-	public Status getStatus() {
-		return status;
+	public LocationsFilter withDisplayName(String displayName) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
+	}
+
+	public LocationsFilter withReference(String reference) {
+		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 
 	public LocationsFilter withStatus(Status status) {
@@ -105,7 +110,7 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		return Sort.by(Direction.ASC, "displayName");
 	}
 
-	public static Paging defaultPaging() {
+	public static Paging getDefaultPaging() {
 		return new Paging(getDefaultSort());
 	}
 
@@ -113,7 +118,8 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 	public boolean apply(LocationSummary instance) {
 		return List.of(instance)
 				.stream()
-				.filter(l -> this.getDisplayName() == null || StringUtils.equalsIgnoreCase(this.getDisplayName(), l.getDisplayName()))
+				.filter(l -> this.getDisplayName() == null || StringUtils.containsIgnoreCase(l.getDisplayName(), this.getDisplayName()))
+				.filter(l -> this.getReference() == null || StringUtils.containsIgnoreCase(l.getReference(), this.getReference()))
 				.filter(l -> this.getStatus() == null || this.getStatus().equals(l.getStatus()))
 				.filter(l -> this.getOrganizationId() == null || this.getOrganizationId().equals(l.getOrganizationId()))
 				.findAny()

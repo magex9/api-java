@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -109,7 +108,7 @@ public class AmnesiaLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+	public Province findProvinceByCode(String province, String country) {
 		if (country.equals("CA")) {
 			return caProvinces.findByCode(province);
 		} else if (country.equals("US")) {
@@ -122,8 +121,8 @@ public class AmnesiaLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
-			@NotNull String country) {
+	public Province findProvinceByLocalizedName(Locale locale, String province,
+			String country) {
 		String code = findCountryByLocalizedName(locale, country).getCode();
 		if (code.equals("CA")) {
 			return caProvinces.findByName(locale, province);
