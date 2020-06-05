@@ -1,8 +1,8 @@
 package ca.magex.crm.restful.controllers;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.test.CrmAsserts.CHLOE;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
-import static ca.magex.crm.test.CrmAsserts.*;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Status;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
@@ -465,280 +467,191 @@ public class UsersControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		JsonAsserts.print(json, "json");
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
+		assertEquals("User", json.getString("@type"));
+		assertEquals(userId.toString(), json.getString("userId"));
+		assertEquals("chloe", json.getString("username"));
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
+		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
+		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
+		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
+		assertEquals("Active", json.getObject("person").getString("status"));
+		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals(2, json.getArray("roles").size());
+		assertEquals("ORG_USER", json.getArray("roles").getString(0));
+		assertEquals("SYS_ADMIN", json.getArray("roles").getString(1));
+	}
+
+	@Test
+	public void testEnableDisablePerson() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+
+		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+
+		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/disable")
+			.header("Locale", Lang.ENGLISH))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(userId.toString(), error1.getObject(0).getString("identifier"));
+		assertEquals("error", error1.getObject(0).getString("type"));
+		assertEquals("confirm", error1.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+
+		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/disable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", false)
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(userId.toString(), error2.getObject(0).getString("identifier"));
+		assertEquals("error", error2.getObject(0).getString("type"));
+		assertEquals("confirm", error2.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+
+		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/disable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", "Test")
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(userId.toString(), error3.getObject(0).getString("identifier"));
+		assertEquals("error", error3.getObject(0).getString("type"));
+		assertEquals("confirm", error3.getObject(0).getString("path"));
+		assertEquals("Confirmation message must be a boolean", error3.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+
+		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/disable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", true)
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		//JsonAsserts.print(disable, "disable");
+		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), disable.keys());
+		assertEquals("User", disable.getString("@type"));
+		assertEquals(userId.toString(), disable.getString("userId"));
+		assertEquals("chloe", disable.getString("username"));
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), disable.getObject("person").keys());
+		assertEquals("PersonSummary", disable.getObject("person").getString("@type"));
+		assertEquals(testPersonId.toString(), disable.getObject("person").getString("personId"));
+		assertEquals(testOrgId.toString(), disable.getObject("person").getString("organizationId"));
+		assertEquals("Active", disable.getObject("person").getString("status"));
+		assertEquals("LaRue, Chloé", disable.getObject("person").getString("displayName"));
+		assertEquals("Inactive", disable.getString("status"));
+		assertEquals(2, disable.getArray("roles").size());
+		assertEquals("ORG_ADMIN", disable.getArray("roles").getString(0));
+		assertEquals("CRM_ADMIN", disable.getArray("roles").getString(1));
+		
+		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/enable")
+			.header("Locale", Lang.ENGLISH))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(userId.toString(), error4.getObject(0).getString("identifier"));
+		assertEquals("error", error4.getObject(0).getString("type"));
+		assertEquals("confirm", error4.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error4.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		
+		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/enable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", false)
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(userId.toString(), error5.getObject(0).getString("identifier"));
+		assertEquals("error", error5.getObject(0).getString("type"));
+		assertEquals("confirm", error5.getObject(0).getString("path"));
+		assertEquals("You must send in the confirmation message", error5.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		
+		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/enable")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("confirm", "test")
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(userId.toString(), error6.getObject(0).getString("identifier"));
+		assertEquals("error", error6.getObject(0).getString("type"));
+		assertEquals("confirm", error6.getObject(0).getString("path"));
+		assertEquals("Confirmation message must be a boolean", error6.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+	
+		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/users/" + userId + "/enable")
+			.header("Locale", Lang.FRENCH)
+			.content(new JsonObject()
+				.with("confirm", true)
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		//JsonAsserts.print(enable, "enable");
+		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), enable.keys());
+		assertEquals("User", enable.getString("@type"));
+		assertEquals(userId.toString(), enable.getString("userId"));
+		assertEquals("chloe", enable.getString("username"));
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), enable.getObject("person").keys());
+		assertEquals("PersonSummary", enable.getObject("person").getString("@type"));
+		assertEquals(testPersonId.toString(), enable.getObject("person").getString("personId"));
+		assertEquals(testOrgId.toString(), enable.getObject("person").getString("organizationId"));
+		assertEquals("Actif", enable.getObject("person").getString("status"));
+		assertEquals("LaRue, Chloé", enable.getObject("person").getString("displayName"));
+		assertEquals("Actif", enable.getString("status"));
+		assertEquals(2, enable.getArray("roles").size());
+		assertEquals("ORG_ADMIN", enable.getArray("roles").getString(0));
+		assertEquals("CRM_ADMIN", enable.getArray("roles").getString(1));
+		
+		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		
+		mockMvc.perform(MockMvcRequestBuilders
+			.put("/api/user/chloe/disable")
+			.header("Locale", Lang.FRENCH)
+			.content(new JsonObject()
+				.with("confirm", true)
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString();
+		
+		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+
+		mockMvc.perform(MockMvcRequestBuilders
+				.put("/api/user/chloe/enable")
+				.header("Locale", Lang.FRENCH)
+				.content(new JsonObject()
+					.with("confirm", true)
+					.toString()))
+				//.andDo(MockMvcResultHandlers.print())
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		
+		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
 
 	}
-//	
-//	@Test
-//	public void testUpdatingAddress() throws Exception {
-//		Identifier personId = crm.createPerson(organizationId, BOB, US_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-//		
-//		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.patch("/api/users/" + personId)
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("address", new MailingAddressJsonTransformer(crm).format(MX_ADDRESS, Lang.ENGLISH))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), json.keys());
-//		assertEquals("PersonDetails", json.getString("@type"));
-//		assertEquals(personId.toString(), json.getString("personId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("Robert, Bob K", json.getString("displayName"));
-//		assertEquals(List.of("@type", "firstName", "middleName", "lastName"), json.getObject("legalName").keys());
-//		assertEquals("PersonName", json.getObject("legalName").getString("@type"));
-//		assertEquals("Bob", json.getObject("legalName").getString("firstName"));
-//		assertEquals("K", json.getObject("legalName").getString("middleName"));
-//		assertEquals("Robert", json.getObject("legalName").getString("lastName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("120 Col. Hipodromo Condesa", json.getObject("address").getString("street"));
-//		assertEquals("Monterrey", json.getObject("address").getString("city"));
-//		assertEquals("Nuevo Leon", json.getObject("address").getString("province"));
-//		assertEquals("Mexico", json.getObject("address").getString("country"));
-//		assertEquals("06100", json.getObject("address").getString("postalCode"));
-//		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), json.getObject("communication").keys());
-//		assertEquals("Communication", json.getObject("communication").getString("@type"));
-//		assertEquals("Developer", json.getObject("communication").getString("jobTitle"));
-//		assertEquals("English", json.getObject("communication").getString("language"));
-//		assertEquals("user@work.ca", json.getObject("communication").getString("email"));
-//		assertEquals(List.of("@type", "number", "extension"), json.getObject("communication").getObject("homePhone").keys());
-//		assertEquals("Telephone", json.getObject("communication").getObject("homePhone").getString("@type"));
-//		assertEquals("5551234567", json.getObject("communication").getObject("homePhone").getString("number"));
-//		assertEquals("42", json.getObject("communication").getObject("homePhone").getString("extension"));
-//		assertEquals("8881234567", json.getObject("communication").getString("faxNumber"));
-//		assertEquals(List.of("@type", "sector", "unit", "classification"), json.getObject("position").keys());
-//		assertEquals("BusinessPosition", json.getObject("position").getString("@type"));
-//		assertEquals("External", json.getObject("position").getString("sector"));
-//		assertEquals("Solutions", json.getObject("position").getString("unit"));
-//		assertEquals("Developer", json.getObject("position").getString("classification"));
-//	}
-//
-//	@Test
-//	public void testUpdatingCommunication() throws Exception {
-//		Identifier personId = crm.createPerson(organizationId, BOB, US_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-//		
-//		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.patch("/api/users/" + personId)
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("communication", new CommunicationJsonTransformer(crm).format(HOME_COMMUNICATIONS, Lang.ENGLISH))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), json.keys());
-//		assertEquals("PersonDetails", json.getString("@type"));
-//		assertEquals(personId.toString(), json.getString("personId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("Robert, Bob K", json.getString("displayName"));
-//		assertEquals(List.of("@type", "firstName", "middleName", "lastName"), json.getObject("legalName").keys());
-//		assertEquals("PersonName", json.getObject("legalName").getString("@type"));
-//		assertEquals("Bob", json.getObject("legalName").getString("firstName"));
-//		assertEquals("K", json.getObject("legalName").getString("middleName"));
-//		assertEquals("Robert", json.getObject("legalName").getString("lastName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("465 Huntington Ave", json.getObject("address").getString("street"));
-//		assertEquals("Boston", json.getObject("address").getString("city"));
-//		assertEquals("Massachusetts", json.getObject("address").getString("province"));
-//		assertEquals("United States", json.getObject("address").getString("country"));
-//		assertEquals("02115", json.getObject("address").getString("postalCode"));
-//		assertEquals(List.of("@type", "language", "email", "homePhone"), json.getObject("communication").keys());
-//		assertEquals("Communication", json.getObject("communication").getString("@type"));
-//		assertEquals("English", json.getObject("communication").getString("language"));
-//		assertEquals("user@home.ca", json.getObject("communication").getString("email"));
-//		assertEquals(List.of("@type", "number"), json.getObject("communication").getObject("homePhone").keys());
-//		assertEquals("Telephone", json.getObject("communication").getObject("homePhone").getString("@type"));
-//		assertEquals("5558883333", json.getObject("communication").getObject("homePhone").getString("number"));
-//		assertEquals(List.of("@type", "sector", "unit", "classification"), json.getObject("position").keys());
-//		assertEquals("BusinessPosition", json.getObject("position").getString("@type"));
-//		assertEquals("External", json.getObject("position").getString("sector"));
-//		assertEquals("Solutions", json.getObject("position").getString("unit"));
-//		assertEquals("Developer", json.getObject("position").getString("classification"));
-//	}
-//
-//	@Test
-//	public void testUpdatingPosition() throws Exception {
-//		Identifier personId = crm.createPerson(organizationId, BOB, US_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-//		
-//		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.patch("/api/users/" + personId)
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("position", new BusinessPositionJsonTransformer(crm).format(DEVELOPER_POSITION, Lang.ENGLISH))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), json.keys());
-//		assertEquals("PersonDetails", json.getString("@type"));
-//		assertEquals(personId.toString(), json.getString("personId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("Robert, Bob K", json.getString("displayName"));
-//		assertEquals(List.of("@type", "firstName", "middleName", "lastName"), json.getObject("legalName").keys());
-//		assertEquals("PersonName", json.getObject("legalName").getString("@type"));
-//		assertEquals("Bob", json.getObject("legalName").getString("firstName"));
-//		assertEquals("K", json.getObject("legalName").getString("middleName"));
-//		assertEquals("Robert", json.getObject("legalName").getString("lastName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("465 Huntington Ave", json.getObject("address").getString("street"));
-//		assertEquals("Boston", json.getObject("address").getString("city"));
-//		assertEquals("Massachusetts", json.getObject("address").getString("province"));
-//		assertEquals("United States", json.getObject("address").getString("country"));
-//		assertEquals("02115", json.getObject("address").getString("postalCode"));
-//		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), json.getObject("communication").keys());
-//		assertEquals("Communication", json.getObject("communication").getString("@type"));
-//		assertEquals("Developer", json.getObject("communication").getString("jobTitle"));
-//		assertEquals("English", json.getObject("communication").getString("language"));
-//		assertEquals("user@work.ca", json.getObject("communication").getString("email"));
-//		assertEquals(List.of("@type", "number", "extension"), json.getObject("communication").getObject("homePhone").keys());
-//		assertEquals("Telephone", json.getObject("communication").getObject("homePhone").getString("@type"));
-//		assertEquals("5551234567", json.getObject("communication").getObject("homePhone").getString("number"));
-//		assertEquals("42", json.getObject("communication").getObject("homePhone").getString("extension"));
-//		assertEquals("8881234567", json.getObject("communication").getString("faxNumber"));
-//		assertEquals(List.of("@type", "sector", "unit", "classification"), json.getObject("position").keys());
-//		assertEquals("BusinessPosition", json.getObject("position").getString("@type"));
-//		assertEquals("Compliance", json.getObject("position").getString("sector"));
-//		assertEquals("Data Management", json.getObject("position").getString("unit"));
-//		assertEquals("Team Lead", json.getObject("position").getString("classification"));
-//	}
-//
-//	@Test
-//	public void testEnableDisablePerson() throws Exception {
-//		Identifier personId = crm.createPerson(organizationId, BOB, US_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-//		assertEquals(Status.ACTIVE, crm.findPersonSummary(personId).getStatus());
-//
-//		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/disable")
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(personId.toString(), error1.getObject(0).getString("identifier"));
-//		assertEquals("error", error1.getObject(0).getString("type"));
-//		assertEquals("confirm", error1.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
-//		assertEquals(Status.ACTIVE, crm.findPersonSummary(personId).getStatus());
-//
-//		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/disable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", false)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(personId.toString(), error2.getObject(0).getString("identifier"));
-//		assertEquals("error", error2.getObject(0).getString("type"));
-//		assertEquals("confirm", error2.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
-//		assertEquals(Status.ACTIVE, crm.findPersonSummary(personId).getStatus());
-//
-//		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/disable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", "Test")
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(personId.toString(), error3.getObject(0).getString("identifier"));
-//		assertEquals("error", error3.getObject(0).getString("type"));
-//		assertEquals("confirm", error3.getObject(0).getString("path"));
-//		assertEquals("Confirmation message must be a boolean", error3.getObject(0).getString("reason"));
-//		assertEquals(Status.ACTIVE, crm.findPersonSummary(personId).getStatus());
-//
-//		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/disable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", true)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(disable, "disable");
-//		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), disable.keys());
-//		assertEquals("PersonSummary", disable.getString("@type"));
-//		assertEquals(personId.toString(), disable.getString("personId"));
-//		assertEquals(organizationId.toString(), disable.getString("organizationId"));
-//		assertEquals("Inactive", disable.getString("status"));
-//		assertEquals("Robert, Bob K", disable.getString("displayName"));
-//		
-//		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/enable")
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(personId.toString(), error4.getObject(0).getString("identifier"));
-//		assertEquals("error", error4.getObject(0).getString("type"));
-//		assertEquals("confirm", error4.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error4.getObject(0).getString("reason"));
-//		assertEquals(Status.INACTIVE, crm.findPersonSummary(personId).getStatus());
-//		
-//		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/enable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", false)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(personId.toString(), error5.getObject(0).getString("identifier"));
-//		assertEquals("error", error5.getObject(0).getString("type"));
-//		assertEquals("confirm", error5.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error5.getObject(0).getString("reason"));
-//		assertEquals(Status.INACTIVE, crm.findPersonSummary(personId).getStatus());
-//		
-//		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/enable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", "test")
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(personId.toString(), error6.getObject(0).getString("identifier"));
-//		assertEquals("error", error6.getObject(0).getString("type"));
-//		assertEquals("confirm", error6.getObject(0).getString("path"));
-//		assertEquals("Confirmation message must be a boolean", error6.getObject(0).getString("reason"));
-//		assertEquals(Status.INACTIVE, crm.findPersonSummary(personId).getStatus());
-//	
-//		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/api/users/" + personId + "/enable")
-//			.header("Locale", Lang.FRENCH)
-//			.content(new JsonObject()
-//				.with("confirm", true)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(enable, "enable");
-//		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), enable.keys());
-//		assertEquals("PersonSummary", enable.getString("@type"));
-//		assertEquals(personId.toString(), enable.getString("personId"));
-//		assertEquals(organizationId.toString(), enable.getString("organizationId"));
-//		assertEquals("Actif", enable.getString("status"));
-//		assertEquals("Robert, Bob K", enable.getString("displayName"));
-//	}
-//	
+	
 //	@Test
 //	public void testPersonWithLongName() throws Exception {
 //		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
