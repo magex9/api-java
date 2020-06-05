@@ -93,16 +93,15 @@ public interface CrmPersonService {
 		@NotNull Paging paging
 	);
 	
-	
-	default Page<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
+	default FilteredPage<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
 		return findPersonDetails(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default Page<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter) {
+	default FilteredPage<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter) {
 		return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default Page<PersonSummary> findActivePersonSummariesForOrg(@NotNull Identifier organizationId) {
+	default FilteredPage<PersonSummary> findActivePersonSummariesForOrg(@NotNull Identifier organizationId) {
 		return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());
 	}
 	
