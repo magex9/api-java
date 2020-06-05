@@ -27,8 +27,19 @@ public class JsonAsserts {
 				JsonArray array = (JsonArray)el;
 				sb.append("\t\tassertEquals(" + array.size() + ", " + prefix + ".getArray(\"" + key + "\").size());");
 				for (int i = 0; i < array.size(); i++) {
-					if (array.get(i) instanceof JsonObject) {
-						buildAsserts((JsonObject)array.get(i), prefix + ".getArray(\"" + key + "\").getObject(" + i + ")", sb);
+					JsonElement child = array.get(i);
+					if (child instanceof JsonObject) {
+						buildAsserts((JsonObject)child, prefix + ".getArray(\"" + key + "\").getObject(" + i + ")", sb);
+					} else if (child instanceof JsonNumber) {
+						sb.append("\t\tassertEquals(" + array.getNumber(i) + ", " + prefix + ".getArray(\"" + key + "\").getNumber(" + i + "));");
+					} else if (child instanceof JsonBoolean) {
+						sb.append("\t\tassertEquals(" + array.getBoolean(i) + ", " + prefix + ".getArray(\"" + key + "\").getBoolean(" + i + "));");
+					} else if (child instanceof JsonText) {
+						if (key.endsWith("Id")) {
+							sb.append("\t\tassertEquals(" + key + ".toString(), " + prefix + ".getArray(\"" + key + "\").getString(" + i + "));");
+						} else {
+							sb.append("\t\tassertEquals(\"" + array.getString(i) + "\", " + prefix + ".getArray(\"" + key + "\").getString(" + i + "));");
+						}
 					} else {
 						sb.append("\t\tassertEquals(" + array.get(i) + ", " + prefix + ".getArray(\"" + key + "\").get(" + i + "));");
 					}
