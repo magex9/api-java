@@ -226,7 +226,7 @@ public class CrmServicesTestSuite {
 				orgId,
 				CrmAsserts.PERSON_NAME,
 				CrmAsserts.MAILING_ADDRESS,
-				CrmAsserts.COMMUNICATIONS,
+				CrmAsserts.WORK_COMMUNICATIONS,
 				CrmAsserts.BUSINESS_POSITION);
 		Identifier personId = personDetails.getPersonId();
 		logger.info("Generated personId: " + personId);
@@ -271,7 +271,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with 1 match on name filter */
 		logger.info("Finding Organization Details with Name Match");
-		Page<OrganizationDetails> orgDetailsPage = crm.findOrganizationDetails(new OrganizationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<OrganizationDetails> orgDetailsPage = crm.findOrganizationDetails(new OrganizationsFilter(newName, Status.ACTIVE, null), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgDetailsPage.getNumber());
 		Assert.assertEquals(1, orgDetailsPage.getTotalPages());
 		Assert.assertEquals(1, orgDetailsPage.getNumberOfElements());
@@ -281,7 +281,7 @@ public class CrmServicesTestSuite {
 
 		/* validate details paging with no match on name filter */
 		logger.info("Finding Organization Details without Name Match");
-		orgDetailsPage = crm.findOrganizationDetails(new OrganizationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		orgDetailsPage = crm.findOrganizationDetails(new OrganizationsFilter(newName + "00", Status.ACTIVE, null), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgDetailsPage.getNumber());
 		Assert.assertEquals(0, orgDetailsPage.getTotalPages());
 		Assert.assertEquals(0, orgDetailsPage.getNumberOfElements());
@@ -290,7 +290,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with 1 match on name filter */
 		logger.info("Finding Organization Summary without Name Match");
-		Page<OrganizationSummary> orgSummaryPage = crm.findOrganizationSummaries(new OrganizationsFilter(newName, Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		Page<OrganizationSummary> orgSummaryPage = crm.findOrganizationSummaries(new OrganizationsFilter(newName, Status.ACTIVE, null), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgSummaryPage.getNumber());
 		Assert.assertEquals(1, orgSummaryPage.getTotalPages());
 		Assert.assertEquals(1, orgSummaryPage.getNumberOfElements());
@@ -300,7 +300,7 @@ public class CrmServicesTestSuite {
 
 		/* validate summary paging with no match on name filter */
 		logger.info("Finding Organization Summary without Name Match");
-		orgSummaryPage = crm.findOrganizationSummaries(new OrganizationsFilter(newName + "00", Status.ACTIVE), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
+		orgSummaryPage = crm.findOrganizationSummaries(new OrganizationsFilter(newName + "00", Status.ACTIVE, null), new Paging(1, 5, Sort.by(Direction.ASC, "displayName")));
 		Assert.assertEquals(1, orgSummaryPage.getNumber());
 		Assert.assertEquals(0, orgSummaryPage.getTotalPages());
 		Assert.assertEquals(0, orgSummaryPage.getNumberOfElements());
