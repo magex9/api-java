@@ -109,7 +109,7 @@ public class AmnesiaDB {
 	
 	private Lookups<BusinessClassification, String> classifications;
 	
-	private AmnesiaCrm crm;
+//	private AmnesiaCrm crm;
 	
 	public AmnesiaDB(PasswordEncoder passwordEncoder, CrmLookupLoader lookupLoader) {
 		this.passwordEncoder = passwordEncoder;
@@ -122,7 +122,7 @@ public class AmnesiaDB {
 		persons = new AmnesiaPersonService(this);
 		users = new AmnesiaUserService(this);
 		passwords = new AmnesiaPasswordService(this);
-		crm = new AmnesiaCrm(this);
+//		crm = new AmnesiaCrm(this);
 		data = new HashMap<Identifier, Serializable>();
 		passwordData = new HashMap<String, PasswordDetails>();
 		groupsByCode = new HashMap<String, Group>();
@@ -152,9 +152,9 @@ public class AmnesiaDB {
 		classifications = new Lookups<BusinessClassification, String>(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"), BusinessClassification.class, String.class);
 	}
 	
-	public Crm getCrm() {
-		return crm;
-	}
+//	public Crm getCrm() {
+//		return crm;
+//	}
 	
 	public CrmInitializationService getInitialization() {
 		return initialization;
