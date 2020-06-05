@@ -25,7 +25,7 @@ public class AmnesiaPasswordServiceTests extends AbstractPasswordServiceTests {
 	}
 	
 	private AmnesiaPasswordServiceTests(AmnesiaDB db) {
-		super(db.getCrm(), new AmnesiaPasswordService(db), db.getPasswordEncoder());
+		super(new AmnesiaCrm(db), new AmnesiaPasswordService(db), db.getPasswordEncoder());
 	}
 
 	@Test
