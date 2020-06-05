@@ -112,4 +112,11 @@
 		</plugins>
 	</build>
 
+	<distributionManagement>
+    	<site>
+      		<id>magex</id>
+      		<url>https://github.com/magex9/api-java/</url>
+    	</site>
+  	</distributionManagement>
+
 </project>
