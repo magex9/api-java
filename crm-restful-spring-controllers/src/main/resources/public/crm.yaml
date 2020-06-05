@@ -1,23 +1,12 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: API Reporting
+  title: Customer Relationship Management
 security:
   - bearerAuth: []
 servers:
-#  - url: https://magex9.github.io/apis/restful/{environment}/v0
-#    description: Test server (uses shared data)
-#    variables:
-#      environment:
-#        default: production
-#        enum:
-#          - production
-#          - training
-#          - preview
-  - url: http://localhost:9002/api
+  - url: http://${serverAddress}:${serverPort}${contextPath}
     description: Local development (uses test data)
-  - url: https://magex9.github.io/apis/restful/v0
-    description: Test server (uses shared data)
 paths:
   /organizations:
     get:
