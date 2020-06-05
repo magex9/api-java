@@ -87,11 +87,11 @@ public interface CrmUserService {
 		return true;
 	}
 	
-	default Page<User> findUsers(@NotNull UsersFilter filter) {
+	default FilteredPage<User> findUsers(@NotNull UsersFilter filter) {
 		return findUsers(filter, defaultUsersPaging());
 	}
 	
-	default Page<User> findActiveUserForOrg(@NotNull Identifier organizationId) {
+	default FilteredPage<User> findActiveUserForOrg(@NotNull Identifier organizationId) {
 		return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));
 	}
 	
