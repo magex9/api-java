@@ -582,6 +582,9 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 
 	@Override
 	public String resetPassword(Identifier userId) {
+		if (!canUpdateUserPassword(userId)) {
+			throw new PermissionDeniedException("resetPassword:" + userId);
+		}
 		return userService.resetPassword(userId);
 	}
 

@@ -109,8 +109,11 @@ public class HazelcastLookupService implements CrmLookupService {
 
 	@Override
 	public Province findProvinceByLocalizedName(Locale locale, String province, String country) {
-		String code = findCountryByLocalizedName(locale, country).getCode();
-		return findProvinces(code)
+		Country cntry = findCountryByLocalizedName(locale, country);
+		if (cntry == null) {
+			return null;
+		}
+		return findProvinces(cntry.getCode())
 				.stream()
 				.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
 				.findFirst()
