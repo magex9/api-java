@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class PersonsFilterControllerTests extends AbstractControllerTests {
