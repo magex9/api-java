@@ -15,14 +15,6 @@
 		<relativePath />
 	</parent>
 
-	
-	 <distributionManagement>
-		<repository>
-			<id>finapplicationdevelopment-snapshots</id>
-			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
-		</repository>
-	</distributionManagement>
-
 	<repositories>
 		<repository>
 			<id>finapplicationdevelopment-snapshots</id>
