@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ca.magex.crm.amnesia.Lookups;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.test.AbstractLookupServiceTests;
-import ca.magex.crm.test.TestConfig;
+import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class })

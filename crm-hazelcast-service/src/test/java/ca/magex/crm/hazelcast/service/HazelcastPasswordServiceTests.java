@@ -11,10 +11,10 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.test.AbstractPasswordServiceTests;
-import ca.magex.crm.test.TestConfig;
+import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { TestConfig.class, HazelcastTestConfig.class })
 @ActiveProfiles(profiles =  {MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED, MagexCrmProfiles.CRM_NO_AUTH} )
 public class HazelcastPasswordServiceTests extends AbstractPasswordServiceTests {
 

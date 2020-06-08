@@ -9,10 +9,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.test.AbstractLocationServiceTests;
-import ca.magex.crm.test.TestConfig;
+import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfig.class })
+@ContextConfiguration(classes = { TestConfig.class, HazelcastTestConfig.class })
 @ActiveProfiles(profiles =  {MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED, MagexCrmProfiles.CRM_NO_AUTH} )
 public class HazelcastLocationServiceTests extends AbstractLocationServiceTests {
 	

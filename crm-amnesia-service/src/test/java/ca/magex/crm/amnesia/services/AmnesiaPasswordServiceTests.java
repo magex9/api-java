@@ -13,7 +13,7 @@ import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.resource.CrmLookupLoader;
 import ca.magex.crm.test.AbstractPasswordServiceTests;
-import ca.magex.crm.test.TestConfig;
+import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { TestConfig.class })
