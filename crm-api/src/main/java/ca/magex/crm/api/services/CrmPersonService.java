@@ -2,8 +2,6 @@ package ca.magex.crm.api.services;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -17,6 +15,24 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmPersonService {
+	
+	default PersonDetails prototypePerson(
+			@NotNull Identifier organizationId, 
+			@NotNull PersonName name, 
+			@NotNull MailingAddress address, 
+			@NotNull Communication communication, 
+			@NotNull BusinessPosition position) {
+		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, position);
+	};
+	
+	default PersonDetails createPerson(PersonDetails prototype) {
+		return createPerson(
+			prototype.getOrganizationId(), 
+			prototype.getLegalName(), 
+			prototype.getAddress(),
+			prototype.getCommunication(),
+			prototype.getPosition());
+	}
 
 	PersonDetails createPerson(
 		@NotNull Identifier organizationId, 
@@ -75,16 +91,15 @@ public interface CrmPersonService {
 		@NotNull Paging paging
 	);
 	
-	
-	default Page<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
+	default FilteredPage<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
 		return findPersonDetails(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default Page<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter) {
+	default FilteredPage<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter) {
 		return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default Page<PersonSummary> findActivePersonSummariesForOrg(@NotNull Identifier organizationId) {
+	default FilteredPage<PersonSummary> findActivePersonSummariesForOrg(@NotNull Identifier organizationId) {
 		return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());
 	}
 	

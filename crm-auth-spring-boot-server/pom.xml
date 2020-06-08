@@ -36,13 +36,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-policies</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
+	
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-amnesia-service</artifactId>

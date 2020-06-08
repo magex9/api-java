@@ -7,19 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 
 import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -29,6 +36,10 @@ import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPermissionService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
@@ -37,101 +48,145 @@ import ca.magex.crm.resource.CrmRoleInitializer;
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastInitializationService implements CrmInitializationService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HazelcastInitializationService.class);
 	
-	@Autowired private HazelcastInstance hzInstance;	
-	@Autowired private HazelcastPermissionService hzPermissionService;
-	@Autowired private CrmLookupLoader lookupLoader;	
-	@Autowired private HazelcastOrganizationService hzOrganizationService;
-	@Autowired private HazelcastPersonService hzPersonService;
-	@Autowired private HazelcastUserService hzUserService;
-	@Autowired private HazelcastPasswordService hzPasswordService;
-	@Autowired private PasswordEncoder passwordEncoder;
+	public static String HZ_INIT_KEY = "init";
 	
-	private boolean shouldInitialize = false;
+	private HazelcastInstance hzInstance;	
+	private CrmPermissionService hzPermissionService;
+	private CrmLookupLoader lookupLoader;	
+	private CrmOrganizationService hzOrganizationService;
+	private CrmPersonService hzPersonService;
+	private CrmUserService hzUserService;
+	private CrmPasswordService hzPasswordService;
+	private PasswordEncoder passwordEncoder;
 	
-	@Override
-	public boolean isInitialized() {
-		Map<String, Object> initMap = hzInstance.getMap("init");
-		if (initMap.containsKey("timestamp")) {
-			Long initTimeStamp = (Long) initMap.get("timestamp");
-			for (int i=0; i<10; i++) {				
-				if (initTimeStamp == 0L) {
-					LOG.info("Waiting for hazelcast to be initialized...");
-					try {
-						Thread.sleep(TimeUnit.SECONDS.toMillis(3));
-					}
-					catch(InterruptedException ie) {
-						if (Thread.currentThread().isInterrupted()) {
-							continue;
-						}
-					}
-					initTimeStamp = (Long) initMap.get("timestamp");
-				}
-				else {
-					break;
-				}
-			}
-			LOG.info("Hazelcast CRM Previously Initialized on: " + new Date(initTimeStamp));
-			return true;
+	private Long initializedTimestamp = null;
+	private Long startedTimestamp = null;	
+	
+	public HazelcastInitializationService(
+			HazelcastInstance hzInstance,
+			CrmPermissionService hzPermissionService,			
+			CrmOrganizationService hzOrganizationService,
+			CrmPersonService hzPersonService,
+			CrmUserService hzUserService,
+			CrmPasswordService hzPasswordService,
+			CrmLookupLoader lookupLoader,
+			PasswordEncoder passwordEncoder) {
+		this.hzInstance = hzInstance;
+		this.hzPermissionService = hzPermissionService;
+		this.hzOrganizationService = hzOrganizationService;
+		this.hzPersonService = hzPersonService;
+		this.hzUserService = hzUserService;
+		this.hzPasswordService = hzPasswordService;
+		this.passwordEncoder = passwordEncoder;
+		this.lookupLoader = lookupLoader;		
+	}
+
+	@PostConstruct
+	public void start() {
+		IMap<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
+		if (initMap.containsKey("started")) {
+			waitForStartup(initMap);
+			return;
 		}
-		initMap.put("timestamp", 0L);
-		this.shouldInitialize = true;
-		return false;
+		else {
+			startedTimestamp = (Long) initMap.put("started", 0L); 
+			if (startedTimestamp == null) {
+				LOG.info("Loading Lookups");
+				List<Country> countries = lookupLoader.loadLookup(Country.class, "Country.csv");
+				hzInstance.getList(HazelcastLookupService.HZ_STATUS_KEY).addAll(Arrays.asList(Status.values()));
+				hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).addAll(countries);
+				hzInstance.getList(HazelcastLookupService.HZ_LANGUAGE_KEY).addAll(lookupLoader.loadLookup(Language.class, "Language.csv"));
+				hzInstance.getList(HazelcastLookupService.HZ_SALUTATION_KEY).addAll(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"));
+				hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
+				hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
+				hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
+				// FIXME update to proper countries				
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("CA")).findFirst().get(), Province.class, "CaProvince.csv"));
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("US")).findFirst().get(), Province.class, "UsProvince.csv"));
+				hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(countries.stream().filter((c) -> c.getCode().equalsIgnoreCase("MX")).findFirst().get(), Province.class, "MxProvince.csv"));
+				initMap.put("started", System.currentTimeMillis());
+				LOG.info("Hazelcast CRM Started on: " + new Date((Long) initMap.get("started")));
+				return;
+			}
+			else if (startedTimestamp.equals(Long.valueOf(0))) {
+				/* this means another node is starting, so just wait for it */
+				waitForStartup(initMap);
+				return;
+			}
+			else {
+				/* another node has already started */
+				LOG.info("Hazelcast CRM Previously Started on: " + new Date(startedTimestamp));
+				return;
+			}
+		}
 	}
 	
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
-		if (shouldInitialize) {
-			LOG.info("Initializing Lookups");
-			hzInstance.getList(HazelcastLookupService.HZ_STATUS_KEY).addAll(Arrays.asList(Status.values()));
-			hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).addAll(lookupLoader.loadLookup(Country.class, "Country.csv"));
-			hzInstance.getList(HazelcastLookupService.HZ_LANGUAGE_KEY).addAll(lookupLoader.loadLookup(Language.class, "Language.csv"));
-			hzInstance.getList(HazelcastLookupService.HZ_SALUTATION_KEY).addAll(lookupLoader.loadLookup(Salutation.class, "Salutation.csv"));
-			hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).addAll(lookupLoader.loadLookup(BusinessSector.class, "BusinessSector.csv"));
-			hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).addAll(lookupLoader.loadLookup(BusinessUnit.class, "BusinessUnit.csv"));
-			hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).addAll(lookupLoader.loadLookup(BusinessClassification.class, "BusinessClassification.csv"));
-			hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("CA", lookupLoader.loadLookup(Province.class, "CaProvince.csv"));
-			hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("US", lookupLoader.loadLookup(Province.class, "UsProvince.csv"));
-			hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).put("MX", lookupLoader.loadLookup(Province.class, "MxProvince.csv"));
-			
-			LOG.info("Initializing Permissions");
-			CrmRoleInitializer.initialize(hzPermissionService);			
-			
-			Identifier organizationId = hzOrganizationService.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
-			Identifier personId = hzPersonService.createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
-			User initialUser = hzUserService.createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN"));			
-			hzPasswordService.generateTemporaryPassword(username);
-			hzPasswordService.updatePassword(username, passwordEncoder.encode(password));
-			
-			shouldInitialize = false;
-			return initialUser;
+		Map<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
+		if (initMap.get("initialized") != null) {
+			waitForInitialization(initMap);
+			return hzUserService.findUserByUsername(username);
 		}
-		return hzUserService.findUserByUsername(username);
+		else {
+			initializedTimestamp = (Long) initMap.put("initialized", 0L);
+			if (initializedTimestamp == null) {
+				LOG.info("Initializing Permissions");
+				CrmRoleInitializer.initialize(hzPermissionService);	
+				LOG.info("Initializing Organizations");
+				Identifier organizationId = hzOrganizationService.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
+				Identifier personId = hzPersonService.createPerson(organizationId, name, null, new Communication(null, null, email, null, null), null).getPersonId();
+				User initialUser = hzUserService.createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN"));			
+				hzPasswordService.generateTemporaryPassword(username);
+				hzPasswordService.updatePassword(username, passwordEncoder.encode(password));
+				initMap.put("initialized", System.currentTimeMillis());
+				return initialUser; 
+			}
+			else if (initializedTimestamp.equals(Long.valueOf(0))) {
+				/* this means another node is starting, so just wait for it */
+				waitForInitialization(initMap);
+				return hzUserService.findUserByUsername(username);
+			}
+			else {
+				/* another node has already started */
+				LOG.info("Hazelcast CRM Previously Started on: " + new Date(startedTimestamp));
+				return hzUserService.findUserByUsername(username);
+			}
+		}		
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		Map<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
+		if (initMap.containsKey("initialized")) {
+			waitForInitialization(initMap);
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	@Override
 	public boolean reset() {
-		hzInstance.getList(HazelcastLookupService.HZ_STATUS_KEY).clear();
-		hzInstance.getList(HazelcastLookupService.HZ_COUNTRY_KEY).clear();
-		hzInstance.getList(HazelcastLookupService.HZ_LANGUAGE_KEY).clear();
-		hzInstance.getList(HazelcastLookupService.HZ_SALUTATION_KEY).clear();
-		hzInstance.getList(HazelcastLookupService.HZ_SECTOR_KEY).clear();
-		hzInstance.getList(HazelcastLookupService.HZ_UNIT_KEY).clear();
-		hzInstance.getList(HazelcastLookupService.HZ_CLASSIFICATION_KEY).clear();
-		hzInstance.getMap(HazelcastLookupService.HZ_PROVINCES_KEY).clear();
-		
+		Map<String, Object> initMap = hzInstance.getMap(HZ_INIT_KEY);
+		initMap.remove("initialized");
 		hzInstance.getMap(HazelcastLocationService.HZ_LOCATION_KEY).clear();
 		hzInstance.getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY).clear();
 		hzInstance.getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY).clear();
 		hzInstance.getMap(HazelcastPermissionService.HZ_GROUP_KEY).clear();
 		hzInstance.getMap(HazelcastPermissionService.HZ_ROLE_KEY).clear();
 		hzInstance.getMap(HazelcastPersonService.HZ_PERSON_KEY).clear();
-		hzInstance.getMap(HazelcastUserService.HZ_USER_KEY).clear();
-		
-		shouldInitialize = true;
+		hzInstance.getMap(HazelcastUserService.HZ_USER_KEY).clear();		
+		initializedTimestamp = null;
 		return true;
 	}
 	
@@ -160,5 +215,59 @@ public class HazelcastInitializationService implements CrmInitializationService 
 					}
 				});
 		}
+	}
+	
+	/**
+	 * helper method to wait for startup to occur
+	 * @param initMap
+	 */
+	private void waitForStartup(Map<String, Object> initMap) {	
+		startedTimestamp = (Long) initMap.get("started");
+		for (int i=0; i<10; i++) {				
+			if (startedTimestamp == 0L) {
+				LOG.info("Waiting for hazelcast to be started...");
+				try {
+					Thread.sleep(TimeUnit.SECONDS.toMillis(3));
+				}
+				catch(InterruptedException ie) {
+					if (Thread.currentThread().isInterrupted()) {
+						continue;
+					}
+				}
+				startedTimestamp = (Long) initMap.get("started");
+			}
+			else {
+				break;
+			}
+		}
+		LOG.info("Hazelcast CRM Previously Started on: " + new Date(startedTimestamp));
+		return;
+	}
+	
+	/**
+	 * helper method to wait for startup to occur
+	 * @param initMap
+	 */
+	private void waitForInitialization(Map<String, Object> initMap) {	
+		initializedTimestamp = (Long) initMap.get("initialized");
+		for (int i=0; i<10; i++) {				
+			if (initializedTimestamp == 0L) {
+				LOG.info("Waiting for hazelcast to be initialized...");
+				try {
+					Thread.sleep(TimeUnit.SECONDS.toMillis(3));
+				}
+				catch(InterruptedException ie) {
+					if (Thread.currentThread().isInterrupted()) {
+						continue;
+					}
+				}
+				initializedTimestamp = (Long) initMap.get("initialized");
+			}
+			else {
+				break;
+			}
+		}
+		LOG.info("Hazelcast CRM Previously Initialized on: " + new Date(initializedTimestamp));
+		return;
 	}
 }

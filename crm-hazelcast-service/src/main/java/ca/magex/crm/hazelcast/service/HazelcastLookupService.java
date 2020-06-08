@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.hazelcast.core.HazelcastInstance;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -38,33 +36,37 @@ public class HazelcastLookupService implements CrmLookupService {
 	public static String HZ_UNIT_KEY = "units";
 	public static String HZ_CLASSIFICATION_KEY = "classifications";
 	public static String HZ_PROVINCES_KEY = "classifications";
-		
-	@Autowired private HazelcastInstance hzInstance;
-	
+
+	private HazelcastInstance hzInstance;
+
+	public HazelcastLookupService(HazelcastInstance hzInstance) {
+		this.hzInstance = hzInstance;
+	}
+
 	@Override
 	public List<Status> findStatuses() {
 		return hzInstance.getList(HZ_STATUS_KEY);
 	}
 
 	@Override
-	public Status findStatusByCode(String code) throws ItemNotFoundException {
+	public Status findStatusByCode(String code) {
 		return hzInstance.getList(HZ_STATUS_KEY)
 				.stream()
 				.map((s) -> (Status) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Status '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Status findStatusByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_STATUS_KEY)
 				.stream()
 				.map((s) -> (Status) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Status[" + locale + "] '" + name + "'"));
-	}	
+				.orElse(null);
+	}
 
 	@Override
 	public List<Country> findCountries() {
@@ -72,47 +74,50 @@ public class HazelcastLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public Country findCountryByCode(String code) throws ItemNotFoundException {
+	public Country findCountryByCode(String code) {
 		return hzInstance.getList(HZ_COUNTRY_KEY)
 				.stream()
 				.map((s) -> (Country) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Country '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Country findCountryByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_COUNTRY_KEY)
 				.stream()
 				.map((s) -> (Country) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Country[" + locale + "] '" + name + "'"));
-	}	
-	
+				.orElse(null);
+	}
+
 	@Override
 	public List<Province> findProvinces(String country) {
 		return (List<Province>) hzInstance.getMap(HZ_PROVINCES_KEY).getOrDefault(StringUtils.upperCase(country), new ArrayList<Province>());
 	}
-	
+
 	@Override
 	public Province findProvinceByCode(String province, String country) {
 		return findProvinces(country)
 				.stream()
 				.filter((p) -> StringUtils.equalsIgnoreCase(p.getCode(), province))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Province '" + province + "' for Country '" + country + "'"));
+				.orElse(null);
 	}
-	
+
 	@Override
 	public Province findProvinceByLocalizedName(Locale locale, String province, String country) {
-		String code = findCountryByLocalizedName(locale, country).getCode();
-		return findProvinces(code)
-			.stream()
-			.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
-			.findFirst()
-			.orElseThrow(() -> new ItemNotFoundException("Province[" + locale + "] '" + province + "' for country '" + country + "'"));
+		Country cntry = findCountryByLocalizedName(locale, country);
+		if (cntry == null) {
+			return null;
+		}
+		return findProvinces(cntry.getCode())
+				.stream()
+				.filter((p) -> StringUtils.equalsIgnoreCase(p.getName(locale), province))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -121,23 +126,23 @@ public class HazelcastLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public Language findLanguageByCode(String code) throws ItemNotFoundException {
+	public Language findLanguageByCode(String code) {
 		return hzInstance.getList(HZ_LANGUAGE_KEY)
 				.stream()
 				.map((s) -> (Language) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Language '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Language findLanguageByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_LANGUAGE_KEY)
 				.stream()
 				.map((s) -> (Language) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Language[" + locale + "] '" + name + "'"));
+				.orElse(null);
 	}
 
 	@Override
@@ -146,23 +151,23 @@ public class HazelcastLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
+	public Salutation findSalutationByCode(String code) {
 		return hzInstance.getList(HZ_SALUTATION_KEY)
 				.stream()
 				.map((s) -> (Salutation) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Salutation '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Salutation findSalutationByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_SALUTATION_KEY)
 				.stream()
 				.map((s) -> (Salutation) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("Salutation[" + locale + "] '" + name + "'"));
+				.orElse(null);
 	}
 
 	@Override
@@ -171,23 +176,23 @@ public class HazelcastLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByCode(String code) {
 		return hzInstance.getList(HZ_SECTOR_KEY)
 				.stream()
 				.map((s) -> (BusinessSector) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("BusinessSector '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_SECTOR_KEY)
 				.stream()
 				.map((s) -> (BusinessSector) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("BusinessSector[" + locale + "] '" + name + "'"));
+				.orElse(null);
 	}
 
 	@Override
@@ -196,23 +201,23 @@ public class HazelcastLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByCode(String code) {
 		return hzInstance.getList(HZ_UNIT_KEY)
 				.stream()
 				.map((s) -> (BusinessUnit) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("BusinessUnit '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_UNIT_KEY)
 				.stream()
 				.map((s) -> (BusinessUnit) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("BusinessUnit[" + locale + "] '" + name + "'"));
+				.orElse(null);
 	}
 
 	@Override
@@ -221,22 +226,22 @@ public class HazelcastLookupService implements CrmLookupService {
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByCode(String code) {
 		return hzInstance.getList(HZ_CLASSIFICATION_KEY)
 				.stream()
 				.map((s) -> (BusinessClassification) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getCode(), code))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("BusinessClassification '" + code + "'"));
+				.orElse(null);
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) {
 		return hzInstance.getList(HZ_CLASSIFICATION_KEY)
 				.stream()
 				.map((s) -> (BusinessClassification) s)
 				.filter((s) -> StringUtils.equalsIgnoreCase(s.getName(locale), name))
 				.findFirst()
-				.orElseThrow(() -> new ItemNotFoundException("BusinessClassification[" + locale + "] '" + name + "'"));
+				.orElse(null);
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 //import org.junit.Assert;
 //import org.junit.Test;
 import org.springframework.data.domain.Sort;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Sort.Direction;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.system.Localized;
 
+@TestInstance(Lifecycle.PER_METHOD)
 public class PagingTests {
 			
 	@Test

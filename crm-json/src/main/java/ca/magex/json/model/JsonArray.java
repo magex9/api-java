@@ -58,6 +58,10 @@ public final class JsonArray extends JsonElement {
 		return ((JsonText)get(index)).value();
 	}
 	
+	public Number getNumber(int index) {
+		return ((JsonNumber)get(index)).value();
+	}
+	
 	public Integer getInt(int index) {
 		return ((JsonNumber)get(index)).value().intValue();
 	}

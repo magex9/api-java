@@ -10,6 +10,7 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Status;
 
 /**
  * The CRM Organization service is used to manage organizations that are owned
@@ -38,6 +39,18 @@ import ca.magex.crm.api.system.Identifier;
  */
 public interface CrmOrganizationService {
 
+	default OrganizationDetails prototypeOrganization(
+			@NotNull String displayName,
+			@NotNull List<String> groups) {
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groups);
+	}
+	
+	default OrganizationDetails createOrganization(OrganizationDetails prototype) {
+		return createOrganization(
+			prototype.getDisplayName(), 
+			prototype.getGroups());
+	}
+	
 	/**
 	 * Create a new organization for a customer or the system.
 	 * 
@@ -51,7 +64,7 @@ public interface CrmOrganizationService {
 	 * @return Details about the new organization
 	 */
 	OrganizationDetails createOrganization(
-		@NotNull String organizationDisplayName,
+		@NotNull String displayName,
 		@NotNull List<String> groups
 	);
 

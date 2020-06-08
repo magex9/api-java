@@ -1,26 +1,26 @@
 package ca.magex.crm.hazelcast.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.PageBuilder;
@@ -30,38 +30,51 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.services.StructureValidationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
+import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
+		ItemNotFoundException.class,
+		BadRequestException.class
+})
 public class HazelcastUserService implements CrmUserService {
 
 	public static String HZ_USER_KEY = "users";
 
-	@Autowired private HazelcastInstance hzInstance;
-	@Autowired private PasswordEncoder passwordEncoder;
-	@Autowired private CrmPasswordService passwordService;
-	@Autowired private CrmPersonService personService;
-	@Autowired private CrmPermissionService permissionService;
-	
-	@Autowired @Lazy private StructureValidationService validationService; // needs to be lazy because it depends on other services
+	private XATransactionAwareHazelcastInstance hzInstance;
+	private PasswordEncoder passwordEncoder;
+	private CrmPasswordService passwordService;
+	private CrmPersonService personService;
+	private CrmPermissionService permissionService;
+
+	public HazelcastUserService(
+			XATransactionAwareHazelcastInstance hzInstance,
+			PasswordEncoder passwordEncoder,
+			CrmPasswordService passwordService,
+			CrmPersonService personService,
+			CrmPermissionService permissionService) {
+		this.hzInstance = hzInstance;
+		this.passwordEncoder = passwordEncoder;
+		this.passwordService = passwordService;
+		this.personService = personService;
+		this.permissionService = permissionService;
+	}
 
 	@Override
-	public User createUser(
-			@NotNull Identifier personId,
-			@NotNull String username,
-			@NotNull List<String> roles) {
+	public User createUser(Identifier personId, String username, List<String> roles) {
 		roles.forEach((role) -> {
 			permissionService.findRoleByCode(role); // ensure each role exists
 		});
 		/* run a find on the personId to ensure it exists */
 		PersonSummary person = personService.findPersonSummary(personId);
 		/* create our new user */
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_USER_KEY);
 		/* ensure the user name doen't exist */
 		if (users.values().stream()
@@ -81,20 +94,18 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User findUser(
-			@NotNull Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+	public User findUser(Identifier userId) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		return SerializationUtils.clone(user);
 	}
 
 	@Override
-	public User findUserByUsername(
-			@NotNull String username) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+	public User findUserByUsername(String username) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.values().stream()
 				.filter(u -> StringUtils.equalsIgnoreCase(u.getUsername(), username))
 				.findFirst()
@@ -105,13 +116,11 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User updateUserRoles(
-			@NotNull Identifier userId,
-			@NotNull List<String> roles) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+	public User updateUserRoles(Identifier userId, List<String> roles) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		if (user.getRoles().containsAll(roles) && roles.containsAll(user.getRoles())) {
 			return SerializationUtils.clone(user);
@@ -122,12 +131,11 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User enableUser(
-			@NotNull Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+	public User enableUser(Identifier userId) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		if (user.getStatus() == Status.ACTIVE) {
 			return SerializationUtils.clone(user);
@@ -138,12 +146,11 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public User disableUser(
-			@NotNull Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+	public User disableUser(Identifier userId) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		if (user.getStatus() == Status.INACTIVE) {
 			return SerializationUtils.clone(user);
@@ -154,66 +161,69 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public boolean changePassword(
-			@NotNull Identifier userId,
-			@NotNull String currentPassword,
-			@NotNull String newPassword) {
-		if (!isValidPasswordFormat(newPassword))
+	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+		if (!isValidPasswordFormat(newPassword)) {
 			return false;
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+		}
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return false;
 		}
 		if (passwordService.verifyPassword(user.getUsername(), currentPassword)) {
 			passwordService.updatePassword(user.getUsername(), passwordEncoder.encode(newPassword));
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	@Override
-	public String resetPassword(
-			@NotNull Identifier userId) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
+	public String resetPassword(Identifier userId) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
 		User user = users.get(userId);
 		if (user == null) {
-			throw new ItemNotFoundException("User ID '" + userId + "'");
+			return null;
 		}
 		return passwordService.generateTemporaryPassword(user.getUsername());
 	}
 
 	@Override
-	public long countUsers(
-			@NotNull UsersFilter filter) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
-		return users.values()
-				.stream()
-				.filter(u -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(u.getPerson().getOrganizationId()) : true)
-				.filter(u -> filter.getStatus() != null ? filter.getStatus().equals(u.getStatus()) : true)
-				.filter(u -> filter.getPersonId() != null ? filter.getPersonId().equals(u.getPerson().getPersonId()) : true)
-				.filter(u -> filter.getRole() != null ? u.getRoles().contains(filter.getRole()) : true)
-				.filter(u -> filter.getUsername() != null ? StringUtils.equals(filter.getUsername(), u.getUsername()) : true)
-				.count();
+	public long countUsers(UsersFilter filter) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
+		return users.values(new CrmFilterPredicate<User>(filter)).size();
 	}
 
 	@Override
 	public FilteredPage<User> findUsers(
-			@NotNull UsersFilter filter,
-			@NotNull Paging paging) {
-		Map<Identifier, User> users = hzInstance.getMap(HZ_USER_KEY);
-		List<User> allMatchingUsers = users.values()
+			UsersFilter filter,
+			Paging paging) {
+		TransactionalMap<Identifier, User> users = hzInstance.getUsersMap();
+		List<User> allMatchingUsers = users.values(new CrmFilterPredicate<User>(filter))
 				.stream()
-				.filter(u -> filter.getOrganizationId() != null ? filter.getOrganizationId().equals(u.getPerson().getOrganizationId()) : true)
-				.filter(u -> filter.getStatus() != null ? filter.getStatus().equals(u.getStatus()) : true)
-				.filter(u -> filter.getPersonId() != null ? filter.getPersonId().equals(u.getPerson().getPersonId()) : true)
-				.filter(u -> filter.getRole() != null ? u.getRoles().contains(filter.getRole()) : true)
-				.filter(u -> filter.getUsername() != null ? StringUtils.equals(filter.getUsername(), u.getUsername()) : true)
 				.map(u -> SerializationUtils.clone(u))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingUsers, paging);
+	}
+
+	@Override
+	public FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
+		return CrmUserService.super.findActiveUserForOrg(organizationId);
+	}
+
+	@Override
+	public FilteredPage<User> findUsers(UsersFilter filter) {
+		return CrmUserService.super.findUsers(filter);
+	}
+
+	@Override
+	public User createUser(User prototype) {
+		return CrmUserService.super.createUser(prototype);
+	}
+
+	@Override
+	public User prototypeUser(@NotNull Identifier personId, @NotNull String username, @NotNull List<String> roles) {
+		return CrmUserService.super.prototypeUser(personId, username, roles);
 	}
 }

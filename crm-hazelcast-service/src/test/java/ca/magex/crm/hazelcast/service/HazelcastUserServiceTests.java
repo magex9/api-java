@@ -7,48 +7,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.test.AbstractUserServiceTests;
-import ca.magex.crm.test.TestConfig;
+import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfig.class })
-@ActiveProfiles(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@ContextConfiguration(classes = { TestConfig.class, HazelcastTestConfig.class })
+@ActiveProfiles(profiles =  {MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED, MagexCrmProfiles.CRM_NO_AUTH} )
 public class HazelcastUserServiceTests extends AbstractUserServiceTests {
 
-	@Autowired private CrmInitializationService hzInitializationService;
-	@Autowired private CrmPermissionService hzPermissionService;
-	@Autowired private CrmUserService hzUserService;
-	@Autowired private CrmOrganizationService hzOrganizationService;
-	@Autowired private CrmPersonService hzPersonService;
-	
-	@Override
-	public CrmInitializationService getInitializationService() {
-		return hzInitializationService;
+	@Autowired
+	public void setCrm(Crm crm) {
+		this.crm = crm;
 	}
-
-	@Override
-	public CrmUserService getUserService() {
-		return hzUserService;
-	}
-
-	@Override
-	public CrmOrganizationService getOrganizationService() {
-		return hzOrganizationService;
-	}
-
-	@Override
-	public CrmPersonService getPersonService() {
-		return hzPersonService;
-	}
-
-	@Override
-	public CrmPermissionService getPermissionService() {
-		return hzPermissionService;
-	}
-
 }

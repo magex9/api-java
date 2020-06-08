@@ -9,28 +9,21 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
-import ca.magex.crm.api.system.Status;
 
 public class LocalizedFilter implements CrmFilter<Localized> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	public static final Sort SORT_ENGLISH_ASC = Sort.by(Order.asc(":" + Lang.ENGLISH));
-
 	public static final Sort SORT_ENGLISH_DESC = Sort.by(Order.desc(":" + Lang.ENGLISH));
-
 	public static final Sort SORT_FRENCH_ASC = Sort.by(Order.asc(":" + Lang.FRENCH));
-
 	public static final Sort SORT_FRENCH_DESC = Sort.by(Order.desc(":" + Lang.FRENCH));
-
 	public static final Sort SORT_CODE_ASC = Sort.by(Order.asc(":" + Lang.ROOT));
-
 	public static final Sort SORT_CODE_DESC = Sort.by(Order.desc(":" + Lang.ROOT));
 
 	public static final List<Sort> SORT_OPTIONS = List.of(
@@ -88,16 +81,12 @@ public class LocalizedFilter implements CrmFilter<Localized> {
 		return new LocalizedFilter(englishName, frenchName, code);
 	}
 	
-	public LocalizedFilter withStatus(Status status) {
-		return new LocalizedFilter(englishName, frenchName, code);
-	}
-	
 	public static List<Sort> getSortOptions() {
 		return SORT_OPTIONS;
 	}
 	
 	public static Sort getDefaultSort() {
-		return Sort.by(Direction.ASC, "name");
+		return SORT_CODE_ASC;
 	}
 
 	public static Paging getDefaultPaging() {

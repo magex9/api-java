@@ -33,12 +33,8 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
-		List<Group> allMatchingGroups = db.findByType(Group.class)
-			.filter(g -> filter.apply(g))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
+	public Group createGroup(Localized name) {
+		return db.saveGroup(new Group(db.generateId(), Status.ACTIVE, name));
 	}
 
 	@Override
@@ -52,36 +48,32 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Group createGroup(Localized name) {
-		return db.saveGroup(validate(new Group(db.generateId(), Status.ACTIVE, name)));
-	}
-
-	@Override
 	public Group updateGroupName(Identifier groupId, Localized name) {
-		return db.saveGroup(validate(db.findGroup(groupId).withName(name)));
+		return db.saveGroup(db.findGroup(groupId).withName(name));
 	}
 	
 	@Override
 	public Group enableGroup(Identifier groupId) {
-		return db.saveGroup(validate(findGroup(groupId).withStatus(Status.ACTIVE)));
+		return db.saveGroup(findGroup(groupId).withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public Group disableGroup(Identifier groupId) {
-		return db.saveGroup(validate(findGroup(groupId).withStatus(Status.INACTIVE)));
-	}
-
-	private Group validate(Group group) {
-		return db.getValidation().validate(group);
+		return db.saveGroup(findGroup(groupId).withStatus(Status.INACTIVE));
 	}
 
 	@Override
-	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
-		List<Role> allRoles = db.findByType(Role.class)
-			.filter(r -> filter.apply(r))
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
+		List<Group> allMatchingGroups = db.findByType(Group.class)
+			.filter(g -> filter.apply(g))
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(filter, allRoles, paging);
+		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
+	}
+
+	@Override
+	public Role createRole(Identifier groupId, Localized name) {
+		return db.saveRole(new Role(db.generateId(), groupId, Status.ACTIVE, name));
 	}
 
 	@Override
@@ -95,27 +87,27 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, Localized name) {
-		return db.saveRole(validate(new Role(db.generateId(), groupId, Status.ACTIVE, name)));
-	}
-
-	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
-		return db.saveRole(validate(db.findRole(roleId).withName(name)));
+		return db.saveRole(db.findRole(roleId).withName(name));
 	}
 
 	@Override
 	public Role enableRole(Identifier roleId) {
-		return db.saveRole(validate(findRole(roleId).withStatus(Status.ACTIVE)));
+		return db.saveRole(findRole(roleId).withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public Role disableRole(Identifier roleId) {
-		return db.saveRole(validate(findRole(roleId).withStatus(Status.INACTIVE)));
+		return db.saveRole(findRole(roleId).withStatus(Status.INACTIVE));
 	}
 
-	private Role validate(Role role) {
-		return db.getValidation().validate(role);
+	@Override
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
+		List<Role> allRoles = db.findByType(Role.class)
+			.filter(r -> filter.apply(r))
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(filter, allRoles, paging);
 	}
 
 }

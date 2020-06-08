@@ -11,25 +11,47 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	 <distributionManagement>
+		<repository>
+			<id>finapplicationdevelopment-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>appdev-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	
 	<modules>	
 		<module>crm-maven-parent</module>
 		<module>crm-json</module>
+		<module>crm-json-transformers</module>
 		
 		<!-- Support Modules -->
-		<module>crm-api</module>
+		<module>crm-api</module>		
 		<module>crm-resources</module>		
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
 		<module>crm-zuul-spring-boot-server</module>
 		
+		<!-- Playground Module -->
+		<module>crm-helloworld</module>	
+		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
-<!-- 		<module>crm-hazelcast-service</module> -->
+ 		<module>crm-hazelcast-service</module>
 		
-		<!-- Policy Implementations -->
-		<module>crm-policies</module>		
-		
+				
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>
 		<module>crm-auth-spring-boot-server</module>
@@ -45,7 +67,6 @@
 <!--  		<module>crm-graphql-spring-boot-feign-client</module> -->
 		
 		<!-- REST Endpoint Implementation -->
-		<module>crm-restful-json</module>
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
 <!-- 		<module>crm-restful-client</module> -->

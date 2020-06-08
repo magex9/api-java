@@ -88,21 +88,21 @@ public class AmnesiaPersonService implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, applyFilter(filter)
-				.map(i -> SerializationUtils.clone(i))
-				.sorted(filter.getComparator(paging))
-				.collect(Collectors.toList()), paging);
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList()), paging);
 	}
 
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, applyFilter(filter)
-				.map(i -> SerializationUtils.clone(i))
-				.sorted(filter.getComparator(paging))
-				.collect(Collectors.toList()), paging);
+			.map(i -> SerializationUtils.clone(i))
+			.sorted(filter.getComparator(paging))
+			.collect(Collectors.toList()), paging);
 	}
 
 	private Stream<PersonDetails> applyFilter(PersonsFilter filter) {
 		return db.findByType(PersonDetails.class)
-				.filter(p -> filter.apply(p));
+			.filter(p -> filter.apply(p));
 	}
 }
