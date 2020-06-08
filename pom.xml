@@ -11,6 +11,26 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	 <distributionManagement>
+		<repository>
+			<id>finapplicationdevelopment-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>appdev-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	
 	<modules>	
 		<module>crm-maven-parent</module>
@@ -18,6 +38,7 @@
 		
 		<!-- Support Modules -->
 		<module>crm-api</module>
+		<module>crm-helloworld</module>
 		<module>crm-resources</module>		
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
@@ -25,7 +46,7 @@
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
-<!-- 		<module>crm-hazelcast-service</module> -->
+ 		<module>crm-hazelcast-service</module>
 		
 		<!-- Policy Implementations -->
 		<module>crm-policies</module>		
