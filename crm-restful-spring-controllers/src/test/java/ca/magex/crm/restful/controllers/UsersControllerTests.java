@@ -17,7 +17,6 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class UsersControllerTests extends AbstractControllerTests {

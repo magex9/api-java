@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
 
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;

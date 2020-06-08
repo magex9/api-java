@@ -9,7 +9,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -209,12 +208,12 @@ public class HazelcastUserService implements CrmUserService {
 	}
 
 	@Override
-	public Page<User> findActiveUserForOrg(Identifier organizationId) {
+	public FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
 		return CrmUserService.super.findActiveUserForOrg(organizationId);
 	}
 
 	@Override
-	public Page<User> findUsers(UsersFilter filter) {
+	public FilteredPage<User> findUsers(UsersFilter filter) {
 		return CrmUserService.super.findUsers(filter);
 	}
 

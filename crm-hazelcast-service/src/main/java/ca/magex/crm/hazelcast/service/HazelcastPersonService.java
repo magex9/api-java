@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -211,17 +210,17 @@ public class HazelcastPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public Page<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
+	public FilteredPage<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
 		return CrmPersonService.super.findActivePersonSummariesForOrg(organizationId);
 	}
 
 	@Override
-	public Page<PersonDetails> findPersonDetails(PersonsFilter filter) {
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter) {
 		return CrmPersonService.super.findPersonDetails(filter);
 	}
 
 	@Override
-	public Page<PersonSummary> findPersonSummaries(PersonsFilter filter) {
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter) {
 		return CrmPersonService.super.findPersonSummaries(filter);
 	}
 

@@ -7,11 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.graphql.client.CrmServicesGraphQLClientImpl;
 import ca.magex.crm.test.CrmServicesTestSuite;
 

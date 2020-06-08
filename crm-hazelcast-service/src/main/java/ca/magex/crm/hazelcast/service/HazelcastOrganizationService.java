@@ -183,13 +183,13 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		return organizations.values(new CrmFilterPredicate<OrganizationSummary>(filter)).size();				
+		return organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter)).size();				
 	}
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		List<OrganizationDetails> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationSummary>(filter))
+		List<OrganizationDetails> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter))
 				.stream()				
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
@@ -200,7 +200,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		List<OrganizationSummary> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationSummary>(filter))
+		List<OrganizationSummary> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter))
 				.stream()
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))

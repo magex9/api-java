@@ -2,8 +2,6 @@ package ca.magex.crm.api.services;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
