@@ -19,10 +19,14 @@
 		
 		<!-- Support Modules -->
 		<module>crm-api</module>
-		<module>crm-resources</module>		
+		<module>crm-resources</module>
+			
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
 		<module>crm-zuul-spring-boot-server</module>
+		
+		<!-- Playground Module -->
+		<module>crm-helloworld</module>	
 		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
