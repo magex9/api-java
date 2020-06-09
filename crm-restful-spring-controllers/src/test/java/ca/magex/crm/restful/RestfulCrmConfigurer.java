@@ -1,8 +1,7 @@
-package ca.magex.crm.graphql;
+package ca.magex.crm.restful;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import ca.magex.crm.api.config.CrmConfigurer;
@@ -18,10 +17,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 
 @Configuration
-@ComponentScan(basePackages = {
-		"ca.magex.crm.graphql"
-		})
-public class GraphQLTestConfig implements CrmConfigurer {
+public class RestfulCrmConfigurer implements CrmConfigurer {
 
 	/* autowired services */
 	@Autowired private CrmInitializationService initializationService;	

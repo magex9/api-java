@@ -6,12 +6,12 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 
 @SpringBootApplication(scanBasePackages = {
 		"ca.magex.crm.api",
-		"ca.magex.crm.resource",		
+		"ca.magex.crm.caching",
+		"ca.magex.crm.resource",
 		"ca.magex.crm.amnesia",
 		"ca.magex.crm.hazelcast",
 		"ca.magex.crm.graphql",
-		"ca.magex.crm.spring.security",
-		"ca.magex.crm.policy"
+		"ca.magex.crm.spring.security",		
 })
 public class CrmGraphqlApplication {
 

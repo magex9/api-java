@@ -37,7 +37,7 @@ public class CachingOrganizationServiceTests {
 
 	@Autowired private CrmOrganizationService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("caching") private CrmOrganizationService organizationService;
+	@Autowired @Qualifier("CachingOrganizationService") private CrmOrganizationService organizationService;
 
 	@Before
 	public void reset() {

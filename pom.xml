@@ -51,7 +51,9 @@
 		<module>crm-amnesia-service</module>
  		<module>crm-hazelcast-service</module>
 		
-				
+		<!-- Caching Implementations -->
+		<module>crm-spring-caching</module>
+
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>
 		<module>crm-auth-spring-boot-server</module>
