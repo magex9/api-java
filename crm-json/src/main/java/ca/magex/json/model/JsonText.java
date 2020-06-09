@@ -1,5 +1,7 @@
 package ca.magex.json.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public final class JsonText extends JsonElement {
 
 	private final String value;
@@ -11,6 +13,10 @@ public final class JsonText extends JsonElement {
 	
 	public String value() {
 		return value;
+	}
+	
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(value);
 	}
 	
 }

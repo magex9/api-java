@@ -93,5 +93,32 @@ public final class JsonArray extends JsonElement {
 	public boolean isEmpty() {
 		return elements.isEmpty();
 	}
+	
+	public JsonArray prune() {
+		List<JsonElement> pruned = new ArrayList<JsonElement>();
+		for (JsonElement element : elements) {
+			if (element.getClass().equals(JsonObject.class)) {
+				JsonObject obj = ((JsonObject)element).prune();
+				if (!obj.isEmpty())
+					pruned.add(obj);
+			} else if (element.getClass().equals(JsonArray.class)) {
+				JsonArray array = ((JsonArray)element).prune();
+				if (!array.isEmpty())
+					pruned.add(array);
+			} else if (element.getClass().equals(JsonText.class)) {
+				if (!((JsonText)element).isEmpty())
+					pruned.add(element);
+			} else if (element.getClass().equals(JsonNumber.class)) {
+				if (!((JsonNumber)element).isEmpty())
+					pruned.add(element);
+			} else if (element.getClass().equals(JsonBoolean.class)) {
+				if (!((JsonBoolean)element).isEmpty())
+					pruned.add(element);
+			} else {
+				throw new IllegalArgumentException("Unexpected element to prune: " + element.getClass());
+			}
+		}
+		return new JsonArray(pruned);
+	}
 
 }
