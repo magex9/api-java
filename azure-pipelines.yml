@@ -72,17 +72,14 @@ stages:
               parameters:
                 environment: 'ut'
                 application_name: crm-graphql-spring-boot-server
-                application_version: 1.0.0-SNAPSHOT
                 sshEndpoint: 'ssh - RD3'
             - template: azure-deploy.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-restful-spring-boot-server
-                application_version: 1.0.0-SNAPSHOT
                 sshEndpoint: 'ssh - RD3'
             - template: azure-deploy.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-helloworld
-                application_version: 1.0.0-SNAPSHOT
                 sshEndpoint: 'ssh - RD3'    
