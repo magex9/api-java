@@ -3,7 +3,6 @@ package ca.magex.crm.caching.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.config.CrmConfigurerAdapter;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
