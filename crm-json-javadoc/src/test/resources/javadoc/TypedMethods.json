@@ -1,0 +1,33 @@
+{
+  "name": "TypedMethods",
+  "generics": [],
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": [],
+  "implements": [],
+  "imports": {"List": "java.util"},
+  "fields": [],
+  "methods": [
+    {
+      "name": "find",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["T"]
+      },
+      "parameters": [{
+        "name": "type",
+        "type": "T"
+      }]
+    },
+    {
+      "name": "load",
+      "modifiers": ["public"],
+      "type": "K",
+      "parameters": [{
+        "name": "id",
+        "type": "String"
+      }]
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 {
-  "description": "A basic entity test\r\n@author scott",
+  "name": "BasicEntity",
+  "generics": [],
+  "type": "class",
+  "modifiers": ["public"],
+  "extends": [],
+  "implements": [],
+  "description": "A basic entity test\n@author scott",
   "imports": {},
   "fields": [{
     "name": "name",
@@ -10,20 +16,20 @@
   "methods": [
     {
       "name": "getName",
-      "description": "Get the name of the entity\r\n@return entity name",
+      "description": "Get the name of the entity\n@return entity name",
       "modifiers": ["public"],
       "type": "String",
-      "body": "{\r\n    return name;\r\n}"
+      "body": "{\n    return name;\n}"
     },
     {
       "name": "setName",
-      "description": "Set the name of the entity\r\n@param name the new name",
+      "description": "Set the name of the entity\n@param name the new name",
       "modifiers": ["public"],
       "parameters": [{
         "name": "name",
         "type": "String"
       }],
-      "body": "{\r\n    this.name = name;\r\n}"
+      "body": "{\n    this.name = name;\n}"
     }
   ]
 }

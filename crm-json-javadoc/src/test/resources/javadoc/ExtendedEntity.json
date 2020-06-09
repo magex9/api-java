@@ -1,0 +1,86 @@
+{
+  "name": "ExtendedEntity",
+  "generics": [],
+  "type": "class",
+  "modifiers": [
+    "public",
+    "final"
+  ],
+  "extends": ["BasicEntity"],
+  "implements": [
+    "Cloneable",
+    "Serializable"
+  ],
+  "description": "A basic entity test\n@author scott",
+  "imports": {
+    "Serializable": "java.io",
+    "HashMap": "java.util",
+    "List": "java.util",
+    "Locale": "java.util",
+    "Map": "java.util"
+  },
+  "fields": [
+    {
+      "name": "locales",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": {
+        "class": "List",
+        "generics": ["Locale"]
+      }
+    },
+    {
+      "name": "cache",
+      "modifiers": ["private"],
+      "type": {
+        "class": "Map",
+        "generics": [
+          "BasicEntity",
+          {
+            "class": "Map",
+            "generics": [
+              "Locale",
+              {
+                "class": "List",
+                "generics": ["? extends BasicEntity"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "methods": [
+    {
+      "name": "findChildren",
+      "modifiers": ["public"],
+      "type": {
+        "class": "Map",
+        "generics": [
+          "Locale",
+          {
+            "class": "List",
+            "generics": ["? extends BasicEntity"]
+          }
+        ]
+      },
+      "parameters": [{
+        "name": "locale",
+        "type": "Locale"
+      }],
+      "body": "{\n    return cache.get(this);\n}"
+    },
+    {
+      "name": "getLocales",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Locale"]
+      },
+      "body": "{\n    return locales;\n}"
+    }
+  ]
+}

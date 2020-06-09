@@ -108,7 +108,7 @@ public class JsonFormatter {
 			.replaceAll("\b", "\\\\b")
 			.replaceAll("\f", "\\\\f")
 			.replaceAll("\n", "\\\\n")
-			.replaceAll("\r", "\\\\r")
+			.replaceAll("\r", "")
 			.replaceAll("\t", "\\\\t")
 				+ "\"").getBytes());
 	}

@@ -1,6 +1,7 @@
 package ca.magex.json.javadoc;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -23,8 +25,11 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
-import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.TypeParameter;
+import com.github.javaparser.ast.type.WildcardType;
 
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
@@ -39,9 +44,16 @@ public class JavadocBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(JavadocBuilder.class);
 	
-    public static JsonObject processDirectory(File src) throws Exception {
+	/**
+	 * Process a source directory and all of its sub directories and return the resulting
+	 * json object with the javadoc information
+	 * 
+	 * @param src The source directory to process
+	 * @return The json object of the javadoc
+	 * @throws FileNotFoundException thrown if the file is not found. 
+	 */
+    public static JsonObject processDirectory(File src) throws FileNotFoundException {
     	logger.info("Processing root: " + src.getAbsolutePath());
-
     	List<JsonPair> pairs = new ArrayList<JsonPair>();
     	for (String filename : findFiles(src)) {
     		String clsName = filename.replaceAll(".java$", "").replaceAll("/", ".");
@@ -49,16 +61,22 @@ public class JavadocBuilder {
         	File file = new File(src, filename);
     		pairs.add(new JsonPair(clsName, processClass(file)));
     	}
-    	
     	return new JsonObject(pairs);
     }
     
+    /**
+     * Process a source directory and all of its sub directories and output the javadocs
+     * to a the output file 
+     */
     public static File processDirectory(File src, File output) throws Exception {
     	logger.info("Creating file: " + output.getAbsolutePath());
     	FileUtils.writeStringToFile(output, processDirectory(src).toString(), StandardCharsets.UTF_8);
     	return output;
     }
 
+    /**
+     * Get a list of all the files in the given source folder
+     */
     public static List<String> findFiles(File src) {
     	return findFiles(src, "");
     }
@@ -76,11 +94,24 @@ public class JavadocBuilder {
     	return files;
     }
     
-    public static JsonObject processClass(File file) throws Exception {
+    /**
+     * Get the json representation of the javadocs for the given source file
+     */
+    public static JsonObject processClass(File file) throws FileNotFoundException {
         CompilationUnit cu = StaticJavaParser.parse(file);
-
+        
+        ClassOrInterfaceDeclaration cls = cu.findAll(ClassOrInterfaceDeclaration.class).get(0);
+        
         JsonObject json = new JsonObject()
-        	.with("description", buildComment(cu.findAll(ClassOrInterfaceDeclaration.class).get(0).getComment()))
+        	.with("name", cls.getNameAsString())
+        	.with("generics", cls.getTypeParameters().stream().map(t -> buildType(t)).collect(Collectors.toList()))
+        	.with("type", cls.isInterface() ? "interface" : "class")
+        	.with("modifiers", new JsonArray(cls.getModifiers().stream()
+            		.map(n -> new JsonText(n.getKeyword().toString().toLowerCase()))
+            		.collect(Collectors.toList())))
+        	.with("extends", new JsonArray(cls.getExtendedTypes().stream().map(t -> buildType(t)).collect(Collectors.toList())))
+        	.with("implements", new JsonArray(cls.getImplementedTypes().stream().map(t -> buildType(t)).collect(Collectors.toList())))
+        	.with("description", buildComment(cls.getComment()))
         	.with("imports", buildImports(cu))
         	.with("fields", new JsonArray())
         	.with("methods", new JsonArray());
@@ -148,18 +179,31 @@ public class JavadocBuilder {
     	return json;
     }
     
-    private static JsonElement buildType(Type type) {
+    private static JsonElement buildType(Node type) {
     	if (type instanceof PrimitiveType) {
         	return new JsonText(((PrimitiveType)type).getElementType().toString());
-    	}
-    	if (type.getChildNodes().size() > 1) {
-        	JsonObject json = new JsonObject();
-        	json = json.with("class", type.getChildNodes().get(0).toString());
-    		json = json.with("generics", type.getChildNodes().subList(1, type.getChildNodes().size())
-    			.stream().map(n -> n.toString()).collect(Collectors.toList()));
+    	} else if (type instanceof SimpleName) {
+    		return new JsonText(type.toString());
+    	} else if (type instanceof WildcardType) {
+    		return new JsonText(type.toString());
+    	} else if (type instanceof TypeParameter) {
+    		JsonObject json = new JsonObject();
+        	json = json.with("class", buildType(type.getChildNodes().get(0)));
+    		json = json.with("extends", type.getChildNodes().subList(1, type.getChildNodes().size())
+    			.stream().map(n -> buildType(n)).collect(Collectors.toList()));
         	return json;
+    	} else if (type instanceof ClassOrInterfaceType) {
+	    	if (type.getChildNodes().size() > 1) {
+	        	JsonObject json = new JsonObject();
+	        	json = json.with("class", buildType(type.getChildNodes().get(0)));
+	    		json = json.with("generics", type.getChildNodes().subList(1, type.getChildNodes().size())
+	    			.stream().map(n -> buildType(n)).collect(Collectors.toList()));
+	        	return json;
+	    	} else {
+	    		return buildType(type.getChildNodes().get(0));
+	    	}
     	} else {
-    		return new JsonText(type.getChildNodes().get(0).toString());
+    		throw new IllegalArgumentException("Unsupported node type: " + type.getClass());
     	}
     }
     

@@ -1,4 +1,4 @@
-package ca.magex.json.javadoc;
+package ca.magex.json.javadoc.samples;
 
 /**
  * A basic entity test

@@ -1,0 +1,24 @@
+{
+  "name": "TypedGenerics",
+  "generics": [{
+    "class": "T",
+    "extends": ["BasicEntity"]
+  }],
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": [{
+    "class": "Comparable",
+    "generics": ["T"]
+  }],
+  "implements": [],
+  "imports": {"List": "java.util"},
+  "fields": [],
+  "methods": [{
+    "name": "find",
+    "modifiers": ["public"],
+    "type": {
+      "class": "List",
+      "generics": ["T"]
+    }
+  }]
+}
