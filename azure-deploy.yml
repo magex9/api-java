@@ -132,6 +132,8 @@ steps:
     runOptions: 'inline'
     inline: |
       echo $(application_package_name)
+      echo ${application_package_name}
+      echo ${{variables.application_package_name}}
       rm -rf /var/data/finuser/apps/${{parameters.application_name}} > /dev/null
       tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/$(application_package_name)
     readyTimeout: '20000'
