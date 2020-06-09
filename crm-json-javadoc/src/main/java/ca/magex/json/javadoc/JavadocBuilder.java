@@ -132,7 +132,7 @@ public class JavadocBuilder {
             }
         }
         
-        return json;
+        return json.prune();
     }
     
     private static String buildComment(Optional<Comment> comment) {
@@ -187,11 +187,15 @@ public class JavadocBuilder {
     	} else if (type instanceof WildcardType) {
     		return new JsonText(type.toString());
     	} else if (type instanceof TypeParameter) {
-    		JsonObject json = new JsonObject();
-        	json = json.with("class", buildType(type.getChildNodes().get(0)));
-    		json = json.with("extends", type.getChildNodes().subList(1, type.getChildNodes().size())
-    			.stream().map(n -> buildType(n)).collect(Collectors.toList()));
-        	return json;
+    		if (type.getChildNodes().size() > 1) {
+	    		JsonObject json = new JsonObject();
+	        	json = json.with("class", buildType(type.getChildNodes().get(0)));
+	    		json = json.with("extends", type.getChildNodes().subList(1, type.getChildNodes().size())
+	    			.stream().map(n -> buildType(n)).collect(Collectors.toList()));
+	        	return json;
+	    	} else {
+	    		return buildType(type.getChildNodes().get(0));
+	    	}
     	} else if (type instanceof ClassOrInterfaceType) {
 	    	if (type.getChildNodes().size() > 1) {
 	        	JsonObject json = new JsonObject();
@@ -217,6 +221,8 @@ public class JavadocBuilder {
     	if (!method.getType().getChildNodes().isEmpty()) {
     		json = json.with("type", buildType(method.getType()));
     	}
+    	json = json.with("generics", method.getTypeParameters().stream()
+    		.map(g -> buildType(g)).collect(Collectors.toList()));
     	if (!method.getAnnotations().isEmpty()) {
     		json = json.with("annotations", method.getAnnotations().stream()
     	    	.map(a -> buildAnnotation(a)).collect(Collectors.toList()));

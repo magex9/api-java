@@ -1,16 +1,12 @@
 {
   "name": "NestedGenerics",
-  "generics": [],
   "type": "interface",
   "modifiers": ["public"],
-  "extends": [],
-  "implements": [],
   "imports": {
     "List": "java.util",
     "Locale": "java.util",
     "Map": "java.util"
   },
-  "fields": [],
   "methods": [{
     "name": "find",
     "modifiers": ["public"],

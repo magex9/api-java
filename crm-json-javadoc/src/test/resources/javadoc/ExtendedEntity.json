@@ -1,6 +1,5 @@
 {
   "name": "ExtendedEntity",
-  "generics": [],
   "type": "class",
   "modifiers": [
     "public",

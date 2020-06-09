@@ -6,6 +6,6 @@ public interface TypedMethods {
 
 	public <T> List<T> find(T type);
 	
-	public <K> K load(String id);
+	public <K> Long load(String id, Class<K> cls);
 	
 }
