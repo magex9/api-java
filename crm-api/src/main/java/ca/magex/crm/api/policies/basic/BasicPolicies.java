@@ -1,7 +1,6 @@
 package ca.magex.crm.api.policies.basic;
 
 import ca.magex.crm.api.policies.CrmPolicyDelegate;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -13,7 +12,6 @@ public class BasicPolicies extends CrmPolicyDelegate {
 	
 	public BasicPolicies(
 			CrmLookupService lookups,
-			CrmAuthenticationService auth,
 			CrmPermissionService permissions,
 			CrmOrganizationService organizations,
 			CrmLocationService locations,

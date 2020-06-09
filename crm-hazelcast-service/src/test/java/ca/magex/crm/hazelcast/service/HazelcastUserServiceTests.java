@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.hazelcast.config.HazelcastTestConfig;
 import ca.magex.crm.test.AbstractUserServiceTests;
 import ca.magex.crm.test.config.TestConfig;
 

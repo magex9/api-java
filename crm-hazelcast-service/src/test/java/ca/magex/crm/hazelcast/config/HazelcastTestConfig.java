@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql;
+package ca.magex.crm.hazelcast.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +19,9 @@ import ca.magex.crm.api.services.CrmUserService;
 
 @Configuration
 @ComponentScan(basePackages = {
-		"ca.magex.crm.graphql"
+		"ca.magex.crm.hazelcast"
 		})
-public class GraphQLTestConfig implements CrmConfigurer {
+public class HazelcastTestConfig implements CrmConfigurer {
 
 	/* autowired services */
 	@Autowired private CrmInitializationService initializationService;	

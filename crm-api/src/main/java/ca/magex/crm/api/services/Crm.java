@@ -107,6 +107,32 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 		);
 	}
 	
+	public Crm(
+			CrmInitializationService initializationService, 
+			CrmLookupService lookupService,
+			CrmPermissionService permissionsService, 
+			CrmOrganizationService organizationService,
+			CrmLocationService locationService, 
+			CrmPersonService personService,
+			CrmUserService userService,
+			CrmPolicies policies) {
+		this(
+				initializationService,
+				lookupService,
+				policies,
+				permissionsService,
+				policies,
+				organizationService,
+				policies,
+				locationService,
+				policies,
+				personService,
+				policies,
+				userService,
+				policies
+		);
+	}
+	
 	public Crm(CrmInitializationService initializationService, 
 			CrmLookupService lookupService, CrmLookupPolicy lookupPolicy,
 			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy, 

@@ -22,7 +22,7 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("PrincipalOrganizationService")
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaOrganizationService implements CrmOrganizationService {

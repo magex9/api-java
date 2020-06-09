@@ -3,11 +3,6 @@ package ca.magex.crm.api.policies.authenticated;
 import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
 import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.basic.BasicLocationPolicy;
 import ca.magex.crm.api.services.CrmAuthenticationService;
@@ -15,9 +10,6 @@ import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	
 	private CrmAuthenticationService auth;
