@@ -5,6 +5,11 @@ import org.springframework.context.annotation.Bean;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.services.Crm;
 
+/**
+ * Used to configure the Crm Subsystem
+ * 
+ * @author Jonny
+ */
 public interface CrmConfigurer {
 
 	@Bean
