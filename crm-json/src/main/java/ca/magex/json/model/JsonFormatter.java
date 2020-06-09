@@ -102,7 +102,16 @@ public class JsonFormatter {
 	}
 	
 	public void stream(JsonText data, OutputStream os) throws IOException {
-		os.write((data.value() == null ? "null" : "\"" + data.value().replaceAll("\"", "\\\\\"").replaceAll("'", "\\\\'") + "\"").getBytes());
+		os.write((data.value() == null ? "null" : "\"" + data.value()
+			.replaceAll("\\\\", "\\\\\\\\")
+			.replaceAll("\"", "\\\\\"")
+			.replaceAll("/", "\\\\/")
+			.replaceAll("\b", "\\\\b")
+			.replaceAll("\f", "\\\\f")
+			.replaceAll("\n", "\\\\n")
+			.replaceAll("\r", "\\\\r")
+			.replaceAll("\t", "\\\\t")
+				+ "\"").getBytes());
 	}
 	
 	public void stream(JsonNumber data, OutputStream os) throws IOException {

@@ -18,7 +18,7 @@ public class JsonAsserts {
 		for (String key : json.keys()) {
 			keys.append(", \"" + key + "\"");
 		}
-		sb.append("\t\tassertEquals(List.of(" + keys.substring(2) + "), " + prefix + ".keys());");
+		sb.append("\t\tassertEquals(List.of(" + (json.keys().isEmpty() ? "" : keys.substring(2)) + "), " + prefix + ".keys());");
 		for (String key : json.keys()) {
 			JsonElement el = json.get(key);
 			if (el instanceof JsonObject) {
@@ -38,7 +38,7 @@ public class JsonAsserts {
 						if (key.endsWith("Id")) {
 							sb.append("\t\tassertEquals(" + key + ".toString(), " + prefix + ".getArray(\"" + key + "\").getString(" + i + "));");
 						} else {
-							sb.append("\t\tassertEquals(\"" + array.getString(i) + "\", " + prefix + ".getArray(\"" + key + "\").getString(" + i + "));");
+							sb.append("\t\tassertEquals(\"" + array.getString(i).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r") + "\", " + prefix + ".getArray(\"" + key + "\").getString(" + i + ").replaceAll(\"\\n\", \"\\\\\\\\n\").replaceAll(\"\\r\", \"\\\\\\\\r\"));");
 						}
 					} else {
 						sb.append("\t\tassertEquals(" + array.get(i) + ", " + prefix + ".getArray(\"" + key + "\").get(" + i + "));");
@@ -52,7 +52,7 @@ public class JsonAsserts {
 				if (key.endsWith("Id")) {
 					sb.append("\t\tassertEquals(" + key + ".toString(), " + prefix + ".getString(\"" + key + "\"));");
 				} else {
-					sb.append("\t\tassertEquals(\"" + json.getString(key) + "\", " + prefix + ".getString(\"" + key + "\"));");
+					sb.append("\t\tassertEquals(\"" + json.getString(key).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r") + "\", " + prefix + ".getString(\"" + key + "\").replaceAll(\"\\n\", \"\\\\\\\\n\").replaceAll(\"\\r\", \"\\\\\\\\r\"));");
 				}
 			} else {
 				sb.append("\t\tassertEquals(" + json.get(key) + ", " + prefix + ".get(\"" + key + "\"));");

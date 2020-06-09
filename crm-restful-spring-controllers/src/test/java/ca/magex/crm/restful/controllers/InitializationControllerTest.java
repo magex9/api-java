@@ -27,24 +27,9 @@ public class InitializationControllerTest extends AbstractControllerTests {
 	}
 	
 	@Test
-	public void testYamlConfig() throws Exception {
-		String yaml = mockMvc.perform(MockMvcRequestBuilders
-			.get("/api.yaml")
-			.header("Locale", Lang.ENGLISH))
-			.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString();
-		assertTrue(yaml.replaceAll("\r", "")
-			.startsWith("openapi: 3.0.0\n" + 
-				"info:\n" + 
-				"  version: 1.0.0\n" + 
-				"  title: Customer Relationship Management\n"));
-	}
-	
-	@Test
 	public void testJsonConfig() throws Exception {
 		String yaml = mockMvc.perform(MockMvcRequestBuilders
-			.get("/api.json")
+			.get("/openapi.json")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
