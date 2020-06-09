@@ -112,6 +112,11 @@ public class CrmPolicyDelegate implements CrmPolicies {
 	public boolean canCreateUserForPerson(Identifier personId) {
 		return userPolicy.canCreateUserForPerson(personId);
 	}
+	
+	@Override
+	public boolean canViewUser(String username) {
+		return userPolicy.canViewUser(username);
+	}
 
 	@Override
 	public boolean canViewUser(Identifier userId) {

@@ -42,32 +42,56 @@ public class AmnesiaPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails updatePersonName(Identifier personId, PersonName legalName) {
-		return db.savePerson(findPersonDetails(personId).withLegalName(legalName).withDisplayName(legalName.getDisplayName()));
+		PersonDetails person = db.findPerson(personId);
+		if (person == null) {
+			return null;
+		}
+		return db.savePerson(person.withLegalName(legalName).withDisplayName(legalName.getDisplayName()));
 	}
 
 	@Override
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
-		return db.savePerson(findPersonDetails(personId).withAddress(address));
+		PersonDetails person = db.findPerson(personId);
+		if (person == null) {
+			return null;
+		}
+		return db.savePerson(person.withAddress(address));
 	}
 
 	@Override
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
-		return db.savePerson(findPersonDetails(personId).withCommunication(communication));
+		PersonDetails person = db.findPerson(personId);
+		if (person == null) {
+			return null;
+		}
+		return db.savePerson(person.withCommunication(communication));
 	}
 
 	@Override
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
-		return db.savePerson(findPersonDetails(personId).withPosition(position));
+		PersonDetails person = db.findPerson(personId);
+		if (person == null) {
+			return null;
+		}
+		return db.savePerson(person.withPosition(position));
 	}
 
 	@Override
 	public PersonSummary enablePerson(Identifier personId) {
-		return db.savePerson(findPersonDetails(personId).withStatus(Status.ACTIVE));
+		PersonDetails person = db.findPerson(personId);
+		if (person == null) {
+			return null;
+		}
+		return db.savePerson(person.withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public PersonSummary disablePerson(Identifier personId) {
-		return db.savePerson(findPersonDetails(personId).withStatus(Status.INACTIVE));
+		PersonDetails person = db.findPerson(personId);
+		if (person == null) {
+			return null;
+		}
+		return db.savePerson(person.withStatus(Status.INACTIVE));
 	}
 
 	@Override
