@@ -1,10 +1,11 @@
-package ca.magex.crm.graphql;
+package ca.magex.crm.graphql.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
+import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
@@ -18,10 +19,8 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 
 @Configuration
-@ComponentScan(basePackages = {
-		"ca.magex.crm.graphql"
-		})
-public class GraphQLTestConfig implements CrmConfigurer {
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class GraphQLCrmNoAuthConfig implements CrmConfigurer {
 
 	/* autowired services */
 	@Autowired private CrmInitializationService initializationService;	

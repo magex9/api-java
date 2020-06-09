@@ -1,10 +1,5 @@
 package ca.magex.crm.api.policies.basic;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmUserPolicy;
@@ -14,9 +9,6 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicUserPolicy implements CrmUserPolicy {
 
 	private CrmPersonService persons;

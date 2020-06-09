@@ -20,7 +20,7 @@ import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("PrincipalLookupService")
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLookupService implements CrmLookupService {

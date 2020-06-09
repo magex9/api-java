@@ -2,20 +2,12 @@ package ca.magex.crm.api.policies.authenticated;
 
 import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.basic.BasicPermissionPolicy;
 import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Identifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedPermissionPolicy implements CrmPermissionPolicy {
 	
 	private CrmAuthenticationService auth;

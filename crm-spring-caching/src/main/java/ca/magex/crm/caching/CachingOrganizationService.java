@@ -10,7 +10,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -20,7 +20,7 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
-@Component("CachingOrganizationService")
+@Service("CachingOrganizationService")
 public class CachingOrganizationService implements CrmOrganizationService {
 	
 	private Logger LOG = LoggerFactory.getLogger(getClass());

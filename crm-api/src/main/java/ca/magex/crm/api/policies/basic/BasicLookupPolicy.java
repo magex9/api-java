@@ -2,18 +2,10 @@ package ca.magex.crm.api.policies.basic;
 
 import java.util.Locale;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmLookupPolicy;
 import ca.magex.crm.api.services.CrmLookupService;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicLookupPolicy implements CrmLookupPolicy {
 
 	private CrmLookupService lookups;
