@@ -40,6 +40,8 @@ public final class JsonObject extends JsonElement {
 	}
 	
 	public JsonObject with(String key, Object value) {
+		if (value == null)
+			return remove(key);
 		return with(new JsonPair(key, cast(value)));
 	}
 	
@@ -62,6 +64,8 @@ public final class JsonObject extends JsonElement {
 	}
 	
 	public JsonObject append(String key, Object value) {
+		if (value == null)
+			return this;
 		if (!contains(key, JsonArray.class))
 			throw new IllegalArgumentException("Key is not an array: " + key);
 		return with(key, getArray(key).with(value));
