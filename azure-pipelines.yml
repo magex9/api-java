@@ -34,7 +34,7 @@ stages:
       inputs:
         goals: 'install'
         mavenPomFile: 'pom.xml'
-        #options: '-Dmaven.test.failure.ignore=true'
+        options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
