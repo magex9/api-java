@@ -119,6 +119,12 @@ steps:
     commands: 'ls -la /var/data/finuser/builds'
     readyTimeout: '20000'
 
+- script: |
+    echo $(application_package_name)
+    echo ${{variables.application_package_name}}
+    echo $[variables.application_package_name]
+  displayName: "testing"
+
 - task: SSH@0
   displayName: Untar Application Package for ${{parameters.application_name}}
   inputs:
