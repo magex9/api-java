@@ -44,6 +44,9 @@ stages:
 
     - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
       artifact: crm-graphql-spring-boot-server
+    
+    - publish: $(System.DefaultWorkingDirectory)/crm-restful-spring-boot-server/target/
+      artifact: crm-restful-spring-boot-server
 
     - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
       artifact: crm-helloworld
