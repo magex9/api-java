@@ -1,0 +1,29 @@
+{
+  "description": "A basic entity test\r\n@author scott",
+  "imports": {},
+  "fields": [{
+    "name": "name",
+    "description": "The name of the entity",
+    "modifiers": ["public"],
+    "type": "String"
+  }],
+  "methods": [
+    {
+      "name": "getName",
+      "description": "Get the name of the entity\r\n@return entity name",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\r\n    return name;\r\n}"
+    },
+    {
+      "name": "setName",
+      "description": "Set the name of the entity\r\n@param name the new name",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "name",
+        "type": "String"
+      }],
+      "body": "{\r\n    this.name = name;\r\n}"
+    }
+  ]
+}

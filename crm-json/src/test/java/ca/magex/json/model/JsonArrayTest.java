@@ -42,7 +42,7 @@ public class JsonArrayTest {
 		List<JsonElement> elements = new ArrayList<JsonElement>();
 		elements.add(new JsonText("a'b"));
 		JsonArray array = new JsonArray(elements);
-		assertEquals("[\"a\\'b\"]", JsonFormatter.compact(array));
+		assertEquals("[\"a'b\"]", JsonFormatter.compact(array));
 		String compact = JsonFormatter.compact(array);
 		assertEquals(compact, JsonFormatter.compact(JsonParser.parseArray(compact)));
 		assertEquals(compact, JsonFormatter.formatted(JsonParser.parseArray(compact)));
@@ -54,7 +54,7 @@ public class JsonArrayTest {
 		elements.add(new JsonText("Quote's"));
 		elements.add(new JsonText("\"Double\" Quotes"));
 		JsonArray array = new JsonArray(elements);
-		assertEquals("[\"Quote\\'s\",\"\\\"Double\\\" Quotes\"]", JsonFormatter.compact(array));
+		assertEquals("[\"Quote's\",\"\\\"Double\\\" Quotes\"]", JsonFormatter.compact(array));
 		String compact = JsonFormatter.compact(array);
 		String formatted = JsonFormatter.formatted(array);
 		

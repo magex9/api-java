@@ -35,6 +35,7 @@
 	<modules>	
 		<module>crm-maven-parent</module>
 		<module>crm-json</module>
+		<module>crm-json-javadoc</module>
 		<module>crm-json-transformers</module>
 		
 		<!-- Support Modules -->
