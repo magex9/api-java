@@ -27,6 +27,9 @@
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
 		<module>crm-hazelcast-service</module>
+		
+		<!-- Caching Implementations -->
+		<module>crm-spring-caching</module>
 
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>

@@ -25,15 +25,15 @@ public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {
 	
 	@Bean
 	@Override
-	public Crm crm() {		
+	public Crm crm() {
 		return new Crm(
-				initializationService, 
-				lookupService, 
-				permissionService, 
-				organizationService, 
-				locationService, 
-				personService,
-				userService, 
+				getInitializationService(), 
+				getLookupService(), 
+				getPermissionService(), 
+				getOrganizationService(), 
+				getLocationService(), 
+				getPersonService(),
+				getUserService(), 
 				crmPolicies());
 	}
 	
@@ -42,11 +42,11 @@ public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {
 	public CrmPolicies crmPolicies() {		
 		return new AuthenticatedPolicies(
 				authenticationService,
-				lookupService, 
-				permissionService, 
-				organizationService, 
-				locationService, 
-				personService, 
-				userService);
+				getLookupService(), 
+				getPermissionService(), 
+				getOrganizationService(), 
+				getLocationService(), 
+				getPersonService(), 
+				getUserService());
 	}
 }

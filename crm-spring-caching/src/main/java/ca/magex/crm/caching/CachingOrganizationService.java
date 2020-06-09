@@ -48,8 +48,7 @@ public class CachingOrganizationService implements CrmOrganizationService {
 	@CacheEvict(cacheNames = "organizations", key="'Details_'.concat(#result.organizationId)")
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		LOG.debug("enableOrganization(" + organizationId + ")");
-		OrganizationSummary summary = delegate.enableOrganization(organizationId);
-		return summary;
+		return delegate.enableOrganization(organizationId);
 	}
 
 	@Override
@@ -57,8 +56,7 @@ public class CachingOrganizationService implements CrmOrganizationService {
 	@CacheEvict(cacheNames = "organizations", key="'Details_'.concat(#result.organizationId)")
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		LOG.debug("disableOrganization(" + organizationId + ")");
-		OrganizationSummary summary =  delegate.disableOrganization(organizationId);
-		return summary;
+		return delegate.disableOrganization(organizationId);
 	}
 
 	@Override
@@ -126,9 +124,9 @@ public class CachingOrganizationService implements CrmOrganizationService {
 		LOG.debug("findOrganizationDetails(" + filter + "," + paging + ")");
 		FilteredPage<OrganizationDetails> page = delegate.findOrganizationDetails(filter, paging);
 		Cache organizationsCache = cacheManager.getCache("organizations");
-		page.forEach((summary) -> {
-			organizationsCache.putIfAbsent("Details_" + summary.getOrganizationId(), summary);
-			organizationsCache.putIfAbsent("Summary_" + summary.getOrganizationId(), summary);
+		page.forEach((details) -> {
+			organizationsCache.putIfAbsent("Details_" + details.getOrganizationId(), details);
+			organizationsCache.putIfAbsent("Summary_" + details.getOrganizationId(), details);
 		});
 		return page;
 	}

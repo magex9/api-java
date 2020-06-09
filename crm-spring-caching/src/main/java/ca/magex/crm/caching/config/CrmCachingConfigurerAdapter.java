@@ -1,7 +1,10 @@
-package ca.magex.crm.api.config;
+package ca.magex.crm.caching.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import ca.magex.crm.api.config.CrmConfigurer;
+import ca.magex.crm.api.config.CrmConfigurerAdapter;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
@@ -15,7 +18,7 @@ import ca.magex.crm.api.services.CrmUserService;
  * 
  * @author Jonny
  */
-public abstract class CrmConfigurerAdapter implements CrmConfigurer {
+public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 
 	private CrmInitializationService initializationService;	
 	private CrmLookupService lookupService;	
@@ -44,6 +47,7 @@ public abstract class CrmConfigurerAdapter implements CrmConfigurer {
 	}
 	
 	@Autowired
+	@Qualifier("CachingOrganizationService")
 	public void setOrganizationService(CrmOrganizationService organizationService) {
 		this.organizationService = organizationService;
 	}
