@@ -49,7 +49,8 @@ public final class JsonObject extends JsonElement {
 		for (int i = 0; i < pairs.size(); i++) {
 			JsonPair p = pairs.get(i);
 			if (p.key().equals(pair.key())) {
-				values.add(pair);
+				if (pair.value() != null)
+					values.add(pair);
 				found = true;
 			} else {
 				values.add(p);
@@ -58,6 +59,12 @@ public final class JsonObject extends JsonElement {
 		if (!found)
 			values.add(pair);
 		return new JsonObject(values);
+	}
+	
+	public JsonObject append(String key, Object value) {
+		if (!contains(key, JsonArray.class))
+			throw new IllegalArgumentException("Key is not an array: " + key);
+		return with(key, getArray(key).with(value));
 	}
 	
 	public JsonObject remove(String key) {
