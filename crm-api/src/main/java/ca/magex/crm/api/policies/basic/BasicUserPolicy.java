@@ -43,6 +43,14 @@ public class BasicUserPolicy implements CrmUserPolicy {
 		}		
 		return true;
 	}
+	
+	@Override
+	public boolean canViewUser(String username) {
+		if (users.findUserByUsername(username) == null) {
+			throw new ItemNotFoundException("Username '" + username + "'");
+		}
+		return true;
+	}
 
 	@Override
 	public boolean canViewUser(Identifier userId) {

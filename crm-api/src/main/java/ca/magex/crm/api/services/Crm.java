@@ -580,10 +580,9 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	
 	@Override
 	public User findUserByUsername(String username) {
-		User user = userService.findUserByUsername(username);
-		if (!canViewUser(user.getUserId()))
+		if (!canViewUser(username))
 			throw new PermissionDeniedException("findUserByUsername: " + username);
-		return user;
+		return userService.findUserByUsername(username);
 	}
 
 	@Override
@@ -624,6 +623,11 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	@Override
 	public boolean canDisableUser(Identifier userId) {
 		return userPolicy.canDisableUser(userId);
+	}
+	
+	@Override
+	public boolean canViewUser(String username) {
+		return userPolicy.canViewUser(username);
 	}
 	
 	@Override

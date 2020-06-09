@@ -61,6 +61,19 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 		/* current user not associated to the organization of the person */
 		return false;
 	}
+	
+	@Override
+	public boolean canViewUser(String username) {
+		if (!delegate.canViewUser(username)) {
+			return false;
+		}
+		/* if the user is a CRM Admin then return true */
+		if (auth.isUserInRole(CRM_ADMIN)) {
+			return true;
+		}
+		/* ensure the current user is associated to the users organization */
+		return auth.getOrganizationId().equals(users.findUserByUsername(username).getPerson().getOrganizationId());
+	}
 
 	@Override
 	public boolean canViewUser(Identifier userId) {

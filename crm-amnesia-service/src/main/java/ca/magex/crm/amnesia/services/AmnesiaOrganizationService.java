@@ -13,6 +13,7 @@ import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
@@ -37,27 +38,52 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withStatus(Status.ACTIVE));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withStatus(Status.ACTIVE));
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withStatus(Status.INACTIVE));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withDisplayName(name));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withDisplayName(name));
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withMainLocationId(locationId == null ? null : db.findLocation(locationId).getLocationId()));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withMainLocationId(locationId == null ? null : db.findLocation(locationId).getLocationId()));
 	}
 	
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withMainContactId(personId == null ? null : db.findPerson(personId).getPersonId()));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		PersonDetails person = db.findPerson(personId);
+		return db.saveOrganization(details.withMainContactId(person == null ? null : person.getPersonId()));
 	}
 
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		return db.saveOrganization(findOrganizationDetails(organizationId).withGroups(groups));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withGroups(groups));
 	}
 
 	@Override
