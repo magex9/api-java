@@ -55,11 +55,11 @@ steps:
     # Application Version (make it accessible from outside this script)
     echo "application_version=${version}"
     application_version=${version}
-    echo "##vso[task.setvariable variable=application_version]${version}"
+    #echo "##vso[task.setvariable variable=application_version]${version}"
 
-    echo "application_package_name=${{parameters.application_name}}-${version}.tar.gz"
-    application_package_name=${{parameters.application_name}}-${version}.tar.gz
-    echo "##vso[task.setvariable variable=application_package_name]${{parameters.application_name}}-${version}.tar.gz"
+    echo "application_package_name=${{parameters.application_name}}-${application_version}.tar.gz"
+    application_package_name=${{parameters.application_name}}-${application_version}.tar.gz
+    echo "##vso[task.setvariable variable=application_package_name]${{parameters.application_name}}-${application_version}.tar.gz"
 
     
     application_config_dir=${application_package_build_dir}/config
@@ -126,7 +126,7 @@ steps:
     runOptions: 'inline'
     inline: |
       rm -rf /var/data/finuser/apps/${{parameters.application_name}} > /dev/null
-      tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/${{parameters.application_name}}-${application_version}.tar.gz
+      tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/$(application_package_name)
     readyTimeout: '20000'
 - task: SSH@0
   displayName: (Re)Start Application ${{parameters.application_name}}
