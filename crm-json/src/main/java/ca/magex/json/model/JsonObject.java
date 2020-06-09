@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,10 @@ public final class JsonObject extends JsonElement {
 	
 	public JsonObject(String text) {
 		this(JsonParser.parseObject(text).pairs);
+	}
+	
+	public JsonObject(JsonPair... pairs) {
+		this(Arrays.asList(pairs));
 	}
 	
 	public JsonObject(List<JsonPair> pairs) {

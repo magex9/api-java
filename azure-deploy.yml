@@ -1,0 +1,132 @@
+### INPUT PARAMETERS ######################
+parameters:
+- name: application_name
+  type: string
+
+- name: environment
+  type: string
+  default: 'ut'
+  values:
+  - 'ut'
+  - 'qa'
+  - 'ua'
+  - 'pr'
+
+- name: application_version
+  type: string
+
+- name: sshEndpoint
+  type: string
+
+
+##########################################
+
+steps:
+      
+- bash: | 
+    echo "application_package_name=${{parameters.application_name}}-${{parameters.application_version}}.tar.gz"
+    application_package_name=${{parameters.application_name}}-${{parameters.application_version}}.tar.gz
+    echo "##vso[task.setvariable variable=application_package_name]${{parameters.application_name}}-${{parameters.application_version}}.tar.gz"
+
+    echo "application_package_source_dir=${PIPELINE_WORKSPACE}/${{parameters.application_name}}"
+    application_package_source_dir="${PIPELINE_WORKSPACE}/${{parameters.application_name}}"
+    echo "##vso[task.setvariable variable=application_package_source_dir]${PIPELINE_WORKSPACE}/${{parameters.application_name}}"
+    
+    #-----------------------------------------------------
+    # BUILD Directory -> where we assemble all pieces to create a package    
+    echo "application_package_build_dir=${PIPELINE_WORKSPACE}/build/${{parameters.application_name}}"
+    #echo "##vso[task.setvariable variable=application_package_build_dir]${PIPELINE_WORKSPACE}/build/${{parameters.application_name}}"
+    application_package_build_dir=${PIPELINE_WORKSPACE}/build/${{parameters.application_name}}
+    
+
+    #-----------------------------------------------------
+    #Package Directory -> Where we put the final package
+    echo "application_package_publish_dir=${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}/"
+    echo "##vso[task.setvariable variable=application_package_publish_dir]${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}/"
+    application_package_publish_dir=${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}
+
+    echo "application_package_publish_path=${application_package_publish_dir}/${application_package_name}"
+    echo "##vso[task.setvariable variable=application_package_publish_path]${application_package_publish_dir}/${application_package_name}"
+    application_package_publish_path=${application_package_publish_dir}/${application_package_name}
+
+    adlc_dir=${AGENT_BUILDDIRECTORY}/adlc
+    echo "adlc_dir=$adlc_dir"
+    config_dir=${adlc_dir}/${{parameters.application_name}}/${{parameters.environment}}
+    echo "config_dir=${config_dir}"
+    admin_dir=${adlc_dir}/admin
+    echo "admin_dir=${admin_dir}"
+    
+    application_config_dir=${application_package_build_dir}/config
+    
+    application_config_path=${application_config_dir}/application.cfg
+    
+    bootstrap_config_path=${application_config_dir}/bootstrap.properties
+
+    #-----------------------------------------------------
+    env      
+    ls -la ${SYSTEM_ARTIFACTSDIRECTORY}/**
+    ls -la ${adlc_dir}
+    
+    mkdir -p ${application_package_publish_dir}
+    mkdir -p ${application_package_build_dir}
+
+    if [ ! -d ${application_config_dir} ];then
+      mkdir -p ${application_config_dir}
+    fi
+
+    #setup server specific information
+    echo "export SERVER_INTERNAL_IP=${SERVER_INTERNAL_IP}" >> ${application_config_path}
+    echo "export SERVER_EXTERNAL_IP=${SERVER_EXTERNAL_IP}" >> ${application_config_path}
+    echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${application_config_path}
+    echo "export APPLICATION_NAME=${{parameters.application_name}}" >> ${application_config_path}
+    echo "export ENVIRONMENT=${{parameters.environment}}" >> ${application_config_path}
+
+    #create springboot bootstrap configuration file
+    echo "spring.application.name=${{parameters.application_name}}" >> ${bootstrap_config_path}
+    echo "spring.cloud.config.uri=${CONFIG_SERVER_URI}" >> ${bootstrap_config_path}
+    echo "management.security.enabled=false" >> ${bootstrap_config_path}
+
+    cp ${application_package_source_dir}/*.jar ${application_package_build_dir}/
+    cp -r ${config_dir}/* ${application_package_build_dir}/
+    cp -r ${admin_dir}/* ${application_package_build_dir}/
+    tar -C ${application_package_build_dir}/../ -cvzf ${application_package_publish_path} ${{parameters.application_name}}
+    ls -la ${application_package_publish_path}
+    tar -tvzf ${application_package_publish_path}
+
+  displayName: "Create application package" 
+ 
+- task: CopyFilesOverSSH@0
+  displayName: "Send package to server"
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    sourceFolder: '$(application_package_publish_dir)/'
+    contents: '$(application_package_name)'
+    targetFolder: '/var/data/finuser/builds/'
+    readyTimeout: '20000'
+    failOnEmptySource: true
+
+- task: SSH@0
+  displayName: "DEBUG - Display builds directory"
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    runOptions: 'commands'
+    commands: 'ls -la /var/data/finuser/builds'
+    readyTimeout: '20000'
+
+- task: SSH@0
+  displayName: Untar Application Package for ${{parameters.application_name}}
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    runOptions: 'inline'
+    inline: |
+      rm -rf /var/data/finuser/apps/${{parameters.application_name}} > /dev/null
+      tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/${{parameters.application_name}}-${{parameters.application_version}}.tar.gz
+    readyTimeout: '20000'
+- task: SSH@0
+  displayName: (Re)Start Application ${{parameters.application_name}}
+  inputs:
+    sshEndpoint: ${{parameters.sshEndpoint}}
+    runOptions: 'inline'
+    inline: |
+      /var/data/finuser/apps/${{parameters.application_name}}/admin/service.sh restart
+    readyTimeout: '20000'

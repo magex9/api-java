@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#set -x
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
@@ -42,8 +42,6 @@ fi
 
 jar_path="${work_dir}/${APPLICATION_NAME}-${APPLICATION_VERSION}${app_suffix}"
 
-ls -la $jar_path
-
 #check logs_dir
 if [ ! -d ${logs_dir} ];then
     mkdir -p ${logs_dir}
@@ -54,10 +52,27 @@ if [ ! -d ${work_dir} ];then
     mkdir -p ${work_dir}
 fi
 
+restart(){
+        stop
+        status;rtrn=$?
+        if [ $rtrn != 0 ];then
+                for i in {1..5}
+                do
+                        sleep 10
+                        status;rtrn=$?
+                        if [ $rtrn == 0 ];then
+                                break
+                        fi
+
+                done
+        fi
+        start
+}
 start() {
+    echo "Starting application ${APPLICATION_NAME}"
     #get status
     status ; rtrn_cd=$?
-    if [ $rtrn_cd -eq 1 ];then 
+    if [ $rtrn_cd -eq 1 ];then
         #application running , must stop it first
         echo "application already running"
         exit 0
@@ -71,33 +86,45 @@ start() {
 }
 
 stop() {
-    pid=cat ${pid_file}
-    if [ -z $pid ];then
-        echo "pid does not exists for application ${APPLICATION_NAME} assuming it is not running"
-    else
+    echo "Stopping application ${APPLICATION_NAME}"
+    status ; rtrn_cd=$?
+    if [ $rtrn_cd -eq 1 ];then
+        if [ -f ${pid_file} ];then
+            pid=`cat ${pid_file}`
+        else
+            echo "problem reading pid file"
+            exit 1
+        fi
         echo "killing pid $pid"
         kill -15 $pid
+    else
+        echo "application not running , then nothing to stop"
     fi
 }
 
-#status returns 
+#status returns
 # 0 : not running
 # 1 : running
 status(){
-    pid=`cat ${pid_file}`
+    if [ -f ${pid_file} ];then
+        pid=`cat ${pid_file}`
+    else
+        echo "WARNING: pid does not exists for application ${APPLICATION_NAME} assuming it is not running"
+        return 0
+    fi
     if [ -z $pid ];then
         echo "pid does not exists for application ${APPLICATION_NAME} assuming it is not running"
         return 0
     else
         echo "Getting status of application $APPLICATION_NAME, pid $pid"
-        ps -fp $pid ; rtrn_cd=$?
+        ps -fp $pid > /dev/null ; rtrn_cd=$?
         if [ $rtrn_cd -eq 0 ];then
             #application running
-            echo "application running"
+            echo "application ${APPLICATION_NAME} running"
             return 1
         else
             #application not running
-            echo "application NOT running"
+            echo "application ${APPLICATION_NAME} NOT running"
             return 0
         fi
     fi
