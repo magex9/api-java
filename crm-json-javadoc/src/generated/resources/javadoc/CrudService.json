@@ -40,6 +40,16 @@
         "name": "entity",
         "type": "T"
       }]
+    },
+    {
+      "name": "contains",
+      "description": "Check to see if an entity exists\n@param id\n@return",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "id",
+        "type": "K"
+      }]
     }
   ]
 }

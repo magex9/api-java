@@ -30,4 +30,11 @@ public interface CrudService<K, T> {
 	 */
 	public void update(T entity);
 	
+	/**
+	 * Check to see if an entity exists
+	 * @param id
+	 * @return
+	 */
+	public boolean contains(K id);
+	
 }
