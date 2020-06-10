@@ -1100,5 +1100,11 @@ public class RestfulCrmClient implements CrmClient {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean canViewUser(String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }
