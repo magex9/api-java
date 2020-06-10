@@ -176,6 +176,10 @@ public final class JsonObject extends JsonElement {
 			return defaultValue;
 		}
 	}
+	
+	public <T> List<T> getArray(String key, Class<T> type) {
+		return getArray(key).values(type);
+	}
 
 	public String getString(String key) {
 		return ((JsonText)get(key)).value();

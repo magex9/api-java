@@ -42,6 +42,25 @@ public final class JsonArray extends JsonElement {
 		return elements;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> values(Class<T> type) {
+		if (JsonElement.class.isAssignableFrom(type)) {
+			return elements.stream().map(e -> (T)e).collect(Collectors.toList());
+		} else if (String.class.isAssignableFrom(type)) {
+			return elements.stream()
+				.map(e -> e instanceof JsonText ? ((JsonText)e).value() : e.toString())
+				.map(e -> (T)e)
+				.collect(Collectors.toList());
+		} else if (Integer.class.isAssignableFrom(type)) {
+			return elements.stream()
+				.map(e -> ((JsonNumber)e).value().intValue())
+				.map(e -> (T)e)
+				.collect(Collectors.toList());
+		} else {
+			throw new IllegalArgumentException("Unsuport class casting for list: " + type);
+		}
+	}
+	
 	public JsonElement get(int index) {
 		return elements.get(index);
 	}
