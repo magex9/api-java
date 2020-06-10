@@ -13,4 +13,8 @@ public final class JsonNumber extends JsonElement {
 		return value;
 	}
 	
+	public boolean isEmpty() {
+		return value == null;
+	}
+	
 }

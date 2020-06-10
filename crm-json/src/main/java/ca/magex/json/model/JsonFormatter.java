@@ -105,11 +105,10 @@ public class JsonFormatter {
 		os.write((data.value() == null ? "null" : "\"" + data.value()
 			.replaceAll("\\\\", "\\\\\\\\")
 			.replaceAll("\"", "\\\\\"")
-			.replaceAll("/", "\\\\/")
 			.replaceAll("\b", "\\\\b")
 			.replaceAll("\f", "\\\\f")
 			.replaceAll("\n", "\\\\n")
-			.replaceAll("\r", "\\\\r")
+			.replaceAll("\r", "")
 			.replaceAll("\t", "\\\\t")
 				+ "\"").getBytes());
 	}

@@ -1,0 +1,31 @@
+{
+  "name": "BasicEntity",
+  "description": "A basic entity test\n@author scott",
+  "type": "class",
+  "modifiers": ["public"],
+  "fields": [{
+    "name": "name",
+    "description": "The name of the entity",
+    "modifiers": ["public"],
+    "type": "String"
+  }],
+  "methods": [
+    {
+      "name": "getName",
+      "description": "Get the name of the entity\n@return entity name",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return name;\n}"
+    },
+    {
+      "name": "setName",
+      "description": "Set the name of the entity\n@param name the new name",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "name",
+        "type": "String"
+      }],
+      "body": "{\n    this.name = name;\n}"
+    }
+  ]
+}

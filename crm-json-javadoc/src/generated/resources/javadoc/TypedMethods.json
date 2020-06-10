@@ -1,0 +1,40 @@
+{
+  "name": "TypedMethods",
+  "imports": {"List": "java.util"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "find",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["T"]
+      },
+      "generics": ["T"],
+      "parameters": [{
+        "name": "type",
+        "type": "T"
+      }]
+    },
+    {
+      "name": "load",
+      "modifiers": ["public"],
+      "type": "Long",
+      "generics": ["K"],
+      "parameters": [
+        {
+          "name": "id",
+          "type": "String"
+        },
+        {
+          "name": "cls",
+          "type": {
+            "class": "Class",
+            "generics": ["K"]
+          }
+        }
+      ]
+    }
+  ]
+}

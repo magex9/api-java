@@ -111,6 +111,33 @@ public final class JsonObject extends JsonElement {
 	public boolean isEmpty() {
 		return keys.isEmpty();
 	}
+
+	public JsonObject prune() {
+		List<JsonPair> pruned = new ArrayList<JsonPair>();
+		for (JsonPair pair : pairs) {
+			if (pair.value().getClass().equals(JsonObject.class)) {
+				JsonObject obj = ((JsonObject)pair.value()).prune();
+				if (!obj.isEmpty())
+					pruned.add(new JsonPair(pair.key(), obj));
+			} else if (pair.value().getClass().equals(JsonArray.class)) {
+				JsonArray array = ((JsonArray)pair.value()).prune();
+				if (!array.isEmpty())
+					pruned.add(new JsonPair(pair.key(), array));
+			} else if (pair.value().getClass().equals(JsonText.class)) {
+				if (!((JsonText)pair.value()).isEmpty())
+					pruned.add(pair);
+			} else if (pair.value().getClass().equals(JsonNumber.class)) {
+				if (!((JsonNumber)pair.value()).isEmpty())
+					pruned.add(pair);
+			} else if (pair.value().getClass().equals(JsonBoolean.class)) {
+				if (!((JsonBoolean)pair.value()).isEmpty())
+					pruned.add(pair);
+			} else {
+				throw new IllegalArgumentException("Unexpected element to prune: " + pair.value().getClass());
+			}
+		}
+		return new JsonObject(pruned);
+	}
 	
 	public JsonElement get(String key) {
 		if (!contains(key))
@@ -148,6 +175,10 @@ public final class JsonObject extends JsonElement {
 		} catch (NoSuchElementException e) {
 			return defaultValue;
 		}
+	}
+	
+	public <T> List<T> getArray(String key, Class<T> type) {
+		return getArray(key).values(type);
 	}
 
 	public String getString(String key) {
