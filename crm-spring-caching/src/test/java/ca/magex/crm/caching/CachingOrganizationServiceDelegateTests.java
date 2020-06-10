@@ -33,7 +33,7 @@ import ca.magex.crm.test.config.TestConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
-public class CachingOrganizationServiceTests {
+public class CachingOrganizationServiceDelegateTests {
 
 	@Autowired private CrmOrganizationService delegate;
 	@Autowired private CacheManager cacheManager;
@@ -102,18 +102,28 @@ public class CachingOrganizationServiceTests {
 	@Test
 	public void testDisableCachedOrg() {
 		final AtomicInteger orgIndex = new AtomicInteger();
+		final AtomicReference<OrganizationDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1));
+			reference.set(new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1)));
+			return reference.get();
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(invocation.getArgument(0), Status.INACTIVE, "hello", null, null, List.of("ORG"));
+			reference.set(reference.get().withStatus(Status.INACTIVE));
+			return reference.get();
 		}).given(delegate).disableOrganization(Mockito.any(Identifier.class));
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(invocation.getArgument(0), Status.INACTIVE, "hello", null, null, List.of("ORG"));
+			return reference.get();
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
 
 		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
+		Assert.assertEquals(reference.get(), orgDetails);
+		/* ensure the details and summary are cached */
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 
+		/* make sure the summary is cached after the disable */
 		OrganizationSummary orgSummary = organizationService.disableOrganization(orgDetails.getOrganizationId());
 		Assert.assertEquals(orgSummary, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
@@ -129,18 +139,28 @@ public class CachingOrganizationServiceTests {
 	@Test
 	public void testEnableCachedOrg() {
 		final AtomicInteger orgIndex = new AtomicInteger();
+		final AtomicReference<OrganizationDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), Status.INACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1));
+			reference.set(new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), Status.INACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1)));
+			return reference.get();
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "hello", null, null, List.of("ORG"));
+			reference.set(reference.get().withStatus(Status.ACTIVE));
+			return reference.get();
 		}).given(delegate).enableOrganization(Mockito.any(Identifier.class));
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "hello", null, null, List.of("ORG"));
+			return reference.get();
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
 
 		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
+		Assert.assertEquals(reference.get(), orgDetails);
+		/* ensure the details and summary are cached */
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 
+		/* make sure the summary is cached after the enable */
 		OrganizationSummary orgSummary = organizationService.enableOrganization(orgDetails.getOrganizationId());
 		Assert.assertEquals(orgSummary, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
@@ -181,40 +201,40 @@ public class CachingOrganizationServiceTests {
 		/* create and ensure cached */
 		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
-		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 		
 		/* clear cache, update name, and ensure cached */
 		cacheManager.getCache("organizations").clear();
 		orgDetails = organizationService.updateOrganizationDisplayName(orgDetails.getOrganizationId(), "Bye");
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
-		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 		
 		/* clear cache, update main location, and ensure cached */
 		cacheManager.getCache("organizations").clear();
 		orgDetails = organizationService.updateOrganizationMainLocation(orgDetails.getOrganizationId(), new Identifier("LOC"));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
-		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 		
 		/* clear cache, update main contact, and ensure cached */
 		cacheManager.getCache("organizations").clear();
 		orgDetails = organizationService.updateOrganizationMainContact(orgDetails.getOrganizationId(), new Identifier("WOMAN"));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
-		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 		
 		/* clear cache, update groups, and ensure cached */
 		cacheManager.getCache("organizations").clear();
 		orgDetails = organizationService.updateOrganizationGroups(orgDetails.getOrganizationId(), List.of("ADM"));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
-		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 	}
 	

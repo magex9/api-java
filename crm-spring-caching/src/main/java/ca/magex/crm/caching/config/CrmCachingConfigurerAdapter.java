@@ -56,6 +56,7 @@ public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 	}
 	
 	@Autowired
+	@Qualifier("CachingLocationService")
 	public void setLocationService(CrmLocationService locationService) {
 		this.locationService = locationService;
 	}
@@ -65,6 +66,7 @@ public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 	}
 	
 	@Autowired
+	@Qualifier("CachingPersonService")
 	public void setPersonService(CrmPersonService personService) {
 		this.personService = personService;
 	}
@@ -74,6 +76,7 @@ public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 	}
 	
 	@Autowired
+	@Qualifier("CachingUserService")
 	public void setUserService(CrmUserService userService) {
 		this.userService = userService;
 	}

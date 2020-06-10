@@ -14,7 +14,7 @@ public class LocationDetails extends LocationSummary {
 	private static final long serialVersionUID = 1L;
 	
 	private MailingAddress address;
-
+	
 	public LocationDetails(Identifier locationId, Identifier organizationId, Status status, String reference, String displayName, MailingAddress address) {
 		super(locationId, organizationId, status, reference, displayName);		
 		this.address = address;
