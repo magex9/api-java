@@ -97,7 +97,7 @@ public class CrmTestSuite {
 		Identifier organizationId = crm.createOrganization("MageX", List.of("CRM")).getOrganizationId();
 
 		MailingAddress address = new MailingAddress("1234 Alta Vista Drive", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K3J 3I3");
-		Identifier mainLocationId = crm.createLocation(organizationId, "Headquarters", "HQ", address).getLocationId();
+		Identifier mainLocationId = crm.createLocation(organizationId, "HQ", "Headquarters", address).getLocationId();
 		crm.updateOrganizationMainLocation(organizationId, mainLocationId);
 		
 		PersonName scottName = new PersonName("Mr.", "Scott", null, "Finlay");

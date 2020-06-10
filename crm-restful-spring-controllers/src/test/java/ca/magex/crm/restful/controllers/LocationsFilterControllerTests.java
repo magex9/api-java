@@ -50,14 +50,14 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 		org1 = crm.createOrganization("Org 1", List.of("ORG")).getOrganizationId();
 		org2 = crm.createOrganization("Org 2", List.of("ORG")).getOrganizationId();
 		
-		locId = crm.createLocation(org1, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
-		caId = crm.createLocation(org1, "Canadian Location", "CANADIAN", CA_ADDRESS).getLocationId();
-		nlId = crm.createLocation(org1, "Newfoundland Location", "NEWFOUNDLAND", NL_ADDRESS).getLocationId();
-		usId = crm.disableLocation(crm.createLocation(org1, "American Location", "AMERICAN", US_ADDRESS).getLocationId()).getLocationId();
-		mxId = crm.createLocation(org1, "Mexican Location", "MEXICAN", MX_ADDRESS).getLocationId();
-		enId = crm.createLocation(org2, "British Location", "BRITISH", EN_ADDRESS).getLocationId();
-		frId = crm.disableLocation(crm.createLocation(org2, "France Location", "FRANCE", FR_ADDRESS).getLocationId()).getLocationId();
-		deId = crm.createLocation(org2, "German Location", "GERMAN", DE_ADDRESS).getLocationId();
+		locId = crm.createLocation(org1, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
+		caId = crm.createLocation(org1, "CANADIAN", "Canadian Location", CA_ADDRESS).getLocationId();
+		nlId = crm.createLocation(org1, "NEWFOUNDLAND", "Newfoundland Location", NL_ADDRESS).getLocationId();
+		usId = crm.disableLocation(crm.createLocation(org1, "AMERICAN", "American Location", US_ADDRESS).getLocationId()).getLocationId();
+		mxId = crm.createLocation(org1, "MEXICAN", "Mexican Location", MX_ADDRESS).getLocationId();
+		enId = crm.createLocation(org2, "BRITISH", "British Location", EN_ADDRESS).getLocationId();
+		frId = crm.disableLocation(crm.createLocation(org2, "FRANCE", "France Location", FR_ADDRESS).getLocationId()).getLocationId();
+		deId = crm.createLocation(org2, "GERMAN", "German Location", DE_ADDRESS).getLocationId();
 	}
 	
 	@Test

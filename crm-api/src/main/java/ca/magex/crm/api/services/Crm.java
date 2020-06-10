@@ -435,11 +435,11 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 		return location;
 	}
 	
-	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference,
+	public LocationDetails createLocation(Identifier organizationId, String reference, String displayName, 
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
-		return locationService.createLocation(validate(prototypeLocation(organizationId, displayName, reference, address)));
+		return locationService.createLocation(validate(prototypeLocation(organizationId, reference, displayName, address)));
 	}
 
 	public LocationDetails updateLocationName(Identifier locationId, String displayName) {

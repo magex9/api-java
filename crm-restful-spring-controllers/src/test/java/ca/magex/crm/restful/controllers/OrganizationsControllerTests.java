@@ -25,6 +25,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class OrganizationsControllerTests extends AbstractControllerTests {
@@ -137,7 +138,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testGetOrganizationSummary() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 		crm.updateOrganizationMainContact(organizationId, personId);
@@ -182,7 +183,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testGetMainLocation() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS.withProvince("NL")).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS.withProvince("NL")).getLocationId();
 		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 		crm.updateOrganizationMainContact(organizationId, personId);
@@ -387,7 +388,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingFullOrganization() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
 		
 		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
@@ -449,7 +450,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingMainLocation() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/organizations/" + organizationId)
@@ -473,7 +474,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingMainLocationAsNull() throws Exception {
 		Identifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of("ORG")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
@@ -486,13 +487,16 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
-		assertEquals("OrganizationDetails", json.getString("@type"));
-		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
-		assertEquals("Active", json.getString("status"));
-		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
-		assertFalse(json.contains("mainLocationId"));
-		assertEquals(new JsonArray().with("ORG"), json.getArray("groups"));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainLocationId", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(organizationId.toString(), json.getString("organizationId"));
+		assertEquals("Active", json.getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Organization", json.getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(locationId.toString(), json.getString("mainLocationId"));
+		assertEquals(1, json.getArray("groups").size());
+		assertEquals("ORG", json.getArray("groups").getString(0).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+
 	}
 	
 	@Test
@@ -535,13 +539,15 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		
-		assertEquals(List.of("@type", "organizationId", "status", "displayName", "groups"), json.keys());
-		assertEquals("OrganizationDetails", json.getString("@type"));
-		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
-		assertEquals("Active", json.getString("status"));
-		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
-		assertFalse(json.contains("mainContactId"));
-		assertEquals(new JsonArray().with("ORG"), json.getArray("groups"));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainContactId", "groups"), json.keys());
+		assertEquals("OrganizationDetails", json.getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(organizationId.toString(), json.getString("organizationId"));
+		assertEquals("Active", json.getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Organization", json.getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(personId.toString(), json.getString("mainContactId"));
+		assertEquals(1, json.getArray("groups").size());
+		assertEquals("ORG", json.getArray("groups").getString(0).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 	}
 	
 	@Test

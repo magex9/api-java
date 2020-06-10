@@ -49,7 +49,7 @@ public abstract class AbstractLocationServiceTests {
 		
 		/* create */
 		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", NEW_YORK.getCode(), UNITED_STATES.getCode(), "10451");
-		LocationDetails l1 = crm.createLocation(mlbId, "New York", "NYY", newyork);
+		LocationDetails l1 = crm.createLocation(mlbId, "NYY", "New York", newyork);
 		Assert.assertEquals("New York", l1.getDisplayName());
 		Assert.assertEquals("NYY", l1.getReference());
 		Assert.assertEquals(Status.ACTIVE, l1.getStatus());
@@ -57,7 +57,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(l1, crm.findLocationDetails(l1.getLocationId()));
 
 		MailingAddress boston = new MailingAddress("4 Jersey St", "Boston", MASSACHUSETTS.getCode(), UNITED_STATES.getCode(), "02215");
-		LocationDetails l2 = crm.createLocation(mlbId, "Boston", "BOS", boston);
+		LocationDetails l2 = crm.createLocation(mlbId, "BOS", "Boston", boston);
 		Assert.assertEquals("Boston", l2.getDisplayName());
 		Assert.assertEquals("BOS", l2.getReference());
 		Assert.assertEquals(Status.ACTIVE, l2.getStatus());
@@ -65,7 +65,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(l2, crm.findLocationDetails(l2.getLocationId()));
 
 		MailingAddress chicago = new MailingAddress("1060 W Addison St", "Chicago", ILLINOIS.getCode(), UNITED_STATES.getCode(), "60613");
-		LocationDetails l3 = crm.createLocation(mlbId, "Chicago", "CHC", chicago);
+		LocationDetails l3 = crm.createLocation(mlbId, "CHC", "Chicago", chicago);
 		Assert.assertEquals("Chicago", l3.getDisplayName());
 		Assert.assertEquals("CHC", l3.getReference());
 		Assert.assertEquals(Status.ACTIVE, l3.getStatus());
@@ -346,7 +346,7 @@ public abstract class AbstractLocationServiceTests {
 	public void testWrongIdentifiers() throws Exception {
 		Identifier groupId = crm.createGroup(GROUP).getGroupId();
 		Identifier organizationId = crm.createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Location", "LOC", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 
 		assertEquals("LOC", crm.findLocationDetails(locationId).getReference());
 		assertEquals("LOC", crm.findLocationSummary(locationId).getReference());

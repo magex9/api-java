@@ -79,7 +79,7 @@ public class LocationsController extends AbstractCrmController {
 			String reference = getString(body, "reference", "", null, messages);
 			MailingAddress address = getObject(MailingAddress.class, body, "address", null, null, messages, locale);
 			validate(messages);
-			return transformer.format(crm.createLocation(organizationId, displayName, reference, address), locale);
+			return transformer.format(crm.createLocation(organizationId, reference, displayName, address), locale);
 		});
 	}
 

@@ -57,7 +57,7 @@ public class HazelcastLocationService implements CrmLocationService {
 	}
 
 	@Override
-	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String locationReference, String locationName, MailingAddress address) {
 		/* run a find on the organizationId to ensure it exists */
 		organizationService.findOrganizationSummary(organizationId);
 		/* create our new location for this organizationId */
