@@ -3,8 +3,6 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Primary;
@@ -206,30 +204,5 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
-	}
-
-	@Override
-	public OrganizationDetails findOrganizationByDisplayName(String displayName) {
-		return CrmOrganizationService.super.findOrganizationByDisplayName(displayName);
-	}
-
-	@Override
-	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
-		return CrmOrganizationService.super.findOrganizationDetails(filter);
-	}
-
-	@Override
-	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
-		return CrmOrganizationService.super.findOrganizationSummaries(filter);
-	}
-	
-	@Override
-	public OrganizationDetails createOrganization(OrganizationDetails prototype) {	
-		return CrmOrganizationService.super.createOrganization(prototype);
-	}
-	
-	@Override
-	public OrganizationDetails prototypeOrganization(@NotNull String displayName, @NotNull List<String> groups) {	
-		return CrmOrganizationService.super.prototypeOrganization(displayName, groups);
 	}
 }

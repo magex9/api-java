@@ -3,14 +3,11 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -175,30 +172,5 @@ public class HazelcastLocationService implements CrmLocationService {
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
 		return PageBuilder.buildPageFor(filter, allMatchingLocations, paging);
-	}
-
-	@Override
-	public Page<LocationSummary> findActiveLocationSummariesForOrg(@NotNull Identifier organizationId) {
-		return CrmLocationService.super.findActiveLocationSummariesForOrg(organizationId);
-	}
-
-	@Override
-	public FilteredPage<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {
-		return CrmLocationService.super.findLocationDetails(filter);
-	}
-
-	@Override
-	public FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {
-		return CrmLocationService.super.findLocationSummaries(filter);
-	}
-
-	@Override
-	public LocationDetails createLocation(LocationDetails prototype) {
-		return CrmLocationService.super.createLocation(prototype);
-	}
-
-	@Override
-	public LocationDetails prototypeLocation(@NotNull Identifier organizationId, @NotNull String displayName, @NotNull String reference, @NotNull MailingAddress address) {
-		return CrmLocationService.super.prototypeLocation(organizationId, displayName, reference, address);
-	}
+	}	
 }

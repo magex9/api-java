@@ -23,7 +23,6 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.FilteredPage;
@@ -36,7 +35,7 @@ import ca.magex.crm.test.config.TestConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
-public class CachingLocationServiceTests {
+public class CachingLocationServiceDelegateTests {
 
 	@Autowired private CrmLocationService delegate;
 	@Autowired private CacheManager cacheManager;
@@ -67,7 +66,25 @@ public class CachingLocationServiceTests {
 		/* should have added the summary to the cache */
 		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
+	}
 
+	@Test
+	public void testCacheNewLocFromPrototype() {
+		final AtomicInteger locIndex = new AtomicInteger();
+		BDDMockito.willAnswer((invocation) -> {
+			LocationDetails locDetails = invocation.getArgument(0);
+			return new LocationDetails(new Identifier(Integer.toString(locIndex.getAndIncrement())), locDetails.getOrganizationId(), locDetails.getStatus(), locDetails.getReference(), locDetails.getDisplayName(), locDetails.getAddress());
+		}).given(delegate).createLocation(Mockito.any(LocationDetails.class));
+		LocationDetails locDetails = locationService.createLocation(new LocationDetails(null, new Identifier("ABC"), Status.ACTIVE, "Head Quarters", "HQ", CrmAsserts.MAILING_ADDRESS));
+		BDDMockito.verify(delegate, Mockito.times(1)).createLocation(Mockito.any(LocationDetails.class));
+
+		/* should have added the details to the cache */
+		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
+
+		/* should have added the summary to the cache */
+		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 	}
 
 	@Test
@@ -212,42 +229,137 @@ public class CachingLocationServiceTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 
 		/* clear cache, update address, and ensure cached */
-		cacheManager.getCache("organizations").clear();
+		cacheManager.getCache("locations").clear();
 		locDetails = locationService.updateLocationAddress(locDetails.getLocationId(), CrmAsserts.CA_ADDRESS);
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
 		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));		
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 	}
-	
+
 	@Test
 	public void testCachingFindDetailsResults() {
 		LocationDetails details1 = new LocationDetails(new Identifier("A"), new Identifier("O"), Status.ACTIVE, "A", "a", CrmAsserts.CA_ADDRESS);
 		LocationDetails details2 = new LocationDetails(new Identifier("B"), new Identifier("O"), Status.ACTIVE, "B", "b", CrmAsserts.US_ADDRESS);
 		LocationDetails details3 = new LocationDetails(new Identifier("C"), new Identifier("O"), Status.ACTIVE, "C", "c", CrmAsserts.DE_ADDRESS);
-		
+
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);
 		}).given(delegate).findLocationDetails(Mockito.any(LocationsFilter.class), Mockito.any(Paging.class));
-		
+
+		BDDMockito.willAnswer((invocation) -> {
+			return new FilteredPage<>(invocation.getArgument(0), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+		}).given(delegate).findLocationDetails(Mockito.any(LocationsFilter.class));
+
 		BDDMockito.willAnswer((invocation) -> {
 			return 3l;
 		}).given(delegate).countLocations(Mockito.any(LocationsFilter.class));
-		
-		
-		locationService.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.unsorted()));
+
 		Assert.assertEquals(3l, locationService.countLocations(new LocationsFilter()));
-		
+
+		/* find locations summaries with paging and ensure cached results */
+		cacheManager.getCache("locations").clear();
+		Assert.assertEquals(3, locationService.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());
+
 		Assert.assertEquals(details1, locationService.findLocationDetails(details1.getLocationId()));
 		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
-		
+
 		Assert.assertEquals(details2, locationService.findLocationDetails(details2.getLocationId()));
 		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
-		
+
 		Assert.assertEquals(details3, locationService.findLocationDetails(details3.getLocationId()));
 		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
-		
+
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
+
+		/* find locations summaries with default paging and ensure cached results */
+		cacheManager.getCache("locations").clear();
+		Assert.assertEquals(3, locationService.findLocationDetails(new LocationsFilter()).getNumberOfElements());
+
+		Assert.assertEquals(details1, locationService.findLocationDetails(details1.getLocationId()));
+		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+
+		Assert.assertEquals(details2, locationService.findLocationDetails(details2.getLocationId()));
+		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+
+		Assert.assertEquals(details3, locationService.findLocationDetails(details3.getLocationId()));
+		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
+	}
+
+	@Test
+	public void testCachingFindSummariesResults() {
+		LocationDetails details1 = new LocationDetails(new Identifier("A"), new Identifier("O"), Status.ACTIVE, "A", "a", CrmAsserts.CA_ADDRESS);
+		LocationDetails details2 = new LocationDetails(new Identifier("B"), new Identifier("O"), Status.ACTIVE, "B", "b", CrmAsserts.US_ADDRESS);
+		LocationDetails details3 = new LocationDetails(new Identifier("C"), new Identifier("O"), Status.ACTIVE, "C", "c", CrmAsserts.DE_ADDRESS);
+
+		BDDMockito.willAnswer((invocation) -> {
+			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);
+		}).given(delegate).findLocationSummaries(Mockito.any(LocationsFilter.class), Mockito.any(Paging.class));
+
+		BDDMockito.willAnswer((invocation) -> {
+			return new FilteredPage<>(invocation.getArgument(0), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+		}).given(delegate).findLocationSummaries(Mockito.any(LocationsFilter.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
+			return new FilteredPage<>(invocation.getArgument(0), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+		}).given(delegate).findActiveLocationSummariesForOrg(Mockito.any(Identifier.class));
+
+		BDDMockito.willAnswer((invocation) -> {
+			return 3l;
+		}).given(delegate).countLocations(Mockito.any(LocationsFilter.class));
+
+		Assert.assertEquals(3l, locationService.countLocations(new LocationsFilter()));
+
+		/* find locations summaries with paging and ensure cached results */
+		cacheManager.getCache("locations").clear();
+		Assert.assertEquals(3, locationService.findLocationSummaries(new LocationsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());
+
+		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+
+		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+
+		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
+
+		/* find locations summaries with default paging and ensure cached results */
+		cacheManager.getCache("locations").clear();
+		Assert.assertEquals(3, locationService.findLocationSummaries(new LocationsFilter()).getNumberOfElements());
+
+		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+
+		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+
+		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
+		
+		/* find locations summaries with default paging and ensure cached results */
+		cacheManager.getCache("locations").clear();
+		Assert.assertEquals(3, locationService.findLocationSummaries(new LocationsFilter()).getNumberOfElements());
+
+		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+
+		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+
+		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
+		
+		/* find active locations summaries */
+		cacheManager.getCache("locations").clear();
+		Assert.assertEquals(3, locationService.findActiveLocationSummariesForOrg(details1.getOrganizationId()).getNumberOfElements());
+
+		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+
+		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+
+		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 	}
 }

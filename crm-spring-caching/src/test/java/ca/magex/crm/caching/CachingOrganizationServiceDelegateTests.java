@@ -65,6 +65,25 @@ public class CachingOrganizationServiceDelegateTests {
 		Assert.assertNotNull(organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
 	}
+	
+	@Test
+	public void testCacheNewOrgFromPrototype() {
+		final AtomicInteger orgIndex = new AtomicInteger();
+		BDDMockito.willAnswer((invocation) -> {
+			OrganizationDetails orgDetails = invocation.getArgument(0);
+			return new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), orgDetails.getStatus(), orgDetails.getDisplayName(), orgDetails.getMainLocationId(), orgDetails.getMainContactId(), orgDetails.getGroups());
+		}).given(delegate).createOrganization(Mockito.any(OrganizationDetails.class));
+		OrganizationDetails orgDetails = organizationService.createOrganization(new OrganizationDetails(null, Status.ACTIVE, "Hello", null, null, List.of("ORG")));
+		BDDMockito.verify(delegate, Mockito.times(1)).createOrganization(Mockito.any(OrganizationDetails.class));
+
+		/* should have added the details to the cache */
+		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+
+		/* should have added the summary to the cache */
+		Assert.assertNotNull(organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
+	}
 
 	@Test
 	public void testCacheExistingOrg() {
@@ -249,12 +268,34 @@ public class CachingOrganizationServiceDelegateTests {
 		}).given(delegate).findOrganizationDetails(Mockito.any(OrganizationsFilter.class), Mockito.any(Paging.class));
 		
 		BDDMockito.willAnswer((invocation) -> {
+			return new FilteredPage<>(invocation.getArgument(0), OrganizationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+		}).given(delegate).findOrganizationDetails(Mockito.any(OrganizationsFilter.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
 			return 3l;
 		}).given(delegate).countOrganizations(Mockito.any(OrganizationsFilter.class));
 		
-		
-		organizationService.findOrganizationDetails(new OrganizationsFilter(), new Paging(1, 5, Sort.unsorted()));
 		Assert.assertEquals(3l, organizationService.countOrganizations(new OrganizationsFilter()));
+		
+		/* find organization details with paging and ensure cached results */
+		cacheManager.getCache("organizations").clear();
+		Assert.assertEquals(3, organizationService.findOrganizationDetails(new OrganizationsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());
+				
+		Assert.assertEquals(details1, organizationService.findOrganizationDetails(details1.getOrganizationId()));
+		Assert.assertEquals(details1, organizationService.findOrganizationSummary(details1.getOrganizationId()));
+		
+		Assert.assertEquals(details2, organizationService.findOrganizationDetails(details2.getOrganizationId()));
+		Assert.assertEquals(details2, organizationService.findOrganizationSummary(details2.getOrganizationId()));
+		
+		Assert.assertEquals(details3, organizationService.findOrganizationDetails(details3.getOrganizationId()));
+		Assert.assertEquals(details3, organizationService.findOrganizationSummary(details3.getOrganizationId()));
+		
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
+		
+		/* find organization details with default paging and ensure cached results */
+		cacheManager.getCache("organizations").clear();
+		Assert.assertEquals(3, organizationService.findOrganizationDetails(new OrganizationsFilter()).getNumberOfElements());
 		
 		Assert.assertEquals(details1, organizationService.findOrganizationDetails(details1.getOrganizationId()));
 		Assert.assertEquals(details1, organizationService.findOrganizationSummary(details1.getOrganizationId()));
@@ -280,11 +321,29 @@ public class CachingOrganizationServiceDelegateTests {
 		}).given(delegate).findOrganizationSummaries(Mockito.any(OrganizationsFilter.class), Mockito.any(Paging.class));
 		
 		BDDMockito.willAnswer((invocation) -> {
+			return new FilteredPage<>(invocation.getArgument(0), OrganizationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+		}).given(delegate).findOrganizationSummaries(Mockito.any(OrganizationsFilter.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
 			return 3l;
 		}).given(delegate).countOrganizations(Mockito.any(OrganizationsFilter.class));
 		
-		organizationService.findOrganizationSummaries(new OrganizationsFilter(), new Paging(1, 5, Sort.unsorted()));
 		Assert.assertEquals(3l, organizationService.countOrganizations(new OrganizationsFilter()));
+		
+		/* find organization summaries with paging and ensure cached results */
+		Assert.assertEquals(3, organizationService.findOrganizationSummaries(new OrganizationsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());		
+		
+		Assert.assertEquals(details1, organizationService.findOrganizationSummary(details1.getOrganizationId()));
+		
+		Assert.assertEquals(details2, organizationService.findOrganizationSummary(details2.getOrganizationId()));
+		
+		Assert.assertEquals(details3, organizationService.findOrganizationSummary(details3.getOrganizationId()));
+		
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
+		
+		/* find organization details with default paging and ensure cached results */
+		cacheManager.getCache("organizations").clear();
+		Assert.assertEquals(3, organizationService.findOrganizationSummaries(new OrganizationsFilter()).getNumberOfElements());		
 		
 		Assert.assertEquals(details1, organizationService.findOrganizationSummary(details1.getOrganizationId()));
 		

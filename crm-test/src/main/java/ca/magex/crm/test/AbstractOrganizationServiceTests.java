@@ -395,7 +395,6 @@ public abstract class AbstractOrganizationServiceTests {
 
 		assertEquals("Org Name", crm.findOrganizationDetails(organizationId).getDisplayName());
 		assertEquals("Org Name", crm.findOrganizationSummary(organizationId).getDisplayName());
-		assertEquals("Org Name", crm.findOrganizationByDisplayName("Org Name").getDisplayName());
 		try {
 			crm.findOrganizationDetails(groupId);
 			fail("Not a valid identifier");

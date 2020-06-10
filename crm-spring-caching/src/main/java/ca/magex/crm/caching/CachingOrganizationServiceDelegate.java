@@ -2,6 +2,8 @@ package ca.magex.crm.caching;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,6 +35,15 @@ public class CachingOrganizationServiceDelegate implements CrmOrganizationServic
 	public CachingOrganizationServiceDelegate(CrmOrganizationService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
+	}
+	
+	@Override
+	@Caching(put = {
+			@CachePut(cacheNames = "organizations", key = "'Details_'.concat(#result.organizationId)", unless = "#result == null"),
+			@CachePut(cacheNames = "organizations", key = "'Summary_'.concat(#result.organizationId)", unless = "#result == null")
+	})
+	public OrganizationDetails createOrganization(OrganizationDetails prototype) {
+		return delegate.createOrganization(prototype);
 	}
 
 	@Override
@@ -105,6 +116,8 @@ public class CachingOrganizationServiceDelegate implements CrmOrganizationServic
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
 		return delegate.findOrganizationDetails(organizationId);
 	}
+	
+	
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
@@ -123,6 +136,17 @@ public class CachingOrganizationServiceDelegate implements CrmOrganizationServic
 	}
 
 	@Override
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
+		FilteredPage<OrganizationDetails> page = delegate.findOrganizationDetails(filter);
+		Cache organizationsCache = cacheManager.getCache("organizations");
+		page.forEach((details) -> {
+			organizationsCache.putIfAbsent("Details_" + details.getOrganizationId(), details);
+			organizationsCache.putIfAbsent("Summary_" + details.getOrganizationId(), details);
+		});
+		return page;
+	}
+
+	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
 		FilteredPage<OrganizationSummary> page = delegate.findOrganizationSummaries(filter, paging);
 		Cache organizationsCache = cacheManager.getCache("organizations");
@@ -130,5 +154,15 @@ public class CachingOrganizationServiceDelegate implements CrmOrganizationServic
 			organizationsCache.putIfAbsent("Summary_" + summary.getOrganizationId(), summary);
 		});
 		return page;
-	}	
+	}
+
+	@Override
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
+		FilteredPage<OrganizationSummary> page = delegate.findOrganizationSummaries(filter);
+		Cache organizationsCache = cacheManager.getCache("organizations");
+		page.forEach((summary) -> {
+			organizationsCache.putIfAbsent("Summary_" + summary.getOrganizationId(), summary);
+		});
+		return page;
+	}
 }
