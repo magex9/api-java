@@ -1,8 +1,8 @@
 {
   "name": "TypedMethods",
+  "imports": {"List": "java.util"},
   "type": "interface",
   "modifiers": ["public"],
-  "imports": {"List": "java.util"},
   "methods": [
     {
       "name": "find",

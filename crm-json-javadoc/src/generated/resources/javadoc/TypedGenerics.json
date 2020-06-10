@@ -4,13 +4,13 @@
     "class": "T",
     "extends": ["BasicEntity"]
   }],
+  "imports": {"List": "java.util"},
   "type": "interface",
   "modifiers": ["public"],
   "extends": [{
     "class": "Comparable",
     "generics": ["T"]
   }],
-  "imports": {"List": "java.util"},
   "methods": [{
     "name": "find",
     "modifiers": ["public"],

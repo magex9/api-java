@@ -1,5 +1,13 @@
 {
   "name": "ExtendedEntity",
+  "description": "A basic entity test\n@author scott",
+  "imports": {
+    "Serializable": "java.io",
+    "HashMap": "java.util",
+    "List": "java.util",
+    "Locale": "java.util",
+    "Map": "java.util"
+  },
   "type": "class",
   "modifiers": [
     "public",
@@ -10,14 +18,15 @@
     "Cloneable",
     "Serializable"
   ],
-  "description": "A basic entity test\n@author scott",
-  "imports": {
-    "Serializable": "java.io",
-    "HashMap": "java.util",
-    "List": "java.util",
-    "Locale": "java.util",
-    "Map": "java.util"
-  },
+  "constructors": [{
+    "name": "ExtendedEntity",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "locales",
+      "type": "Locale"
+    }],
+    "body": "{\n    this.cache = new HashMap<BasicEntity, Map<Locale, List<? extends BasicEntity>>>();\n}"
+  }],
   "fields": [
     {
       "name": "locales",

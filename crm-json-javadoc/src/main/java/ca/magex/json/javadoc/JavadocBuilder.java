@@ -18,6 +18,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -104,15 +105,16 @@ public class JavadocBuilder {
         
         JsonObject json = new JsonObject()
         	.with("name", cls.getNameAsString())
+        	.with("description", buildComment(cls.getComment()))
         	.with("generics", cls.getTypeParameters().stream().map(t -> buildType(t)).collect(Collectors.toList()))
+        	.with("imports", buildImports(cu))
         	.with("type", cls.isInterface() ? "interface" : "class")
         	.with("modifiers", new JsonArray(cls.getModifiers().stream()
             		.map(n -> new JsonText(n.getKeyword().toString().toLowerCase()))
             		.collect(Collectors.toList())))
         	.with("extends", new JsonArray(cls.getExtendedTypes().stream().map(t -> buildType(t)).collect(Collectors.toList())))
         	.with("implements", new JsonArray(cls.getImplementedTypes().stream().map(t -> buildType(t)).collect(Collectors.toList())))
-        	.with("description", buildComment(cls.getComment()))
-        	.with("imports", buildImports(cu))
+        	.with("constructors", new JsonArray())
         	.with("fields", new JsonArray())
         	.with("methods", new JsonArray());
         
@@ -120,6 +122,11 @@ public class JavadocBuilder {
             List<BodyDeclaration<?>> members = typeDec.getMembers();
             if (members != null) {
                 for (BodyDeclaration<?> member : members) {
+                	if (member.isConstructorDeclaration()) {
+                		//for (int i = 0; i < ((ConstructorDeclaration)member).getVariables().size(); i++) {
+                		json = json.append("constructors", buildConstructor((ConstructorDeclaration)member));
+                		//}
+                	}
                 	if (member.isFieldDeclaration()) {
                 		for (int i = 0; i < ((FieldDeclaration)member).getVariables().size(); i++) {
                 			json = json.append("fields", buildField((FieldDeclaration)member, i));
@@ -211,6 +218,27 @@ public class JavadocBuilder {
     	}
     }
     
+    private static JsonObject buildConstructor(ConstructorDeclaration method) {
+    	JsonObject json = new JsonObject();
+    	json = json.with("name", method.getNameAsString());
+   		json = json.with("description", buildComment(method.getComment()));
+    	json = json.with("modifiers", new JsonArray(method.getModifiers().stream()
+    		.map(n -> new JsonText(n.getKeyword().toString().toLowerCase()))
+    		.collect(Collectors.toList())));
+    	json = json.with("generics", method.getTypeParameters().stream()
+    		.map(g -> buildType(g)).collect(Collectors.toList()));
+    	if (!method.getAnnotations().isEmpty()) {
+    		json = json.with("annotations", method.getAnnotations().stream()
+    	    	.map(a -> buildAnnotation(a)).collect(Collectors.toList()));
+    	}
+    	if (!method.getParameters().isEmpty()) {
+	    	json = json.with("parameters", method.getParameters().stream()
+	    		.map(p -> buildParameter(p)).collect(Collectors.toList()));
+    	}
+   		json = json.with("body", method.getBody().toString());
+    	return json;
+    }
+    
     private static JsonObject buildMethod(MethodDeclaration method) {
     	JsonObject json = new JsonObject();
     	json = json.with("name", method.getNameAsString());
@@ -223,6 +251,10 @@ public class JavadocBuilder {
     	}
     	json = json.with("generics", method.getTypeParameters().stream()
     		.map(g -> buildType(g)).collect(Collectors.toList()));
+    	if (!method.getThrownExceptions().isEmpty()) {
+    		json = json.with("exceptions", method.getThrownExceptions().stream()
+    	    	.map(e -> buildType(e)).collect(Collectors.toList()));
+    	}
     	if (!method.getAnnotations().isEmpty()) {
     		json = json.with("annotations", method.getAnnotations().stream()
     	    	.map(a -> buildAnnotation(a)).collect(Collectors.toList()));
@@ -236,8 +268,8 @@ public class JavadocBuilder {
     	}
     	return json;
     }
-    
-    private static JsonObject buildParameter(Parameter parameter) {
+
+	private static JsonObject buildParameter(Parameter parameter) {
     	JsonObject json = new JsonObject();
     	json = json.with("name", parameter.getNameAsString());
     	json = json.with("type", buildType(parameter.getType()));
@@ -255,7 +287,6 @@ public class JavadocBuilder {
     	if (!properties.isEmpty()) {
     		json = json.with("properties", properties.stream().map(p -> buildPair(p)).collect(Collectors.toList()));
     	}
-    	annotation.getDataKeys();
 		return json;
 	}
 	

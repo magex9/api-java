@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.magex.json.javadoc.samples.BasicEntity;
+import ca.magex.json.javadoc.samples.CrudService;
 import ca.magex.json.javadoc.samples.ExtendedEntity;
 import ca.magex.json.javadoc.samples.NestedGenerics;
 import ca.magex.json.javadoc.samples.TypedGenerics;
@@ -50,10 +51,15 @@ public class JavadocBuilderTests {
 		compare(TypedMethods.class);
 	}
 	
+	@Test
+	public void testCrudService() throws Exception {
+		compare(CrudService.class);
+	}
+	
 	private void compare(Class<?> cls) throws Exception {
 		File input = new File(basedir, cls.getSimpleName() + ".java");
 		assertTrue(input.exists());
-		File output = new File("src/test/resources/javadoc", cls.getSimpleName() + ".json");
+		File output = new File("src/generated/resources/javadoc", cls.getSimpleName() + ".json");
 		compare(input, output);
 	}
 	
