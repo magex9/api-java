@@ -26,7 +26,7 @@ public class PersonServiceCachingDelegateTests {
 
 	@Autowired private CrmPersonService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("CachingPersonService") private CrmPersonService locationService;
+	@Autowired @Qualifier("PersonServiceCachingDelegate") private CrmPersonService locationService;
 
 	@Before
 	public void reset() {

@@ -20,7 +20,7 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
-@Service("CachingOrganizationService")
+@Service("OrganizationServiceCachingDelegate")
 public class OrganizationServiceCachingDelegate implements CrmOrganizationService {
 
 	private CrmOrganizationService delegate;

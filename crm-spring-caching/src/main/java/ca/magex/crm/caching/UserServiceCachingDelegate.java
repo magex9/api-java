@@ -16,7 +16,7 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
-@Service("CachingUserService")
+@Service("UserServiceCachingDelegate")
 public class UserServiceCachingDelegate implements CrmUserService {
 
 	private CrmUserService delegate;

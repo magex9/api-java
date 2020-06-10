@@ -40,7 +40,7 @@ public class LocationServiceCachingDelegateTests {
 
 	@Autowired private CrmLocationService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("CachingLocationService") private CrmLocationService locationService;
+	@Autowired @Qualifier("LocationServiceCachingDelegate") private CrmLocationService locationService;
 
 	@Before
 	public void reset() {

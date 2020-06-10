@@ -20,7 +20,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
-@Service("CachingPersonService")
+@Service("PersonServiceCachingDelegate")
 public class PersonServiceCachingDelegate implements CrmPersonService {
 
 	private CrmPersonService delegate;
