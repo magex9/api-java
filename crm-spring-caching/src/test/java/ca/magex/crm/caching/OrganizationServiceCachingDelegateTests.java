@@ -27,13 +27,14 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.caching.config.CachingTestConfig;
 import ca.magex.crm.test.config.MockConfig;
 import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
-public class CachingOrganizationServiceDelegateTests {
+public class OrganizationServiceCachingDelegateTests {
 
 	@Autowired private CrmOrganizationService delegate;
 	@Autowired private CacheManager cacheManager;

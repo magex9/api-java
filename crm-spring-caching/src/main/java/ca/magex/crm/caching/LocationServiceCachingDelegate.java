@@ -20,7 +20,7 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 @Service("CachingLocationService")
-public class CachingLocationServiceDelegate implements CrmLocationService {
+public class LocationServiceCachingDelegate implements CrmLocationService {
 
 	private CrmLocationService delegate;
 	private CacheManager cacheManager;
@@ -31,7 +31,7 @@ public class CachingLocationServiceDelegate implements CrmLocationService {
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public CachingLocationServiceDelegate(CrmLocationService delegate, CacheManager cacheManager) {
+	public LocationServiceCachingDelegate(CrmLocationService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}
