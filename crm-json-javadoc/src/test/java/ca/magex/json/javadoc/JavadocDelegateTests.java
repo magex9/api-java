@@ -17,7 +17,7 @@ public class JavadocDelegateTests {
 		assertTrue(inputFile.exists());
 		File outputFile = new File("src/generated/java/", CrudService.class.getName().replaceAll("\\.", "/") + "LoggerDelegate.java");
 		String outputPackage = CrudService.class.getPackageName();
-		LoggerDelegationBuilder.build(inputFile, inputPackage, outputFile, outputPackage);
+		LoggerDelegationBuilder.build(inputFile, inputPackage, outputFile, outputPackage, "CrudServiceLoggerDelegate");
 	}
 	
 }

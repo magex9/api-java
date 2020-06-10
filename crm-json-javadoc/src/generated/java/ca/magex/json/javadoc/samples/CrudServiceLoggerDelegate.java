@@ -130,4 +130,41 @@ public class CrudServiceLoggerDelegate<K, T> implements CrudService<K, T> {
 		}
 	}
 	
+	@Override
+	public boolean contains(K id) {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling contains(" + id + ")");
+				boolean result = delegate.contains(id);
+				logger.trace("Executed contains(" + id + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on contains(" + id + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling contains(" + id + ")");
+				boolean result = delegate.contains(id);
+				logger.debug("Executed contains(" + id + ") in " + Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on contains(" + id + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling contains(" + id + ")");
+			return delegate.contains(id);
+		}
+		else {
+			return delegate.contains(id);
+		}
+	}
+	
 }

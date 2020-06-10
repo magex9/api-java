@@ -20,7 +20,7 @@ public class LoggerDelegationBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoggerDelegationBuilder.class);
 	
-	public static void build(File inputFile, String inputPackage, File outputFile, String outputPackage) throws IOException {
+	public static void build(File inputFile, String inputPackage, File outputFile, String outputPackage, String outputClass) throws IOException {
 		logger.info("Building logger from " + inputFile.getAbsolutePath());
 		if (!inputFile.isFile())
 			throw new FileNotFoundException("Could not find input interface: " + inputFile.getAbsolutePath());
@@ -37,13 +37,13 @@ public class LoggerDelegationBuilder {
 			sb.append("import " + pair.text() + "." + pair.key() + ";");
 		}
 		sb.append("");
-		sb.indent("public class " + cls.getString("name") + "LoggerDelegate" + buildGenerics(cls.getArray("generics")) + " implements " + cls.getString("name") + buildGenerics(cls.getArray("generics")) + " {");
+		sb.indent("public class " + outputClass + buildGenerics(cls) + " implements " + cls.getString("name") + buildGenerics(cls) + " {");
 		sb.append("");
-		sb.append("private " + cls.getString("name") + buildGenerics(cls.getArray("generics")) + " delegate;");
+		sb.append("private " + cls.getString("name") + buildGenerics(cls) + " delegate;");
 		sb.append("");
 		sb.append("private Logger logger;");
 		sb.append("");
-		sb.indent("public " + cls.getString("name") + "LoggerDelegate" + "(" + cls.getString("name") + buildGenerics(cls.getArray("generics")) + " delegate, Logger logger) {");
+		sb.indent("public " + outputClass + "(" + cls.getString("name") + buildGenerics(cls) + " delegate, Logger logger) {");
 		sb.append("this.delegate = delegate;");
 		sb.append("this.logger = logger;");
 		sb.unindent("}");
@@ -57,7 +57,10 @@ public class LoggerDelegationBuilder {
 		FileUtils.writeStringToFile(outputFile, sb.toString(), StandardCharsets.UTF_8);
 	}
 	
-	private static String buildGenerics(JsonArray generics) {
+	private static String buildGenerics(JsonObject obj) {
+		if (!obj.contains("generics", JsonArray.class))
+			return "";
+		JsonArray generics = obj.getArray("generics");
 		if (generics == null || generics.isEmpty())
 			return "";
 		return "<" + generics.stream().map(e -> ((JsonText)e).value()).collect(Collectors.joining(", ")) + ">";
@@ -71,7 +74,7 @@ public class LoggerDelegationBuilder {
 		} else if (json.contains("type", JsonObject.class)) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(json.getObject("type").getString("class"));
-			sb.append(buildGenerics(json.getObject("type").getArray("generics")));
+			sb.append(buildGenerics(json.getObject("type")));
 			return sb.toString();
 		} else {
 			return json.get("type").toString();
@@ -81,7 +84,7 @@ public class LoggerDelegationBuilder {
 	private static void buildMethod(FormattedStringBuilder sb, JsonObject cls, JsonObject method) {
 		String methodParams = !method.contains("parameters") ? "" :
 			method.getArray("parameters", JsonObject.class).stream()
-				.map(o -> o.getString("type") + " " + o.getString("name"))
+				.map(o -> buildType(o) + " " + o.getString("name"))
 				.collect(Collectors.joining(", "));
 		String loggerParams = !method.contains("parameters") ? "" :
 			method.getArray("parameters", JsonObject.class).stream()
@@ -94,20 +97,22 @@ public class LoggerDelegationBuilder {
 		String throwable = !method.contains("exceptions") ? "" :
 			" throws " + method.getArray("exceptions", String.class).stream().collect(Collectors.joining(", "));
 		String call = method.getString("name") + "(" + loggerParams + ")";
+		String returnType = buildType(method);
+		String returnClass = returnType.matches("^[a-z].*") ? "\"returnType\"" : "result.getClass()";
 		sb.append("@Override");
-		sb.indent("public " + buildType(method) + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
+		sb.indent("public " + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
 		sb.indent("if (logger.isTraceEnabled()) {");
 		sb.append("long start = System.nanoTime();");
 		sb.indent("try {");
 		sb.append("logger.trace(\"Calling " + call + "\");");
-		if (buildType(method).equals("void")) {
+		if (returnType.equals("void")) {
 			sb.append("delegate." + method.getString("name") + "(" + invokeParams + ");");
 			sb.append("logger.trace(\"Executed " + call + " in \" + Duration.ofNanos(System.nanoTime() - start) + \".\");");
 		} else {
-			sb.append(buildType(method) + " result = delegate." + method.getString("name") + "(" + invokeParams + ");");
-			sb.append("logger.trace(\"Executed " + call + " in \" + Duration.ofNanos(System.nanoTime() - start) + \" (\" + result.getClass() + \": \" + result + \").\");");
+			sb.append(returnType + " result = delegate." + method.getString("name") + "(" + invokeParams + ");");
+			sb.append("logger.trace(\"Executed " + call + " in \" + Duration.ofNanos(System.nanoTime() - start) + \" (\" + " + returnClass + " + \": \" + result + \").\");");
 		}
-		if (buildType(method).equals("void")) {
+		if (returnType.equals("void")) {
 			sb.append("return;");
 		} else {
 			sb.append("return result;");
@@ -122,14 +127,14 @@ public class LoggerDelegationBuilder {
 		sb.append("long start = System.nanoTime();");
 		sb.indent("try {");
 		sb.append("logger.debug(\"Calling " + call + "\");");
-		if (buildType(method).equals("void")) {
+		if (returnType.equals("void")) {
 			sb.append("delegate." + method.getString("name") + "(" + invokeParams + ");");
 			sb.append("logger.debug(\"Executed " + call + " in \" + Duration.ofNanos(System.nanoTime() - start) + \".\");");
 		} else {
-			sb.append(buildType(method) + " result = delegate." + method.getString("name") + "(" + invokeParams + ");");
+			sb.append(returnType + " result = delegate." + method.getString("name") + "(" + invokeParams + ");");
 			sb.append("logger.debug(\"Executed " + call + " in \" + Duration.ofNanos(System.nanoTime() - start) + \".\");");
 		}
-		if (buildType(method).equals("void")) {
+		if (returnType.equals("void")) {
 			sb.append("return;");
 		} else {
 			sb.append("return result;");
@@ -142,14 +147,14 @@ public class LoggerDelegationBuilder {
 		sb.unindent("}");
 		sb.indent("else if (logger.isInfoEnabled()) {");
 		sb.append("logger.info(\"Calling " + call + "\");");
-		if (buildType(method).equals("void")) {
+		if (returnType.equals("void")) {
 			sb.append("delegate." + method.getString("name") + "(" + invokeParams + ");");
 		} else {
 			sb.append("return delegate." + method.getString("name") + "(" + invokeParams + ");");
 		}
 		sb.unindent("}");
 		sb.indent("else {");
-		if (buildType(method).equals("void")) {
+		if (returnType.equals("void")) {
 			sb.append("delegate." + method.getString("name") + "(" + invokeParams + ");");
 		} else {
 			sb.append("return delegate." + method.getString("name") + "(" + invokeParams + ");");
@@ -158,5 +163,5 @@ public class LoggerDelegationBuilder {
 		sb.unindent("}");
 		sb.append("");
 	}
-	
+
 }

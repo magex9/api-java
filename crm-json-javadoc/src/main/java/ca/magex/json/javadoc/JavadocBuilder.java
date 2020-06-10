@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -246,8 +247,12 @@ public class JavadocBuilder {
     	json = json.with("modifiers", new JsonArray(method.getModifiers().stream()
     		.map(n -> new JsonText(n.getKeyword().toString().toLowerCase()))
     		.collect(Collectors.toList())));
-    	if (!method.getType().getChildNodes().isEmpty()) {
-    		json = json.with("type", buildType(method.getType()));
+    	if (method.getType() instanceof PrimitiveType) {
+    		json = json.with("type", method.getTypeAsString());
+    	} else {
+        	if (!method.getType().getChildNodes().isEmpty()) {
+        		json = json.with("type", buildType(method.getType()));
+        	}
     	}
     	json = json.with("generics", method.getTypeParameters().stream()
     		.map(g -> buildType(g)).collect(Collectors.toList()));
