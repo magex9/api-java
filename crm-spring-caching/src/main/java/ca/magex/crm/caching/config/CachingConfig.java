@@ -13,7 +13,7 @@ public class CachingConfig {
 
 	@Bean
     public CacheManager cacheManager() {
-		ConcurrentMapCacheManager cm = new ConcurrentMapCacheManager("organizations", "locations");
+		ConcurrentMapCacheManager cm = new ConcurrentMapCacheManager("organizations", "locations", "persons");
 		
 		return new TransactionAwareCacheManagerProxy(cm);
     }	

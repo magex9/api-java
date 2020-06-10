@@ -1,4 +1,4 @@
-package ca.magex.crm.caching;
+package ca.magex.crm.caching.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

@@ -55,7 +55,7 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();		
+		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_ORGANIZATION_KEY);
 		OrganizationDetails orgDetails = new OrganizationDetails(
 				new Identifier(Long.toHexString(idGenerator.newId())),
@@ -183,14 +183,14 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
-		return organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter)).size();				
+		return organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter)).size();
 	}
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		List<OrganizationDetails> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter))
-				.stream()				
+				.stream()
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
 				.collect(Collectors.toList());
@@ -208,28 +208,27 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		return PageBuilder.buildPageFor(filter, allMatchingOrgs, paging);
 	}
 
+	/* --------------------------------------------------------------------------- */
+	/* these methods below are required for the transaction proxy to work properly */
+	/* --------------------------------------------------------------------------- */
+
 	@Override
-	public OrganizationDetails findOrganizationByDisplayName(String displayName) {
-		return CrmOrganizationService.super.findOrganizationByDisplayName(displayName);
+	public OrganizationDetails prototypeOrganization(@NotNull String displayName, @NotNull List<String> groups) {
+		return CrmOrganizationService.super.prototypeOrganization(displayName, groups);
 	}
 
 	@Override
-	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
+	public OrganizationDetails createOrganization(OrganizationDetails prototype) {
+		return CrmOrganizationService.super.createOrganization(prototype);
+	}
+
+	@Override
+	public FilteredPage<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
 		return CrmOrganizationService.super.findOrganizationDetails(filter);
 	}
 
 	@Override
-	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
 		return CrmOrganizationService.super.findOrganizationSummaries(filter);
-	}
-	
-	@Override
-	public OrganizationDetails createOrganization(OrganizationDetails prototype) {	
-		return CrmOrganizationService.super.createOrganization(prototype);
-	}
-	
-	@Override
-	public OrganizationDetails prototypeOrganization(@NotNull String displayName, @NotNull List<String> groups) {	
-		return CrmOrganizationService.super.prototypeOrganization(displayName, groups);
 	}
 }

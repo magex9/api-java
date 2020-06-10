@@ -146,9 +146,4 @@ public interface CrmOrganizationService {
 	default OrganizationsFilter defaultOrganizationsFilter() {
 		return new OrganizationsFilter();
 	};
-	
-	default OrganizationDetails findOrganizationByDisplayName(String displayName) {
-		return findOrganizationDetails(defaultOrganizationsFilter().withDisplayName(displayName)).getSingleItem();
-	};
-
 }

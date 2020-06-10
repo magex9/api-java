@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -177,8 +176,22 @@ public class HazelcastLocationService implements CrmLocationService {
 		return PageBuilder.buildPageFor(filter, allMatchingLocations, paging);
 	}
 
+	/* --------------------------------------------------------------------------- */
+	/* these methods below are required for the transaction proxy to work properly */
+	/* --------------------------------------------------------------------------- */
+
 	@Override
-	public Page<LocationSummary> findActiveLocationSummariesForOrg(@NotNull Identifier organizationId) {
+	public LocationDetails prototypeLocation(@NotNull Identifier organizationId, @NotNull String displayName, @NotNull String reference, @NotNull MailingAddress address) {
+		return CrmLocationService.super.prototypeLocation(organizationId, displayName, reference, address);
+	}
+
+	@Override
+	public LocationDetails createLocation(LocationDetails prototype) {
+		return CrmLocationService.super.createLocation(prototype);
+	}
+
+	@Override
+	public FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(@NotNull Identifier organizationId) {
 		return CrmLocationService.super.findActiveLocationSummariesForOrg(organizationId);
 	}
 
@@ -190,15 +203,5 @@ public class HazelcastLocationService implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {
 		return CrmLocationService.super.findLocationSummaries(filter);
-	}
-
-	@Override
-	public LocationDetails createLocation(LocationDetails prototype) {
-		return CrmLocationService.super.createLocation(prototype);
-	}
-
-	@Override
-	public LocationDetails prototypeLocation(@NotNull Identifier organizationId, @NotNull String displayName, @NotNull String reference, @NotNull MailingAddress address) {
-		return CrmLocationService.super.prototypeLocation(organizationId, displayName, reference, address);
 	}
 }
