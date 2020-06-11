@@ -453,6 +453,37 @@ public class UsersControllerTests extends AbstractControllerTests {
 	}
 	
 	@Test
+	public void testUpdatingUsernameNotChanged() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		
+		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.patch("/api/users/" + userId)
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("username", "updated")
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
+		assertEquals("User", json.getString("@type"));
+		assertEquals(userId.toString(), json.getString("userId"));
+		assertEquals("chloe", json.getString("username"));
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
+		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
+		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
+		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
+		assertEquals("Active", json.getObject("person").getString("status"));
+		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals(2, json.getArray("roles").size());
+		assertEquals("ORG_ADMIN", json.getArray("roles").getString(0));
+		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
+	}
+	
+	@Test
 	public void testUpdatingRoles() throws Exception {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
@@ -481,6 +512,76 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(2, json.getArray("roles").size());
 		assertEquals("ORG_USER", json.getArray("roles").getString(0));
 		assertEquals("SYS_ADMIN", json.getArray("roles").getString(1));
+	}
+	
+	@Test
+	public void testUpdatingRolesByUsername() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("CRM_USER")).getUserId();
+		
+		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.patch("/api/user/chloe")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("roles", List.of("CRM_USER"))
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
+		assertEquals("User", json.getString("@type"));
+		assertEquals(userId.toString(), json.getString("userId"));
+		assertEquals("chloe", json.getString("username"));
+		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
+		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
+		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
+		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
+		assertEquals("Active", json.getObject("person").getString("status"));
+		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals(1, json.getArray("roles").size());
+		assertEquals("CRM_USER", json.getArray("roles").getString(0));
+	}
+	
+	@Test
+	public void testGetUserRolesByUserId() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		
+		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/users/" + userId + "/roles")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("roles", List.of("ORG_USER", "SYS_ADMIN"))
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		
+		//JsonAsserts.print(json, "json");
+		assertEquals(2, json.size());
+		assertEquals("ORG_ADMIN", json.getString(0).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("CRM_ADMIN", json.getString(1).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+	}
+
+	@Test
+	public void testGetUserRolesByUsername() throws Exception {
+		crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		
+		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
+			.get("/api/user/chloe/roles")
+			.header("Locale", Lang.ENGLISH)
+			.content(new JsonObject()
+				.with("roles", List.of("ORG_USER", "SYS_ADMIN"))
+				.toString()))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		
+		//JsonAsserts.print(json, "json");
+		assertEquals(2, json.size());
+		assertEquals("ORG_ADMIN", json.getString(0).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("CRM_ADMIN", json.getString(1).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 	}
 
 	@Test

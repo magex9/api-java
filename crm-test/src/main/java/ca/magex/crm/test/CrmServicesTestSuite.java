@@ -209,8 +209,8 @@ public class CrmServicesTestSuite {
 		MailingAddress address = new MailingAddress("54 fifth street", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "T5R5X3");
 		LocationDetails locDetails = crm.createLocation(
 				orgId,
-				"HeadQuarters",
 				"HQ",
+				"HeadQuarters",
 				address);
 		Identifier locId = locDetails.getLocationId();
 		logger.info("Generated locId: " + locId);

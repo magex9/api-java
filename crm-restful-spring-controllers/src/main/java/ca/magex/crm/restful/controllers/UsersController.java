@@ -3,6 +3,7 @@ package ca.magex.crm.restful.controllers;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,10 +21,11 @@ import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
 @Controller
-public class UserController extends AbstractCrmController {
+public class UsersController extends AbstractCrmController {
 
 	@GetMapping("/api/users")
 	public void findUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -39,11 +41,11 @@ public class UserController extends AbstractCrmController {
 	
 	public UsersFilter extractUserFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
 		Identifier organizationId = req.getParameter("organization") == null ? null : new Identifier(req.getParameter("organization"));
-		Identifier userId = req.getParameter("user") == null ? null : new Identifier(req.getParameter("user"));
+		Identifier personId = req.getParameter("person") == null ? null : new Identifier(req.getParameter("person"));
 		String username = req.getParameter("username");
 		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
 		String role = req.getParameter("role");
-		return new UsersFilter(organizationId, userId, status, username, role);
+		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 	
 	@PostMapping("/api/users")
@@ -108,8 +110,9 @@ public class UserController extends AbstractCrmController {
 	@GetMapping("/api/users/{userId}/roles")
 	public void getUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
-		handle(req, res, List.class, (messages, transformer, locale) -> {
-			return transformer.format(crm.findUser(userId).getRoles(), locale);
+		handle(req, res, String.class, (messages, transformer, locale) -> {
+			return new JsonArray(crm.findUser(userId).getRoles().stream()
+				.map(s -> transformer.format(s, locale)).collect(Collectors.toList()));
 		});
 	}
 

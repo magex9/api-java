@@ -15,24 +15,24 @@ public interface CrmLocationService {
 	
 	default LocationDetails prototypeLocation(
 			@NotNull Identifier organizationId, 
-			@NotNull String displayName, 
 			@NotNull String reference, 
+			@NotNull String displayName, 
 			@NotNull MailingAddress address) {
 		return new LocationDetails(null, organizationId, Status.PENDING, reference, displayName, address);
 	};
 	
 	default LocationDetails createLocation(LocationDetails prototype) {
 		return createLocation(
-			prototype.getOrganizationId(), 
-			prototype.getDisplayName(), 
+			prototype.getOrganizationId(),
 			prototype.getReference(), 
+			prototype.getDisplayName(), 
 			prototype.getAddress());
 	}
 
 	LocationDetails createLocation(
-		@NotNull Identifier organizationId, 
-		@NotNull String displayName, 
+		@NotNull Identifier organizationId,
 		@NotNull String reference, 
+		@NotNull String displayName, 
 		@NotNull MailingAddress address
 	);
 

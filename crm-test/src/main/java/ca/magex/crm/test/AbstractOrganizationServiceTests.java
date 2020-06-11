@@ -104,8 +104,8 @@ public abstract class AbstractOrganizationServiceTests {
 		/* update main location */
 		Identifier torontoId = crm.createLocation(
 				o1.getOrganizationId(),
-				"Toronto",
 				"TORONTO",
+				"Toronto",
 				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2")).getLocationId();
 		o1 = crm.updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
@@ -117,8 +117,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 		Identifier ottawaId = crm.createLocation(
 				o2.getOrganizationId(),
-				"Ottawa",
 				"OTTAWA",
+				"Ottawa",
 				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5")).getLocationId();
 		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
@@ -131,8 +131,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 		Identifier montrealId = crm.createLocation(
 				o3.getOrganizationId(),
-				"Montreal",
 				"MONTREAL",
+				"Montreal",
 				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", QUEBEC.getCode(), CANADA.getCode(), "H4B 5G0")).getLocationId();
 		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
@@ -482,7 +482,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCannotUpdateDisabledMainLocation() throws Exception {
 		crm.createGroup(GROUP).getGroupId();
 		Identifier organizationId = crm.createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Location", "LOC", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 		crm.disableLocation(locationId);
 
 		try {
@@ -528,7 +528,7 @@ public abstract class AbstractOrganizationServiceTests {
 		crm.createGroup(GROUP).getGroupId();
 		Identifier organizationA = crm.createOrganization("A", List.of("GRP")).getOrganizationId();
 		Identifier organizationB = crm.createOrganization("B", List.of("GRP")).getOrganizationId();
-		Identifier locationB = crm.createLocation(organizationB, "Location", "B", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		Identifier locationB = crm.createLocation(organizationB, "B", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 
 		try {
 			crm.updateOrganizationMainLocation(organizationA, locationB);

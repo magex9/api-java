@@ -167,7 +167,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetLocationDetails() throws Exception {
-		Identifier locationId = crm.createLocation(organizationId, "Nuevo Leon", "NUEVOLEON", MX_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "NUEVOLEON", "Nuevo Leon", MX_ADDRESS).getLocationId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/locations/" + locationId)
@@ -238,7 +238,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetLocationSummary() throws Exception {
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/locations/" + locationId + "/summary")
@@ -288,7 +288,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetLocationAddress() throws Exception {
-		Identifier locationId = crm.createLocation(organizationId, "Labrador City", "NEWFOUNDLAND", NL_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "NEWFOUNDLAND", "Labrador City", NL_ADDRESS).getLocationId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/api/locations/" + locationId + "/address")
@@ -338,7 +338,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingDisplayName() throws Exception {
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/locations/" + locationId)
@@ -370,7 +370,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingAddress() throws Exception {
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.patch("/api/locations/" + locationId)
@@ -401,7 +401,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 	@Test
 	public void testEnableDisableLocation() throws Exception {
-		Identifier locationId = crm.createLocation(organizationId, "Main Location", "MAIN", MAILING_ADDRESS).getLocationId();
+		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders

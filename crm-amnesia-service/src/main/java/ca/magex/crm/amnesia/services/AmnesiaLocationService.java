@@ -32,7 +32,7 @@ public class AmnesiaLocationService implements CrmLocationService {
 		this.db = db;
 	}
 	
-	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String locationReference, String locationName, MailingAddress address) {
 		return db.saveLocation(new LocationDetails(db.generateId(), organizationId, Status.ACTIVE, locationReference, locationName, address));
 	}
 

@@ -75,13 +75,9 @@ public class OrganizationsController extends AbstractCrmController {
 			}
 			if (body.contains("mainLocationId")) {
 				crm.updateOrganizationMainLocation(organizationId, getIdentifier(body, "mainLocationId", null, null, messages));
-			} else if (body.isNull("mainLocationId")) {
-				crm.updateOrganizationMainLocation(organizationId, null);
 			}
 			if (body.contains("mainContactId")) {
 				crm.updateOrganizationMainContact(organizationId, getIdentifier(body, "mainContactId", null, null, messages));
-			} else if (body.isNull("mainContactId")) {
-				crm.updateOrganizationMainContact(organizationId, null);
 			}
 			validate(messages);
 			return transformer.format(crm.findOrganizationDetails(organizationId), locale);

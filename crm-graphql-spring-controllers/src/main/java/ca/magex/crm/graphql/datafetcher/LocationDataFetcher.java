@@ -59,8 +59,8 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
 			return crm.createLocation(
 					new Identifier((String) environment.getArgument("organizationId")),
-					environment.getArgument("locationName"),
 					environment.getArgument("locationReference"),
+					environment.getArgument("locationName"),
 					extractMailingAddress(environment, "locationAddress"));
 		};
 	}

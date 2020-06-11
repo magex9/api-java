@@ -497,7 +497,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 	
 	@Override
-	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String reference, String displayName, MailingAddress address) {
 		JsonObject result = post("/api/locations", new JsonObject()
 			.with("organizationId", organizationId.toString())
 			.with("reference", reference)
