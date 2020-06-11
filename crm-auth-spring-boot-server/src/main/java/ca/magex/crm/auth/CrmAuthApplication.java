@@ -19,8 +19,7 @@ import ca.magex.crm.api.services.CrmInitializationService;
 		"ca.magex.crm.resource", 			// lookup data
 		"ca.magex.crm.amnesia",				// crm implementation
 		"ca.magex.crm.hazelcast",			// crm implementation
-		"ca.magex.crm.spring.security",		// security implementation
-		"ca.magex.crm.policy"
+		"ca.magex.crm.spring.security"		// security implementation
 })
 public class CrmAuthApplication {
 

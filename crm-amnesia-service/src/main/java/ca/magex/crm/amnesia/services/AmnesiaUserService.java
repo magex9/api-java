@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -22,7 +21,7 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("PrincipalUserService")
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaUserService implements CrmUserService {
@@ -45,14 +44,20 @@ public class AmnesiaUserService implements CrmUserService {
 
 	@Override
 	public User enableUser(Identifier userId) {
-		return db.saveUser(db.findUser(userId).withStatus(Status.ACTIVE));
+		User user = db.findUser(userId);
+		if (user == null) {
+			return null;
+		}
+		return db.saveUser(user.withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public User disableUser(Identifier userId) {
-		User user = findUser(userId);
-		return user.getStatus() == Status.INACTIVE ? user :
-			db.saveUser(db.findUser(userId).withStatus(Status.INACTIVE));
+		User user = db.findUser(userId);
+		if (user == null) {
+			return null;
+		}
+		return db.saveUser(user.withStatus(Status.INACTIVE));
 	}
 
 	@Override
@@ -65,13 +70,16 @@ public class AmnesiaUserService implements CrmUserService {
 		try {
 			return db.findByType(User.class).filter(u -> u.getUsername().equals(username)).findAny().get();
 		} catch (NoSuchElementException e) {
-			throw new ItemNotFoundException("Username '" + username + "'");
+			return null;
 		}
 	}	
 
 	@Override
 	public User updateUserRoles(Identifier userId, List<String> roles) {
 		User user = db.findUser(userId);
+		if (user == null) {
+			return null;
+		}
 		roles.forEach((role) -> {
 			db.findRoleByCode(role); // ensure role exists
 		});

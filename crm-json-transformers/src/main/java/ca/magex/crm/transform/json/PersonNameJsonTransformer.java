@@ -3,21 +3,27 @@ package ca.magex.crm.transform.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
+@Component
 public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonName> {
+	
+	private SalutationJsonTransformer salutationJsonTransformer;
 
 	public PersonNameJsonTransformer(CrmServices crm) {
 		super(crm);
+		this.salutationJsonTransformer = new SalutationJsonTransformer(crm);
 	}
 
 	@Override
-	public Class<PersonName> getType() {
+	public Class<PersonName> getSourceType() {
 		return PersonName.class;
 	}
 	
@@ -31,7 +37,7 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
 		if (name.getSalutation() != null) {
-			pairs.add(new JsonPair("salutation", new SalutationJsonTransformer(crm)
+			pairs.add(new JsonPair("salutation", salutationJsonTransformer
 				.format(crm.findSalutationByCode(name.getSalutation()), locale)));
 		}
 		formatText(pairs, "firstName", name);
@@ -42,7 +48,10 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 
 	@Override
 	public PersonName parseJsonObject(JsonObject json, Locale locale) {
-		String salutation = parseObject("salutation", json, Salutation.class, SalutationJsonTransformer.class, locale).getCode();
+		String salutation = null;
+		try {
+			salutation = parseObject("salutation", json, salutationJsonTransformer, locale).getCode();
+		} catch (NoSuchElementException e) { }
 		String firstName = parseText("firstName", json);
 		String middleName = parseText("middleName", json);
 		String lastName = parseText("lastName", json);

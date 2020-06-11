@@ -273,9 +273,9 @@ public class ModelBinder {
 	
 	public static Province toProvince(JSONObject json) {
 		try {
-			return new Province(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
+			return new Province(toCountry(json.getJSONObject("parent")), json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
 		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Country from: " + json.toString(), jsone);
+			throw new RuntimeException("Error constructing Province from: " + json.toString(), jsone);
 		}
 	}
 	

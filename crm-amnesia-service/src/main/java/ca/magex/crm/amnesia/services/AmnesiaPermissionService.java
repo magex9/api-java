@@ -21,24 +21,20 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("PrincipalPermissionService")
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPermissionService implements CrmPermissionService {
-	
+
 	private AmnesiaDB db;
-	
+
 	public AmnesiaPermissionService(AmnesiaDB db) {
 		this.db = db;
 	}
 
 	@Override
-	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
-		List<Group> allMatchingGroups = db.findByType(Group.class)
-			.filter(g -> filter.apply(g))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
+	public Group createGroup(Localized name) {
+		return db.saveGroup(new Group(db.generateId(), Status.ACTIVE, name));
 	}
 
 	@Override
@@ -52,38 +48,44 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Group createGroup(Localized name) {
-		return db.saveGroup(validate(new Group(db.generateId(), Status.ACTIVE, name)));
+	public Group updateGroupName(Identifier groupId, Localized name) {
+		Group group = db.findGroup(groupId);
+		if (group == null) {
+			return null;
+		}
+		return db.saveGroup(group.withName(name));
 	}
 
 	@Override
-	public Group updateGroupName(Identifier groupId, Localized name) {
-		return db.saveGroup(validate(db.findGroup(groupId).withName(name)));
-	}
-	
-	@Override
 	public Group enableGroup(Identifier groupId) {
-		return db.saveGroup(validate(findGroup(groupId).withStatus(Status.ACTIVE)));
+		Group group = db.findGroup(groupId);
+		if (group == null) {
+			return null;
+		}
+		return db.saveGroup(group.withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public Group disableGroup(Identifier groupId) {
-		Group group = findGroup(groupId);
-		return group.getStatus() == Status.INACTIVE ? group :
-			db.saveGroup(validate(group.withStatus(Status.INACTIVE)));
-	}
-
-	private Group validate(Group group) {
-		return db.getValidation().validate(group);
+		Group group = db.findGroup(groupId);
+		if (group == null) {
+			return null;
+		}
+		return db.saveGroup(group.withStatus(Status.INACTIVE));
 	}
 
 	@Override
-	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
-		List<Role> allRoles = db.findByType(Role.class)
-			.filter(r -> filter.apply(r))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList());
-		return PageBuilder.buildPageFor(filter, allRoles, paging);
+	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
+		List<Group> allMatchingGroups = db.findByType(Group.class)
+				.filter(g -> filter.apply(g))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(filter, allMatchingGroups, paging);
+	}
+
+	@Override
+	public Role createRole(Identifier groupId, Localized name) {
+		return db.saveRole(new Role(db.generateId(), groupId, Status.ACTIVE, name));
 	}
 
 	@Override
@@ -97,29 +99,38 @@ public class AmnesiaPermissionService implements CrmPermissionService {
 	}
 
 	@Override
-	public Role createRole(Identifier groupId, Localized name) {
-		return db.saveRole(validate(new Role(db.generateId(), groupId, Status.ACTIVE, name)));
-	}
-
-	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
-		return db.saveRole(validate(db.findRole(roleId).withName(name)));
+		Role role = db.findRole(roleId);
+		if (role == null) {
+			return null;
+		}
+		return db.saveRole(role.withName(name));
 	}
 
 	@Override
 	public Role enableRole(Identifier roleId) {
-		return db.saveRole(validate(findRole(roleId).withStatus(Status.ACTIVE)));
+		Role role = db.findRole(roleId);
+		if (role == null) {
+			return null;
+		}
+		return db.saveRole(role.withStatus(Status.ACTIVE));
 	}
 
 	@Override
 	public Role disableRole(Identifier roleId) {
-		Role role = findRole(roleId);
-		return role.getStatus() == Status.INACTIVE ? role :
-			db.saveRole(validate(role.withStatus(Status.INACTIVE)));
+		Role role = db.findRole(roleId);
+		if (role == null) {
+			return null;
+		}
+		return db.saveRole(role.withStatus(Status.INACTIVE));
 	}
 
-	private Role validate(Role role) {
-		return db.getValidation().validate(role);
+	@Override
+	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging) {
+		List<Role> allRoles = db.findByType(Role.class)
+				.filter(r -> filter.apply(r))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList());
+		return PageBuilder.buildPageFor(filter, allRoles, paging);
 	}
-
 }

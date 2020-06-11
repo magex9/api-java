@@ -240,7 +240,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, name: {firstName: %s, middleName: %s, lastName: %s, salutation: %s }, address: {street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s}, communication: { jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, position: { sector: %s, unit: %s, classification: %s} ) { personId } }",
 				johnnuyId,
-				"Henry", "Peter", "Jones", "Jr",
+				"Henry", "Peter", "Jones", "2",
 				"123 Frank St", "Ottawa", "Ontario", "CA", "K5J9F4",
 				"CIO", "EN", "cio@johnnuy.org", "613-555-5556", "97", "613-555-5557",
 				"IT", "Management", "CIO");
@@ -286,7 +286,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, name: {firstName: %s, middleName: %s, lastName: %s, salutation: %s }, address: {street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s}, communication: { jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, position: { sector: %s, unit: %s, classification: %s} ) { personId } }",
 				johnnuyId,
-				"Tommy", "Falls", "Narrow", "Sr",
+				"Tommy", "Falls", "Narrow", "3",
 				"123 Frank St", "Ottawa", "Ontario", "CA", "K5J9F4",
 				"CIO", "EN", "cio@johnnuy.org", "613-555-5556", "97", "613-555-5557",
 				"IT", "Management", "CIO");
@@ -399,7 +399,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 				"countOrganizations",
 				"{ countOrganizations(filter: { status: %s } ) }",
 				"active");
-		Assert.assertEquals(1, orgCount);
+		Assert.assertEquals(2, orgCount);
 		
 		orgCount = execute(
 				"countOrganizations",
@@ -411,7 +411,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject organizations = execute(
 				"findOrganizations",
 				"{ findOrganizations(filter: {displayName: %s, status: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { organizationId status displayName } } }",
-				"Johnnuy",
+				"Johnnuy.org",
 				"active",
 				1,
 				5,

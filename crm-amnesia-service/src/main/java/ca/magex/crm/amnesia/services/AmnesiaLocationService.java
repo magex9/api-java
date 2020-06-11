@@ -21,7 +21,7 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("PrincipalLocationService")
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLocationService implements CrmLocationService {
@@ -32,26 +32,40 @@ public class AmnesiaLocationService implements CrmLocationService {
 		this.db = db;
 	}
 	
-	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
-		return db.saveLocation(validate(new LocationDetails(db.generateId(), db.findOrganization(organizationId).getOrganizationId(), Status.ACTIVE, locationReference, locationName, address)));
+	public LocationDetails createLocation(Identifier organizationId, String locationReference, String locationName, MailingAddress address) {
+		return db.saveLocation(new LocationDetails(db.generateId(), organizationId, Status.ACTIVE, locationReference, locationName, address));
 	}
 
 	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
-		return db.saveLocation(validate(findLocationDetails(locationId).withDisplayName(locationName)));
+		LocationDetails loc = db.findLocation(locationId);
+		if (loc == null) {
+			return null;
+		}
+		return db.saveLocation(loc.withDisplayName(locationName));
 	}
 
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
-		return db.saveLocation(validate(findLocationDetails(locationId).withAddress(address)));
+		LocationDetails loc = db.findLocation(locationId);
+		if (loc == null) {
+			return null;
+		}
+		return db.saveLocation(loc.withAddress(address));
 	}
 
 	public LocationSummary enableLocation(Identifier locationId) {		
-		return db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.ACTIVE)));
+		LocationDetails loc = db.findLocation(locationId);
+		if (loc == null) {
+			return null;
+		}
+		return db.saveLocation(loc.withStatus(Status.ACTIVE));
 	}
 
 	public LocationSummary disableLocation(Identifier locationId) {
-		LocationDetails location = findLocationDetails(locationId);
-		return location.getStatus() == Status.INACTIVE ? location :
-			db.saveLocation(validate(findLocationDetails(locationId).withStatus(Status.INACTIVE)));
+		LocationDetails loc = db.findLocation(locationId);
+		if (loc == null) {
+			return null;
+		}
+		return db.saveLocation(loc.withStatus(Status.INACTIVE));
 	}
 	
 	public LocationSummary findLocationSummary(Identifier locationId) {
@@ -60,10 +74,6 @@ public class AmnesiaLocationService implements CrmLocationService {
 	
 	public LocationDetails findLocationDetails(Identifier locationId) {
 		return db.findLocation(locationId);
-	}
-	
-	private LocationDetails validate(LocationDetails location) {
-		return db.getValidation().validate(location);
 	}
 	
 	public Stream<LocationDetails> apply(LocationsFilter filter) {

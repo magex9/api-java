@@ -22,7 +22,7 @@ public class ContextListener implements ApplicationListener<ApplicationReadyEven
 		LOG.info("Initializing Crm Data");
 		initializationService.initializeSystem(
 				"Johnnuy", 
-				new PersonName("Mr", "Jonny", "", "Trafford"), 
+				new PersonName("3", "Jonny", "", "Trafford"), 
 				"jonny@johnnuy.org", 
 				"johnnuy", 
 				"admin");

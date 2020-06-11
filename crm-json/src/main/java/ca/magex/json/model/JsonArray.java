@@ -42,6 +42,25 @@ public final class JsonArray extends JsonElement {
 		return elements;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> values(Class<T> type) {
+		if (JsonElement.class.isAssignableFrom(type)) {
+			return elements.stream().map(e -> (T)e).collect(Collectors.toList());
+		} else if (String.class.isAssignableFrom(type)) {
+			return elements.stream()
+				.map(e -> e instanceof JsonText ? ((JsonText)e).value() : e.toString())
+				.map(e -> (T)e)
+				.collect(Collectors.toList());
+		} else if (Integer.class.isAssignableFrom(type)) {
+			return elements.stream()
+				.map(e -> ((JsonNumber)e).value().intValue())
+				.map(e -> (T)e)
+				.collect(Collectors.toList());
+		} else {
+			throw new IllegalArgumentException("Unsuport class casting for list: " + type);
+		}
+	}
+	
 	public JsonElement get(int index) {
 		return elements.get(index);
 	}
@@ -56,6 +75,10 @@ public final class JsonArray extends JsonElement {
 	
 	public String getString(int index) {
 		return ((JsonText)get(index)).value();
+	}
+	
+	public Number getNumber(int index) {
+		return ((JsonNumber)get(index)).value();
 	}
 	
 	public Integer getInt(int index) {
@@ -88,6 +111,33 @@ public final class JsonArray extends JsonElement {
 	
 	public boolean isEmpty() {
 		return elements.isEmpty();
+	}
+	
+	public JsonArray prune() {
+		List<JsonElement> pruned = new ArrayList<JsonElement>();
+		for (JsonElement element : elements) {
+			if (element.getClass().equals(JsonObject.class)) {
+				JsonObject obj = ((JsonObject)element).prune();
+				if (!obj.isEmpty())
+					pruned.add(obj);
+			} else if (element.getClass().equals(JsonArray.class)) {
+				JsonArray array = ((JsonArray)element).prune();
+				if (!array.isEmpty())
+					pruned.add(array);
+			} else if (element.getClass().equals(JsonText.class)) {
+				if (!((JsonText)element).isEmpty())
+					pruned.add(element);
+			} else if (element.getClass().equals(JsonNumber.class)) {
+				if (!((JsonNumber)element).isEmpty())
+					pruned.add(element);
+			} else if (element.getClass().equals(JsonBoolean.class)) {
+				if (!((JsonBoolean)element).isEmpty())
+					pruned.add(element);
+			} else {
+				throw new IllegalArgumentException("Unexpected element to prune: " + element.getClass());
+			}
+		}
+		return new JsonArray(pruned);
 	}
 
 }

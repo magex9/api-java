@@ -32,4 +32,8 @@ public final class JsonPair extends JsonElement {
 		return value;
 	}
 	
+	public String text() {
+		return ((JsonText)value).value();
+	}
+	
 }

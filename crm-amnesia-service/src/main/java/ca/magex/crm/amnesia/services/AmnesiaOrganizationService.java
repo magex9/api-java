@@ -13,6 +13,7 @@ import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
@@ -21,7 +22,7 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
-@Service
+@Service("PrincipalOrganizationService")
 @Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaOrganizationService implements CrmOrganizationService {
@@ -33,37 +34,56 @@ public class AmnesiaOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
-		return db.saveOrganization(validate(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null, groups)));
+		return db.saveOrganization(new OrganizationDetails(db.generateId(), Status.ACTIVE, organizationDisplayName, null, null, groups));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withStatus(Status.ACTIVE)));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withStatus(Status.ACTIVE));
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		OrganizationDetails org = findOrganizationDetails(organizationId);
-		return org.getStatus() == Status.INACTIVE ? org :
-			db.saveOrganization(validate(findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withStatus(Status.INACTIVE));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withDisplayName(name)));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withDisplayName(name));
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainLocationId(locationId == null ? null : db.findLocation(locationId).getLocationId())));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withMainLocationId(locationId == null ? null : db.findLocation(locationId).getLocationId()));
 	}
 	
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withMainContactId(personId == null ? null : db.findPerson(personId).getPersonId())));
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		PersonDetails person = db.findPerson(personId);
+		return db.saveOrganization(details.withMainContactId(person == null ? null : person.getPersonId()));
 	}
 
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		return db.saveOrganization(validate(findOrganizationDetails(organizationId).withGroups(groups)));
-	}
-	
-	private OrganizationDetails validate(OrganizationDetails organization) {
-		return db.getValidation().validate(organization);
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return db.saveOrganization(details.withGroups(groups));
 	}
 
 	@Override

@@ -9,33 +9,34 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaServices;
+import ca.magex.crm.amnesia.services.AmnesiaCrm;
 import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.util.Transformer;
 
 public class LocationDetailsJsonTransformerTests {
 	
-	private CrmServices crm;
+	private Crm crm;
 	
-	private Transformer<LocationDetails> transformer;
+	private Transformer<LocationDetails, JsonElement> transformer;
 	
 	private LocationDetails location;
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaServices();
+		crm = new AmnesiaCrm();
 		transformer = new LocationDetailsJsonTransformer(crm);
 		location = new LocationDetails(new Identifier("loc"), new Identifier("org"), Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS);
 	}
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(LocationDetails.class, transformer.getType());
+		assertEquals(LocationDetails.class, transformer.getSourceType());
 	}
 
 	@Test

@@ -497,7 +497,7 @@ public class RestfulCrmClient implements CrmClient {
 	}
 	
 	@Override
-	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String reference, String displayName, MailingAddress address) {
 		JsonObject result = post("/api/locations", new JsonObject()
 			.with("organizationId", organizationId.toString())
 			.with("reference", reference)
@@ -993,12 +993,6 @@ public class RestfulCrmClient implements CrmClient {
 	}
 
 	@Override
-	public boolean canCreateRole() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean canViewRoles() {
 		// TODO Auto-generated method stub
 		return false;
@@ -1033,49 +1027,7 @@ public class RestfulCrmClient implements CrmClient {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	public boolean canViewPermissions() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	
-	@Override
-	public Group validate(Group group) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public Role validate(Role role) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public OrganizationDetails validate(OrganizationDetails organization) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LocationDetails validate(LocationDetails location) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PersonDetails validate(PersonDetails person) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> validate(List<String> roles, Identifier personId) throws BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public List<Province> findProvinces(String country) {
 		// TODO Auto-generated method stub
@@ -1093,6 +1045,66 @@ public class RestfulCrmClient implements CrmClient {
 			@NotNull String country) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean canCreateRole(Identifier groupId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewStatusLookup(String StatusLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewCountryLookup(String CountryLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewLanguageLookup(String languageLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewSalutationLookup(String salutationLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewBusinessUnitLookup(String unitLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canViewUser(String username) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

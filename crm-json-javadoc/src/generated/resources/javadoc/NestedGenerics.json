@@ -1,0 +1,24 @@
+{
+  "name": "NestedGenerics",
+  "imports": {
+    "List": "java.util",
+    "Locale": "java.util",
+    "Map": "java.util"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [{
+    "name": "find",
+    "modifiers": ["public"],
+    "type": {
+      "class": "Map",
+      "generics": [
+        "Locale",
+        {
+          "class": "List",
+          "generics": ["? extends BasicEntity"]
+        }
+      ]
+    }
+  }]
+}

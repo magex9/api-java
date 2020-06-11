@@ -1,0 +1,55 @@
+{
+  "name": "CrudService",
+  "description": "A sample CRUD service for managing entities\n\n@author magex",
+  "generics": [
+    "K",
+    "T"
+  ],
+  "imports": {
+    "List": "java.util",
+    "NoSuchElementException": "java.util"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "load",
+      "description": "Find a a single entity given its id\n@param id the entity to find\n@return the entity\n@throws NoSuchElementException if no entity is found for the id",
+      "modifiers": ["public"],
+      "type": "T",
+      "exceptions": ["NoSuchElementException"],
+      "parameters": [{
+        "name": "id",
+        "type": "K"
+      }]
+    },
+    {
+      "name": "findAll",
+      "description": "Find a list of all the entities\n@return a list of all the entities, or an empty list if there are none.",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["T"]
+      }
+    },
+    {
+      "name": "update",
+      "description": "Update an entity\n@param entity the entity to update",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "entity",
+        "type": "T"
+      }]
+    },
+    {
+      "name": "contains",
+      "description": "Check to see if an entity exists\n@param id\n@return",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "id",
+        "type": "K"
+      }]
+    }
+  ]
+}

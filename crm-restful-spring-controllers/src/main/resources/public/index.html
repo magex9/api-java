@@ -16,7 +16,8 @@
     <script>
     window.onload = function() {
       window.ui = SwaggerUIBundle({
-        url: "crm.yaml",
+        //url: "${contextPath}/api.yaml",
+		url: "/openapi.json",
         dom_id: '#swagger-ui',
         docExpansion: "list",
         defaultModelsExpandDepth: 1,

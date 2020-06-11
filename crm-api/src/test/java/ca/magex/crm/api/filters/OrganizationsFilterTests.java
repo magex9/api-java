@@ -2,18 +2,22 @@ package ca.magex.crm.api.filters;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
-import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
+@TestInstance(Lifecycle.PER_METHOD)
 public class OrganizationsFilterTests {
 
 	@Test
@@ -22,6 +26,9 @@ public class OrganizationsFilterTests {
 		for (Field field : fields) {
 			/* ignore static fields */
 			if ((field.getModifiers() & Modifier.STATIC) > 0) {
+				continue;
+			}
+			if (field.getName().equals("group")) {
 				continue;
 			}
 			Assertions.assertTrue(OrganizationsFilter.getSortOptions().contains(Sort.by(Order.asc(field.getName()))));
@@ -39,23 +46,23 @@ public class OrganizationsFilterTests {
 		OrganizationsFilter filter = new OrganizationsFilter();
 		Assertions.assertNull(filter.getDisplayName());		
 		Assertions.assertNull(filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":null,\"status\":null}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter(null, null), filter);
-		Assertions.assertEquals(new OrganizationsFilter(null, null).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":null,\"status\":null,\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter(null, null, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter(null, null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withDisplayName("display");
 		Assertions.assertEquals("display", filter.getDisplayName());
 		Assertions.assertNull(filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":null}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter("display", null), filter);
-		Assertions.assertEquals(new OrganizationsFilter("display", null).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":null,\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter("display", null, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter("display", null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withStatus(Status.ACTIVE);
 		Assertions.assertEquals("display", filter.getDisplayName());		
 		Assertions.assertEquals(Status.ACTIVE, filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\"}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE), filter);
-		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\",\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null).hashCode(), filter.hashCode());
 	}
 	
 	@Test
@@ -63,30 +70,30 @@ public class OrganizationsFilterTests {
 		OrganizationsFilter filter = new OrganizationsFilter(Map.of());
 		Assertions.assertNull(filter.getDisplayName());
 		Assertions.assertNull(filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":null,\"status\":null}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter(null, null), filter);
-		Assertions.assertEquals(new OrganizationsFilter(null, null).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":null,\"status\":null,\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter(null, null, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter(null, null, null).hashCode(), filter.hashCode());
 		
 		filter = new OrganizationsFilter(Map.of("displayName", "display"));
 		Assertions.assertEquals("display", filter.getDisplayName());
 		Assertions.assertNull(filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":null}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter("display", null), filter);
-		Assertions.assertEquals(new OrganizationsFilter("display", null).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":null,\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter("display", null, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter("display", null, null).hashCode(), filter.hashCode());
 		
 		filter = new OrganizationsFilter(Map.of("displayName", "display", "status", ""));
 		Assertions.assertEquals("display", filter.getDisplayName());
 		Assertions.assertNull(filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":null}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter("display", null), filter);
-		Assertions.assertEquals(new OrganizationsFilter("display", null).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":null,\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter("display", null, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter("display", null, null).hashCode(), filter.hashCode());
 		
 		filter = new OrganizationsFilter(Map.of("displayName", "display", "status", "active"));
 		Assertions.assertEquals("display", filter.getDisplayName());
 		Assertions.assertEquals(Status.ACTIVE, filter.getStatus());
-		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\"}", filter.toString());
-		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE), filter);
-		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE).hashCode(), filter.hashCode());
+		Assertions.assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\",\"group\":null}", filter.toString());
+		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null), filter);
+		Assertions.assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null).hashCode(), filter.hashCode());
 		
 		try {
 			new OrganizationsFilter(Map.of("displayName", 1));
@@ -114,7 +121,7 @@ public class OrganizationsFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		OrganizationSummary organization = new OrganizationSummary(new Identifier("ABC"), Status.ACTIVE, "Road and Track");
+		OrganizationDetails organization = new OrganizationDetails(new Identifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of("ORG"));
 		/* default filter should match */
 		Assertions.assertTrue(new OrganizationsFilter().apply(organization));
 		

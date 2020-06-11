@@ -14,10 +14,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.lookup.CrmLookupItem;
 
 @Component
 public class CrmLookupLoader {
 
+	public <T> List<T> loadLookup(Class<T> clazz, String lookup) {
+		return loadLookup(null, clazz, lookup);
+	}
+	
 	/**
 	 * returns a list of lookups
 	 * @param <T>
@@ -25,7 +30,7 @@ public class CrmLookupLoader {
 	 * @param lookup
 	 * @return
 	 */
-	public <T> List<T> loadLookup(Class<T> clazz, String lookup) {
+	public <T> List<T> loadLookup(CrmLookupItem parent, Class<T> clazz, String lookup) {
 		List<T> list = new ArrayList<T>();
 		URL url = getClass().getResource("/lookups/" + lookup);
 		try (InputStream is = url.openStream()) {
@@ -37,13 +42,25 @@ public class CrmLookupLoader {
 						throw new ApiException("Resource entry '" + r  + "' does not contain 3 columns");
 					}
 					try {
-						return (T) clazz.getConstructor(
+						if (parent == null) {
+							return (T) clazz.getConstructor(
 								String.class, 
 								String.class, 
 								String.class).newInstance(
-										StringUtils.trim(r.get(0)), 
-										StringUtils.trim(r.get(1)), 
-										StringUtils.trim(r.get(2)));
+									StringUtils.trim(r.get(0)), 
+									StringUtils.trim(r.get(1)), 
+									StringUtils.trim(r.get(2)));
+						} else {
+							return (T) clazz.getConstructor(
+								parent.getClass(),
+								String.class, 
+								String.class, 
+								String.class).newInstance(
+									parent,
+									StringUtils.trim(r.get(0)), 
+									StringUtils.trim(r.get(1)), 
+									StringUtils.trim(r.get(2)));
+						}
 					}
 					catch (Exception e) {
 						throw new ApiException("Error parsing resource entry '" + r + "'", e);

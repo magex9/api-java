@@ -291,6 +291,7 @@ type Telephone {
 }
 
 type CodeLookup {
+	parent: CodeLookup
 	code: String
 	englishName: String
 	frenchName: String

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
@@ -14,6 +16,7 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
+@TestInstance(Lifecycle.PER_METHOD)
 public class PersonsFilterTests {
 
 	@Test
