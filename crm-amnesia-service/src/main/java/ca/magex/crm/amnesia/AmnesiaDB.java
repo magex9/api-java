@@ -168,11 +168,11 @@ public class AmnesiaDB {
 		return passwordEncoder;
 	}
 
-	public boolean isInitialized() {
+	public synchronized boolean isInitialized() {
 		return systemId != null;
 	}
 
-	public Identifier initialize(String organization, PersonName name, String email, String username, String password) {
+	public synchronized Identifier initialize(String organization, PersonName name, String email, String username, String password) {
 		if (systemId == null) {
 			CrmRoleInitializer.initialize(permissions);
 			Identifier organizationId = organizations.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
@@ -184,7 +184,7 @@ public class AmnesiaDB {
 		return systemId;
 	}
 
-	public void reset() {
+	public synchronized void reset() {
 		data.clear();
 		passwordData.clear();
 		groupsByCode.clear();
@@ -193,64 +193,64 @@ public class AmnesiaDB {
 		systemId = null;
 	}
 
-	public Lookups<Status, String> getStatuses() {
+	public synchronized Lookups<Status, String> getStatuses() {
 		return statuses;
 	}
 
-	public Lookups<Province, String> getCaProvinces() {
+	public synchronized Lookups<Province, String> getCaProvinces() {
 		return caProvinces;
 	}
 
-	public Lookups<Province, String> getUsProvinces() {
+	public synchronized Lookups<Province, String> getUsProvinces() {
 		return usProvinces;
 	}
 
-	public Lookups<Province, String> getMxProvinces() {
+	public synchronized Lookups<Province, String> getMxProvinces() {
 		return mxProvinces;
 	}
 
-	public Lookups<Country, String> getCountries() {
+	public synchronized Lookups<Country, String> getCountries() {
 		return countries;
 	}
 
-	public Lookups<Salutation, String> getSalutations() {
+	public synchronized Lookups<Salutation, String> getSalutations() {
 		return salutations;
 	}
 
-	public Lookups<Language, String> getLanguages() {
+	public synchronized Lookups<Language, String> getLanguages() {
 		return languages;
 	}
 
-	public Lookups<BusinessSector, String> getSectors() {
+	public synchronized Lookups<BusinessSector, String> getSectors() {
 		return sectors;
 	}
 
-	public Lookups<BusinessUnit, String> getUnits() {
+	public synchronized Lookups<BusinessUnit, String> getUnits() {
 		return units;
 	}
 
-	public Lookups<BusinessClassification, String> getClassifications() {
+	public synchronized Lookups<BusinessClassification, String> getClassifications() {
 		return classifications;
 	}
 
-	public Identifier generateId() {
+	public synchronized Identifier generateId() {
 		return idGenerator.generate();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Serializable> Stream<T> findByType(Class<T> cls) {
+	public synchronized <T extends Serializable> Stream<T> findByType(Class<T> cls) {
 		return data.values().stream().filter(c -> c.getClass().equals(cls)).map(c -> (T) c);
 	}
 
-	public PasswordDetails findPassword(String username) {
+	public synchronized PasswordDetails findPassword(String username) {
 		return passwordData.get(username);
 	}
 
-	public void savePassword(String username, PasswordDetails passwordDetails) {
+	public synchronized void savePassword(String username, PasswordDetails passwordDetails) {
 		this.passwordData.put(username, passwordDetails);
 	}
 
-	public OrganizationDetails findOrganization(Identifier organizationId) {
+	public synchronized OrganizationDetails findOrganization(Identifier organizationId) {
 		Serializable obj = data.get(organizationId);
 		if (obj == null || !(obj instanceof OrganizationDetails)) {
 			return null;
@@ -258,12 +258,12 @@ public class AmnesiaDB {
 		return (OrganizationDetails) SerializationUtils.clone(obj);
 	}
 
-	public OrganizationDetails saveOrganization(OrganizationDetails organization) {
+	public synchronized OrganizationDetails saveOrganization(OrganizationDetails organization) {
 		data.put(organization.getOrganizationId(), organization);
 		return organization;
 	}
 
-	public LocationDetails findLocation(Identifier locationId) {
+	public synchronized LocationDetails findLocation(Identifier locationId) {
 		Serializable obj = data.get(locationId);
 		if (obj == null || !(obj instanceof LocationDetails)) {
 			return null;
@@ -271,12 +271,12 @@ public class AmnesiaDB {
 		return (LocationDetails) SerializationUtils.clone(obj);
 	}
 
-	public LocationDetails saveLocation(LocationDetails location) {
+	public synchronized LocationDetails saveLocation(LocationDetails location) {
 		data.put(location.getLocationId(), location);
 		return location;
 	}
 
-	public PersonDetails findPerson(Identifier personId) {
+	public synchronized PersonDetails findPerson(Identifier personId) {
 		Serializable obj = data.get(personId);
 		if (obj == null || !(obj instanceof PersonDetails)) {
 			return null;
@@ -284,12 +284,12 @@ public class AmnesiaDB {
 		return (PersonDetails) SerializationUtils.clone(obj);
 	}
 
-	public PersonDetails savePerson(PersonDetails person) {
+	public synchronized PersonDetails savePerson(PersonDetails person) {
 		data.put(person.getPersonId(), person);
 		return person;
 	}
 
-	public User findUser(Identifier userId) {
+	public synchronized User findUser(Identifier userId) {
 		Serializable obj = data.get(userId);
 		if (obj == null)
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -298,48 +298,48 @@ public class AmnesiaDB {
 		return (User) SerializationUtils.clone(obj);
 	}
 
-	public User saveUser(User user) {
+	public synchronized User saveUser(User user) {
 		data.put(user.getUserId(), user);
 		usersByUsername.put(user.getUsername(), user);
 		return user;
 	}
 
-	public Group findGroup(Identifier groupId) {
+	public synchronized Group findGroup(Identifier groupId) {
 		return (Group) findById(groupId, Group.class);
 	}
 
-	public Group findGroupByCode(String group) {
+	public synchronized Group findGroupByCode(String group) {
 		if (!groupsByCode.containsKey(group)) {
 			return null;
 		}
 		return groupsByCode.get(group);
 	}
 
-	public Group saveGroup(Group group) {
+	public synchronized Group saveGroup(Group group) {
 		data.put(group.getGroupId(), group);
 		groupsByCode.put(group.getCode(), group);
 		return group;
 	}
 
-	public Role findRole(Identifier roleId) {
+	public synchronized Role findRole(Identifier roleId) {
 		return (Role) findById(roleId, Role.class);
 	}
 
-	public Role findRoleByCode(String role) {
+	public synchronized Role findRoleByCode(String role) {
 		if (!rolesByCode.containsKey(role)) {
 			return null;
 		}
 		return rolesByCode.get(role);
 	}
 
-	public Role saveRole(Role role) {
+	public synchronized Role saveRole(Role role) {
 		data.put(role.getRoleId(), role);
 		rolesByCode.put(role.getCode(), role);
 		return role;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T findById(Identifier identifier, Class<T> cls) {
+	public synchronized <T> T findById(Identifier identifier, Class<T> cls) {
 		Serializable obj = data.get(identifier);
 		if (obj == null || !(cls.equals(obj.getClass()))) {
 			return null;
@@ -347,11 +347,11 @@ public class AmnesiaDB {
 		return (T) SerializationUtils.clone(obj);
 	}
 
-	public void dump() {
+	public synchronized void dump() {
 		dump(System.out);
 	}
 
-	public void dump(OutputStream os) {
+	public synchronized void dump(OutputStream os) {
 		data.keySet()
 				.stream()
 				.sorted((x, y) -> x.toString().compareTo(y.toString()))

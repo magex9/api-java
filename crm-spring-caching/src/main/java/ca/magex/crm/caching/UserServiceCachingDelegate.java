@@ -41,6 +41,15 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		return delegate.createUser(personId, username, roles);
 	}
+	
+	@Override
+	@Caching(put = {
+			@CachePut(cacheNames = "users", key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
+			@CachePut(cacheNames = "users", key = "'Username_'.concat(#result.username)", unless = "#result == null")
+	})
+	public User createUser(User prototype) {
+		return delegate.createUser(prototype);
+	}
 
 	@Override
 	@Caching(put = {
@@ -80,15 +89,27 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	@Cacheable(cacheNames = "users", key = "'Id_'.concat(#userId)")
+	@Cacheable(cacheNames = "users", key = "'Id_'.concat(#userId)")			
 	public User findUser(Identifier userId) {
-		return delegate.findUser(userId);
+		User user = delegate.findUser(userId);
+		/* programmatically add a username entry to the cache */
+		if (user != null) {
+			Cache usersCache = cacheManager.getCache("users");
+			usersCache.putIfAbsent("Username_" + user.getUsername(), user);
+		}
+		return user;
 	}
 
 	@Override
 	@Cacheable(cacheNames = "users", key = "'Username_'.concat(#username)")
 	public User findUserByUsername(String username) {
-		return delegate.findUserByUsername(username);
+		/* programmatically add an id entry to the cache */
+		User user = delegate.findUserByUsername(username);
+		if (user != null) {
+			Cache usersCache = cacheManager.getCache("users");
+			usersCache.putIfAbsent("Id_" + user.getUserId(), user);
+		}
+		return user;
 	}
 
 	@Override
@@ -99,6 +120,17 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	@Override
 	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		FilteredPage<User> page = delegate.findUsers(filter, paging);
+		Cache usersCache = cacheManager.getCache("users");
+		page.forEach((user) -> {
+			usersCache.putIfAbsent("Id_" + user.getUserId(), user);
+			usersCache.putIfAbsent("Username_" + user.getUsername(), user);
+		});
+		return page;
+	}
+	
+	@Override
+	public FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
+		FilteredPage<User> page = delegate.findActiveUserForOrg(organizationId);
 		Cache usersCache = cacheManager.getCache("users");
 		page.forEach((user) -> {
 			usersCache.putIfAbsent("Id_" + user.getUserId(), user);

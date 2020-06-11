@@ -45,6 +45,15 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		return delegate.createPerson(organizationId, name, address, communication, position);
 	}
+	
+	@Override
+	@Caching(put = {
+			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
+			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
+	})
+	public PersonDetails createPerson(PersonDetails prototype) {
+		return delegate.createPerson(prototype);
+	}
 
 	@Override
 	@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
@@ -123,10 +132,41 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 		});
 		return page;
 	}
+	
+	@Override
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter) {
+		FilteredPage<PersonDetails> page = delegate.findPersonDetails(filter);
+		Cache personsCache = cacheManager.getCache("persons");
+		page.forEach((details) -> {
+			personsCache.putIfAbsent("Details_" + details.getPersonId(), details);
+			personsCache.putIfAbsent("Summary_" + details.getPersonId(), details);
+		});
+		return page;
+	}
 
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		FilteredPage<PersonSummary> page = delegate.findPersonSummaries(filter, paging);
+		Cache personsCache = cacheManager.getCache("persons");
+		page.forEach((summary) -> {
+			personsCache.putIfAbsent("Summary_" + summary.getPersonId(), summary);
+		});
+		return page;
+	}
+	
+	@Override
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter) {
+		FilteredPage<PersonSummary> page = delegate.findPersonSummaries(filter);
+		Cache personsCache = cacheManager.getCache("persons");
+		page.forEach((summary) -> {
+			personsCache.putIfAbsent("Summary_" + summary.getPersonId(), summary);
+		});
+		return page;
+	}
+	
+	@Override
+	public FilteredPage<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
+		FilteredPage<PersonSummary> page = delegate.findActivePersonSummariesForOrg(organizationId);
 		Cache personsCache = cacheManager.getCache("persons");
 		page.forEach((summary) -> {
 			personsCache.putIfAbsent("Summary_" + summary.getPersonId(), summary);
