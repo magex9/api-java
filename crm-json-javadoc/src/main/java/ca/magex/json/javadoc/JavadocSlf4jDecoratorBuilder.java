@@ -16,15 +16,15 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 import ca.magex.json.util.FormattedStringBuilder;
 
-public class LoggerDelegationBuilder {
+public class JavadocSlf4jDecoratorBuilder {
 
-	private static final Logger logger = LoggerFactory.getLogger(LoggerDelegationBuilder.class);
+	private static final Logger logger = LoggerFactory.getLogger(JavadocSlf4jDecoratorBuilder.class);
 	
 	public static void build(File inputFile, String inputPackage, File outputFile, String outputPackage, String outputClass) throws IOException {
 		logger.info("Building logger from " + inputFile.getAbsolutePath());
 		if (!inputFile.isFile())
 			throw new FileNotFoundException("Could not find input interface: " + inputFile.getAbsolutePath());
-		JsonObject cls = JavadocBuilder.processClass(inputFile);
+		JsonObject cls = JavadocBuilder.processFile(inputFile);
 		FormattedStringBuilder sb = new FormattedStringBuilder();
 		sb.append("package " + outputPackage + ";");
 		sb.append("");

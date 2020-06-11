@@ -65,7 +65,7 @@ public class JavadocBuilderTests {
 	
 	private void compare(File input, File output) throws Exception {
 		FileUtils.forceMkdir(output.getParentFile());
-		JsonObject json = JavadocBuilder.processClass(input);
+		JsonObject json = JavadocBuilder.processFile(input);
 		FileUtils.writeStringToFile(output, json.toString(), StandardCharsets.UTF_8);
 		assertEquals(FileUtils.readFileToString(output, StandardCharsets.UTF_8), json.toString());
 	}

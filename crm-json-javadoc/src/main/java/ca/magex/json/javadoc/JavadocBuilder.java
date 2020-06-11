@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +19,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -61,7 +61,7 @@ public class JavadocBuilder {
     		String clsName = filename.replaceAll(".java$", "").replaceAll("/", ".");
     		logger.info("Building: " + clsName);
         	File file = new File(src, filename);
-    		pairs.add(new JsonPair(clsName, processClass(file)));
+    		pairs.add(new JsonPair(clsName, processFile(file)));
     	}
     	return new JsonObject(pairs);
     }
@@ -96,14 +96,31 @@ public class JavadocBuilder {
     	return files;
     }
     
+    @SuppressWarnings("rawtypes")
+	public static JsonObject processFile(File file) throws FileNotFoundException {
+        CompilationUnit cu = StaticJavaParser.parse(file);
+        List<TypeDeclaration> types = cu.findAll(TypeDeclaration.class);
+        if (types.get(0) instanceof EnumDeclaration) {
+        	return processEnum(cu, (EnumDeclaration)types.get(0));
+        } else if (types.get(0) instanceof ClassOrInterfaceDeclaration) {
+        	return processClass(cu, (ClassOrInterfaceDeclaration)types.get(0));
+        } else {
+        	throw new IllegalArgumentException("Unknown type of declaration: " + types.get(0));
+        }
+    }
+
+    public static JsonObject processEnum(CompilationUnit cu, EnumDeclaration declaration) throws FileNotFoundException {
+        JsonObject json = new JsonObject()
+        	.with("name", declaration.getNameAsString())
+        	.with("description", buildComment(declaration.getComment()));
+
+        return json;
+    }
+    
     /**
      * Get the json representation of the javadocs for the given source file
      */
-    public static JsonObject processClass(File file) throws FileNotFoundException {
-        CompilationUnit cu = StaticJavaParser.parse(file);
-        
-        ClassOrInterfaceDeclaration cls = cu.findAll(ClassOrInterfaceDeclaration.class).get(0);
-        
+    public static JsonObject processClass(CompilationUnit cu, ClassOrInterfaceDeclaration cls) throws FileNotFoundException {
         JsonObject json = new JsonObject()
         	.with("name", cls.getNameAsString())
         	.with("description", buildComment(cls.getComment()))
