@@ -122,4 +122,16 @@ public class UserServiceCachingDelegateTests {
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
 	}
+	
+	@Test
+	public void testCacheNonExistantUserById() {
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).findUser(Mockito.any(Identifier.class));
+
+		/* this should also cache the result, so the second find doesn't hit the delegate */
+		Assert.assertNull(userService.findUser(new Identifier("1")));
+		Assert.assertNull(userService.findUser(new Identifier("1")));
+		BDDMockito.verify(delegate, Mockito.times(1)).findUser(Mockito.any(Identifier.class));
+	}
 }
