@@ -46,7 +46,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertNull(transformer.format(null, Lang.ENGLISH));
 		assertNull(transformer.format(null, Lang.FRENCH));
 	}
-	
+		
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(organization, null);
