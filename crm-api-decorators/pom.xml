@@ -15,6 +15,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-json-javadoc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
