@@ -21,10 +21,6 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class InitializationController extends AbstractCrmController {
 
-	private String authAddress = "localhost";
-	
-	private String authPort = "9012";
-	
 	@Value("${server.external.address:localhost}") 
 	private String serverAddress;
 	
@@ -69,22 +65,6 @@ public class InitializationController extends AbstractCrmController {
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
 		res.getWriter().write(JsonFormatter.formatted(new JsonBoolean(true)));
-	}
-	
-	@GetMapping("/config")
-	public void config(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		JsonObject config = new JsonObject()
-			.with("auth", "http://" + authAddress + ":" + authPort + contextPath + "/auth")
-			.with("openapi", contextPath + "/api.json")
-			.with("rest", "http://" + serverAddress + ":" + serverPort + contextPath + "/rest")
-			.with("graphql", "http://" + serverAddress + ":" + serverPort + "/graphql")
-			.with("server", new JsonObject()
-				.with("address", serverAddress)
-				.with("port", serverPort)
-				.with("context", contextPath));
-		res.setStatus(200);
-		res.setContentType(getContentType(req));
-		res.getWriter().write(JsonFormatter.formatted(config));
 	}
 	
 }

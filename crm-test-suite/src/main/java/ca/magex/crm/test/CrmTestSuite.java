@@ -79,7 +79,7 @@ public class CrmTestSuite {
 		assertSinglePage(orgs, 2);
 		
 		logger.info("Make sure the organization can be found using case-insensitive filters with the default no user or location.");
-		OrganizationDetails org = crm.findOrganizationByDisplayName("crm");
+		OrganizationDetails org = crm.findOrganizationDetails(crm.defaultOrganizationsFilter().withDisplayName("crm")).getSingleItem();
 		assertEquals("CRM Management", org.getDisplayName());
 		assertNull(org.getMainLocationId());
 		assertNull(org.getMainContactId());
@@ -123,7 +123,7 @@ public class CrmTestSuite {
 		Page<OrganizationDetails> orgs = crm.findOrganizationDetails(crm.defaultOrganizationsFilter());
 		assertSinglePage(orgs, 2);
 		
-		Identifier organizationId = crm.findOrganizationByDisplayName("MageX").getOrganizationId();
+		Identifier organizationId = crm.findOrganizationDetails(crm.defaultOrganizationsFilter().withDisplayName("MageX")).getSingleItem().getOrganizationId();
 		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
 		assertEquals("MageX", org.getDisplayName());
 		assertEquals(List.of("CRM"), org.getGroups());

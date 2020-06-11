@@ -60,5 +60,33 @@ public class JsonAsserts {
 		}
 		return sb.toString().trim();
 	}
+
+	public static void print(JsonArray json, String name) {
+		System.out.println("====================================================");
+		System.out.println(json);
+		System.out.println("====================================================");
+		System.out.println("\t\t//JsonAsserts.print(" + name + ", \"" + name + "\");");
+		System.out.println("\t\t" + buildAsserts(json, name, new FormattedStringBuilder()));
+		System.out.println("====================================================");
+	}
+
+	private static String buildAsserts(JsonArray json, String prefix, FormattedStringBuilder sb) {
+		sb.append("\t\tassertEquals(" + json.size() + ", " + prefix + ".size());");
+		for (int i = 0; i < json.size(); i++) {
+			JsonElement child = json.get(i);
+			if (child instanceof JsonObject) {
+				buildAsserts((JsonObject)child, prefix + ".getObject(" + i + ")", sb);
+			} else if (child instanceof JsonNumber) {
+				sb.append("\t\tassertEquals(" + json.getNumber(i) + ", " + prefix + ".getNumber(" + i + "));");
+			} else if (child instanceof JsonBoolean) {
+				sb.append("\t\tassertEquals(" + json.getBoolean(i) + ", " + prefix + ".getBoolean(" + i + "));");
+			} else if (child instanceof JsonText) {
+				sb.append("\t\tassertEquals(\"" + json.getString(i).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r") + "\", " + prefix + ".getString(" + i + ").replaceAll(\"\\n\", \"\\\\\\\\n\").replaceAll(\"\\r\", \"\\\\\\\\r\"));");
+			} else {
+				sb.append("\t\tassertEquals(" + json.get(i) + ", " + prefix + ".get(" + i + "));");
+			}
+		}
+		return sb.toString().trim();
+	}
 	
 }
