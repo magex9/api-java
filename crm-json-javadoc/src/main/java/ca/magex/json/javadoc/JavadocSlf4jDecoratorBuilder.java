@@ -20,7 +20,7 @@ public class JavadocSlf4jDecoratorBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(JavadocSlf4jDecoratorBuilder.class);
 	
-	public static void build(File inputFile, String inputPackage, File outputFile, String outputPackage, String outputClass) throws IOException {
+	public static void build(File inputFile, String inputPackage, String inputClass, File outputFile, String outputPackage, String outputClass) throws IOException {
 		logger.info("Building logger from " + inputFile.getAbsolutePath());
 		if (!inputFile.isFile())
 			throw new FileNotFoundException("Could not find input interface: " + inputFile.getAbsolutePath());

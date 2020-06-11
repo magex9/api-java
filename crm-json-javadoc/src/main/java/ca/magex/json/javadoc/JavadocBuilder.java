@@ -59,7 +59,6 @@ public class JavadocBuilder {
     	List<JsonPair> pairs = new ArrayList<JsonPair>();
     	for (String filename : findFiles(src)) {
     		String clsName = filename.replaceAll(".java$", "").replaceAll("/", ".");
-    		logger.info("Building: " + clsName);
         	File file = new File(src, filename);
     		pairs.add(new JsonPair(clsName, processFile(file)));
     	}
@@ -71,8 +70,9 @@ public class JavadocBuilder {
      * to a the output file 
      */
     public static File processDirectory(File src, File output) throws Exception {
+    	JsonObject json = processDirectory(src);
     	logger.info("Creating file: " + output.getAbsolutePath());
-    	FileUtils.writeStringToFile(output, processDirectory(src).toString(), StandardCharsets.UTF_8);
+    	FileUtils.writeStringToFile(output, json.toString(), StandardCharsets.UTF_8);
     	return output;
     }
 

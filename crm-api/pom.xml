@@ -56,4 +56,63 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>crm-json-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<decorators>
+						<decorator>
+							<targetPackage>ca.magex.crm.api.decorators</targetPackage>
+							<interfaces>
+								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
+								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
+								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
+								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmPersonService</interface>
+								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmUserService</interface>
+								<interface>ca.magex.crm.api.policies.CrmUserPolicy</interface>
+							</interfaces>
+						</decorator>
+					</decorators>
+					<adapters>
+						<adapter>
+							<targetClass>ca.magex.crm.api.adapters.CrmPolicies</targetClass>
+							<interfaces>
+								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmUserPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
+							</interfaces>
+						</adapter>
+						<adapter>
+							<targetClass>ca.magex.crm.api.adapters.CrmServices</targetClass>
+							<interfaces>
+								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
+								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
+								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
+								<interface>ca.magex.crm.api.services.CrmPersonService</interface>
+								<interface>ca.magex.crm.api.services.CrmUserService</interface>
+							</interfaces>
+						</adapter>
+					</adapters>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
