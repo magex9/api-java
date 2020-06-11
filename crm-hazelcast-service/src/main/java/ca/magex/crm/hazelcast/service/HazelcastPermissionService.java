@@ -3,8 +3,6 @@ package ca.magex.crm.hazelcast.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -230,6 +228,16 @@ public class HazelcastPermissionService implements CrmPermissionService {
 				.findFirst()
 				.orElseThrow(() -> new ItemNotFoundException("Role Code '" + code + "'"));
 	}
+	
+	@Override
+	public FilteredPage<Group> findGroups(GroupsFilter filter) {
+		return CrmPermissionService.super.findGroups(filter);
+	}
+	
+	@Override
+	public FilteredPage<Role> findRoles(RolesFilter filter) {	
+		return CrmPermissionService.super.findRoles(filter);
+	}
 
 	@Override
 	public List<String> findActiveGroupCodes() {
@@ -247,22 +255,22 @@ public class HazelcastPermissionService implements CrmPermissionService {
 	}
 	
 	@Override
-	public Group createGroup(@NotNull Group group) {	
+	public Group createGroup(Group group) {	
 		return CrmPermissionService.super.createGroup(group);
 	}
 	
 	@Override
-	public Role createRole(@NotNull Role role) {	
+	public Role createRole(Role role) {	
 		return CrmPermissionService.super.createRole(role);
 	}
 	
 	@Override
-	public Group prototypeGroup(@NotNull Localized name) {	
+	public Group prototypeGroup(Localized name) {	
 		return CrmPermissionService.super.prototypeGroup(name);
 	}
 	
 	@Override
-	public Role prototypeRole(@NotNull Identifier groupId, @NotNull Localized name) {	
+	public Role prototypeRole(Identifier groupId, Localized name) {	
 		return CrmPermissionService.super.prototypeRole(groupId, name);
 	}
 }
