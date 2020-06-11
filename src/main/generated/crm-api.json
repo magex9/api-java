@@ -11411,6 +11411,20 @@
         ]
       },
       {
+        "name": "findGroups",
+        "modifiers": ["default"],
+        "type": {
+          "class": "FilteredPage",
+          "generics": ["Group"]
+        },
+        "parameters": [{
+          "name": "filter",
+          "type": "GroupsFilter",
+          "annotations": [{"name": "NotNull"}]
+        }],
+        "body": "{\n    return findGroups(filter, defaultGroupPaging());\n}"
+      },
+      {
         "name": "findActiveGroupCodes",
         "modifiers": ["default"],
         "type": {
@@ -11541,6 +11555,20 @@
         "name": "findRoles",
         "modifiers": ["default"],
         "type": {
+          "class": "FilteredPage",
+          "generics": ["Role"]
+        },
+        "parameters": [{
+          "name": "filter",
+          "type": "RolesFilter",
+          "annotations": [{"name": "NotNull"}]
+        }],
+        "body": "{\n    return findRoles(filter, defaultRolePaging());\n}"
+      },
+      {
+        "name": "findRoles",
+        "modifiers": ["default"],
+        "type": {
           "class": "List",
           "generics": ["Role"]
         },
@@ -11564,6 +11592,18 @@
         "modifiers": ["default"],
         "type": "RolesFilter",
         "body": "{\n    return new RolesFilter();\n}"
+      },
+      {
+        "name": "defaultGroupPaging",
+        "modifiers": ["default"],
+        "type": "Paging",
+        "body": "{\n    return new Paging(GroupsFilter.getSortOptions().get(0));\n}"
+      },
+      {
+        "name": "defaultRolePaging",
+        "modifiers": ["default"],
+        "type": "Paging",
+        "body": "{\n    return new Paging(RolesFilter.getSortOptions().get(0));\n}"
       }
     ]
   },

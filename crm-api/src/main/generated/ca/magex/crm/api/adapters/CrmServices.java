@@ -71,6 +71,11 @@ public class CrmServices implements ca.magex.crm.api.services.CrmPermissionServi
 	}
 	
 	@Override
+	public ca.magex.crm.api.system.FilteredPage<ca.magex.crm.api.roles.Group> findGroups(ca.magex.crm.api.filters.GroupsFilter filter) {
+		return crmPermissionService.findGroups(filter);
+	}
+	
+	@Override
 	public java.util.List<String> findActiveGroupCodes() {
 		return crmPermissionService.findActiveGroupCodes();
 	}
@@ -121,6 +126,11 @@ public class CrmServices implements ca.magex.crm.api.services.CrmPermissionServi
 	}
 	
 	@Override
+	public ca.magex.crm.api.system.FilteredPage<ca.magex.crm.api.roles.Role> findRoles(ca.magex.crm.api.filters.RolesFilter filter) {
+		return crmPermissionService.findRoles(filter);
+	}
+	
+	@Override
 	public java.util.List<ca.magex.crm.api.roles.Role> findRoles() {
 		return crmPermissionService.findRoles();
 	}
@@ -133,6 +143,16 @@ public class CrmServices implements ca.magex.crm.api.services.CrmPermissionServi
 	@Override
 	public ca.magex.crm.api.filters.RolesFilter defaultRolesFilter() {
 		return crmPermissionService.defaultRolesFilter();
+	}
+	
+	@Override
+	public ca.magex.crm.api.filters.Paging defaultGroupPaging() {
+		return crmPermissionService.defaultGroupPaging();
+	}
+	
+	@Override
+	public ca.magex.crm.api.filters.Paging defaultRolePaging() {
+		return crmPermissionService.defaultRolePaging();
 	}
 	
 	@Override

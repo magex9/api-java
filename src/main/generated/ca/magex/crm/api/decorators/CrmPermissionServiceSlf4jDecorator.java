@@ -400,6 +400,43 @@ public class CrmPermissionServiceSlf4jDecorator implements CrmPermissionService 
 	}
 	
 	@Override
+	public FilteredPage<Group> findGroups(GroupsFilter filter) {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling findGroups(" + filter + ")");
+				FilteredPage<Group> result = delegate.findGroups(filter);
+				logger.trace("Executed findGroups(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on findGroups(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling findGroups(" + filter + ")");
+				FilteredPage<Group> result = delegate.findGroups(filter);
+				logger.debug("Executed findGroups(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on findGroups(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling findGroups(" + filter + ")");
+			return delegate.findGroups(filter);
+		}
+		else {
+			return delegate.findGroups(filter);
+		}
+	}
+	
+	@Override
 	public List<String> findActiveGroupCodes() {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
@@ -770,6 +807,43 @@ public class CrmPermissionServiceSlf4jDecorator implements CrmPermissionService 
 	}
 	
 	@Override
+	public FilteredPage<Role> findRoles(RolesFilter filter) {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling findRoles(" + filter + ")");
+				FilteredPage<Role> result = delegate.findRoles(filter);
+				logger.trace("Executed findRoles(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on findRoles(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling findRoles(" + filter + ")");
+				FilteredPage<Role> result = delegate.findRoles(filter);
+				logger.debug("Executed findRoles(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on findRoles(" + filter + ") in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling findRoles(" + filter + ")");
+			return delegate.findRoles(filter);
+		}
+		else {
+			return delegate.findRoles(filter);
+		}
+	}
+	
+	@Override
 	public List<Role> findRoles() {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
@@ -877,6 +951,80 @@ public class CrmPermissionServiceSlf4jDecorator implements CrmPermissionService 
 		}
 		else {
 			return delegate.defaultRolesFilter();
+		}
+	}
+	
+	@Override
+	public Paging defaultGroupPaging() {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling defaultGroupPaging()");
+				Paging result = delegate.defaultGroupPaging();
+				logger.trace("Executed defaultGroupPaging() in " + Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on defaultGroupPaging() in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling defaultGroupPaging()");
+				Paging result = delegate.defaultGroupPaging();
+				logger.debug("Executed defaultGroupPaging() in " + Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on defaultGroupPaging() in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling defaultGroupPaging()");
+			return delegate.defaultGroupPaging();
+		}
+		else {
+			return delegate.defaultGroupPaging();
+		}
+	}
+	
+	@Override
+	public Paging defaultRolePaging() {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling defaultRolePaging()");
+				Paging result = delegate.defaultRolePaging();
+				logger.trace("Executed defaultRolePaging() in " + Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on defaultRolePaging() in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling defaultRolePaging()");
+				Paging result = delegate.defaultRolePaging();
+				logger.debug("Executed defaultRolePaging() in " + Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on defaultRolePaging() in " + Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling defaultRolePaging()");
+			return delegate.defaultRolePaging();
+		}
+		else {
+			return delegate.defaultRolePaging();
 		}
 	}
 	

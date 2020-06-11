@@ -74,6 +74,11 @@ public class CrmPermissionServiceDelegate implements CrmPermissionService {
 	}
 	
 	@Override
+	public FilteredPage<Group> findGroups(GroupsFilter filter) {
+		return delegate.findGroups(filter);
+	}
+	
+	@Override
 	public List<String> findActiveGroupCodes() {
 		return delegate.findActiveGroupCodes();
 	}
@@ -124,6 +129,11 @@ public class CrmPermissionServiceDelegate implements CrmPermissionService {
 	}
 	
 	@Override
+	public FilteredPage<Role> findRoles(RolesFilter filter) {
+		return delegate.findRoles(filter);
+	}
+	
+	@Override
 	public List<Role> findRoles() {
 		return delegate.findRoles();
 	}
@@ -136,6 +146,16 @@ public class CrmPermissionServiceDelegate implements CrmPermissionService {
 	@Override
 	public RolesFilter defaultRolesFilter() {
 		return delegate.defaultRolesFilter();
+	}
+	
+	@Override
+	public Paging defaultGroupPaging() {
+		return delegate.defaultGroupPaging();
+	}
+	
+	@Override
+	public Paging defaultRolePaging() {
+		return delegate.defaultRolePaging();
 	}
 	
 }
