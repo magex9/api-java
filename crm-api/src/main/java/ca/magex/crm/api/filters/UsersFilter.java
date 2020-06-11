@@ -131,14 +131,14 @@ public class UsersFilter implements CrmFilter<User> {
 	@Override
 	public boolean apply(User instance) {
 		return List.of(instance)
-				.stream()
-				.filter(u -> this.getUsername() == null || StringUtils.containsIgnoreCase(u.getUsername(), this.getUsername()))
-				.filter(u -> this.getRole() == null || u.getRoles().contains(this.getRole()))
-				.filter(u -> this.getStatus() == null || this.getStatus().equals(u.getStatus()))
-				.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPerson().getPersonId()))
-				.filter(u -> this.getOrganizationId() == null || this.getOrganizationId().equals(u.getPerson().getOrganizationId()))
-				.findAny()
-				.isPresent();
+			.stream()
+			.filter(u -> this.getUsername() == null || StringUtils.containsIgnoreCase(u.getUsername(), this.getUsername()))
+			.filter(u -> this.getRole() == null || u.getRoles().contains(this.getRole()))
+			.filter(u -> this.getStatus() == null || this.getStatus().equals(u.getStatus()))
+			.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPerson().getPersonId()))
+			.filter(u -> this.getOrganizationId() == null || this.getOrganizationId().equals(u.getPerson().getOrganizationId()))
+			.findAny()
+			.isPresent();
 	}
 
 	@Override
