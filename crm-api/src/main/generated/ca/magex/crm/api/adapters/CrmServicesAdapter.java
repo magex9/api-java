@@ -5,7 +5,7 @@ package ca.magex.crm.api.adapters;
  * 
  * Aggregate adapter for all the CRM services
  */
-public class CrmServices implements ca.magex.crm.api.services.CrmLookupService, ca.magex.crm.api.services.CrmPermissionService, ca.magex.crm.api.services.CrmOrganizationService, ca.magex.crm.api.services.CrmLocationService, ca.magex.crm.api.services.CrmPersonService, ca.magex.crm.api.services.CrmUserService {
+public class CrmServicesAdapter implements ca.magex.crm.api.services.CrmLookupService, ca.magex.crm.api.services.CrmPermissionService, ca.magex.crm.api.services.CrmOrganizationService, ca.magex.crm.api.services.CrmLocationService, ca.magex.crm.api.services.CrmPersonService, ca.magex.crm.api.services.CrmUserService {
 	
 	private ca.magex.crm.api.services.CrmLookupService crmLookupService;
 	
@@ -19,7 +19,7 @@ public class CrmServices implements ca.magex.crm.api.services.CrmLookupService, 
 	
 	private ca.magex.crm.api.services.CrmUserService crmUserService;
 	
-	public CrmServices(ca.magex.crm.api.services.CrmLookupService crmLookupService, ca.magex.crm.api.services.CrmPermissionService crmPermissionService, ca.magex.crm.api.services.CrmOrganizationService crmOrganizationService, ca.magex.crm.api.services.CrmLocationService crmLocationService, ca.magex.crm.api.services.CrmPersonService crmPersonService, ca.magex.crm.api.services.CrmUserService crmUserService) {
+	public CrmServicesAdapter(ca.magex.crm.api.services.CrmLookupService crmLookupService, ca.magex.crm.api.services.CrmPermissionService crmPermissionService, ca.magex.crm.api.services.CrmOrganizationService crmOrganizationService, ca.magex.crm.api.services.CrmLocationService crmLocationService, ca.magex.crm.api.services.CrmPersonService crmPersonService, ca.magex.crm.api.services.CrmUserService crmUserService) {
 		this.crmLookupService = crmLookupService;
 		this.crmPermissionService = crmPermissionService;
 		this.crmOrganizationService = crmOrganizationService;

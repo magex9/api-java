@@ -1,6 +1,7 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import ca.magex.crm.api.adapters.CrmPolicies;
+import ca.magex.crm.api.adapters.CrmPoliciesAdapter;
+import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
@@ -9,7 +10,7 @@ import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 
-public class AuthenticatedPolicies extends CrmPolicies {
+public class AuthenticatedPolicies extends CrmPoliciesAdapter implements CrmPolicies {
 	
 	public AuthenticatedPolicies(			
 			CrmAuthenticationService auth,

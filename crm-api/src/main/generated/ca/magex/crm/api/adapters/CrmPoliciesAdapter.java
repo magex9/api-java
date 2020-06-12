@@ -5,7 +5,7 @@ package ca.magex.crm.api.adapters;
  * 
  * Aggregate adapter for all the CRM policies
  */
-public class CrmPolicies implements ca.magex.crm.api.policies.CrmLookupPolicy, ca.magex.crm.api.policies.CrmPermissionPolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy {
+public class CrmPoliciesAdapter implements ca.magex.crm.api.policies.CrmLookupPolicy, ca.magex.crm.api.policies.CrmPermissionPolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy {
 	
 	private ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy;
 	
@@ -19,7 +19,7 @@ public class CrmPolicies implements ca.magex.crm.api.policies.CrmLookupPolicy, c
 	
 	private ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy;
 	
-	public CrmPolicies(ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy, ca.magex.crm.api.policies.CrmPermissionPolicy crmPermissionPolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy crmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy crmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy crmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy) {
+	public CrmPoliciesAdapter(ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy, ca.magex.crm.api.policies.CrmPermissionPolicy crmPermissionPolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy crmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy crmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy crmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy) {
 		this.crmLookupPolicy = crmLookupPolicy;
 		this.crmPermissionPolicy = crmPermissionPolicy;
 		this.crmOrganizationPolicy = crmOrganizationPolicy;

@@ -75,8 +75,7 @@
 				<configuration>
 					<decorators>
 						<decorator>
-							<description>Logging and delegate decorators for the CRM services
-								and policies</description>
+							<description>Logging and delegate decorators for the CRM services and policies</description>
 							<targetPackage>ca.magex.crm.api.decorators</targetPackage>
 							<interfaces>
 								<interface>ca.magex.crm.api.authentication.CrmPasswordService</interface>
@@ -97,7 +96,7 @@
 					<adapters>
 						<adapter>
 							<description>Aggregate adapter for all the CRM policies</description>
-							<targetClass>ca.magex.crm.api.adapters.CrmPolicies</targetClass>
+							<targetClass>ca.magex.crm.api.adapters.CrmPoliciesAdapter</targetClass>
 							<interfaces>
 								<interface>ca.magex.crm.api.policies.CrmLookupPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
@@ -109,7 +108,7 @@
 						</adapter>
 						<adapter>
 							<description>Aggregate adapter for all the CRM services</description>
-							<targetClass>ca.magex.crm.api.adapters.CrmServices</targetClass>
+							<targetClass>ca.magex.crm.api.adapters.CrmServicesAdapter</targetClass>
 							<interfaces>
 								<interface>ca.magex.crm.api.services.CrmLookupService</interface>
 								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
