@@ -1,5 +1,6 @@
 {
   "name": "ExtendedEntity",
+  "package": "ca.magex.json.javadoc.samples",
   "description": "A basic entity test\n@author scott",
   "imports": {
     "Serializable": "java.io",

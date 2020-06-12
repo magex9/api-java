@@ -123,6 +123,7 @@ public class JavadocBuilder {
     public static JsonObject processClass(CompilationUnit cu, ClassOrInterfaceDeclaration cls) throws FileNotFoundException {
         JsonObject json = new JsonObject()
         	.with("name", cls.getNameAsString())
+        	.with("package", cu.getPackageDeclaration().get().getNameAsString())
         	.with("description", buildComment(cls.getComment()))
         	.with("generics", cls.getTypeParameters().stream().map(t -> buildType(t)).collect(Collectors.toList()))
         	.with("imports", buildImports(cu))

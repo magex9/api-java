@@ -1,5 +1,6 @@
 {
   "name": "TypedMethods",
+  "package": "ca.magex.json.javadoc.samples",
   "imports": {"List": "java.util"},
   "type": "interface",
   "modifiers": ["public"],

@@ -32,7 +32,7 @@ public class JavadocDelegationBuilder {
 		sb.append(" * ");
 		sb.append(" * " + description);
 		sb.append(" * ");
-		sb.append(" * This delegate may be extended so that implementations can be kept clean if they dont need to implement every single field.");
+		sb.append(" * This delegate may be extended so that implementations can be kept clean if they don't need to implement every single field.");
 		sb.append(" * ");
 		sb.append(" * @author magex");
 		sb.append(" */");
@@ -73,8 +73,11 @@ public class JavadocDelegationBuilder {
 		if (!json.contains("type")) {
 			return "void";
 		} else if (json.contains("type", JsonText.class)) {
-			if (cls.getObject("imports").contains(json.getString("type")))
+			if (json.getString("type").equals(cls.getString("name"))) {
+				return cls.getString("package") + "." + json.getString("type");
+			} else if (cls.getObject("imports").contains(json.getString("type"))) {
 				return cls.getObject("imports").getString(json.getString("type")) + "." + json.getString("type");
+			}
 			return json.getString("type");
 		} else if (json.contains("type", JsonObject.class)) {
 			StringBuilder sb = new StringBuilder();

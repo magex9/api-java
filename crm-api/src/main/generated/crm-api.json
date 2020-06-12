@@ -1,6 +1,7 @@
 {
   "ca.magex.crm.api.MagexCrmProfiles": {
     "name": "MagexCrmProfiles",
+    "package": "ca.magex.crm.api",
     "type": "class",
     "modifiers": ["public"],
     "fields": [
@@ -65,6 +66,7 @@
   },
   "ca.magex.crm.api.authentication.CrmPasswordService": {
     "name": "CrmPasswordService",
+    "package": "ca.magex.crm.api.authentication",
     "imports": {"NotNull": "javax.validation.constraints"},
     "type": "interface",
     "modifiers": ["public"],
@@ -140,6 +142,7 @@
   },
   "ca.magex.crm.api.authentication.PasswordDetails": {
     "name": "PasswordDetails",
+    "package": "ca.magex.crm.api.authentication",
     "imports": {
       "Serializable": "java.io",
       "Date": "java.util",
@@ -266,6 +269,7 @@
   },
   "ca.magex.crm.api.common.BusinessPosition": {
     "name": "BusinessPosition",
+    "package": "ca.magex.crm.api.common",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -391,6 +395,7 @@
   },
   "ca.magex.crm.api.common.Communication": {
     "name": "Communication",
+    "package": "ca.magex.crm.api.common",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -566,6 +571,7 @@
   },
   "ca.magex.crm.api.common.MailingAddress": {
     "name": "MailingAddress",
+    "package": "ca.magex.crm.api.common",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -741,6 +747,7 @@
   },
   "ca.magex.crm.api.common.PersonName": {
     "name": "PersonName",
+    "package": "ca.magex.crm.api.common",
     "imports": {
       "Serializable": "java.io",
       "StringUtils": "org.apache.commons.lang3",
@@ -903,6 +910,7 @@
   },
   "ca.magex.crm.api.common.Telephone": {
     "name": "Telephone",
+    "package": "ca.magex.crm.api.common",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -994,6 +1002,7 @@
   },
   "ca.magex.crm.api.config.CrmConfigurer": {
     "name": "CrmConfigurer",
+    "package": "ca.magex.crm.api.config",
     "description": "Used to configure the Crm Subsystem\n\n@author Jonny",
     "imports": {
       "Bean": "org.springframework.context.annotation",
@@ -1019,6 +1028,7 @@
   },
   "ca.magex.crm.api.config.CrmConfigurerAdapter": {
     "name": "CrmConfigurerAdapter",
+    "package": "ca.magex.crm.api.config",
     "description": "Adapter to hide the common components of the CrmConfigurer\n\n@author Jonny",
     "imports": {
       "Autowired": "org.springframework.beans.factory.annotation",
@@ -1190,6 +1200,7 @@
   },
   "ca.magex.crm.api.crm.LocationDetails": {
     "name": "LocationDetails",
+    "package": "ca.magex.crm.api.crm",
     "imports": {
       "EqualsBuilder": "org.apache.commons.lang3.builder",
       "HashCodeBuilder": "org.apache.commons.lang3.builder",
@@ -1323,6 +1334,7 @@
   },
   "ca.magex.crm.api.crm.LocationSummary": {
     "name": "LocationSummary",
+    "package": "ca.magex.crm.api.crm",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -1480,6 +1492,7 @@
   },
   "ca.magex.crm.api.crm.OrganizationDetails": {
     "name": "OrganizationDetails",
+    "package": "ca.magex.crm.api.crm",
     "imports": {
       "ArrayList": "java.util",
       "List": "java.util",
@@ -1653,6 +1666,7 @@
   },
   "ca.magex.crm.api.crm.OrganizationSummary": {
     "name": "OrganizationSummary",
+    "package": "ca.magex.crm.api.crm",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -1770,6 +1784,7 @@
   },
   "ca.magex.crm.api.crm.PersonDetails": {
     "name": "PersonDetails",
+    "package": "ca.magex.crm.api.crm",
     "imports": {
       "EqualsBuilder": "org.apache.commons.lang3.builder",
       "HashCodeBuilder": "org.apache.commons.lang3.builder",
@@ -1968,6 +1983,7 @@
   },
   "ca.magex.crm.api.crm.PersonSummary": {
     "name": "PersonSummary",
+    "package": "ca.magex.crm.api.crm",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -2100,6 +2116,7 @@
   },
   "ca.magex.crm.api.exceptions.ApiException": {
     "name": "ApiException",
+    "package": "ca.magex.crm.api.exceptions",
     "imports": {"Crm": "ca.magex.crm.api.services"},
     "type": "class",
     "modifiers": ["public"],
@@ -2163,6 +2180,7 @@
   },
   "ca.magex.crm.api.exceptions.BadRequestException": {
     "name": "BadRequestException",
+    "package": "ca.magex.crm.api.exceptions",
     "imports": {
       "IOException": "java.io",
       "OutputStream": "java.io",
@@ -2270,6 +2288,7 @@
   },
   "ca.magex.crm.api.exceptions.DuplicateItemFoundException": {
     "name": "DuplicateItemFoundException",
+    "package": "ca.magex.crm.api.exceptions",
     "imports": {"Crm": "ca.magex.crm.api.services"},
     "type": "class",
     "modifiers": ["public"],
@@ -2293,6 +2312,7 @@
   },
   "ca.magex.crm.api.exceptions.ItemNotFoundException": {
     "name": "ItemNotFoundException",
+    "package": "ca.magex.crm.api.exceptions",
     "imports": {"Crm": "ca.magex.crm.api.services"},
     "type": "class",
     "modifiers": ["public"],
@@ -2316,6 +2336,7 @@
   },
   "ca.magex.crm.api.exceptions.PermissionDeniedException": {
     "name": "PermissionDeniedException",
+    "package": "ca.magex.crm.api.exceptions",
     "imports": {"Crm": "ca.magex.crm.api.services"},
     "type": "class",
     "modifiers": ["public"],
@@ -2339,6 +2360,7 @@
   },
   "ca.magex.crm.api.exceptions.UnauthenticatedException": {
     "name": "UnauthenticatedException",
+    "package": "ca.magex.crm.api.exceptions",
     "imports": {"Crm": "ca.magex.crm.api.services"},
     "type": "class",
     "modifiers": ["public"],
@@ -2358,6 +2380,7 @@
   },
   "ca.magex.crm.api.filters.CrmFilter": {
     "name": "CrmFilter",
+    "package": "ca.magex.crm.api.filters",
     "generics": ["T"],
     "imports": {
       "Serializable": "java.io",
@@ -2430,6 +2453,7 @@
   },
   "ca.magex.crm.api.filters.GroupsFilter": {
     "name": "GroupsFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -2666,6 +2690,7 @@
   },
   "ca.magex.crm.api.filters.LocalizedFilter": {
     "name": "LocalizedFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -2929,6 +2954,7 @@
   },
   "ca.magex.crm.api.filters.LocationsFilter": {
     "name": "LocationsFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -3166,6 +3192,7 @@
   },
   "ca.magex.crm.api.filters.OrganizationsFilter": {
     "name": "OrganizationsFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -3376,6 +3403,7 @@
   },
   "ca.magex.crm.api.filters.PageBuilder": {
     "name": "PageBuilder",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "Serializable": "java.io",
       "Collections": "java.util",
@@ -3417,6 +3445,7 @@
   },
   "ca.magex.crm.api.filters.Paging": {
     "name": "Paging",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "Serializable": "java.io",
       "Collator": "java.text",
@@ -3624,6 +3653,7 @@
   },
   "ca.magex.crm.api.filters.PersonsFilter": {
     "name": "PersonsFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -3836,6 +3866,7 @@
   },
   "ca.magex.crm.api.filters.RolesFilter": {
     "name": "RolesFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -4099,6 +4130,7 @@
   },
   "ca.magex.crm.api.filters.UsersFilter": {
     "name": "UsersFilter",
+    "package": "ca.magex.crm.api.filters",
     "imports": {
       "List": "java.util",
       "Map": "java.util",
@@ -4361,6 +4393,7 @@
   },
   "ca.magex.crm.api.lookup.BusinessClassification": {
     "name": "BusinessClassification",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4442,6 +4475,7 @@
   },
   "ca.magex.crm.api.lookup.BusinessSector": {
     "name": "BusinessSector",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4523,6 +4557,7 @@
   },
   "ca.magex.crm.api.lookup.BusinessUnit": {
     "name": "BusinessUnit",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4604,6 +4639,7 @@
   },
   "ca.magex.crm.api.lookup.Country": {
     "name": "Country",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4685,6 +4721,7 @@
   },
   "ca.magex.crm.api.lookup.CrmLookupItem": {
     "name": "CrmLookupItem",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Serializable": "java.io",
       "Locale": "java.util"
@@ -4723,6 +4760,7 @@
   },
   "ca.magex.crm.api.lookup.Language": {
     "name": "Language",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4804,6 +4842,7 @@
   },
   "ca.magex.crm.api.lookup.Province": {
     "name": "Province",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4908,6 +4947,7 @@
   },
   "ca.magex.crm.api.lookup.Salutation": {
     "name": "Salutation",
+    "package": "ca.magex.crm.api.lookup",
     "imports": {
       "Locale": "java.util",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -4989,6 +5029,7 @@
   },
   "ca.magex.crm.api.observer.CrmDataObserver": {
     "name": "CrmDataObserver",
+    "package": "ca.magex.crm.api.observer",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5067,6 +5108,7 @@
   },
   "ca.magex.crm.api.policies.CrmLocationPolicy": {
     "name": "CrmLocationPolicy",
+    "package": "ca.magex.crm.api.policies",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5115,6 +5157,7 @@
   },
   "ca.magex.crm.api.policies.CrmLookupPolicy": {
     "name": "CrmLookupPolicy",
+    "package": "ca.magex.crm.api.policies",
     "imports": {"Locale": "java.util"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5239,6 +5282,7 @@
   },
   "ca.magex.crm.api.policies.CrmOrganizationPolicy": {
     "name": "CrmOrganizationPolicy",
+    "package": "ca.magex.crm.api.policies",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5283,6 +5327,7 @@
   },
   "ca.magex.crm.api.policies.CrmPermissionPolicy": {
     "name": "CrmPermissionPolicy",
+    "package": "ca.magex.crm.api.policies",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5387,6 +5432,7 @@
   },
   "ca.magex.crm.api.policies.CrmPersonPolicy": {
     "name": "CrmPersonPolicy",
+    "package": "ca.magex.crm.api.policies",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5435,6 +5481,7 @@
   },
   "ca.magex.crm.api.policies.CrmPolicies": {
     "name": "CrmPolicies",
+    "package": "ca.magex.crm.api.policies",
     "type": "interface",
     "modifiers": ["public"],
     "extends": [
@@ -5446,8 +5493,598 @@
       "CrmPermissionPolicy"
     ]
   },
+  "ca.magex.crm.api.policies.CrmPolicyDelegate": {
+    "name": "CrmPolicyDelegate",
+    "package": "ca.magex.crm.api.policies",
+    "imports": {
+      "Locale": "java.util",
+      "Identifier": "ca.magex.crm.api.system"
+    },
+    "type": "class",
+    "modifiers": ["public"],
+    "implements": ["CrmPolicies"],
+    "constructors": [{
+      "name": "CrmPolicyDelegate",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "lookupPolicy",
+          "type": "CrmLookupPolicy"
+        },
+        {
+          "name": "permissionPolicy",
+          "type": "CrmPermissionPolicy"
+        },
+        {
+          "name": "organizationPolicy",
+          "type": "CrmOrganizationPolicy"
+        },
+        {
+          "name": "locationPolicy",
+          "type": "CrmLocationPolicy"
+        },
+        {
+          "name": "personPolicy",
+          "type": "CrmPersonPolicy"
+        },
+        {
+          "name": "userPolicy",
+          "type": "CrmUserPolicy"
+        }
+      ],
+      "body": "{\n    this.lookupPolicy = lookupPolicy;\n    this.permissionPolicy = permissionPolicy;\n    this.organizationPolicy = organizationPolicy;\n    this.locationPolicy = locationPolicy;\n    this.personPolicy = personPolicy;\n    this.userPolicy = userPolicy;\n}"
+    }],
+    "fields": [
+      {
+        "name": "lookupPolicy",
+        "modifiers": ["private"],
+        "type": "CrmLookupPolicy"
+      },
+      {
+        "name": "permissionPolicy",
+        "modifiers": ["private"],
+        "type": "CrmPermissionPolicy"
+      },
+      {
+        "name": "organizationPolicy",
+        "modifiers": ["private"],
+        "type": "CrmOrganizationPolicy"
+      },
+      {
+        "name": "locationPolicy",
+        "modifiers": ["private"],
+        "type": "CrmLocationPolicy"
+      },
+      {
+        "name": "personPolicy",
+        "modifiers": ["private"],
+        "type": "CrmPersonPolicy"
+      },
+      {
+        "name": "userPolicy",
+        "modifiers": ["private"],
+        "type": "CrmUserPolicy"
+      }
+    ],
+    "methods": [
+      {
+        "name": "canCreateOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "body": "{\n    return organizationPolicy.canCreateOrganization();\n}"
+      },
+      {
+        "name": "canViewOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "organizationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return organizationPolicy.canViewOrganization(organizationId);\n}"
+      },
+      {
+        "name": "canUpdateOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "organizationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return organizationPolicy.canUpdateOrganization(organizationId);\n}"
+      },
+      {
+        "name": "canEnableOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "organizationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return organizationPolicy.canEnableOrganization(organizationId);\n}"
+      },
+      {
+        "name": "canDisableOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "organizationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return organizationPolicy.canDisableOrganization(organizationId);\n}"
+      },
+      {
+        "name": "canCreateLocationForOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "organizationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return locationPolicy.canCreateLocationForOrganization(organizationId);\n}"
+      },
+      {
+        "name": "canViewLocation",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "locationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return locationPolicy.canViewLocation(locationId);\n}"
+      },
+      {
+        "name": "canUpdateLocation",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "locationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return locationPolicy.canUpdateLocation(locationId);\n}"
+      },
+      {
+        "name": "canEnableLocation",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "locationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return locationPolicy.canEnableLocation(locationId);\n}"
+      },
+      {
+        "name": "canDisableLocation",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "locationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return locationPolicy.canDisableLocation(locationId);\n}"
+      },
+      {
+        "name": "canCreatePersonForOrganization",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "organizationId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return personPolicy.canCreatePersonForOrganization(organizationId);\n}"
+      },
+      {
+        "name": "canViewPerson",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "personId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return personPolicy.canViewPerson(personId);\n}"
+      },
+      {
+        "name": "canUpdatePerson",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "personId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return personPolicy.canUpdatePerson(personId);\n}"
+      },
+      {
+        "name": "canEnablePerson",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "personId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return personPolicy.canEnablePerson(personId);\n}"
+      },
+      {
+        "name": "canDisablePerson",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "personId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return personPolicy.canDisablePerson(personId);\n}"
+      },
+      {
+        "name": "canCreateUserForPerson",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "personId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return userPolicy.canCreateUserForPerson(personId);\n}"
+      },
+      {
+        "name": "canViewUser",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "username",
+          "type": "String"
+        }],
+        "body": "{\n    return userPolicy.canViewUser(username);\n}"
+      },
+      {
+        "name": "canViewUser",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "userId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return userPolicy.canViewUser(userId);\n}"
+      },
+      {
+        "name": "canUpdateUserPassword",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "userId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return userPolicy.canUpdateUserPassword(userId);\n}"
+      },
+      {
+        "name": "canUpdateUserRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "userId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return userPolicy.canUpdateUserRole(userId);\n}"
+      },
+      {
+        "name": "canEnableUser",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "userId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return userPolicy.canEnableUser(userId);\n}"
+      },
+      {
+        "name": "canDisableUser",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "userId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return userPolicy.canDisableUser(userId);\n}"
+      },
+      {
+        "name": "canCreateGroup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "body": "{\n    return permissionPolicy.canCreateGroup();\n}"
+      },
+      {
+        "name": "canViewGroup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "group",
+          "type": "String"
+        }],
+        "body": "{\n    return permissionPolicy.canViewGroup(group);\n}"
+      },
+      {
+        "name": "canViewGroup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "groupId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canViewGroup(groupId);\n}"
+      },
+      {
+        "name": "canUpdateGroup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "groupId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canUpdateGroup(groupId);\n}"
+      },
+      {
+        "name": "canEnableGroup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "groupId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canEnableGroup(groupId);\n}"
+      },
+      {
+        "name": "canDisableGroup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "groupId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canDisableGroup(groupId);\n}"
+      },
+      {
+        "name": "canCreateRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "groupId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canCreateRole(groupId);\n}"
+      },
+      {
+        "name": "canViewRoles",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "body": "{\n    return permissionPolicy.canViewRoles();\n}"
+      },
+      {
+        "name": "canViewRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "code",
+          "type": "String"
+        }],
+        "body": "{\n    return permissionPolicy.canViewRole(code);\n}"
+      },
+      {
+        "name": "canViewRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "roleId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canViewRole(roleId);\n}"
+      },
+      {
+        "name": "canUpdateRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "roleId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canUpdateRole(roleId);\n}"
+      },
+      {
+        "name": "canEnableRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "roleId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canEnableRole(roleId);\n}"
+      },
+      {
+        "name": "canDisableRole",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [{
+          "name": "roleId",
+          "type": "Identifier"
+        }],
+        "body": "{\n    return permissionPolicy.canDisableRole(roleId);\n}"
+      },
+      {
+        "name": "canViewStatusLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "StatusLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewStatusLookup(StatusLookup, locale);\n}"
+      },
+      {
+        "name": "canViewCountryLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "CountryLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewCountryLookup(CountryLookup, locale);\n}"
+      },
+      {
+        "name": "canViewProvinceLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "countryLookup",
+            "type": "String"
+          },
+          {
+            "name": "provinceLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);\n}"
+      },
+      {
+        "name": "canViewLanguageLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "languageLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewLanguageLookup(languageLookup, locale);\n}"
+      },
+      {
+        "name": "canViewSalutationLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "salutationLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewSalutationLookup(salutationLookup, locale);\n}"
+      },
+      {
+        "name": "canViewBusinessSectorLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "sectorLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);\n}"
+      },
+      {
+        "name": "canViewBusinessUnitLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "unitLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);\n}"
+      },
+      {
+        "name": "canViewBusinessClassificationLookup",
+        "modifiers": ["public"],
+        "type": "boolean",
+        "annotations": [{"name": "Override"}],
+        "parameters": [
+          {
+            "name": "classificationLookup",
+            "type": "String"
+          },
+          {
+            "name": "locale",
+            "type": "Locale"
+          }
+        ],
+        "body": "{\n    return lookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);\n}"
+      }
+    ]
+  },
   "ca.magex.crm.api.policies.CrmUserPolicy": {
     "name": "CrmUserPolicy",
+    "package": "ca.magex.crm.api.policies",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
     "type": "interface",
     "modifiers": ["public"],
@@ -5512,6 +6149,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedLocationPolicy": {
     "name": "AuthenticatedLocationPolicy",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "CRM_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
       "ORG_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
@@ -5622,6 +6260,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedLookupPolicy": {
     "name": "AuthenticatedLookupPolicy",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "Locale": "java.util",
       "CrmLookupPolicy": "ca.magex.crm.api.policies",
@@ -5805,6 +6444,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedOrganizationPolicy": {
     "name": "AuthenticatedOrganizationPolicy",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "CRM_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
       "ORG_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
@@ -5901,6 +6541,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedPermissionPolicy": {
     "name": "AuthenticatedPermissionPolicy",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "CRM_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
       "CrmPermissionPolicy": "ca.magex.crm.api.policies",
@@ -6080,6 +6721,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedPersonPolicy": {
     "name": "AuthenticatedPersonPolicy",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "CRM_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
       "ORG_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
@@ -6190,6 +6832,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies": {
     "name": "AuthenticatedPolicies",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "CrmPolicyDelegate": "ca.magex.crm.api.policies",
       "CrmAuthenticationService": "ca.magex.crm.api.services",
@@ -6241,6 +6884,7 @@
   },
   "ca.magex.crm.api.policies.authenticated.AuthenticatedUserPolicy": {
     "name": "AuthenticatedUserPolicy",
+    "package": "ca.magex.crm.api.policies.authenticated",
     "imports": {
       "CRM_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
       "ORG_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
@@ -6378,6 +7022,7 @@
   },
   "ca.magex.crm.api.policies.basic.BasicLocationPolicy": {
     "name": "BasicLocationPolicy",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
       "LocationSummary": "ca.magex.crm.api.crm",
       "OrganizationSummary": "ca.magex.crm.api.crm",
@@ -6479,6 +7124,7 @@
   },
   "ca.magex.crm.api.policies.basic.BasicLookupPolicy": {
     "name": "BasicLookupPolicy",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
       "Locale": "java.util",
       "ItemNotFoundException": "ca.magex.crm.api.exceptions",
@@ -6648,6 +7294,7 @@
   },
   "ca.magex.crm.api.policies.basic.BasicOrganizationPolicy": {
     "name": "BasicOrganizationPolicy",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
       "OrganizationSummary": "ca.magex.crm.api.crm",
       "ItemNotFoundException": "ca.magex.crm.api.exceptions",
@@ -6730,6 +7377,7 @@
   },
   "ca.magex.crm.api.policies.basic.BasicPermissionPolicy": {
     "name": "BasicPermissionPolicy",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
       "ItemNotFoundException": "ca.magex.crm.api.exceptions",
       "CrmPermissionPolicy": "ca.magex.crm.api.policies",
@@ -6897,6 +7545,7 @@
   },
   "ca.magex.crm.api.policies.basic.BasicPersonPolicy": {
     "name": "BasicPersonPolicy",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
       "OrganizationSummary": "ca.magex.crm.api.crm",
       "PersonSummary": "ca.magex.crm.api.crm",
@@ -6998,8 +7647,9 @@
   },
   "ca.magex.crm.api.policies.basic.BasicPolicies": {
     "name": "BasicPolicies",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
-      "CrmPolicies": "ca.magex.crm.api.adapters",
+      "CrmPolicyDelegate": "ca.magex.crm.api.policies",
       "CrmLocationService": "ca.magex.crm.api.services",
       "CrmLookupService": "ca.magex.crm.api.services",
       "CrmOrganizationService": "ca.magex.crm.api.services",
@@ -7009,7 +7659,7 @@
     },
     "type": "class",
     "modifiers": ["public"],
-    "extends": ["CrmPolicies"],
+    "extends": ["CrmPolicyDelegate"],
     "constructors": [{
       "name": "BasicPolicies",
       "modifiers": ["public"],
@@ -7044,6 +7694,7 @@
   },
   "ca.magex.crm.api.policies.basic.BasicUserPolicy": {
     "name": "BasicUserPolicy",
+    "package": "ca.magex.crm.api.policies.basic",
     "imports": {
       "PersonSummary": "ca.magex.crm.api.crm",
       "ItemNotFoundException": "ca.magex.crm.api.exceptions",
@@ -7167,6 +7818,7 @@
   },
   "ca.magex.crm.api.roles.Group": {
     "name": "Group",
+    "package": "ca.magex.crm.api.roles",
     "imports": {
       "Serializable": "java.io",
       "Locale": "java.util",
@@ -7303,6 +7955,7 @@
   },
   "ca.magex.crm.api.roles.Role": {
     "name": "Role",
+    "package": "ca.magex.crm.api.roles",
     "imports": {
       "Serializable": "java.io",
       "Locale": "java.util",
@@ -7454,6 +8107,7 @@
   },
   "ca.magex.crm.api.roles.User": {
     "name": "User",
+    "package": "ca.magex.crm.api.roles",
     "imports": {
       "Serializable": "java.io",
       "ArrayList": "java.util",
@@ -7626,6 +8280,7 @@
   },
   "ca.magex.crm.api.services.Crm": {
     "name": "Crm",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "OutputStream": "java.io",
       "List": "java.util",
@@ -9721,6 +10376,7 @@
   },
   "ca.magex.crm.api.services.CrmAuthenticationService": {
     "name": "CrmAuthenticationService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "User": "ca.magex.crm.api.roles",
       "Identifier": "ca.magex.crm.api.system"
@@ -9807,6 +10463,7 @@
   },
   "ca.magex.crm.api.services.CrmClient": {
     "name": "CrmClient",
+    "package": "ca.magex.crm.api.services",
     "imports": {"CrmPolicies": "ca.magex.crm.api.policies"},
     "type": "interface",
     "modifiers": ["public"],
@@ -9838,6 +10495,7 @@
   },
   "ca.magex.crm.api.services.CrmInitializationService": {
     "name": "CrmInitializationService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "OutputStream": "java.io",
       "PersonName": "ca.magex.crm.api.common",
@@ -9896,6 +10554,7 @@
   },
   "ca.magex.crm.api.services.CrmLocationService": {
     "name": "CrmLocationService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "NotNull": "javax.validation.constraints",
       "MailingAddress": "ca.magex.crm.api.common",
@@ -10147,6 +10806,7 @@
   },
   "ca.magex.crm.api.services.CrmLookupService": {
     "name": "CrmLookupService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "List": "java.util",
       "Locale": "java.util",
@@ -10439,6 +11099,7 @@
   },
   "ca.magex.crm.api.services.CrmOrganizationService": {
     "name": "CrmOrganizationService",
+    "package": "ca.magex.crm.api.services",
     "description": "The CRM Organization service is used to manage organizations that are owned\nby business customers.\n\nThere are must be at least one organization in the system with the \"CRM\"\ngroup assigned to it in order to create and manage new organizations in the\nsystem. Organizations with the \"CRM\" group can then create users with the\n\"CRM_ADMIN\" role which will be able to manage the customers organizations.\nUsers in this org with the \"CRM_USER\" role will have some limited\nfunctionality to search and maintain some of the organization information.\n\nAll customer organizations should have the \"ORG\" group assigned to them in\norder to keep their own organization information up to date. There should be\none main location and one main contact that are used for communication\ninformation in case information needs to be mailed or an email / phone call\nis required to get information. All users with the \"ORG_ADMIN\" role will be\nable to keep their locations and persons up to date for their organization.\n\nNote that organizations are never deleted from the system just enabled and\ndisabled, so it is important to make sure that the organization does not\nalready exist in the system before creating a new one.\n\n@author scott",
     "imports": {
       "List": "java.util",
@@ -10695,6 +11356,7 @@
   },
   "ca.magex.crm.api.services.CrmPermissionService": {
     "name": "CrmPermissionService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "List": "java.util",
       "Collectors": "java.util.stream",
@@ -11021,6 +11683,7 @@
   },
   "ca.magex.crm.api.services.CrmPersonService": {
     "name": "CrmPersonService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "NotNull": "javax.validation.constraints",
       "BusinessPosition": "ca.magex.crm.api.common",
@@ -11311,6 +11974,7 @@
   },
   "ca.magex.crm.api.services.CrmServices": {
     "name": "CrmServices",
+    "package": "ca.magex.crm.api.services",
     "type": "interface",
     "modifiers": ["public"],
     "extends": [
@@ -11324,6 +11988,7 @@
   },
   "ca.magex.crm.api.services.CrmUserService": {
     "name": "CrmUserService",
+    "package": "ca.magex.crm.api.services",
     "imports": {
       "List": "java.util",
       "NotNull": "javax.validation.constraints",
@@ -11566,6 +12231,7 @@
   },
   "ca.magex.crm.api.system.Activation": {
     "name": "Activation",
+    "package": "ca.magex.crm.api.system",
     "imports": {
       "Serializable": "java.io",
       "LocalDateTime": "java.time",
@@ -11653,6 +12319,7 @@
   },
   "ca.magex.crm.api.system.FilteredPage": {
     "name": "FilteredPage",
+    "package": "ca.magex.crm.api.system",
     "generics": ["T"],
     "imports": {
       "Serializable": "java.io",
@@ -11752,6 +12419,7 @@
   },
   "ca.magex.crm.api.system.Identifier": {
     "name": "Identifier",
+    "package": "ca.magex.crm.api.system",
     "imports": {
       "Serializable": "java.io",
       "StringUtils": "org.apache.commons.lang3",
@@ -11875,6 +12543,7 @@
   },
   "ca.magex.crm.api.system.Lang": {
     "name": "Lang",
+    "package": "ca.magex.crm.api.system",
     "imports": {
       "Arrays": "java.util",
       "List": "java.util",
@@ -11954,6 +12623,7 @@
   },
   "ca.magex.crm.api.system.Localized": {
     "name": "Localized",
+    "package": "ca.magex.crm.api.system",
     "imports": {
       "Serializable": "java.io",
       "Collator": "java.text",
@@ -12108,6 +12778,7 @@
   },
   "ca.magex.crm.api.system.Message": {
     "name": "Message",
+    "package": "ca.magex.crm.api.system",
     "imports": {
       "Serializable": "java.io",
       "EqualsBuilder": "org.apache.commons.lang3.builder",
@@ -12219,6 +12890,7 @@
   "ca.magex.crm.api.system.Status": {"name": "Status"},
   "ca.magex.crm.api.transform.RequestHandler": {
     "name": "RequestHandler",
+    "package": "ca.magex.crm.api.transform",
     "generics": [
       "A",
       "B",
@@ -12279,6 +12951,7 @@
   },
   "ca.magex.crm.api.transform.Transformer": {
     "name": "Transformer",
+    "package": "ca.magex.crm.api.transform",
     "generics": [
       "S",
       "T"
@@ -12337,6 +13010,7 @@
   },
   "ca.magex.crm.api.validation.CrmValidation": {
     "name": "CrmValidation",
+    "package": "ca.magex.crm.api.validation",
     "imports": {
       "ArrayList": "java.util",
       "List": "java.util",

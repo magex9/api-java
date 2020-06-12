@@ -1,5 +1,6 @@
 {
   "name": "BasicEntity",
+  "package": "ca.magex.json.javadoc.samples",
   "description": "A basic entity test\n@author scott",
   "type": "class",
   "modifiers": ["public"],

@@ -28,13 +28,13 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 	}
 	
 	@Override
-	public CrmDataObserver groupUpdate(Long timestamp, String groupCode) {
+	public ca.magex.crm.api.observer.CrmDataObserver groupUpdate(Long timestamp, String groupCode) {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
 			try {
 				logger.trace("Calling groupUpdate(" + timestamp + ", " + groupCode + ")");
-				CrmDataObserver result = delegate.groupUpdate(timestamp, groupCode);
-				logger.trace("Executed groupUpdate(" + timestamp + ", " + groupCode + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.groupUpdate(timestamp, groupCode);
+				logger.trace("Executed groupUpdate(" + timestamp + ", " + groupCode + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
 				return result;
 			}
 			catch (Exception e) {
@@ -46,7 +46,7 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 			long start = System.nanoTime();
 			try {
 				logger.debug("Calling groupUpdate(" + timestamp + ", " + groupCode + ")");
-				CrmDataObserver result = delegate.groupUpdate(timestamp, groupCode);
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.groupUpdate(timestamp, groupCode);
 				logger.debug("Executed groupUpdate(" + timestamp + ", " + groupCode + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
 				return result;
 			}
@@ -65,13 +65,13 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 	}
 	
 	@Override
-	public CrmDataObserver roleUpdate(Long timestamp, String roleCode) {
+	public ca.magex.crm.api.observer.CrmDataObserver roleUpdate(Long timestamp, String roleCode) {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
 			try {
 				logger.trace("Calling roleUpdate(" + timestamp + ", " + roleCode + ")");
-				CrmDataObserver result = delegate.roleUpdate(timestamp, roleCode);
-				logger.trace("Executed roleUpdate(" + timestamp + ", " + roleCode + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.roleUpdate(timestamp, roleCode);
+				logger.trace("Executed roleUpdate(" + timestamp + ", " + roleCode + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
 				return result;
 			}
 			catch (Exception e) {
@@ -83,7 +83,7 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 			long start = System.nanoTime();
 			try {
 				logger.debug("Calling roleUpdate(" + timestamp + ", " + roleCode + ")");
-				CrmDataObserver result = delegate.roleUpdate(timestamp, roleCode);
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.roleUpdate(timestamp, roleCode);
 				logger.debug("Executed roleUpdate(" + timestamp + ", " + roleCode + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
 				return result;
 			}
@@ -102,13 +102,13 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 	}
 	
 	@Override
-	public CrmDataObserver organizationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier organizationId) {
+	public ca.magex.crm.api.observer.CrmDataObserver organizationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier organizationId) {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
 			try {
 				logger.trace("Calling organizationUpdate(" + timestamp + ", " + organizationId + ")");
-				CrmDataObserver result = delegate.organizationUpdate(timestamp, organizationId);
-				logger.trace("Executed organizationUpdate(" + timestamp + ", " + organizationId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.organizationUpdate(timestamp, organizationId);
+				logger.trace("Executed organizationUpdate(" + timestamp + ", " + organizationId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
 				return result;
 			}
 			catch (Exception e) {
@@ -120,7 +120,7 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 			long start = System.nanoTime();
 			try {
 				logger.debug("Calling organizationUpdate(" + timestamp + ", " + organizationId + ")");
-				CrmDataObserver result = delegate.organizationUpdate(timestamp, organizationId);
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.organizationUpdate(timestamp, organizationId);
 				logger.debug("Executed organizationUpdate(" + timestamp + ", " + organizationId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
 				return result;
 			}
@@ -139,13 +139,13 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 	}
 	
 	@Override
-	public CrmDataObserver locationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier locationId) {
+	public ca.magex.crm.api.observer.CrmDataObserver locationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier locationId) {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
 			try {
 				logger.trace("Calling locationUpdate(" + timestamp + ", " + locationId + ")");
-				CrmDataObserver result = delegate.locationUpdate(timestamp, locationId);
-				logger.trace("Executed locationUpdate(" + timestamp + ", " + locationId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.locationUpdate(timestamp, locationId);
+				logger.trace("Executed locationUpdate(" + timestamp + ", " + locationId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
 				return result;
 			}
 			catch (Exception e) {
@@ -157,7 +157,7 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 			long start = System.nanoTime();
 			try {
 				logger.debug("Calling locationUpdate(" + timestamp + ", " + locationId + ")");
-				CrmDataObserver result = delegate.locationUpdate(timestamp, locationId);
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.locationUpdate(timestamp, locationId);
 				logger.debug("Executed locationUpdate(" + timestamp + ", " + locationId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
 				return result;
 			}
@@ -176,13 +176,13 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 	}
 	
 	@Override
-	public CrmDataObserver personUpdate(Long timestamp, ca.magex.crm.api.system.Identifier personId) {
+	public ca.magex.crm.api.observer.CrmDataObserver personUpdate(Long timestamp, ca.magex.crm.api.system.Identifier personId) {
 		if (logger.isTraceEnabled()) {
 			long start = System.nanoTime();
 			try {
 				logger.trace("Calling personUpdate(" + timestamp + ", " + personId + ")");
-				CrmDataObserver result = delegate.personUpdate(timestamp, personId);
-				logger.trace("Executed personUpdate(" + timestamp + ", " + personId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + result.getClass() + ": " + result + ").");
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.personUpdate(timestamp, personId);
+				logger.trace("Executed personUpdate(" + timestamp + ", " + personId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
 				return result;
 			}
 			catch (Exception e) {
@@ -194,7 +194,7 @@ public class CrmDataObserverSlf4jDecorator implements ca.magex.crm.api.observer.
 			long start = System.nanoTime();
 			try {
 				logger.debug("Calling personUpdate(" + timestamp + ", " + personId + ")");
-				CrmDataObserver result = delegate.personUpdate(timestamp, personId);
+				ca.magex.crm.api.observer.CrmDataObserver result = delegate.personUpdate(timestamp, personId);
 				logger.debug("Executed personUpdate(" + timestamp + ", " + personId + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
 				return result;
 			}

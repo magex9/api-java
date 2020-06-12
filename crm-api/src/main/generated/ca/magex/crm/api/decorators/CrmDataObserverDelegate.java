@@ -18,27 +18,27 @@ public class CrmDataObserverDelegate implements ca.magex.crm.api.observer.CrmDat
 	}
 	
 	@Override
-	public CrmDataObserver groupUpdate(Long timestamp, String groupCode) {
+	public ca.magex.crm.api.observer.CrmDataObserver groupUpdate(Long timestamp, String groupCode) {
 		return delegate.groupUpdate(timestamp, groupCode);
 	}
 	
 	@Override
-	public CrmDataObserver roleUpdate(Long timestamp, String roleCode) {
+	public ca.magex.crm.api.observer.CrmDataObserver roleUpdate(Long timestamp, String roleCode) {
 		return delegate.roleUpdate(timestamp, roleCode);
 	}
 	
 	@Override
-	public CrmDataObserver organizationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier organizationId) {
+	public ca.magex.crm.api.observer.CrmDataObserver organizationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier organizationId) {
 		return delegate.organizationUpdate(timestamp, organizationId);
 	}
 	
 	@Override
-	public CrmDataObserver locationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier locationId) {
+	public ca.magex.crm.api.observer.CrmDataObserver locationUpdate(Long timestamp, ca.magex.crm.api.system.Identifier locationId) {
 		return delegate.locationUpdate(timestamp, locationId);
 	}
 	
 	@Override
-	public CrmDataObserver personUpdate(Long timestamp, ca.magex.crm.api.system.Identifier personId) {
+	public ca.magex.crm.api.observer.CrmDataObserver personUpdate(Long timestamp, ca.magex.crm.api.system.Identifier personId) {
 		return delegate.personUpdate(timestamp, personId);
 	}
 	
