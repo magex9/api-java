@@ -29,7 +29,7 @@ public class JsonJavadocMojo extends AbstractMavenMojo {
 	public void execute() throws MojoExecutionException {
 		try {
 			FileUtils.mkdir(new File(basedir, "src/main/generated").getAbsolutePath());
-			JavadocBuilder.processDirectory(new File(basedir, "src/main/java"), new File("src/main/generated/" + mavenProject.getArtifactId() + ".json"));
+			JavadocBuilder.processDirectory(new File(basedir, "src/main/java"), new File(basedir, "src/main/generated/" + mavenProject.getArtifactId() + ".json"));
 			
 			getLog().info("Building decorators: " + decorators);
 			decorators.forEach(d -> d.build(basedir));

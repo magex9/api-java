@@ -79,7 +79,7 @@ public abstract class AbstractMavenMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}", property = "workingDirectory", required = true)
 	protected File workingDirectory;
 
-	@Parameter(defaultValue = "${basedir}", property = "basedir", required = true)
+	@Parameter(defaultValue = "${project.basedir}", property = "basedir", required = true)
 	protected File basedir;
 
 	@Parameter(defaultValue = "${session}", property = "session", required = true)

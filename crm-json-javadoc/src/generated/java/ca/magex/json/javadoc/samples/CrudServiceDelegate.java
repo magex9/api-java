@@ -5,7 +5,7 @@ package ca.magex.json.javadoc.samples;
  * 
  * JUnit Crud Service Delegate Test
  * 
- * This delegate may be extended so that implementations can be kept clean if they dont need to implement every single field.
+ * This delegate may be extended so that implementations can be kept clean if they don't need to implement every single field.
  * 
  * @author magex
  */

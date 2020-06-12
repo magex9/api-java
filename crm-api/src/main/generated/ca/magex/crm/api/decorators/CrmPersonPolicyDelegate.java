@@ -5,7 +5,7 @@ package ca.magex.crm.api.decorators;
  * 
  * Logging and delegate decorators for the CRM services and policies
  * 
- * This delegate may be extended so that implementations can be kept clean if they dont need to implement every single field.
+ * This delegate may be extended so that implementations can be kept clean if they don't need to implement every single field.
  * 
  * @author magex
  */

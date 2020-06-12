@@ -54,7 +54,7 @@ public class InterfaceDecoratorConfig {
 			File inputDir = new File(basedir, "src/main/java");
 			String inputPackage = sourceInterface.substring(0, sourceInterface.lastIndexOf('.')); 
 			String inputClass = sourceInterface.substring(sourceInterface.lastIndexOf('.') + 1);
-			File outputDir = new File("src/main/generated");
+			File outputDir = new File(basedir, "src/main/generated");
 			String outputPackage = targetPackage; 
 			String outputClass = inputClass + "Delegate"; 
 			File inputFile = new File(inputDir, inputPackage.replaceAll("\\.", "/") + "/" + inputClass +".java");
@@ -70,7 +70,7 @@ public class InterfaceDecoratorConfig {
 			File inputDir = new File(basedir, "src/main/java");
 			String inputPackage = sourceInterface.substring(0, sourceInterface.lastIndexOf('.')); 
 			String inputClass = sourceInterface.substring(sourceInterface.lastIndexOf('.') + 1);
-			File outputDir = new File("src/main/generated");
+			File outputDir = new File(basedir, "src/main/generated");
 			String outputPackage = targetPackage; 
 			String outputClass = inputClass + "Slf4jDecorator"; 
 			File inputFile = new File(inputDir, inputPackage.replaceAll("\\.", "/") + "/" + inputClass +".java");
