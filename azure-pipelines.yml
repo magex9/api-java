@@ -44,6 +44,9 @@ stages:
 
     - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
       artifact: crm-graphql-spring-boot-server
+
+    - publish: $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/
+      artifact: crm-auth-spring-boot-server
     
     - publish: $(System.DefaultWorkingDirectory)/crm-restful-spring-boot-server/target/
       artifact: crm-restful-spring-boot-server
@@ -85,4 +88,9 @@ stages:
               parameters:
                 environment: 'ut'
                 application_name: crm-helloworld
-                sshEndpoint: 'ssh - RD3'    
+                sshEndpoint: 'ssh - RD3'
+            - template: azure-deploy.yml
+              parameters:
+                environment: 'ut'
+                application_name: crm-auth-spring-boot-server
+                sshEndpoint: 'ssh - RD3'      
