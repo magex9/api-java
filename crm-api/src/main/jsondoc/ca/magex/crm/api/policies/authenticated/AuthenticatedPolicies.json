@@ -2,7 +2,7 @@
   "name": "AuthenticatedPolicies",
   "package": "ca.magex.crm.api.policies.authenticated",
   "imports": {
-    "CrmPolicyDelegate": "ca.magex.crm.api.policies",
+    "CrmPolicies": "ca.magex.crm.api.adapters",
     "CrmAuthenticationService": "ca.magex.crm.api.services",
     "CrmLocationService": "ca.magex.crm.api.services",
     "CrmLookupService": "ca.magex.crm.api.services",
@@ -13,7 +13,7 @@
   },
   "type": "class",
   "modifiers": ["public"],
-  "extends": ["CrmPolicyDelegate"],
+  "extends": ["CrmPolicies"],
   "constructors": [{
     "name": "AuthenticatedPolicies",
     "modifiers": ["public"],

@@ -2,7 +2,7 @@
   "name": "BasicPolicies",
   "package": "ca.magex.crm.api.policies.basic",
   "imports": {
-    "CrmPolicyDelegate": "ca.magex.crm.api.policies",
+    "CrmPolicies": "ca.magex.crm.api.adapters",
     "CrmLocationService": "ca.magex.crm.api.services",
     "CrmLookupService": "ca.magex.crm.api.services",
     "CrmOrganizationService": "ca.magex.crm.api.services",
@@ -12,7 +12,7 @@
   },
   "type": "class",
   "modifiers": ["public"],
-  "extends": ["CrmPolicyDelegate"],
+  "extends": ["CrmPolicies"],
   "constructors": [{
     "name": "BasicPolicies",
     "modifiers": ["public"],
