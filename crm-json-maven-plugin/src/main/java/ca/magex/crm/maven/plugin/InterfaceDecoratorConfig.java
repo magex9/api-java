@@ -12,9 +12,19 @@ import ca.magex.json.javadoc.JavadocSlf4jDecoratorBuilder;
 
 public class InterfaceDecoratorConfig {
 	
+	private String description;
+	
 	private List<String> interfaces;
 
 	private String targetPackage;
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public List<String> getInterfaces() {
 		return interfaces;
@@ -34,12 +44,12 @@ public class InterfaceDecoratorConfig {
 	
 	public void build(File basedir) {
 		for (String iface : interfaces) {
-			buildDelegate(basedir, iface, targetPackage);
-			buildLogger(basedir, iface, targetPackage);
+			buildDelegate(description, basedir, iface, targetPackage);
+			buildLogger(description, basedir, iface, targetPackage);
 		}
 	}
 	
-	public static void buildDelegate(File basedir, String sourceInterface, String targetPackage) {
+	public static void buildDelegate(String description, File basedir, String sourceInterface, String targetPackage) {
 		try {
 			File inputDir = new File(basedir, "src/main/java");
 			String inputPackage = sourceInterface.substring(0, sourceInterface.lastIndexOf('.')); 
@@ -49,13 +59,13 @@ public class InterfaceDecoratorConfig {
 			String outputClass = inputClass + "Delegate"; 
 			File inputFile = new File(inputDir, inputPackage.replaceAll("\\.", "/") + "/" + inputClass +".java");
 			File outputFile = new File(outputDir, outputPackage.replaceAll("\\.", "/") + "/" + outputClass + ".java");
-			JavadocDelegationBuilder.build(inputFile, inputPackage, inputClass, outputFile, outputPackage, outputClass);
+			JavadocDelegationBuilder.build(description, inputFile, inputPackage, inputClass, outputFile, outputPackage, outputClass);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem building delegate class: " + sourceInterface + " to " + targetPackage, e);
 		}
 	}
 	
-	public static void buildLogger(File basedir, String sourceInterface, String targetPackage) {
+	public static void buildLogger(String description, File basedir, String sourceInterface, String targetPackage) {
 		try {
 			File inputDir = new File(basedir, "src/main/java");
 			String inputPackage = sourceInterface.substring(0, sourceInterface.lastIndexOf('.')); 
@@ -65,7 +75,7 @@ public class InterfaceDecoratorConfig {
 			String outputClass = inputClass + "Slf4jDecorator"; 
 			File inputFile = new File(inputDir, inputPackage.replaceAll("\\.", "/") + "/" + inputClass +".java");
 			File outputFile = new File(outputDir, outputPackage.replaceAll("\\.", "/") + "/" + outputClass + ".java");
-			JavadocSlf4jDecoratorBuilder.build(inputFile, inputPackage, inputClass, outputFile, outputPackage, outputClass);
+			JavadocSlf4jDecoratorBuilder.build(description, inputFile, inputPackage, inputClass, outputFile, outputPackage, outputClass);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem building slf4j decorator class: " + sourceInterface + " to " + targetPackage, e);
 		}

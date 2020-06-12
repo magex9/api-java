@@ -11,9 +11,19 @@ import ca.magex.json.javadoc.JavadocInterfaceAdapterBuilder;
 
 public class InterfaceAdapterConfig {
 
+	private String description;
+	
 	private List<String> interfaces;
 
 	private String targetClass;
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public List<String> getInterfaces() {
 		return interfaces;
@@ -38,7 +48,7 @@ public class InterfaceAdapterConfig {
 			String adapterPackage = targetClass.substring(0, targetClass.lastIndexOf('.')); 
 			String adapterClass = targetClass.substring(targetClass.lastIndexOf('.') + 1);
 			File adapterFile = new File(outputDir, targetClass.replaceAll("\\.", "/") + ".java");
-			JavadocInterfaceAdapterBuilder.build(sourceDir, interfaces, adapterFile, adapterPackage, adapterClass);
+			JavadocInterfaceAdapterBuilder.build(description, sourceDir, interfaces, adapterFile, adapterPackage, adapterClass);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem building adapter class: " + interfaces + " to " + targetClass, e);
 		}
