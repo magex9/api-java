@@ -36,8 +36,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#result == null ? '' : #result.userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result == null ? '' : #result.username)", unless = "#result == null")
 	})
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		return delegate.createUser(personId, username, roles);
@@ -45,8 +45,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#result == null ? '' : #result.userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result == null ? '' : #result.username)", unless = "#result == null")
 	})
 	public User createUser(User prototype) {
 		return delegate.createUser(prototype);
@@ -54,8 +54,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result == null ? '' : #result.username)", unless = "#result == null")
 	})
 	public User enableUser(Identifier userId) {
 		return delegate.enableUser(userId);
@@ -63,8 +63,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result == null ? '' : #result.username)", unless = "#result == null")
 	})
 	public User disableUser(Identifier userId) {
 		return delegate.disableUser(userId);
@@ -72,8 +72,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result == null ? '' : #result.username)", unless = "#result == null")
 	})
 	public User updateUserRoles(Identifier userId, List<String> roles) {
 		return delegate.updateUserRoles(userId, roles);

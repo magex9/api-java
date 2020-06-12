@@ -40,8 +40,8 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#result == null ? '' : #result.personId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#result == null ? '' : #result.personId)", unless = "#result == null")
 	})
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		return delegate.createPerson(organizationId, name, address, communication, position);
@@ -49,8 +49,8 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#result == null ? '' : #result.personId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#result == null ? '' : #result.personId)", unless = "#result == null")
 	})
 	public PersonDetails createPerson(PersonDetails prototype) {
 		return delegate.createPerson(prototype);

@@ -159,6 +159,14 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findPersonDetails(Mockito.any(Identifier.class));
 		personDetails = personService.findPersonDetails(personDetails.getOrganizationId());
 		BDDMockito.verify(delegate, Mockito.times(1)).findPersonDetails(Mockito.any(Identifier.class));
+		
+		/* enable non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).disablePerson(new Identifier("JJ"));
+		Assert.assertNull(personService.disablePerson(new Identifier("JJ")));		
+		Assert.assertNull(personService.findPersonSummary(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(new Identifier("JJ"));
 	}
 	
 	@Test
@@ -196,6 +204,14 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findPersonDetails(Mockito.any(Identifier.class));
 		personDetails = personService.findPersonDetails(personDetails.getOrganizationId());
 		BDDMockito.verify(delegate, Mockito.times(1)).findPersonDetails(Mockito.any(Identifier.class));
+		
+		/* enable non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).enablePerson(new Identifier("JJ"));
+		Assert.assertNull(personService.enablePerson(new Identifier("JJ")));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(new Identifier("JJ"));
 	}
 
 	@Test
@@ -263,6 +279,46 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
 		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
+		
+		/* update non existent person (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updatePersonName(Mockito.eq(new Identifier("JJ")), Mockito.any());
+		Assert.assertNull(personService.updatePersonName(new Identifier("JJ"), CrmAsserts.DAN));
+		Assert.assertNull(personService.findPersonDetails(new Identifier("JJ")));		
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(new Identifier("JJ"));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(new Identifier("JJ"));
+		
+		/* update non existent person (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updatePersonAddress(Mockito.eq(new Identifier("KK")), Mockito.any());
+		Assert.assertNull(personService.updatePersonAddress(new Identifier("KK"), CrmAsserts.DE_ADDRESS));
+		Assert.assertNull(personService.findPersonDetails(new Identifier("KK")));		
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(new Identifier("KK"));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("KK")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(new Identifier("KK"));
+		
+		/* update non existent person (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updatePersonCommunication(Mockito.eq(new Identifier("LL")), Mockito.any());
+		Assert.assertNull(personService.updatePersonCommunication(new Identifier("LL"), CrmAsserts.HOME_COMMUNICATIONS));
+		Assert.assertNull(personService.findPersonDetails(new Identifier("LL")));		
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(new Identifier("LL"));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("LL")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(new Identifier("LL"));
+		
+		/* update non existent person (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updatePersonBusinessPosition(Mockito.eq(new Identifier("MM")), Mockito.any());
+		Assert.assertNull(personService.updatePersonBusinessPosition(new Identifier("MM"), CrmAsserts.DEVELOPER_POSITION));
+		Assert.assertNull(personService.findPersonDetails(new Identifier("MM")));		
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(new Identifier("MM"));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("MM")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(new Identifier("MM"));
 	}
 	
 	@Test

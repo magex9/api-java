@@ -209,7 +209,31 @@ public class CrmUserServiceCachingDelegateTests {
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());		
+		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
+		
+		/* update non existent user (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateUserRoles(Mockito.eq(new Identifier("JJ")), Mockito.any());
+		Assert.assertNull(userService.updateUserRoles(new Identifier("JJ"), List.of("C", "D", "E")));
+		Assert.assertNull(userService.findUser(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new Identifier("JJ"));
+		
+		/* update non existent user (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).disableUser(Mockito.eq(new Identifier("KK")));
+		Assert.assertNull(userService.disableUser(new Identifier("KK")));
+		Assert.assertNull(userService.findUser(new Identifier("KK")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new Identifier("KK"));
+		
+		/* update non existent user (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).enableUser(Mockito.eq(new Identifier("LL")));
+		Assert.assertNull(userService.enableUser(new Identifier("LL")));
+		Assert.assertNull(userService.findUser(new Identifier("LL")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new Identifier("LL"));
 	}
 	
 	@Test
