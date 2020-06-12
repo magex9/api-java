@@ -24,7 +24,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListRootStatuses() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/status"))
+			.get("/rest/lookup/status"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -39,7 +39,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindRootStatus() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/status/active"))
+			.get("/rest/lookup/status/active"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -49,7 +49,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishStatuses() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/status")
+			.get("/rest/lookup/status")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -65,7 +65,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindEnglishStatus() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/status/active")
+			.get("/rest/lookup/status/active")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -76,7 +76,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchStatuses() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/status")
+			.get("/rest/lookup/status")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -92,7 +92,7 @@ public class LookupStatusControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindFrenchStatus() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/status/active")
+			.get("/rest/lookup/status/active")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())

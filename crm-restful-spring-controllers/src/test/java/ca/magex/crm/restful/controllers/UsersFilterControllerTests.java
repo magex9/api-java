@@ -75,7 +75,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultRoot() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users"))
+			.get("/rest/users"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -119,7 +119,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultEnglish() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -164,7 +164,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultFrench() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -209,7 +209,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByUsername() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.queryParam("username", "e")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -270,7 +270,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByRole() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.queryParam("role", "CRM_USER")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -329,7 +329,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByPersonId() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.queryParam("person", crm.findUser(francoisId).getPerson().getPersonId().toString())
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -362,7 +362,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByOrgId() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.queryParam("organization", org2.toString())
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -421,7 +421,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByInactifDesc() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.queryParam("status", "Inactif")
 			.queryParam("order", "displayName")
 			.queryParam("direction", "desc")

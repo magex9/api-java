@@ -27,7 +27,7 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class UsersController extends AbstractCrmController {
 
-	@GetMapping("/api/users")
+	@GetMapping("/rest/users")
 	public void findUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, User.class, (messages, transformer, locale) -> { 
 			return createPage(
@@ -48,7 +48,7 @@ public class UsersController extends AbstractCrmController {
 		return new UsersFilter(organizationId, personId, status, username, role);
 	}
 	
-	@PostMapping("/api/users")
+	@PostMapping("/rest/users")
 	public void createUser(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, User.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
@@ -60,7 +60,7 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/users/{userId}")
+	@GetMapping("/rest/users/{userId}")
 	public void getUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
 		handle(req, res, User.class, (messages, transformer, locale) -> {
@@ -68,13 +68,13 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/user/{username}")
+	@GetMapping("/rest/user/{username}")
 	public void getUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		getUser(req, res, crm.findUserByUsername(username).getUserId());
 	}
 
-	@PatchMapping("/api/users/{userId}")
+	@PatchMapping("/rest/users/{userId}")
 	public void updateUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
 		handle(req, res, User.class, (messages, transformer, locale) -> {
@@ -87,13 +87,13 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/api/user/{username}")
+	@PatchMapping("/rest/user/{username}")
 	public void updateUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		updateUser(req, res, crm.findUserByUsername(username).getUserId());
 	}
 
-	@GetMapping("/api/users/{userId}/person")
+	@GetMapping("/rest/users/{userId}/person")
 	public void getUserPerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
@@ -101,13 +101,13 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/user/{username}/person")
+	@GetMapping("/rest/user/{username}/person")
 	public void getUserPersonByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		getUserPerson(req, res, crm.findUserByUsername(username).getUserId());
 	}
 
-	@GetMapping("/api/users/{userId}/roles")
+	@GetMapping("/rest/users/{userId}/roles")
 	public void getUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
 		handle(req, res, String.class, (messages, transformer, locale) -> {
@@ -116,13 +116,13 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/user/{username}/roles")
+	@GetMapping("/rest/user/{username}/roles")
 	public void getUserRolesByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		getUserRoles(req, res, crm.findUserByUsername(username).getUserId());
 	}
 
-	@PutMapping("/api/users/{userId}/enable")
+	@PutMapping("/rest/users/{userId}/enable")
 	public void enableUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
 		handle(req, res, User.class, (messages, transformer, locale) -> {
@@ -131,13 +131,13 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/user/{username}/enable")
+	@PutMapping("/rest/user/{username}/enable")
 	public void enableUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		enableUser(req, res, crm.findUserByUsername(username).getUserId());
 	}
 
-	@PutMapping("/api/users/{userId}/disable")
+	@PutMapping("/rest/users/{userId}/disable")
 	public void disableUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") Identifier userId) throws IOException {
 		handle(req, res, User.class, (messages, transformer, locale) -> {
@@ -146,7 +146,7 @@ public class UsersController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/user/{username}/disable")
+	@PutMapping("/rest/user/{username}/disable")
 	public void disableUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		disableUser(req, res, crm.findUserByUsername(username).getUserId());

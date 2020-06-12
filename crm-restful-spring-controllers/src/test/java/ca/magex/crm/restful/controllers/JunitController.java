@@ -24,7 +24,7 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class JunitController extends AbstractCrmController {
 
-	@PostMapping("/api/junit/identifier/{key}")
+	@PostMapping("/rest/junit/identifier/{key}")
 	public void getIdentifier(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -35,7 +35,7 @@ public class JunitController extends AbstractCrmController {
 		});
 	}
 
-	@PostMapping("/api/junit/strings/{key}")
+	@PostMapping("/rest/junit/strings/{key}")
 	public void getStrings(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -46,7 +46,7 @@ public class JunitController extends AbstractCrmController {
 		});
 	}
 
-	@PostMapping("/api/junit/object/{key}")
+	@PostMapping("/rest/junit/object/{key}")
 	public void getObject(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -57,7 +57,7 @@ public class JunitController extends AbstractCrmController {
 		});
 	}
 
-	@PostMapping("/api/junit/400")
+	@PostMapping("/rest/junit/400")
 	public void createBadRequestException(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			throw new BadRequestException("JUnit bad request denied", new Identifier("junit"), "error", "path", 
@@ -65,21 +65,21 @@ public class JunitController extends AbstractCrmController {
 		});
 	}
 
-	@PostMapping("/api/junit/403")
+	@PostMapping("/rest/junit/403")
 	public void createPermissionDeniedException(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			throw new PermissionDeniedException("JUnit permission denied");
 		});
 	}
 
-	@PostMapping("/api/junit/404")
+	@PostMapping("/rest/junit/404")
 	public void createItemNotFoundException(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			throw new ItemNotFoundException("JUnit item not found");
 		});
 	}
 	
-	@PostMapping("/api/junit/500")
+	@PostMapping("/rest/junit/500")
 	public void createException(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			throw new RuntimeException("Exception controller test");

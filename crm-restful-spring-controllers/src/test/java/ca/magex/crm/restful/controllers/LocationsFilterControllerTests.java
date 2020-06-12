@@ -63,7 +63,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultRoot() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations"))
+			.get("/rest/locations"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -100,7 +100,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultEnglish() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -138,7 +138,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultFrench() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -176,7 +176,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByDisplayNameCaseAccentInsensitive() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.queryParam("displayName", "CAN")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -216,7 +216,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByInactifDesc() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.queryParam("status", "Inactif")
 			.queryParam("order", "displayName")
 			.queryParam("direction", "desc")
@@ -251,7 +251,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByActiveDesc() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.queryParam("organization", org1.toString())
 			.queryParam("status", "active")
 			.queryParam("order", "displayName")
@@ -301,7 +301,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByOrganization() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.queryParam("organization", org2.toString())
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())

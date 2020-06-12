@@ -40,7 +40,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 	public void testCreateGroup() throws Exception {
 		// Get the initial list of groups to make sure they are blank
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -53,7 +53,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(0, json.getArray("content").size());
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/groups")
+			.post("/rest/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "GRP")
@@ -68,7 +68,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		Identifier groupId = new Identifier(json.getString("groupId"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups/" + groupId)
+			.get("/rest/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -80,7 +80,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Group", json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups/" + groupId)
+			.get("/rest/groups/" + groupId)
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -91,7 +91,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Groupe", json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups/" + groupId))
+			.get("/rest/groups/" + groupId))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -100,7 +100,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("GRP", json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -119,7 +119,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testCreateGroupEnglishNameTests() throws Exception {
 		JsonArray missing = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/groups")
+			.post("/rest/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "GRP")
@@ -135,7 +135,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Field is mandatory", missing.getObject(0).getString("reason"));
 			
 		JsonArray spaces = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/groups")
+			.post("/rest/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "GRP")
@@ -151,7 +151,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("An English description is required", spaces.getObject(0).getString("reason"));
 				
 		JsonArray classCast = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/groups")
+			.post("/rest/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "GRP")
@@ -167,7 +167,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Invalid format", classCast.getObject(0).getString("reason"));
 					
 		JsonArray maxLength = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/groups")
+			.post("/rest/groups")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "GRP")
@@ -188,7 +188,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createGroup(l));
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("order", "englishName")
 			.queryParam("direction", "asc")
 			.header("Locale", Lang.ENGLISH))
@@ -209,7 +209,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 	public void testSecondPageEnglishSortGroup() throws Exception {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createGroup(l));
 		JsonObject page2 = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("page", "2")
 			.queryParam("limit", "5")
 			.queryParam("order", "frenchName")
@@ -242,7 +242,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		);
 		
 		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -266,7 +266,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		crm.disableGroup(crm.findGroupByCode("H").getGroupId());
 		
 		JsonObject inativeCodeDesc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("status", "inactive")
 			.queryParam("order", "code")
 			.queryParam("direction", "desc"))
@@ -288,7 +288,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		Identifier groupId = crm.createGroup(new Localized("ORIG", "Original", "First")).getGroupId();
 		
 		JsonObject orig = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups/" + groupId)
+			.get("/rest/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -299,7 +299,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Original", orig.getString("name"));
 
 		JsonObject updated = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/groups/" + groupId)
+			.patch("/rest/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "ORIG")
@@ -315,7 +315,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Updated", updated.getString("name"));
 		
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups/" + groupId)
+			.get("/rest/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -326,7 +326,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Updated", english.getString("name"));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups/" + groupId)
+			.get("/rest/groups/" + groupId)
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -337,7 +337,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Second", french.getString("name"));
 		
 		JsonArray errors = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/groups/" + groupId)
+			.patch("/rest/groups/" + groupId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "IMMUTABLE")
@@ -359,7 +359,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createGroup(l));
 		
 		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("name", "re")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -375,7 +375,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 
 		JsonObject englishNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("englishName", "re")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -389,7 +389,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createGroup(l));
 		
 		JsonObject inativeFrenchAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("name", "ou")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -405,7 +405,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 		
 		JsonObject frenchNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("frenchName", "ou")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -419,7 +419,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createGroup(l));
 		
 		JsonObject activeCodeAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("name", "A"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -434,7 +434,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 		
 		JsonObject codeFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/groups")
+			.get("/rest/groups")
 			.queryParam("code", "A"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -448,7 +448,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findGroup(groupId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/disable")
+			.put("/rest/groups/" + groupId + "/disable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -460,7 +460,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findGroup(groupId).getStatus());
 
 		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/disable")
+			.put("/rest/groups/" + groupId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -475,7 +475,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findGroup(groupId).getStatus());
 
 		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/disable")
+			.put("/rest/groups/" + groupId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "Test")
@@ -490,7 +490,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findGroup(groupId).getStatus());
 
 		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/disable")
+			.put("/rest/groups/" + groupId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -505,7 +505,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findGroup(groupId).getStatus());
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/enable")
+			.put("/rest/groups/" + groupId + "/enable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -517,7 +517,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findGroup(groupId).getStatus());
 		
 		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/enable")
+			.put("/rest/groups/" + groupId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -532,7 +532,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findGroup(groupId).getStatus());
 		
 		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/enable")
+			.put("/rest/groups/" + groupId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "test")
@@ -547,7 +547,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findGroup(groupId).getStatus());
 	
 		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/groups/" + groupId + "/enable")
+			.put("/rest/groups/" + groupId + "/enable")
 			.header("Locale", Lang.FRENCH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -568,7 +568,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		
 		// Get the initial list of groups to make sure they are blank
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -581,7 +581,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(0, json.getArray("content").size());
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/roles")
+			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", groupId.toString())
@@ -597,7 +597,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		Identifier roleId = new Identifier(json.getString("roleId"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles/" + roleId)
+			.get("/rest/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -609,7 +609,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("System Administrator", json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles/" + roleId)
+			.get("/rest/roles/" + roleId)
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -620,7 +620,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Adminstrator du système", json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles/" + roleId))
+			.get("/rest/roles/" + roleId))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -630,7 +630,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("SYS_ADMIN", json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -651,7 +651,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		Identifier groupId = crm.createGroup(SYS).getGroupId();
 		
 		JsonArray missing = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/roles")
+			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", groupId.toString())
@@ -668,7 +668,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Field is mandatory", missing.getObject(0).getString("reason"));
 			
 		JsonArray spaces = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/roles")
+			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", groupId.toString())
@@ -685,7 +685,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("An English description is required", spaces.getObject(0).getString("reason"));
 				
 		JsonArray classCast = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/roles")
+			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", groupId.toString())
@@ -702,7 +702,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Invalid format", classCast.getObject(0).getString("reason"));
 					
 		JsonArray maxLength = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/roles")
+			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", groupId.toString())
@@ -725,7 +725,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("order", "englishName")
 			.queryParam("direction", "asc")
 			.header("Locale", Lang.ENGLISH))
@@ -748,7 +748,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
 		
 		JsonObject page2 = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("page", "2")
 			.queryParam("limit", "5")
 			.queryParam("order", "frenchName")
@@ -783,7 +783,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		);
 		
 		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -810,7 +810,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		crm.createRole(orgId, ORG_ASSISTANT).getRoleId();
 		
 		JsonObject all = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -818,7 +818,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(4, all.getInt("total"));
 		
 		JsonObject inactive = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -827,7 +827,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(1, inactive.getInt("total"));
 			
 		JsonObject activeOrg = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("groupId", orgId.toString())
 			.queryParam("status", "Actif")
 			.header("Locale", Lang.FRENCH))
@@ -837,7 +837,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(2, activeOrg.getInt("total"));
 				
 		JsonObject inactiveOrg = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("groupId", orgId.toString())
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
@@ -847,7 +847,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(0, inactiveOrg.getInt("total"));
 					
 		JsonObject allOrg = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("groupId", orgId.toString())
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -866,7 +866,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		crm.disableRole(crm.findRoleByCode("H").getRoleId());
 		
 		JsonObject inativeCodeDesc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("status", "inactive")
 			.queryParam("order", "code")
 			.queryParam("direction", "desc"))
@@ -889,7 +889,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		Identifier roleId = crm.createRole(groupId, new Localized("ORIG", "Original", "First")).getRoleId();
 		
 		JsonObject orig = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles/" + roleId)
+			.get("/rest/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -900,7 +900,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Original", orig.getString("name"));
 
 		JsonObject updated = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/roles/" + roleId)
+			.patch("/rest/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "ORIG")
@@ -916,7 +916,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Updated", updated.getString("name"));
 		
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles/" + roleId)
+			.get("/rest/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -927,7 +927,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Updated", english.getString("name"));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles/" + roleId)
+			.get("/rest/roles/" + roleId)
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -938,7 +938,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals("Second", french.getString("name"));
 		
 		JsonArray errors = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/roles/" + roleId)
+			.patch("/rest/roles/" + roleId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("code", "IMMUTABLE")
@@ -961,7 +961,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
 		
 		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("name", "re")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -977,7 +977,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 
 		JsonObject englishNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("englishName", "re")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -992,7 +992,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
 		
 		JsonObject inativeFrenchAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("name", "ou")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -1008,7 +1008,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 		
 		JsonObject frenchNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("frenchName", "ou")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -1023,7 +1023,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
 		
 		JsonObject activeCodeAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("name", "A"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -1038,7 +1038,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 		
 		JsonObject codeFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/roles")
+			.get("/rest/roles")
 			.queryParam("code", "A"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -1053,7 +1053,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findRole(roleId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/disable")
+			.put("/rest/roles/" + roleId + "/disable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -1065,7 +1065,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findRole(roleId).getStatus());
 
 		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/disable")
+			.put("/rest/roles/" + roleId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -1080,7 +1080,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findRole(roleId).getStatus());
 
 		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/disable")
+			.put("/rest/roles/" + roleId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "Test")
@@ -1095,7 +1095,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findRole(roleId).getStatus());
 
 		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/disable")
+			.put("/rest/roles/" + roleId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -1110,7 +1110,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findRole(roleId).getStatus());
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/enable")
+			.put("/rest/roles/" + roleId + "/enable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -1122,7 +1122,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findRole(roleId).getStatus());
 		
 		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/enable")
+			.put("/rest/roles/" + roleId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -1137,7 +1137,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findRole(roleId).getStatus());
 		
 		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/enable")
+			.put("/rest/roles/" + roleId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "test")
@@ -1152,7 +1152,7 @@ public class PermissionsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findRole(roleId).getStatus());
 	
 		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/roles/" + roleId + "/enable")
+			.put("/rest/roles/" + roleId + "/enable")
 			.header("Locale", Lang.FRENCH)
 			.content(new JsonObject()
 				.with("confirm", true)

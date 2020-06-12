@@ -27,7 +27,7 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class OrganizationsController extends AbstractCrmController {
 
-	@GetMapping("/api/organizations")
+	@GetMapping("/rest/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
@@ -46,7 +46,7 @@ public class OrganizationsController extends AbstractCrmController {
 		return new OrganizationsFilter(displayName, status, group);
 	}
 
-	@PostMapping("/api/organizations")
+	@PostMapping("/rest/organizations")
 	public void createOrganization(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
@@ -57,7 +57,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/organizations/{organizationId}")
+	@GetMapping("/rest/organizations/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
@@ -65,7 +65,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/api/organizations/{organizationId}")
+	@PatchMapping("/rest/organizations/{organizationId}")
 	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
@@ -84,7 +84,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/organizations/{organizationId}/summary")
+	@GetMapping("/rest/organizations/{organizationId}/summary")
 	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
@@ -92,7 +92,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/organizations/{organizationId}/mainLocation")
+	@GetMapping("/rest/organizations/{organizationId}/mainLocation")
 	public void getOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -100,7 +100,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/organizations/{organizationId}/mainContact")
+	@GetMapping("/rest/organizations/{organizationId}/mainContact")
 	public void getOrganizationMainContact(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
@@ -108,7 +108,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/organizations/{organizationId}/enable")
+	@PutMapping("/rest/organizations/{organizationId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
@@ -117,7 +117,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/organizations/{organizationId}/disable")
+	@PutMapping("/rest/organizations/{organizationId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {

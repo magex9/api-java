@@ -24,7 +24,7 @@ public class LookupLanguageControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListRootLanguages() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/languages"))
+			.get("/rest/lookup/languages"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -38,7 +38,7 @@ public class LookupLanguageControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindRootLanguages() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/languages/en"))
+			.get("/rest/lookup/languages/en"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -48,7 +48,7 @@ public class LookupLanguageControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishLanguages() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/languages")
+			.get("/rest/lookup/languages")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -63,7 +63,7 @@ public class LookupLanguageControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindEnglishLanguage() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/languages/en")
+			.get("/rest/lookup/languages/en")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -74,7 +74,7 @@ public class LookupLanguageControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchLanguages() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/languages")
+			.get("/rest/lookup/languages")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -89,7 +89,7 @@ public class LookupLanguageControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindFrenchLanguage() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/languages/en")
+			.get("/rest/lookup/languages/en")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())

@@ -30,7 +30,7 @@ public class InitializationController extends AbstractCrmController {
 	@Value("${server.servlet.context-path:/}") 
 	private String contextPath;
 
-	@GetMapping("/openapi.json")
+	@GetMapping("/rest")
 	public void getJsonConfig(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		res.setStatus(200);
 		try (InputStream is = getClass().getResource("/crm.json").openStream()) {
@@ -43,14 +43,14 @@ public class InitializationController extends AbstractCrmController {
 		}
 	}
 	
-	@GetMapping("/initialized")
+	@GetMapping("/rest/initialized")
 	public void initialized(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		res.setStatus(200);
 		res.setContentType(getContentType(req));
 		res.getWriter().write(JsonFormatter.formatted(new JsonBoolean(crm.isInitialized())));
 	}
 	
-	@PostMapping("/initialize")
+	@PostMapping("/rest/initialize")
 	public void initialize(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		if (!crm.isInitialized()) {
 			JsonObject body = extractBody(req);

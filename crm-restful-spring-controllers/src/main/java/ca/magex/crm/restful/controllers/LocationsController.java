@@ -25,7 +25,7 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class LocationsController extends AbstractCrmController {
 
-	@GetMapping("/api/locations")
+	@GetMapping("/rest/locations")
 	public void findLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
@@ -40,7 +40,7 @@ public class LocationsController extends AbstractCrmController {
 //	private JsonArray formatLocationsActions(Identifier organizationId) {
 //		List<JsonElement> actions = new ArrayList<JsonElement>();
 //		if (crm.canCreateLocationForOrganization(organizationId)) {
-//			actions.add(action("create", "Create Location", "post", "/api/locations"));
+//			actions.add(action("create", "Create Location", "post", "/rest/locations"));
 //		}
 //		return new JsonArray(actions);
 //		
@@ -49,15 +49,15 @@ public class LocationsController extends AbstractCrmController {
 //	private JsonArray formatLocationActions(Identifier locationId) {
 //		List<JsonElement> actions = new ArrayList<JsonElement>();
 //		if (crm.canUpdateLocation(locationId)) {
-//			actions.add(action("edit", "Edit", "get", "/api/locations/" + locationId + "/edit"));
+//			actions.add(action("edit", "Edit", "get", "/rest/locations/" + locationId + "/edit"));
 //		} else if (crm.canViewLocation(locationId)) {
-//			actions.add(action("view", "View", "get", "/api/locations/" + locationId));
+//			actions.add(action("view", "View", "get", "/rest/locations/" + locationId));
 //		}
 //		if (crm.canDisableLocation(locationId)) {
-//			actions.add(action("disable", "Inactivate", "put", "/api/locations/" + locationId + "/disable"));
+//			actions.add(action("disable", "Inactivate", "put", "/rest/locations/" + locationId + "/disable"));
 //		}
 //		if (crm.canEnableLocation(locationId)) {
-//			actions.add(action("enable", "Activate", "put", "/api/locations/" + locationId + "/enable"));
+//			actions.add(action("enable", "Activate", "put", "/rest/locations/" + locationId + "/enable"));
 //		}
 //		return new JsonArray(actions);
 //	}
@@ -70,7 +70,7 @@ public class LocationsController extends AbstractCrmController {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 
-	@PostMapping("/api/locations")
+	@PostMapping("/rest/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
@@ -83,7 +83,7 @@ public class LocationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/locations/{locationId}")
+	@GetMapping("/rest/locations/{locationId}")
 	public void getLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -91,7 +91,7 @@ public class LocationsController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/api/locations/{locationId}")
+	@PatchMapping("/rest/locations/{locationId}")
 	public void updateLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -107,7 +107,7 @@ public class LocationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/locations/{locationId}/summary")
+	@GetMapping("/rest/locations/{locationId}/summary")
 	public void getLocationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
@@ -115,7 +115,7 @@ public class LocationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/locations/{locationId}/address")
+	@GetMapping("/rest/locations/{locationId}/address")
 	public void getLocationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
 		handle(req, res, MailingAddress.class, (messages, transformer, locale) -> {
@@ -123,7 +123,7 @@ public class LocationsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/locations/{locationId}/enable")
+	@PutMapping("/rest/locations/{locationId}/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
@@ -132,7 +132,7 @@ public class LocationsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/locations/{locationId}/disable")
+	@PutMapping("/rest/locations/{locationId}/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") Identifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
