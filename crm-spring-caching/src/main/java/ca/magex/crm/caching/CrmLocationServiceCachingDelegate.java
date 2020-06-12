@@ -18,9 +18,10 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.caching.config.CachingConfig;
 
-@Service("LocationServiceCachingDelegate")
-public class LocationServiceCachingDelegate implements CrmLocationService {
+@Service("CrmLocationServiceCachingDelegate")
+public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 
 	private CrmLocationService delegate;
 	private CacheManager cacheManager;
@@ -31,15 +32,15 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public LocationServiceCachingDelegate(CrmLocationService delegate, CacheManager cacheManager) {
+	public CrmLocationServiceCachingDelegate(CrmLocationService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "locations", key = "'Details_'.concat(#result.locationId)", unless = "#result == null"),
-			@CachePut(cacheNames = "locations", key = "'Summary_'.concat(#result.locationId)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null")
 	})
 	public LocationDetails createLocation(LocationDetails prototype) {
 		return delegate.createLocation(prototype);
@@ -47,31 +48,31 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "locations", key = "'Details_'.concat(#result.locationId)", unless = "#result == null"),
-			@CachePut(cacheNames = "locations", key = "'Summary_'.concat(#result.locationId)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null")
 	})
 	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) {
 		return delegate.createLocation(organizationId, displayName, reference, address);
 	}
 
 	@Override
-	@CachePut(cacheNames = "locations", key = "'Summary_'.concat(#locationId)")
-	@CacheEvict(cacheNames = "locations", key = "'Details_'.concat(#locationId)")
+	@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
+	@CacheEvict(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)")
 	public LocationSummary enableLocation(Identifier locationId) {
 		return delegate.enableLocation(locationId);
 	}
 
 	@Override
-	@CachePut(cacheNames = "locations", key = "'Summary_'.concat(#locationId)")
-	@CacheEvict(cacheNames = "locations", key = "'Details_'.concat(#locationId)")
+	@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
+	@CacheEvict(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)")
 	public LocationSummary disableLocation(Identifier locationId) {
 		return delegate.disableLocation(locationId);
 	}
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "locations", key = "'Details_'.concat(#locationId)"),
-			@CachePut(cacheNames = "locations", key = "'Summary_'.concat(#locationId)")
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
 	})
 	public LocationDetails updateLocationName(Identifier locationId, String displaysName) {
 		return delegate.updateLocationName(locationId, displaysName);
@@ -79,21 +80,21 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "locations", key = "'Details_'.concat(#locationId)"),
-			@CachePut(cacheNames = "locations", key = "'Summary_'.concat(#locationId)")
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
 	})
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		return delegate.updateLocationAddress(locationId, address);
 	}
 
 	@Override
-	@Cacheable(cacheNames = "locations", key = "'Summary_'.concat(#locationId)")
+	@Cacheable(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
 	public LocationSummary findLocationSummary(Identifier locationId) {
 		return delegate.findLocationSummary(locationId);
 	}
 
 	@Override
-	@Cacheable(cacheNames = "locations", key = "'Details_'.concat(#locationId)")
+	@Cacheable(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)")
 	public LocationDetails findLocationDetails(Identifier locationId) {
 		return delegate.findLocationDetails(locationId);
 	}
@@ -106,7 +107,7 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		FilteredPage<LocationDetails> page = delegate.findLocationDetails(filter, paging);
-		Cache locationsCache = cacheManager.getCache("locations");
+		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((details) -> {
 			locationsCache.putIfAbsent("Details_" + details.getLocationId(), details);
 			locationsCache.putIfAbsent("Summary_" + details.getLocationId(), details);
@@ -117,7 +118,7 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {
 		FilteredPage<LocationDetails> page = delegate.findLocationDetails(filter);
-		Cache locationsCache = cacheManager.getCache("locations");
+		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((details) -> {
 			locationsCache.putIfAbsent("Details_" + details.getLocationId(), details);
 			locationsCache.putIfAbsent("Summary_" + details.getLocationId(), details);
@@ -128,7 +129,7 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		FilteredPage<LocationSummary> page = delegate.findLocationSummaries(filter, paging);
-		Cache locationsCache = cacheManager.getCache("locations");
+		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((summary) -> {
 			locationsCache.putIfAbsent("Summary_" + summary.getLocationId(), summary);
 		});
@@ -138,7 +139,7 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {
 		FilteredPage<LocationSummary> page = delegate.findLocationSummaries(filter);
-		Cache locationsCache = cacheManager.getCache("locations");
+		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((summary) -> {
 			locationsCache.putIfAbsent("Summary_" + summary.getLocationId(), summary);
 		});
@@ -148,7 +149,7 @@ public class LocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(Identifier organizationId) {
 		FilteredPage<LocationSummary> page = delegate.findActiveLocationSummariesForOrg(organizationId);
-		Cache locationsCache = cacheManager.getCache("locations");
+		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((summary) -> {
 			locationsCache.putIfAbsent("Summary_" + summary.getLocationId(), summary);
 		});

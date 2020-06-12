@@ -15,9 +15,10 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.caching.config.CachingConfig;
 
-@Service("UserServiceCachingDelegate")
-public class UserServiceCachingDelegate implements CrmUserService {
+@Service("CrmUserServiceCachingDelegate")
+public class CrmUserServiceCachingDelegate implements CrmUserService {
 
 	private CrmUserService delegate;
 	private CacheManager cacheManager;
@@ -28,15 +29,15 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public UserServiceCachingDelegate(CrmUserService delegate, CacheManager cacheManager) {
+	public CrmUserServiceCachingDelegate(CrmUserService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "users", key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
-			@CachePut(cacheNames = "users", key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
 	})
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		return delegate.createUser(personId, username, roles);
@@ -44,8 +45,8 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "users", key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
-			@CachePut(cacheNames = "users", key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#result.userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
 	})
 	public User createUser(User prototype) {
 		return delegate.createUser(prototype);
@@ -53,8 +54,8 @@ public class UserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "users", key = "'Id_'.concat(#userId)", unless = "#result == null"),
-			@CachePut(cacheNames = "users", key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
 	})
 	public User enableUser(Identifier userId) {
 		return delegate.enableUser(userId);
@@ -62,8 +63,8 @@ public class UserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "users", key = "'Id_'.concat(#userId)", unless = "#result == null"),
-			@CachePut(cacheNames = "users", key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
 	})
 	public User disableUser(Identifier userId) {
 		return delegate.disableUser(userId);
@@ -71,8 +72,8 @@ public class UserServiceCachingDelegate implements CrmUserService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "users", key = "'Id_'.concat(#userId)", unless = "#result == null"),
-			@CachePut(cacheNames = "users", key = "'Username_'.concat(#result.username)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#result.username)", unless = "#result == null")
 	})
 	public User updateUserRoles(Identifier userId, List<String> roles) {
 		return delegate.updateUserRoles(userId, roles);
@@ -89,24 +90,24 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	@Cacheable(cacheNames = "users", key = "'Id_'.concat(#userId)")			
+	@Cacheable(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)")			
 	public User findUser(Identifier userId) {
 		User user = delegate.findUser(userId);
 		/* programmatically add a username entry to the cache */
 		if (user != null) {
-			Cache usersCache = cacheManager.getCache("users");
+			Cache usersCache = cacheManager.getCache(CachingConfig.Caches.Users);
 			usersCache.putIfAbsent("Username_" + user.getUsername(), user);
 		}
 		return user;
 	}
 
 	@Override
-	@Cacheable(cacheNames = "users", key = "'Username_'.concat(#username)")
+	@Cacheable(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#username)")
 	public User findUserByUsername(String username) {
 		/* programmatically add an id entry to the cache */
 		User user = delegate.findUserByUsername(username);
 		if (user != null) {
-			Cache usersCache = cacheManager.getCache("users");
+			Cache usersCache = cacheManager.getCache(CachingConfig.Caches.Users);
 			usersCache.putIfAbsent("Id_" + user.getUserId(), user);
 		}
 		return user;
@@ -120,7 +121,7 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	@Override
 	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		FilteredPage<User> page = delegate.findUsers(filter, paging);
-		Cache usersCache = cacheManager.getCache("users");
+		Cache usersCache = cacheManager.getCache(CachingConfig.Caches.Users);
 		page.forEach((user) -> {
 			usersCache.putIfAbsent("Id_" + user.getUserId(), user);
 			usersCache.putIfAbsent("Username_" + user.getUsername(), user);
@@ -131,7 +132,7 @@ public class UserServiceCachingDelegate implements CrmUserService {
 	@Override
 	public FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
 		FilteredPage<User> page = delegate.findActiveUserForOrg(organizationId);
-		Cache usersCache = cacheManager.getCache("users");
+		Cache usersCache = cacheManager.getCache(CachingConfig.Caches.Users);
 		page.forEach((user) -> {
 			usersCache.putIfAbsent("Id_" + user.getUserId(), user);
 			usersCache.putIfAbsent("Username_" + user.getUsername(), user);

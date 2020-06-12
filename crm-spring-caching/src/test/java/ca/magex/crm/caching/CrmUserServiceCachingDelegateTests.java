@@ -35,11 +35,11 @@ import ca.magex.crm.test.config.TestConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
-public class UserServiceCachingDelegateTests {
+public class CrmUserServiceCachingDelegateTests {
 
 	@Autowired private CrmUserService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("UserServiceCachingDelegate") private CrmUserService userService;
+	@Autowired @Qualifier("CrmUserServiceCachingDelegate") private CrmUserService userService;
 
 	@Before
 	public void reset() {

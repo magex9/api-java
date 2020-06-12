@@ -36,11 +36,11 @@ import ca.magex.crm.test.config.TestConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
-public class PermissionServiceCachingDelegateTests {
+public class CrmPermissionServiceCachingDelegateTests {
 
 	@Autowired private CrmPermissionService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("PermissionServiceCachingDelegate") private CrmPermissionService permissionService;
+	@Autowired @Qualifier("CrmPermissionServiceCachingDelegate") private CrmPermissionService permissionService;
 
 	@Before
 	public void reset() {
@@ -202,6 +202,30 @@ public class PermissionServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findGroup(Mockito.any(Identifier.class));
 		Assert.assertEquals(group, permissionService.findGroupByCode(group.getCode()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findGroupByCode(Mockito.anyString());
+		
+		/* update non existent group (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateGroupName(Mockito.eq(new Identifier("JJ")), Mockito.any());
+		Assert.assertNull(permissionService.updateGroupName(new Identifier("JJ"), new Localized("A", "B", "C")));
+		Assert.assertNull(permissionService.findGroup(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findGroup(Mockito.eq(new Identifier("JJ")));
+		
+		/* disable non existent group (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).disableGroup(Mockito.eq(new Identifier("KK")));
+		Assert.assertNull(permissionService.disableGroup(new Identifier("KK")));
+		Assert.assertNull(permissionService.findGroup(new Identifier("KK")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findGroup(Mockito.eq(new Identifier("KK")));
+		
+		/* enable non existent group (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).enableGroup(Mockito.eq(new Identifier("LL")));
+		Assert.assertNull(permissionService.enableGroup(new Identifier("LL")));
+		Assert.assertNull(permissionService.findGroup(new Identifier("LL")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findGroup(Mockito.eq(new Identifier("LL")));
 	}
 
 	@Test
@@ -396,7 +420,7 @@ public class PermissionServiceCachingDelegateTests {
 
 		/* clear cache, disable and ensure cached */
 		cacheManager.getCache("roles").clear();
-		role = permissionService.disableRole(role.getGroupId());
+		role = permissionService.disableRole(role.getRoleId());
 		Assert.assertEquals(role, permissionService.findRole(role.getRoleId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findRole(Mockito.any(Identifier.class));
 		Assert.assertEquals(role, permissionService.findRoleByCode(role.getCode()));
@@ -404,11 +428,35 @@ public class PermissionServiceCachingDelegateTests {
 
 		/* clear cache, disable and ensure cached */
 		cacheManager.getCache("roles").clear();
-		role = permissionService.enableRole(role.getGroupId());
+		role = permissionService.enableRole(role.getRoleId());
 		Assert.assertEquals(role, permissionService.findRole(role.getRoleId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findRole(Mockito.any(Identifier.class));
 		Assert.assertEquals(role, permissionService.findRoleByCode(role.getCode()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findRoleByCode(Mockito.anyString());
+		
+		/* update non existent role (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateRoleName(Mockito.eq(new Identifier("JJ")), Mockito.any());
+		Assert.assertNull(permissionService.updateRoleName(new Identifier("JJ"), new Localized("A", "B", "C")));
+		Assert.assertNull(permissionService.findRole(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findRole(Mockito.eq(new Identifier("JJ")));
+		
+		/* disable non existent group (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).disableRole(Mockito.eq(new Identifier("KK")));
+		Assert.assertNull(permissionService.disableRole(new Identifier("KK")));
+		Assert.assertNull(permissionService.findRole(new Identifier("KK")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findRole(Mockito.eq(new Identifier("KK")));
+		
+		/* enable non existent group (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).enableRole(Mockito.eq(new Identifier("LL")));
+		Assert.assertNull(permissionService.enableRole(new Identifier("LL")));
+		Assert.assertNull(permissionService.findRole(new Identifier("LL")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findRole(Mockito.eq(new Identifier("LL")));
 	}
 
 	@Test

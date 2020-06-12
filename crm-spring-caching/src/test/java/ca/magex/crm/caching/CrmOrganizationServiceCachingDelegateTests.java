@@ -34,11 +34,11 @@ import ca.magex.crm.test.config.TestConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
-public class OrganizationServiceCachingDelegateTests {
+public class CrmOrganizationServiceCachingDelegateTests {
 
 	@Autowired private CrmOrganizationService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("OrganizationServiceCachingDelegate") private CrmOrganizationService organizationService;
+	@Autowired @Qualifier("CrmOrganizationServiceCachingDelegate") private CrmOrganizationService organizationService;
 
 	@Before
 	public void reset() {
@@ -154,6 +154,14 @@ public class OrganizationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findOrganizationDetails(Mockito.any(Identifier.class));
 		orgDetails = organizationService.findOrganizationDetails(orgDetails.getOrganizationId());
 		BDDMockito.verify(delegate, Mockito.times(1)).findOrganizationDetails(Mockito.any(Identifier.class));
+		
+		/* disable non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).disableOrganization(new Identifier("JJ"));
+		Assert.assertNull(organizationService.disableOrganization(new Identifier("JJ")));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(new Identifier("JJ"));
 	}
 
 	@Test
@@ -191,6 +199,14 @@ public class OrganizationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findOrganizationDetails(Mockito.any(Identifier.class));
 		orgDetails = organizationService.findOrganizationDetails(orgDetails.getOrganizationId());
 		BDDMockito.verify(delegate, Mockito.times(1)).findOrganizationDetails(Mockito.any(Identifier.class));
+		
+		/* enable non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).enableOrganization(new Identifier("JJ"));
+		Assert.assertNull(organizationService.enableOrganization(new Identifier("JJ")));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(new Identifier("JJ"));
 	}
 
 	@Test
@@ -256,6 +272,38 @@ public class OrganizationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(Mockito.any(Identifier.class));
+		
+		/* update non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateOrganizationDisplayName(Mockito.eq(new Identifier("JJ")), Mockito.any());
+		Assert.assertNull(organizationService.updateOrganizationDisplayName(new Identifier("JJ"), "Hello"));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(new Identifier("JJ"));
+		
+		/* update non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateOrganizationMainLocation(Mockito.eq(new Identifier("KK")), Mockito.any());
+		Assert.assertNull(organizationService.updateOrganizationMainLocation(new Identifier("KK"), new Identifier("123")));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("KK")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(new Identifier("KK"));
+		
+		/* update non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateOrganizationMainContact(Mockito.eq(new Identifier("LL")), Mockito.any());
+		Assert.assertNull(organizationService.updateOrganizationMainContact(new Identifier("LL"), new Identifier("123")));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("LL")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(new Identifier("LL"));
+		
+		/* update non existent organization (should cache the fact that it doesn't exist for the summary) */
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).updateOrganizationGroups(Mockito.eq(new Identifier("MM")), Mockito.any());
+		Assert.assertNull(organizationService.updateOrganizationGroups(new Identifier("MM"), List.of("A")));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("MM")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationSummary(new Identifier("MM"));
 	}
 	
 	@Test

@@ -19,9 +19,10 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.caching.config.CachingConfig;
 
-@Service("PersonServiceCachingDelegate")
-public class PersonServiceCachingDelegate implements CrmPersonService {
+@Service("CrmPersonServiceCachingDelegate")
+public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 
 	private CrmPersonService delegate;
 	private CacheManager cacheManager;
@@ -32,15 +33,15 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public PersonServiceCachingDelegate(CrmPersonService delegate, CacheManager cacheManager) {
+	public CrmPersonServiceCachingDelegate(CrmPersonService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
-			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
 	})
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		return delegate.createPerson(organizationId, name, address, communication, position);
@@ -48,31 +49,31 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
-			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#result.personId)", unless = "#result == null"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#result.personId)", unless = "#result == null")
 	})
 	public PersonDetails createPerson(PersonDetails prototype) {
 		return delegate.createPerson(prototype);
 	}
 
 	@Override
-	@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
-	@CacheEvict(cacheNames = "persons", key = "'Details_'.concat(#personId)")
+	@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
+	@CacheEvict(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)")
 	public PersonSummary enablePerson(Identifier personId) {
 		return delegate.enablePerson(personId);
 	}
 
 	@Override
-	@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
-	@CacheEvict(cacheNames = "persons", key = "'Details_'.concat(#personId)")
+	@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
+	@CacheEvict(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)")
 	public PersonSummary disablePerson(Identifier personId) {
 		return delegate.disablePerson(personId);
 	}
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#personId)"),
-			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
 	})
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
 		return delegate.updatePersonName(personId, name);
@@ -80,8 +81,8 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#personId)"),
-			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
 	})
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
 		return delegate.updatePersonAddress(personId, address);
@@ -89,8 +90,8 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#personId)"),
-			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
 	})
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
 		return delegate.updatePersonCommunication(personId, communication);
@@ -98,21 +99,21 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 
 	@Override
 	@Caching(put = {
-			@CachePut(cacheNames = "persons", key = "'Details_'.concat(#personId)"),
-			@CachePut(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)"),
+			@CachePut(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
 	})
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
 		return delegate.updatePersonBusinessPosition(personId, position);
 	}
 
 	@Override
-	@Cacheable(cacheNames = "persons", key = "'Summary_'.concat(#personId)")
+	@Cacheable(cacheNames = CachingConfig.Caches.Persons, key = "'Summary_'.concat(#personId)")
 	public PersonSummary findPersonSummary(Identifier personId) {
 		return delegate.findPersonSummary(personId);
 	}
 
 	@Override
-	@Cacheable(cacheNames = "persons", key = "'Details_'.concat(#personId)")
+	@Cacheable(cacheNames = CachingConfig.Caches.Persons, key = "'Details_'.concat(#personId)")
 	public PersonDetails findPersonDetails(Identifier personId) {
 		return delegate.findPersonDetails(personId);
 	}
@@ -125,7 +126,7 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		FilteredPage<PersonDetails> page = delegate.findPersonDetails(filter, paging);
-		Cache personsCache = cacheManager.getCache("persons");
+		Cache personsCache = cacheManager.getCache(CachingConfig.Caches.Persons);
 		page.forEach((details) -> {
 			personsCache.putIfAbsent("Details_" + details.getPersonId(), details);
 			personsCache.putIfAbsent("Summary_" + details.getPersonId(), details);
@@ -136,7 +137,7 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter) {
 		FilteredPage<PersonDetails> page = delegate.findPersonDetails(filter);
-		Cache personsCache = cacheManager.getCache("persons");
+		Cache personsCache = cacheManager.getCache(CachingConfig.Caches.Persons);
 		page.forEach((details) -> {
 			personsCache.putIfAbsent("Details_" + details.getPersonId(), details);
 			personsCache.putIfAbsent("Summary_" + details.getPersonId(), details);
@@ -147,7 +148,7 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		FilteredPage<PersonSummary> page = delegate.findPersonSummaries(filter, paging);
-		Cache personsCache = cacheManager.getCache("persons");
+		Cache personsCache = cacheManager.getCache(CachingConfig.Caches.Persons);
 		page.forEach((summary) -> {
 			personsCache.putIfAbsent("Summary_" + summary.getPersonId(), summary);
 		});
@@ -157,7 +158,7 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter) {
 		FilteredPage<PersonSummary> page = delegate.findPersonSummaries(filter);
-		Cache personsCache = cacheManager.getCache("persons");
+		Cache personsCache = cacheManager.getCache(CachingConfig.Caches.Persons);
 		page.forEach((summary) -> {
 			personsCache.putIfAbsent("Summary_" + summary.getPersonId(), summary);
 		});
@@ -167,7 +168,7 @@ public class PersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public FilteredPage<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
 		FilteredPage<PersonSummary> page = delegate.findActivePersonSummariesForOrg(organizationId);
-		Cache personsCache = cacheManager.getCache("persons");
+		Cache personsCache = cacheManager.getCache(CachingConfig.Caches.Persons);
 		page.forEach((summary) -> {
 			personsCache.putIfAbsent("Summary_" + summary.getPersonId(), summary);
 		});
