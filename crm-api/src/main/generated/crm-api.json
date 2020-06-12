@@ -5446,594 +5446,6 @@
       "CrmPermissionPolicy"
     ]
   },
-  "ca.magex.crm.api.policies.CrmPolicyDelegate": {
-    "name": "CrmPolicyDelegate",
-    "imports": {
-      "Locale": "java.util",
-      "Identifier": "ca.magex.crm.api.system"
-    },
-    "type": "class",
-    "modifiers": ["public"],
-    "implements": ["CrmPolicies"],
-    "constructors": [{
-      "name": "CrmPolicyDelegate",
-      "modifiers": ["public"],
-      "parameters": [
-        {
-          "name": "lookupPolicy",
-          "type": "CrmLookupPolicy"
-        },
-        {
-          "name": "permissionPolicy",
-          "type": "CrmPermissionPolicy"
-        },
-        {
-          "name": "organizationPolicy",
-          "type": "CrmOrganizationPolicy"
-        },
-        {
-          "name": "locationPolicy",
-          "type": "CrmLocationPolicy"
-        },
-        {
-          "name": "personPolicy",
-          "type": "CrmPersonPolicy"
-        },
-        {
-          "name": "userPolicy",
-          "type": "CrmUserPolicy"
-        }
-      ],
-      "body": "{\n    this.lookupPolicy = lookupPolicy;\n    this.permissionPolicy = permissionPolicy;\n    this.organizationPolicy = organizationPolicy;\n    this.locationPolicy = locationPolicy;\n    this.personPolicy = personPolicy;\n    this.userPolicy = userPolicy;\n}"
-    }],
-    "fields": [
-      {
-        "name": "lookupPolicy",
-        "modifiers": ["private"],
-        "type": "CrmLookupPolicy"
-      },
-      {
-        "name": "permissionPolicy",
-        "modifiers": ["private"],
-        "type": "CrmPermissionPolicy"
-      },
-      {
-        "name": "organizationPolicy",
-        "modifiers": ["private"],
-        "type": "CrmOrganizationPolicy"
-      },
-      {
-        "name": "locationPolicy",
-        "modifiers": ["private"],
-        "type": "CrmLocationPolicy"
-      },
-      {
-        "name": "personPolicy",
-        "modifiers": ["private"],
-        "type": "CrmPersonPolicy"
-      },
-      {
-        "name": "userPolicy",
-        "modifiers": ["private"],
-        "type": "CrmUserPolicy"
-      }
-    ],
-    "methods": [
-      {
-        "name": "canCreateOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "body": "{\n    return organizationPolicy.canCreateOrganization();\n}"
-      },
-      {
-        "name": "canViewOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "organizationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return organizationPolicy.canViewOrganization(organizationId);\n}"
-      },
-      {
-        "name": "canUpdateOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "organizationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return organizationPolicy.canUpdateOrganization(organizationId);\n}"
-      },
-      {
-        "name": "canEnableOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "organizationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return organizationPolicy.canEnableOrganization(organizationId);\n}"
-      },
-      {
-        "name": "canDisableOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "organizationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return organizationPolicy.canDisableOrganization(organizationId);\n}"
-      },
-      {
-        "name": "canCreateLocationForOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "organizationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return locationPolicy.canCreateLocationForOrganization(organizationId);\n}"
-      },
-      {
-        "name": "canViewLocation",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "locationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return locationPolicy.canViewLocation(locationId);\n}"
-      },
-      {
-        "name": "canUpdateLocation",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "locationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return locationPolicy.canUpdateLocation(locationId);\n}"
-      },
-      {
-        "name": "canEnableLocation",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "locationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return locationPolicy.canEnableLocation(locationId);\n}"
-      },
-      {
-        "name": "canDisableLocation",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "locationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return locationPolicy.canDisableLocation(locationId);\n}"
-      },
-      {
-        "name": "canCreatePersonForOrganization",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "organizationId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return personPolicy.canCreatePersonForOrganization(organizationId);\n}"
-      },
-      {
-        "name": "canViewPerson",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "personId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return personPolicy.canViewPerson(personId);\n}"
-      },
-      {
-        "name": "canUpdatePerson",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "personId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return personPolicy.canUpdatePerson(personId);\n}"
-      },
-      {
-        "name": "canEnablePerson",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "personId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return personPolicy.canEnablePerson(personId);\n}"
-      },
-      {
-        "name": "canDisablePerson",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "personId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return personPolicy.canDisablePerson(personId);\n}"
-      },
-      {
-        "name": "canCreateUserForPerson",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "personId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return userPolicy.canCreateUserForPerson(personId);\n}"
-      },
-      {
-        "name": "canViewUser",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "username",
-          "type": "String"
-        }],
-        "body": "{\n    return userPolicy.canViewUser(username);\n}"
-      },
-      {
-        "name": "canViewUser",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "userId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return userPolicy.canViewUser(userId);\n}"
-      },
-      {
-        "name": "canUpdateUserPassword",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "userId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return userPolicy.canUpdateUserPassword(userId);\n}"
-      },
-      {
-        "name": "canUpdateUserRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "userId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return userPolicy.canUpdateUserRole(userId);\n}"
-      },
-      {
-        "name": "canEnableUser",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "userId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return userPolicy.canEnableUser(userId);\n}"
-      },
-      {
-        "name": "canDisableUser",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "userId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return userPolicy.canDisableUser(userId);\n}"
-      },
-      {
-        "name": "canCreateGroup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "body": "{\n    return permissionPolicy.canCreateGroup();\n}"
-      },
-      {
-        "name": "canViewGroup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "group",
-          "type": "String"
-        }],
-        "body": "{\n    return permissionPolicy.canViewGroup(group);\n}"
-      },
-      {
-        "name": "canViewGroup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "groupId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canViewGroup(groupId);\n}"
-      },
-      {
-        "name": "canUpdateGroup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "groupId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canUpdateGroup(groupId);\n}"
-      },
-      {
-        "name": "canEnableGroup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "groupId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canEnableGroup(groupId);\n}"
-      },
-      {
-        "name": "canDisableGroup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "groupId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canDisableGroup(groupId);\n}"
-      },
-      {
-        "name": "canCreateRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "groupId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canCreateRole(groupId);\n}"
-      },
-      {
-        "name": "canViewRoles",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "body": "{\n    return permissionPolicy.canViewRoles();\n}"
-      },
-      {
-        "name": "canViewRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "code",
-          "type": "String"
-        }],
-        "body": "{\n    return permissionPolicy.canViewRole(code);\n}"
-      },
-      {
-        "name": "canViewRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "roleId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canViewRole(roleId);\n}"
-      },
-      {
-        "name": "canUpdateRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "roleId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canUpdateRole(roleId);\n}"
-      },
-      {
-        "name": "canEnableRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "roleId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canEnableRole(roleId);\n}"
-      },
-      {
-        "name": "canDisableRole",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [{
-          "name": "roleId",
-          "type": "Identifier"
-        }],
-        "body": "{\n    return permissionPolicy.canDisableRole(roleId);\n}"
-      },
-      {
-        "name": "canViewStatusLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "StatusLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewStatusLookup(StatusLookup, locale);\n}"
-      },
-      {
-        "name": "canViewCountryLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "CountryLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewCountryLookup(CountryLookup, locale);\n}"
-      },
-      {
-        "name": "canViewProvinceLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "countryLookup",
-            "type": "String"
-          },
-          {
-            "name": "provinceLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);\n}"
-      },
-      {
-        "name": "canViewLanguageLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "languageLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewLanguageLookup(languageLookup, locale);\n}"
-      },
-      {
-        "name": "canViewSalutationLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "salutationLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewSalutationLookup(salutationLookup, locale);\n}"
-      },
-      {
-        "name": "canViewBusinessSectorLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "sectorLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);\n}"
-      },
-      {
-        "name": "canViewBusinessUnitLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "unitLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);\n}"
-      },
-      {
-        "name": "canViewBusinessClassificationLookup",
-        "modifiers": ["public"],
-        "type": "boolean",
-        "annotations": [{"name": "Override"}],
-        "parameters": [
-          {
-            "name": "classificationLookup",
-            "type": "String"
-          },
-          {
-            "name": "locale",
-            "type": "Locale"
-          }
-        ],
-        "body": "{\n    return lookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);\n}"
-      }
-    ]
-  },
   "ca.magex.crm.api.policies.CrmUserPolicy": {
     "name": "CrmUserPolicy",
     "imports": {"Identifier": "ca.magex.crm.api.system"},
@@ -7587,7 +6999,7 @@
   "ca.magex.crm.api.policies.basic.BasicPolicies": {
     "name": "BasicPolicies",
     "imports": {
-      "CrmPolicyDelegate": "ca.magex.crm.api.policies",
+      "CrmPolicies": "ca.magex.crm.api.adapters",
       "CrmLocationService": "ca.magex.crm.api.services",
       "CrmLookupService": "ca.magex.crm.api.services",
       "CrmOrganizationService": "ca.magex.crm.api.services",
@@ -7597,7 +7009,7 @@
     },
     "type": "class",
     "modifiers": ["public"],
-    "extends": ["CrmPolicyDelegate"],
+    "extends": ["CrmPolicies"],
     "constructors": [{
       "name": "BasicPolicies",
       "modifiers": ["public"],
@@ -11411,6 +10823,20 @@
         ]
       },
       {
+        "name": "findGroups",
+        "modifiers": ["default"],
+        "type": {
+          "class": "FilteredPage",
+          "generics": ["Group"]
+        },
+        "parameters": [{
+          "name": "filter",
+          "type": "GroupsFilter",
+          "annotations": [{"name": "NotNull"}]
+        }],
+        "body": "{\n    return findGroups(filter, defaultGroupPaging());\n}"
+      },
+      {
         "name": "findActiveGroupCodes",
         "modifiers": ["default"],
         "type": {
@@ -11541,6 +10967,20 @@
         "name": "findRoles",
         "modifiers": ["default"],
         "type": {
+          "class": "FilteredPage",
+          "generics": ["Role"]
+        },
+        "parameters": [{
+          "name": "filter",
+          "type": "RolesFilter",
+          "annotations": [{"name": "NotNull"}]
+        }],
+        "body": "{\n    return findRoles(filter, defaultRolePaging());\n}"
+      },
+      {
+        "name": "findRoles",
+        "modifiers": ["default"],
+        "type": {
           "class": "List",
           "generics": ["Role"]
         },
@@ -11564,6 +11004,18 @@
         "modifiers": ["default"],
         "type": "RolesFilter",
         "body": "{\n    return new RolesFilter();\n}"
+      },
+      {
+        "name": "defaultGroupPaging",
+        "modifiers": ["default"],
+        "type": "Paging",
+        "body": "{\n    return new Paging(GroupsFilter.getSortOptions().get(0));\n}"
+      },
+      {
+        "name": "defaultRolePaging",
+        "modifiers": ["default"],
+        "type": "Paging",
+        "body": "{\n    return new Paging(RolesFilter.getSortOptions().get(0));\n}"
       }
     ]
   },
