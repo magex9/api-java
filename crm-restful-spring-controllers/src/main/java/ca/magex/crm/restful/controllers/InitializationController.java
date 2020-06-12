@@ -30,7 +30,7 @@ public class InitializationController extends AbstractCrmController {
 	@Value("${server.servlet.context-path:/}") 
 	private String contextPath;
 
-	@GetMapping("/rest")
+	@GetMapping("/rest/api.json")
 	public void getJsonConfig(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		res.setStatus(200);
 		try (InputStream is = getClass().getResource("/crm.json").openStream()) {
