@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql.config;
+package ca.magex.crm.springboot.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -21,16 +21,13 @@ import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @Profile(MagexCrmProfiles.CRM_AUTH)
-public class GraphQLAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class CrmAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired private JwtRequestFilter jwtRequestFilter;
 	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		/* 
-		 * graphql api endpoints 
-		 * @formatter:off 
-		 */
+		
 		httpSecurity.authorizeRequests()
 				.antMatchers("/graphql", "/").permitAll()		
 			.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

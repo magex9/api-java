@@ -1,31 +1,22 @@
-package ca.magex.crm.graphql.config;
+package ca.magex.crm.springboot.config.crm;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.config.CrmConfigurerAdapter;
 import ca.magex.crm.api.policies.CrmPolicies;
-import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
+import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.services.CrmAuthenticationService;
+import ca.magex.crm.caching.config.CrmCachingConfigurerAdapter;
 
 @Configuration
-@Profile(MagexCrmProfiles.CRM_AUTH)
-public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {	
-	
-	private CrmAuthenticationService authenticationService;
-	
-	@Autowired
-	public void setAuthenticationService(CrmAuthenticationService authenticationService) {
-		this.authenticationService = authenticationService;
-	}
-	
+@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+public class GraphQLCrmNoAuthConfig extends CrmCachingConfigurerAdapter {	
+		
 	@Bean
 	@Override
-	public Crm crm() {
+	public Crm crm() {		
 		return new Crm(
 				getInitializationService(), 
 				getLookupService(), 
@@ -39,9 +30,8 @@ public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {
 	
 	@Bean
 	@Override
-	public CrmPolicies crmPolicies() {		
-		return new AuthenticatedPolicies(
-				authenticationService,
+	public CrmPolicies crmPolicies() {
+		return new BasicPolicies(
 				getLookupService(), 
 				getPermissionService(), 
 				getOrganizationService(), 

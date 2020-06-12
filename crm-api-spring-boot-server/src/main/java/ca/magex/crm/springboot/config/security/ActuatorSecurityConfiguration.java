@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql.config;
+package ca.magex.crm.springboot.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -44,13 +44,11 @@ public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter 
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		/*
-		 * actuator endpoints
-		 * @formatter:off
-		 */
+
 		httpSecurity.authorizeRequests()
 				.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")		
+//				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
+				.antMatchers("/actuator/*").permitAll()
 			.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
