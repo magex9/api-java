@@ -24,7 +24,7 @@ public class JavadocInterfaceAdapterBuilder {
 		logger.info("Building adapters for \"" + interfaces.stream().collect(Collectors.joining(", ")) + "\" from " + sourceDir.getAbsolutePath());
 		if (!sourceDir.isDirectory())
 			throw new FileNotFoundException("Could not find source directory: " + sourceDir.getAbsolutePath());
-		JsonObject docs = JavadocBuilder.processDirectory(sourceDir);
+		JsonObject docs = JsondocBuilder.processDirectory(sourceDir);
 		
 		FormattedStringBuilder sb = new FormattedStringBuilder();
 		sb.append("package " + adapterPackage + ";");

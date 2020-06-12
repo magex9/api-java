@@ -24,7 +24,7 @@ public class JavadocSlf4jDecoratorBuilder {
 		logger.info("Building logger from " + inputFile.getAbsolutePath());
 		if (!inputFile.isFile())
 			throw new FileNotFoundException("Could not find input interface: " + inputFile.getAbsolutePath());
-		JsonObject cls = JavadocBuilder.processFile(inputFile);
+		JsonObject cls = JsondocBuilder.processFile(inputFile);
 		FormattedStringBuilder sb = new FormattedStringBuilder();
 		sb.append("package " + outputPackage + ";");
 		sb.append("");

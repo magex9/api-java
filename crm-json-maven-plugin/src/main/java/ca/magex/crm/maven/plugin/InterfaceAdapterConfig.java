@@ -41,13 +41,11 @@ public class InterfaceAdapterConfig {
 		this.targetClass = targetClass;
 	}
 	
-	public void build(File basedir) {
+	public void build(File sourceDir, File targetDir) {
 		try {
-			File sourceDir = new File(basedir, "src/main/java");
-			File outputDir = new File(basedir, "src/main/generated");
 			String adapterPackage = targetClass.substring(0, targetClass.lastIndexOf('.')); 
 			String adapterClass = targetClass.substring(targetClass.lastIndexOf('.') + 1);
-			File adapterFile = new File(outputDir, targetClass.replaceAll("\\.", "/") + ".java");
+			File adapterFile = new File(targetDir, targetClass.replaceAll("\\.", "/") + ".java");
 			JavadocInterfaceAdapterBuilder.build(description, sourceDir, interfaces, adapterFile, adapterPackage, adapterClass);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem building adapter class: " + interfaces + " to " + targetClass, e);

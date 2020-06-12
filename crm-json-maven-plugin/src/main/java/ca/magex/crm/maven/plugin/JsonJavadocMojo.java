@@ -9,7 +9,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
 
-import ca.magex.json.javadoc.JavadocBuilder;
+import ca.magex.json.javadoc.JsondocBuilder;
 
 /**
  * A maven mojo which which converts all the java source files to javadocs in json format.
@@ -27,15 +27,22 @@ public class JsonJavadocMojo extends AbstractMavenMojo {
 	protected List<InterfaceAdapterConfig> adapters;
 
 	public void execute() throws MojoExecutionException {
+		File source = new File(basedir, "src/main/java");
+		File jsondocs = new File(basedir, "src/main/jsondoc");
+		File generated = new File(basedir, "src/main/generated");
 		try {
-			FileUtils.mkdir(new File(basedir, "src/main/generated").getAbsolutePath());
-			JavadocBuilder.processDirectory(new File(basedir, "src/main/java"), new File(basedir, "src/main/generated/" + mavenProject.getArtifactId() + ".json"));
+			FileUtils.deleteDirectory(jsondocs);
+			FileUtils.mkdir(jsondocs.getAbsolutePath());
+			JsondocBuilder.createFiles(new File(basedir, "src/main/java"), new File(basedir, "src/main/jsondoc"));
 			
+			FileUtils.deleteDirectory(generated);
+			FileUtils.mkdir(generated.getAbsolutePath());
+
 			getLog().info("Building decorators: " + decorators);
-			decorators.forEach(d -> d.build(basedir));
+			decorators.forEach(d -> d.build(source, generated));
 
 			getLog().info("Building adapters: " + adapters);
-			adapters.forEach(a -> a.build(basedir));
+			adapters.forEach(a -> a.build(source, generated));
 			
 		} catch (Exception e) {
 			throw new MojoExecutionException("Failed to execute mojo", e);

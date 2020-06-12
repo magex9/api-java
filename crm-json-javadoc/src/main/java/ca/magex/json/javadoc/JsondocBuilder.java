@@ -42,9 +42,9 @@ import ca.magex.json.model.JsonText;
 /**
  * Iterate over the classes and print their Javadoc in JSON format.
  */
-public class JavadocBuilder {
+public class JsondocBuilder {
 
-	private static final Logger logger = LoggerFactory.getLogger(JavadocBuilder.class);
+	private static final Logger logger = LoggerFactory.getLogger(JsondocBuilder.class);
 	
 	/**
 	 * Process a source directory and all of its sub directories and return the resulting
@@ -69,11 +69,23 @@ public class JavadocBuilder {
      * Process a source directory and all of its sub directories and output the javadocs
      * to a the output file 
      */
-    public static File processDirectory(File src, File output) throws Exception {
+    public static void createFile(File src, File output) throws Exception {
     	JsonObject json = processDirectory(src);
-    	logger.info("Creating file: " + output.getAbsolutePath());
+    	logger.info("Writing jsondocs: " + output.getAbsolutePath());
     	FileUtils.writeStringToFile(output, json.toString(), StandardCharsets.UTF_8);
-    	return output;
+    }
+    
+    /**
+     * Process a source directory and all of its sub directories and output the javadocs
+     * to a the output file 
+     */
+    public static void createFiles(File src, File output) throws Exception {
+    	JsonObject json = processDirectory(src);
+    	for (String cls : json.keys()) {
+    		File file = new File(output, cls.replaceAll("\\.", "/") + ".json");
+        	logger.info("Writing jsondoc: " + file.getAbsolutePath());
+    		FileUtils.writeStringToFile(file, json.getObject(cls).toString(), StandardCharsets.UTF_8);
+    	}
     }
 
     /**

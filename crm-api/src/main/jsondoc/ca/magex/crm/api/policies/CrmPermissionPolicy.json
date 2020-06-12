@@ -1,0 +1,105 @@
+{
+  "name": "CrmPermissionPolicy",
+  "package": "ca.magex.crm.api.policies",
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "canCreateGroup",
+      "type": "boolean"
+    },
+    {
+      "name": "canViewGroup",
+      "type": "boolean",
+      "parameters": [{
+        "name": "group",
+        "type": "String"
+      }]
+    },
+    {
+      "name": "canViewGroup",
+      "type": "boolean",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdateGroup",
+      "type": "boolean",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canEnableGroup",
+      "type": "boolean",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canDisableGroup",
+      "type": "boolean",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canCreateRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canViewRoles",
+      "type": "boolean"
+    },
+    {
+      "name": "canViewRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }]
+    },
+    {
+      "name": "canViewRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdateRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canEnableRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canDisableRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    }
+  ]
+}

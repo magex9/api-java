@@ -1,0 +1,204 @@
+{
+  "name": "CrmValidation",
+  "package": "ca.magex.crm.api.validation",
+  "imports": {
+    "ArrayList": "java.util",
+    "List": "java.util",
+    "StringUtils": "org.apache.commons.lang3",
+    "MailingAddress": "ca.magex.crm.api.common",
+    "PersonName": "ca.magex.crm.api.common",
+    "LocationDetails": "ca.magex.crm.api.crm",
+    "LocationSummary": "ca.magex.crm.api.crm",
+    "OrganizationDetails": "ca.magex.crm.api.crm",
+    "PersonDetails": "ca.magex.crm.api.crm",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "BadRequestException": "ca.magex.crm.api.exceptions",
+    "ItemNotFoundException": "ca.magex.crm.api.exceptions",
+    "GroupsFilter": "ca.magex.crm.api.filters",
+    "RolesFilter": "ca.magex.crm.api.filters",
+    "Group": "ca.magex.crm.api.roles",
+    "Role": "ca.magex.crm.api.roles",
+    "User": "ca.magex.crm.api.roles",
+    "Crm": "ca.magex.crm.api.services",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Lang": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Message": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "constructors": [{
+    "name": "CrmValidation",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "crm",
+      "type": "Crm"
+    }],
+    "body": "{\n    this.crm = crm;\n}"
+  }],
+  "fields": [{
+    "name": "crm",
+    "modifiers": ["private"],
+    "type": "Crm"
+  }],
+  "methods": [
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "parameters": [{
+        "name": "group",
+        "type": "Group"
+      }],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    // Status\n    if (group.getStatus() == null) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Status is mandatory for a group\")));\n    } else if (group.getStatus() == Status.PENDING && group.getGroupId() != null) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Pending statuses should not have identifiers\")));\n    }\n    // Must be a valid group code\n    if (StringUtils.isBlank(group.getCode())) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Group code must not be blank\")));\n    } else if (!group.getCode().matches(\"[A-Z0-9_]{1,20}\")) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Group code must match: [A-Z0-9_]{1,20}\")));\n    }\n    // Make sure the existing code didn't change\n    try {\n        if (!crm.findGroup(group.getGroupId()).getCode().equals(group.getCode())) {\n            messages.add(new Message(group.getGroupId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Group code must not change during updates\")));\n        }\n    } catch (ItemNotFoundException e) {\n    /* no existing group, so don't care */\n    }\n    // Make sure the code is unique\n    FilteredPage<Group> groups = crm.findGroups(crm.defaultGroupsFilter().withCode(group.getCode()), GroupsFilter.getDefaultPaging().allItems());\n    for (Group existing : groups.getContent()) {\n        if (!existing.getGroupId().equals(group.getGroupId())) {\n            messages.add(new Message(group.getGroupId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Duplicate code found in another group: \" + existing.getGroupId())));\n        }\n    }\n    // Make sure there is an English description\n    if (StringUtils.isBlank(group.getName(Lang.ENGLISH))) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"englishName\", new Localized(Lang.ENGLISH, \"An English description is required\")));\n    } else if (group.getName(Lang.ENGLISH).length() > 50) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"englishName\", new Localized(Lang.ENGLISH, \"English name must be 50 characters or less\")));\n    }\n    // Make sure there is a French description\n    if (StringUtils.isBlank(group.getName(Lang.FRENCH))) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"frenchName\", new Localized(Lang.ENGLISH, \"An French description is required\")));\n    } else if (group.getName(Lang.FRENCH).length() > 50) {\n        messages.add(new Message(group.getGroupId(), \"error\", \"frenchName\", new Localized(Lang.ENGLISH, \"French name must be 50 characters or less\")));\n    }\n    return messages;\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "parameters": [{
+        "name": "role",
+        "type": "Role"
+      }],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    // Status\n    if (role.getStatus() == null) {\n        messages.add(new Message(role.getRoleId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Status is mandatory for a role\")));\n    } else if (role.getStatus() == Status.PENDING && role.getRoleId() != null) {\n        messages.add(new Message(role.getRoleId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Pending statuses should not have identifiers\")));\n    }\n    // Must be a valid role code\n    if (StringUtils.isBlank(role.getCode())) {\n        messages.add(new Message(role.getGroupId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Role code must not be blank\")));\n    } else if (!role.getCode().matches(\"[A-Z0-9_]{1,20}\")) {\n        messages.add(new Message(role.getGroupId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Role code must match: [A-Z0-9_]{1,20}\")));\n    }\n    // Make sure the existing code didn't change\n    try {\n        if (!crm.findRole(role.getRoleId()).getCode().equals(role.getCode())) {\n            messages.add(new Message(role.getRoleId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Role code must not change during updates\")));\n        }\n    } catch (ItemNotFoundException e) {\n    /* no existing role, so don't care */\n    }\n    // Make sure the code is unique\n    FilteredPage<Role> roles = crm.findRoles(crm.defaultRolesFilter().withCode(role.getCode()), RolesFilter.getDefaultPaging().allItems());\n    for (Role existing : roles.getContent()) {\n        if (!existing.getRoleId().equals(role.getRoleId())) {\n            messages.add(new Message(role.getRoleId(), \"error\", \"code\", new Localized(Lang.ENGLISH, \"Duplicate code found in another role: \" + existing.getGroupId())));\n        }\n    }\n    // Make sure there is an English description\n    if (StringUtils.isBlank(role.getName(Lang.ENGLISH))) {\n        messages.add(new Message(role.getRoleId(), \"error\", \"englishName\", new Localized(Lang.ENGLISH, \"An English description is required\")));\n    } else if (role.getName(Lang.ENGLISH).length() > 50) {\n        messages.add(new Message(role.getRoleId(), \"error\", \"englishName\", new Localized(Lang.ENGLISH, \"English name must be 50 characters or less\")));\n    }\n    // Make sure there is a French description\n    if (StringUtils.isBlank(role.getName(Lang.FRENCH))) {\n        messages.add(new Message(role.getRoleId(), \"error\", \"frenchName\", new Localized(Lang.ENGLISH, \"An French description is required\")));\n    } else if (role.getName(Lang.FRENCH).length() > 50) {\n        messages.add(new Message(role.getRoleId(), \"error\", \"frenchName\", new Localized(Lang.ENGLISH, \"French name must be 50 characters or less\")));\n    }\n    return messages;\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "parameters": [{
+        "name": "organization",
+        "type": "OrganizationDetails"
+      }],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    // Status\n    if (organization.getStatus() == null) {\n        messages.add(new Message(organization.getOrganizationId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Status is mandatory for an organization\")));\n    } else if (organization.getStatus() == Status.PENDING && organization.getOrganizationId() != null) {\n        messages.add(new Message(organization.getOrganizationId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Pending statuses should not have identifiers\")));\n    }\n    // Display Name\n    if (StringUtils.isBlank(organization.getDisplayName())) {\n        messages.add(new Message(organization.getOrganizationId(), \"error\", \"displayName\", new Localized(Lang.ENGLISH, \"Display name is mandatory for an organization\")));\n    } else if (organization.getDisplayName().length() > 60) {\n        messages.add(new Message(organization.getOrganizationId(), \"error\", \"displayName\", new Localized(Lang.ENGLISH, \"Display name must be 60 characters or less\")));\n    }\n    // Main contact reference\n    if (organization.getMainContactId() != null) {\n        PersonSummary person = crm.findPersonSummary(organization.getMainContactId());\n        // Make sure main contact belongs to current org\n        if (!person.getOrganizationId().equals(organization.getOrganizationId())) {\n            messages.add(new Message(organization.getOrganizationId(), \"error\", \"mainContactId\", new Localized(Lang.ENGLISH, \"Main contact organization has invalid referential integrity\")));\n        }\n        // Make sure main contact is active\n        if (!person.getStatus().equals(Status.ACTIVE)) {\n            messages.add(new Message(organization.getOrganizationId(), \"error\", \"mainContactId\", new Localized(Lang.ENGLISH, \"Main contact must be active\")));\n        }\n    }\n    // Main location reference\n    if (organization.getMainLocationId() != null) {\n        LocationSummary location = crm.findLocationSummary(organization.getMainLocationId());\n        // Make sure main location belongs to current org\n        if (!location.getOrganizationId().equals(organization.getOrganizationId())) {\n            messages.add(new Message(organization.getOrganizationId(), \"error\", \"mainLocationId\", new Localized(Lang.ENGLISH, \"Main location organization has invalid referential integrity\")));\n        }\n        // Make sure main location is active\n        if (!location.getStatus().equals(Status.ACTIVE)) {\n            messages.add(new Message(organization.getOrganizationId(), \"error\", \"mainLocationId\", new Localized(Lang.ENGLISH, \"Main location must be active\")));\n        }\n    }\n    // Group\n    if (organization.getGroups().isEmpty()) {\n        messages.add(new Message(organization.getOrganizationId(), \"error\", \"groups\", new Localized(Lang.ENGLISH, \"Organizations must have a permission group assigned to them\")));\n    } else {\n        for (int i = 0; i < organization.getGroups().size(); i++) {\n            String group = organization.getGroups().get(i);\n            try {\n                if (!crm.findGroupByCode(group).getStatus().equals(Status.ACTIVE))\n                    messages.add(new Message(organization.getOrganizationId(), \"error\", \"groups[\" + i + \"]\", new Localized(Lang.ENGLISH, \"Group is not active: \" + group)));\n            } catch (ItemNotFoundException e) {\n                messages.add(new Message(organization.getOrganizationId(), \"error\", \"groups[\" + i + \"]\", new Localized(Lang.ENGLISH, \"Group does not exist: \" + group)));\n            }\n        }\n    }\n    return messages;\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "parameters": [{
+        "name": "location",
+        "type": "LocationDetails"
+      }],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    // Organization\n    if (location.getOrganizationId() == null) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"organizationId\", new Localized(Lang.ENGLISH, \"Organization cannot be null\")));\n    } else {\n        try {\n            crm.findOrganizationDetails(location.getOrganizationId());\n        } catch (ItemNotFoundException e) {\n            messages.add(new Message(location.getLocationId(), \"error\", \"organizationId\", new Localized(Lang.ENGLISH, \"Organization does not exist\")));\n        }\n    }\n    // Status\n    if (location.getStatus() == null) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Status is mandatory for a location\")));\n    } else if (location.getStatus() == Status.PENDING && location.getLocationId() != null) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Pending statuses should not have identifiers\")));\n    }\n    // Reference\n    if (StringUtils.isBlank(location.getReference())) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"reference\", new Localized(Lang.ENGLISH, \"Reference is mandatory for a location\")));\n    } else if (!location.getReference().matches(\"[A-Z0-9-]{1,60}\")) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"reference\", new Localized(Lang.ENGLISH, \"Reference is not in the correct format\")));\n    }\n    // Display Name\n    if (StringUtils.isBlank(location.getDisplayName())) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"displayName\", new Localized(Lang.ENGLISH, \"Display name is mandatory for a location\")));\n    } else if (location.getDisplayName().length() > 60) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"displayName\", new Localized(Lang.ENGLISH, \"Display name must be 60 characters or less\")));\n    }\n    // Address\n    if (location.getAddress() == null) {\n        messages.add(new Message(location.getLocationId(), \"error\", \"address\", new Localized(Lang.ENGLISH, \"Mailing address is mandatory for a location\")));\n    } else {\n        validateMailingAddress(location.getAddress(), messages, location.getLocationId(), \"address\");\n    }\n    return messages;\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "exceptions": ["BadRequestException"],
+      "parameters": [{
+        "name": "person",
+        "type": "PersonDetails"
+      }],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    // Organization\n    if (person.getOrganizationId() == null) {\n        messages.add(new Message(person.getPersonId(), \"error\", \"organizationId\", new Localized(Lang.ENGLISH, \"Organization cannot be null\")));\n    } else {\n        try {\n            crm.findOrganizationDetails(person.getOrganizationId());\n        } catch (ItemNotFoundException e) {\n            messages.add(new Message(person.getPersonId(), \"error\", \"organizationId\", new Localized(Lang.ENGLISH, \"Organization does not exist\")));\n        }\n    }\n    // Status\n    if (person.getStatus() == null) {\n        messages.add(new Message(person.getPersonId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Status is mandatory for a person\")));\n    } else if (person.getStatus() == Status.PENDING && person.getPersonId() != null) {\n        messages.add(new Message(person.getPersonId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Pending statuses should not have identifiers\")));\n    }\n    // Display Name\n    if (StringUtils.isBlank(person.getDisplayName())) {\n        messages.add(new Message(person.getPersonId(), \"error\", \"displayName\", new Localized(Lang.ENGLISH, \"Display name is mandatory for a person\")));\n    } else if (person.getDisplayName().length() > 60) {\n        messages.add(new Message(person.getPersonId(), \"error\", \"displayName\", new Localized(Lang.ENGLISH, \"Display name must be 60 characters or less\")));\n    }\n    // Legal Name\n    if (person.getLegalName() == null) {\n        messages.add(new Message(person.getPersonId(), \"error\", \"legalName\", new Localized(Lang.ENGLISH, \"Legal name is mandatory for a person\")));\n    } else {\n        validatePersonName(person.getLegalName(), messages, person.getPersonId(), \"legalName\");\n    }\n    // Address\n    if (person.getAddress() != null) {\n        validateMailingAddress(person.getAddress(), messages, person.getPersonId(), \"address\");\n    }\n    return messages;\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "exceptions": ["BadRequestException"],
+      "parameters": [{
+        "name": "user",
+        "type": "User"
+      }],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    // Status\n    if (user.getStatus() == null) {\n        messages.add(new Message(user.getUserId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Status is mandatory for a person\")));\n    } else if (user.getStatus() == Status.PENDING && user.getUserId() != null) {\n        messages.add(new Message(user.getUserId(), \"error\", \"status\", new Localized(Lang.ENGLISH, \"Pending statuses should not have identifiers\")));\n    }\n    // Organization\n    if (user.getPerson() == null || user.getPerson().getPersonId() == null) {\n        messages.add(new Message(null, \"error\", \"person\", new Localized(Lang.ENGLISH, \"Person cannot be null\")));\n    } else {\n        try {\n            crm.findPersonDetails(user.getPerson().getPersonId());\n        } catch (ItemNotFoundException e) {\n            messages.add(new Message(user.getPerson().getPersonId(), \"error\", \"person\", new Localized(Lang.ENGLISH, \"Person does not exist\")));\n        }\n    }\n    // Display Name\n    if (StringUtils.isBlank(user.getUsername())) {\n        messages.add(new Message(user.getUserId(), \"error\", \"username\", new Localized(Lang.ENGLISH, \"Username is mandatory for a user\")));\n    } else if (user.getUsername().length() > 20) {\n        messages.add(new Message(user.getUserId(), \"error\", \"username\", new Localized(Lang.ENGLISH, \"Username must be 20 characters or less\")));\n    }\n    // Roles\n    if (user.getRoles().isEmpty()) {\n        messages.add(new Message(user.getUserId(), \"error\", \"roles\", new Localized(Lang.ENGLISH, \"Users must have a permission role assigned to them\")));\n    } else {\n        for (int i = 0; i < user.getRoles().size(); i++) {\n            String role = user.getRoles().get(i);\n            try {\n                if (!crm.findRoleByCode(role).getStatus().equals(Status.ACTIVE))\n                    messages.add(new Message(user.getUserId(), \"error\", \"roles[\" + i + \"]\", new Localized(Lang.ENGLISH, \"Role is not active: \" + role)));\n            } catch (ItemNotFoundException e) {\n                messages.add(new Message(user.getUserId(), \"error\", \"roles[\" + i + \"]\", new Localized(Lang.ENGLISH, \"Role does not exist: \" + role)));\n            }\n        }\n    }\n    return messages;\n}"
+    },
+    {
+      "name": "validateMailingAddress",
+      "description": "helper method for validating an address\n@param address\n@param messages\n@param identifier\n@param prefix",
+      "modifiers": ["private"],
+      "parameters": [
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        },
+        {
+          "name": "messages",
+          "type": {
+            "class": "List",
+            "generics": ["Message"]
+          }
+        },
+        {
+          "name": "identifier",
+          "type": "Identifier"
+        },
+        {
+          "name": "prefix",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    // Street\n    if (StringUtils.isBlank(address.getStreet())) {\n        messages.add(new Message(identifier, \"error\", prefix + \".street\", new Localized(Lang.ENGLISH, \"Street address is mandatory\")));\n    } else if (address.getStreet().length() > 60) {\n        messages.add(new Message(identifier, \"error\", prefix + \".street\", new Localized(Lang.ENGLISH, \"Street must be 60 characters or less\")));\n    }\n    // City\n    if (StringUtils.isBlank(address.getCity())) {\n        messages.add(new Message(identifier, \"error\", prefix + \".city\", new Localized(Lang.ENGLISH, \"City is mandatory\")));\n    } else if (address.getCity().length() > 60) {\n        messages.add(new Message(identifier, \"error\", prefix + \".city\", new Localized(Lang.ENGLISH, \"City must be 60 characters or less\")));\n    }\n    // Province\n    if (StringUtils.isBlank(address.getProvince())) {\n        messages.add(new Message(identifier, \"error\", prefix + \".province\", new Localized(Lang.ENGLISH, \"Province is mandatory\")));\n    } else if (address.getCountry() == null) {\n        messages.add(new Message(identifier, \"error\", prefix + \".province\", new Localized(Lang.ENGLISH, \"Province is forbidden unless there is a country\")));\n    }\n    // Country\n    if (address.getCountry() == null) {\n        messages.add(new Message(identifier, \"error\", prefix + \".country\", new Localized(Lang.ENGLISH, \"Country is mandatory\")));\n    } else {\n        try {\n            crm.findCountryByCode(address.getCountry());\n        } catch (ItemNotFoundException e) {\n            messages.add(new Message(identifier, \"error\", prefix + \".country\", new Localized(Lang.ENGLISH, \"Country code is not in the lookup\")));\n        }\n    }\n    // Postal Code\n    if (StringUtils.isNotBlank(address.getPostalCode())) {\n        if (address.getCountry() != null && crm.findCountryByCode(address.getCountry()).getCode().equals(\"CA\")) {\n            if (!address.getPostalCode().matches(\"[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]\")) {\n                messages.add(new Message(identifier, \"error\", prefix + \".provinceCode\", new Localized(Lang.ENGLISH, \"Canadian province format is invalid\")));\n            }\n        }\n    }\n}"
+    },
+    {
+      "name": "validatePersonName",
+      "modifiers": ["private"],
+      "parameters": [
+        {
+          "name": "name",
+          "type": "PersonName"
+        },
+        {
+          "name": "messages",
+          "type": {
+            "class": "List",
+            "generics": ["Message"]
+          }
+        },
+        {
+          "name": "identifier",
+          "type": "Identifier"
+        },
+        {
+          "name": "prefix",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    // Salutation\n    if (StringUtils.isNotBlank(name.getSalutation())) {\n        try {\n            crm.findSalutationByCode(name.getSalutation());\n        } catch (ItemNotFoundException e) {\n            messages.add(new Message(identifier, \"error\", prefix + \".salutation\", new Localized(Lang.ENGLISH, \"Salutation code is not in the lookup\")));\n        }\n    }\n    // First Name\n    if (StringUtils.isBlank(name.getFirstName())) {\n        messages.add(new Message(identifier, \"error\", prefix + \".firstName\", new Localized(Lang.ENGLISH, \"First name is required\")));\n    } else if (name.getFirstName().length() > 60) {\n        messages.add(new Message(identifier, \"error\", prefix + \".firstName\", new Localized(Lang.ENGLISH, \"First name must be 60 characters or less\")));\n    }\n    // Middle Name\n    if (name.getFirstName().length() > 30) {\n        messages.add(new Message(identifier, \"error\", prefix + \".middleName\", new Localized(Lang.ENGLISH, \"Middle name must be 60 characters or less\")));\n    }\n    // Last Name\n    if (StringUtils.isBlank(name.getFirstName())) {\n        messages.add(new Message(identifier, \"error\", prefix + \".lastName\", new Localized(Lang.ENGLISH, \"Last name is required\")));\n    } else if (name.getFirstName().length() > 60) {\n        messages.add(new Message(identifier, \"error\", prefix + \".lastName\", new Localized(Lang.ENGLISH, \"Last name must be 60 characters or less\")));\n    }\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Message"]
+      },
+      "exceptions": ["BadRequestException"],
+      "parameters": [
+        {
+          "name": "roles",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          }
+        },
+        {
+          "name": "personId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    List<Message> messages = new ArrayList<Message>();\n    for (String role : roles) {\n        try {\n        // lookups.findRoleByCode(role);\n        } catch (ItemNotFoundException e) {\n            messages.add(new Message(personId, \"error\", \"roles('\" + role + \"')\", new Localized(Lang.ENGLISH, \"Role does not exist\")));\n        }\n    }\n    return messages;\n}"
+    }
+  ]
+}

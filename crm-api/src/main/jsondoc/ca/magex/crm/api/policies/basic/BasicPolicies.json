@@ -1,0 +1,47 @@
+{
+  "name": "BasicPolicies",
+  "package": "ca.magex.crm.api.policies.basic",
+  "imports": {
+    "CrmPolicyDelegate": "ca.magex.crm.api.policies",
+    "CrmLocationService": "ca.magex.crm.api.services",
+    "CrmLookupService": "ca.magex.crm.api.services",
+    "CrmOrganizationService": "ca.magex.crm.api.services",
+    "CrmPermissionService": "ca.magex.crm.api.services",
+    "CrmPersonService": "ca.magex.crm.api.services",
+    "CrmUserService": "ca.magex.crm.api.services"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "extends": ["CrmPolicyDelegate"],
+  "constructors": [{
+    "name": "BasicPolicies",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "lookups",
+        "type": "CrmLookupService"
+      },
+      {
+        "name": "permissions",
+        "type": "CrmPermissionService"
+      },
+      {
+        "name": "organizations",
+        "type": "CrmOrganizationService"
+      },
+      {
+        "name": "locations",
+        "type": "CrmLocationService"
+      },
+      {
+        "name": "persons",
+        "type": "CrmPersonService"
+      },
+      {
+        "name": "users",
+        "type": "CrmUserService"
+      }
+    ],
+    "body": "{\n    super(new BasicLookupPolicy(lookups), new BasicPermissionPolicy(permissions), new BasicOrganizationPolicy(organizations), new BasicLocationPolicy(organizations, locations), new BasicPersonPolicy(organizations, persons), new BasicUserPolicy(persons, users));\n}"
+  }]
+}

@@ -1,0 +1,61 @@
+{
+  "name": "RequestHandler",
+  "package": "ca.magex.crm.api.transform",
+  "generics": [
+    "A",
+    "B",
+    "C",
+    "R"
+  ],
+  "imports": {
+    "Objects": "java.util",
+    "Function": "java.util.function"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "apply",
+      "type": "R",
+      "parameters": [
+        {
+          "name": "a",
+          "type": "A"
+        },
+        {
+          "name": "b",
+          "type": "B"
+        },
+        {
+          "name": "c",
+          "type": "C"
+        }
+      ]
+    },
+    {
+      "name": "andThen",
+      "modifiers": ["default"],
+      "type": {
+        "class": "RequestHandler",
+        "generics": [
+          "A",
+          "B",
+          "C",
+          "V"
+        ]
+      },
+      "generics": ["V"],
+      "parameters": [{
+        "name": "after",
+        "type": {
+          "class": "Function",
+          "generics": [
+            "? super R",
+            "? extends V"
+          ]
+        }
+      }],
+      "body": "{\n    Objects.requireNonNull(after);\n    return (A a, B b, C c) -> after.apply(apply(a, b, c));\n}"
+    }
+  ]
+}

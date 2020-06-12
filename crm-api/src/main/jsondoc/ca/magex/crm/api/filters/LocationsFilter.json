@@ -1,0 +1,238 @@
+{
+  "name": "LocationsFilter",
+  "package": "ca.magex.crm.api.filters",
+  "imports": {
+    "List": "java.util",
+    "Map": "java.util",
+    "StringUtils": "org.apache.commons.lang3",
+    "EqualsBuilder": "org.apache.commons.lang3.builder",
+    "HashCodeBuilder": "org.apache.commons.lang3.builder",
+    "ToStringBuilder": "org.apache.commons.lang3.builder",
+    "ToStringStyle": "org.apache.commons.lang3.builder",
+    "Sort": "org.springframework.data.domain",
+    "Direction": "org.springframework.data.domain.Sort",
+    "Order": "org.springframework.data.domain.Sort",
+    "LocationSummary": "ca.magex.crm.api.crm",
+    "ApiException": "ca.magex.crm.api.exceptions",
+    "Crm": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": [{
+    "class": "CrmFilter",
+    "generics": ["LocationSummary"]
+  }],
+  "constructors": [
+    {
+      "name": "LocationsFilter",
+      "modifiers": ["public"],
+      "body": "{\n    this(null, null, null, null);\n}"
+    },
+    {
+      "name": "LocationsFilter",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "displayName",
+          "type": "String"
+        },
+        {
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "name": "status",
+          "type": "Status"
+        }
+      ],
+      "body": "{\n    this.organizationId = organizationId;\n    this.displayName = displayName;\n    this.reference = reference;\n    this.status = status;\n}"
+    },
+    {
+      "name": "LocationsFilter",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "filterCriteria",
+        "type": {
+          "class": "Map",
+          "generics": [
+            "String",
+            "Object"
+          ]
+        }
+      }],
+      "body": "{\n    try {\n        this.displayName = (String) filterCriteria.get(\"displayName\");\n        this.reference = (String) filterCriteria.get(\"reference\");\n        this.organizationId = filterCriteria.keySet().contains(\"organizationId\") ? new Identifier((String) filterCriteria.get(\"organizationId\")) : null;\n        this.status = null;\n        if (filterCriteria.containsKey(\"status\") && StringUtils.isNotBlank((String) filterCriteria.get(\"status\"))) {\n            try {\n                this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get(\"status\")));\n            } catch (IllegalArgumentException e) {\n                throw new ApiException(\"Invalid status value '\" + filterCriteria.get(\"status\") + \"' expected one of {\" + StringUtils.join(Status.values(), \",\") + \"}\");\n            }\n        }\n    } catch (ClassCastException cce) {\n        throw new ApiException(\"Unable to instantiate locations filter\", cce);\n    }\n}"
+    }
+  ],
+  "fields": [
+    {
+      "name": "SORT_OPTIONS",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": {
+        "class": "List",
+        "generics": ["Sort"]
+      }
+    },
+    {
+      "name": "organizationId",
+      "modifiers": ["private"],
+      "type": "Identifier"
+    },
+    {
+      "name": "displayName",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "reference",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "status",
+      "modifiers": ["private"],
+      "type": "Status"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getOrganizationId",
+      "modifiers": ["public"],
+      "type": "Identifier",
+      "body": "{\n    return organizationId;\n}"
+    },
+    {
+      "name": "getDisplayName",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return displayName;\n}"
+    },
+    {
+      "name": "getReference",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return reference;\n}"
+    },
+    {
+      "name": "getStatus",
+      "modifiers": ["public"],
+      "type": "Status",
+      "body": "{\n    return status;\n}"
+    },
+    {
+      "name": "withOrganizationId",
+      "modifiers": ["public"],
+      "type": "LocationsFilter",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return new LocationsFilter(organizationId, displayName, reference, status);\n}"
+    },
+    {
+      "name": "withDisplayName",
+      "modifiers": ["public"],
+      "type": "LocationsFilter",
+      "parameters": [{
+        "name": "displayName",
+        "type": "String"
+      }],
+      "body": "{\n    return new LocationsFilter(organizationId, displayName, reference, status);\n}"
+    },
+    {
+      "name": "withReference",
+      "modifiers": ["public"],
+      "type": "LocationsFilter",
+      "parameters": [{
+        "name": "reference",
+        "type": "String"
+      }],
+      "body": "{\n    return new LocationsFilter(organizationId, displayName, reference, status);\n}"
+    },
+    {
+      "name": "withStatus",
+      "modifiers": ["public"],
+      "type": "LocationsFilter",
+      "parameters": [{
+        "name": "status",
+        "type": "Status"
+      }],
+      "body": "{\n    return new LocationsFilter(organizationId, displayName, reference, status);\n}"
+    },
+    {
+      "name": "getSortOptions",
+      "modifiers": [
+        "public",
+        "static"
+      ],
+      "type": {
+        "class": "List",
+        "generics": ["Sort"]
+      },
+      "body": "{\n    return SORT_OPTIONS;\n}"
+    },
+    {
+      "name": "getDefaultSort",
+      "modifiers": [
+        "public",
+        "static"
+      ],
+      "type": "Sort",
+      "body": "{\n    return Sort.by(Direction.ASC, \"displayName\");\n}"
+    },
+    {
+      "name": "getDefaultPaging",
+      "modifiers": [
+        "public",
+        "static"
+      ],
+      "type": "Paging",
+      "body": "{\n    return new Paging(getDefaultSort());\n}"
+    },
+    {
+      "name": "apply",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "instance",
+        "type": "LocationSummary"
+      }],
+      "body": "{\n    return List.of(instance).stream().filter(l -> this.getDisplayName() == null || StringUtils.containsIgnoreCase(l.getDisplayName(), this.getDisplayName())).filter(l -> this.getReference() == null || StringUtils.containsIgnoreCase(l.getReference(), this.getReference())).filter(l -> this.getStatus() == null || this.getStatus().equals(l.getStatus())).filter(l -> this.getOrganizationId() == null || this.getOrganizationId().equals(l.getOrganizationId())).findAny().isPresent();\n}"
+    },
+    {
+      "name": "hashCode",
+      "modifiers": ["public"],
+      "type": "int",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return HashCodeBuilder.reflectionHashCode(this);\n}"
+    },
+    {
+      "name": "equals",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "obj",
+        "type": "Object"
+      }],
+      "body": "{\n    return EqualsBuilder.reflectionEquals(this, obj);\n}"
+    },
+    {
+      "name": "toString",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);\n}"
+    }
+  ]
+}

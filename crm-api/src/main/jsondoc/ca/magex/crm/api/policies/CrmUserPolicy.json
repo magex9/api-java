@@ -1,0 +1,65 @@
+{
+  "name": "CrmUserPolicy",
+  "package": "ca.magex.crm.api.policies",
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "canCreateUserForPerson",
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canViewUser",
+      "type": "boolean",
+      "parameters": [{
+        "name": "username",
+        "type": "String"
+      }]
+    },
+    {
+      "name": "canViewUser",
+      "type": "boolean",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdateUserPassword",
+      "type": "boolean",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdateUserRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canEnableUser",
+      "type": "boolean",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canDisableUser",
+      "type": "boolean",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }]
+    }
+  ]
+}

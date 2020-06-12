@@ -1,0 +1,14 @@
+{
+  "name": "CrmPolicies",
+  "package": "ca.magex.crm.api.policies",
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": [
+    "CrmLookupPolicy",
+    "CrmOrganizationPolicy",
+    "CrmLocationPolicy",
+    "CrmPersonPolicy",
+    "CrmUserPolicy",
+    "CrmPermissionPolicy"
+  ]
+}

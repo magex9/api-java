@@ -1,0 +1,184 @@
+{
+  "name": "AuthenticatedLookupPolicy",
+  "package": "ca.magex.crm.api.policies.authenticated",
+  "imports": {
+    "Locale": "java.util",
+    "CrmLookupPolicy": "ca.magex.crm.api.policies",
+    "BasicLookupPolicy": "ca.magex.crm.api.policies.basic",
+    "CrmAuthenticationService": "ca.magex.crm.api.services",
+    "CrmLookupService": "ca.magex.crm.api.services"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmLookupPolicy"],
+  "constructors": [{
+    "name": "AuthenticatedLookupPolicy",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "auth",
+        "type": "CrmAuthenticationService"
+      },
+      {
+        "name": "lookups",
+        "type": "CrmLookupService"
+      }
+    ],
+    "body": "{\n    this.auth = auth;\n    this.delegate = new BasicLookupPolicy(lookups);\n}"
+  }],
+  "fields": [
+    {
+      "name": "auth",
+      "modifiers": ["private"],
+      "type": "CrmAuthenticationService",
+      "annotations": [{"name": "SuppressWarnings"}]
+    },
+    {
+      "name": "delegate",
+      "modifiers": ["private"],
+      "type": "CrmLookupPolicy"
+    }
+  ],
+  "methods": [
+    {
+      "name": "canViewStatusLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "StatusLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewStatusLookup(StatusLookup, locale);\n}"
+    },
+    {
+      "name": "canViewCountryLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "CountryLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewCountryLookup(CountryLookup, locale);\n}"
+    },
+    {
+      "name": "canViewProvinceLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "countryLookup",
+          "type": "String"
+        },
+        {
+          "name": "provinceLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewProvinceLookup(countryLookup, provinceLookup, locale);\n}"
+    },
+    {
+      "name": "canViewLanguageLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "languageLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewLanguageLookup(languageLookup, locale);\n}"
+    },
+    {
+      "name": "canViewSalutationLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "salutationLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewSalutationLookup(salutationLookup, locale);\n}"
+    },
+    {
+      "name": "canViewBusinessSectorLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "sectorLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewBusinessSectorLookup(sectorLookup, locale);\n}"
+    },
+    {
+      "name": "canViewBusinessUnitLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "unitLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewBusinessUnitLookup(unitLookup, locale);\n}"
+    },
+    {
+      "name": "canViewBusinessClassificationLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "classificationLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return delegate.canViewBusinessClassificationLookup(classificationLookup, locale);\n}"
+    }
+  ]
+}

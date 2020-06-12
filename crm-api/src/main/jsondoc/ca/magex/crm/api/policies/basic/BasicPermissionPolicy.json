@@ -1,0 +1,168 @@
+{
+  "name": "BasicPermissionPolicy",
+  "package": "ca.magex.crm.api.policies.basic",
+  "imports": {
+    "ItemNotFoundException": "ca.magex.crm.api.exceptions",
+    "CrmPermissionPolicy": "ca.magex.crm.api.policies",
+    "Group": "ca.magex.crm.api.roles",
+    "Role": "ca.magex.crm.api.roles",
+    "CrmPermissionService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmPermissionPolicy"],
+  "constructors": [{
+    "name": "BasicPermissionPolicy",
+    "description": "Basic Permission Policy handles presence and status checks require for policy approval\n\n@param permissions",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "permissions",
+      "type": "CrmPermissionService"
+    }],
+    "body": "{\n    this.permissions = permissions;\n}"
+  }],
+  "fields": [{
+    "name": "permissions",
+    "modifiers": ["private"],
+    "type": "CrmPermissionService"
+  }],
+  "methods": [
+    {
+      "name": "canCreateGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    /* always return true */\n    return true;\n}"
+    },
+    {
+      "name": "canViewGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "group",
+        "type": "String"
+      }],
+      "body": "{\n    /* can view a group if it exists */\n    if (permissions.findGroupByCode(group) == null) {\n        throw new ItemNotFoundException(\"Group Code '\" + group + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canViewGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a group if it exists */\n    if (permissions.findGroup(groupId) == null) {\n        throw new ItemNotFoundException(\"Group ID '\" + groupId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canUpdateGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can update a group if it exists and is active */\n    Group group = permissions.findGroup(groupId);\n    if (group == null) {\n        throw new ItemNotFoundException(\"Group ID '\" + groupId + \"'\");\n    }\n    return group.getStatus() == Status.ACTIVE;\n}"
+    },
+    {
+      "name": "canEnableGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can enable a group if it exists */\n    if (permissions.findGroup(groupId) == null) {\n        throw new ItemNotFoundException(\"Group ID '\" + groupId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canDisableGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can disable a group if it exists */\n    if (permissions.findGroup(groupId) == null) {\n        throw new ItemNotFoundException(\"Group ID '\" + groupId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canCreateRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can create a role for this group if it exists */\n    if (permissions.findGroup(groupId) == null) {\n        throw new ItemNotFoundException(\"Group ID '\" + groupId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canViewRoles",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    /* can always view roles */\n    return true;\n}"
+    },
+    {
+      "name": "canViewRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    /* can view a specific role if it exists */\n    if (permissions.findRoleByCode(code) == null) {\n        throw new ItemNotFoundException(\"Role Code '\" + code + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canViewRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a specific role if it exists */\n    if (permissions.findRole(roleId) == null) {\n        throw new ItemNotFoundException(\"Role ID '\" + roleId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canUpdateRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a specific role if it exists and is active */\n    Role role = permissions.findRole(roleId);\n    if (role == null) {\n        throw new ItemNotFoundException(\"Role ID '\" + roleId + \"'\");\n    }\n    return permissions.findRole(roleId).getStatus() == Status.ACTIVE;\n}"
+    },
+    {
+      "name": "canEnableRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can enable a specific role if it exists */\n    if (permissions.findRole(roleId) == null) {\n        throw new ItemNotFoundException(\"Role ID '\" + roleId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canDisableRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can disable a specific role if it exists */\n    if (permissions.findRole(roleId) == null) {\n        throw new ItemNotFoundException(\"Role ID '\" + roleId + \"'\");\n    }\n    return true;\n}"
+    }
+  ]
+}

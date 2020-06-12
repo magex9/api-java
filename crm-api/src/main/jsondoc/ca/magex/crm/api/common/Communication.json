@@ -1,0 +1,176 @@
+{
+  "name": "Communication",
+  "package": "ca.magex.crm.api.common",
+  "imports": {
+    "Serializable": "java.io",
+    "EqualsBuilder": "org.apache.commons.lang3.builder",
+    "HashCodeBuilder": "org.apache.commons.lang3.builder",
+    "ToStringBuilder": "org.apache.commons.lang3.builder",
+    "ToStringStyle": "org.apache.commons.lang3.builder",
+    "Crm": "ca.magex.crm.api.services"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["Serializable"],
+  "constructors": [{
+    "name": "Communication",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "jobTitle",
+        "type": "String"
+      },
+      {
+        "name": "language",
+        "type": "String"
+      },
+      {
+        "name": "email",
+        "type": "String"
+      },
+      {
+        "name": "homePhone",
+        "type": "Telephone"
+      },
+      {
+        "name": "faxNumber",
+        "type": "String"
+      }
+    ],
+    "body": "{\n    super();\n    this.jobTitle = jobTitle;\n    this.language = language;\n    this.email = email;\n    this.homePhone = homePhone;\n    this.faxNumber = faxNumber;\n}"
+  }],
+  "fields": [
+    {
+      "name": "jobTitle",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "language",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "email",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "homePhone",
+      "modifiers": ["private"],
+      "type": "Telephone"
+    },
+    {
+      "name": "faxNumber",
+      "modifiers": ["private"],
+      "type": "String"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getJobTitle",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return jobTitle;\n}"
+    },
+    {
+      "name": "withJobTitle",
+      "modifiers": ["public"],
+      "type": "Communication",
+      "parameters": [{
+        "name": "jobTitle",
+        "type": "String"
+      }],
+      "body": "{\n    return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);\n}"
+    },
+    {
+      "name": "getLanguage",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return language;\n}"
+    },
+    {
+      "name": "withLanguage",
+      "modifiers": ["public"],
+      "type": "Communication",
+      "parameters": [{
+        "name": "language",
+        "type": "String"
+      }],
+      "body": "{\n    return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);\n}"
+    },
+    {
+      "name": "getEmail",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return email;\n}"
+    },
+    {
+      "name": "withEmail",
+      "modifiers": ["public"],
+      "type": "Communication",
+      "parameters": [{
+        "name": "email",
+        "type": "String"
+      }],
+      "body": "{\n    return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);\n}"
+    },
+    {
+      "name": "getHomePhone",
+      "modifiers": ["public"],
+      "type": "Telephone",
+      "body": "{\n    return homePhone;\n}"
+    },
+    {
+      "name": "withHomePhone",
+      "modifiers": ["public"],
+      "type": "Communication",
+      "parameters": [{
+        "name": "homePhone",
+        "type": "Telephone"
+      }],
+      "body": "{\n    return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);\n}"
+    },
+    {
+      "name": "getFaxNumber",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return faxNumber;\n}"
+    },
+    {
+      "name": "withFaxNumber",
+      "modifiers": ["public"],
+      "type": "Communication",
+      "parameters": [{
+        "name": "faxNumber",
+        "type": "String"
+      }],
+      "body": "{\n    return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);\n}"
+    },
+    {
+      "name": "hashCode",
+      "modifiers": ["public"],
+      "type": "int",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return HashCodeBuilder.reflectionHashCode(this);\n}"
+    },
+    {
+      "name": "equals",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "obj",
+        "type": "Object"
+      }],
+      "body": "{\n    return EqualsBuilder.reflectionEquals(this, obj);\n}"
+    },
+    {
+      "name": "toString",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);\n}"
+    }
+  ]
+}

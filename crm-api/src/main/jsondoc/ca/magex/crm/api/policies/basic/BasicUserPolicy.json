@@ -1,0 +1,124 @@
+{
+  "name": "BasicUserPolicy",
+  "package": "ca.magex.crm.api.policies.basic",
+  "imports": {
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "ItemNotFoundException": "ca.magex.crm.api.exceptions",
+    "CrmUserPolicy": "ca.magex.crm.api.policies",
+    "User": "ca.magex.crm.api.roles",
+    "CrmPersonService": "ca.magex.crm.api.services",
+    "CrmUserService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmUserPolicy"],
+  "constructors": [{
+    "name": "BasicUserPolicy",
+    "description": "Basic User Policy handles presence and status checks require for policy approval\n\n@param users\n@param persons",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "persons",
+        "type": "CrmPersonService"
+      },
+      {
+        "name": "users",
+        "type": "CrmUserService"
+      }
+    ],
+    "body": "{\n    this.users = users;\n    this.persons = persons;\n}"
+  }],
+  "fields": [
+    {
+      "name": "persons",
+      "modifiers": ["private"],
+      "type": "CrmPersonService"
+    },
+    {
+      "name": "users",
+      "modifiers": ["private"],
+      "type": "CrmUserService"
+    }
+  ],
+  "methods": [
+    {
+      "name": "canCreateUserForPerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can create a user for a given person if the person exists */\n    PersonSummary summary = persons.findPersonSummary(personId);\n    if (summary == null) {\n        throw new ItemNotFoundException(\"Person ID '\" + personId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canViewUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "username",
+        "type": "String"
+      }],
+      "body": "{\n    if (users.findUserByUsername(username) == null) {\n        throw new ItemNotFoundException(\"Username '\" + username + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canViewUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a user if it exists */\n    if (users.findUser(userId) == null) {\n        throw new ItemNotFoundException(\"User ID '\" + userId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canUpdateUserRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a user if it exists and is active */\n    User user = users.findUser(userId);\n    if (user == null) {\n        throw new ItemNotFoundException(\"User ID '\" + userId + \"'\");\n    }\n    return user.getStatus() == Status.ACTIVE;\n}"
+    },
+    {
+      "name": "canUpdateUserPassword",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a user password if it exists and is active */\n    User user = users.findUser(userId);\n    if (user == null) {\n        throw new ItemNotFoundException(\"User ID '\" + userId + \"'\");\n    }\n    return user.getStatus() == Status.ACTIVE;\n}"
+    },
+    {
+      "name": "canEnableUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can enable a user if it exists */\n    if (users.findUser(userId) == null) {\n        throw new ItemNotFoundException(\"User ID '\" + userId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canDisableUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can disable a user if it exists */\n    if (users.findUser(userId) == null) {\n        throw new ItemNotFoundException(\"User ID '\" + userId + \"'\");\n    }\n    return true;\n}"
+    }
+  ]
+}

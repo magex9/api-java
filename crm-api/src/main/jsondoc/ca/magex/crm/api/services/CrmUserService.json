@@ -1,0 +1,243 @@
+{
+  "name": "CrmUserService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "List": "java.util",
+    "NotNull": "javax.validation.constraints",
+    "StringUtils": "org.apache.commons.lang3",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "Paging": "ca.magex.crm.api.filters",
+    "UsersFilter": "ca.magex.crm.api.filters",
+    "User": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "prototypeUser",
+      "modifiers": ["default"],
+      "type": "User",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "roles",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          },
+          "annotations": [{"name": "NotNull"}]
+        }
+      ],
+      "body": "{\n    return new User(null, username, new PersonSummary(personId, null, null, null), Status.PENDING, roles);\n}"
+    },
+    {
+      "name": "createUser",
+      "modifiers": ["default"],
+      "type": "User",
+      "parameters": [{
+        "name": "prototype",
+        "type": "User"
+      }],
+      "body": "{\n    return createUser(prototype.getPerson().getPersonId(), prototype.getUsername(), prototype.getRoles());\n}"
+    },
+    {
+      "name": "createUser",
+      "type": "User",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "roles",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          },
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "enableUser",
+      "type": "User",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "disableUser",
+      "type": "User",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "updateUserRoles",
+      "type": "User",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "roles",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          },
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "changePassword",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "currentPassword",
+          "type": "String",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "newPassword",
+          "type": "String",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "resetPassword",
+      "type": "String",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "findUser",
+      "type": "User",
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "findUserByUsername",
+      "type": "User",
+      "parameters": [{
+        "name": "username",
+        "type": "String",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "countUsers",
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "UsersFilter",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "findUsers",
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["User"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "UsersFilter",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "paging",
+          "type": "Paging",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "isValidPasswordFormat",
+      "modifiers": ["default"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "password",
+        "type": "String"
+      }],
+      "body": "{\n    if (StringUtils.isBlank(password))\n        return false;\n    if (password.length() < 5 || password.length() > 255)\n        return false;\n    if (!password.matches(\"[A-Za-z0-9\\\\!\\\\@\\\\#\\\\$\\\\%\\\\^\\\\&\\\\*\\\\(\\\\)]+\"))\n        return false;\n    return true;\n}"
+    },
+    {
+      "name": "findUsers",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["User"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "UsersFilter",
+        "annotations": [{"name": "NotNull"}]
+      }],
+      "body": "{\n    return findUsers(filter, defaultUsersPaging());\n}"
+    },
+    {
+      "name": "findActiveUserForOrg",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["User"]
+      },
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }],
+      "body": "{\n    return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));\n}"
+    },
+    {
+      "name": "defaultUsersFilter",
+      "modifiers": ["default"],
+      "type": "UsersFilter",
+      "body": "{\n    return new UsersFilter();\n}"
+    },
+    {
+      "name": "defaultUsersPaging",
+      "modifiers": ["default"],
+      "type": "Paging",
+      "body": "{\n    return new Paging(UsersFilter.getSortOptions().get(0));\n}"
+    }
+  ]
+}

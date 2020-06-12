@@ -1,0 +1,124 @@
+{
+  "name": "Identifier",
+  "package": "ca.magex.crm.api.system",
+  "imports": {
+    "Serializable": "java.io",
+    "StringUtils": "org.apache.commons.lang3",
+    "EqualsBuilder": "org.apache.commons.lang3.builder",
+    "HashCodeBuilder": "org.apache.commons.lang3.builder",
+    "Crm": "ca.magex.crm.api.services"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": [
+    "CharSequence",
+    "Serializable"
+  ],
+  "constructors": [
+    {
+      "name": "Identifier",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "id",
+        "type": "String"
+      }],
+      "body": "{\n    if (StringUtils.isBlank(id))\n        throw new IllegalArgumentException(\"Id cannot be blank\");\n    if (!id.matches(PATTERN))\n        throw new IllegalArgumentException(\"Id must match the pattern \" + PATTERN);\n    this.id = id;\n}"
+    },
+    {
+      "name": "Identifier",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "identifier",
+        "type": "Identifier"
+      }],
+      "body": "{\n    this(identifier.id);\n}"
+    }
+  ],
+  "fields": [
+    {
+      "name": "UNDEFINED",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "Identifier"
+    },
+    {
+      "name": "PATTERN",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "id",
+      "modifiers": ["private"],
+      "type": "String"
+    }
+  ],
+  "methods": [
+    {
+      "name": "length",
+      "modifiers": ["public"],
+      "type": "int",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return id.length();\n}"
+    },
+    {
+      "name": "charAt",
+      "modifiers": ["public"],
+      "type": "char",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "index",
+        "type": "int"
+      }],
+      "body": "{\n    return id.charAt(index);\n}"
+    },
+    {
+      "name": "subSequence",
+      "modifiers": ["public"],
+      "type": "CharSequence",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "start",
+          "type": "int"
+        },
+        {
+          "name": "end",
+          "type": "int"
+        }
+      ],
+      "body": "{\n    return id.subSequence(start, end);\n}"
+    },
+    {
+      "name": "toString",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return id;\n}"
+    },
+    {
+      "name": "hashCode",
+      "modifiers": ["public"],
+      "type": "int",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return HashCodeBuilder.reflectionHashCode(this);\n}"
+    },
+    {
+      "name": "equals",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "obj",
+        "type": "Object"
+      }],
+      "body": "{\n    return EqualsBuilder.reflectionEquals(this, obj);\n}"
+    }
+  ]
+}
