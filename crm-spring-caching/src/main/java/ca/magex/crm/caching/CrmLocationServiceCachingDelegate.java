@@ -2,6 +2,7 @@ package ca.magex.crm.caching;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,7 +33,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public CrmLocationServiceCachingDelegate(CrmLocationService delegate, CacheManager cacheManager) {
+	public CrmLocationServiceCachingDelegate(@Qualifier("PrincipalLocationService") CrmLocationService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}

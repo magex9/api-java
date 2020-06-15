@@ -205,7 +205,7 @@ public class CrmServicesGraphQLClientImpl extends GraphQLClient implements CrmSe
 	/* -------------------------------------------------------------------------------------- */
 
 	@Override
-	public LocationDetails createLocation(Identifier organizationId, String locationName, String locationReference, MailingAddress address) {
+	public LocationDetails createLocation(Identifier organizationId, String locationReference, String locationName, MailingAddress address) {
 		return ModelBinder.toLocationDetails(performGraphQLQueryWithVariables(
 				"createLocation",
 				"createLocation",

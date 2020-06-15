@@ -3,7 +3,6 @@ package ca.magex.crm.test.config;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
@@ -15,38 +14,32 @@ import ca.magex.crm.api.services.CrmUserService;
 @Configuration
 public class MockConfig {
 
-	@Bean
-	@Primary	
+	@Bean("PrincipalLookupService")
 	public CrmLookupService mockLookupService() {
 		return Mockito.mock(CrmLookupService.class);
 	}
-	
-	@Bean
-	@Primary
+
+	@Bean("PrincipalPermissionService")
 	public CrmPermissionService mockPermissionService() {
 		return Mockito.mock(CrmPermissionService.class);
 	}
-	
-	@Bean
-	@Primary
+
+	@Bean("PrincipalOrganizationService")
 	public CrmOrganizationService mockOrganizationService() {
 		return Mockito.mock(CrmOrganizationService.class);
 	}
-	
-	@Bean
-	@Primary
+
+	@Bean("PrincipalLocationService")
 	public CrmLocationService mockLocationService() {
 		return Mockito.mock(CrmLocationService.class);
 	}
-	
-	@Bean
-	@Primary
+
+	@Bean("PrincipalPersonService")
 	public CrmPersonService mockPersonService() {
 		return Mockito.mock(CrmPersonService.class);
 	}
-	
-	@Bean
-	@Primary
+
+	@Bean("PrincipalUserService")
 	public CrmUserService mockUserService() {
 		return Mockito.mock(CrmUserService.class);
 	}

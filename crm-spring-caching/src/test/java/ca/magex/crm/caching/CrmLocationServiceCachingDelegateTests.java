@@ -39,7 +39,7 @@ import ca.magex.crm.test.config.TestConfig;
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
 public class CrmLocationServiceCachingDelegateTests {
 
-	@Autowired private CrmLocationService delegate;
+	@Autowired @Qualifier("PrincipalLocationService") private CrmLocationService delegate;
 	@Autowired private CacheManager cacheManager;
 	@Autowired @Qualifier("CrmLocationServiceCachingDelegate") private CrmLocationService locationService;
 

@@ -41,7 +41,7 @@ import ca.magex.crm.test.config.TestConfig;
 @ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
 public class CrmPersonServiceCachingDelegateTests {
 
-	@Autowired private CrmPersonService delegate;
+	@Autowired @Qualifier("PrincipalPersonService") private CrmPersonService delegate;
 	@Autowired private CacheManager cacheManager;
 	@Autowired @Qualifier("CrmPersonServiceCachingDelegate") private CrmPersonService personService;
 

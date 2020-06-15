@@ -2,6 +2,7 @@ package ca.magex.crm.caching;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
@@ -26,7 +27,7 @@ public class CrmPermissionServiceCachingDelegate implements CrmPermissionService
 	private CrmPermissionService delegate;
 	private CacheManager cacheManager;
 	
-	public CrmPermissionServiceCachingDelegate(CrmPermissionService delegate, CacheManager cacheManager) {
+	public CrmPermissionServiceCachingDelegate(@Qualifier("PrincipalPermissionService") CrmPermissionService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}

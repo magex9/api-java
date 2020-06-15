@@ -22,7 +22,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 @Service("PrincipalLocationService")
-@Primary
+//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLocationService implements CrmLocationService {
 

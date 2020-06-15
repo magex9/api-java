@@ -76,6 +76,25 @@
           "type": "CrmInitializationService"
         },
         {
+          "name": "services",
+          "type": "CrmServices"
+        },
+        {
+          "name": "policies",
+          "type": "CrmPolicies"
+        }
+      ],
+      "body": "{\n    this(initializationService, services, policies, services, policies, services, policies, services, policies, services, policies, services, policies);\n}"
+    },
+    {
+      "name": "Crm",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "initializationService",
+          "type": "CrmInitializationService"
+        },
+        {
           "name": "lookupService",
           "type": "CrmLookupService"
         },
@@ -819,7 +838,7 @@
         "name": "organizationId",
         "type": "Identifier"
       }],
-      "body": "{\n    if (!canViewOrganization(organizationId))\n        throw new PermissionDeniedException(\"findOrganization: \" + organizationId);\n    return organizationService.findOrganizationDetails(organizationId);\n}"
+      "body": "{\n    if (!canViewOrganization(organizationId))\n        throw new PermissionDeniedException(\"findOrganization: \" + organizationId);\n    return organizationService.findOrganizationSummary(organizationId);\n}"
     },
     {
       "name": "findOrganizationDetails",

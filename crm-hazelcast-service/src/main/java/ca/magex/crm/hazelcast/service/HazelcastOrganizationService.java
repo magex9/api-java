@@ -25,7 +25,6 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -44,13 +43,9 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 	public static String HZ_ORGANIZATION_KEY = "organizations";
 
 	private XATransactionAwareHazelcastInstance hzInstance;
-	private CrmPermissionService permissionService;
 
-	public HazelcastOrganizationService(
-			XATransactionAwareHazelcastInstance hzInstance,
-			CrmPermissionService permissionService) {
+	public HazelcastOrganizationService(XATransactionAwareHazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
-		this.permissionService = permissionService;
 	}
 
 	@Override
@@ -122,9 +117,6 @@ public class HazelcastOrganizationService implements CrmOrganizationService {
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
 			return null;
-		}
-		for (String group : groups) {
-			permissionService.findGroupByCode(group); // ensure each group exists
 		}
 		/* nothing to update here */
 		if (orgDetails.getGroups().containsAll(groups) && groups.containsAll(orgDetails.getGroups())) {

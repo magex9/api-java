@@ -3,6 +3,7 @@ package ca.magex.crm.graphql.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 import ca.magex.crm.api.MagexCrmProfiles;
@@ -24,6 +25,7 @@ public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {
 	}
 	
 	@Bean
+	@Primary
 	@Override
 	public Crm crm() {
 		return new Crm(

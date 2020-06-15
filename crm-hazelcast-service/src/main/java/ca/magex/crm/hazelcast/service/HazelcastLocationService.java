@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -46,19 +44,13 @@ public class HazelcastLocationService implements CrmLocationService {
 	public static String HZ_LOCATION_KEY = "locations";
 
 	private XATransactionAwareHazelcastInstance hzInstance;
-	private CrmOrganizationService organizationService;
 
-	public HazelcastLocationService(
-			XATransactionAwareHazelcastInstance hzInstance,
-			@Lazy CrmOrganizationService organizationService) {
+	public HazelcastLocationService(XATransactionAwareHazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
-		this.organizationService = organizationService;
 	}
 
 	@Override
 	public LocationDetails createLocation(Identifier organizationId, String locationReference, String locationName, MailingAddress address) {
-		/* run a find on the organizationId to ensure it exists */
-		organizationService.findOrganizationSummary(organizationId);
 		/* create our new location for this organizationId */
 		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_LOCATION_KEY);

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.policies.CrmPolicies;
@@ -33,6 +34,7 @@ public class GraphQLTestConfig implements CrmConfigurer {
 	@Autowired private CrmPermissionService permissionService;
 		
 	@Bean
+	@Primary
 	@Override
 	public Crm crm() {		
 		return new Crm(

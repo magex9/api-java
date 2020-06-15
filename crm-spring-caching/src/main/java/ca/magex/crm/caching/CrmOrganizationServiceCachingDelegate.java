@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,7 +34,7 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public CrmOrganizationServiceCachingDelegate(CrmOrganizationService delegate, CacheManager cacheManager) {
+	public CrmOrganizationServiceCachingDelegate(@Qualifier("PrincipalOrganizationService") CrmOrganizationService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}

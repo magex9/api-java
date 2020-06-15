@@ -1,5 +1,6 @@
 package ca.magex.crm.caching;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,7 +34,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public CrmPersonServiceCachingDelegate(CrmPersonService delegate, CacheManager cacheManager) {
+	public CrmPersonServiceCachingDelegate(@Qualifier("PrincipalPersonService") CrmPersonService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}
