@@ -3,18 +3,20 @@ package ca.magex.crm.springboot.config.crm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 
 import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.config.CrmConfigurerAdapter;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmAuthenticationService;
+import ca.magex.crm.caching.config.CrmCachingConfigurerAdapter;
 
 @Configuration
 @Profile(MagexCrmProfiles.CRM_AUTH)
-public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {	
+@Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
+public class GraphQLCrmAuthConfig extends CrmCachingConfigurerAdapter {	
 	
 	private CrmAuthenticationService authenticationService;
 	

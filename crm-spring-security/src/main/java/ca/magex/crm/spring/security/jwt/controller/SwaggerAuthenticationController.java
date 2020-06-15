@@ -27,10 +27,10 @@ public class SwaggerAuthenticationController {
 	@GetMapping("/auth-yaml")
 	public void getSwaggerYaml(HttpServletResponse res) throws IOException {
 		try (InputStream yaml = getClass().getResourceAsStream("/auth.yaml")) {
-			String yamlContents = StreamUtils.copyToString(yaml, Charset.forName("UTF-8"));
-			yamlContents = yamlContents.replace("${serverAddress}", serverAddress);
-			yamlContents = yamlContents.replace("${serverPort}", serverPort);
-			yamlContents = yamlContents.replace("${contextPath}", contextPath);
+			String yamlContents = StreamUtils.copyToString(yaml, Charset.forName("UTF-8"))
+					.replace("${serverAddress}", serverAddress)
+					.replace("${serverPort}", serverPort)
+					.replace("${contextPath}", contextPath);
 			res.getWriter().append(yamlContents);
 			res.getWriter().flush();
 		}

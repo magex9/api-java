@@ -47,8 +47,7 @@ public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter 
 
 		httpSecurity.authorizeRequests()
 				.antMatchers("/actuator/shutdown").hasRole("SYS_ADMIN")
-//				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
-				.antMatchers("/actuator/*").permitAll()
+				.antMatchers("/actuator/*").hasAnyRole("SYS_ADMIN", "APP_ADMIN")
 			.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

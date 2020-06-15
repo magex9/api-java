@@ -29,7 +29,14 @@ public class CrmUnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAd
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 
 		httpSecurity.authorizeRequests()
-				.antMatchers("/graphql", "/").permitAll()		
+				.antMatchers(
+						"/graphql", 
+						"/rest/**",
+						"/",
+						"/crm.yaml",
+						"/swagger-ui-bundle.js",
+						"/swagger-ui.css",
+						"/favicon.ico").permitAll()		
 			.and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

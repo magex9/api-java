@@ -5,14 +5,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 
 @SpringBootApplication(scanBasePackages = {
-		"ca.magex.crm.api",
-		
+		"ca.magex.crm.api",		
 		"ca.magex.crm.caching",
 		"ca.magex.crm.resource",
 		"ca.magex.crm.amnesia",		
-		"ca.magex.crm.graphql",		
+		"ca.magex.crm.graphql",
+		"ca.magex.crm.restful",		
 		"ca.magex.crm.springboot",
 		"ca.magex.crm.spring.security",
+		"ca.magex.crm.transform", 
 })
 public class CrmSpringBootApplication {
 
