@@ -43,7 +43,7 @@ steps:
 
     adlc_dir=${AGENT_BUILDDIRECTORY}/adlc
     echo "adlc_dir=$adlc_dir"
-    config_dir=${adlc_dir}/${{parameters.application_name}}/${{parameters.environment}}
+    config_dir=${adlc_dir}/${{parameters.application_name}}/config
     echo "config_dir=${config_dir}"
     admin_dir=${adlc_dir}/admin
     echo "admin_dir=${admin_dir}"
@@ -87,12 +87,8 @@ steps:
     echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${application_config_path}
     echo "export APPLICATION_NAME=${{parameters.application_name}}" >> ${application_config_path}
     echo "export ENVIRONMENT=${{parameters.environment}}" >> ${application_config_path}
-
-    #create springboot bootstrap configuration file
-    echo "spring.application.name=${{parameters.application_name}}" >> ${bootstrap_config_path}
-    echo "spring.cloud.config.uri=${CONFIG_SERVER_URI}" >> ${bootstrap_config_path}
-    echo "management.security.enabled=false" >> ${bootstrap_config_path}
-
+    echo "export SPRING_CONFIG_SERVER_URI=${CONFIG_SERVER_URI}" >> ${application_config_path}
+    
     cp ${application_package_source_dir}/*.jar ${application_package_build_dir}/
     cp -r ${config_dir}/* ${application_package_build_dir}/
     cp -r ${admin_dir}/* ${application_package_build_dir}/
