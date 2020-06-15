@@ -70,8 +70,9 @@ steps:
     bootstrap_config_path=${application_config_dir}/bootstrap.properties
 
     #-----------------------------------------------------
-    env      
-    ls -la ${SYSTEM_ARTIFACTSDIRECTORY}/**
+    #env      
+    ls -la ${SYSTEM_ARTIFACTSDIRECTORY}
+    ls -la ${PIPELINE_WORKSPACE}
     ls -la ${adlc_dir}
     
     mkdir -p ${application_package_publish_dir}
