@@ -71,8 +71,7 @@ steps:
 
     #-----------------------------------------------------
     #env      
-    ls -la ${SYSTEM_ARTIFACTSDIRECTORY}
-    ls -la ${PIPELINE_WORKSPACE}
+    ls -la ${application_package_source_dir}
     ls -la ${adlc_dir}
     
     mkdir -p ${application_package_publish_dir}
