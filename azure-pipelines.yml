@@ -42,16 +42,16 @@ stages:
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
+    - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/
       artifact: crm-graphql-spring-boot-server
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/target/
+    - publish: $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/
       artifact: crm-auth-spring-boot-server
     
-    - publish: $(System.DefaultWorkingDirectory)/crm-restful-spring-boot-server/target/
+    - publish: $(System.DefaultWorkingDirectory)/crm-restful-spring-boot-server/
       artifact: crm-restful-spring-boot-server
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
+    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/
       artifact: crm-helloworld
 
 - stage: deployApplications

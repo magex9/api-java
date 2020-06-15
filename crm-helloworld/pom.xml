@@ -68,6 +68,14 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>config</directory>
+				<includes>
+					<include>*.properties</include>
+				</includes>
+			</resource>
+    	</resources>
 	</build>
 
 	<repositories>
