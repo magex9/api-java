@@ -1,5 +1,7 @@
 package ca.magex.crm.graphql.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -16,7 +18,11 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
@@ -32,6 +38,14 @@ public class GraphQLController implements CrmGraphQLController {
 	
 	public GraphQLController(GraphQLCrmServices graphQLService) {
 		this.graphQLService = graphQLService;
+	}
+	
+	@ResponseBody
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value="/graphql/schema")
+	public String doGetSchema() throws IOException {
+		try (InputStream schema = getClass().getResourceAsStream("/crm.graphql")) {
+			return StreamUtils.copyToString(schema, Charset.forName("UTF-8"));
+		}
 	}
 
 	@Override
@@ -50,7 +64,7 @@ public class GraphQLController implements CrmGraphQLController {
 			if (req.getHeader(HttpHeaders.CONTENT_TYPE) == null) {
 				return new ResponseEntity<Object>("No " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);
 			}
-			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains("application/json")) {
+			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains(MediaType.APPLICATION_JSON_VALUE)) {
 				JSONObject jsonRequest = new JSONObject(content);
 				query = jsonRequest.getString("query");
 				if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {

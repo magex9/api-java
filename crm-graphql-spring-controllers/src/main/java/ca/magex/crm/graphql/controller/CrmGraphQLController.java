@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Jonny
  */
 public interface CrmGraphQLController {
-
+	
 	@PostMapping("/graphql")
 	public ResponseEntity<Object> doQuery(
 			@RequestBody(required = false) String request, 
