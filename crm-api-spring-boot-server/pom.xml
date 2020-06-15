@@ -19,21 +19,21 @@
 			<artifactId>crm-amnesia-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- Caching Support -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-spring-caching</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- JWT Security Support -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-spring-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -45,13 +45,13 @@
 			<artifactId>crm-graphql-spring-controllers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-restful-spring-controllers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-						
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -67,12 +67,23 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
-		
-		<!-- thymeleaf -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
+
+		<!-- thymeleaf UI Components c -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
 
 		<!-- Actuator Support -->
 		<dependency>
@@ -80,16 +91,16 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>me.snowdrop</groupId> -->
-<!-- 			<artifactId>narayana-spring-boot-starter</artifactId> -->
-<!-- 			<version>2.3.1</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>me.snowdrop</groupId> -->
+		<!-- <artifactId>narayana-spring-boot-starter</artifactId> -->
+		<!-- <version>2.3.1</version> -->
+		<!-- </dependency> -->
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>jakarta.xml.bind</groupId> -->
-<!-- 			<artifactId>jakarta.xml.bind-api</artifactId> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>jakarta.xml.bind</groupId> -->
+		<!-- <artifactId>jakarta.xml.bind-api</artifactId> -->
+		<!-- </dependency> -->
 
 		<!-- Test Dependencies -->
 		<dependency>

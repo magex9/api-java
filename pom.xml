@@ -74,6 +74,9 @@
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
 <!-- 		<module>crm-restful-client</module> -->
+
+		<!-- Unified Server -->
+		<module>crm-api-spring-boot-server</module>
  	</modules>
 
 </project>

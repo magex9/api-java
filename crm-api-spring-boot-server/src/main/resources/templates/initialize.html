@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>CRM Initialization Page</title>
+
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/crm.css}"/>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Magex.ca</a>
+</nav>
+
+<main role="main" class="container">
+
+    <div class="starter-template">
+        <h1>CRM Initialization Form</h1>
+        <form action="#" th:action="@{/initialize}" th:object="${initializationRequest}" method="post">
+          <p>Organization Name: <input type="text" th:field="*{organizationName}" /></p>
+          <p>Owner Given Name: <input type="text" th:field="*{ownerGivenName}" /></p>
+          <p>Owner Middle Name: <input type="text" th:field="*{ownerMiddleName}" /></p>
+          <p>Owner Surname: <input type="text" th:field="*{ownerSurname}" /></p>
+          <p>Owner Email: <input type="text" th:field="*{ownerEmail}" /></p>
+          <p>Admin Username: <input type="text" th:field="*{username}" /></p>
+          <p>Admin Password: <input type="password" th:field="*{password}" /></p>
+          <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+        </form>
+    </div>    
+</main>
+<!-- /.container -->
+<script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+</body>
+</html>
