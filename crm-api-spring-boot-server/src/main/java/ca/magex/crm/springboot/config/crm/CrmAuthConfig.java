@@ -16,7 +16,7 @@ import ca.magex.crm.caching.config.CrmCachingConfigurerAdapter;
 @Configuration
 @Profile(MagexCrmProfiles.CRM_AUTH)
 @Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
-public class GraphQLCrmAuthConfig extends CrmCachingConfigurerAdapter {	
+public class CrmAuthConfig extends CrmCachingConfigurerAdapter {	
 	
 	private CrmAuthenticationService authenticationService;
 	
