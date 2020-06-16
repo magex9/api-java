@@ -1,5 +1,6 @@
 {
   "name": "TypedGenerics",
+  "package": "ca.magex.json.javadoc.samples",
   "generics": [{
     "class": "T",
     "extends": ["BasicEntity"]

@@ -81,7 +81,7 @@ public class CrmServicesTestSuite {
 		if (!crm.isInitialized())
 			crm.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
 		crm.dump();
-		runLookupServiceTests();
+//		runLookupServiceTests();
 		try {
 			runCreatePermissions();
 			Identifier orgIdentifier = runOrganizationServiceTests();

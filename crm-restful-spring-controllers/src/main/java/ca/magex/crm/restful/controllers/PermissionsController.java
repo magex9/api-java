@@ -27,7 +27,7 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class PermissionsController extends AbstractCrmController {
 
-	@GetMapping("/api/groups")
+	@GetMapping("/rest/groups")
 	public void findGroups(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> { 
 			return createPage(
@@ -58,7 +58,7 @@ public class PermissionsController extends AbstractCrmController {
 		}
 	}
 
-	@PostMapping("/api/groups")
+	@PostMapping("/rest/groups")
 	public void createGroup(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
@@ -71,7 +71,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/groups/{groupId}")
+	@GetMapping("/rest/groups/{groupId}")
 	public void getGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -79,7 +79,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/api/groups/{groupId}")
+	@PatchMapping("/rest/groups/{groupId}")
 	public void updateGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -94,7 +94,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/groups/{groupId}/enable")
+	@PutMapping("/rest/groups/{groupId}/enable")
 	public void enableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -104,7 +104,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/groups/{groupId}/disable")
+	@PutMapping("/rest/groups/{groupId}/disable")
 	public void disableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
 		handle(req, res, Group.class, (messages, transformer, locale) -> {
@@ -114,7 +114,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/roles")
+	@GetMapping("/rest/roles")
 	public void findRoles(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Role.class, (messages, transformer, locale) -> { 
 			return createPage(
@@ -145,7 +145,7 @@ public class PermissionsController extends AbstractCrmController {
 		}
 	}
 
-	@PostMapping("/api/roles")
+	@PostMapping("/rest/roles")
 	public void createRole(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, Role.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
@@ -159,7 +159,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/api/roles/{roleId}")
+	@GetMapping("/rest/roles/{roleId}")
 	public void getRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
 		handle(req, res, Role.class, (messages, transformer, locale) -> {
@@ -167,7 +167,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/api/roles/{roleId}")
+	@PatchMapping("/rest/roles/{roleId}")
 	public void updateRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
 		handle(req, res, Role.class, (messages, transformer, locale) -> {
@@ -182,7 +182,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/roles/{roleId}/enable")
+	@PutMapping("/rest/roles/{roleId}/enable")
 	public void enableRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
 		handle(req, res, Role.class, (messages, transformer, locale) -> {
@@ -191,7 +191,7 @@ public class PermissionsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/api/roles/{roleId}/disable")
+	@PutMapping("/rest/roles/{roleId}/disable")
 	public void disableRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
 		handle(req, res, Role.class, (messages, transformer, locale) -> {

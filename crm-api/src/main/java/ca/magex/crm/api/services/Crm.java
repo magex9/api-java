@@ -88,7 +88,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	private final CrmUserPolicy userPolicy;
 	
 	private final CrmValidation validation;
-
+	
 	public Crm(Crm crm) {
 		this(
 			crm.initializationService,
@@ -104,6 +104,27 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 			crm.personPolicy,
 			crm.userService,
 			crm.userPolicy
+		);
+	}
+	
+	public Crm(
+			CrmInitializationService initializationService, 
+			CrmServices services,
+			CrmPolicies policies) {
+		this(
+				initializationService,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies
 		);
 	}
 	
@@ -407,7 +428,7 @@ public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		if (!canViewOrganization(organizationId))
 			throw new PermissionDeniedException("findOrganization: " + organizationId);
-		return organizationService.findOrganizationDetails(organizationId);
+		return organizationService.findOrganizationSummary(organizationId);
 	}
 	
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {

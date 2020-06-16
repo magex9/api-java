@@ -15,9 +15,19 @@ public class JavadocDelegateTests {
 		File inputFile = new File("src/test/java/", CrudService.class.getName().replaceAll("\\.", "/") + ".java");
 		String inputPackage = CrudService.class.getPackageName();
 		assertTrue(inputFile.exists());
-		File outputFile = new File("src/generated/java/", CrudService.class.getName().replaceAll("\\.", "/") + "LoggerDelegate.java");
+		File outputFile = new File("src/generated/java/", CrudService.class.getName().replaceAll("\\.", "/") + "Slf4jLogger.java");
 		String outputPackage = CrudService.class.getPackageName();
-		LoggerDelegationBuilder.build(inputFile, inputPackage, outputFile, outputPackage, "CrudServiceLoggerDelegate");
+		JavadocSlf4jDecoratorBuilder.build("JUnit Crud Service Logger Test", inputFile, inputPackage, CrudService.class.getName(), outputFile, outputPackage, "CrudServiceSlf4jLogger");
+	}
+	
+	@Test
+	public void testCrudServiceDelegate() throws Exception {
+		File inputFile = new File("src/test/java/", CrudService.class.getName().replaceAll("\\.", "/") + ".java");
+		String inputPackage = CrudService.class.getPackageName();
+		assertTrue(inputFile.exists());
+		File outputFile = new File("src/generated/java/", CrudService.class.getName().replaceAll("\\.", "/") + "Delegate.java");
+		String outputPackage = CrudService.class.getPackageName();
+		JavadocDelegationBuilder.build("JUnit Crud Service Delegate Test", inputFile, inputPackage, CrudService.class.getName(), outputFile, outputPackage, "CrudServiceDelegate");
 	}
 	
 }

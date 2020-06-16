@@ -71,7 +71,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultRoot() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/persons"))
+			.get("/rest/persons"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -130,7 +130,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultEnglish() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/persons")
+			.get("/rest/persons")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -190,7 +190,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testOrganizationFilterDefaultFrench() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/persons")
+			.get("/rest/persons")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -250,7 +250,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByDisplayNameCaseAccentInsensitive() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/persons")
+			.get("/rest/persons")
 			.queryParam("displayName", "C")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -287,7 +287,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByInactifDesc() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/persons")
+			.get("/rest/persons")
 			.queryParam("status", "Inactif")
 			.queryParam("order", "displayName")
 			.queryParam("direction", "desc")
@@ -320,7 +320,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByOrganization() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/persons")
+			.get("/rest/persons")
 			.queryParam("organization", org2.toString())
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())

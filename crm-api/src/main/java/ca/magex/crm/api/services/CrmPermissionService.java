@@ -68,6 +68,10 @@ public interface CrmPermissionService {
 		@NotNull Paging paging
 	);
 	
+	default FilteredPage<Group> findGroups(@NotNull GroupsFilter filter) {
+		return findGroups(filter, defaultGroupPaging());
+	}
+	
 	default List<String> findActiveGroupCodes() {
 		return findGroups(
 			defaultGroupsFilter().withStatus(Status.ACTIVE), 
@@ -124,6 +128,10 @@ public interface CrmPermissionService {
 		@NotNull Paging paging
 	);
 	
+	default FilteredPage<Role> findRoles(@NotNull RolesFilter filter) {
+		return findRoles(filter, defaultRolePaging());
+	}
+	
 	default List<Role> findRoles() {
 		return findRoles(
 			defaultRolesFilter(), 
@@ -143,5 +151,13 @@ public interface CrmPermissionService {
 	default RolesFilter defaultRolesFilter() {
 		return new RolesFilter();
 	};
+	
+	default Paging defaultGroupPaging() {
+		return new Paging(GroupsFilter.getSortOptions().get(0));
+	}
+	
+	default Paging defaultRolePaging() {
+		return new Paging(RolesFilter.getSortOptions().get(0));
+	}
 
 }

@@ -1,5 +1,6 @@
 {
   "name": "CrudService",
+  "package": "ca.magex.json.javadoc.samples",
   "description": "A sample CRUD service for managing entities\n\n@author magex",
   "generics": [
     "K",

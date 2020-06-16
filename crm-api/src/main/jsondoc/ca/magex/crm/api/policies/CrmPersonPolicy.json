@@ -1,0 +1,49 @@
+{
+  "name": "CrmPersonPolicy",
+  "package": "ca.magex.crm.api.policies",
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "canCreatePersonForOrganization",
+      "type": "boolean",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canViewPerson",
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdatePerson",
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canEnablePerson",
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canDisablePerson",
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    }
+  ]
+}

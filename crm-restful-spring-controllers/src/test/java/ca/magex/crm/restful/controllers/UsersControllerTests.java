@@ -45,7 +45,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 	public void testCreateUser() throws Exception {
 		// Get the initial list of groups to make sure they are blank
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -76,7 +76,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(3));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/users")
+			.post("/rest/users")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("personId", testPersonId.toString())
@@ -104,7 +104,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = new Identifier(json.getString("userId"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId)
+			.get("/rest/users/" + userId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -126,7 +126,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId)
+			.get("/rest/users/" + userId)
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -148,7 +148,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId))
+			.get("/rest/users/" + userId))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -169,7 +169,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
+			.get("/rest/users")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -219,7 +219,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId)
+				.get("/rest/users/" + userId)
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -241,14 +241,14 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", data.getArray("roles").getString(1));
 		
 		assertEquals(data, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe")
+				.get("/rest/user/chloe")
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString()));
 		
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId)
+				.get("/rest/users/" + userId)
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -270,14 +270,14 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", english.getArray("roles").getString(1));
 		
 		assertEquals(english, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe")
+				.get("/rest/user/chloe")
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString()));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId)
+				.get("/rest/users/" + userId)
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -299,7 +299,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", french.getArray("roles").getString(1));
 		
 		assertEquals(french, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe")
+				.get("/rest/user/chloe")
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -311,7 +311,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId + "/person")
+				.get("/rest/users/" + userId + "/person")
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -351,14 +351,14 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("1", data.getObject("position").getString("classification"));
 		
 		assertEquals(data, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe/person")
+				.get("/rest/user/chloe/person")
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString()));
 		
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId + "/person")
+				.get("/rest/users/" + userId + "/person")
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -398,14 +398,14 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("Developer", english.getObject("position").getString("classification"));
 		
 		assertEquals(english, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe/person")
+				.get("/rest/user/chloe/person")
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString()));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId + "/person")
+				.get("/rest/users/" + userId + "/person")
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -445,7 +445,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("Développeur", french.getObject("position").getString("classification"));
 		
 		assertEquals(french, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe/person")
+				.get("/rest/user/chloe/person")
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -457,7 +457,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/users/" + userId)
+			.patch("/rest/users/" + userId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("username", "updated")
@@ -488,7 +488,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/users/" + userId)
+			.patch("/rest/users/" + userId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("roles", List.of("ORG_USER", "SYS_ADMIN"))
@@ -519,7 +519,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("CRM_USER")).getUserId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/user/chloe")
+			.patch("/rest/user/chloe")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("roles", List.of("CRM_USER"))
@@ -549,7 +549,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId + "/roles")
+			.get("/rest/users/" + userId + "/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("roles", List.of("ORG_USER", "SYS_ADMIN"))
@@ -569,7 +569,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
 		
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/user/chloe/roles")
+			.get("/rest/user/chloe/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("roles", List.of("ORG_USER", "SYS_ADMIN"))
@@ -591,7 +591,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
+			.put("/rest/users/" + userId + "/disable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -603,7 +603,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
 
 		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
+			.put("/rest/users/" + userId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -618,7 +618,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
 
 		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
+			.put("/rest/users/" + userId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "Test")
@@ -633,7 +633,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
 
 		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
+			.put("/rest/users/" + userId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -658,7 +658,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM_ADMIN", disable.getArray("roles").getString(1));
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
+			.put("/rest/users/" + userId + "/enable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -670,7 +670,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
 		
 		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
+			.put("/rest/users/" + userId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -685,7 +685,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
 		
 		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
+			.put("/rest/users/" + userId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "test")
@@ -700,7 +700,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
 	
 		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
+			.put("/rest/users/" + userId + "/enable")
 			.header("Locale", Lang.FRENCH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -727,7 +727,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
 		
 		mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/user/chloe/disable")
+			.put("/rest/user/chloe/disable")
 			.header("Locale", Lang.FRENCH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -739,7 +739,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
 
 		mockMvc.perform(MockMvcRequestBuilders
-				.put("/api/user/chloe/enable")
+				.put("/rest/user/chloe/enable")
 				.header("Locale", Lang.FRENCH)
 				.content(new JsonObject()
 					.with("confirm", true)
@@ -755,7 +755,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 //	@Test
 //	public void testPersonWithLongName() throws Exception {
 //		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/api/users")
+//			.post("/rest/users")
 //			.header("Locale", Lang.ENGLISH)
 //			.content(new JsonObject()
 //				.with("displayName", LoremIpsumGenerator.buildWords(20))
@@ -770,7 +770,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 //	@Test
 //	public void testPersonWithNoName() throws Exception {
 //		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/api/users")
+//			.post("/rest/users")
 //			.header("Locale", Lang.ENGLISH)
 //			.content(new JsonObject()
 //				.with("groups", List.of("ORG"))

@@ -36,10 +36,11 @@
 		<module>crm-maven-parent</module>
 		<module>crm-json</module>
 		<module>crm-json-javadoc</module>
-		<module>crm-json-transformers</module>
+		<module>crm-json-maven-plugin</module>
 		
 		<!-- Support Modules -->
 		<module>crm-api</module>		
+		<module>crm-json-transformers</module>
 		<module>crm-resources</module>		
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
@@ -73,6 +74,9 @@
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
 <!-- 		<module>crm-restful-client</module> -->
+
+		<!-- Unified Server -->
+		<module>crm-api-spring-boot-server</module>
  	</modules>
 
 </project>

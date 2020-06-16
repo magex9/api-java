@@ -10,11 +10,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableCaching
 public class CachingConfig {
+	
+	public static interface Caches {
+		public static final String Organizations 	= "organizations";
+		public static final String Locations 		= "locations";
+		public static final String Persons 			= "persons";
+		public static final String Users			= "users";
+		public static final String Groups 			= "groups";
+		public static final String Roles 			= "roles";
+	}
 
 	@Bean
     public CacheManager cacheManager() {
-		ConcurrentMapCacheManager cm = new ConcurrentMapCacheManager("organizations", "locations", "persons", "users");
-		
-		return new TransactionAwareCacheManagerProxy(cm);
+		return new TransactionAwareCacheManagerProxy(
+				new ConcurrentMapCacheManager(
+						Caches.Organizations, 
+						Caches.Locations,
+						Caches.Persons,
+						Caches.Users,
+						Caches.Groups,
+						Caches.Roles));
     }	
 }

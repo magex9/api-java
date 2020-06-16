@@ -35,7 +35,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	public void testCreateLocation() throws Exception {
 		// Get the initial list of groups to make sure they are blank
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -48,7 +48,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(0, json.getArray("content").size());
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/locations")
+			.post("/rest/locations")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("organizationId", organizationId.toString())
@@ -77,7 +77,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		Identifier locationId = new Identifier(json.getString("locationId"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations/" + locationId)
+			.get("/rest/locations/" + locationId)
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -99,7 +99,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations/" + locationId)
+			.get("/rest/locations/" + locationId)
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -121,7 +121,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations/" + locationId))
+			.get("/rest/locations/" + locationId))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -142,7 +142,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/locations")
+			.get("/rest/locations")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -170,7 +170,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		Identifier locationId = crm.createLocation(organizationId, "NUEVOLEON", "Nuevo Leon", MX_ADDRESS).getLocationId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId)
+				.get("/rest/locations/" + locationId)
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -192,7 +192,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("06100", data.getObject("address").getString("postalCode"));
 		
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId)
+				.get("/rest/locations/" + locationId)
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -214,7 +214,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("06100", english.getObject("address").getString("postalCode"));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId)
+				.get("/rest/locations/" + locationId)
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -241,7 +241,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId + "/summary")
+				.get("/rest/locations/" + locationId + "/summary")
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -256,7 +256,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("Main Location", data.getString("displayName"));
 		
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId + "/summary")
+				.get("/rest/locations/" + locationId + "/summary")
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -271,7 +271,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("Main Location", english.getString("displayName"));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId + "/summary")
+				.get("/rest/locations/" + locationId + "/summary")
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -291,7 +291,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		Identifier locationId = crm.createLocation(organizationId, "NEWFOUNDLAND", "Labrador City", NL_ADDRESS).getLocationId();
 		
 		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId + "/address")
+				.get("/rest/locations/" + locationId + "/address")
 				.header("Locale", Lang.ROOT))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -306,7 +306,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("A2V 2Y2", data.getString("postalCode"));
 
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId + "/address")
+				.get("/rest/locations/" + locationId + "/address")
 				.header("Locale", Lang.ENGLISH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -321,7 +321,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("A2V 2Y2", english.getString("postalCode"));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/locations/" + locationId + "/address")
+				.get("/rest/locations/" + locationId + "/address")
 				.header("Locale", Lang.FRENCH))
 				//.andDo(MockMvcResultHandlers.print())
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -341,7 +341,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/locations/" + locationId)
+			.patch("/rest/locations/" + locationId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("displayName", "Updated name")
@@ -373,7 +373,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/locations/" + locationId)
+			.patch("/rest/locations/" + locationId)
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH))
@@ -405,7 +405,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/disable")
+			.put("/rest/locations/" + locationId + "/disable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -417,7 +417,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/disable")
+			.put("/rest/locations/" + locationId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -432,7 +432,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/disable")
+			.put("/rest/locations/" + locationId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "Test")
@@ -447,7 +447,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/disable")
+			.put("/rest/locations/" + locationId + "/disable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -465,7 +465,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("Main Location", disable.getString("displayName"));
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/enable")
+			.put("/rest/locations/" + locationId + "/enable")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
@@ -477,7 +477,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 		
 		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/enable")
+			.put("/rest/locations/" + locationId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", false)
@@ -492,7 +492,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 		
 		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/enable")
+			.put("/rest/locations/" + locationId + "/enable")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("confirm", "test")
@@ -507,7 +507,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 	
 		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/locations/" + locationId + "/enable")
+			.put("/rest/locations/" + locationId + "/enable")
 			.header("Locale", Lang.FRENCH)
 			.content(new JsonObject()
 				.with("confirm", true)
@@ -528,7 +528,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 //	@Test
 //	public void testLocationWithLongName() throws Exception {
 //		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/api/locations")
+//			.post("/rest/locations")
 //			.header("Locale", Lang.ENGLISH)
 //			.content(new JsonObject()
 //				.with("displayName", LoremIpsumGenerator.buildWords(20))
@@ -543,7 +543,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 //	@Test
 //	public void testLocationWithNoName() throws Exception {
 //		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/api/locations")
+//			.post("/rest/locations")
 //			.header("Locale", Lang.ENGLISH)
 //			.content(new JsonObject()
 //				.with("groups", List.of("ORG"))

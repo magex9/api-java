@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,6 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
@@ -51,26 +51,24 @@ public class HazelcastUserService implements CrmUserService {
 	private PasswordEncoder passwordEncoder;
 	private CrmPasswordService passwordService;
 	private CrmPersonService personService;
-	private CrmPermissionService permissionService;
 
 	public HazelcastUserService(
 			XATransactionAwareHazelcastInstance hzInstance,
 			PasswordEncoder passwordEncoder,
 			CrmPasswordService passwordService,
-			CrmPersonService personService,
-			CrmPermissionService permissionService) {
+			CrmPersonService personService) {
 		this.hzInstance = hzInstance;
 		this.passwordEncoder = passwordEncoder;
 		this.passwordService = passwordService;
+	}
+	
+	@Autowired
+	public void setPersonService(CrmPersonService personService) {
 		this.personService = personService;
-		this.permissionService = permissionService;
 	}
 
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
-		roles.forEach((role) -> {
-			permissionService.findRoleByCode(role); // ensure each role exists
-		});
 		/* run a find on the personId to ensure it exists */
 		PersonSummary person = personService.findPersonSummary(personId);
 		/* create our new user */

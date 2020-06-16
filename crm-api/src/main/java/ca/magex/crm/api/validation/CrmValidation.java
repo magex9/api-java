@@ -53,12 +53,14 @@ public class CrmValidation {
 		}
 
 		// Make sure the existing code didn't change
-		try {
-			if (!crm.findGroup(group.getGroupId()).getCode().equals(group.getCode())) {
-				messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Group code must not change during updates")));
+		if (group.getGroupId() != null) {
+			try {			
+				if (!crm.findGroup(group.getGroupId()).getCode().equals(group.getCode())) {
+					messages.add(new Message(group.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Group code must not change during updates")));
+				}
+			} catch (ItemNotFoundException e) {
+				/* no existing group, so don't care */
 			}
-		} catch (ItemNotFoundException e) {
-			/* no existing group, so don't care */
 		}
 
 		// Make sure the code is unique
@@ -104,12 +106,14 @@ public class CrmValidation {
 		}
 
 		// Make sure the existing code didn't change
-		try {
-			if (!crm.findRole(role.getRoleId()).getCode().equals(role.getCode())) {
-				messages.add(new Message(role.getRoleId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must not change during updates")));
+		if (role.getRoleId() != null) {
+			try {
+				if (!crm.findRole(role.getRoleId()).getCode().equals(role.getCode())) {
+					messages.add(new Message(role.getRoleId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must not change during updates")));
+				}
+			} catch (ItemNotFoundException e) {
+				/* no existing role, so don't care */
 			}
-		} catch (ItemNotFoundException e) {
-			/* no existing role, so don't care */
 		}
 
 		// Make sure the code is unique

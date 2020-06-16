@@ -27,7 +27,6 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
@@ -47,19 +46,13 @@ public class HazelcastPersonService implements CrmPersonService {
 	public static String HZ_PERSON_KEY = "persons";
 
 	private XATransactionAwareHazelcastInstance hzInstance;
-	private CrmOrganizationService organizationService;
 
-	public HazelcastPersonService(
-			XATransactionAwareHazelcastInstance hzInstance,
-			CrmOrganizationService organizationService) {
+	public HazelcastPersonService(XATransactionAwareHazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
-		this.organizationService = organizationService;
 	}
 
 	@Override
 	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position) {
-		/* run a find on the organizationId to ensure it exists */
-		organizationService.findOrganizationDetails(organizationId);
 		/* create our new person for this organizationId */
 		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		FlakeIdGenerator idGenerator = hzInstance.getFlakeIdGenerator(HZ_PERSON_KEY);

@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>crm-api</artifactId>
@@ -42,18 +44,104 @@
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>crm-json-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<decorators>
+						<decorator>
+							<description>Logging and delegate decorators for the CRM services and policies</description>
+							<targetPackage>ca.magex.crm.api.decorators</targetPackage>
+							<interfaces>
+								<interface>ca.magex.crm.api.authentication.CrmPasswordService</interface>
+								<interface>ca.magex.crm.api.observer.CrmDataObserver</interface>
+								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
+								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
+								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
+								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmPersonService</interface>
+								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmUserService</interface>
+								<interface>ca.magex.crm.api.policies.CrmUserPolicy</interface>
+							</interfaces>
+						</decorator>
+					</decorators>
+					<adapters>
+						<adapter>
+							<description>Aggregate adapter for all the CRM policies</description>
+							<targetClass>ca.magex.crm.api.adapters.CrmPoliciesAdapter</targetClass>
+							<interfaces>
+								<interface>ca.magex.crm.api.policies.CrmLookupPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmUserPolicy</interface>
+							</interfaces>
+						</adapter>
+						<adapter>
+							<description>Aggregate adapter for all the CRM services</description>
+							<targetClass>ca.magex.crm.api.adapters.CrmServicesAdapter</targetClass>
+							<interfaces>
+								<interface>ca.magex.crm.api.services.CrmLookupService</interface>
+								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
+								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
+								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
+								<interface>ca.magex.crm.api.services.CrmPersonService</interface>
+								<interface>ca.magex.crm.api.services.CrmUserService</interface>
+							</interfaces>
+						</adapter>
+					</adapters>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/main/jsondoc</source>
+								<source>src/main/generated</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

@@ -21,7 +21,7 @@ import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
 
 @Service("PrincipalLookupService")
-@Primary
+//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLookupService implements CrmLookupService {
 	

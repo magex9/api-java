@@ -1,18 +1,16 @@
 package ca.magex.crm.spring.security.auth;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 
 @Component
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class SpringSecurityAuthenticationService implements CrmAuthenticationService {
 
 	private CrmUserService userService;
@@ -23,13 +21,13 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public boolean isAuthenticated() {
-		return SecurityContextHolder.getContext().getAuthentication() != null;
+		return SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken;
 	}
 
 	@Override
 	public User getCurrentUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null) {
+		if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
 			return null;
 		}
 		return userService.findUserByUsername(auth.getName());

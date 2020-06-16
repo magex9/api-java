@@ -1,0 +1,102 @@
+{
+  "name": "BasicPersonPolicy",
+  "package": "ca.magex.crm.api.policies.basic",
+  "imports": {
+    "OrganizationSummary": "ca.magex.crm.api.crm",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "ItemNotFoundException": "ca.magex.crm.api.exceptions",
+    "CrmPersonPolicy": "ca.magex.crm.api.policies",
+    "CrmOrganizationService": "ca.magex.crm.api.services",
+    "CrmPersonService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmPersonPolicy"],
+  "constructors": [{
+    "name": "BasicPersonPolicy",
+    "description": "Basic Person Policy handles presence and status checks require for policy approval\n\n@param organizations\n@param persons",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "organizations",
+        "type": "CrmOrganizationService"
+      },
+      {
+        "name": "persons",
+        "type": "CrmPersonService"
+      }
+    ],
+    "body": "{\n    this.organizations = organizations;\n    this.persons = persons;\n}"
+  }],
+  "fields": [
+    {
+      "name": "organizations",
+      "modifiers": ["private"],
+      "type": "CrmOrganizationService"
+    },
+    {
+      "name": "persons",
+      "modifiers": ["private"],
+      "type": "CrmPersonService"
+    }
+  ],
+  "methods": [
+    {
+      "name": "canCreatePersonForOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can only create a location for the organization, if the organization exists, and is active */\n    OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);\n    if (summary == null) {\n        throw new ItemNotFoundException(\"Organization ID '\" + organizationId + \"'\");\n    }\n    return organizations.findOrganizationSummary(organizationId).getStatus() == Status.ACTIVE;\n}"
+    },
+    {
+      "name": "canViewPerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a person if the person exists */\n    if (persons.findPersonSummary(personId) == null) {\n        throw new ItemNotFoundException(\"Person ID '\" + personId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canUpdatePerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can only update a location if it exists, and is active */\n    PersonSummary summary = persons.findPersonSummary(personId);\n    if (summary == null) {\n        throw new ItemNotFoundException(\"Person ID '\" + personId + \"'\");\n    }\n    /* can only update a person if the person exists, and is active */\n    return persons.findPersonSummary(personId).getStatus() == Status.ACTIVE;\n}"
+    },
+    {
+      "name": "canEnablePerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    // * can view a person if the person exists */\n    if (persons.findPersonSummary(personId) == null) {\n        throw new ItemNotFoundException(\"Person ID '\" + personId + \"'\");\n    }\n    return true;\n}"
+    },
+    {
+      "name": "canDisablePerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a person if the person exists */\n    if (persons.findPersonSummary(personId) == null) {\n        throw new ItemNotFoundException(\"Person ID '\" + personId + \"'\");\n    }\n    return true;\n}"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ public class LookupSalutationControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListRootSalutations() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/salutations"))
+			.get("/rest/lookup/salutations"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -39,7 +39,7 @@ public class LookupSalutationControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindRootSalutation() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/salutations/3"))
+			.get("/rest/lookup/salutations/3"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -49,7 +49,7 @@ public class LookupSalutationControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishSalutations() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/salutations")
+			.get("/rest/lookup/salutations")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -65,7 +65,7 @@ public class LookupSalutationControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindEnglishSalutation() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/salutations/3")
+			.get("/rest/lookup/salutations/3")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -76,7 +76,7 @@ public class LookupSalutationControllerTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchSalutations() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/salutations")
+			.get("/rest/lookup/salutations")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -92,7 +92,7 @@ public class LookupSalutationControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFindFrenchSalutation() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/salutations/3")
+			.get("/rest/lookup/salutations/3")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())

@@ -29,7 +29,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 	@Test
 	public void testJsonConfig() throws Exception {
 		String yaml = mockMvc.perform(MockMvcRequestBuilders
-			.get("/openapi.json")
+			.get("/rest/api.json")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -46,7 +46,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 	@Test
 	public void testInitialized() throws Exception {
 		String json = mockMvc.perform(MockMvcRequestBuilders
-			.get("/initialized")
+			.get("/rest/initialized")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -66,7 +66,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 		assertEquals(Long.valueOf(0), crm.findUsers(crm.defaultUsersFilter()).getTotalElements());
 		
 		assertEquals("true", mockMvc.perform(MockMvcRequestBuilders
-			.post("/initialize")
+			.post("/rest/initialize")
 			.content(new JsonObject()
 				.with("displayName", "System Orgainzation")
 				.with("firstName", "First")
@@ -89,7 +89,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 		assertEquals(List.of("system"), crm.findUsers(crm.defaultUsersFilter()).stream().map(u -> u.getUsername()).collect(Collectors.toList()));
 
 		assertEquals("true", mockMvc.perform(MockMvcRequestBuilders
-			.post("/initialize")
+			.post("/rest/initialize")
 			.content(new JsonObject()
 				.with("displayName", "System Orgainzation")
 				.with("firstName", "First")

@@ -16,7 +16,7 @@ import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
 @Service("PrincipalPasswordService")
-@Primary
+//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPasswordService implements CrmPasswordService {
 

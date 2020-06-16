@@ -1,0 +1,59 @@
+{
+  "name": "CrmInitializationService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "OutputStream": "java.io",
+    "PersonName": "ca.magex.crm.api.common",
+    "User": "ca.magex.crm.api.roles"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "isInitialized",
+      "type": "boolean"
+    },
+    {
+      "name": "initializeSystem",
+      "type": "User",
+      "parameters": [
+        {
+          "name": "organization",
+          "type": "String"
+        },
+        {
+          "name": "name",
+          "type": "PersonName"
+        },
+        {
+          "name": "email",
+          "type": "String"
+        },
+        {
+          "name": "username",
+          "type": "String"
+        },
+        {
+          "name": "password",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "reset",
+      "type": "boolean"
+    },
+    {
+      "name": "dump",
+      "parameters": [{
+        "name": "os",
+        "type": "OutputStream"
+      }]
+    },
+    {
+      "name": "dump",
+      "modifiers": ["default"],
+      "body": "{\n    dump(System.out);\n}"
+    }
+  ]
+}

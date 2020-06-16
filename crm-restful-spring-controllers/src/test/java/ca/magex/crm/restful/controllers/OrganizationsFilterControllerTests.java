@@ -38,7 +38,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Test
 	public void testOrganizationFilterDefaultRoot() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/organizations"))
+			.get("/rest/organizations"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -75,7 +75,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Test
 	public void testOrganizationFilterDefaultEnglish() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/organizations")
+			.get("/rest/organizations")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -113,7 +113,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Test
 	public void testOrganizationFilterDefaultFrench() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/organizations")
+			.get("/rest/organizations")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -169,7 +169,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Test
 	public void testFilterByDisplayNameCaseAccentInsensitive() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/organizations")
+			.get("/rest/organizations")
 			.queryParam("displayName", "NEW")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -198,7 +198,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Test
 	public void testFilterByActifDesc() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/organizations")
+			.get("/rest/organizations")
 			.queryParam("status", "Actif")
 			.queryParam("order", "displayName")
 			.queryParam("direction", "desc")
@@ -234,7 +234,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Test
 	public void testFilterByInactif() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/organizations")
+			.get("/rest/organizations")
 			.queryParam("status", "Inactif")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())

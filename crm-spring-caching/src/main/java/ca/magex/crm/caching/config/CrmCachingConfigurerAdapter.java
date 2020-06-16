@@ -32,6 +32,7 @@ public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 		this.initializationService = initializationService;
 	}
 	
+	@Override
 	public CrmInitializationService getInitializationService() {
 		return initializationService;
 	}
@@ -41,12 +42,13 @@ public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 		this.lookupService = lookupService;
 	}
 	
+	@Override
 	public CrmLookupService getLookupService() {
 		return lookupService;
 	}
 	
 	@Autowired
-	@Qualifier("OrganizationServiceCachingDelegate")
+	@Qualifier("CrmOrganizationServiceCachingDelegate")
 	public void setOrganizationService(CrmOrganizationService organizationService) {
 		this.organizationService = organizationService;
 	}
@@ -56,40 +58,45 @@ public abstract class CrmCachingConfigurerAdapter extends CrmConfigurerAdapter {
 	}
 	
 	@Autowired
-	@Qualifier("LocationServiceCachingDelegate")
+	@Qualifier("CrmLocationServiceCachingDelegate")
 	public void setLocationService(CrmLocationService locationService) {
 		this.locationService = locationService;
 	}
 	
+	@Override
 	public CrmLocationService getLocationService() {
 		return locationService;
 	}
 	
 	@Autowired
-	@Qualifier("PersonServiceCachingDelegate")
+	@Qualifier("CrmPersonServiceCachingDelegate")
 	public void setPersonService(CrmPersonService personService) {
 		this.personService = personService;
 	}
 	
+	@Override
 	public CrmPersonService getPersonService() {
 		return personService;
 	}
 	
 	@Autowired
-	@Qualifier("UserServiceCachingDelegate")
+	@Qualifier("CrmUserServiceCachingDelegate")
 	public void setUserService(CrmUserService userService) {
 		this.userService = userService;
 	}
 	
+	@Override
 	public CrmUserService getUserService() {
 		return userService;
 	}
 	
 	@Autowired
+	@Qualifier("CrmPermissionServiceCachingDelegate")
 	public void setPermissionService(CrmPermissionService permissionService) {
 		this.permissionService = permissionService;
 	}
 	
+	@Override
 	public CrmPermissionService getPermissionService() {
 		return permissionService;
 	}

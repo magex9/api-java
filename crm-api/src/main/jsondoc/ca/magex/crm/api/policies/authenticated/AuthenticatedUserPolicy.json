@@ -1,0 +1,138 @@
+{
+  "name": "AuthenticatedUserPolicy",
+  "package": "ca.magex.crm.api.policies.authenticated",
+  "imports": {
+    "CRM_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
+    "ORG_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
+    "CrmUserPolicy": "ca.magex.crm.api.policies",
+    "BasicUserPolicy": "ca.magex.crm.api.policies.basic",
+    "CrmAuthenticationService": "ca.magex.crm.api.services",
+    "CrmPersonService": "ca.magex.crm.api.services",
+    "CrmUserService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmUserPolicy"],
+  "constructors": [{
+    "name": "AuthenticatedUserPolicy",
+    "description": "Authenticated User Policy handles roles and association checks required for policy approval\n\n@param auth\n@param persons\n@param users",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "auth",
+        "type": "CrmAuthenticationService"
+      },
+      {
+        "name": "persons",
+        "type": "CrmPersonService"
+      },
+      {
+        "name": "users",
+        "type": "CrmUserService"
+      }
+    ],
+    "body": "{\n    this.auth = auth;\n    this.persons = persons;\n    this.users = users;\n    this.delegate = new BasicUserPolicy(persons, users);\n}"
+  }],
+  "fields": [
+    {
+      "name": "auth",
+      "modifiers": ["private"],
+      "type": "CrmAuthenticationService"
+    },
+    {
+      "name": "delegate",
+      "modifiers": ["private"],
+      "type": "CrmUserPolicy"
+    },
+    {
+      "name": "persons",
+      "modifiers": ["private"],
+      "type": "CrmPersonService"
+    },
+    {
+      "name": "users",
+      "modifiers": ["private"],
+      "type": "CrmUserService"
+    }
+  ],
+  "methods": [
+    {
+      "name": "canCreateUserForPerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canCreateUserForPerson(personId)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* ensure the current user is associated with the organization the person belongs to */\n    if (auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {\n        return auth.isUserInRole(ORG_ADMIN);\n    }\n    /* current user not associated to the organization of the person */\n    return false;\n}"
+    },
+    {
+      "name": "canViewUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "username",
+        "type": "String"
+      }],
+      "body": "{\n    if (!delegate.canViewUser(username)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* ensure the current user is associated to the users organization */\n    return auth.getOrganizationId().equals(users.findUserByUsername(username).getPerson().getOrganizationId());\n}"
+    },
+    {
+      "name": "canViewUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canViewUser(userId)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* ensure the current user is associated to the users organization */\n    return auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId());\n}"
+    },
+    {
+      "name": "canUpdateUserRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canUpdateUserRole(userId)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* ensure the current user is associated to the users organization */\n    if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {\n        return auth.isUserInRole(ORG_ADMIN);\n    }\n    /* ensure the current user is associated to the users organization */\n    return false;\n}"
+    },
+    {
+      "name": "canUpdateUserPassword",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canUpdateUserPassword(userId)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* current user can update their own password */\n    if (auth.getUserId().equals(userId)) {\n        return true;\n    }\n    /* ensure the current user is associated to the users organization */\n    if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {\n        return auth.isUserInRole(ORG_ADMIN);\n    }\n    /* ensure the current user is associated to the users organization */\n    return false;\n}"
+    },
+    {
+      "name": "canEnableUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canEnableUser(userId)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* ensure the current user is associated to the users organization */\n    if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {\n        return auth.isUserInRole(ORG_ADMIN);\n    }\n    /* ensure the current user is associated to the users organization */\n    return false;\n}"
+    },
+    {
+      "name": "canDisableUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canDisableUser(userId)) {\n        return false;\n    }\n    /* if the user is a CRM Admin then return true */\n    if (auth.isUserInRole(CRM_ADMIN)) {\n        return true;\n    }\n    /* ensure the current user is associated to the users organization */\n    if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {\n        return auth.isUserInRole(ORG_ADMIN);\n    }\n    /* ensure the current user is associated to the users organization */\n    return false;\n}"
+    }
+  ]
+}

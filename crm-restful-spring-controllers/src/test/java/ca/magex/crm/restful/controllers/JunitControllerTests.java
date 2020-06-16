@@ -27,7 +27,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testBadRequestExceptionRootLocale() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/400"))
+			.post("/rest/junit/400"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
@@ -37,7 +37,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testBadRequestExceptionEnglishLocale() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/400")
+			.post("/rest/junit/400")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -48,7 +48,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testBadRequestExceptionFrenchLocale() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/400")
+			.post("/rest/junit/400")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -59,7 +59,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testPermissionDeniedException() throws Exception {
 		String content = mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/403"))
+			.post("/rest/junit/403"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isForbidden())
 			.andReturn().getResponse().getContentAsString();
@@ -69,7 +69,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testItemNotFoundException() throws Exception {
 		String content = mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/404"))
+			.post("/rest/junit/404"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andReturn().getResponse().getContentAsString();
@@ -79,7 +79,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testExcetpion() throws Exception {
 		String content = mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/500"))
+			.post("/rest/junit/500"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isInternalServerError())
 			.andReturn().getResponse().getContentAsString();
@@ -145,7 +145,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testIdentifierValid() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/identifier/testId")
+			.post("/rest/junit/identifier/testId")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("testId", "test")
@@ -164,7 +164,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testIdentifierClassCastException() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/identifier/status")
+			.post("/rest/junit/identifier/status")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -175,7 +175,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testIdentifierNoSuchElementException() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/identifier/groupId")
+			.post("/rest/junit/identifier/groupId")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", false)
@@ -189,7 +189,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testStringsClassCastException() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/strings/status")
+			.post("/rest/junit/strings/status")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -200,7 +200,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testStringsNoSuchElementException() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/strings/groupId")
+			.post("/rest/junit/strings/groupId")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", false)
@@ -214,7 +214,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testObjectClassCastException() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/object/status")
+			.post("/rest/junit/object/status")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -225,7 +225,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testObjectNoSuchElementException() throws Exception {
 		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/junit/object/groupId")
+			.post("/rest/junit/object/groupId")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("groupId", false)

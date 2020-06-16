@@ -1,0 +1,100 @@
+{
+  "name": "FilteredPage",
+  "package": "ca.magex.crm.api.system",
+  "generics": ["T"],
+  "imports": {
+    "Serializable": "java.io",
+    "List": "java.util",
+    "SerializationUtils": "org.apache.commons.lang3",
+    "PageImpl": "org.springframework.data.domain",
+    "DuplicateItemFoundException": "ca.magex.crm.api.exceptions",
+    "ItemNotFoundException": "ca.magex.crm.api.exceptions",
+    "Paging": "ca.magex.crm.api.filters",
+    "Crm": "ca.magex.crm.api.services"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "extends": [{
+    "class": "PageImpl",
+    "generics": ["T"]
+  }],
+  "constructors": [{
+    "name": "FilteredPage",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "filter",
+        "type": "Serializable"
+      },
+      {
+        "name": "paging",
+        "type": "Paging"
+      },
+      {
+        "name": "content",
+        "type": {
+          "class": "List",
+          "generics": ["T"]
+        }
+      },
+      {
+        "name": "total",
+        "type": "long"
+      }
+    ],
+    "body": "{\n    super(content, paging, total);\n    this.filter = SerializationUtils.clone(filter);\n    this.paging = SerializationUtils.clone(paging);\n}"
+  }],
+  "fields": [
+    {
+      "name": "filter",
+      "modifiers": ["private"],
+      "type": "Serializable"
+    },
+    {
+      "name": "paging",
+      "modifiers": ["private"],
+      "type": "Paging"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getFilter",
+      "modifiers": ["public"],
+      "type": "Serializable",
+      "body": "{\n    return filter;\n}"
+    },
+    {
+      "name": "getPaging",
+      "modifiers": ["public"],
+      "type": "Paging",
+      "body": "{\n    return paging;\n}"
+    },
+    {
+      "name": "getSingleItem",
+      "modifiers": ["public"],
+      "type": "T",
+      "body": "{\n    if (getTotalElements() < 1)\n        throw new ItemNotFoundException(\"No items found: \" + filter);\n    if (getTotalElements() > 1)\n        throw new DuplicateItemFoundException(\"Duplicate items found: \" + filter);\n    return getContent().get(0);\n}"
+    },
+    {
+      "name": "hasPrevious",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return getNumber() > 1;\n}"
+    },
+    {
+      "name": "hasNext",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return getNumber() < getTotalPages();\n}"
+    },
+    {
+      "name": "toString",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    String contentType = \"UNKNOWN\";\n    List<T> content = getContent();\n    if (content.size() > 0) {\n        contentType = content.get(0).getClass().getName();\n    }\n    return String.format(\"Page %s of %d containing %s instances\", getNumber(), getTotalPages(), contentType);\n}"
+    }
+  ]
+}

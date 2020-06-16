@@ -13,7 +13,7 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
 
 @Service("PrincipalInitializationService")
-@Primary
+//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaInitializationService implements CrmInitializationService {
 

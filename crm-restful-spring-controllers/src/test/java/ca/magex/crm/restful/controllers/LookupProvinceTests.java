@@ -24,7 +24,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListRootCanadianProvinces() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces"))
+			.get("/rest/lookup/countries/ca/provinces"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -49,7 +49,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testFindRootCanadianProvince() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces/bc"))
+			.get("/rest/lookup/countries/ca/provinces/bc"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -59,7 +59,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishCanadianProvinces() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces")
+			.get("/rest/lookup/countries/ca/provinces")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -85,7 +85,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testFindEnglishCanadianProvince() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces/bc")
+			.get("/rest/lookup/countries/ca/provinces/bc")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -96,7 +96,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchCanadianProvinces() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces")
+			.get("/rest/lookup/countries/ca/provinces")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -122,7 +122,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testFindFrenchCanadianProvince() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces/bc")
+			.get("/rest/lookup/countries/ca/provinces/bc")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -133,7 +133,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListRootAmericanStates() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/us/provinces"))
+			.get("/rest/lookup/countries/us/provinces"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -196,7 +196,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishAmericanStates() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/us/provinces")
+			.get("/rest/lookup/countries/us/provinces")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -260,7 +260,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchAmericanStates() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/us/provinces")
+			.get("/rest/lookup/countries/us/provinces")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -324,7 +324,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListRootMexicanProvinces() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/mx/provinces"))
+			.get("/rest/lookup/countries/mx/provinces"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -368,7 +368,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishMexicanProvinces() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/mx/provinces")
+			.get("/rest/lookup/countries/mx/provinces")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -413,7 +413,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchMexicanProvinces() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/mx/provinces")
+			.get("/rest/lookup/countries/mx/provinces")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -458,7 +458,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 	@Test
 	public void testFindEnglishProvinceNL() throws Exception {
 		JsonText ca = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/ca/provinces/nl")
+			.get("/rest/lookup/countries/ca/provinces/nl")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -466,7 +466,7 @@ public class LookupProvinceTests extends AbstractControllerTests {
 		assertEquals("Newfoundland and Labrador", ca.value());
 
 		JsonText mx = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/countries/mx/provinces/nl")
+			.get("/rest/lookup/countries/mx/provinces/nl")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())

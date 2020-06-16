@@ -1,0 +1,14 @@
+{
+  "name": "CrmServices",
+  "package": "ca.magex.crm.api.services",
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": [
+    "CrmLookupService",
+    "CrmOrganizationService",
+    "CrmLocationService",
+    "CrmPersonService",
+    "CrmUserService",
+    "CrmPermissionService"
+  ]
+}

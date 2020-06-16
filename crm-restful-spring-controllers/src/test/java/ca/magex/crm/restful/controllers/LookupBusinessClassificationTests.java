@@ -24,7 +24,7 @@ public class LookupBusinessClassificationTests extends AbstractControllerTests {
 	@Test
 	public void testListRootBusinessSectors() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/business/classifications"))
+			.get("/rest/lookup/business/classifications"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -41,7 +41,7 @@ public class LookupBusinessClassificationTests extends AbstractControllerTests {
 	@Test
 	public void testFindRootBusinessSectors() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/business/classifications/4"))
+			.get("/rest/lookup/business/classifications/4"))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
@@ -51,7 +51,7 @@ public class LookupBusinessClassificationTests extends AbstractControllerTests {
 	@Test
 	public void testListEnglishBusinessSectors() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/business/classifications")
+			.get("/rest/lookup/business/classifications")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -69,7 +69,7 @@ public class LookupBusinessClassificationTests extends AbstractControllerTests {
 	@Test
 	public void testFindEnglishBusinessSector() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/business/classifications/4")
+			.get("/rest/lookup/business/classifications/4")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -80,7 +80,7 @@ public class LookupBusinessClassificationTests extends AbstractControllerTests {
 	@Test
 	public void testListFrenchBusinessSectors() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/business/classifications")
+			.get("/rest/lookup/business/classifications")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -98,7 +98,7 @@ public class LookupBusinessClassificationTests extends AbstractControllerTests {
 	@Test
 	public void testFindFrenchBusinessSector() throws Exception {
 		JsonText json = (JsonText)JsonParser.parse(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/lookup/business/classifications/4")
+			.get("/rest/lookup/business/classifications/4")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())

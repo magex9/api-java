@@ -22,7 +22,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 @Service("PrincipalPermissionService")
-@Primary
+//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPermissionService implements CrmPermissionService {
 
