@@ -14,16 +14,12 @@ public class CrmUiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		
-		httpSecurity
+		httpSecurity			
 			.authorizeRequests()
 				.antMatchers("/", "/initialize").permitAll()
 				.antMatchers("/home").hasAnyRole("CRM_USER", "CRM_ADMIN")
-				.and()
-			.formLogin()
-				.loginPage("/login")
-				.permitAll()
-				.and()
-			.logout()
-				.permitAll();
+			.and().formLogin().loginPage("/login").permitAll()
+			.and().logout().permitAll()
+			.and().csrf().disable();
 	}
 }

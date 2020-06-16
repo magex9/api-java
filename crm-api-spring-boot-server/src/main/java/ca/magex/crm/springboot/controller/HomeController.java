@@ -8,13 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 
 @Controller()
 public class HomeController {
 
 	@Autowired private Crm crm = null;
-	@Autowired private CrmAuthenticationService auth;
 
 	@GetMapping("/")
 	public String getRoot() {
