@@ -15,15 +15,20 @@
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="#">Magex.ca</a>
+    <ul class="navbar-nav ml-auto" >
+      <li  class="nav-item">
+        <a class="nav-link" href="#" th:text=${username}></a>
+      </li>
+    </ul>
 </nav>
 
 <main role="main" class="container">
 
     <div class="starter-template">
         <h1>CRM Home Page</h1>
-        <h2>
-            <span th:text="'Crm Successfully Initialized'"></span>
-        </h2>
+        <form th:action="@{/logout}" method="POST">
+            <input type="submit" value="Sign Out"/>
+        </form>
     </div>
     
 </main>

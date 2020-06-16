@@ -17,7 +17,7 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
-@Order(3)
+@Order(4)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @Profile(MagexCrmProfiles.CRM_AUTH)
@@ -32,8 +32,7 @@ public class CrmAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdap
 				.antMatchers(
 						"/graphql", 
 						"/rest/**").hasAnyRole("CRM_USER", "CRM_ADMIN")
-				.antMatchers(
-						"/",
+				.antMatchers(						
 						"/crm.yaml",
 						"/swagger-ui-bundle.js",
 						"/swagger-ui.css",
