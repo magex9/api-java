@@ -17,7 +17,7 @@ public class FormattedStringBuilder {
 		this.indent = 0;
 	}
 	
-	public FormattedStringBuilder append(String text) {
+	public FormattedStringBuilder append(Object text) {
 		for (int i = 0; i < indent; i++) {
 			sb.append("\t");
 		}
@@ -26,13 +26,13 @@ public class FormattedStringBuilder {
 		return this;
 	}
 	
-	public FormattedStringBuilder indent(String text) {
+	public FormattedStringBuilder indent(Object text) {
 		append(text);
 		indent += 1;
 		return this;
 	}
 	
-	public FormattedStringBuilder unindent(String text) {
+	public FormattedStringBuilder unindent(Object text) {
 		indent -= 1;
 		append(text);
 		return this;

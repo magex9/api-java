@@ -1,0 +1,176 @@
+{
+  "name": "MailingAddress",
+  "package": "ca.magex.crm.api.common",
+  "imports": {
+    "Serializable": "java.io",
+    "EqualsBuilder": "org.apache.commons.lang3.builder",
+    "HashCodeBuilder": "org.apache.commons.lang3.builder",
+    "ToStringBuilder": "org.apache.commons.lang3.builder",
+    "ToStringStyle": "org.apache.commons.lang3.builder",
+    "Crm": "ca.magex.crm.api.services"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["Serializable"],
+  "constructors": [{
+    "name": "MailingAddress",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "street",
+        "type": "String"
+      },
+      {
+        "name": "city",
+        "type": "String"
+      },
+      {
+        "name": "province",
+        "type": "String"
+      },
+      {
+        "name": "country",
+        "type": "String"
+      },
+      {
+        "name": "postalCode",
+        "type": "String"
+      }
+    ],
+    "body": "{\n    super();\n    this.street = street;\n    this.city = city;\n    this.province = province;\n    this.country = country;\n    this.postalCode = postalCode;\n}"
+  }],
+  "fields": [
+    {
+      "name": "street",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "city",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "province",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "country",
+      "modifiers": ["private"],
+      "type": "String"
+    },
+    {
+      "name": "postalCode",
+      "modifiers": ["private"],
+      "type": "String"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getStreet",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return street;\n}"
+    },
+    {
+      "name": "withStreet",
+      "modifiers": ["public"],
+      "type": "MailingAddress",
+      "parameters": [{
+        "name": "street",
+        "type": "String"
+      }],
+      "body": "{\n    return new MailingAddress(street, city, province, country, postalCode);\n}"
+    },
+    {
+      "name": "getCity",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return city;\n}"
+    },
+    {
+      "name": "withCity",
+      "modifiers": ["public"],
+      "type": "MailingAddress",
+      "parameters": [{
+        "name": "city",
+        "type": "String"
+      }],
+      "body": "{\n    return new MailingAddress(street, city, province, country, postalCode);\n}"
+    },
+    {
+      "name": "getProvince",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return province;\n}"
+    },
+    {
+      "name": "withProvince",
+      "modifiers": ["public"],
+      "type": "MailingAddress",
+      "parameters": [{
+        "name": "province",
+        "type": "String"
+      }],
+      "body": "{\n    return new MailingAddress(street, city, province, country, postalCode);\n}"
+    },
+    {
+      "name": "getCountry",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return country;\n}"
+    },
+    {
+      "name": "withCountry",
+      "modifiers": ["public"],
+      "type": "MailingAddress",
+      "parameters": [{
+        "name": "country",
+        "type": "String"
+      }],
+      "body": "{\n    return new MailingAddress(street, city, province, country, postalCode);\n}"
+    },
+    {
+      "name": "getPostalCode",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return postalCode;\n}"
+    },
+    {
+      "name": "withPostalCode",
+      "modifiers": ["public"],
+      "type": "MailingAddress",
+      "parameters": [{
+        "name": "postalCode",
+        "type": "String"
+      }],
+      "body": "{\n    return new MailingAddress(street, city, province, country, postalCode);\n}"
+    },
+    {
+      "name": "hashCode",
+      "modifiers": ["public"],
+      "type": "int",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return HashCodeBuilder.reflectionHashCode(this);\n}"
+    },
+    {
+      "name": "equals",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "obj",
+        "type": "Object"
+      }],
+      "body": "{\n    return EqualsBuilder.reflectionEquals(this, obj);\n}"
+    },
+    {
+      "name": "toString",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);\n}"
+    }
+  ]
+}

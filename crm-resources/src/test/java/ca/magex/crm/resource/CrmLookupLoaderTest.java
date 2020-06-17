@@ -15,8 +15,9 @@ import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
 import ca.magex.crm.api.lookup.Country;
 import ca.magex.crm.api.lookup.Language;
+import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.test.TestConfig;
+import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -45,7 +46,7 @@ public class CrmLookupLoaderTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void testLoadCountries() {
 		List<Country> roles = crmLookupLoader.loadLookup(Country.class, "Country.csv");
-		Assert.assertEquals(roles.toString(), 252, roles.size());
+		Assert.assertEquals(roles.toString(), 253, roles.size());
 	}
 	
 	@Test
@@ -58,5 +59,23 @@ public class CrmLookupLoaderTest extends AbstractJUnit4SpringContextTests {
 	public void testLoadSalutations() {
 		List<Salutation> roles = crmLookupLoader.loadLookup(Salutation.class, "Salutation.csv");
 		Assert.assertEquals(roles.toString(), 3, roles.size());
+	}
+	
+	@Test
+	public void testLoadCaProvince() {
+		List<Province> provinces = crmLookupLoader.loadLookup(new Country("CA", "Canada", "Canada"), Province.class, "CaProvince.csv");
+		Assert.assertEquals(provinces.toString(), 13, provinces.size());
+	}
+	
+	@Test
+	public void testLoadUsProvince() {
+		List<Province> provinces = crmLookupLoader.loadLookup(new Country("US", "United States", "Murica"), Province.class, "UsProvince.csv");
+		Assert.assertEquals(provinces.toString(), 51, provinces.size());
+	}
+	
+	@Test
+	public void testLoadMxProvince() {
+		List<Province> provinces = crmLookupLoader.loadLookup(new Country("MX", "Mexico", "Mexico"), Province.class, "MxProvince.csv");
+		Assert.assertEquals(provinces.toString(), 32, provinces.size());
 	}
 }

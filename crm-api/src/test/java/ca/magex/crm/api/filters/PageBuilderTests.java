@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.data.domain.Sort;
 
 import ca.magex.crm.api.roles.Role;
@@ -12,6 +14,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
+@TestInstance(Lifecycle.PER_METHOD)
 public class PageBuilderTests {
 
 	private Role roleA = new Role(new Identifier("A"), new Identifier("G1"), Status.ACTIVE, new Localized("a", "a", "a"));

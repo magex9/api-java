@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Jonny
  */
 public interface CrmGraphQLController {
-
+	
 	@PostMapping("/graphql")
 	public ResponseEntity<Object> doQuery(
-			@RequestBody String request, 
+			@RequestBody(required = false) String request, 
 			HttpServletRequest req, 
 			HttpServletResponse res) throws JSONException;
 	

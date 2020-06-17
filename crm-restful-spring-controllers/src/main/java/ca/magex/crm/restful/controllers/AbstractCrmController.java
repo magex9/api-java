@@ -3,11 +3,10 @@ package ca.magex.crm.restful.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +22,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.Crm;
@@ -30,8 +30,9 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
-import ca.magex.crm.api.system.Status;
-import ca.magex.crm.rest.transformers.JsonTransformer;
+import ca.magex.crm.api.transform.RequestHandler;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonFormatter;
@@ -47,10 +48,13 @@ public abstract class AbstractCrmController {
 	@Autowired
 	protected Crm crm;
 	
-	protected void handle(HttpServletRequest req, HttpServletResponse res, BiFunction<List<Message>, JsonTransformer, JsonElement> func) throws IOException {
+	@Autowired
+	protected JsonTransformerFactory jsonTransformerFactory;
+	
+	protected <T> void handle(HttpServletRequest req, HttpServletResponse res, Class<T> type, RequestHandler<List<Message>, Transformer<T, JsonElement>, Locale, JsonElement> func) throws IOException {
 		List<Message> messages = new ArrayList<Message>();
 		try {
-			JsonElement json = func.apply(messages, getTransformer(req, crm));
+			JsonElement json = func.apply(messages, jsonTransformerFactory.findByClass(type), extractLocale(req));
 			res.setStatus(200);
 			res.setContentType(getContentType(req));
 			res.getWriter().write(JsonFormatter.formatted(json));
@@ -63,6 +67,9 @@ public abstract class AbstractCrmController {
 		} catch (PermissionDeniedException e) {
 			logger.warn("Permission denied:" + req.getPathInfo(), e);
 			res.setStatus(403);
+		} catch (ItemNotFoundException e) {
+			logger.info("Item not found:" + req.getPathInfo(), e);
+			res.setStatus(404);
 		} catch (Exception e) {
 			logger.error("Exception handling request:" + req.getPathInfo(), e);
 			res.setStatus(500);
@@ -109,22 +116,45 @@ public abstract class AbstractCrmController {
 			return defaultValue;
 		}
 	}
+	
+	protected <T> T getObject(Class<T> cls, JsonObject body, String key, T defaultValue, Identifier identifier, List<Message> messages, Locale locale) {
+		try {
+			return jsonTransformerFactory.findByClass(cls).parse(body.getObject(key), locale);
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			return defaultValue;
+		}
+	}
 
 	public String getContentType(HttpServletRequest req) {
-//		if (req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld")) {
-//			return "application/json+ld";
-//		}
+		if (req.getContentType() != null)
+			return req.getContentType();
 		return "application/json";
 	}
 
-	protected <T> JsonObject createPage(Page<T> page, Function<T, JsonElement> mapper) {
+	protected <T> JsonObject createPage(Page<T> page, Transformer<T, JsonElement> transfomer, Locale locale) {
 		return new JsonObject()
 			.with("page", page.getNumber())
-			.with("limit", page.getNumberOfElements())
+			.with("limit", page.getPageable().getPageSize())
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.hasPrevious())
-			.with("content", new JsonArray(page.getContent().stream().map(mapper).collect(Collectors.toList())));
+			.with("content", new JsonArray(page.getContent().stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
+	}
+	
+	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale) {
+		return new JsonObject()
+			.with("total", list.size())
+			.with("content", new JsonArray(list.stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
+	}
+	
+	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale, Comparator<T> comparator) {
+		return new JsonObject()
+			.with("total", list.size())
+			.with("content", new JsonArray(list.stream().sorted(comparator).map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
 	}
 	
 	protected JsonArray createErrorMessages(Locale locale, BadRequestException e) {
@@ -162,55 +192,14 @@ public abstract class AbstractCrmController {
 		validate(messages);
 	}
 	
-	public JsonTransformer getTransformer(HttpServletRequest req, Crm crm) {
-		boolean linked = req.getHeader("Content-Type") != null && req.getHeader("Content-Type").equals("application/json+ld");
-		return new JsonTransformer(crm, extractLocale(req), linked);
-	}
-	
 	public Locale extractLocale(HttpServletRequest req) {
+		if (getContentType(req).contentEquals("application/json+ld"))
+			return null;
 		if (req.getHeader("Locale") == null)
 			return Lang.ROOT;
 		return Lang.parse(req.getHeader("Locale"));
 	}
-	
-	public Identifier extractOrganizationId(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("organizationId");
-		if (value == null)
-			return null;
-		if (value.length() > 60)
-			throw new IllegalArgumentException("The organizationId name must be under 60 characters");
-		return new Identifier(value);
-	}
 
-	public String extractDisplayName(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("displayName");
-		if (value == null)
-			return null;
-		if (value.length() > 60)
-			throw new IllegalArgumentException("The display name must be under 60 characters");
-		return value;
-	}
-
-	public String extractReference(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("reference");
-		if (value == null)
-			return null;
-		if (value.length() > 60)
-			throw new IllegalArgumentException("The reference must be under 60 characters");
-		return value;
-	}
-	
-	public Status extractStatus(HttpServletRequest req) throws IllegalArgumentException {
-		String value = req.getParameter("status");
-		if (value == null)
-			return null;
-		try {
-			return Status.valueOf(value.toUpperCase());
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Invalid status requested: " + value);
-		}
-	}
-	
 	public Paging extractPaging(Paging paging, HttpServletRequest req) {
 		if (req.getParameter("page") != null)
 			paging = paging.withPageNumber(Integer.parseInt(req.getParameter("page")));

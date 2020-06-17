@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.lookup.Country;
@@ -14,14 +16,18 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
+@Component
 public class MailingAddressJsonTransformer extends AbstractJsonTransformer<MailingAddress> {
+	
+	private CountryJsonTransformer countryJsonTransformer;
 
 	public MailingAddressJsonTransformer(CrmServices crm) {
 		super(crm);
+		this.countryJsonTransformer = new CountryJsonTransformer(crm);
 	}
 
 	@Override
-	public Class<MailingAddress> getType() {
+	public Class<MailingAddress> getSourceType() {
 		return MailingAddress.class;
 	}
 	
@@ -38,7 +44,7 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 		formatText(pairs, "city", address);
 		formatProvince(pairs, "province", address, locale);
 		if (address.getCountry() != null) {
-			pairs.add(new JsonPair("country", new CountryJsonTransformer(crm)
+			pairs.add(new JsonPair("country", countryJsonTransformer
 				.format(crm.findCountryByCode(address.getCountry()), locale)));
 		}
 		formatText(pairs, "postalCode", address);
@@ -83,7 +89,7 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	public Country parseCountry(String key, JsonObject json, Locale locale) {
 		if (!json.contains(key))
 			return null;
-		return parseObject("country", json, Country.class, CountryJsonTransformer.class, locale);
+		return parseObject("country", json, countryJsonTransformer, locale);
 	}
 	
 	public String parseProvince(String provinceKey, String countryKey, JsonObject json, Locale locale) {

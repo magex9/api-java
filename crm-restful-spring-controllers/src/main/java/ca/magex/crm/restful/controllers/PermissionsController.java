@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.RolesFilter;
+import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -25,13 +27,15 @@ import ca.magex.json.model.JsonObject;
 @Controller
 public class PermissionsController extends AbstractCrmController {
 
-	@GetMapping("/api/groups")
+	@GetMapping("/rest/groups")
 	public void findGroups(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, (messages, transformer) -> { 
-			return createPage(crm.findGroups(
-				extractGroupsFilter(extractLocale(req), req), 
-				extractPaging(GroupsFilter.getDefaultPaging(), req)), 
-				e -> transformer.formatGroup(e));
+		handle(req, res, Group.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findGroups(
+					extractGroupsFilter(locale, req), 
+					extractPaging(GroupsFilter.getDefaultPaging(), req)
+				), transformer, locale
+			);
 		});
 	}
 	
@@ -54,31 +58,31 @@ public class PermissionsController extends AbstractCrmController {
 		}
 	}
 
-	@PostMapping("/api/groups")
+	@PostMapping("/rest/groups")
 	public void createGroup(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			String code = getString(body, "code", "", null, messages);
 			String englishName = getString(body, "englishName", "", null, messages);
 			String frenchName = getString(body, "frenchName", "", null, messages);
 			Localized name = new Localized(code, englishName, frenchName);
 			validate(messages);
-			return transformer.formatGroup(crm.createGroup(name));
+			return transformer.format(crm.createGroup(name), locale);
 		});
 	}
 
-	@GetMapping("/api/groups/{groupId}")
+	@GetMapping("/rest/groups/{groupId}")
 	public void getGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
-			return transformer.formatGroup(crm.findGroup(groupId));
+		handle(req, res, Group.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findGroup(groupId), locale);
 		});
 	}
 
-	@PatchMapping("/api/groups/{groupId}")
+	@PatchMapping("/rest/groups/{groupId}")
 	public void updateGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			String code = getString(body, "code", "", null, messages);
 			String englishName = getString(body, "englishName", "", null, messages);
@@ -86,37 +90,38 @@ public class PermissionsController extends AbstractCrmController {
 			Localized name = new Localized(code, englishName, frenchName);
 			validate(messages);
 			crm.updateGroupName(groupId, name);
-			return transformer.formatGroup(crm.findGroup(groupId));
+			return transformer.format(crm.findGroup(groupId), locale);
 		});
 	}
 
-	@PutMapping("/api/groups/{groupId}/enable")
+	@PutMapping("/rest/groups/{groupId}/enable")
 	public void enableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), groupId, messages);
 			crm.enableGroup(groupId);
-			return transformer.formatGroup(crm.findGroup(groupId));
+			return transformer.format(crm.findGroup(groupId), locale);
 		});
 	}
 
-	@PutMapping("/api/groups/{groupId}/disable")
+	@PutMapping("/rest/groups/{groupId}/disable")
 	public void disableGroup(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("groupId") Identifier groupId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Group.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), groupId, messages);
 			crm.disableGroup(groupId);
-			return transformer.formatGroup(crm.findGroup(groupId));
+			return transformer.format(crm.findGroup(groupId), locale);
 		});
 	}
 
-	@GetMapping("/api/roles")
+	@GetMapping("/rest/roles")
 	public void findRoles(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, (messages, transformer) -> { 
-			return createPage(crm.findRoles(
-				extractRolesFilter(extractLocale(req), req), 
-				extractPaging(RolesFilter.getDefaultPaging(), req)), 
-				e -> transformer.formatRole(e));
+		handle(req, res, Role.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findRoles(
+					extractRolesFilter(locale, req), 
+					extractPaging(RolesFilter.getDefaultPaging(), req)
+				), transformer, locale);
 		});
 	}
 	
@@ -140,9 +145,9 @@ public class PermissionsController extends AbstractCrmController {
 		}
 	}
 
-	@PostMapping("/api/roles")
+	@PostMapping("/rest/roles")
 	public void createRole(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Role.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			Identifier groupId = getIdentifier(body, "groupId", null, null, messages);
 			String code = getString(body, "code", "", null, messages);
@@ -150,22 +155,22 @@ public class PermissionsController extends AbstractCrmController {
 			String frenchName = getString(body, "frenchName", "", null, messages);
 			Localized name = new Localized(code, englishName, frenchName);
 			validate(messages);
-			return transformer.formatRole(crm.createRole(groupId, name));
+			return transformer.format(crm.createRole(groupId, name), locale);
 		});
 	}
 
-	@GetMapping("/api/roles/{roleId}")
+	@GetMapping("/rest/roles/{roleId}")
 	public void getRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
-			return transformer.formatRole(crm.findRole(roleId));
+		handle(req, res, Role.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findRole(roleId), locale);
 		});
 	}
 
-	@PatchMapping("/api/roles/{roleId}")
+	@PatchMapping("/rest/roles/{roleId}")
 	public void updateRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Role.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			String code = getString(body, "code", "", null, messages);
 			String englishName = getString(body, "englishName", "", null, messages);
@@ -173,25 +178,25 @@ public class PermissionsController extends AbstractCrmController {
 			Localized name = new Localized(code, englishName, frenchName);
 			validate(messages);
 			crm.updateRoleName(roleId, name);
-			return transformer.formatRole(crm.findRole(roleId));
+			return transformer.format(crm.findRole(roleId), locale);
 		});
 	}
 
-	@PutMapping("/api/roles/{roleId}/enable")
+	@PutMapping("/rest/roles/{roleId}/enable")
 	public void enableRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Role.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), roleId, messages);
-			return transformer.formatRole(crm.enableRole(roleId));
+			return transformer.format(crm.enableRole(roleId), locale);
 		});
 	}
 
-	@PutMapping("/api/roles/{roleId}/disable")
+	@PutMapping("/rest/roles/{roleId}/disable")
 	public void disableRole(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("roleId") Identifier roleId) throws IOException {
-		handle(req, res, (messages, transformer) -> {
+		handle(req, res, Role.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), roleId, messages);
-			return transformer.formatRole(crm.disableRole(roleId));
+			return transformer.format(crm.disableRole(roleId), locale);
 		});
 	}
 

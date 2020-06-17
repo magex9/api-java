@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,10 @@ public final class JsonObject extends JsonElement {
 		this(JsonParser.parseObject(text).pairs);
 	}
 	
+	public JsonObject(JsonPair... pairs) {
+		this(Arrays.asList(pairs));
+	}
+	
 	public JsonObject(List<JsonPair> pairs) {
 		super(digest(pairs.stream().map(e -> e.mid()).collect(Collectors.joining(","))));
 		this.pairs = Collections.unmodifiableList(pairs);
@@ -35,6 +40,8 @@ public final class JsonObject extends JsonElement {
 	}
 	
 	public JsonObject with(String key, Object value) {
+		if (value == null)
+			return remove(key);
 		return with(new JsonPair(key, cast(value)));
 	}
 	
@@ -44,7 +51,8 @@ public final class JsonObject extends JsonElement {
 		for (int i = 0; i < pairs.size(); i++) {
 			JsonPair p = pairs.get(i);
 			if (p.key().equals(pair.key())) {
-				values.add(pair);
+				if (pair.value() != null)
+					values.add(pair);
 				found = true;
 			} else {
 				values.add(p);
@@ -53,6 +61,14 @@ public final class JsonObject extends JsonElement {
 		if (!found)
 			values.add(pair);
 		return new JsonObject(values);
+	}
+	
+	public JsonObject append(String key, Object value) {
+		if (value == null)
+			return this;
+		if (!contains(key, JsonArray.class))
+			throw new IllegalArgumentException("Key is not an array: " + key);
+		return with(key, getArray(key).with(value));
 	}
 	
 	public JsonObject remove(String key) {
@@ -95,6 +111,33 @@ public final class JsonObject extends JsonElement {
 	public boolean isEmpty() {
 		return keys.isEmpty();
 	}
+
+	public JsonObject prune() {
+		List<JsonPair> pruned = new ArrayList<JsonPair>();
+		for (JsonPair pair : pairs) {
+			if (pair.value().getClass().equals(JsonObject.class)) {
+				JsonObject obj = ((JsonObject)pair.value()).prune();
+				if (!obj.isEmpty())
+					pruned.add(new JsonPair(pair.key(), obj));
+			} else if (pair.value().getClass().equals(JsonArray.class)) {
+				JsonArray array = ((JsonArray)pair.value()).prune();
+				if (!array.isEmpty())
+					pruned.add(new JsonPair(pair.key(), array));
+			} else if (pair.value().getClass().equals(JsonText.class)) {
+				if (!((JsonText)pair.value()).isEmpty())
+					pruned.add(pair);
+			} else if (pair.value().getClass().equals(JsonNumber.class)) {
+				if (!((JsonNumber)pair.value()).isEmpty())
+					pruned.add(pair);
+			} else if (pair.value().getClass().equals(JsonBoolean.class)) {
+				if (!((JsonBoolean)pair.value()).isEmpty())
+					pruned.add(pair);
+			} else {
+				throw new IllegalArgumentException("Unexpected element to prune: " + pair.value().getClass());
+			}
+		}
+		return new JsonObject(pruned);
+	}
 	
 	public JsonElement get(String key) {
 		if (!contains(key))
@@ -133,6 +176,10 @@ public final class JsonObject extends JsonElement {
 			return defaultValue;
 		}
 	}
+	
+	public <T> List<T> getArray(String key, Class<T> type) {
+		return getArray(key).values(type);
+	}
 
 	public String getString(String key) {
 		return ((JsonText)get(key)).value();
@@ -141,6 +188,18 @@ public final class JsonObject extends JsonElement {
 	public String getString(String key, String defaultValue) {
 		try {
 			return getString(key);
+		} catch (NoSuchElementException e) {
+			return defaultValue;
+		}
+	}
+	
+	public Number getNumber(String key) {
+		return ((JsonNumber)get(key)).value();
+	}
+	
+	public Number getNumber(String key, Number defaultValue) {
+		try {
+			return getNumber(key);
 		} catch (NoSuchElementException e) {
 			return defaultValue;
 		}

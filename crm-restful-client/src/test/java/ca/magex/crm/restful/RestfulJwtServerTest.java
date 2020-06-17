@@ -95,7 +95,7 @@ public class RestfulJwtServerTest {
 		System.out.println(organizations2.getContent());
 		assertEquals(initialOrgCount + 1, organizations2.getContent().size());
 		
-		LocationDetails locationA1 = crm.createLocation(organizationA1.getOrganizationId(), "Location " + time, "LOC_A",
+		LocationDetails locationA1 = crm.createLocation(organizationA1.getOrganizationId(), "LOC_A", "Location " + time,
 				new MailingAddress("123 Main St", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K1K1K1"));
 		
 		assertEquals(organizationA1.getOrganizationId(), locationA1.getOrganizationId());

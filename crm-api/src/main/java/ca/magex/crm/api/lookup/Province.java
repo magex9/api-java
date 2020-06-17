@@ -14,9 +14,12 @@ import ca.magex.crm.api.system.Localized;
 public class Province extends Localized implements CrmLookupItem {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
-
-	public Province(String code, String english, String french) {
+	
+	private Country country;
+	
+	public Province(Country country, String code, String english, String french) {
 		super(code, english, french);
+		this.country = country;
 	}
 	
 	@Override
@@ -27,6 +30,16 @@ public class Province extends Localized implements CrmLookupItem {
 	@Override
 	public String getName(Locale locale) {
 		return get(locale);
+	}
+	
+	@Override
+	public Country getParent() {
+		return country;
+	}
+	
+	@Override
+	public boolean hasParent() {
+		return true;
 	}
 	
 	@Override

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.stereotype.Component;
+
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.json.model.JsonElement;
@@ -11,6 +13,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
+@Component
 public class IdentifierJsonTransformer extends AbstractJsonTransformer<Identifier> {
 
 	public IdentifierJsonTransformer(CrmServices crm) {
@@ -18,7 +21,7 @@ public class IdentifierJsonTransformer extends AbstractJsonTransformer<Identifie
 	}
 
 	@Override
-	public Class<Identifier> getType() {
+	public Class<Identifier> getSourceType() {
 		return Identifier.class;
 	}
 

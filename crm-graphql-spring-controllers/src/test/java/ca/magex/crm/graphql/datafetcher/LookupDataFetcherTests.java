@@ -74,7 +74,7 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 				"findCodeLookups",
 				"{ findCodeLookups(category: %s, code: %s) { code englishName frenchName } }",
 				"LANGUAGE",
-				"en");
+				"EN");
 		Assert.assertNotNull(lookups);
 		
 		try {
@@ -197,14 +197,14 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 		/* province lookups */
 		lookups = execute(
 				"findCodeLookups",
-				"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName } }",
+				"{ findCodeLookups(category: %s, qualifier: %s) { code englishName frenchName parent { code englishName frenchName } } }",
 				"PROVINCE",
 				"CA");
 		Assert.assertNotNull(lookups);
 		
 		lookups = execute(
 				"findCodeLookups",
-				"{ findCodeLookups(category: %s, qualifier: %s, code: %s) { code englishName frenchName } }",
+				"{ findCodeLookups(category: %s, qualifier: %s, code: %s) { code englishName frenchName parent { code englishName frenchName } } }",
 				"PROVINCE",
 				"CA",
 				"ON");
@@ -213,7 +213,7 @@ public class LookupDataFetcherTests extends AbstractDataFetcherTests {
 		try {
 			execute(
 					"findCodeLookups",
-					"{ findCodeLookups(category: %s) { code englishName frenchName } }",
+					"{ findCodeLookups(category: %s) { code englishName frenchName parent { code englishName frenchName } } }",
 					"PROVINCE");
 			Assert.fail("should fail without qualifier provided");
 		}

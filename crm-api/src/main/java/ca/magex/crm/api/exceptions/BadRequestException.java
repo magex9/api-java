@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
@@ -38,6 +40,11 @@ public class BadRequestException extends ApiException {
 		for (Message message : messages) {
 			os.write(message.toString().getBytes());
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return getMessage() + "\n\t" + StringUtils.join(messages, "\n\t");
 	}
 	
 }

@@ -1,5 +1,7 @@
 package ca.magex.crm.graphql.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -11,15 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
@@ -31,14 +34,26 @@ public class GraphQLController implements CrmGraphQLController {
 	
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
-	@Autowired @Qualifier("graphQLOrganizationService") private GraphQLCrmServices graphQLService;
+	private GraphQLCrmServices graphQLService;
+	
+	public GraphQLController(GraphQLCrmServices graphQLService) {
+		this.graphQLService = graphQLService;
+	}
+	
+	@ResponseBody
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value="/graphql/schema")
+	public String doGetSchema() throws IOException {
+		try (InputStream schema = getClass().getResourceAsStream("/crm.graphql")) {
+			return StreamUtils.copyToString(schema, Charset.forName("UTF-8"));
+		}
+	}
 
 	@Override
-	public ResponseEntity<Object> doQuery(@RequestBody(required = false) String request, HttpServletRequest req, HttpServletResponse res) throws JSONException {
+	public ResponseEntity<Object> doQuery(String content, HttpServletRequest req, HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
 		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
 		
-		if (request == null) {
+		if (content == null) {
 			return new ResponseEntity<Object>("No content provided", HttpStatus.BAD_REQUEST);
 		}
 		
@@ -49,15 +64,15 @@ public class GraphQLController implements CrmGraphQLController {
 			if (req.getHeader(HttpHeaders.CONTENT_TYPE) == null) {
 				return new ResponseEntity<Object>("No " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);
 			}
-			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains("application/json")) {
-				JSONObject jsonRequest = new JSONObject(request);
+			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains(MediaType.APPLICATION_JSON_VALUE)) {
+				JSONObject jsonRequest = new JSONObject(content);
 				query = jsonRequest.getString("query");
 				if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {
 					parseVariables(variablesBuilder, jsonRequest.getJSONObject("variables"));
 				}
 			}
 			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains("application/graphql")) {
-				query = request;
+				query = content;
 			}
 			else {
 				return new ResponseEntity<Object>("Unknown " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);

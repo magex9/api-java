@@ -2,8 +2,6 @@ package ca.magex.crm.api.services;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Page;
-
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
@@ -14,11 +12,27 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmLocationService {
+	
+	default LocationDetails prototypeLocation(
+			@NotNull Identifier organizationId, 
+			@NotNull String reference, 
+			@NotNull String displayName, 
+			@NotNull MailingAddress address) {
+		return new LocationDetails(null, organizationId, Status.PENDING, reference, displayName, address);
+	};
+	
+	default LocationDetails createLocation(LocationDetails prototype) {
+		return createLocation(
+			prototype.getOrganizationId(),
+			prototype.getReference(), 
+			prototype.getDisplayName(), 
+			prototype.getAddress());
+	}
 
 	LocationDetails createLocation(
-		@NotNull Identifier organizationId, 
-		@NotNull String displayName, 
+		@NotNull Identifier organizationId,
 		@NotNull String reference, 
+		@NotNull String displayName, 
 		@NotNull MailingAddress address
 	);
 
@@ -70,7 +84,7 @@ public interface CrmLocationService {
 		return findLocationSummaries(filter, defaultLocationsPaging());
 	}
 	
-	default Page<LocationSummary> findActiveLocationSummariesForOrg(@NotNull Identifier organizationId) {
+	default FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(@NotNull Identifier organizationId) {
 		return findLocationSummaries(new LocationsFilter(organizationId, null, null, Status.ACTIVE));
 	}
 	

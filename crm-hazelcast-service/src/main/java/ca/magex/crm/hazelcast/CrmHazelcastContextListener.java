@@ -9,13 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstance;
 
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -25,8 +22,8 @@ import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
 
-@Component
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+//@Component
+//@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class CrmHazelcastContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastContextListener.class);
@@ -73,7 +70,7 @@ public class CrmHazelcastContextListener implements ApplicationListener<ContextR
 
 		/* set our initialization timestamp */
 		long t1 = System.currentTimeMillis();
-		initMap.put("timestamp", t1);
+		initMap.put("initialized", t1);
 		LOG.info("Hazelcast CRM Initialized on: " + new Date(t1));
 	}		
 }

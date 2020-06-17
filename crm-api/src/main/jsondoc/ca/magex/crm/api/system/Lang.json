@@ -1,0 +1,80 @@
+{
+  "name": "Lang",
+  "package": "ca.magex.crm.api.system",
+  "imports": {
+    "Arrays": "java.util",
+    "List": "java.util",
+    "Locale": "java.util"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "fields": [
+    {
+      "name": "ENGLISH",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "Locale"
+    },
+    {
+      "name": "FRENCH",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "Locale"
+    },
+    {
+      "name": "ROOT",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "Locale"
+    },
+    {
+      "name": "SUPPORTED",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": {
+        "class": "List",
+        "generics": ["Locale"]
+      }
+    }
+  ],
+  "methods": [
+    {
+      "name": "isEnglish",
+      "modifiers": [
+        "public",
+        "static"
+      ],
+      "type": "boolean",
+      "parameters": [{
+        "name": "locale",
+        "type": "Locale"
+      }],
+      "body": "{\n    if (locale == null)\n        throw new IllegalArgumentException(\"Locale is null\");\n    if (locale == ENGLISH)\n        return true;\n    if (locale == FRENCH)\n        return false;\n    throw new IllegalArgumentException(\"Locale is not english or french\");\n}"
+    },
+    {
+      "name": "parse",
+      "modifiers": [
+        "public",
+        "static"
+      ],
+      "type": "Locale",
+      "parameters": [{
+        "name": "lang",
+        "type": "String"
+      }],
+      "body": "{\n    if (lang == null) {\n        return null;\n    }\n    if (lang.contentEquals(\"\")) {\n        return ROOT;\n    }\n    if (lang.equals(\"en\") || lang.equals(\"eng\") || lang.equals(ENGLISH.toString())) {\n        return ENGLISH;\n    }\n    if (lang.equals(\"fr\") || lang.equals(\"fra\") || lang.equals(FRENCH.toString())) {\n        return FRENCH;\n    }\n    throw new IllegalArgumentException(\"Locale is not english or french or root\");\n}"
+    }
+  ]
+}

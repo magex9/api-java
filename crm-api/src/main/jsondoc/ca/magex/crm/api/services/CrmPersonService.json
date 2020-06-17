@@ -1,0 +1,291 @@
+{
+  "name": "CrmPersonService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "NotNull": "javax.validation.constraints",
+    "BusinessPosition": "ca.magex.crm.api.common",
+    "Communication": "ca.magex.crm.api.common",
+    "MailingAddress": "ca.magex.crm.api.common",
+    "PersonName": "ca.magex.crm.api.common",
+    "PersonDetails": "ca.magex.crm.api.crm",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "Paging": "ca.magex.crm.api.filters",
+    "PersonsFilter": "ca.magex.crm.api.filters",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "prototypePerson",
+      "modifiers": ["default"],
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "name",
+          "type": "PersonName",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "communication",
+          "type": "Communication",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "position",
+          "type": "BusinessPosition",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ],
+      "body": "{\n    return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, position);\n}"
+    },
+    {
+      "name": "createPerson",
+      "modifiers": ["default"],
+      "type": "PersonDetails",
+      "parameters": [{
+        "name": "prototype",
+        "type": "PersonDetails"
+      }],
+      "body": "{\n    return createPerson(prototype.getOrganizationId(), prototype.getLegalName(), prototype.getAddress(), prototype.getCommunication(), prototype.getPosition());\n}"
+    },
+    {
+      "name": "createPerson",
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "name",
+          "type": "PersonName",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "communication",
+          "type": "Communication",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "position",
+          "type": "BusinessPosition",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "enablePerson",
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "disablePerson",
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "updatePersonName",
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "name",
+          "type": "PersonName",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "updatePersonAddress",
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "updatePersonCommunication",
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "communication",
+          "type": "Communication",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "updatePersonBusinessPosition",
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "position",
+          "type": "BusinessPosition",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "findPersonSummary",
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "findPersonDetails",
+      "type": "PersonDetails",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "countPersons",
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "PersonsFilter",
+        "annotations": [{"name": "NotNull"}]
+      }]
+    },
+    {
+      "name": "findPersonSummaries",
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonSummary"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "paging",
+          "type": "Paging",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "findPersonDetails",
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonDetails"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter",
+          "annotations": [{"name": "NotNull"}]
+        },
+        {
+          "name": "paging",
+          "type": "Paging",
+          "annotations": [{"name": "NotNull"}]
+        }
+      ]
+    },
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonDetails"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "PersonsFilter",
+        "annotations": [{"name": "NotNull"}]
+      }],
+      "body": "{\n    return findPersonDetails(filter, PersonsFilter.getDefaultPaging());\n}"
+    },
+    {
+      "name": "findPersonSummaries",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonSummary"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "PersonsFilter",
+        "annotations": [{"name": "NotNull"}]
+      }],
+      "body": "{\n    return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());\n}"
+    },
+    {
+      "name": "findActivePersonSummariesForOrg",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonSummary"]
+      },
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier",
+        "annotations": [{"name": "NotNull"}]
+      }],
+      "body": "{\n    return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());\n}"
+    },
+    {
+      "name": "defaultPersonsFilter",
+      "modifiers": ["default"],
+      "type": "PersonsFilter",
+      "body": "{\n    return new PersonsFilter();\n}"
+    }
+  ]
+}

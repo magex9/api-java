@@ -13,18 +13,19 @@ import ca.magex.crm.amnesia.AmnesiaDB;
 import ca.magex.crm.amnesia.AmnesiaPasswordEncoder;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.resource.CrmLookupLoader;
 
 public class AmnesiaDBTests {
 
 	@Test
 	public void testAmnesiaPasswordEncoder() throws Exception {
-		assertEquals(AmnesiaPasswordEncoder.class, new AmnesiaDB(new AmnesiaPasswordEncoder()).getPasswordEncoder().getClass());
-		assertEquals(BCryptPasswordEncoder.class, new AmnesiaDB(new BCryptPasswordEncoder()).getPasswordEncoder().getClass());
+		assertEquals(AmnesiaPasswordEncoder.class, new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader()).getPasswordEncoder().getClass());
+		assertEquals(BCryptPasswordEncoder.class, new AmnesiaDB(new BCryptPasswordEncoder(), new CrmLookupLoader()).getPasswordEncoder().getClass());
 	}
 	
 	@Test
 	public void testCheckImplementations() throws Exception {
-		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
+		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader());
 		assertEquals(AmnesiaLookupService.class, db.getLookups().getClass());
 		assertEquals(AmnesiaPermissionService.class, db.getPermissions().getClass());
 		assertEquals(AmnesiaOrganizationService.class, db.getOrganizations().getClass());
@@ -36,7 +37,7 @@ public class AmnesiaDBTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testResetData() throws Exception {
-		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder());
+		AmnesiaDB db = new AmnesiaDB(new AmnesiaPasswordEncoder(), new CrmLookupLoader());
 		Field field = AmnesiaDB.class.getDeclaredField("data");
 		field.setAccessible(true);
 		assertEquals(0, ((Map<Identifier, Serializable>)field.get(db)).size());

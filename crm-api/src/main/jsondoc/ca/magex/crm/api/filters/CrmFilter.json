@@ -1,0 +1,73 @@
+{
+  "name": "CrmFilter",
+  "package": "ca.magex.crm.api.filters",
+  "generics": ["T"],
+  "imports": {
+    "Serializable": "java.io",
+    "Normalizer": "java.text",
+    "Comparator": "java.util",
+    "StringUtils": "org.apache.commons.lang3"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": ["Serializable"],
+  "methods": [
+    {
+      "name": "apply",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "instance",
+        "type": "T"
+      }]
+    },
+    {
+      "name": "getComparator",
+      "modifiers": [
+        "default",
+        "public"
+      ],
+      "type": {
+        "class": "Comparator",
+        "generics": ["T"]
+      },
+      "parameters": [{
+        "name": "paging",
+        "type": "Paging"
+      }],
+      "body": "{\n    return paging.new PagingComparator<T>();\n}"
+    },
+    {
+      "name": "containsIgnoreCaseAndAccent",
+      "modifiers": [
+        "default",
+        "public"
+      ],
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "str",
+          "type": "CharSequence"
+        },
+        {
+          "name": "searchStr",
+          "type": "CharSequence"
+        }
+      ],
+      "body": "{\n    return StringUtils.containsIgnoreCase(normalize(str), normalize(searchStr));\n}"
+    },
+    {
+      "name": "normalize",
+      "modifiers": [
+        "default",
+        "public"
+      ],
+      "type": "String",
+      "parameters": [{
+        "name": "text",
+        "type": "CharSequence"
+      }],
+      "body": "{\n    return Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll(\"[^\\\\p{ASCII}]\", \"\");\n}"
+    }
+  ]
+}

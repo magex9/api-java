@@ -1,0 +1,59 @@
+{
+  "name": "Transformer",
+  "package": "ca.magex.crm.api.transform",
+  "generics": [
+    "S",
+    "T"
+  ],
+  "imports": {"Locale": "java.util"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "getSourceType",
+      "modifiers": ["public"],
+      "type": {
+        "class": "Class",
+        "generics": ["S"]
+      }
+    },
+    {
+      "name": "getTargetType",
+      "modifiers": ["public"],
+      "type": {
+        "class": "Class",
+        "generics": ["T"]
+      }
+    },
+    {
+      "name": "format",
+      "modifiers": ["public"],
+      "type": "T",
+      "parameters": [
+        {
+          "name": "source",
+          "type": "S"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "parse",
+      "modifiers": ["public"],
+      "type": "S",
+      "parameters": [
+        {
+          "name": "target",
+          "type": "T"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    }
+  ]
+}

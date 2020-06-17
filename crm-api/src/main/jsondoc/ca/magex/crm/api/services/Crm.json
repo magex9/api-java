@@ -1,0 +1,2115 @@
+{
+  "name": "Crm",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "OutputStream": "java.io",
+    "List": "java.util",
+    "Locale": "java.util",
+    "BusinessPosition": "ca.magex.crm.api.common",
+    "Communication": "ca.magex.crm.api.common",
+    "MailingAddress": "ca.magex.crm.api.common",
+    "PersonName": "ca.magex.crm.api.common",
+    "LocationDetails": "ca.magex.crm.api.crm",
+    "LocationSummary": "ca.magex.crm.api.crm",
+    "OrganizationDetails": "ca.magex.crm.api.crm",
+    "OrganizationSummary": "ca.magex.crm.api.crm",
+    "PersonDetails": "ca.magex.crm.api.crm",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "BadRequestException": "ca.magex.crm.api.exceptions",
+    "DuplicateItemFoundException": "ca.magex.crm.api.exceptions",
+    "PermissionDeniedException": "ca.magex.crm.api.exceptions",
+    "GroupsFilter": "ca.magex.crm.api.filters",
+    "LocationsFilter": "ca.magex.crm.api.filters",
+    "OrganizationsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "PersonsFilter": "ca.magex.crm.api.filters",
+    "RolesFilter": "ca.magex.crm.api.filters",
+    "UsersFilter": "ca.magex.crm.api.filters",
+    "BusinessClassification": "ca.magex.crm.api.lookup",
+    "BusinessSector": "ca.magex.crm.api.lookup",
+    "BusinessUnit": "ca.magex.crm.api.lookup",
+    "Country": "ca.magex.crm.api.lookup",
+    "Language": "ca.magex.crm.api.lookup",
+    "Province": "ca.magex.crm.api.lookup",
+    "Salutation": "ca.magex.crm.api.lookup",
+    "CrmLocationPolicy": "ca.magex.crm.api.policies",
+    "CrmLookupPolicy": "ca.magex.crm.api.policies",
+    "CrmOrganizationPolicy": "ca.magex.crm.api.policies",
+    "CrmPermissionPolicy": "ca.magex.crm.api.policies",
+    "CrmPersonPolicy": "ca.magex.crm.api.policies",
+    "CrmPolicies": "ca.magex.crm.api.policies",
+    "CrmUserPolicy": "ca.magex.crm.api.policies",
+    "Group": "ca.magex.crm.api.roles",
+    "Role": "ca.magex.crm.api.roles",
+    "User": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Lang": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Message": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system",
+    "CrmValidation": "ca.magex.crm.api.validation"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": [
+    "CrmInitializationService",
+    "CrmServices",
+    "CrmPolicies"
+  ],
+  "constructors": [
+    {
+      "name": "Crm",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "crm",
+        "type": "Crm"
+      }],
+      "body": "{\n    this(crm.initializationService, crm.lookupService, crm.lookupPolicy, crm.permissionsService, crm.permissionsPolicy, crm.organizationService, crm.organizationPolicy, crm.locationService, crm.locationPolicy, crm.personService, crm.personPolicy, crm.userService, crm.userPolicy);\n}"
+    },
+    {
+      "name": "Crm",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "initializationService",
+          "type": "CrmInitializationService"
+        },
+        {
+          "name": "services",
+          "type": "CrmServices"
+        },
+        {
+          "name": "policies",
+          "type": "CrmPolicies"
+        }
+      ],
+      "body": "{\n    this(initializationService, services, policies, services, policies, services, policies, services, policies, services, policies, services, policies);\n}"
+    },
+    {
+      "name": "Crm",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "initializationService",
+          "type": "CrmInitializationService"
+        },
+        {
+          "name": "lookupService",
+          "type": "CrmLookupService"
+        },
+        {
+          "name": "permissionsService",
+          "type": "CrmPermissionService"
+        },
+        {
+          "name": "organizationService",
+          "type": "CrmOrganizationService"
+        },
+        {
+          "name": "locationService",
+          "type": "CrmLocationService"
+        },
+        {
+          "name": "personService",
+          "type": "CrmPersonService"
+        },
+        {
+          "name": "userService",
+          "type": "CrmUserService"
+        },
+        {
+          "name": "policies",
+          "type": "CrmPolicies"
+        }
+      ],
+      "body": "{\n    this(initializationService, lookupService, policies, permissionsService, policies, organizationService, policies, locationService, policies, personService, policies, userService, policies);\n}"
+    },
+    {
+      "name": "Crm",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "initializationService",
+          "type": "CrmInitializationService"
+        },
+        {
+          "name": "lookupService",
+          "type": "CrmLookupService"
+        },
+        {
+          "name": "lookupPolicy",
+          "type": "CrmLookupPolicy"
+        },
+        {
+          "name": "permissionsService",
+          "type": "CrmPermissionService"
+        },
+        {
+          "name": "permissionsPolicy",
+          "type": "CrmPermissionPolicy"
+        },
+        {
+          "name": "organizationService",
+          "type": "CrmOrganizationService"
+        },
+        {
+          "name": "organizationPolicy",
+          "type": "CrmOrganizationPolicy"
+        },
+        {
+          "name": "locationService",
+          "type": "CrmLocationService"
+        },
+        {
+          "name": "locationPolicy",
+          "type": "CrmLocationPolicy"
+        },
+        {
+          "name": "personService",
+          "type": "CrmPersonService"
+        },
+        {
+          "name": "personPolicy",
+          "type": "CrmPersonPolicy"
+        },
+        {
+          "name": "userService",
+          "type": "CrmUserService"
+        },
+        {
+          "name": "userPolicy",
+          "type": "CrmUserPolicy"
+        }
+      ],
+      "body": "{\n    super();\n    this.initializationService = initializationService;\n    this.lookupService = lookupService;\n    this.lookupPolicy = lookupPolicy;\n    this.organizationService = organizationService;\n    this.organizationPolicy = organizationPolicy;\n    this.locationService = locationService;\n    this.locationPolicy = locationPolicy;\n    this.personService = personService;\n    this.personPolicy = personPolicy;\n    this.userService = userService;\n    this.userPolicy = userPolicy;\n    this.permissionsService = permissionsService;\n    this.permissionsPolicy = permissionsPolicy;\n    this.validation = new CrmValidation(this);\n}"
+    }
+  ],
+  "fields": [
+    {
+      "name": "SERIAL_UID_VERSION",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ]
+    },
+    {
+      "name": "PREVIOUS_API_VERSION",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ]
+    },
+    {
+      "name": "PREVIOUS_API_PREFIX",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "CURRENT_API_VERSION",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ]
+    },
+    {
+      "name": "CURRENT_API_PREFIX",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "initializationService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmInitializationService"
+    },
+    {
+      "name": "lookupService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmLookupService"
+    },
+    {
+      "name": "lookupPolicy",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmLookupPolicy"
+    },
+    {
+      "name": "permissionsService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmPermissionService"
+    },
+    {
+      "name": "permissionsPolicy",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmPermissionPolicy"
+    },
+    {
+      "name": "organizationService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmOrganizationService"
+    },
+    {
+      "name": "organizationPolicy",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmOrganizationPolicy"
+    },
+    {
+      "name": "locationService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmLocationService"
+    },
+    {
+      "name": "locationPolicy",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmLocationPolicy"
+    },
+    {
+      "name": "personService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmPersonService"
+    },
+    {
+      "name": "personPolicy",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmPersonPolicy"
+    },
+    {
+      "name": "userService",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmUserService"
+    },
+    {
+      "name": "userPolicy",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmUserPolicy"
+    },
+    {
+      "name": "validation",
+      "modifiers": [
+        "private",
+        "final"
+      ],
+      "type": "CrmValidation"
+    }
+  ],
+  "methods": [
+    {
+      "name": "isInitialized",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return initializationService.isInitialized();\n}"
+    },
+    {
+      "name": "initializeSystem",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "organization",
+          "type": "String"
+        },
+        {
+          "name": "name",
+          "type": "PersonName"
+        },
+        {
+          "name": "email",
+          "type": "String"
+        },
+        {
+          "name": "username",
+          "type": "String"
+        },
+        {
+          "name": "password",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (isInitialized())\n        throw new DuplicateItemFoundException(\"The system is already initialized\");\n    return initializationService.initializeSystem(organization, name, email, username, password);\n}"
+    },
+    {
+      "name": "reset",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return initializationService.reset();\n}"
+    },
+    {
+      "name": "dump",
+      "modifiers": ["public"],
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "os",
+        "type": "OutputStream"
+      }],
+      "body": "{\n    initializationService.dump(os);\n}"
+    },
+    {
+      "name": "findStatuses",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Status"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findStatuses();\n}"
+    },
+    {
+      "name": "findStatusByCode",
+      "modifiers": ["public"],
+      "type": "Status",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewStatusLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findStatusByCode\");\n    }\n    return lookupService.findStatusByCode(code);\n}"
+    },
+    {
+      "name": "findStatusByLocalizedName",
+      "modifiers": ["public"],
+      "type": "Status",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewStatusLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findStatusByLocalizedName\");\n    }\n    return lookupService.findStatusByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "findCountries",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Country"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findCountries();\n}"
+    },
+    {
+      "name": "findCountryByCode",
+      "modifiers": ["public"],
+      "type": "Country",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewCountryLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findCountryByCode\");\n    }\n    return lookupService.findCountryByCode(code);\n}"
+    },
+    {
+      "name": "findCountryByLocalizedName",
+      "modifiers": ["public"],
+      "type": "Country",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewCountryLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findCountryByLocalizedName\");\n    }\n    return lookupService.findCountryByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "findProvinces",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Province"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "country",
+        "type": "String"
+      }],
+      "body": "{\n    return lookupService.findProvinces(country);\n}"
+    },
+    {
+      "name": "findProvinceByCode",
+      "modifiers": ["public"],
+      "type": "Province",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "province",
+          "type": "String"
+        },
+        {
+          "name": "country",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewProvinceLookup(country, province, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findProvinceByCode\");\n    }\n    return lookupService.findProvinceByCode(province, country);\n}"
+    },
+    {
+      "name": "findProvinceByLocalizedName",
+      "modifiers": ["public"],
+      "type": "Province",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "province",
+          "type": "String"
+        },
+        {
+          "name": "country",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewProvinceLookup(country, province, locale)) {\n        throw new PermissionDeniedException(\"findProvinceByLocalizedName\");\n    }\n    return lookupService.findProvinceByLocalizedName(locale, province, country);\n}"
+    },
+    {
+      "name": "findSalutations",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Salutation"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findSalutations();\n}"
+    },
+    {
+      "name": "findSalutationByCode",
+      "modifiers": ["public"],
+      "type": "Salutation",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewSalutationLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findSalutationByCode\");\n    }\n    return lookupService.findSalutationByCode(code);\n}"
+    },
+    {
+      "name": "findSalutationByLocalizedName",
+      "modifiers": ["public"],
+      "type": "Salutation",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewSalutationLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findSalutationByLocalizedName\");\n    }\n    return lookupService.findSalutationByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "findLanguages",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["Language"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findLanguages();\n}"
+    },
+    {
+      "name": "findLanguageByCode",
+      "modifiers": ["public"],
+      "type": "Language",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewLanguageLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findLanguageByCode\");\n    }\n    return lookupService.findLanguageByCode(code);\n}"
+    },
+    {
+      "name": "findLanguageByLocalizedName",
+      "modifiers": ["public"],
+      "type": "Language",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewLanguageLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findLanguageByLocalizedName\");\n    }\n    return lookupService.findLanguageByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "findBusinessSectors",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["BusinessSector"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findBusinessSectors();\n}"
+    },
+    {
+      "name": "findBusinessSectorByCode",
+      "modifiers": ["public"],
+      "type": "BusinessSector",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewBusinessSectorLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findBusinessSectorByCode\");\n    }\n    return lookupService.findBusinessSectorByCode(code);\n}"
+    },
+    {
+      "name": "findBusinessSectorByLocalizedName",
+      "modifiers": ["public"],
+      "type": "BusinessSector",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewBusinessSectorLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findBusinessSectorByLocalizedName\");\n    }\n    return lookupService.findBusinessSectorByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "findBusinessUnits",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["BusinessUnit"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findBusinessUnits();\n}"
+    },
+    {
+      "name": "findBusinessUnitByCode",
+      "modifiers": ["public"],
+      "type": "BusinessUnit",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewBusinessUnitLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findBusinessUnitByCode\");\n    }\n    return lookupService.findBusinessUnitByCode(code);\n}"
+    },
+    {
+      "name": "findBusinessUnitByLocalizedName",
+      "modifiers": ["public"],
+      "type": "BusinessUnit",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewBusinessUnitLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findBusinessUnitByLocalizedName\");\n    }\n    return lookupService.findBusinessUnitByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "findBusinessClassifications",
+      "modifiers": ["public"],
+      "type": {
+        "class": "List",
+        "generics": ["BusinessClassification"]
+      },
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return lookupService.findBusinessClassifications();\n}"
+    },
+    {
+      "name": "findBusinessClassificationByCode",
+      "modifiers": ["public"],
+      "type": "BusinessClassification",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!lookupPolicy.canViewBusinessClassificationLookup(code, Lang.ROOT)) {\n        throw new PermissionDeniedException(\"findBusinessClassificationByCode\");\n    }\n    return lookupService.findBusinessClassificationByCode(code);\n}"
+    },
+    {
+      "name": "findBusinessClassificationByLocalizedName",
+      "modifiers": ["public"],
+      "type": "BusinessClassification",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "locale",
+          "type": "Locale"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!lookupPolicy.canViewBusinessClassificationLookup(name, locale)) {\n        throw new PermissionDeniedException(\"findBusinessClassificationByLocalizedName\");\n    }\n    return lookupService.findBusinessClassificationByLocalizedName(locale, name);\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [{
+        "name": "organization",
+        "type": "OrganizationDetails"
+      }],
+      "body": "{\n    List<Message> messages = validation.validate(organization);\n    if (!messages.isEmpty())\n        throw new BadRequestException(\"Organization has validation errors\", messages);\n    return organization;\n}"
+    },
+    {
+      "name": "createOrganization",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [
+        {
+          "name": "displayName",
+          "type": "String"
+        },
+        {
+          "name": "groups",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          }
+        }
+      ],
+      "body": "{\n    if (!canCreateOrganization())\n        throw new PermissionDeniedException(\"createOrganization\");\n    return organizationService.createOrganization(validate(prototypeOrganization(displayName, groups)));\n}"
+    },
+    {
+      "name": "updateOrganizationDisplayName",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!canUpdateOrganization(organizationId))\n        throw new PermissionDeniedException(\"updateOrganizationDisplayName: \" + organizationId);\n    return organizationService.updateOrganizationDisplayName(organizationId, validate(organizationService.findOrganizationDetails(organizationId).withDisplayName(name)).getDisplayName());\n}"
+    },
+    {
+      "name": "updateOrganizationMainLocation",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "locationId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    if (!canUpdateOrganization(organizationId))\n        throw new PermissionDeniedException(\"updateMainLocation: \" + organizationId);\n    return organizationService.updateOrganizationMainLocation(organizationId, validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(locationId)).getMainLocationId());\n}"
+    },
+    {
+      "name": "updateOrganizationMainContact",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "personId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    if (!canUpdateOrganization(organizationId))\n        throw new PermissionDeniedException(\"updateOrganizationMainContact: \" + organizationId);\n    return organizationService.updateOrganizationMainContact(organizationId, validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());\n}"
+    },
+    {
+      "name": "updateOrganizationGroups",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "groups",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          }
+        }
+      ],
+      "body": "{\n    if (!canUpdateOrganization(organizationId))\n        throw new PermissionDeniedException(\"setGroups: \" + organizationId + \", \" + groups);\n    return organizationService.updateOrganizationGroups(organizationId, validate(organizationService.findOrganizationDetails(organizationId).withGroups(groups)).getGroups());\n}"
+    },
+    {
+      "name": "enableOrganization",
+      "modifiers": ["public"],
+      "type": "OrganizationSummary",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canEnableOrganization(organizationId))\n        throw new PermissionDeniedException(\"enableOrganization: \" + organizationId);\n    return organizationService.enableOrganization(validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.ACTIVE)).getOrganizationId());\n}"
+    },
+    {
+      "name": "disableOrganization",
+      "modifiers": ["public"],
+      "type": "OrganizationSummary",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canDisableOrganization(organizationId))\n        throw new PermissionDeniedException(\"disableOrganization: \" + organizationId);\n    return organizationService.disableOrganization(validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)).getOrganizationId());\n}"
+    },
+    {
+      "name": "findOrganizationSummary",
+      "modifiers": ["public"],
+      "type": "OrganizationSummary",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewOrganization(organizationId))\n        throw new PermissionDeniedException(\"findOrganization: \" + organizationId);\n    return organizationService.findOrganizationSummary(organizationId);\n}"
+    },
+    {
+      "name": "findOrganizationDetails",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewOrganization(organizationId))\n        throw new PermissionDeniedException(\"findOrganization: \" + organizationId);\n    return organizationService.findOrganizationDetails(organizationId);\n}"
+    },
+    {
+      "name": "countOrganizations",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "OrganizationsFilter"
+      }],
+      "body": "{\n    return organizationService.countOrganizations(filter);\n}"
+    },
+    {
+      "name": "findOrganizationDetails",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["OrganizationDetails"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "OrganizationsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return organizationService.findOrganizationDetails(filter, paging);\n}"
+    },
+    {
+      "name": "findOrganizationSummaries",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["OrganizationSummary"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "OrganizationsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return organizationService.findOrganizationSummaries(filter, paging);\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": "LocationDetails",
+      "parameters": [{
+        "name": "location",
+        "type": "LocationDetails"
+      }],
+      "body": "{\n    List<Message> messages = validation.validate(location);\n    if (!messages.isEmpty())\n        throw new BadRequestException(\"Location has validation errors\", messages);\n    return location;\n}"
+    },
+    {
+      "name": "createLocation",
+      "modifiers": ["public"],
+      "type": "LocationDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "name": "displayName",
+          "type": "String"
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        }
+      ],
+      "body": "{\n    if (!canCreateLocationForOrganization(organizationId))\n        throw new PermissionDeniedException(\"createLocation: \" + organizationId);\n    return locationService.createLocation(validate(prototypeLocation(organizationId, reference, displayName, address)));\n}"
+    },
+    {
+      "name": "updateLocationName",
+      "modifiers": ["public"],
+      "type": "LocationDetails",
+      "parameters": [
+        {
+          "name": "locationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "displayName",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!canUpdateLocation(locationId))\n        throw new PermissionDeniedException(\"updateLocationName: \" + locationId);\n    return locationService.updateLocationName(locationId, validate(locationService.findLocationDetails(locationId).withDisplayName(displayName)).getDisplayName());\n}"
+    },
+    {
+      "name": "updateLocationAddress",
+      "modifiers": ["public"],
+      "type": "LocationDetails",
+      "parameters": [
+        {
+          "name": "locationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        }
+      ],
+      "body": "{\n    if (!canUpdateLocation(locationId))\n        throw new PermissionDeniedException(\"updateLocationAddress: \" + locationId);\n    return locationService.updateLocationAddress(locationId, validate(findLocationDetails(locationId).withAddress(address)).getAddress());\n}"
+    },
+    {
+      "name": "enableLocation",
+      "modifiers": ["public"],
+      "type": "LocationSummary",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canEnableLocation(locationId))\n        throw new PermissionDeniedException(\"enableLocation: \" + locationId);\n    return locationService.enableLocation(validate(locationService.findLocationDetails(locationId).withStatus(Status.ACTIVE)).getLocationId());\n}"
+    },
+    {
+      "name": "disableLocation",
+      "modifiers": ["public"],
+      "type": "LocationSummary",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canDisableLocation(locationId))\n        throw new PermissionDeniedException(\"disableLocation: \" + locationId);\n    return locationService.disableLocation(validate(locationService.findLocationDetails(locationId).withStatus(Status.INACTIVE)).getLocationId());\n}"
+    },
+    {
+      "name": "findLocationSummary",
+      "modifiers": ["public"],
+      "type": "LocationSummary",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewLocation(locationId))\n        throw new PermissionDeniedException(\"findLocation: \" + locationId);\n    return locationService.findLocationSummary(locationId);\n}"
+    },
+    {
+      "name": "findLocationDetails",
+      "modifiers": ["public"],
+      "type": "LocationDetails",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewLocation(locationId))\n        throw new PermissionDeniedException(\"findLocation: \" + locationId);\n    return locationService.findLocationDetails(locationId);\n}"
+    },
+    {
+      "name": "countLocations",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "LocationsFilter"
+      }],
+      "body": "{\n    return locationService.countLocations(filter);\n}"
+    },
+    {
+      "name": "findLocationDetails",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["LocationDetails"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "LocationsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return locationService.findLocationDetails(filter, paging);\n}"
+    },
+    {
+      "name": "findLocationSummaries",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["LocationSummary"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "LocationsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return locationService.findLocationSummaries(filter, paging);\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [{
+        "name": "person",
+        "type": "PersonDetails"
+      }],
+      "body": "{\n    List<Message> messages = validation.validate(person);\n    if (!messages.isEmpty())\n        throw new BadRequestException(\"Person has validation errors\", messages);\n    return person;\n}"
+    },
+    {
+      "name": "createPerson",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "PersonName"
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        },
+        {
+          "name": "communication",
+          "type": "Communication"
+        },
+        {
+          "name": "position",
+          "type": "BusinessPosition"
+        }
+      ],
+      "body": "{\n    if (!canCreatePersonForOrganization(organizationId))\n        throw new PermissionDeniedException(\"createPerson: \" + organizationId);\n    return personService.createPerson(validate(prototypePerson(organizationId, name, address, communication, position)));\n}"
+    },
+    {
+      "name": "updatePersonName",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "PersonName"
+        }
+      ],
+      "body": "{\n    if (!canUpdatePerson(personId))\n        throw new PermissionDeniedException(\"updatePersonName: \" + personId);\n    return personService.updatePersonName(personId, validate(findPersonDetails(personId).withLegalName(name)).getLegalName());\n}"
+    },
+    {
+      "name": "updatePersonAddress",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        }
+      ],
+      "body": "{\n    if (!canUpdatePerson(personId))\n        throw new PermissionDeniedException(\"updatePersonAddress: \" + personId);\n    return personService.updatePersonAddress(personId, validate(findPersonDetails(personId).withAddress(address)).getAddress());\n}"
+    },
+    {
+      "name": "updatePersonCommunication",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "communication",
+          "type": "Communication"
+        }
+      ],
+      "body": "{\n    if (!canUpdatePerson(personId))\n        throw new PermissionDeniedException(\"updatePersonCommunication: \" + personId);\n    return personService.updatePersonCommunication(personId, validate(findPersonDetails(personId).withCommunication(communication)).getCommunication());\n}"
+    },
+    {
+      "name": "updatePersonBusinessPosition",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "position",
+          "type": "BusinessPosition"
+        }
+      ],
+      "body": "{\n    if (!canUpdatePerson(personId))\n        throw new PermissionDeniedException(\"updatePersonBusinessPosition: \" + personId);\n    return personService.updatePersonBusinessPosition(personId, validate(findPersonDetails(personId).withPosition(position)).getPosition());\n}"
+    },
+    {
+      "name": "enablePerson",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canEnablePerson(personId))\n        throw new PermissionDeniedException(\"enablePerson: \" + personId);\n    return personService.enablePerson(validate(personService.findPersonDetails(personId).withStatus(Status.ACTIVE)).getPersonId());\n}"
+    },
+    {
+      "name": "disablePerson",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canDisablePerson(personId))\n        throw new PermissionDeniedException(\"disablePerson: \" + personId);\n    return personService.disablePerson(validate(personService.findPersonDetails(personId).withStatus(Status.INACTIVE)).getPersonId());\n}"
+    },
+    {
+      "name": "findPersonSummary",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewPerson(personId))\n        throw new PermissionDeniedException(\"findPerson: \" + personId);\n    return personService.findPersonSummary(personId);\n}"
+    },
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewPerson(personId))\n        throw new PermissionDeniedException(\"findPerson: \" + personId);\n    return personService.findPersonDetails(personId);\n}"
+    },
+    {
+      "name": "countPersons",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "PersonsFilter"
+      }],
+      "body": "{\n    return personService.countPersons(filter);\n}"
+    },
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonDetails"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return personService.findPersonDetails(filter, paging);\n}"
+    },
+    {
+      "name": "findPersonSummaries",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonSummary"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return personService.findPersonSummaries(filter, paging);\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": "User",
+      "parameters": [{
+        "name": "user",
+        "type": "User"
+      }],
+      "body": "{\n    List<Message> messages = validation.validate(user);\n    if (!messages.isEmpty())\n        throw new BadRequestException(\"User has validation errors\", messages);\n    return user;\n}"
+    },
+    {
+      "name": "createUser",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "username",
+          "type": "String"
+        },
+        {
+          "name": "roles",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          }
+        }
+      ],
+      "body": "{\n    if (!canCreateUserForPerson(personId))\n        throw new PermissionDeniedException(\"createUser: \" + personId);\n    return userService.createUser(validate(prototypeUser(personId, username, roles)));\n}"
+    },
+    {
+      "name": "enableUser",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canEnableUser(userId))\n        throw new PermissionDeniedException(\"enableUser: \" + userId);\n    return userService.enableUser(validate(userService.findUser(userId).withStatus(Status.ACTIVE)).getUserId());\n}"
+    },
+    {
+      "name": "disableUser",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canDisableUser(userId))\n        throw new PermissionDeniedException(\"enableUser: \" + userId);\n    return userService.disableUser(validate(userService.findUser(userId).withStatus(Status.INACTIVE)).getUserId());\n}"
+    },
+    {
+      "name": "findUser",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewUser(userId))\n        throw new PermissionDeniedException(\"findUser: \" + userId);\n    return userService.findUser(userId);\n}"
+    },
+    {
+      "name": "findUserByUsername",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "username",
+        "type": "String"
+      }],
+      "body": "{\n    if (!canViewUser(username))\n        throw new PermissionDeniedException(\"findUserByUsername: \" + username);\n    return userService.findUserByUsername(username);\n}"
+    },
+    {
+      "name": "updateUserRoles",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "Identifier"
+        },
+        {
+          "name": "roles",
+          "type": {
+            "class": "List",
+            "generics": ["String"]
+          }
+        }
+      ],
+      "body": "{\n    if (!canUpdateUserRole(userId))\n        throw new PermissionDeniedException(\"setRoles: \" + userId);\n    return userService.updateUserRoles(userId, validate(findUser(userId).withRoles(roles)).getRoles());\n}"
+    },
+    {
+      "name": "changePassword",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "Identifier"
+        },
+        {
+          "name": "currentPassword",
+          "type": "String"
+        },
+        {
+          "name": "newPassword",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    return userService.changePassword(userId, currentPassword, newPassword);\n}"
+    },
+    {
+      "name": "resetPassword",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canUpdateUserPassword(userId)) {\n        throw new PermissionDeniedException(\"resetPassword:\" + userId);\n    }\n    return userService.resetPassword(userId);\n}"
+    },
+    {
+      "name": "countUsers",
+      "modifiers": ["public"],
+      "type": "long",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "filter",
+        "type": "UsersFilter"
+      }],
+      "body": "{\n    return userService.countUsers(filter);\n}"
+    },
+    {
+      "name": "findUsers",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["User"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "UsersFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return userService.findUsers(filter, paging);\n}"
+    },
+    {
+      "name": "canEnableUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return userPolicy.canEnableUser(userId);\n}"
+    },
+    {
+      "name": "canDisableUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return userPolicy.canDisableUser(userId);\n}"
+    },
+    {
+      "name": "canViewUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "username",
+        "type": "String"
+      }],
+      "body": "{\n    return userPolicy.canViewUser(username);\n}"
+    },
+    {
+      "name": "canViewUser",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return userPolicy.canViewUser(userId);\n}"
+    },
+    {
+      "name": "canUpdateUserRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return userPolicy.canUpdateUserRole(userId);\n}"
+    },
+    {
+      "name": "canUpdateUserPassword",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "userId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return userPolicy.canUpdateUserPassword(userId);\n}"
+    },
+    {
+      "name": "canCreateOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "body": "{\n    return organizationPolicy.canCreateOrganization();\n}"
+    },
+    {
+      "name": "canViewOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return organizationPolicy.canViewOrganization(organizationId);\n}"
+    },
+    {
+      "name": "canUpdateOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return organizationPolicy.canUpdateOrganization(organizationId);\n}"
+    },
+    {
+      "name": "canEnableOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return organizationPolicy.canEnableOrganization(organizationId);\n}"
+    },
+    {
+      "name": "canDisableOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return organizationPolicy.canDisableOrganization(organizationId);\n}"
+    },
+    {
+      "name": "canCreateLocationForOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return locationPolicy.canCreateLocationForOrganization(locationId);\n}"
+    },
+    {
+      "name": "canViewLocation",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return locationPolicy.canViewLocation(locationId);\n}"
+    },
+    {
+      "name": "canUpdateLocation",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return locationPolicy.canUpdateLocation(locationId);\n}"
+    },
+    {
+      "name": "canEnableLocation",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return locationPolicy.canEnableLocation(locationId);\n}"
+    },
+    {
+      "name": "canDisableLocation",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "locationId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return locationPolicy.canDisableLocation(locationId);\n}"
+    },
+    {
+      "name": "canCreatePersonForOrganization",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return personPolicy.canCreatePersonForOrganization(personId);\n}"
+    },
+    {
+      "name": "canViewPerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return personPolicy.canViewPerson(personId);\n}"
+    },
+    {
+      "name": "canUpdatePerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return personPolicy.canUpdatePerson(personId);\n}"
+    },
+    {
+      "name": "canEnablePerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return personPolicy.canEnablePerson(personId);\n}"
+    },
+    {
+      "name": "canDisablePerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return personPolicy.canDisablePerson(personId);\n}"
+    },
+    {
+      "name": "canCreateUserForPerson",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return userPolicy.canCreateUserForPerson(personId);\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": "Group",
+      "parameters": [{
+        "name": "group",
+        "type": "Group"
+      }],
+      "body": "{\n    List<Message> messages = validation.validate(group);\n    if (!messages.isEmpty())\n        throw new BadRequestException(\"Group has validation errors\", messages);\n    return group;\n}"
+    },
+    {
+      "name": "createGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "name",
+        "type": "Localized"
+      }],
+      "body": "{\n    if (!canCreateGroup())\n        throw new PermissionDeniedException(\"createGroup: \" + name);\n    return permissionsService.createGroup(validate(prototypeGroup(name)));\n}"
+    },
+    {
+      "name": "findGroups",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Group"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "GroupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return permissionsService.findGroups(filter, paging);\n}"
+    },
+    {
+      "name": "findGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewGroup(groupId))\n        throw new PermissionDeniedException(\"findGroup: \" + groupId);\n    return permissionsService.findGroup(groupId);\n}"
+    },
+    {
+      "name": "findGroupByCode",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!canViewGroup(code))\n        throw new PermissionDeniedException(\"findGroupByCode: \" + code);\n    return permissionsService.findGroupByCode(code);\n}"
+    },
+    {
+      "name": "updateGroupName",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    if (!canUpdateGroup(groupId))\n        throw new PermissionDeniedException(\"updateGroupName: \" + groupId);\n    return permissionsService.updateGroupName(groupId, validate(findGroup(groupId).withName(name)).getName());\n}"
+    },
+    {
+      "name": "enableGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canEnableGroup(groupId))\n        throw new PermissionDeniedException(\"enableGroup: \" + groupId);\n    return permissionsService.enableGroup(validate(findGroup(groupId).withStatus(Status.ACTIVE)).getGroupId());\n}"
+    },
+    {
+      "name": "disableGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canDisableGroup(groupId))\n        throw new PermissionDeniedException(\"disableGroup: \" + groupId);\n    return permissionsService.disableGroup(validate(findGroup(groupId).withStatus(Status.INACTIVE)).getGroupId());\n}"
+    },
+    {
+      "name": "validate",
+      "modifiers": ["public"],
+      "type": "Role",
+      "parameters": [{
+        "name": "role",
+        "type": "Role"
+      }],
+      "body": "{\n    List<Message> messages = validation.validate(role);\n    if (!messages.isEmpty())\n        throw new BadRequestException(\"Role has validation errors\", messages);\n    return role;\n}"
+    },
+    {
+      "name": "findRoles",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Role"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "RolesFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    if (!canViewRoles())\n        throw new PermissionDeniedException(\"findRoles: \" + filter);\n    return permissionsService.findRoles(filter, paging);\n}"
+    },
+    {
+      "name": "findRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canViewRole(roleId))\n        throw new PermissionDeniedException(\"findRole: \" + roleId);\n    return permissionsService.findRole(roleId);\n}"
+    },
+    {
+      "name": "findRoleByCode",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    if (!canViewRole(code))\n        throw new PermissionDeniedException(\"findRoleByCode: \" + code);\n    return permissionsService.findRoleByCode(code);\n}"
+    },
+    {
+      "name": "createRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    if (!canCreateRole(groupId))\n        throw new PermissionDeniedException(\"createRole: \" + groupId);\n    return permissionsService.createRole(validate(prototypeRole(groupId, name)));\n}"
+    },
+    {
+      "name": "updateRoleName",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "roleId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    if (!canUpdateRole(roleId))\n        throw new PermissionDeniedException(\"updateRoleName: \" + roleId);\n    return permissionsService.updateRoleName(roleId, validate(findRole(roleId).withName(name)).getName());\n}"
+    },
+    {
+      "name": "enableRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canEnableRole(roleId))\n        throw new PermissionDeniedException(\"enableRole: \" + roleId);\n    return permissionsService.enableRole(validate(findRole(roleId).withStatus(Status.ACTIVE)).getRoleId());\n}"
+    },
+    {
+      "name": "disableRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!canDisableRole(roleId))\n        throw new PermissionDeniedException(\"disableRole: \" + roleId);\n    return permissionsService.disableRole(validate(findRole(roleId).withStatus(Status.INACTIVE)).getRoleId());\n}"
+    },
+    {
+      "name": "canCreateGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return permissionsPolicy.canCreateGroup();\n}"
+    },
+    {
+      "name": "canViewGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "group",
+        "type": "String"
+      }],
+      "body": "{\n    return permissionsPolicy.canViewGroup(group);\n}"
+    },
+    {
+      "name": "canViewGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canViewGroup(groupId);\n}"
+    },
+    {
+      "name": "canUpdateGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canUpdateGroup(groupId);\n}"
+    },
+    {
+      "name": "canEnableGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canEnableGroup(groupId);\n}"
+    },
+    {
+      "name": "canDisableGroup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canDisableGroup(groupId);\n}"
+    },
+    {
+      "name": "canCreateRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canCreateRole(groupId);\n}"
+    },
+    {
+      "name": "canViewRoles",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return permissionsPolicy.canViewRoles();\n}"
+    },
+    {
+      "name": "canViewRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    return permissionsPolicy.canViewRole(code);\n}"
+    },
+    {
+      "name": "canViewRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canViewRole(roleId);\n}"
+    },
+    {
+      "name": "canUpdateRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canUpdateRole(roleId);\n}"
+    },
+    {
+      "name": "canEnableRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canEnableRole(roleId);\n}"
+    },
+    {
+      "name": "canDisableRole",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return permissionsPolicy.canDisableRole(roleId);\n}"
+    },
+    {
+      "name": "canViewBusinessClassificationLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "classificationLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);\n}"
+    },
+    {
+      "name": "canViewBusinessSectorLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "sectorLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);\n}"
+    },
+    {
+      "name": "canViewBusinessUnitLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "unitLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);\n}"
+    },
+    {
+      "name": "canViewCountryLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "CountryLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewCountryLookup(CountryLookup, locale);\n}"
+    },
+    {
+      "name": "canViewLanguageLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "languageLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewLanguageLookup(languageLookup, locale);\n}"
+    },
+    {
+      "name": "canViewProvinceLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "countryLookup",
+          "type": "String"
+        },
+        {
+          "name": "provinceLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);\n}"
+    },
+    {
+      "name": "canViewSalutationLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "salutationLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewSalutationLookup(salutationLookup, locale);\n}"
+    },
+    {
+      "name": "canViewStatusLookup",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "StatusLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ],
+      "body": "{\n    return lookupPolicy.canViewStatusLookup(StatusLookup, locale);\n}"
+    }
+  ]
+}

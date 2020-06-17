@@ -317,7 +317,7 @@ public class JsonParser {
 	}
 
 	private boolean isQuote(char c) {
-		return c == '"' || c == '\'';
+		return c == '"';
 	}
 	
 	private boolean isOpenCurlyBracket(char c) {

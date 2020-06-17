@@ -1,0 +1,24 @@
+{
+  "name": "PermissionDeniedException",
+  "package": "ca.magex.crm.api.exceptions",
+  "imports": {"Crm": "ca.magex.crm.api.services"},
+  "type": "class",
+  "modifiers": ["public"],
+  "extends": ["ApiException"],
+  "constructors": [{
+    "name": "PermissionDeniedException",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "uri",
+      "type": "String"
+    }],
+    "body": "{\n    super(\"Permission denied: \" + uri);\n}"
+  }],
+  "methods": [{
+    "name": "getErrorCode",
+    "modifiers": ["public"],
+    "type": "Integer",
+    "annotations": [{"name": "Override"}],
+    "body": "{\n    return 403;\n}"
+  }]
+}

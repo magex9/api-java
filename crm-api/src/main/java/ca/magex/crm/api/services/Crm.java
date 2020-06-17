@@ -4,8 +4,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
-import javax.validation.constraints.NotNull;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -17,7 +15,7 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
-import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
@@ -34,6 +32,7 @@ import ca.magex.crm.api.lookup.Language;
 import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
+import ca.magex.crm.api.policies.CrmLookupPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPermissionPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
@@ -44,10 +43,13 @@ import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.validation.CrmValidation;
 
-public final class Crm implements CrmInitializationService, CrmServices, CrmPolicies, CrmValidation {
+public class Crm implements CrmInitializationService, CrmServices, CrmPolicies {
 	
 	public static final long SERIAL_UID_VERSION = 1l;
 
@@ -63,7 +65,11 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 
 	private final CrmLookupService lookupService;
 	
-	private final CrmValidation validationService;
+	private final CrmLookupPolicy lookupPolicy;
+	
+	private final CrmPermissionService permissionsService;
+	
+	private final CrmPermissionPolicy permissionsPolicy;
 	
 	private final CrmOrganizationService organizationService;
 	
@@ -81,20 +87,84 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	
 	private final CrmUserPolicy userPolicy;
 	
-	private final CrmPermissionService permissionsService;
+	private final CrmValidation validation;
 	
-	private final CrmPermissionPolicy permissionsPolicy;
+	public Crm(Crm crm) {
+		this(
+			crm.initializationService,
+			crm.lookupService,
+			crm.lookupPolicy,
+			crm.permissionsService,
+			crm.permissionsPolicy,
+			crm.organizationService,
+			crm.organizationPolicy,
+			crm.locationService,
+			crm.locationPolicy,
+			crm.personService,
+			crm.personPolicy,
+			crm.userService,
+			crm.userPolicy
+		);
+	}
 	
-	public Crm(CrmInitializationService initializationService, CrmLookupService lookupService, 
+	public Crm(
+			CrmInitializationService initializationService, 
+			CrmServices services,
+			CrmPolicies policies) {
+		this(
+				initializationService,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies,
+				services,
+				policies
+		);
+	}
+	
+	public Crm(
+			CrmInitializationService initializationService, 
+			CrmLookupService lookupService,
+			CrmPermissionService permissionsService, 
+			CrmOrganizationService organizationService,
+			CrmLocationService locationService, 
+			CrmPersonService personService,
+			CrmUserService userService,
+			CrmPolicies policies) {
+		this(
+				initializationService,
+				lookupService,
+				policies,
+				permissionsService,
+				policies,
+				organizationService,
+				policies,
+				locationService,
+				policies,
+				personService,
+				policies,
+				userService,
+				policies
+		);
+	}
+	
+	public Crm(CrmInitializationService initializationService, 
+			CrmLookupService lookupService, CrmLookupPolicy lookupPolicy,
+			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy, 
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
-			CrmUserService userService, CrmUserPolicy userPolicy,
-			CrmPermissionService permissionsService, CrmPermissionPolicy permissionsPolicy) {
+			CrmUserService userService, CrmUserPolicy userPolicy) {
 		super();
-		this.validationService = new StructureValidationService(lookupService, permissionsService, organizationService, locationService, personService);
-		this.initializationService = initializationService;
+		this.initializationService = initializationService;		
 		this.lookupService = lookupService;
+		this.lookupPolicy = lookupPolicy;
 		this.organizationService = organizationService;
 		this.organizationPolicy = organizationPolicy;
 		this.locationService = locationService;
@@ -105,8 +175,9 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 		this.userPolicy = userPolicy;
 		this.permissionsService = permissionsService;
 		this.permissionsPolicy = permissionsPolicy;
+		this.validation = new CrmValidation(this);
 	}
-
+	
 	@Override
 	public boolean isInitialized() {
 		return initializationService.isInitialized();
@@ -115,7 +186,7 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (isInitialized())
-			throw new RuntimeException("The system is already initialized");
+			throw new DuplicateItemFoundException("The system is already initialized");
 		return initializationService.initializeSystem(organization, name, email, username, password); 
 	}
 	
@@ -135,12 +206,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 	
 	@Override
-	public Status findStatusByCode(String code) throws ItemNotFoundException {
+	public Status findStatusByCode(String code) {
+		if (!lookupPolicy.canViewStatusLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findStatusByCode");
+		}
 		return lookupService.findStatusByCode(code);
 	}
 	
 	@Override
-	public Status findStatusByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Status findStatusByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewStatusLookup(name, locale)) {
+			throw new PermissionDeniedException("findStatusByLocalizedName");
+		}
 		return lookupService.findStatusByLocalizedName(locale, name);
 	}
 	
@@ -150,12 +227,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 	
 	@Override
-	public Country findCountryByCode(String code) throws ItemNotFoundException {
+	public Country findCountryByCode(String code) {
+		if (!lookupPolicy.canViewCountryLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findCountryByCode");
+		}
 		return lookupService.findCountryByCode(code);
 	}
 	
 	@Override
-	public Country findCountryByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Country findCountryByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewCountryLookup(name, locale)) {
+			throw new PermissionDeniedException("findCountryByLocalizedName");
+		}
 		return lookupService.findCountryByLocalizedName(locale, name);
 	}
 	
@@ -165,13 +248,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 	
 	@Override
-	public Province findProvinceByCode(@NotNull String province, @NotNull String country) {
+	public Province findProvinceByCode(String province, String country) {
+		if (!lookupPolicy.canViewProvinceLookup(country, province, Lang.ROOT)) {
+			throw new PermissionDeniedException("findProvinceByCode");
+		}
 		return lookupService.findProvinceByCode(province, country);
 	}
 	
 	@Override
-	public Province findProvinceByLocalizedName(@NotNull Locale locale, @NotNull String province,
-			@NotNull String country) {
+	public Province findProvinceByLocalizedName(Locale locale, String province,String country) {
+		if (!lookupPolicy.canViewProvinceLookup(country, province, locale)) {
+			throw new PermissionDeniedException("findProvinceByLocalizedName");
+		}
 		return lookupService.findProvinceByLocalizedName(locale, province, country);
 	}
 	
@@ -181,12 +269,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 	
 	@Override
-	public Salutation findSalutationByCode(String code) throws ItemNotFoundException {
+	public Salutation findSalutationByCode(String code) {
+		if (!lookupPolicy.canViewSalutationLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findSalutationByCode");
+		}
 		return lookupService.findSalutationByCode(code);
 	}
 	
 	@Override
-	public Salutation findSalutationByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Salutation findSalutationByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewSalutationLookup(name, locale)) {
+			throw new PermissionDeniedException("findSalutationByLocalizedName");
+		}
 		return lookupService.findSalutationByLocalizedName(locale, name);
 	}	
 	
@@ -196,12 +290,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public Language findLanguageByCode(String code) throws ItemNotFoundException {
+	public Language findLanguageByCode(String code) {
+		if (!lookupPolicy.canViewLanguageLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findLanguageByCode");
+		}
 		return lookupService.findLanguageByCode(code);
 	}
 
 	@Override
-	public Language findLanguageByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public Language findLanguageByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewLanguageLookup(name, locale)) {
+			throw new PermissionDeniedException("findLanguageByLocalizedName");
+		}
 		return lookupService.findLanguageByLocalizedName(locale, name);
 	}
 
@@ -211,12 +311,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByCode(String code) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByCode(String code) {
+		if (!lookupPolicy.canViewBusinessSectorLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findBusinessSectorByCode");
+		}
 		return lookupService.findBusinessSectorByCode(code);
 	}
 
 	@Override
-	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessSector findBusinessSectorByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewBusinessSectorLookup(name, locale)) {
+			throw new PermissionDeniedException("findBusinessSectorByLocalizedName");
+		}
 		return lookupService.findBusinessSectorByLocalizedName(locale, name);
 	}
 
@@ -226,12 +332,18 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByCode(String code) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByCode(String code) {
+		if (!lookupPolicy.canViewBusinessUnitLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findBusinessUnitByCode");
+		}
 		return lookupService.findBusinessUnitByCode(code);
 	}
 
 	@Override
-	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) throws ItemNotFoundException {
+	public BusinessUnit findBusinessUnitByLocalizedName(Locale locale, String name) {
+		if (!lookupPolicy.canViewBusinessUnitLookup(name, locale)) {
+			throw new PermissionDeniedException("findBusinessUnitByLocalizedName");
+		}
 		return lookupService.findBusinessUnitByLocalizedName(locale, name);
 	}
 
@@ -241,63 +353,82 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByCode(String code) throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByCode(String code) {
+		if (!lookupPolicy.canViewBusinessClassificationLookup(code, Lang.ROOT)) {
+			throw new PermissionDeniedException("findBusinessClassificationByCode");
+		}
 		return lookupService.findBusinessClassificationByCode(code);
 	}
 
 	@Override
-	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name)
-			throws ItemNotFoundException {
+	public BusinessClassification findBusinessClassificationByLocalizedName(Locale locale, String name) {	
+		if (!lookupPolicy.canViewBusinessClassificationLookup(name, locale)) {
+			throw new PermissionDeniedException("findBusinessClassificationByLocalizedName");
+		}
 		return lookupService.findBusinessClassificationByLocalizedName(locale, name);
 	}
+
+	public OrganizationDetails validate(OrganizationDetails organization) {
+		List<Message> messages = validation.validate(organization);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Organization has validation errors", messages);
+		return organization;
+	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
+	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
-		return organizationService.createOrganization(organizationDisplayName, groups);
+		return organizationService.createOrganization(
+			validate(prototypeOrganization(displayName, groups)));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationDisplayName: " + organizationId);
-		return organizationService.updateOrganizationDisplayName(organizationId, name);
+		return organizationService.updateOrganizationDisplayName(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withDisplayName(name)).getDisplayName());
 	}
 
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
-		return organizationService.updateOrganizationMainLocation(organizationId, locationId);
+		return organizationService.updateOrganizationMainLocation(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(locationId)).getMainLocationId());
 	}
 	
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
-		return organizationService.updateOrganizationMainContact(organizationId, personId);
+		return organizationService.updateOrganizationMainContact(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());
 	}
 	
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> group) {
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + group);
-		return organizationService.updateOrganizationGroups(organizationId, group);
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groups);
+		return organizationService.updateOrganizationGroups(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withGroups(groups)).getGroups());
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
 		if (!canEnableOrganization(organizationId))
 			throw new PermissionDeniedException("enableOrganization: " + organizationId);
-		return organizationService.enableOrganization(organizationId);
+		return organizationService.enableOrganization(
+			validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.ACTIVE)).getOrganizationId());
 	}
 
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
 		if (!canDisableOrganization(organizationId))
 			throw new PermissionDeniedException("disableOrganization: " + organizationId);
-		return organizationService.disableOrganization(organizationId);
+		return organizationService.disableOrganization(
+			validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)).getOrganizationId());
 	}
 	
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
 		if (!canViewOrganization(organizationId))
 			throw new PermissionDeniedException("findOrganization: " + organizationId);
-		return organizationService.findOrganizationDetails(organizationId);
+		return organizationService.findOrganizationSummary(organizationId);
 	}
 	
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
@@ -318,35 +449,44 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 		return organizationService.findOrganizationSummaries(filter, paging);
 	}
 
-	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference,
+	public LocationDetails validate(LocationDetails location) {
+		List<Message> messages = validation.validate(location);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Location has validation errors", messages);
+		return location;
+	}
+	
+	public LocationDetails createLocation(Identifier organizationId, String reference, String displayName, 
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
-		return locationService.createLocation(organizationId, displayName, reference, address);
+		return locationService.createLocation(validate(prototypeLocation(organizationId, reference, displayName, address)));
 	}
 
-	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
+	public LocationDetails updateLocationName(Identifier locationId, String displayName) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationName: " + locationId);
-		return locationService.updateLocationName(locationId, locationName);
+		return locationService.updateLocationName(locationId, validate(locationService.findLocationDetails(locationId).withDisplayName(displayName)).getDisplayName());
 	}
 
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationAddress: " + locationId);
-		return locationService.updateLocationAddress(locationId, address);
+		return locationService.updateLocationAddress(locationId, validate(findLocationDetails(locationId).withAddress(address)).getAddress());
 	}
 
 	public LocationSummary enableLocation(Identifier locationId) {
 		if (!canEnableLocation(locationId))
 			throw new PermissionDeniedException("enableLocation: " + locationId);
-		return locationService.enableLocation(locationId);
+		return locationService.enableLocation(
+			validate(locationService.findLocationDetails(locationId).withStatus(Status.ACTIVE)).getLocationId());
 	}
 
 	public LocationSummary disableLocation(Identifier locationId) {
 		if (!canDisableLocation(locationId))
 			throw new PermissionDeniedException("disableLocation: " + locationId);
-		return locationService.disableLocation(locationId);
+		return locationService.disableLocation(
+			validate(locationService.findLocationDetails(locationId).withStatus(Status.INACTIVE)).getLocationId());
 	}
 
 	public LocationSummary findLocationSummary(Identifier locationId) {
@@ -373,46 +513,55 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 		return locationService.findLocationSummaries(filter, paging);
 	}
 
+	public PersonDetails validate(PersonDetails person) {
+		List<Message> messages = validation.validate(person);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Person has validation errors", messages);
+		return person;
+	}
+
 	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
-		return personService.createPerson(organizationId, name, address, communication, position);
+		return personService.createPerson(validate(prototypePerson(organizationId, name, address, communication, position)));
 	}
 
 	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonName: " + personId);
-		return personService.updatePersonName(personId, name);
+		return personService.updatePersonName(personId, validate(findPersonDetails(personId).withLegalName(name)).getLegalName());
 	}
 
 	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonAddress: " + personId);
-		return personService.updatePersonAddress(personId, address);
+		return personService.updatePersonAddress(personId, validate(findPersonDetails(personId).withAddress(address)).getAddress());
 	}
 
 	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonCommunication: " + personId);
-		return personService.updatePersonCommunication(personId, communication);
+		return personService.updatePersonCommunication(personId, validate(findPersonDetails(personId).withCommunication(communication)).getCommunication());
 	}
 	
 	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
-		return personService.updatePersonBusinessPosition(personId, position);
+		return personService.updatePersonBusinessPosition(personId, validate(findPersonDetails(personId).withPosition(position)).getPosition());
 	}
 
 	public PersonSummary enablePerson(Identifier personId) {
 		if (!canEnablePerson(personId))
 			throw new PermissionDeniedException("enablePerson: " + personId);
-		return personService.enablePerson(personId);
+		return personService.enablePerson(
+			validate(personService.findPersonDetails(personId).withStatus(Status.ACTIVE)).getPersonId());
 	}
 
 	public PersonSummary disablePerson(Identifier personId) {
 		if (!canDisablePerson(personId))
 			throw new PermissionDeniedException("disablePerson: " + personId);
-		return personService.disablePerson(personId);
+		return personService.disablePerson(
+			validate(personService.findPersonDetails(personId).withStatus(Status.INACTIVE)).getPersonId());
 	}
 
 	public PersonSummary findPersonSummary(Identifier personId) {
@@ -438,26 +587,35 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return personService.findPersonSummaries(filter, paging);
 	}
+
+	public User validate(User user) {
+		List<Message> messages = validation.validate(user);
+		if (!messages.isEmpty())
+			throw new BadRequestException("User has validation errors", messages);
+		return user;
+	}
 	
 	@Override
 	public User createUser(Identifier personId, String username, List<String> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
-		return userService.createUser(personId, username, roles);
+		return userService.createUser(validate(prototypeUser(personId, username, roles)));
 	}
 
 	@Override
 	public User enableUser(Identifier userId) {
 		if (!canEnableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
-		return userService.enableUser(userId);
+		return userService.enableUser(
+			validate(userService.findUser(userId).withStatus(Status.ACTIVE)).getUserId());
 	}
 
 	@Override
 	public User disableUser(Identifier userId) {
 		if (!canDisableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
-		return userService.disableUser(userId);
+		return userService.disableUser(
+			validate(userService.findUser(userId).withStatus(Status.INACTIVE)).getUserId());
 	}
 
 	@Override
@@ -469,17 +627,16 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	
 	@Override
 	public User findUserByUsername(String username) {
-		User user = userService.findUserByUsername(username);
-		if (!canViewUser(user.getUserId()))
+		if (!canViewUser(username))
 			throw new PermissionDeniedException("findUserByUsername: " + username);
-		return user;
+		return userService.findUserByUsername(username);
 	}
 
 	@Override
-	public User updateUserRoles(Identifier userId, List<String> roleIds) {
+	public User updateUserRoles(Identifier userId, List<String> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, roleIds);
+		return userService.updateUserRoles(userId, validate(findUser(userId).withRoles(roles)).getRoles());
 	}
 
 	@Override
@@ -489,6 +646,9 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 
 	@Override
 	public String resetPassword(Identifier userId) {
+		if (!canUpdateUserPassword(userId)) {
+			throw new PermissionDeniedException("resetPassword:" + userId);
+		}
 		return userService.resetPassword(userId);
 	}
 
@@ -513,6 +673,11 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 	
 	@Override
+	public boolean canViewUser(String username) {
+		return userPolicy.canViewUser(username);
+	}
+	
+	@Override
 	public boolean canViewUser(Identifier userId) {
 		return userPolicy.canViewUser(userId);
 	}
@@ -527,32 +692,6 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 		return userPolicy.canUpdateUserPassword(userId);
 	}
 	
-	@Override
-	public Group validate(Group group) throws BadRequestException {
-		return validationService.validate(group);
-	}
-	
-	@Override
-	public Role validate(Role role) throws BadRequestException {
-		return validationService.validate(role);
-	}
-	
-	public OrganizationDetails validate(OrganizationDetails organization) {
-		return validationService.validate(organization);
-	}
-
-	public LocationDetails validate(LocationDetails location) {
-		return validationService.validate(location);
-	}
-
-	public PersonDetails validate(PersonDetails person) {
-		return validationService.validate(person);
-	}
-
-	public List<String> validate(List<String> roles, Identifier personId) {
-		return validationService.validate(roles, personId);
-	}
-
 	public boolean canCreateOrganization() {
 		return organizationPolicy.canCreateOrganization();
 	}
@@ -618,6 +757,20 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 		return userPolicy.canCreateUserForPerson(personId);
 	}
 
+	public Group validate(Group group) {
+		List<Message> messages = validation.validate(group);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Group has validation errors", messages);
+		return group;
+	}
+
+	@Override
+	public Group createGroup(Localized name) {
+		if (!canCreateGroup())
+			throw new PermissionDeniedException("createGroup: " + name);
+		return permissionsService.createGroup(validate(prototypeGroup(name)));
+	}
+
 	@Override
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging) {
 		return permissionsService.findGroups(filter, paging);
@@ -638,31 +791,33 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public Group createGroup(Localized name) {
-		if (!canCreateGroup())
-			throw new PermissionDeniedException("createGroup: " + name);
-		return permissionsService.createGroup(name);
-	}
-
-	@Override
 	public Group updateGroupName(Identifier groupId, Localized name) {
 		if (!canUpdateGroup(groupId))
 			throw new PermissionDeniedException("updateGroupName: " + groupId);
-		return permissionsService.updateGroupName(groupId, name);
+		return permissionsService.updateGroupName(groupId, validate(findGroup(groupId).withName(name)).getName());
 	}
 
 	@Override
 	public Group enableGroup(Identifier groupId) {
 		if (!canEnableGroup(groupId))
 			throw new PermissionDeniedException("enableGroup: " + groupId);
-		return permissionsService.enableGroup(groupId);
+		return permissionsService.enableGroup(
+			validate(findGroup(groupId).withStatus(Status.ACTIVE)).getGroupId());
 	}
 
 	@Override
 	public Group disableGroup(Identifier groupId) {
 		if (!canDisableGroup(groupId))
 			throw new PermissionDeniedException("disableGroup: " + groupId);
-		return permissionsService.disableGroup(groupId);
+		return permissionsService.disableGroup(
+			validate(findGroup(groupId).withStatus(Status.INACTIVE)).getGroupId());
+	}
+
+	public Role validate(Role role) {
+		List<Message> messages = validation.validate(role);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Role has validation errors", messages);
+		return role;
 	}
 
 	@Override
@@ -688,30 +843,32 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 
 	@Override
 	public Role createRole(Identifier groupId, Localized name) {
-		if (!canCreateRole())
-			throw new PermissionDeniedException("addRole: " + groupId);
-		return permissionsService.createRole(groupId, name);
+		if (!canCreateRole(groupId))
+			throw new PermissionDeniedException("createRole: " + groupId);
+		return permissionsService.createRole(validate(prototypeRole(groupId, name)));
 	}
 
 	@Override
 	public Role updateRoleName(Identifier roleId, Localized name) {
 		if (!canUpdateRole(roleId))
 			throw new PermissionDeniedException("updateRoleName: " + roleId);
-		return permissionsService.updateRoleName(roleId, name);
+		return permissionsService.updateRoleName(roleId, validate(findRole(roleId).withName(name)).getName());
 	}
 
 	@Override
 	public Role enableRole(Identifier roleId) {
 		if (!canEnableRole(roleId))
 			throw new PermissionDeniedException("enableRole: " + roleId);
-		return permissionsService.enableRole(roleId);
+		return permissionsService.enableRole(
+			validate(findRole(roleId).withStatus(Status.ACTIVE)).getRoleId());
 	}
 
 	@Override
 	public Role disableRole(Identifier roleId) {
 		if (!canDisableRole(roleId))
 			throw new PermissionDeniedException("disableRole: " + roleId);
-		return permissionsService.disableRole(roleId);
+		return permissionsService.disableRole(
+			validate(findRole(roleId).withStatus(Status.INACTIVE)).getRoleId());
 	}
 
 	@Override
@@ -745,13 +902,13 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	}
 
 	@Override
-	public boolean canCreateRole() {
-		return permissionsPolicy.canCreateRole();
+	public boolean canCreateRole(Identifier groupId) {
+		return permissionsPolicy.canCreateRole(groupId);
 	}
 	
 	@Override
 	public boolean canViewRoles() {
-		return permissionsPolicy.canCreateRole();
+		return permissionsPolicy.canViewRoles();
 	}
 
 	@Override
@@ -778,10 +935,44 @@ public final class Crm implements CrmInitializationService, CrmServices, CrmPoli
 	public boolean canDisableRole(Identifier roleId) {
 		return permissionsPolicy.canDisableRole(roleId);
 	}
-
+	
 	@Override
-	public boolean canViewPermissions() {
-		return permissionsPolicy.canViewPermissions();
+	public boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);
 	}
 	
+	@Override
+	public boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewBusinessUnitLookup(String unitLookup, Locale locale) {
+		return lookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewCountryLookup(String CountryLookup, Locale locale) {
+		return lookupPolicy.canViewCountryLookup(CountryLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewLanguageLookup(String languageLookup, Locale locale) {
+		return lookupPolicy.canViewLanguageLookup(languageLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale) {
+		return lookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewSalutationLookup(String salutationLookup, Locale locale) {
+		return lookupPolicy.canViewSalutationLookup(salutationLookup, locale);
+	}
+	
+	@Override
+	public boolean canViewStatusLookup(String StatusLookup, Locale locale) {
+		return lookupPolicy.canViewStatusLookup(StatusLookup, locale);
+	}
 }

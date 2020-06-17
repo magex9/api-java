@@ -35,22 +35,27 @@
 	<modules>	
 		<module>crm-maven-parent</module>
 		<module>crm-json</module>
+		<module>crm-json-javadoc</module>
+		<module>crm-json-maven-plugin</module>
 		
 		<!-- Support Modules -->
-		<module>crm-api</module>
-		<module>crm-helloworld</module>
+		<module>crm-api</module>		
+		<module>crm-json-transformers</module>
 		<module>crm-resources</module>		
 		<module>crm-test</module>
 		<module>crm-activemq-spring-boot-server</module>
 		<module>crm-zuul-spring-boot-server</module>
 		
+		<!-- Playground Module -->
+		<module>crm-helloworld</module>	
+		
 		<!-- Service Implementations -->
 		<module>crm-amnesia-service</module>
  		<module>crm-hazelcast-service</module>
 		
-		<!-- Policy Implementations -->
-		<module>crm-policies</module>		
-		
+		<!-- Caching Implementations -->
+		<module>crm-spring-caching</module>
+
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>
 		<module>crm-auth-spring-boot-server</module>
@@ -66,10 +71,12 @@
 <!--  		<module>crm-graphql-spring-boot-feign-client</module> -->
 		
 		<!-- REST Endpoint Implementation -->
-		<module>crm-restful-json</module>
 		<module>crm-restful-spring-controllers</module>
 		<module>crm-restful-spring-boot-server</module>
 <!-- 		<module>crm-restful-client</module> -->
+
+		<!-- Unified Server -->
+		<module>crm-api-spring-boot-server</module>
  	</modules>
 
 </project>

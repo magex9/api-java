@@ -1,0 +1,26 @@
+{
+  "name": "CrmConfigurer",
+  "package": "ca.magex.crm.api.config",
+  "description": "Used to configure the Crm Subsystem\n\n@author Jonny",
+  "imports": {
+    "Bean": "org.springframework.context.annotation",
+    "CrmPolicies": "ca.magex.crm.api.policies",
+    "Crm": "ca.magex.crm.api.services"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "crm",
+      "modifiers": ["public"],
+      "type": "Crm",
+      "annotations": [{"name": "Bean"}]
+    },
+    {
+      "name": "crmPolicies",
+      "modifiers": ["public"],
+      "type": "CrmPolicies",
+      "annotations": [{"name": "Bean"}]
+    }
+  ]
+}

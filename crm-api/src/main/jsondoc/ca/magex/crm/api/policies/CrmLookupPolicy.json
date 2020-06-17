@@ -1,0 +1,125 @@
+{
+  "name": "CrmLookupPolicy",
+  "package": "ca.magex.crm.api.policies",
+  "imports": {"Locale": "java.util"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "canViewStatusLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "StatusLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewCountryLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "CountryLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewProvinceLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "countryLookup",
+          "type": "String"
+        },
+        {
+          "name": "provinceLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewLanguageLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "languageLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewSalutationLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "salutationLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewBusinessSectorLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "sectorLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewBusinessUnitLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "unitLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    },
+    {
+      "name": "canViewBusinessClassificationLookup",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "classificationLookup",
+          "type": "String"
+        },
+        {
+          "name": "locale",
+          "type": "Locale"
+        }
+      ]
+    }
+  ]
+}

@@ -16,23 +16,23 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmPermissionService {
-	
-	default GroupsFilter defaultGroupsFilter() {
-		return new GroupsFilter();
-	};
-	
-	FilteredPage<Group> findGroups(
-		@NotNull GroupsFilter filter,
-		@NotNull Paging paging
-	);
-	
-	default List<String> findActiveGroupCodes() {
-		return findGroups(
-			defaultGroupsFilter().withStatus(Status.ACTIVE), 
-			GroupsFilter.getDefaultPaging().allItems()
-		).stream().map(g -> g.getCode()).collect(Collectors.toList());
+
+	default Group prototypeGroup(
+		@NotNull Localized name
+	) {
+		return new Group(null, Status.PENDING, name);
 	}
 	
+	default Group createGroup(
+		@NotNull Group group
+	) {
+		return createGroup(group.getName());
+	}
+	
+	Group createGroup(
+		@NotNull Localized name
+	);
+
 	Group findGroup(
 		@NotNull Identifier groupId
 	);
@@ -45,10 +45,6 @@ public interface CrmPermissionService {
 			GroupsFilter.getDefaultPaging()
 		).getSingleItem();
 	};
-
-	Group createGroup(
-		@NotNull Localized name
-	);
 
 	Group updateGroupName(
 		@NotNull Identifier groupId, 
@@ -63,10 +59,78 @@ public interface CrmPermissionService {
 		@NotNull Identifier groupId
 	);
 
+	default GroupsFilter defaultGroupsFilter() {
+		return new GroupsFilter();
+	};
+	
+	FilteredPage<Group> findGroups(
+		@NotNull GroupsFilter filter,
+		@NotNull Paging paging
+	);
+	
+	default FilteredPage<Group> findGroups(@NotNull GroupsFilter filter) {
+		return findGroups(filter, defaultGroupPaging());
+	}
+	
+	default List<String> findActiveGroupCodes() {
+		return findGroups(
+			defaultGroupsFilter().withStatus(Status.ACTIVE), 
+			GroupsFilter.getDefaultPaging().allItems()
+		).stream().map(g -> g.getCode()).collect(Collectors.toList());
+	}
+	
+	default Role prototypeRole(
+		@NotNull Identifier groupId, 
+		@NotNull Localized name
+	) {
+		return new Role(null, groupId, Status.PENDING, name);
+	}
+	
+	default Role createRole(
+		@NotNull Role role
+	) {
+		return createRole(role.getGroupId(), role.getName());
+	}
+	
+	Role createRole(
+			@NotNull Identifier groupId, 
+			@NotNull Localized name
+		);
+
+	Role findRole(
+		@NotNull Identifier roleId
+	);
+
+	default Role findRoleByCode(
+		@NotNull String code
+	) {
+		return findRoles(
+			defaultRolesFilter().withCode(code), 
+			RolesFilter.getDefaultPaging()
+		).getSingleItem();
+	};
+
+	Role updateRoleName(
+		@NotNull Identifier roleId, 
+		@NotNull Localized name
+	);
+
+	Role enableRole(
+		@NotNull Identifier roleId
+	);
+
+	Role disableRole(
+		@NotNull Identifier roleId
+	);
+	
 	FilteredPage<Role> findRoles(
 		@NotNull RolesFilter filter, 
 		@NotNull Paging paging
 	);
+	
+	default FilteredPage<Role> findRoles(@NotNull RolesFilter filter) {
+		return findRoles(filter, defaultRolePaging());
+	}
 	
 	default List<Role> findRoles() {
 		return findRoles(
@@ -88,34 +152,12 @@ public interface CrmPermissionService {
 		return new RolesFilter();
 	};
 	
-	Role findRole(
-		@NotNull Identifier roleId
-	);
+	default Paging defaultGroupPaging() {
+		return new Paging(GroupsFilter.getSortOptions().get(0));
+	}
+	
+	default Paging defaultRolePaging() {
+		return new Paging(RolesFilter.getSortOptions().get(0));
+	}
 
-	default Role findRoleByCode(
-		@NotNull String code
-	) {
-		return findRoles(
-			defaultRolesFilter().withCode(code), 
-			RolesFilter.getDefaultPaging()
-		).getSingleItem();
-	};
-
-	Role createRole(
-		@NotNull Identifier groupId, 
-		@NotNull Localized name
-	);
-
-	Role updateRoleName(
-		@NotNull Identifier roleId, 
-		@NotNull Localized name
-	);
-
-	Role enableRole(
-		@NotNull Identifier roleId
-	);
-
-	Role disableRole(
-		@NotNull Identifier roleId
-	);
 }
