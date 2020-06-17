@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
-@Order(1)
+@Order(2)
 @Description("Defines the Roles required for accessing the actuator endpoints")
 public class ActuatorSecurityConfiguration extends WebSecurityConfigurerAdapter {
 

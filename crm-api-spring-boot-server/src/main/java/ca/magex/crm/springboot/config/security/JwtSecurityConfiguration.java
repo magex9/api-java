@@ -16,7 +16,7 @@ import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
-@Order(2)
+@Order(3)
 @Description("Defines the Roles required for accessing the authentication endpoints")
 @Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
 public class JwtSecurityConfiguration extends WebSecurityConfigurerAdapter {	

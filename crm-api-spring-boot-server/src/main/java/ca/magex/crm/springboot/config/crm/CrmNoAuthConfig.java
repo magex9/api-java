@@ -15,7 +15,7 @@ import ca.magex.crm.caching.config.CrmCachingConfigurerAdapter;
 @Configuration
 @Profile(MagexCrmProfiles.CRM_NO_AUTH)
 @Description("Configures the CRM by adding caching support, and using the Basic Policies for CRM Processing")
-public class GraphQLCrmNoAuthConfig extends CrmCachingConfigurerAdapter {	
+public class CrmNoAuthConfig extends CrmCachingConfigurerAdapter {	
 		
 	@Bean
 	@Primary
