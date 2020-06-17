@@ -22,7 +22,7 @@ public class HelloController {
         logger.info("An INFO Message");
         logger.warn("A WARN Message");
         logger.error("An ERROR Message");
-		return "Greetings from Spring Boot!";
+		return "Allo Guillaume ";
 	}
 	
 	@Value("${message:Hello default}")
