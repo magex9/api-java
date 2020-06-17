@@ -22,7 +22,7 @@ public class HelloController {
         logger.info("An INFO Message");
         logger.warn("A WARN Message");
         logger.error("An ERROR Message");
-		return "Allo Guillaume ";
+		return "Allo toi !!! ";
 	}
 	
 	@Value("${message:Hello default}")
