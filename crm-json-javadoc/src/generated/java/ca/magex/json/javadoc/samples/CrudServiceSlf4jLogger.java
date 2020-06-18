@@ -175,4 +175,78 @@ public class CrudServiceSlf4jLogger<K, T> implements ca.magex.json.javadoc.sampl
 		}
 	}
 	
+	@Override
+	public <L extends java.io.Serializable> java.util.List<L> findByType(Class<L> cls) {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling findByType(" + cls + ")");
+				java.util.List<L> result = delegate.findByType(cls);
+				logger.trace("Executed findByType(" + cls + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on findByType(" + cls + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling findByType(" + cls + ")");
+				java.util.List<L> result = delegate.findByType(cls);
+				logger.debug("Executed findByType(" + cls + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on findByType(" + cls + ") in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling findByType(" + cls + ")");
+			return delegate.findByType(cls);
+		}
+		else {
+			return delegate.findByType(cls);
+		}
+	}
+	
+	@Override
+	public java.util.Map<K, java.util.List<? extends java.io.Serializable>> findMap() {
+		if (logger.isTraceEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.trace("Calling findMap()");
+				java.util.Map<K, java.util.List<? extends java.io.Serializable>> result = delegate.findMap();
+				logger.trace("Executed findMap() in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + "returnType" + ": " + result + ").");
+				return result;
+			}
+			catch (Exception e) {
+				logger.trace("Exception on findMap() in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isDebugEnabled()) {
+			long start = System.nanoTime();
+			try {
+				logger.debug("Calling findMap()");
+				java.util.Map<K, java.util.List<? extends java.io.Serializable>> result = delegate.findMap();
+				logger.debug("Executed findMap() in " + java.time.Duration.ofNanos(System.nanoTime() - start) + ".");
+				return result;
+			}
+			catch (Exception e) {
+				logger.debug("Exception on findMap() in " + java.time.Duration.ofNanos(System.nanoTime() - start) + " (" + e.getClass() + ": " + e.getMessage() + ").");
+				throw e;
+			}
+		}
+		else if (logger.isInfoEnabled()) {
+			logger.info("Calling findMap()");
+			return delegate.findMap();
+		}
+		else {
+			return delegate.findMap();
+		}
+	}
+	
 }

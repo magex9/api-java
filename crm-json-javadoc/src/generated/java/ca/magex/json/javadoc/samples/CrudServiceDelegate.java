@@ -37,4 +37,14 @@ public class CrudServiceDelegate<K, T> implements ca.magex.json.javadoc.samples.
 		return delegate.contains(id);
 	}
 	
+	@Override
+	public <L extends java.io.Serializable> java.util.List<L> findByType(Class<L> cls) {
+		return delegate.findByType(cls);
+	}
+	
+	@Override
+	public java.util.Map<K, java.util.List<? extends java.io.Serializable>> findMap() {
+		return delegate.findMap();
+	}
+	
 }

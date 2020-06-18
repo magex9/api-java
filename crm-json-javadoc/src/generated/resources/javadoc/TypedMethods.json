@@ -1,7 +1,10 @@
 {
   "name": "TypedMethods",
   "package": "ca.magex.json.javadoc.samples",
-  "imports": {"List": "java.util"},
+  "imports": {
+    "Serializable": "java.io",
+    "List": "java.util"
+  },
   "type": "interface",
   "modifiers": ["public"],
   "methods": [
@@ -22,7 +25,10 @@
       "name": "load",
       "modifiers": ["public"],
       "type": "Long",
-      "generics": ["K"],
+      "generics": [{
+        "class": "K",
+        "extends": ["Serializable"]
+      }],
       "parameters": [
         {
           "name": "id",

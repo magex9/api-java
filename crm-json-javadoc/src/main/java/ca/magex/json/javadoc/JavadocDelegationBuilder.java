@@ -60,28 +60,60 @@ public class JavadocDelegationBuilder {
 		if (generics == null || generics.isEmpty())
 			return "";
 		return "<" + generics.stream().map(e -> {
+			if (e instanceof JsonObject)
+				return buildType(cls, (JsonObject)e);
 			String type = ((JsonText)e).value();
-			if (cls.getObject("imports").contains(type)) {
-				return cls.getObject("imports").getString(type) + "." + type;
-			} else {
-				return type;
+			StringBuilder sb = new StringBuilder();
+			for (String part : type.split("\\s+")) {
+				sb.append(" ");
+				if (cls.getObject("imports").contains(part)) {
+					sb.append(cls.getObject("imports").getString(part) + "." + part);
+				} else {
+					sb.append(part);
+				}
 			}
+			return sb.substring(1);
 		}).collect(Collectors.joining(", ")) + ">";
 	}
 	
 	public static String buildType(JsonObject cls, JsonObject json) {
+		if (json.contains("class", JsonText.class)) {
+			StringBuilder sb = new StringBuilder();
+			if (cls.getObject("imports").contains(json.getString("class"))) {
+				sb.append(cls.getObject("imports").getString(json.getString("class")) + "." + json.getString("class"));
+			} else {
+				sb.append(json.getString("class"));
+			}
+			if (json.contains("extends", JsonArray.class)) {
+				sb.append(" extends ");
+				sb.append(json.getArray("extends", String.class).stream()
+					.map(type -> {
+						StringBuilder tsb = new StringBuilder();
+						if (cls.getObject("imports").contains(type)) {
+							tsb.append(cls.getObject("imports").getString(type) + "." + type);
+						} else {
+							tsb.append(type);
+						}
+						tsb.append(buildGenerics(cls, json));
+						return tsb.toString();
+					})
+					.collect(Collectors.joining(", ")));
+			}
+			sb.append(buildGenerics(cls, json));
+			return sb.toString();
+		}
 		if (!json.contains("type")) {
 			return "void";
 		} else if (json.contains("type", JsonText.class)) {
 			if (json.getString("type").equals(cls.getString("name"))) {
 				return cls.getString("package") + "." + json.getString("type");
-			} else if (cls.getObject("imports").contains(json.getString("type"))) {
+			} else if (cls.contains("imports", JsonObject.class) && cls.getObject("imports").contains(json.getString("type"))) {
 				return cls.getObject("imports").getString(json.getString("type")) + "." + json.getString("type");
 			}
 			return json.getString("type");
 		} else if (json.contains("type", JsonObject.class)) {
 			StringBuilder sb = new StringBuilder();
-			if (cls.getObject("imports").contains(json.getObject("type").getString("class"))) {
+			if (cls.contains("imports", JsonObject.class) && cls.getObject("imports").contains(json.getObject("type").getString("class"))) {
 				sb.append(cls.getObject("imports").getString(json.getObject("type").getString("class")) + "." + json.getObject("type").getString("class"));
 			} else {
 				sb.append(json.getObject("type").getString("class"));
@@ -105,9 +137,10 @@ public class JavadocDelegationBuilder {
 		String throwable = !method.contains("exceptions") ? "" :
 			" throws " + method.getArray("exceptions", String.class).stream()
 				.map(e -> cls.getObject("imports").getString(e) + "." + e).collect(Collectors.joining(", "));
+		String generics = buildGenerics(cls, method);
 		String returnType = buildType(cls, method);
 		sb.append("@Override");
-		sb.indent("public " + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
+		sb.indent("public " + (generics == null || generics.length() < 1 ? "" : generics + " ") + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
 		if (returnType.equals("void")) {
 			sb.append("delegate." + method.getString("name") + "(" + invokeParams + ");");
 		} else {

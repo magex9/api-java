@@ -45,6 +45,7 @@ public class JsonJavadocMojo extends AbstractMavenMojo {
 			adapters.forEach(a -> a.build(source, generated));
 			
 		} catch (Exception e) {
+			getLog().error("Failed to build generated classes", e);
 			throw new MojoExecutionException("Failed to execute mojo", e);
 		}
 	}

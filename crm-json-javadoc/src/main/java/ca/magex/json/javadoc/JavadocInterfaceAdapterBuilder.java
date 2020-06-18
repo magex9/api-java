@@ -1,5 +1,6 @@
 package ca.magex.json.javadoc;
 
+import static ca.magex.json.javadoc.JavadocDelegationBuilder.buildGenerics;
 import static ca.magex.json.javadoc.JavadocDelegationBuilder.buildType;
 
 import java.io.File;
@@ -37,7 +38,7 @@ public class JavadocInterfaceAdapterBuilder {
 		sb.indent("public class " + adapterClass + " implements " + interfaces.stream().collect(Collectors.joining(", ")) + " {");
 		sb.append("");
 		for (String iface : interfaces) {
-			sb.append("private " + iface + " " + variable(iface) + ";");
+			sb.append("protected " + iface + " " + variable(iface) + ";");
 			sb.append("");
 		}
 		sb.indent("public " + adapterClass + "(" + interfaces.stream().map(i -> i + " " + variable(i)).collect(Collectors.joining(", ")) + ") {");
@@ -77,9 +78,10 @@ public class JavadocInterfaceAdapterBuilder {
 			.collect(Collectors.joining(", "));
 		String throwable = !method.contains("exceptions") ? "" :
 			" throws " + method.getArray("exceptions", String.class).stream().collect(Collectors.joining(", "));
+		String generics = buildGenerics(cls, method);
 		String returnType = buildType(cls, method);
 		sb.append("@Override");
-		sb.indent("public " + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
+		sb.indent("public " + (generics == null || generics.length() < 1 ? "" : generics + " ") + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
 		if (returnType.equals("void")) {
 			sb.append(variable(cls.getString("name")) + "." + method.getString("name") + "(" + invokeParams + ");");
 		} else {

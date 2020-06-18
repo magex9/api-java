@@ -11,7 +11,7 @@ import ca.magex.json.javadoc.samples.CrudService;
 public class JavadocDelegateTests {
 	
 	@Test
-	public void testCrudServiceLogger() throws Exception {
+	public void testCrudServiceSlf4jLogger() throws Exception {
 		File inputFile = new File("src/test/java/", CrudService.class.getName().replaceAll("\\.", "/") + ".java");
 		String inputPackage = CrudService.class.getPackageName();
 		assertTrue(inputFile.exists());

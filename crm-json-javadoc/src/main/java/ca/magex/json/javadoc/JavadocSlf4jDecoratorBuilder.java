@@ -81,10 +81,11 @@ public class JavadocSlf4jDecoratorBuilder {
 			" throws " + method.getArray("exceptions", String.class).stream()
 				.map(e -> cls.getObject("imports").getString(e) + "." + e).collect(Collectors.joining(", "));
 		String call = method.getString("name") + "(" + loggerParams + ")";
+		String generics = buildGenerics(cls, method);
 		String returnType = buildType(cls, method);
 		String returnClass = returnType.matches("^[a-z].*") ? "\"returnType\"" : "result.getClass()";
 		sb.append("@Override");
-		sb.indent("public " + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
+		sb.indent("public " + (generics == null || generics.length() < 1 ? "" : generics + " ") + returnType + " " + method.getString("name") + "(" + methodParams + ")" + throwable + " {");
 		sb.indent("if (logger.isTraceEnabled()) {");
 		sb.append("long start = System.nanoTime();");
 		sb.indent("try {");

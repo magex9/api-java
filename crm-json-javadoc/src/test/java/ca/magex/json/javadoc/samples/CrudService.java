@@ -1,6 +1,8 @@
 package ca.magex.json.javadoc.samples;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -36,5 +38,19 @@ public interface CrudService<K, T> {
 	 * @return
 	 */
 	public boolean contains(K id);
+	
+	/**
+	 * Find a list by an inline type of elements
+	 * @param <L>
+	 * @param cls
+	 * @return
+	 */
+	public <L extends Serializable> List<L> findByType(Class<L> cls);
+	
+	/**
+	 * Find a map of lists of serializable objects
+	 * @return
+	 */
+	public Map<K, List<? extends Serializable>> findMap();
 	
 }
