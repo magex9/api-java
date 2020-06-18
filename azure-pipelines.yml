@@ -37,13 +37,14 @@ stages:
       inputs:
         goals: 'install'
         mavenPomFile: 'pom.xml'
-        options: '-Dmaven.test.failure.ignore=true'
+        #options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
+      env: { ENVIRONMENT=ut }
 
     - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/
       artifact: crm-helloworld
