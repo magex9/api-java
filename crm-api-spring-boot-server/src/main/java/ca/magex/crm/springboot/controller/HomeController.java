@@ -14,7 +14,6 @@ import ca.magex.crm.api.services.CrmAuthenticationService;
 public class HomeController {
 
 	@Autowired private Crm crm = null;
-	@Autowired private CrmAuthenticationService auth;
 
 	@GetMapping("/")
 	public String getRoot() {
