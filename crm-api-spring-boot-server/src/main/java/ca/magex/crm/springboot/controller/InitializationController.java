@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.springboot.model.CrmInitializationRequestVO;
 
 @Controller("uiInitialization")
