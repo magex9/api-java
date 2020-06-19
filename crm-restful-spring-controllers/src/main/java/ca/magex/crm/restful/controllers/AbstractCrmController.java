@@ -21,11 +21,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;

@@ -11,15 +11,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmProfiles;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = {
-		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
-		MagexCrmProfiles.CRM_NO_AUTH
+		CrmProfiles.CRM_DATASTORE_CENTRALIZED,
+		CrmProfiles.CRM_NO_AUTH
 })
 public abstract class AbstractControllerTests {
 	

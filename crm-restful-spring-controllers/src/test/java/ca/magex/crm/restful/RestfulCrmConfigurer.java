@@ -4,15 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmPermissionService;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.services.CrmInitializationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 
@@ -20,7 +20,7 @@ import ca.magex.crm.api.services.CrmUserService;
 public class RestfulCrmConfigurer implements CrmConfigurer {
 
 	/* autowired services */
-	@Autowired private CrmInitializationService initializationService;	
+	@Autowired private CrmConfigurationService initializationService;	
 	@Autowired private CrmLookupService lookupService;	
 	@Autowired private CrmOrganizationService organizationService;
 	@Autowired private CrmLocationService locationService;

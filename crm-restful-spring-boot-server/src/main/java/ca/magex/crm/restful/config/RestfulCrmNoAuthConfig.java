@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
@@ -19,7 +19,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 
 @Configuration
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
+@Profile(CrmProfiles.CRM_NO_AUTH)
 public class RestfulCrmNoAuthConfig implements CrmConfigurer {
 
 	/* autowired services */
