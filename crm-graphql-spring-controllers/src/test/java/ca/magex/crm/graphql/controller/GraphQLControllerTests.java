@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.services.CrmPermissionService;
 import ca.magex.crm.api.system.Localized;
@@ -29,8 +29,8 @@ import ca.magex.crm.api.system.Localized;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = {
-		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
-		MagexCrmProfiles.CRM_NO_AUTH
+		CrmProfiles.CRM_DATASTORE_CENTRALIZED,
+		CrmProfiles.CRM_NO_AUTH
 })
 public class GraphQLControllerTests {
 

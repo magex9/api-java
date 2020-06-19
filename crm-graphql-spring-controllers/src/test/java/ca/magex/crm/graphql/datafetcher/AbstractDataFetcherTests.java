@@ -19,7 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.services.CrmInitializationService;
@@ -33,8 +33,8 @@ import graphql.ExecutionResult;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, GraphQLTestConfig.class})
 @ActiveProfiles(value = {
-		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED,
-		MagexCrmProfiles.CRM_NO_AUTH
+		CrmProfiles.CRM_DATASTORE_CENTRALIZED,
+		CrmProfiles.CRM_NO_AUTH
 })
 public abstract class AbstractDataFetcherTests {
 	
