@@ -20,10 +20,10 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.transaction.HazelcastTransactionManager;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 
 @Configuration
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class CrmHazelcastInstance {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastInstance.class);

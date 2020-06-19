@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.PersonName;
@@ -47,7 +47,7 @@ import ca.magex.crm.resource.CrmRoleInitializer;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 @Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
 		ItemNotFoundException.class,
 		BadRequestException.class

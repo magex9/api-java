@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.hazelcast.core.HazelcastInstance;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.lookup.BusinessClassification;
 import ca.magex.crm.api.lookup.BusinessSector;
 import ca.magex.crm.api.lookup.BusinessUnit;
@@ -24,7 +24,7 @@ import ca.magex.crm.api.system.Status;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 @SuppressWarnings("unchecked")
 public class HazelcastLookupService implements CrmLookupService {
 

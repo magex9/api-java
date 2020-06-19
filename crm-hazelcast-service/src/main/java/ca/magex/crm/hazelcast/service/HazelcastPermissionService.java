@@ -14,7 +14,7 @@ import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import com.hazelcast.query.impl.predicates.EqualPredicate;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -33,7 +33,7 @@ import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 @Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
 		ItemNotFoundException.class,
 		BadRequestException.class

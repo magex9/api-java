@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
@@ -34,7 +34,7 @@ import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Service
 @Primary
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 @Transactional(propagation = Propagation.REQUIRED, noRollbackFor = {
 		ItemNotFoundException.class,
 		BadRequestException.class

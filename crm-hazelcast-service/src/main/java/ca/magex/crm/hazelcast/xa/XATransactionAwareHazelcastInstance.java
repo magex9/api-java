@@ -16,12 +16,13 @@ import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import com.hazelcast.transaction.HazelcastXAResource;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.repositories.CrmStore;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
@@ -34,7 +35,7 @@ import ca.magex.crm.hazelcast.service.HazelcastPersonService;
 import ca.magex.crm.hazelcast.service.HazelcastUserService;
 
 @Component
-@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class XATransactionAwareHazelcastInstance {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XATransactionAwareHazelcastInstance.class);

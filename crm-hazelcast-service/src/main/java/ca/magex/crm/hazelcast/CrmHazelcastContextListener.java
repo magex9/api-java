@@ -23,7 +23,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.resource.CrmLookupLoader;
 
 //@Component
-//@Profile(MagexCrmProfiles.CRM_DATASTORE_DECENTRALIZED)
+//@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class CrmHazelcastContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastContextListener.class);
