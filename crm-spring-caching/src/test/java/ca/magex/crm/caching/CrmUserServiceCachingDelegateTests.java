@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
@@ -34,7 +34,7 @@ import ca.magex.crm.test.config.TestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
-@ActiveProfiles(profiles = { MagexCrmProfiles.CRM_NO_AUTH })
+@ActiveProfiles(profiles = { CrmProfiles.CRM_NO_AUTH })
 public class CrmUserServiceCachingDelegateTests {
 
 	@Autowired @Qualifier("PrincipalUserService") private CrmUserService delegate;
