@@ -1,4 +1,4 @@
-package ca.magex.crm.test;
+package ca.magex.json.util;
 
 import java.util.Arrays;
 import java.util.List;
