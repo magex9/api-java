@@ -1,7 +1,5 @@
 package ca.magex.crm.api.services;
 
-import javax.validation.constraints.NotNull;
-
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -17,11 +15,11 @@ import ca.magex.crm.api.system.Status;
 public interface CrmPersonService {
 	
 	default PersonDetails prototypePerson(
-			@NotNull Identifier organizationId, 
-			@NotNull PersonName name, 
-			@NotNull MailingAddress address, 
-			@NotNull Communication communication, 
-			@NotNull BusinessPosition position) {
+			Identifier organizationId, 
+			PersonName name, 
+			MailingAddress address, 
+			Communication communication, 
+			BusinessPosition position) {
 		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, position);
 	};
 	
@@ -35,71 +33,71 @@ public interface CrmPersonService {
 	}
 
 	PersonDetails createPerson(
-		@NotNull Identifier organizationId, 
-		@NotNull PersonName name, 
-		@NotNull MailingAddress address, 
-		@NotNull Communication communication, 
-		@NotNull BusinessPosition position);
+		Identifier organizationId, 
+		PersonName name, 
+		MailingAddress address, 
+		Communication communication, 
+		BusinessPosition position);
 
 	PersonSummary enablePerson(
-		@NotNull Identifier personId
+		Identifier personId
 	);
 
 	PersonSummary disablePerson(
-		@NotNull Identifier personId
+		Identifier personId
 	);
 
 	PersonDetails updatePersonName(
-		@NotNull Identifier personId, 
-		@NotNull PersonName name
+		Identifier personId, 
+		PersonName name
 	);
 
 	PersonDetails updatePersonAddress(
-		@NotNull Identifier personId, 
-		@NotNull MailingAddress address
+		Identifier personId, 
+		MailingAddress address
 	);
 
 	PersonDetails updatePersonCommunication(
-		@NotNull Identifier personId, 
-		@NotNull Communication communication
+		Identifier personId, 
+		Communication communication
 	);
 
 	PersonDetails updatePersonBusinessPosition(
-		@NotNull Identifier personId, 
-		@NotNull BusinessPosition position
+		Identifier personId, 
+		BusinessPosition position
 	);
 
 	PersonSummary findPersonSummary(
-		@NotNull Identifier personId
+		Identifier personId
 	);
 
 	PersonDetails findPersonDetails(
-		@NotNull Identifier personId
+		Identifier personId
 	);
 
 	long countPersons(
-		@NotNull PersonsFilter filter
+		PersonsFilter filter
 	);
 
 	FilteredPage<PersonSummary> findPersonSummaries(
-		@NotNull PersonsFilter filter, 
-		@NotNull Paging paging
+		PersonsFilter filter, 
+		Paging paging
 	);
 	
 	FilteredPage<PersonDetails> findPersonDetails(
-		@NotNull PersonsFilter filter, 
-		@NotNull Paging paging
+		PersonsFilter filter, 
+		Paging paging
 	);
 	
-	default FilteredPage<PersonDetails> findPersonDetails(@NotNull PersonsFilter filter) {
+	default FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter) {
 		return findPersonDetails(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default FilteredPage<PersonSummary> findPersonSummaries(@NotNull PersonsFilter filter) {
+	default FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter) {
 		return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default FilteredPage<PersonSummary> findActivePersonSummariesForOrg(@NotNull Identifier organizationId) {
+	default FilteredPage<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
 		return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());
 	}
 	

@@ -2,8 +2,6 @@ package ca.magex.crm.api.services;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.crm.PersonSummary;
@@ -17,9 +15,9 @@ import ca.magex.crm.api.system.Status;
 public interface CrmUserService {
 	
 	default User prototypeUser(
-			@NotNull Identifier personId, 
-			@NotNull String username, 
-			@NotNull List<String> roles) {
+			Identifier personId, 
+			String username, 
+			List<String> roles) {
 		return new User(null, username, new PersonSummary(personId, null, null, null), Status.PENDING, roles);
 	};
 	
@@ -31,50 +29,50 @@ public interface CrmUserService {
 	}
 
 	User createUser(
-		@NotNull Identifier personId, 
-		@NotNull String username, 
-		@NotNull List<String> roles
+		Identifier personId, 
+		String username, 
+		List<String> roles
 	);
 
 	User enableUser(
-		@NotNull Identifier userId
+		Identifier userId
 	);
 
 	User disableUser(
-		@NotNull Identifier userId
+		Identifier userId
 	);
 	
 	User updateUserRoles(
-		@NotNull Identifier userId, 
-		@NotNull List<String> roles
+		Identifier userId, 
+		List<String> roles
 	);
 
 	boolean changePassword(
-		@NotNull Identifier userId, 
-		@NotNull String currentPassword, 
-		@NotNull String newPassword
+		Identifier userId, 
+		String currentPassword, 
+		String newPassword
 	);
 
 	String resetPassword(
-		@NotNull Identifier userId
+		Identifier userId
 	);
 	
 	User findUser(
-	  	@NotNull Identifier userId
+	  	Identifier userId
 	);
     
     User findUserByUsername(
-    	@NotNull String username
+    	String username
     );
     
     long countUsers(
-   		@NotNull UsersFilter filter
+   		UsersFilter filter
    	);
     
     FilteredPage<User> findUsers(
-    	@NotNull UsersFilter filter, 
-    	@NotNull Paging paging
-    );	
+    	UsersFilter filter, 
+    	Paging paging
+    );
 
 	default boolean isValidPasswordFormat(String password) {
 		if (StringUtils.isBlank(password))
@@ -86,11 +84,11 @@ public interface CrmUserService {
 		return true;
 	}
 	
-	default FilteredPage<User> findUsers(@NotNull UsersFilter filter) {
+	default FilteredPage<User> findUsers(UsersFilter filter) {
 		return findUsers(filter, defaultUsersPaging());
 	}
 	
-	default FilteredPage<User> findActiveUserForOrg(@NotNull Identifier organizationId) {
+	default FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
 		return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));
 	}
 	

@@ -12,9 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.Role;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
@@ -24,14 +24,15 @@ public class RolesFilter implements CrmFilter<Role> {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public static final List<Sort> SORT_OPTIONS = List.of(
-			Sort.by(Order.asc("englishName")),
-			Sort.by(Order.desc("englishName")),
-			Sort.by(Order.asc("frenchName")),
-			Sort.by(Order.desc("frenchName")),
-			Sort.by(Order.asc("code")),
-			Sort.by(Order.desc("code")),
-			Sort.by(Order.asc("status")),
-			Sort.by(Order.desc("status")));
+		Sort.by(Order.asc("englishName")),
+		Sort.by(Order.desc("englishName")),
+		Sort.by(Order.asc("frenchName")),
+		Sort.by(Order.desc("frenchName")),
+		Sort.by(Order.asc("code")),
+		Sort.by(Order.desc("code")),
+		Sort.by(Order.asc("status")),
+		Sort.by(Order.desc("status"))
+	);
 
 	private Identifier groupId;
 

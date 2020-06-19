@@ -11,9 +11,9 @@
     "ToStringStyle": "org.apache.commons.lang3.builder",
     "Sort": "org.springframework.data.domain",
     "Direction": "org.springframework.data.domain.Sort",
+    "Crm": "ca.magex.crm.api",
     "OrganizationDetails": "ca.magex.crm.api.crm",
     "ApiException": "ca.magex.crm.api.exceptions",
-    "Crm": "ca.magex.crm.api.services",
     "Status": "ca.magex.crm.api.system"
   },
   "type": "class",

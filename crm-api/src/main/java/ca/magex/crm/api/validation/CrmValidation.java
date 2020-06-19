@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
@@ -19,7 +20,6 @@ import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -370,7 +370,7 @@ public class CrmValidation {
 			messages.add(new Message(identifier, "error", prefix + ".country", new Localized(Lang.ENGLISH, "Country is mandatory")));
 		} else {
 			try {
-				crm.findCountryByCode(address.getCountry());
+				crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY_LOOKUP).getLookupId(), address.getCountry()).getCode();
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", prefix + ".country", new Localized(Lang.ENGLISH, "Country code is not in the lookup")));
 			}
@@ -378,7 +378,7 @@ public class CrmValidation {
 
 		// Postal Code
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
-			if (address.getCountry() != null && crm.findCountryByCode(address.getCountry()).getCode().equals("CA")) {
+			if (address.getCountry() != null && crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY_LOOKUP).getLookupId(), address.getCountry()).getCode().equals("CA")) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
 					messages.add(new Message(identifier, "error", prefix + ".provinceCode", new Localized(Lang.ENGLISH, "Canadian province format is invalid")));
 				}
@@ -390,7 +390,7 @@ public class CrmValidation {
 		// Salutation
 		if (StringUtils.isNotBlank(name.getSalutation())) {
 			try {
-				crm.findSalutationByCode(name.getSalutation());
+				crm.findOptionByCode(crm.findLookupByCode(Crm.LANGUAGE_LOOKUP).getLookupId(), name.getSalutation());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", prefix + ".salutation", new Localized(Lang.ENGLISH, "Salutation code is not in the lookup")));
 			}

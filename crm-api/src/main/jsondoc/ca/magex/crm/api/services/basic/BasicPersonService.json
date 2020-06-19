@@ -1,0 +1,230 @@
+{
+  "name": "BasicPersonService",
+  "package": "ca.magex.crm.api.services.basic",
+  "imports": {
+    "BusinessPosition": "ca.magex.crm.api.common",
+    "Communication": "ca.magex.crm.api.common",
+    "MailingAddress": "ca.magex.crm.api.common",
+    "PersonName": "ca.magex.crm.api.common",
+    "PersonDetails": "ca.magex.crm.api.crm",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "Paging": "ca.magex.crm.api.filters",
+    "PersonsFilter": "ca.magex.crm.api.filters",
+    "CrmRepositories": "ca.magex.crm.api.repositories",
+    "CrmPersonService": "ca.magex.crm.api.services",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmPersonService"],
+  "constructors": [{
+    "name": "BasicPersonService",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "repos",
+      "type": "CrmRepositories"
+    }],
+    "body": "{\n    this.repos = repos;\n}"
+  }],
+  "fields": [{
+    "name": "repos",
+    "modifiers": ["private"],
+    "type": "CrmRepositories"
+  }],
+  "methods": [
+    {
+      "name": "createPerson",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        },
+        {
+          "name": "legalName",
+          "type": "PersonName"
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        },
+        {
+          "name": "communication",
+          "type": "Communication"
+        },
+        {
+          "name": "unit",
+          "type": "BusinessPosition"
+        }
+      ],
+      "body": "{\n    return repos.savePersonDetails(new PersonDetails(repos.generateId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, unit));\n}"
+    },
+    {
+      "name": "updatePersonName",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "legalName",
+          "type": "PersonName"
+        }
+      ],
+      "body": "{\n    PersonDetails person = repos.findPersonDetails(personId);\n    if (person == null) {\n        return null;\n    }\n    return repos.savePersonDetails(person.withLegalName(legalName).withDisplayName(legalName.getDisplayName()));\n}"
+    },
+    {
+      "name": "updatePersonAddress",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "address",
+          "type": "MailingAddress"
+        }
+      ],
+      "body": "{\n    PersonDetails person = repos.findPersonDetails(personId);\n    if (person == null) {\n        return null;\n    }\n    return repos.savePersonDetails(person.withAddress(address));\n}"
+    },
+    {
+      "name": "updatePersonCommunication",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "communication",
+          "type": "Communication"
+        }
+      ],
+      "body": "{\n    PersonDetails person = repos.findPersonDetails(personId);\n    if (person == null) {\n        return null;\n    }\n    return repos.savePersonDetails(person.withCommunication(communication));\n}"
+    },
+    {
+      "name": "updatePersonBusinessPosition",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "personId",
+          "type": "Identifier"
+        },
+        {
+          "name": "position",
+          "type": "BusinessPosition"
+        }
+      ],
+      "body": "{\n    PersonDetails person = repos.findPersonDetails(personId);\n    if (person == null) {\n        return null;\n    }\n    return repos.savePersonDetails(person.withPosition(position));\n}"
+    },
+    {
+      "name": "enablePerson",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    PersonDetails person = repos.findPersonDetails(personId);\n    if (person == null) {\n        return null;\n    }\n    return repos.savePersonDetails(person.withStatus(Status.ACTIVE));\n}"
+    },
+    {
+      "name": "disablePerson",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    PersonDetails person = repos.findPersonDetails(personId);\n    if (person == null) {\n        return null;\n    }\n    return repos.savePersonDetails(person.withStatus(Status.INACTIVE));\n}"
+    },
+    {
+      "name": "findPersonSummary",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return repos.findPersonSummary(personId);\n}"
+    },
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return repos.findPersonDetails(personId);\n}"
+    },
+    {
+      "name": "countPersons",
+      "modifiers": ["public"],
+      "type": "long",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "filter",
+        "type": "PersonsFilter"
+      }],
+      "body": "{\n    return repos.countPersons(filter);\n}"
+    },
+    {
+      "name": "findPersonSummaries",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonSummary"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return repos.findPersonSummary(filter, paging);\n}"
+    },
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonDetails"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return repos.findPersonDetails(filter, paging);\n}"
+    }
+  ]
+}

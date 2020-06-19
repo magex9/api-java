@@ -2,8 +2,6 @@ package ca.magex.crm.api.services;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.filters.OrganizationsFilter;
@@ -40,8 +38,8 @@ import ca.magex.crm.api.system.Status;
 public interface CrmOrganizationService {
 
 	default OrganizationDetails prototypeOrganization(
-			@NotNull String displayName,
-			@NotNull List<String> groups) {
+			String displayName,
+			List<String> groups) {
 		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groups);
 	}
 	
@@ -64,8 +62,8 @@ public interface CrmOrganizationService {
 	 * @return Details about the new organization
 	 */
 	OrganizationDetails createOrganization(
-		@NotNull String displayName,
-		@NotNull List<String> groups
+		String displayName,
+		List<String> groups
 	);
 
 	/**
@@ -76,7 +74,7 @@ public interface CrmOrganizationService {
 	 * @return The organization that was enabled.
 	 */
 	OrganizationSummary enableOrganization(
-		@NotNull Identifier organizationId
+		Identifier organizationId
 	);
 
 	/**
@@ -89,57 +87,31 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to disable.
 	 * @return The organization that was disabled.
 	 */
-	OrganizationSummary disableOrganization(
-		@NotNull Identifier organizationId
-	);
+	OrganizationSummary disableOrganization(Identifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(
-		@NotNull Identifier organizationId, 
-		@NotNull String name
-	);
+	OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name);
 
-	OrganizationDetails updateOrganizationMainLocation(
-		@NotNull Identifier organizationId, 
-		@NotNull Identifier locationId
-	);
+	OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId);
 
-	OrganizationDetails updateOrganizationMainContact(
-		@NotNull Identifier organizationId, 
-		@NotNull Identifier personId
-	);
+	OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId);
 
-	OrganizationDetails updateOrganizationGroups(
-		@NotNull Identifier organizationId, 
-		@NotNull List<String> groups
-	);
+	OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups);
 
-	OrganizationSummary findOrganizationSummary(
-		@NotNull Identifier organizationId
-	);
+	OrganizationSummary findOrganizationSummary(Identifier organizationId);
 
-	OrganizationDetails findOrganizationDetails(
-		@NotNull Identifier organizationId
-	);
+	OrganizationDetails findOrganizationDetails(Identifier organizationId);
 
-	long countOrganizations(
-		@NotNull OrganizationsFilter filter
-	);
+	long countOrganizations(OrganizationsFilter filter);
 
-	FilteredPage<OrganizationDetails> findOrganizationDetails(
-		@NotNull OrganizationsFilter filter, 
-		@NotNull Paging paging
-	);
+	FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging);
 
-	FilteredPage<OrganizationSummary> findOrganizationSummaries(
-		@NotNull OrganizationsFilter filter, 
-		@NotNull Paging paging
-	);
+	FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging);
 	
-	default FilteredPage<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
+	default FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
 		return findOrganizationDetails(filter, OrganizationsFilter.getDefaultPaging());
 	};
 	
-	default FilteredPage<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
+	default FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
 		return findOrganizationSummaries(filter, OrganizationsFilter.getDefaultPaging());
 	};
 	

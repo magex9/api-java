@@ -1,10 +1,11 @@
 package ca.magex.crm.api.policies.basic;
 
-import java.util.Locale;
-
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmLookupPolicy;
 import ca.magex.crm.api.services.CrmLookupService;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lookup;
+import ca.magex.crm.api.system.Status;
 
 public class BasicLookupPolicy implements CrmLookupPolicy {
 
@@ -19,67 +20,59 @@ public class BasicLookupPolicy implements CrmLookupPolicy {
 		this.lookups = lookups;
 	}
 
+
 	@Override
-	public boolean canViewStatusLookup(String StatusLookup, Locale locale) {
-		if (lookups.findStatusByLocalizedName(locale, StatusLookup) == null) {
-			throw new ItemNotFoundException("Status[" + locale + "] '" + StatusLookup + "'");
+	public boolean canCreateLookup() {
+		// TODO should be able to create new business units and province lists.
+		//if (province or business unit sublist)
+		//	return true;
+		return false;
+	}
+
+	@Override
+	public boolean canViewLookup(String lookup) {
+		/* can view a lookup if it exists */
+		if (lookups.findLookupByCode(lookup) == null) {
+			throw new ItemNotFoundException("Lookup Code '" + lookup + "'");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean canViewCountryLookup(String CountryLookup, Locale locale) {
-		if (lookups.findCountryByLocalizedName(locale, CountryLookup) == null) {
-			throw new ItemNotFoundException("Country[" + locale + "] '" + CountryLookup + "'");
+	public boolean canViewLookup(Identifier lookupId) {
+		/* can view a lookup if it exists */
+		if (lookups.findLookup(lookupId) == null) {
+			throw new ItemNotFoundException("Lookup ID '" + lookupId + "'");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale) {
-		if (lookups.findProvinceByLocalizedName(locale, provinceLookup, countryLookup) == null) {
-			throw new ItemNotFoundException("Province[" + locale + "] '" + provinceLookup + "'");
+	public boolean canUpdateLookup(Identifier lookupId) {
+		/* can update a lookup if it exists and is active */
+		Lookup lookup = lookups.findLookup(lookupId);
+		if (lookup == null) {
+			throw new ItemNotFoundException("Lookup ID '" + lookupId + "'");
+		}
+		return lookup.getStatus() == Status.ACTIVE;
+	}
+
+	@Override
+	public boolean canEnableLookup(Identifier lookupId) {
+		/* can enable a lookup if it exists */
+		if (lookups.findLookup(lookupId) == null) {
+			throw new ItemNotFoundException("Lookup ID '" + lookupId + "'");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean canViewLanguageLookup(String languageLookup, Locale locale) {
-		if (lookups.findLanguageByLocalizedName(locale, languageLookup) == null) {
-			throw new ItemNotFoundException("Language[" + locale + "] '" + languageLookup + "'");
+	public boolean canDisableLookup(Identifier lookupId) {
+		/* can disable a lookup if it exists */
+		if (lookups.findLookup(lookupId) == null) {
+			throw new ItemNotFoundException("Lookup ID '" + lookupId + "'");
 		}
 		return true;
 	}
-
-	@Override
-	public boolean canViewSalutationLookup(String salutationLookup, Locale locale) {
-		if (lookups.findSalutationByLocalizedName(locale, salutationLookup) == null) {
-			throw new ItemNotFoundException("Salutation[" + locale + "] '" + salutationLookup + "'");
-		}
-		return true;
-	}
-
-	@Override
-	public boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale) {
-		if (lookups.findBusinessSectorByLocalizedName(locale, sectorLookup) == null) {
-			throw new ItemNotFoundException("BusinessSector[" + locale + "] '" + sectorLookup + "'");
-		}
-		return true;
-	}
-
-	@Override
-	public boolean canViewBusinessUnitLookup(String unitLookup, Locale locale) {
-		if (lookups.findBusinessUnitByLocalizedName(locale, unitLookup) == null) {
-			throw new ItemNotFoundException("BusinessUnit[" + locale + "] '" + unitLookup + "'");
-		}
-		return true;
-	}
-
-	@Override
-	public boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale) {
-		if (lookups.findBusinessClassificationByLocalizedName(locale, classificationLookup) == null) {
-			throw new ItemNotFoundException("BusinessClassification[" + locale + "] '" + classificationLookup + "'");
-		}
-		return true;
-	}
+	
 }

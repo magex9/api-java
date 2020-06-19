@@ -9,8 +9,8 @@
     "HashCodeBuilder": "org.apache.commons.lang3.builder",
     "ToStringBuilder": "org.apache.commons.lang3.builder",
     "ToStringStyle": "org.apache.commons.lang3.builder",
+    "Crm": "ca.magex.crm.api",
     "PersonSummary": "ca.magex.crm.api.crm",
-    "Crm": "ca.magex.crm.api.services",
     "Identifier": "ca.magex.crm.api.system",
     "Status": "ca.magex.crm.api.system"
   },

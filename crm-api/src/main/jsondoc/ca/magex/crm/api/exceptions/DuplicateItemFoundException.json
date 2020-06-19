@@ -1,7 +1,7 @@
 {
   "name": "DuplicateItemFoundException",
   "package": "ca.magex.crm.api.exceptions",
-  "imports": {"Crm": "ca.magex.crm.api.services"},
+  "imports": {"Crm": "ca.magex.crm.api"},
   "type": "class",
   "modifiers": ["public"],
   "extends": ["ApiException"],

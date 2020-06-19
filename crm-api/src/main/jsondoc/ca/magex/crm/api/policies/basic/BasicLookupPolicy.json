@@ -2,10 +2,12 @@
   "name": "BasicLookupPolicy",
   "package": "ca.magex.crm.api.policies.basic",
   "imports": {
-    "Locale": "java.util",
     "ItemNotFoundException": "ca.magex.crm.api.exceptions",
     "CrmLookupPolicy": "ca.magex.crm.api.policies",
-    "CrmLookupService": "ca.magex.crm.api.services"
+    "CrmLookupService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system",
+    "Lookup": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
   },
   "type": "class",
   "modifiers": ["public"],
@@ -27,144 +29,66 @@
   }],
   "methods": [
     {
-      "name": "canViewStatusLookup",
+      "name": "canCreateLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "StatusLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findStatusByLocalizedName(locale, StatusLookup) == null) {\n        throw new ItemNotFoundException(\"Status[\" + locale + \"] '\" + StatusLookup + \"'\");\n    }\n    return true;\n}"
+      "body": "{\n    // TODO should be able to create new business units and province lists.\n    // if (province or business unit sublist)\n    // return true;\n    return false;\n}"
     },
     {
-      "name": "canViewCountryLookup",
+      "name": "canViewLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "CountryLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findCountryByLocalizedName(locale, CountryLookup) == null) {\n        throw new ItemNotFoundException(\"Country[\" + locale + \"] '\" + CountryLookup + \"'\");\n    }\n    return true;\n}"
+      "parameters": [{
+        "name": "lookup",
+        "type": "String"
+      }],
+      "body": "{\n    /* can view a lookup if it exists */\n    if (lookups.findLookupByCode(lookup) == null) {\n        throw new ItemNotFoundException(\"Lookup Code '\" + lookup + \"'\");\n    }\n    return true;\n}"
     },
     {
-      "name": "canViewProvinceLookup",
+      "name": "canViewLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "countryLookup",
-          "type": "String"
-        },
-        {
-          "name": "provinceLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findProvinceByLocalizedName(locale, provinceLookup, countryLookup) == null) {\n        throw new ItemNotFoundException(\"Province[\" + locale + \"] '\" + provinceLookup + \"'\");\n    }\n    return true;\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can view a lookup if it exists */\n    if (lookups.findLookup(lookupId) == null) {\n        throw new ItemNotFoundException(\"Lookup ID '\" + lookupId + \"'\");\n    }\n    return true;\n}"
     },
     {
-      "name": "canViewLanguageLookup",
+      "name": "canUpdateLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "languageLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findLanguageByLocalizedName(locale, languageLookup) == null) {\n        throw new ItemNotFoundException(\"Language[\" + locale + \"] '\" + languageLookup + \"'\");\n    }\n    return true;\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can update a lookup if it exists and is active */\n    Lookup lookup = lookups.findLookup(lookupId);\n    if (lookup == null) {\n        throw new ItemNotFoundException(\"Lookup ID '\" + lookupId + \"'\");\n    }\n    return lookup.getStatus() == Status.ACTIVE;\n}"
     },
     {
-      "name": "canViewSalutationLookup",
+      "name": "canEnableLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "salutationLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findSalutationByLocalizedName(locale, salutationLookup) == null) {\n        throw new ItemNotFoundException(\"Salutation[\" + locale + \"] '\" + salutationLookup + \"'\");\n    }\n    return true;\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can enable a lookup if it exists */\n    if (lookups.findLookup(lookupId) == null) {\n        throw new ItemNotFoundException(\"Lookup ID '\" + lookupId + \"'\");\n    }\n    return true;\n}"
     },
     {
-      "name": "canViewBusinessSectorLookup",
+      "name": "canDisableLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "sectorLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findBusinessSectorByLocalizedName(locale, sectorLookup) == null) {\n        throw new ItemNotFoundException(\"BusinessSector[\" + locale + \"] '\" + sectorLookup + \"'\");\n    }\n    return true;\n}"
-    },
-    {
-      "name": "canViewBusinessUnitLookup",
-      "modifiers": ["public"],
-      "type": "boolean",
-      "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "unitLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findBusinessUnitByLocalizedName(locale, unitLookup) == null) {\n        throw new ItemNotFoundException(\"BusinessUnit[\" + locale + \"] '\" + unitLookup + \"'\");\n    }\n    return true;\n}"
-    },
-    {
-      "name": "canViewBusinessClassificationLookup",
-      "modifiers": ["public"],
-      "type": "boolean",
-      "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "classificationLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    if (lookups.findBusinessClassificationByLocalizedName(locale, classificationLookup) == null) {\n        throw new ItemNotFoundException(\"BusinessClassification[\" + locale + \"] '\" + classificationLookup + \"'\");\n    }\n    return true;\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    /* can disable a lookup if it exists */\n    if (lookups.findLookup(lookupId) == null) {\n        throw new ItemNotFoundException(\"Lookup ID '\" + lookupId + \"'\");\n    }\n    return true;\n}"
     }
   ]
 }

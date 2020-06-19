@@ -1,0 +1,163 @@
+{
+  "name": "CrmOptionService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "List": "java.util",
+    "OptionsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Option": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "prototypeOption",
+      "modifiers": ["default"],
+      "type": "Option",
+      "parameters": [
+        {
+          "name": "lookupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    return new Option(null, lookupId, Status.PENDING, name);\n}"
+    },
+    {
+      "name": "createOption",
+      "modifiers": ["default"],
+      "type": "Option",
+      "parameters": [{
+        "name": "option",
+        "type": "Option"
+      }],
+      "body": "{\n    return createOption(option.getLookupId(), option.getName());\n}"
+    },
+    {
+      "name": "createOption",
+      "type": "Option",
+      "parameters": [
+        {
+          "name": "lookupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ]
+    },
+    {
+      "name": "findOption",
+      "type": "Option",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findOptionByCode",
+      "modifiers": ["default"],
+      "type": "Option",
+      "parameters": [
+        {
+          "name": "lookupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "optionCode",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    return findOptions(defaultOptionsFilter().withLookupId(lookupId).withOptionCode(optionCode), OptionsFilter.getDefaultPaging()).getSingleItem();\n}"
+    },
+    {
+      "name": "updateOptionName",
+      "type": "Option",
+      "parameters": [
+        {
+          "name": "optionId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ]
+    },
+    {
+      "name": "enableOption",
+      "type": "Option",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "disableOption",
+      "type": "Option",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findOptions",
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Option"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "OptionsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "findOptions",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Option"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "OptionsFilter"
+      }],
+      "body": "{\n    return findOptions(filter, defaultOptionPaging());\n}"
+    },
+    {
+      "name": "findOptions",
+      "modifiers": ["default"],
+      "type": {
+        "class": "List",
+        "generics": ["Option"]
+      },
+      "body": "{\n    return findOptions(defaultOptionsFilter(), OptionsFilter.getDefaultPaging().allItems()).getContent();\n}"
+    },
+    {
+      "name": "defaultOptionsFilter",
+      "modifiers": ["default"],
+      "type": "OptionsFilter",
+      "body": "{\n    return new OptionsFilter();\n}"
+    },
+    {
+      "name": "defaultOptionPaging",
+      "modifiers": ["default"],
+      "type": "Paging",
+      "body": "{\n    return new Paging(OptionsFilter.getSortOptions().get(0));\n}"
+    }
+  ]
+}

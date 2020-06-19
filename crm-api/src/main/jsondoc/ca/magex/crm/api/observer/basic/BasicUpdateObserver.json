@@ -1,0 +1,170 @@
+{
+  "name": "BasicUpdateObserver",
+  "package": "ca.magex.crm.api.observer.basic",
+  "imports": {
+    "ArrayList": "java.util",
+    "List": "java.util",
+    "Pair": "org.apache.commons.lang3.tuple",
+    "CrmUpdateObserver": "ca.magex.crm.api.observer",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmUpdateObserver"],
+  "constructors": [{
+    "name": "BasicUpdateObserver",
+    "modifiers": ["public"],
+    "body": "{\n    updates = new ArrayList<>();\n}"
+  }],
+  "fields": [{
+    "name": "updates",
+    "type": {
+      "class": "List",
+      "generics": [{
+        "class": "Pair",
+        "generics": [
+          "Identifier",
+          "Long"
+        ]
+      }]
+    }
+  }],
+  "methods": [
+    {
+      "name": "lookupUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "lookupId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(lookupId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "optionUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "optionId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(optionId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "groupUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(groupId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "roleUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "roleId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(roleId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "organizationUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(organizationId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "locationUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "locationId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(locationId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "personUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "personId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(personId, timestamp));\n    return this;\n}"
+    },
+    {
+      "name": "userUpdated",
+      "modifiers": ["public"],
+      "type": "CrmUpdateObserver",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "userId",
+          "type": "Identifier"
+        }
+      ],
+      "body": "{\n    updates.add(Pair.of(userId, timestamp));\n    return this;\n}"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "name": "BasicConfigurationService",
+  "package": "ca.magex.crm.api.services.basic",
+  "imports": {
+    "OutputStream": "java.io",
+    "List": "java.util",
+    "CrmPasswordRepository": "ca.magex.crm.api.authentication",
+    "Communication": "ca.magex.crm.api.common",
+    "MailingAddress": "ca.magex.crm.api.common",
+    "PersonName": "ca.magex.crm.api.common",
+    "LocationDetails": "ca.magex.crm.api.crm",
+    "OrganizationDetails": "ca.magex.crm.api.crm",
+    "PersonDetails": "ca.magex.crm.api.crm",
+    "UsersFilter": "ca.magex.crm.api.filters",
+    "CrmRepositories": "ca.magex.crm.api.repositories",
+    "User": "ca.magex.crm.api.roles",
+    "CrmConfigurationService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmConfigurationService"],
+  "constructors": [{
+    "name": "BasicConfigurationService",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "repos",
+        "type": "CrmRepositories"
+      },
+      {
+        "name": "passwords",
+        "type": "CrmPasswordRepository"
+      }
+    ],
+    "body": "{\n    this.repos = repos;\n    this.passwords = passwords;\n}"
+  }],
+  "fields": [
+    {
+      "name": "repos",
+      "modifiers": ["private"],
+      "type": "CrmRepositories"
+    },
+    {
+      "name": "passwords",
+      "modifiers": ["private"],
+      "type": "CrmPasswordRepository"
+    }
+  ],
+  "methods": [
+    {
+      "name": "isInitialized",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return repos.countUsers(new UsersFilter().withRole(\"SYS_ADMIN\").withStatus(Status.ACTIVE)) > 0;\n}"
+    },
+    {
+      "name": "initializeSystem",
+      "modifiers": ["public"],
+      "type": "User",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "organization",
+          "type": "String"
+        },
+        {
+          "name": "name",
+          "type": "PersonName"
+        },
+        {
+          "name": "email",
+          "type": "String"
+        },
+        {
+          "name": "username",
+          "type": "String"
+        },
+        {
+          "name": "password",
+          "type": "String"
+        }
+      ],
+      "body": "{\n    if (!isInitialized()) {\n        initialize(repos);\n        Identifier organizationId = repos.generateId();\n        Identifier mainLocationId = repos.generateId();\n        Identifier mainContactId = repos.generateId();\n        Identifier systemId = repos.generateId();\n        MailingAddress address = new MailingAddress(\"221b Baker Street\", \"London\", \"England\", \"GB\", \"NW1 6XE\");\n        Communication communication = new Communication(\"System Admin\", \"en\", email, null, null);\n        repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, List.of(\"SYS\", \"CRM\")));\n        repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, \"SYSTEM\", \"System Administrator\", address));\n        repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));\n        repos.saveUser(new User(systemId, username, repos.findPersonSummary(mainContactId), Status.ACTIVE, List.of(\"SYS_ADMIN\", \"CRM_ADMIN\")));\n        passwords.generateTemporaryPassword(username);\n        passwords.updatePassword(username, passwords.encodePassword(password));\n    }\n    return null;\n}"
+    },
+    {
+      "name": "reset",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    repos.reset();\n    return true;\n}"
+    },
+    {
+      "name": "dump",
+      "modifiers": ["public"],
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "os",
+        "type": "OutputStream"
+      }],
+      "body": "{\n    repos.dump(os);\n}"
+    }
+  ]
+}

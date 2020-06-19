@@ -4,46 +4,73 @@
   "imports": {
     "CrmPoliciesAdapter": "ca.magex.crm.api.adapters",
     "CrmPolicies": "ca.magex.crm.api.policies",
+    "CrmConfigurationService": "ca.magex.crm.api.services",
+    "CrmGroupService": "ca.magex.crm.api.services",
     "CrmLocationService": "ca.magex.crm.api.services",
     "CrmLookupService": "ca.magex.crm.api.services",
+    "CrmOptionService": "ca.magex.crm.api.services",
     "CrmOrganizationService": "ca.magex.crm.api.services",
-    "CrmPermissionService": "ca.magex.crm.api.services",
     "CrmPersonService": "ca.magex.crm.api.services",
+    "CrmRoleService": "ca.magex.crm.api.services",
+    "CrmServices": "ca.magex.crm.api.services",
     "CrmUserService": "ca.magex.crm.api.services"
   },
   "type": "class",
   "modifiers": ["public"],
   "extends": ["CrmPoliciesAdapter"],
   "implements": ["CrmPolicies"],
-  "constructors": [{
-    "name": "BasicPolicies",
-    "modifiers": ["public"],
-    "parameters": [
-      {
-        "name": "lookups",
-        "type": "CrmLookupService"
-      },
-      {
-        "name": "permissions",
-        "type": "CrmPermissionService"
-      },
-      {
-        "name": "organizations",
-        "type": "CrmOrganizationService"
-      },
-      {
-        "name": "locations",
-        "type": "CrmLocationService"
-      },
-      {
-        "name": "persons",
-        "type": "CrmPersonService"
-      },
-      {
-        "name": "users",
-        "type": "CrmUserService"
-      }
-    ],
-    "body": "{\n    super(new BasicLookupPolicy(lookups), new BasicPermissionPolicy(permissions), new BasicOrganizationPolicy(organizations), new BasicLocationPolicy(organizations, locations), new BasicPersonPolicy(organizations, persons), new BasicUserPolicy(persons, users));\n}"
-  }]
+  "constructors": [
+    {
+      "name": "BasicPolicies",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "services",
+        "type": "CrmServices"
+      }],
+      "body": "{\n    super(new BasicConfigurationPolicy(services), new BasicLookupPolicy(services), new BasicOptionPolicy(services, services), new BasicGroupPolicy(services), new BasicRolePolicy(services, services), new BasicOrganizationPolicy(services), new BasicLocationPolicy(services, services), new BasicPersonPolicy(services, services), new BasicUserPolicy(services, services));\n}"
+    },
+    {
+      "name": "BasicPolicies",
+      "modifiers": ["public"],
+      "parameters": [
+        {
+          "name": "init",
+          "type": "CrmConfigurationService"
+        },
+        {
+          "name": "lookups",
+          "type": "CrmLookupService"
+        },
+        {
+          "name": "options",
+          "type": "CrmOptionService"
+        },
+        {
+          "name": "groups",
+          "type": "CrmGroupService"
+        },
+        {
+          "name": "roles",
+          "type": "CrmRoleService"
+        },
+        {
+          "name": "organizations",
+          "type": "CrmOrganizationService"
+        },
+        {
+          "name": "locations",
+          "type": "CrmLocationService"
+        },
+        {
+          "name": "persons",
+          "type": "CrmPersonService"
+        },
+        {
+          "name": "users",
+          "type": "CrmUserService"
+        }
+      ],
+      "body": "{\n    super(new BasicConfigurationPolicy(init), new BasicLookupPolicy(lookups), new BasicOptionPolicy(lookups, options), new BasicGroupPolicy(groups), new BasicRolePolicy(groups, roles), new BasicOrganizationPolicy(organizations), new BasicLocationPolicy(organizations, locations), new BasicPersonPolicy(organizations, persons), new BasicUserPolicy(persons, users));\n}"
+    }
+  ]
 }

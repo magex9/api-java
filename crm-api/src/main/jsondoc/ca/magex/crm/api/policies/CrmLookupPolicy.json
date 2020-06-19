@@ -1,125 +1,53 @@
 {
   "name": "CrmLookupPolicy",
   "package": "ca.magex.crm.api.policies",
-  "imports": {"Locale": "java.util"},
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
   "type": "interface",
   "modifiers": ["public"],
   "methods": [
     {
-      "name": "canViewStatusLookup",
-      "type": "boolean",
-      "parameters": [
-        {
-          "name": "StatusLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
+      "name": "canCreateLookup",
+      "type": "boolean"
     },
     {
-      "name": "canViewCountryLookup",
+      "name": "canViewLookup",
       "type": "boolean",
-      "parameters": [
-        {
-          "name": "CountryLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
+      "parameters": [{
+        "name": "lookupCode",
+        "type": "String"
+      }]
     },
     {
-      "name": "canViewProvinceLookup",
+      "name": "canViewLookup",
       "type": "boolean",
-      "parameters": [
-        {
-          "name": "countryLookup",
-          "type": "String"
-        },
-        {
-          "name": "provinceLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
     },
     {
-      "name": "canViewLanguageLookup",
+      "name": "canUpdateLookup",
       "type": "boolean",
-      "parameters": [
-        {
-          "name": "languageLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
     },
     {
-      "name": "canViewSalutationLookup",
+      "name": "canEnableLookup",
       "type": "boolean",
-      "parameters": [
-        {
-          "name": "salutationLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
     },
     {
-      "name": "canViewBusinessSectorLookup",
+      "name": "canDisableLookup",
       "type": "boolean",
-      "parameters": [
-        {
-          "name": "sectorLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
-    },
-    {
-      "name": "canViewBusinessUnitLookup",
-      "type": "boolean",
-      "parameters": [
-        {
-          "name": "unitLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
-    },
-    {
-      "name": "canViewBusinessClassificationLookup",
-      "type": "boolean",
-      "parameters": [
-        {
-          "name": "classificationLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ]
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
     }
   ]
 }

@@ -1,0 +1,121 @@
+{
+  "name": "BasicRoleService",
+  "package": "ca.magex.crm.api.services.basic",
+  "imports": {
+    "Paging": "ca.magex.crm.api.filters",
+    "RolesFilter": "ca.magex.crm.api.filters",
+    "CrmRepositories": "ca.magex.crm.api.repositories",
+    "Role": "ca.magex.crm.api.roles",
+    "CrmRoleService": "ca.magex.crm.api.services",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmRoleService"],
+  "constructors": [{
+    "name": "BasicRoleService",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "repos",
+      "type": "CrmRepositories"
+    }],
+    "body": "{\n    this.repos = repos;\n}"
+  }],
+  "fields": [{
+    "name": "repos",
+    "modifiers": ["private"],
+    "type": "CrmRepositories"
+  }],
+  "methods": [
+    {
+      "name": "createRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    return repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, name));\n}"
+    },
+    {
+      "name": "findRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return repos.findRole(roleId);\n}"
+    },
+    {
+      "name": "updateRoleName",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "roleId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    Role role = repos.findRole(roleId);\n    if (role == null) {\n        return null;\n    }\n    return repos.saveRole(role.withName(name));\n}"
+    },
+    {
+      "name": "enableRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    Role role = repos.findRole(roleId);\n    if (role == null) {\n        return null;\n    }\n    return repos.saveRole(role.withStatus(Status.ACTIVE));\n}"
+    },
+    {
+      "name": "disableRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    Role role = repos.findRole(roleId);\n    if (role == null) {\n        return null;\n    }\n    return repos.saveRole(role.withStatus(Status.INACTIVE));\n}"
+    },
+    {
+      "name": "findRoles",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Role"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "RolesFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return repos.findRoles(filter, paging);\n}"
+    }
+  ]
+}

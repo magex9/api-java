@@ -1,0 +1,188 @@
+{
+  "name": "CrmConfigurationService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "OutputStream": "java.io",
+    "Crm": "ca.magex.crm.api",
+    "PersonName": "ca.magex.crm.api.common",
+    "LookupsFilter": "ca.magex.crm.api.filters",
+    "OptionsFilter": "ca.magex.crm.api.filters",
+    "CrmRepositories": "ca.magex.crm.api.repositories",
+    "Group": "ca.magex.crm.api.roles",
+    "Role": "ca.magex.crm.api.roles",
+    "User": "ca.magex.crm.api.roles",
+    "Identifier": "ca.magex.crm.api.system",
+    "Lang": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Lookup": "ca.magex.crm.api.system",
+    "Option": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "isInitialized",
+      "type": "boolean"
+    },
+    {
+      "name": "initializeSystem",
+      "type": "User",
+      "parameters": [
+        {
+          "name": "organization",
+          "type": "String"
+        },
+        {
+          "name": "name",
+          "type": "PersonName"
+        },
+        {
+          "name": "email",
+          "type": "String"
+        },
+        {
+          "name": "username",
+          "type": "String"
+        },
+        {
+          "name": "password",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "reset",
+      "modifiers": ["public"],
+      "type": "boolean"
+    },
+    {
+      "name": "dump",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "os",
+        "type": "OutputStream"
+      }]
+    },
+    {
+      "name": "initialize",
+      "description": "Default initialization of the system into the given repositories\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    createSysGroup(repos);\n    createAppGroup(repos);\n    createCrmGroup(repos);\n    createOrgGroup(repos);\n    createCountriesLookup(repos);\n    createCanadianProvinces(repos);\n}"
+    },
+    {
+      "name": "createSysGroup",
+      "description": "Create the default System group that controls the administration of the system\n<ul>\n<li>SYS_ADMIN - Application shutdown (os user)</li>\n<li>SYS_ACTUATOR - Monitoring and services (monitoring tool)</li>\n<li>SYS_ACCESS - Managing group and roles (service desk)</li>\n</ul>",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier groupId = repos.saveGroup(new Group(repos.generateId(), Status.ACTIVE, new Localized(\"SYS\", \"System\", \"Système\"))).getGroupId();\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"SYS_ADMIN\", \"System Administrator\", \"Adminstrator du système\")));\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"SYS_ACTUATOR\", \"System Actuator\", \"Actuator du système\")));\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"SYS_ACCESS\", \"System Access\", \"Access du système\")));\n}"
+    },
+    {
+      "name": "createAppGroup",
+      "description": "Create the default application group for applications to create background requests\n<ul>\n<li>APP_AUTH_REQUEST - Token verification (application background user)</li>\n</ul>\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier groupId = repos.saveGroup(new Group(repos.generateId(), Status.ACTIVE, new Localized(\"APP\", \"Application\", \"Application\"))).getGroupId();\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"APP_AUTH_REQUEST\", \"Authorization Requestor\", \"Demandeur d'Autorisation\")));\n}"
+    },
+    {
+      "name": "createCrmGroup",
+      "description": "Create the default CRM group for users allowed to view or manage all of the organizations\n<ul>\n<li>CRM_ADMIN - Create and manage all organization</li>\n<li>CRM_USER - View all of the organization</li>\n</ul>\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier groupId = repos.saveGroup(new Group(repos.generateId(), Status.ACTIVE, new Localized(\"CRM\", \"Customer Relationship Management\", \"Gestion de la relation client\"))).getGroupId();\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"CRM_ADMIN\", \"CRM Admin\", \"Administrateur GRC\")));\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"CRM_USER\", \"CRM Viewer\", \"Visionneuse GRC\")));\n}"
+    },
+    {
+      "name": "createOrgGroup",
+      "description": "Create the default organization roles for single organization access\n<ul>\n<li>ORG_ADMIN - Full access to their organizations information</li>\n<li>ORG_USER - Limited access to their organizations information</li>\n</ul>\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier groupId = repos.saveGroup(new Group(repos.generateId(), Status.ACTIVE, new Localized(\"ORG\", \"Organization\", \"Organisation\"))).getGroupId();\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"ORG_ADMIN\", \"Organization Admin\", \"Administrateur GRC\")));\n    repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, new Localized(\"ORG_USER\", \"Organization Viewer\", \"Visionneuse GRC\")));\n}"
+    },
+    {
+      "name": "createStatusLookup",
+      "description": "Create a default set of statuses that are immutable.\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, false, new Localized(Crm.STATUSES_LOOKUP, \"Statuses\", \"Statuts\"), null)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, Status.ACTIVE.getName()));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, Status.INACTIVE.getName()));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, Status.PENDING.getName()));\n}"
+    },
+    {
+      "name": "createLocaleLookup",
+      "description": "Create a default set of statuses that are immutable.\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, false, new Localized(Crm.LOCALES_LOOKUP, \"Locales\", \"Locaux\"), null)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.ROOT)));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.ENGLISH)));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.FRENCH)));\n}"
+    },
+    {
+      "name": "createSalutationsLookup",
+      "description": "Create a default set of statuses that are immutable.\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, false, new Localized(Crm.SALUTATION_LOOKUP, \"Salutations\", \"Salutations\"), null)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"1\", \"Miss\", \"Mlle.\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"2\", \"Mrs.\", \"Mme.\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"3\", \"Mr.\", \"M.\")));\n}"
+    },
+    {
+      "name": "createCountriesLookup",
+      "description": "Create a default set of countries for the system that can be extended to a larger set later\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, true, new Localized(Crm.COUNTRY_LOOKUP, \"Countries\", \"Des pays\"), null)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CA\", \"Canada\", \"Canada\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"GB\", \"United Kingdom\", \"Royaume-Uni\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"DE\", \"Germany\", \"Allemagne\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"FR\", \"France\", \"France\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"IT\", \"Italy\", \"Italie\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MX\", \"Mexico\", \"Mexique\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"US\", \"United States\", \"États-Unis d'Amérique\")));\n}"
+    },
+    {
+      "name": "createCanadianProvinces",
+      "description": "Create a set of Canadian Provinces\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY_LOOKUP), LookupsFilter.getDefaultPaging()).getSingleItem();\n    Option ca = repos.findOptions(new OptionsFilter().withLookupId(countries.getLookupId()).withOptionCode(\"CA\"), OptionsFilter.getDefaultPaging()).getSingleItem();\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, true, new Localized(Crm.CA_PROVINCE_LOOKUP, \"Canadian Provinces\", \"Provinces canadiennes\"), ca)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"AB\", \"Alberta\", \"Alberta\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"BC\", \"British Columbia\", \"Colombie-Britannique\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MB\", \"Manitoba\", \"Manitoba\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NB\", \"New Brunswick\", \"Nouveau-Brunswick\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NL\", \"Newfoundland and Labrador\", \"Terre-Neuve et Labrador\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NS\", \"Nova Scotia\", \"Nouvelle-Ècosse\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NT\", \"Northwest Territories\", \"Territoires du Nord-Ouest\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NU\", \"Nunavut\", \"Nunavut\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"ON\", \"Ontario\", \"Ontario\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"PE\", \"Prince Edward Island\", \"Île-du-Prince-Èdouard\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"QC\", \"Quebec\", \"Québec\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"SK\", \"Saskatchewan\", \"Saskatchewan\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"YT\", \"Yukon\", \"Yukon\")));\n}"
+    },
+    {
+      "name": "createAmericanStates",
+      "description": "Create a set of American States\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY_LOOKUP), LookupsFilter.getDefaultPaging()).getSingleItem();\n    Option us = repos.findOptions(new OptionsFilter().withLookupId(countries.getLookupId()).withOptionCode(\"US\"), OptionsFilter.getDefaultPaging()).getSingleItem();\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, true, new Localized(Crm.US_PROVINCE_LOOKUP, \"America States\", \"États d'Amérique\"), us)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"AK\", \"Alaska\", \"Alaska\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"AL\", \"Alabama\", \"Alabama\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"AR\", \"Arkansas\", \"Arkansas\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"AZ\", \"Arizona\", \"Arizona\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CA\", \"California\", \"Californie\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CO\", \"Colorado\", \"Colorado\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CT\", \"Connecticut\", \"Connecticut\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"DC\", \"District of Columbia\", \"District fédéral de Columbia\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"DE\", \"Delaware\", \"Delaware\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"FL\", \"Florida\", \"Floride\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"GA\", \"Georgia\", \"Géorgie\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"HI\", \"Hawaii\", \"Hawai\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"IA\", \"Iowa\", \"Iowa\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"ID\", \"Idaho\", \"Idaho\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"IL\", \"Illinois\", \"Illinois\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"IN\", \"Indiana\", \"Indiana\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"KS\", \"Kansas\", \"Kansas\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"KY\", \"Kentucky\", \"Kentucky\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"LA\", \"Louisiana\", \"Louisiane\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MA\", \"Massachusetts\", \"Massachusetts\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MD\", \"Maryland\", \"Maryland\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"ME\", \"Maine\", \"Maine\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MI\", \"Michigan\", \"Michigan\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MN\", \"Minnesota\", \"Minnesota\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MO\", \"Missouri\", \"Missouri\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MS\", \"Mississippi\", \"Mississippi\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MT\", \"Montana\", \"Montana\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NC\", \"North Carolina\", \"Caroline du Nord\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"ND\", \"North Dakota\", \"Dakota du Nord\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NE\", \"Nebraska\", \"Nebraska\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NH\", \"New Hampshire\", \"New Hampshire\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NJ\", \"New Jersey\", \"New Jersey\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NM\", \"New Mexico\", \"Nouveau-Mexique\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NV\", \"Nevada\", \"Nevada\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NY\", \"New York\", \"New York\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"OH\", \"Ohio\", \"Ohio\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"OK\", \"Oklahoma\", \"Oklahoma\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"OR\", \"Oregon\", \"Orégon\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"PA\", \"Pennsylvania\", \"Pennsylvanie\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"RI\", \"Rhode Island\", \"Rhode Island\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"SC\", \"South Carolina\", \"Carolina du Sud\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"SD\", \"South Dakota\", \"Dakota du Sud\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"TN\", \"Tennessee\", \"Tennessee\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"TX\", \"Texas\", \"Texas\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"UT\", \"Utah\", \"Utah\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"VA\", \"Virginia\", \"Virginie\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"VT\", \"Vermont\", \"Vermont\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"WA\", \"Washington\", \"Washington\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"WI\", \"Wisconsin\", \"Wisconsin\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"WV\", \"West Virginia\", \"Virginie-Occidentale\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"WY\", \"Wyoming\", \"Wyoming\")));\n}"
+    },
+    {
+      "name": "createMexicanProvinces",
+      "description": "Create a set of Mexican Provinces\n@param repos",
+      "modifiers": ["default"],
+      "parameters": [{
+        "name": "repos",
+        "type": "CrmRepositories"
+      }],
+      "body": "{\n    Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY_LOOKUP), LookupsFilter.getDefaultPaging()).getSingleItem();\n    Option mx = repos.findOptions(new OptionsFilter().withLookupId(countries.getLookupId()).withOptionCode(\"MX\"), OptionsFilter.getDefaultPaging()).getSingleItem();\n    Identifier lookupId = repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, true, new Localized(Crm.MX_PROVINCE_LOOKUP, \"Mexican Provinces\", \"Provinces mexicaines\"), mx)).getLookupId();\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"AG\", \"Aguascalientas\", \"Aguascalientas\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"BA\", \"Baja California (North)\", \"Baja California (Nord)\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"BJ\", \"Baja California (South)\", \"Baja California (Sud)\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CE\", \"Campeche\", \"Campeche\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CH\", \"Chihuahua\", \"Chihuahua\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CI\", \"Chiapas\", \"Chiapas\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CL\", \"Colima\", \"Colima\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"CU\", \"Coahuila de Zaragoza\", \"Coahuila de Zaragoza\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"DF\", \"Distrito\", \"Distrito (Federal)\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"DO\", \"Durango\", \"Durango\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"GR\", \"Guerreo\", \"Guerreo\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"GU\", \"Guanajuato\", \"Guanajuato\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"HL\", \"Hidalgo\", \"Hidalgo\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"JL\", \"Jalisco\", \"Jalisco\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MC\", \"Michoacan de Ocampo\", \"Michoacan de Ocampo\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MR\", \"Morelos\", \"Morelos\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"MX\", \"Mexico (State)\", \"Mexico (Ètat)\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NA\", \"Nayarit\", \"Nayarit\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"NL\", \"Nuevo Leon\", \"Nuevo Leon\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"OA\", \"Oaxaca\", \"Oaxaca\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"PB\", \"Puebla\", \"Puebla\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"QR\", \"Quintana Roo\", \"Quintana Roo\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"QU\", \"Queretaro de Arteaga\", \"Queretaro de Arteaga\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"SI\", \"Sinaloa\", \"Sinaloa\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"SL\", \"San Luis Potosi\", \"San Luis Potosi\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"SO\", \"Sonora\", \"Sonora\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"TA\", \"Tamaulipas\", \"Tamaulipas\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"TB\", \"Tabasco\", \"Tabasco\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"TL\", \"Tlaxcala\", \"Tlaxcala\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"VC\", \"Veracruz-Llave\", \"Veracruz-Llave\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"YU\", \"Yucatan\", \"Yucatan\")));\n    repos.saveOption(new Option(repos.generateId(), lookupId, Status.ACTIVE, new Localized(\"ZA\", \"Zacatecas\", \"Zacatecas\")));\n}"
+    }
+  ]
+}

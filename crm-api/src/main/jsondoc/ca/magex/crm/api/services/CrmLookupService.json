@@ -2,292 +2,231 @@
   "name": "CrmLookupService",
   "package": "ca.magex.crm.api.services",
   "imports": {
-    "List": "java.util",
-    "Locale": "java.util",
-    "NotNull": "javax.validation.constraints",
-    "BusinessClassification": "ca.magex.crm.api.lookup",
-    "BusinessSector": "ca.magex.crm.api.lookup",
-    "BusinessUnit": "ca.magex.crm.api.lookup",
-    "Country": "ca.magex.crm.api.lookup",
-    "Language": "ca.magex.crm.api.lookup",
-    "Province": "ca.magex.crm.api.lookup",
-    "Salutation": "ca.magex.crm.api.lookup",
+    "LookupsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Lookup": "ca.magex.crm.api.system",
+    "Option": "ca.magex.crm.api.system",
     "Status": "ca.magex.crm.api.system"
   },
   "type": "interface",
   "modifiers": ["public"],
+  "fields": [
+    {
+      "name": "STATUSES_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "LOCALES_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "SALUTATION_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "LANGUAGE_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "COUNTRY_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "CA_PROVINCE_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "US_PROVINCE_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    },
+    {
+      "name": "MX_PROVINCE_LOOKUP",
+      "modifiers": [
+        "public",
+        "static",
+        "final"
+      ],
+      "type": "String"
+    }
+  ],
   "methods": [
     {
-      "name": "findStatuses",
-      "type": {
-        "class": "List",
-        "generics": ["Status"]
-      }
-    },
-    {
-      "name": "findStatusByCode",
-      "type": "Status",
-      "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
-      }]
-    },
-    {
-      "name": "findStatusByLocalizedName",
-      "type": "Status",
+      "name": "prototypeLookup",
+      "modifiers": ["default"],
+      "type": "Lookup",
       "parameters": [
         {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
+          "name": "name",
+          "type": "Localized"
         },
         {
+          "name": "parent",
+          "type": "Option"
+        }
+      ],
+      "body": "{\n    return new Lookup(null, Status.PENDING, true, name, parent);\n}"
+    },
+    {
+      "name": "createLookup",
+      "modifiers": ["default"],
+      "type": "Lookup",
+      "parameters": [{
+        "name": "lookup",
+        "type": "Lookup"
+      }],
+      "body": "{\n    return createLookup(lookup.getName(), lookup.getParent());\n}"
+    },
+    {
+      "name": "createLookup",
+      "type": "Lookup",
+      "parameters": [
+        {
           "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Localized"
+        },
+        {
+          "name": "parent",
+          "type": "Option"
         }
       ]
     },
     {
-      "name": "findCountries",
-      "type": {
-        "class": "List",
-        "generics": ["Country"]
-      }
-    },
-    {
-      "name": "findCountryByCode",
-      "type": "Country",
+      "name": "findLookup",
+      "type": "Lookup",
       "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
+        "name": "lookupId",
+        "type": "Identifier"
       }]
     },
     {
-      "name": "findCountryByLocalizedName",
-      "type": "Country",
+      "name": "updateLookupName",
+      "type": "Lookup",
       "parameters": [
         {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
+          "name": "lookupId",
+          "type": "Identifier"
         },
         {
           "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Localized"
         }
       ]
     },
     {
-      "name": "findProvinces",
+      "name": "findLookupByCode",
+      "modifiers": ["default"],
+      "type": "Lookup",
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    return (Lookup) findLookups(defaultLookupsFilter().withLookupCode(code), LookupsFilter.getDefaultPaging()).getSingleItem();\n}"
+    },
+    {
+      "name": "findLookupByTypeWithParent",
+      "modifiers": ["default"],
+      "type": "Lookup",
+      "parameters": [{
+        "name": "parent",
+        "type": "Lookup"
+      }],
+      "body": "{\n    return (Lookup) findLookups(defaultLookupsFilter().withParentCode(parent.getCode()), LookupsFilter.getDefaultPaging()).getSingleItem();\n}"
+    },
+    {
+      "name": "enableLookup",
+      "type": "Lookup",
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "disableLookup",
+      "type": "Lookup",
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "defaultLookupsFilter",
+      "modifiers": ["default"],
+      "type": "LookupsFilter",
+      "body": "{\n    return new LookupsFilter();\n}"
+    },
+    {
+      "name": "findLookups",
       "type": {
-        "class": "List",
-        "generics": ["Province"]
+        "class": "FilteredPage",
+        "generics": ["Lookup"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "LookupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "findLookups",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Lookup"]
       },
       "parameters": [{
-        "name": "country",
-        "type": "String"
-      }]
+        "name": "filter",
+        "type": "LookupsFilter"
+      }],
+      "body": "{\n    return findLookups(filter, defaultLookupPaging());\n}"
     },
     {
-      "name": "findProvinceByCode",
-      "type": "Province",
-      "parameters": [
-        {
-          "name": "province",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "country",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
-    },
-    {
-      "name": "findProvinceByLocalizedName",
-      "type": "Province",
-      "parameters": [
-        {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "province",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "country",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
-    },
-    {
-      "name": "findLanguages",
-      "type": {
-        "class": "List",
-        "generics": ["Language"]
-      }
-    },
-    {
-      "name": "findLanguageByCode",
-      "type": "Language",
-      "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
-      }]
-    },
-    {
-      "name": "findLanguageByLocalizedName",
-      "type": "Language",
-      "parameters": [
-        {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
-    },
-    {
-      "name": "findSalutations",
-      "type": {
-        "class": "List",
-        "generics": ["Salutation"]
-      }
-    },
-    {
-      "name": "findSalutationByCode",
-      "type": "Salutation",
-      "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
-      }]
-    },
-    {
-      "name": "findSalutationByLocalizedName",
-      "type": "Salutation",
-      "parameters": [
-        {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
-    },
-    {
-      "name": "findBusinessSectors",
-      "type": {
-        "class": "List",
-        "generics": ["BusinessSector"]
-      }
-    },
-    {
-      "name": "findBusinessSectorByCode",
-      "type": "BusinessSector",
-      "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
-      }]
-    },
-    {
-      "name": "findBusinessSectorByLocalizedName",
-      "type": "BusinessSector",
-      "parameters": [
-        {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
-    },
-    {
-      "name": "findBusinessUnits",
-      "type": {
-        "class": "List",
-        "generics": ["BusinessUnit"]
-      }
-    },
-    {
-      "name": "findBusinessUnitByCode",
-      "type": "BusinessUnit",
-      "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
-      }]
-    },
-    {
-      "name": "findBusinessUnitByLocalizedName",
-      "type": "BusinessUnit",
-      "parameters": [
-        {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
-    },
-    {
-      "name": "findBusinessClassifications",
-      "type": {
-        "class": "List",
-        "generics": ["BusinessClassification"]
-      }
-    },
-    {
-      "name": "findBusinessClassificationByCode",
-      "type": "BusinessClassification",
-      "parameters": [{
-        "name": "code",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
-      }]
-    },
-    {
-      "name": "findBusinessClassificationByLocalizedName",
-      "type": "BusinessClassification",
-      "parameters": [
-        {
-          "name": "locale",
-          "type": "Locale",
-          "annotations": [{"name": "NotNull"}]
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
-        }
-      ]
+      "name": "defaultLookupPaging",
+      "modifiers": ["default"],
+      "type": "Paging",
+      "body": "{\n    return new Paging(LookupsFilter.getSortOptions().get(0));\n}"
     }
   ]
 }

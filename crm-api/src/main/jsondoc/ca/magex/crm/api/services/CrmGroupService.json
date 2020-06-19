@@ -1,0 +1,146 @@
+{
+  "name": "CrmGroupService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "List": "java.util",
+    "Collectors": "java.util.stream",
+    "GroupsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "Group": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "prototypeGroup",
+      "modifiers": ["default"],
+      "type": "Group",
+      "parameters": [{
+        "name": "name",
+        "type": "Localized"
+      }],
+      "body": "{\n    return new Group(null, Status.PENDING, name);\n}"
+    },
+    {
+      "name": "createGroup",
+      "modifiers": ["default"],
+      "type": "Group",
+      "parameters": [{
+        "name": "group",
+        "type": "Group"
+      }],
+      "body": "{\n    return createGroup(group.getName());\n}"
+    },
+    {
+      "name": "createGroup",
+      "type": "Group",
+      "parameters": [{
+        "name": "name",
+        "type": "Localized"
+      }]
+    },
+    {
+      "name": "findGroup",
+      "type": "Group",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findGroupByCode",
+      "modifiers": ["default"],
+      "type": "Group",
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    return findGroups(defaultGroupsFilter().withCode(code), GroupsFilter.getDefaultPaging()).getSingleItem();\n}"
+    },
+    {
+      "name": "updateGroupName",
+      "type": "Group",
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ]
+    },
+    {
+      "name": "enableGroup",
+      "type": "Group",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "disableGroup",
+      "type": "Group",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "defaultGroupsFilter",
+      "modifiers": ["default"],
+      "type": "GroupsFilter",
+      "body": "{\n    return new GroupsFilter();\n}"
+    },
+    {
+      "name": "findGroups",
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Group"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "GroupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "findGroups",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Group"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "GroupsFilter"
+      }],
+      "body": "{\n    return findGroups(filter, defaultGroupPaging());\n}"
+    },
+    {
+      "name": "findActiveGroupCodes",
+      "modifiers": ["default"],
+      "type": {
+        "class": "List",
+        "generics": ["String"]
+      },
+      "body": "{\n    return findGroups(defaultGroupsFilter().withStatus(Status.ACTIVE), GroupsFilter.getDefaultPaging().allItems()).stream().map(g -> g.getCode()).collect(Collectors.toList());\n}"
+    },
+    {
+      "name": "defaultGroupPaging",
+      "modifiers": ["default"],
+      "type": "Paging",
+      "body": "{\n    return new Paging(GroupsFilter.getSortOptions().get(0));\n}"
+    }
+  ]
+}

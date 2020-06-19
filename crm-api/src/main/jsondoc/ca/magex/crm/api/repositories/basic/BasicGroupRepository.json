@@ -1,0 +1,131 @@
+{
+  "name": "BasicGroupRepository",
+  "package": "ca.magex.crm.api.repositories.basic",
+  "imports": {
+    "Collectors": "java.util.stream",
+    "Stream": "java.util.stream",
+    "SerializationUtils": "org.apache.commons.lang3",
+    "GroupsFilter": "ca.magex.crm.api.filters",
+    "PageBuilder": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "CrmUpdateNotifier": "ca.magex.crm.api.observer",
+    "CrmGroupRepository": "ca.magex.crm.api.repositories",
+    "CrmStore": "ca.magex.crm.api.repositories",
+    "Group": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmGroupRepository"],
+  "constructors": [{
+    "name": "BasicGroupRepository",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "store",
+        "type": "CrmStore"
+      },
+      {
+        "name": "notifier",
+        "type": "CrmUpdateNotifier"
+      }
+    ],
+    "body": "{\n    this.store = store;\n    this.notifier = notifier;\n}"
+  }],
+  "fields": [
+    {
+      "name": "store",
+      "modifiers": ["private"],
+      "type": "CrmStore"
+    },
+    {
+      "name": "notifier",
+      "modifiers": ["private"],
+      "type": "CrmUpdateNotifier"
+    }
+  ],
+  "methods": [
+    {
+      "name": "apply",
+      "modifiers": [
+        "private",
+        "synchronized"
+      ],
+      "type": {
+        "class": "Stream",
+        "generics": ["Group"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "GroupsFilter"
+      }],
+      "body": "{\n    return store.getGroups().values().stream().filter(p -> filter.apply(p));\n}"
+    },
+    {
+      "name": "findGroups",
+      "modifiers": [
+        "public",
+        "synchronized"
+      ],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Group"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "GroupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return PageBuilder.buildPageFor(filter, apply(filter).map(i -> SerializationUtils.clone(i)).sorted(filter.getComparator(paging)).collect(Collectors.toList()), paging);\n}"
+    },
+    {
+      "name": "countGroups",
+      "modifiers": [
+        "public",
+        "synchronized"
+      ],
+      "type": "long",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "filter",
+        "type": "GroupsFilter"
+      }],
+      "body": "{\n    return apply(filter).count();\n}"
+    },
+    {
+      "name": "findGroup",
+      "modifiers": [
+        "public",
+        "synchronized"
+      ],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return store.getGroups().get(groupId);\n}"
+    },
+    {
+      "name": "saveGroup",
+      "modifiers": [
+        "public",
+        "synchronized"
+      ],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "group",
+        "type": "Group"
+      }],
+      "body": "{\n    notifier.groupUpdated(System.nanoTime(), group.getGroupId());\n    store.getGroups().put(group.getGroupId(), group);\n    return group;\n}"
+    }
+  ]
+}

@@ -4,11 +4,14 @@
   "type": "interface",
   "modifiers": ["public"],
   "extends": [
+    "CrmConfigurationPolicy",
     "CrmLookupPolicy",
+    "CrmOptionPolicy",
+    "CrmGroupPolicy",
+    "CrmRolePolicy",
     "CrmOrganizationPolicy",
     "CrmLocationPolicy",
     "CrmPersonPolicy",
-    "CrmUserPolicy",
-    "CrmPermissionPolicy"
+    "CrmUserPolicy"
   ]
 }

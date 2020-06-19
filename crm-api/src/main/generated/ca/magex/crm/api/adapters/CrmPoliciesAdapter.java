@@ -5,23 +5,32 @@ package ca.magex.crm.api.adapters;
  * 
  * Aggregate adapter for all the CRM policies
  */
-public class CrmPoliciesAdapter implements ca.magex.crm.api.policies.CrmLookupPolicy, ca.magex.crm.api.policies.CrmPermissionPolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy {
+public class CrmPoliciesAdapter implements ca.magex.crm.api.policies.CrmConfigurationPolicy, ca.magex.crm.api.policies.CrmLookupPolicy, ca.magex.crm.api.policies.CrmOptionPolicy, ca.magex.crm.api.policies.CrmGroupPolicy, ca.magex.crm.api.policies.CrmRolePolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy {
 	
-	private ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy;
+	protected ca.magex.crm.api.policies.CrmConfigurationPolicy crmConfigurationPolicy;
 	
-	private ca.magex.crm.api.policies.CrmPermissionPolicy crmPermissionPolicy;
+	protected ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy;
 	
-	private ca.magex.crm.api.policies.CrmOrganizationPolicy crmOrganizationPolicy;
+	protected ca.magex.crm.api.policies.CrmOptionPolicy crmOptionPolicy;
 	
-	private ca.magex.crm.api.policies.CrmLocationPolicy crmLocationPolicy;
+	protected ca.magex.crm.api.policies.CrmGroupPolicy crmGroupPolicy;
 	
-	private ca.magex.crm.api.policies.CrmPersonPolicy crmPersonPolicy;
+	protected ca.magex.crm.api.policies.CrmRolePolicy crmRolePolicy;
 	
-	private ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy;
+	protected ca.magex.crm.api.policies.CrmOrganizationPolicy crmOrganizationPolicy;
 	
-	public CrmPoliciesAdapter(ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy, ca.magex.crm.api.policies.CrmPermissionPolicy crmPermissionPolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy crmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy crmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy crmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy) {
+	protected ca.magex.crm.api.policies.CrmLocationPolicy crmLocationPolicy;
+	
+	protected ca.magex.crm.api.policies.CrmPersonPolicy crmPersonPolicy;
+	
+	protected ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy;
+	
+	public CrmPoliciesAdapter(ca.magex.crm.api.policies.CrmConfigurationPolicy crmConfigurationPolicy, ca.magex.crm.api.policies.CrmLookupPolicy crmLookupPolicy, ca.magex.crm.api.policies.CrmOptionPolicy crmOptionPolicy, ca.magex.crm.api.policies.CrmGroupPolicy crmGroupPolicy, ca.magex.crm.api.policies.CrmRolePolicy crmRolePolicy, ca.magex.crm.api.policies.CrmOrganizationPolicy crmOrganizationPolicy, ca.magex.crm.api.policies.CrmLocationPolicy crmLocationPolicy, ca.magex.crm.api.policies.CrmPersonPolicy crmPersonPolicy, ca.magex.crm.api.policies.CrmUserPolicy crmUserPolicy) {
+		this.crmConfigurationPolicy = crmConfigurationPolicy;
 		this.crmLookupPolicy = crmLookupPolicy;
-		this.crmPermissionPolicy = crmPermissionPolicy;
+		this.crmOptionPolicy = crmOptionPolicy;
+		this.crmGroupPolicy = crmGroupPolicy;
+		this.crmRolePolicy = crmRolePolicy;
 		this.crmOrganizationPolicy = crmOrganizationPolicy;
 		this.crmLocationPolicy = crmLocationPolicy;
 		this.crmPersonPolicy = crmPersonPolicy;
@@ -29,108 +38,138 @@ public class CrmPoliciesAdapter implements ca.magex.crm.api.policies.CrmLookupPo
 	}
 	
 	@Override
-	public boolean canViewStatusLookup(String StatusLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewStatusLookup(StatusLookup, locale);
+	public boolean canInitialize() {
+		return crmConfigurationPolicy.canInitialize();
 	}
 	
 	@Override
-	public boolean canViewCountryLookup(String CountryLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewCountryLookup(CountryLookup, locale);
+	public boolean canReset() {
+		return crmConfigurationPolicy.canReset();
 	}
 	
 	@Override
-	public boolean canViewProvinceLookup(String countryLookup, String provinceLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewProvinceLookup(countryLookup, provinceLookup, locale);
+	public boolean canCreateLookup() {
+		return crmLookupPolicy.canCreateLookup();
 	}
 	
 	@Override
-	public boolean canViewLanguageLookup(String languageLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewLanguageLookup(languageLookup, locale);
+	public boolean canViewLookup(String lookupCode) {
+		return crmLookupPolicy.canViewLookup(lookupCode);
 	}
 	
 	@Override
-	public boolean canViewSalutationLookup(String salutationLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewSalutationLookup(salutationLookup, locale);
+	public boolean canViewLookup(ca.magex.crm.api.system.Identifier lookupId) {
+		return crmLookupPolicy.canViewLookup(lookupId);
 	}
 	
 	@Override
-	public boolean canViewBusinessSectorLookup(String sectorLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewBusinessSectorLookup(sectorLookup, locale);
+	public boolean canUpdateLookup(ca.magex.crm.api.system.Identifier lookupId) {
+		return crmLookupPolicy.canUpdateLookup(lookupId);
 	}
 	
 	@Override
-	public boolean canViewBusinessUnitLookup(String unitLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewBusinessUnitLookup(unitLookup, locale);
+	public boolean canEnableLookup(ca.magex.crm.api.system.Identifier lookupId) {
+		return crmLookupPolicy.canEnableLookup(lookupId);
 	}
 	
 	@Override
-	public boolean canViewBusinessClassificationLookup(String classificationLookup, java.util.Locale locale) {
-		return crmLookupPolicy.canViewBusinessClassificationLookup(classificationLookup, locale);
+	public boolean canDisableLookup(ca.magex.crm.api.system.Identifier lookupId) {
+		return crmLookupPolicy.canDisableLookup(lookupId);
+	}
+	
+	@Override
+	public boolean canCreateOption(ca.magex.crm.api.system.Identifier lookupId) {
+		return crmOptionPolicy.canCreateOption(lookupId);
+	}
+	
+	@Override
+	public boolean canViewOptions(ca.magex.crm.api.system.Identifier lookupId) {
+		return crmOptionPolicy.canViewOptions(lookupId);
+	}
+	
+	@Override
+	public boolean canViewOption(ca.magex.crm.api.system.Identifier optionId) {
+		return crmOptionPolicy.canViewOption(optionId);
+	}
+	
+	@Override
+	public boolean canUpdateOption(ca.magex.crm.api.system.Identifier optionId) {
+		return crmOptionPolicy.canUpdateOption(optionId);
+	}
+	
+	@Override
+	public boolean canEnableOption(ca.magex.crm.api.system.Identifier optionId) {
+		return crmOptionPolicy.canEnableOption(optionId);
+	}
+	
+	@Override
+	public boolean canDisableOption(ca.magex.crm.api.system.Identifier optionId) {
+		return crmOptionPolicy.canDisableOption(optionId);
 	}
 	
 	@Override
 	public boolean canCreateGroup() {
-		return crmPermissionPolicy.canCreateGroup();
+		return crmGroupPolicy.canCreateGroup();
 	}
 	
 	@Override
 	public boolean canViewGroup(String group) {
-		return crmPermissionPolicy.canViewGroup(group);
+		return crmGroupPolicy.canViewGroup(group);
 	}
 	
 	@Override
 	public boolean canViewGroup(ca.magex.crm.api.system.Identifier groupId) {
-		return crmPermissionPolicy.canViewGroup(groupId);
+		return crmGroupPolicy.canViewGroup(groupId);
 	}
 	
 	@Override
 	public boolean canUpdateGroup(ca.magex.crm.api.system.Identifier groupId) {
-		return crmPermissionPolicy.canUpdateGroup(groupId);
+		return crmGroupPolicy.canUpdateGroup(groupId);
 	}
 	
 	@Override
 	public boolean canEnableGroup(ca.magex.crm.api.system.Identifier groupId) {
-		return crmPermissionPolicy.canEnableGroup(groupId);
+		return crmGroupPolicy.canEnableGroup(groupId);
 	}
 	
 	@Override
 	public boolean canDisableGroup(ca.magex.crm.api.system.Identifier groupId) {
-		return crmPermissionPolicy.canDisableGroup(groupId);
+		return crmGroupPolicy.canDisableGroup(groupId);
 	}
 	
 	@Override
 	public boolean canCreateRole(ca.magex.crm.api.system.Identifier groupId) {
-		return crmPermissionPolicy.canCreateRole(groupId);
+		return crmRolePolicy.canCreateRole(groupId);
 	}
 	
 	@Override
 	public boolean canViewRoles() {
-		return crmPermissionPolicy.canViewRoles();
+		return crmRolePolicy.canViewRoles();
 	}
 	
 	@Override
 	public boolean canViewRole(String code) {
-		return crmPermissionPolicy.canViewRole(code);
+		return crmRolePolicy.canViewRole(code);
 	}
 	
 	@Override
 	public boolean canViewRole(ca.magex.crm.api.system.Identifier roleId) {
-		return crmPermissionPolicy.canViewRole(roleId);
+		return crmRolePolicy.canViewRole(roleId);
 	}
 	
 	@Override
 	public boolean canUpdateRole(ca.magex.crm.api.system.Identifier roleId) {
-		return crmPermissionPolicy.canUpdateRole(roleId);
+		return crmRolePolicy.canUpdateRole(roleId);
 	}
 	
 	@Override
 	public boolean canEnableRole(ca.magex.crm.api.system.Identifier roleId) {
-		return crmPermissionPolicy.canEnableRole(roleId);
+		return crmRolePolicy.canEnableRole(roleId);
 	}
 	
 	@Override
 	public boolean canDisableRole(ca.magex.crm.api.system.Identifier roleId) {
-		return crmPermissionPolicy.canDisableRole(roleId);
+		return crmRolePolicy.canDisableRole(roleId);
 	}
 	
 	@Override

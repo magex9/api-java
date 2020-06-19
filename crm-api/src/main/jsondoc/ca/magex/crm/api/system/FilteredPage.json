@@ -7,10 +7,10 @@
     "List": "java.util",
     "SerializationUtils": "org.apache.commons.lang3",
     "PageImpl": "org.springframework.data.domain",
+    "Crm": "ca.magex.crm.api",
     "DuplicateItemFoundException": "ca.magex.crm.api.exceptions",
     "ItemNotFoundException": "ca.magex.crm.api.exceptions",
-    "Paging": "ca.magex.crm.api.filters",
-    "Crm": "ca.magex.crm.api.services"
+    "Paging": "ca.magex.crm.api.filters"
   },
   "type": "class",
   "modifiers": ["public"],

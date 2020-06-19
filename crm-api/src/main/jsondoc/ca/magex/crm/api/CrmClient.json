@@ -1,0 +1,34 @@
+{
+  "name": "CrmClient",
+  "package": "ca.magex.crm.api",
+  "imports": {
+    "CrmPolicies": "ca.magex.crm.api.policies",
+    "CrmServices": "ca.magex.crm.api.services"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": [
+    "CrmServices",
+    "CrmPolicies"
+  ],
+  "methods": [
+    {
+      "name": "login",
+      "type": "boolean",
+      "parameters": [
+        {
+          "name": "username",
+          "type": "String"
+        },
+        {
+          "name": "password",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "logout",
+      "type": "boolean"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "CrmRoleRepository",
+  "package": "ca.magex.crm.api.repositories",
+  "imports": {
+    "Paging": "ca.magex.crm.api.filters",
+    "RolesFilter": "ca.magex.crm.api.filters",
+    "Role": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "findRoles",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Role"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "RolesFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "countRoles",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "RolesFilter"
+      }]
+    },
+    {
+      "name": "findRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "saveRole",
+      "modifiers": ["public"],
+      "type": "Role",
+      "parameters": [{
+        "name": "role",
+        "type": "Role"
+      }]
+    }
+  ]
+}

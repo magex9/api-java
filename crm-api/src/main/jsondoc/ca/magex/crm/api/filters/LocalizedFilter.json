@@ -11,7 +11,7 @@
     "ToStringStyle": "org.apache.commons.lang3.builder",
     "Sort": "org.springframework.data.domain",
     "Order": "org.springframework.data.domain.Sort",
-    "Crm": "ca.magex.crm.api.services",
+    "Crm": "ca.magex.crm.api",
     "Lang": "ca.magex.crm.api.system",
     "Localized": "ca.magex.crm.api.system"
   },

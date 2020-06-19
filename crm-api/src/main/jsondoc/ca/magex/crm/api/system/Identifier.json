@@ -6,7 +6,7 @@
     "StringUtils": "org.apache.commons.lang3",
     "EqualsBuilder": "org.apache.commons.lang3.builder",
     "HashCodeBuilder": "org.apache.commons.lang3.builder",
-    "Crm": "ca.magex.crm.api.services"
+    "Crm": "ca.magex.crm.api"
   },
   "type": "class",
   "modifiers": ["public"],

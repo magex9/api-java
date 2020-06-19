@@ -1,22 +1,14 @@
 package ca.magex.crm.api.policies;
 
-import java.util.Locale;
+import ca.magex.crm.api.system.Identifier;
 
 public interface CrmLookupPolicy {
 
-	boolean canViewStatusLookup(String StatusLookup, Locale locale);
-	
-	boolean canViewCountryLookup(String CountryLookup, Locale locale);
-	
-	boolean canViewProvinceLookup(String countryLookup, String provinceLookup, Locale locale);
-	
-	boolean canViewLanguageLookup(String languageLookup, Locale locale);
-	
-	boolean canViewSalutationLookup(String salutationLookup, Locale locale);
-	
-	boolean canViewBusinessSectorLookup(String sectorLookup, Locale locale);
-	
-	boolean canViewBusinessUnitLookup(String unitLookup, Locale locale);
-	
-	boolean canViewBusinessClassificationLookup(String classificationLookup, Locale locale);
+	boolean canCreateLookup();
+    boolean canViewLookup(String lookupCode);
+    boolean canViewLookup(Identifier lookupId);
+    boolean canUpdateLookup(Identifier lookupId);
+    boolean canEnableLookup(Identifier lookupId);
+    boolean canDisableLookup(Identifier lookupId);
+    
 }

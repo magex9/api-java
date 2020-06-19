@@ -2,9 +2,7 @@ package ca.magex.crm.api.system;
 
 import java.util.Locale;
 
-import ca.magex.crm.api.lookup.CrmLookupItem;
-
-public enum Status implements CrmLookupItem {
+public enum Status {
 
 	ACTIVE("Active", "Actif"), 
 	INACTIVE("Inactive", "Inactif"), 
@@ -16,12 +14,14 @@ public enum Status implements CrmLookupItem {
 		this.name = new Localized(toString().toLowerCase(), english, french);
 	}
 	
-	@Override
 	public String getCode() {
 		return name.get(Lang.ROOT);
 	}
 	
-	@Override
+	public Localized getName() {
+		return name;
+	}
+	
 	public String getName(Locale locale) {
 		return name.get(locale);
 	}

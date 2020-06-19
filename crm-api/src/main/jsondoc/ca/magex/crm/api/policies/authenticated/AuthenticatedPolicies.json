@@ -1,54 +1,6 @@
 {
   "name": "AuthenticatedPolicies",
   "package": "ca.magex.crm.api.policies.authenticated",
-  "imports": {
-    "CrmPoliciesAdapter": "ca.magex.crm.api.adapters",
-    "CrmPolicies": "ca.magex.crm.api.policies",
-    "CrmAuthenticationService": "ca.magex.crm.api.services",
-    "CrmLocationService": "ca.magex.crm.api.services",
-    "CrmLookupService": "ca.magex.crm.api.services",
-    "CrmOrganizationService": "ca.magex.crm.api.services",
-    "CrmPermissionService": "ca.magex.crm.api.services",
-    "CrmPersonService": "ca.magex.crm.api.services",
-    "CrmUserService": "ca.magex.crm.api.services"
-  },
   "type": "class",
-  "modifiers": ["public"],
-  "extends": ["CrmPoliciesAdapter"],
-  "implements": ["CrmPolicies"],
-  "constructors": [{
-    "name": "AuthenticatedPolicies",
-    "modifiers": ["public"],
-    "parameters": [
-      {
-        "name": "auth",
-        "type": "CrmAuthenticationService"
-      },
-      {
-        "name": "lookups",
-        "type": "CrmLookupService"
-      },
-      {
-        "name": "permissions",
-        "type": "CrmPermissionService"
-      },
-      {
-        "name": "organizations",
-        "type": "CrmOrganizationService"
-      },
-      {
-        "name": "locations",
-        "type": "CrmLocationService"
-      },
-      {
-        "name": "persons",
-        "type": "CrmPersonService"
-      },
-      {
-        "name": "users",
-        "type": "CrmUserService"
-      }
-    ],
-    "body": "{\n    super(new AuthenticatedLookupPolicy(auth, lookups), new AuthenticatedPermissionPolicy(auth, permissions), new AuthenticatedOrganizationPolicy(auth, organizations), new AuthenticatedLocationPolicy(auth, organizations, locations), new AuthenticatedPersonPolicy(auth, organizations, persons), new AuthenticatedUserPolicy(auth, persons, users));\n}"
-  }]
+  "modifiers": ["public"]
 }

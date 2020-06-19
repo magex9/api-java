@@ -1,0 +1,61 @@
+{
+  "name": "CrmRolePolicy",
+  "package": "ca.magex.crm.api.policies",
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "canCreateRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canViewRoles",
+      "type": "boolean"
+    },
+    {
+      "name": "canViewRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }]
+    },
+    {
+      "name": "canViewRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdateRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canEnableRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canDisableRole",
+      "type": "boolean",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "CrmOptionPolicy",
+  "package": "ca.magex.crm.api.policies",
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "canCreateOption",
+      "type": "boolean",
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canViewOptions",
+      "type": "boolean",
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canViewOption",
+      "type": "boolean",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canUpdateOption",
+      "type": "boolean",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canEnableOption",
+      "type": "boolean",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "canDisableOption",
+      "type": "boolean",
+      "parameters": [{
+        "name": "optionId",
+        "type": "Identifier"
+      }]
+    }
+  ]
+}

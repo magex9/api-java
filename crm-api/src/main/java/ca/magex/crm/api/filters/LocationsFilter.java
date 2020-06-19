@@ -12,9 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -23,14 +23,15 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public static final List<Sort> SORT_OPTIONS = List.of(
-			Sort.by(Order.asc("displayName")),
-			Sort.by(Order.desc("displayName")),
-			Sort.by(Order.asc("reference")),
-			Sort.by(Order.desc("reference")),
-			Sort.by(Order.asc("country")),
-			Sort.by(Order.desc("country")),
-			Sort.by(Order.asc("status")),
-			Sort.by(Order.desc("status")));
+		Sort.by(Order.asc("displayName")),
+		Sort.by(Order.desc("displayName")),
+		Sort.by(Order.asc("reference")),
+		Sort.by(Order.desc("reference")),
+		Sort.by(Order.asc("country")),
+		Sort.by(Order.desc("country")),
+		Sort.by(Order.asc("status")),
+		Sort.by(Order.desc("status"))
+	);
 
 	private Identifier organizationId;
 

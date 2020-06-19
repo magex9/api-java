@@ -4,11 +4,14 @@
   "type": "interface",
   "modifiers": ["public"],
   "extends": [
+    "CrmConfigurationService",
     "CrmLookupService",
+    "CrmOptionService",
+    "CrmGroupService",
+    "CrmRoleService",
     "CrmOrganizationService",
     "CrmLocationService",
     "CrmPersonService",
-    "CrmUserService",
-    "CrmPermissionService"
+    "CrmUserService"
   ]
 }

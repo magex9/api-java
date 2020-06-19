@@ -2,7 +2,6 @@
   "name": "CrmPersonService",
   "package": "ca.magex.crm.api.services",
   "imports": {
-    "NotNull": "javax.validation.constraints",
     "BusinessPosition": "ca.magex.crm.api.common",
     "Communication": "ca.magex.crm.api.common",
     "MailingAddress": "ca.magex.crm.api.common",
@@ -25,28 +24,23 @@
       "parameters": [
         {
           "name": "organizationId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "name",
-          "type": "PersonName",
-          "annotations": [{"name": "NotNull"}]
+          "type": "PersonName"
         },
         {
           "name": "address",
-          "type": "MailingAddress",
-          "annotations": [{"name": "NotNull"}]
+          "type": "MailingAddress"
         },
         {
           "name": "communication",
-          "type": "Communication",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Communication"
         },
         {
           "name": "position",
-          "type": "BusinessPosition",
-          "annotations": [{"name": "NotNull"}]
+          "type": "BusinessPosition"
         }
       ],
       "body": "{\n    return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, position);\n}"
@@ -67,28 +61,23 @@
       "parameters": [
         {
           "name": "organizationId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "name",
-          "type": "PersonName",
-          "annotations": [{"name": "NotNull"}]
+          "type": "PersonName"
         },
         {
           "name": "address",
-          "type": "MailingAddress",
-          "annotations": [{"name": "NotNull"}]
+          "type": "MailingAddress"
         },
         {
           "name": "communication",
-          "type": "Communication",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Communication"
         },
         {
           "name": "position",
-          "type": "BusinessPosition",
-          "annotations": [{"name": "NotNull"}]
+          "type": "BusinessPosition"
         }
       ]
     },
@@ -97,8 +86,7 @@
       "type": "PersonSummary",
       "parameters": [{
         "name": "personId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -106,8 +94,7 @@
       "type": "PersonSummary",
       "parameters": [{
         "name": "personId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -116,13 +103,11 @@
       "parameters": [
         {
           "name": "personId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "name",
-          "type": "PersonName",
-          "annotations": [{"name": "NotNull"}]
+          "type": "PersonName"
         }
       ]
     },
@@ -132,13 +117,11 @@
       "parameters": [
         {
           "name": "personId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "address",
-          "type": "MailingAddress",
-          "annotations": [{"name": "NotNull"}]
+          "type": "MailingAddress"
         }
       ]
     },
@@ -148,13 +131,11 @@
       "parameters": [
         {
           "name": "personId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "communication",
-          "type": "Communication",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Communication"
         }
       ]
     },
@@ -164,13 +145,11 @@
       "parameters": [
         {
           "name": "personId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "position",
-          "type": "BusinessPosition",
-          "annotations": [{"name": "NotNull"}]
+          "type": "BusinessPosition"
         }
       ]
     },
@@ -179,8 +158,7 @@
       "type": "PersonSummary",
       "parameters": [{
         "name": "personId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -188,8 +166,7 @@
       "type": "PersonDetails",
       "parameters": [{
         "name": "personId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -197,8 +174,7 @@
       "type": "long",
       "parameters": [{
         "name": "filter",
-        "type": "PersonsFilter",
-        "annotations": [{"name": "NotNull"}]
+        "type": "PersonsFilter"
       }]
     },
     {
@@ -210,13 +186,11 @@
       "parameters": [
         {
           "name": "filter",
-          "type": "PersonsFilter",
-          "annotations": [{"name": "NotNull"}]
+          "type": "PersonsFilter"
         },
         {
           "name": "paging",
-          "type": "Paging",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Paging"
         }
       ]
     },
@@ -229,13 +203,11 @@
       "parameters": [
         {
           "name": "filter",
-          "type": "PersonsFilter",
-          "annotations": [{"name": "NotNull"}]
+          "type": "PersonsFilter"
         },
         {
           "name": "paging",
-          "type": "Paging",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Paging"
         }
       ]
     },
@@ -248,8 +220,7 @@
       },
       "parameters": [{
         "name": "filter",
-        "type": "PersonsFilter",
-        "annotations": [{"name": "NotNull"}]
+        "type": "PersonsFilter"
       }],
       "body": "{\n    return findPersonDetails(filter, PersonsFilter.getDefaultPaging());\n}"
     },
@@ -262,8 +233,7 @@
       },
       "parameters": [{
         "name": "filter",
-        "type": "PersonsFilter",
-        "annotations": [{"name": "NotNull"}]
+        "type": "PersonsFilter"
       }],
       "body": "{\n    return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());\n}"
     },
@@ -276,8 +246,7 @@
       },
       "parameters": [{
         "name": "organizationId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }],
       "body": "{\n    return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());\n}"
     },

@@ -1,0 +1,148 @@
+{
+  "name": "Option",
+  "package": "ca.magex.crm.api.system",
+  "imports": {
+    "Serializable": "java.io",
+    "Locale": "java.util",
+    "EqualsBuilder": "org.apache.commons.lang3.builder",
+    "HashCodeBuilder": "org.apache.commons.lang3.builder",
+    "ToStringBuilder": "org.apache.commons.lang3.builder",
+    "ToStringStyle": "org.apache.commons.lang3.builder",
+    "Crm": "ca.magex.crm.api"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["Serializable"],
+  "constructors": [{
+    "name": "Option",
+    "modifiers": ["public"],
+    "parameters": [
+      {
+        "name": "optionId",
+        "type": "Identifier"
+      },
+      {
+        "name": "lookupId",
+        "type": "Identifier"
+      },
+      {
+        "name": "status",
+        "type": "Status"
+      },
+      {
+        "name": "name",
+        "type": "Localized"
+      }
+    ],
+    "body": "{\n    super();\n    this.optionId = optionId;\n    this.lookupId = lookupId;\n    this.status = status;\n    this.name = name;\n}"
+  }],
+  "fields": [
+    {
+      "name": "optionId",
+      "modifiers": ["private"],
+      "type": "Identifier"
+    },
+    {
+      "name": "lookupId",
+      "modifiers": ["private"],
+      "type": "Identifier"
+    },
+    {
+      "name": "status",
+      "modifiers": ["private"],
+      "type": "Status"
+    },
+    {
+      "name": "name",
+      "modifiers": ["private"],
+      "type": "Localized"
+    }
+  ],
+  "methods": [
+    {
+      "name": "getOptionId",
+      "modifiers": ["public"],
+      "type": "Identifier",
+      "body": "{\n    return optionId;\n}"
+    },
+    {
+      "name": "getLookupId",
+      "modifiers": ["public"],
+      "type": "Identifier",
+      "body": "{\n    return lookupId;\n}"
+    },
+    {
+      "name": "getCode",
+      "modifiers": ["public"],
+      "type": "String",
+      "body": "{\n    return name.get(Lang.ROOT);\n}"
+    },
+    {
+      "name": "getStatus",
+      "modifiers": ["public"],
+      "type": "Status",
+      "body": "{\n    return status;\n}"
+    },
+    {
+      "name": "withStatus",
+      "modifiers": ["public"],
+      "type": "Option",
+      "parameters": [{
+        "name": "status",
+        "type": "Status"
+      }],
+      "body": "{\n    return new Option(optionId, lookupId, status, name);\n}"
+    },
+    {
+      "name": "getName",
+      "modifiers": ["public"],
+      "type": "Localized",
+      "body": "{\n    return name;\n}"
+    },
+    {
+      "name": "getName",
+      "modifiers": ["public"],
+      "type": "String",
+      "parameters": [{
+        "name": "locale",
+        "type": "Locale"
+      }],
+      "body": "{\n    return name.get(locale);\n}"
+    },
+    {
+      "name": "withName",
+      "modifiers": ["public"],
+      "type": "Option",
+      "parameters": [{
+        "name": "name",
+        "type": "Localized"
+      }],
+      "body": "{\n    return new Option(optionId, lookupId, status, name);\n}"
+    },
+    {
+      "name": "hashCode",
+      "modifiers": ["public"],
+      "type": "int",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return HashCodeBuilder.reflectionHashCode(this);\n}"
+    },
+    {
+      "name": "equals",
+      "modifiers": ["public"],
+      "type": "boolean",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "obj",
+        "type": "Object"
+      }],
+      "body": "{\n    return EqualsBuilder.reflectionEquals(this, obj);\n}"
+    },
+    {
+      "name": "toString",
+      "modifiers": ["public"],
+      "type": "String",
+      "annotations": [{"name": "Override"}],
+      "body": "{\n    return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);\n}"
+    }
+  ]
+}

@@ -2,11 +2,12 @@
   "name": "AuthenticatedLookupPolicy",
   "package": "ca.magex.crm.api.policies.authenticated",
   "imports": {
-    "Locale": "java.util",
+    "SYS_ADMIN": "ca.magex.crm.api.services.CrmAuthenticationService",
     "CrmLookupPolicy": "ca.magex.crm.api.policies",
     "BasicLookupPolicy": "ca.magex.crm.api.policies.basic",
     "CrmAuthenticationService": "ca.magex.crm.api.services",
-    "CrmLookupService": "ca.magex.crm.api.services"
+    "CrmLookupService": "ca.magex.crm.api.services",
+    "Identifier": "ca.magex.crm.api.system"
   },
   "type": "class",
   "modifiers": ["public"],
@@ -30,8 +31,7 @@
     {
       "name": "auth",
       "modifiers": ["private"],
-      "type": "CrmAuthenticationService",
-      "annotations": [{"name": "SuppressWarnings"}]
+      "type": "CrmAuthenticationService"
     },
     {
       "name": "delegate",
@@ -41,144 +41,66 @@
   ],
   "methods": [
     {
-      "name": "canViewStatusLookup",
+      "name": "canCreateLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "StatusLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewStatusLookup(StatusLookup, locale);\n}"
+      "body": "{\n    if (!delegate.canCreateLookup()) {\n        return false;\n    }\n    /* only a CRM Admin can create a Lookup */\n    return auth.isUserInRole(SYS_ADMIN);\n}"
     },
     {
-      "name": "canViewCountryLookup",
+      "name": "canViewLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "CountryLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewCountryLookup(CountryLookup, locale);\n}"
+      "parameters": [{
+        "name": "lookup",
+        "type": "String"
+      }],
+      "body": "{\n    if (!delegate.canViewLookup(lookup)) {\n        return false;\n    }\n    /* anybody can view a lookup */\n    return true;\n}"
     },
     {
-      "name": "canViewProvinceLookup",
+      "name": "canViewLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "countryLookup",
-          "type": "String"
-        },
-        {
-          "name": "provinceLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewProvinceLookup(countryLookup, provinceLookup, locale);\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canViewLookup(lookupId)) {\n        return false;\n    }\n    /* anybody can view a lookup */\n    return true;\n}"
     },
     {
-      "name": "canViewLanguageLookup",
+      "name": "canUpdateLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "languageLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewLanguageLookup(languageLookup, locale);\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canUpdateLookup(lookupId)) {\n        return false;\n    }\n    /* only a CRM Admin can update a Lookup */\n    return auth.isUserInRole(SYS_ADMIN);\n}"
     },
     {
-      "name": "canViewSalutationLookup",
+      "name": "canEnableLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "salutationLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewSalutationLookup(salutationLookup, locale);\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canEnableLookup(lookupId)) {\n        return false;\n    }\n    /* only a CRM Admin can enable a Lookup */\n    return auth.isUserInRole(SYS_ADMIN);\n}"
     },
     {
-      "name": "canViewBusinessSectorLookup",
+      "name": "canDisableLookup",
       "modifiers": ["public"],
       "type": "boolean",
       "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "sectorLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewBusinessSectorLookup(sectorLookup, locale);\n}"
-    },
-    {
-      "name": "canViewBusinessUnitLookup",
-      "modifiers": ["public"],
-      "type": "boolean",
-      "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "unitLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewBusinessUnitLookup(unitLookup, locale);\n}"
-    },
-    {
-      "name": "canViewBusinessClassificationLookup",
-      "modifiers": ["public"],
-      "type": "boolean",
-      "annotations": [{"name": "Override"}],
-      "parameters": [
-        {
-          "name": "classificationLookup",
-          "type": "String"
-        },
-        {
-          "name": "locale",
-          "type": "Locale"
-        }
-      ],
-      "body": "{\n    return delegate.canViewBusinessClassificationLookup(classificationLookup, locale);\n}"
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    if (!delegate.canDisableLookup(lookupId)) {\n        return false;\n    }\n    /* only a CRM Admin can disable a Lookup */\n    return auth.isUserInRole(SYS_ADMIN);\n}"
     }
   ]
 }

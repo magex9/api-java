@@ -17,8 +17,8 @@
     "Pageable": "org.springframework.data.domain",
     "Sort": "org.springframework.data.domain",
     "Order": "org.springframework.data.domain.Sort",
+    "Crm": "ca.magex.crm.api",
     "ApiException": "ca.magex.crm.api.exceptions",
-    "Crm": "ca.magex.crm.api.services",
     "Lang": "ca.magex.crm.api.system",
     "Localized": "ca.magex.crm.api.system"
   },

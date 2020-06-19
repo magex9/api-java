@@ -1,0 +1,88 @@
+{
+  "name": "CrmOrganizationRepository",
+  "package": "ca.magex.crm.api.repositories",
+  "imports": {
+    "OrganizationDetails": "ca.magex.crm.api.crm",
+    "OrganizationSummary": "ca.magex.crm.api.crm",
+    "OrganizationsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "findOrganizationDetails",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["OrganizationDetails"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "OrganizationsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "findOrganizationSummary",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["OrganizationSummary"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "OrganizationsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "countOrganizations",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "OrganizationsFilter"
+      }]
+    },
+    {
+      "name": "findOrganizationDetails",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findOrganizationSummary",
+      "modifiers": ["public"],
+      "type": "OrganizationSummary",
+      "parameters": [{
+        "name": "organizationId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "saveOrganizationDetails",
+      "modifiers": ["public"],
+      "type": "OrganizationDetails",
+      "parameters": [{
+        "name": "organization",
+        "type": "OrganizationDetails"
+      }]
+    }
+  ]
+}

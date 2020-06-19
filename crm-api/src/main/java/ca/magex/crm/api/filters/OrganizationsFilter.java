@@ -11,9 +11,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Status;
 
 public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {

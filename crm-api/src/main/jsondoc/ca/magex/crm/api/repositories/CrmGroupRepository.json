@@ -1,0 +1,60 @@
+{
+  "name": "CrmGroupRepository",
+  "package": "ca.magex.crm.api.repositories",
+  "imports": {
+    "GroupsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "Group": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "findGroups",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Group"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "GroupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "countGroups",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "GroupsFilter"
+      }]
+    },
+    {
+      "name": "findGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "saveGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "parameters": [{
+        "name": "group",
+        "type": "Group"
+      }]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "name": "CrmUpdateObserver",
+  "package": "ca.magex.crm.api.observer",
+  "imports": {"Identifier": "ca.magex.crm.api.system"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "lookupUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "lookupId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "optionUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "optionId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "groupUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "roleUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "roleId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "organizationUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "organizationId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "locationUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "locationId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "personUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "personId",
+          "type": "Identifier"
+        }
+      ]
+    },
+    {
+      "name": "userUpdated",
+      "type": "CrmUpdateObserver",
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "Long"
+        },
+        {
+          "name": "userId",
+          "type": "Identifier"
+        }
+      ]
+    }
+  ]
+}

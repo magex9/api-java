@@ -1,0 +1,32 @@
+{
+  "name": "CrmRepositories",
+  "package": "ca.magex.crm.api.repositories",
+  "imports": {"OutputStream": "java.io"},
+  "type": "interface",
+  "modifiers": ["public"],
+  "extends": [
+    "CrmConfigurationRepository",
+    "CrmLookupRepository",
+    "CrmOptionRepository",
+    "CrmOrganizationRepository",
+    "CrmLocationRepository",
+    "CrmPersonRepository",
+    "CrmUserRepository",
+    "CrmRoleRepository",
+    "CrmGroupRepository"
+  ],
+  "methods": [
+    {
+      "name": "reset",
+      "modifiers": ["public"]
+    },
+    {
+      "name": "dump",
+      "modifiers": ["public"],
+      "parameters": [{
+        "name": "os",
+        "type": "OutputStream"
+      }]
+    }
+  ]
+}

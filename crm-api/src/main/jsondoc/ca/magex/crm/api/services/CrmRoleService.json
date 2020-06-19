@@ -1,0 +1,157 @@
+{
+  "name": "CrmRoleService",
+  "package": "ca.magex.crm.api.services",
+  "imports": {
+    "List": "java.util",
+    "Paging": "ca.magex.crm.api.filters",
+    "RolesFilter": "ca.magex.crm.api.filters",
+    "Role": "ca.magex.crm.api.roles",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "prototypeRole",
+      "modifiers": ["default"],
+      "type": "Role",
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    return new Role(null, groupId, Status.PENDING, name);\n}"
+    },
+    {
+      "name": "createRole",
+      "modifiers": ["default"],
+      "type": "Role",
+      "parameters": [{
+        "name": "role",
+        "type": "Role"
+      }],
+      "body": "{\n    return createRole(role.getGroupId(), role.getName());\n}"
+    },
+    {
+      "name": "createRole",
+      "type": "Role",
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ]
+    },
+    {
+      "name": "findRole",
+      "type": "Role",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findRoleByCode",
+      "modifiers": ["default"],
+      "type": "Role",
+      "parameters": [{
+        "name": "code",
+        "type": "String"
+      }],
+      "body": "{\n    return findRoles(defaultRolesFilter().withCode(code), RolesFilter.getDefaultPaging()).getSingleItem();\n}"
+    },
+    {
+      "name": "updateRoleName",
+      "type": "Role",
+      "parameters": [
+        {
+          "name": "roleId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ]
+    },
+    {
+      "name": "enableRole",
+      "type": "Role",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "disableRole",
+      "type": "Role",
+      "parameters": [{
+        "name": "roleId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findRoles",
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Role"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "RolesFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "findRoles",
+      "modifiers": ["default"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Role"]
+      },
+      "parameters": [{
+        "name": "filter",
+        "type": "RolesFilter"
+      }],
+      "body": "{\n    return findRoles(filter, defaultRolePaging());\n}"
+    },
+    {
+      "name": "findRoles",
+      "modifiers": ["default"],
+      "type": {
+        "class": "List",
+        "generics": ["Role"]
+      },
+      "body": "{\n    return findRoles(defaultRolesFilter(), RolesFilter.getDefaultPaging().allItems()).getContent();\n}"
+    },
+    {
+      "name": "defaultRolesFilter",
+      "modifiers": ["default"],
+      "type": "RolesFilter",
+      "body": "{\n    return new RolesFilter();\n}"
+    },
+    {
+      "name": "defaultRolePaging",
+      "modifiers": ["default"],
+      "type": "Paging",
+      "body": "{\n    return new Paging(RolesFilter.getSortOptions().get(0));\n}"
+    }
+  ]
+}

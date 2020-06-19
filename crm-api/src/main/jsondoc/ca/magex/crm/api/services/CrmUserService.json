@@ -3,7 +3,6 @@
   "package": "ca.magex.crm.api.services",
   "imports": {
     "List": "java.util",
-    "NotNull": "javax.validation.constraints",
     "StringUtils": "org.apache.commons.lang3",
     "PersonSummary": "ca.magex.crm.api.crm",
     "Paging": "ca.magex.crm.api.filters",
@@ -23,21 +22,18 @@
       "parameters": [
         {
           "name": "personId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "username",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
+          "type": "String"
         },
         {
           "name": "roles",
           "type": {
             "class": "List",
             "generics": ["String"]
-          },
-          "annotations": [{"name": "NotNull"}]
+          }
         }
       ],
       "body": "{\n    return new User(null, username, new PersonSummary(personId, null, null, null), Status.PENDING, roles);\n}"
@@ -58,21 +54,18 @@
       "parameters": [
         {
           "name": "personId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "username",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
+          "type": "String"
         },
         {
           "name": "roles",
           "type": {
             "class": "List",
             "generics": ["String"]
-          },
-          "annotations": [{"name": "NotNull"}]
+          }
         }
       ]
     },
@@ -81,8 +74,7 @@
       "type": "User",
       "parameters": [{
         "name": "userId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -90,8 +82,7 @@
       "type": "User",
       "parameters": [{
         "name": "userId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -100,16 +91,14 @@
       "parameters": [
         {
           "name": "userId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "roles",
           "type": {
             "class": "List",
             "generics": ["String"]
-          },
-          "annotations": [{"name": "NotNull"}]
+          }
         }
       ]
     },
@@ -119,18 +108,15 @@
       "parameters": [
         {
           "name": "userId",
-          "type": "Identifier",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Identifier"
         },
         {
           "name": "currentPassword",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
+          "type": "String"
         },
         {
           "name": "newPassword",
-          "type": "String",
-          "annotations": [{"name": "NotNull"}]
+          "type": "String"
         }
       ]
     },
@@ -139,8 +125,7 @@
       "type": "String",
       "parameters": [{
         "name": "userId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -148,8 +133,7 @@
       "type": "User",
       "parameters": [{
         "name": "userId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }]
     },
     {
@@ -157,8 +141,7 @@
       "type": "User",
       "parameters": [{
         "name": "username",
-        "type": "String",
-        "annotations": [{"name": "NotNull"}]
+        "type": "String"
       }]
     },
     {
@@ -166,8 +149,7 @@
       "type": "long",
       "parameters": [{
         "name": "filter",
-        "type": "UsersFilter",
-        "annotations": [{"name": "NotNull"}]
+        "type": "UsersFilter"
       }]
     },
     {
@@ -179,13 +161,11 @@
       "parameters": [
         {
           "name": "filter",
-          "type": "UsersFilter",
-          "annotations": [{"name": "NotNull"}]
+          "type": "UsersFilter"
         },
         {
           "name": "paging",
-          "type": "Paging",
-          "annotations": [{"name": "NotNull"}]
+          "type": "Paging"
         }
       ]
     },
@@ -208,8 +188,7 @@
       },
       "parameters": [{
         "name": "filter",
-        "type": "UsersFilter",
-        "annotations": [{"name": "NotNull"}]
+        "type": "UsersFilter"
       }],
       "body": "{\n    return findUsers(filter, defaultUsersPaging());\n}"
     },
@@ -222,8 +201,7 @@
       },
       "parameters": [{
         "name": "organizationId",
-        "type": "Identifier",
-        "annotations": [{"name": "NotNull"}]
+        "type": "Identifier"
       }],
       "body": "{\n    return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));\n}"
     },

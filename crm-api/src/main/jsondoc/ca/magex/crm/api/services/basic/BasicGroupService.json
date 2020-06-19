@@ -1,0 +1,115 @@
+{
+  "name": "BasicGroupService",
+  "package": "ca.magex.crm.api.services.basic",
+  "imports": {
+    "GroupsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "CrmRepositories": "ca.magex.crm.api.repositories",
+    "Group": "ca.magex.crm.api.roles",
+    "CrmGroupService": "ca.magex.crm.api.services",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmGroupService"],
+  "constructors": [{
+    "name": "BasicGroupService",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "repos",
+      "type": "CrmRepositories"
+    }],
+    "body": "{\n    this.repos = repos;\n}"
+  }],
+  "fields": [{
+    "name": "repos",
+    "modifiers": ["private"],
+    "type": "CrmRepositories"
+  }],
+  "methods": [
+    {
+      "name": "createGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "name",
+        "type": "Localized"
+      }],
+      "body": "{\n    return repos.saveGroup(new Group(repos.generateId(), Status.ACTIVE, name));\n}"
+    },
+    {
+      "name": "findGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return repos.findGroup(groupId);\n}"
+    },
+    {
+      "name": "updateGroupName",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "groupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    Group group = repos.findGroup(groupId);\n    if (group == null) {\n        return null;\n    }\n    return repos.saveGroup(group.withName(name));\n}"
+    },
+    {
+      "name": "enableGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    Group group = repos.findGroup(groupId);\n    if (group == null) {\n        return null;\n    }\n    return repos.saveGroup(group.withStatus(Status.ACTIVE));\n}"
+    },
+    {
+      "name": "disableGroup",
+      "modifiers": ["public"],
+      "type": "Group",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "groupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    Group group = repos.findGroup(groupId);\n    if (group == null) {\n        return null;\n    }\n    return repos.saveGroup(group.withStatus(Status.INACTIVE));\n}"
+    },
+    {
+      "name": "findGroups",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Group"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "GroupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return repos.findGroups(filter, paging);\n}"
+    }
+  ]
+}

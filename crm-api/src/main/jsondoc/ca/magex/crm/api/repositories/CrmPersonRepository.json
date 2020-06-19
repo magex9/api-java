@@ -1,0 +1,88 @@
+{
+  "name": "CrmPersonRepository",
+  "package": "ca.magex.crm.api.repositories",
+  "imports": {
+    "PersonDetails": "ca.magex.crm.api.crm",
+    "PersonSummary": "ca.magex.crm.api.crm",
+    "Paging": "ca.magex.crm.api.filters",
+    "PersonsFilter": "ca.magex.crm.api.filters",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system"
+  },
+  "type": "interface",
+  "modifiers": ["public"],
+  "methods": [
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonDetails"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "findPersonSummary",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["PersonSummary"]
+      },
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "PersonsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ]
+    },
+    {
+      "name": "countPersons",
+      "modifiers": ["public"],
+      "type": "long",
+      "parameters": [{
+        "name": "filter",
+        "type": "PersonsFilter"
+      }]
+    },
+    {
+      "name": "findPersonDetails",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "findPersonSummary",
+      "modifiers": ["public"],
+      "type": "PersonSummary",
+      "parameters": [{
+        "name": "personId",
+        "type": "Identifier"
+      }]
+    },
+    {
+      "name": "savePersonDetails",
+      "modifiers": ["public"],
+      "type": "PersonDetails",
+      "parameters": [{
+        "name": "person",
+        "type": "PersonDetails"
+      }]
+    }
+  ]
+}

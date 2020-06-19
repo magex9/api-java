@@ -12,9 +12,9 @@
     "Sort": "org.springframework.data.domain",
     "Direction": "org.springframework.data.domain.Sort",
     "Order": "org.springframework.data.domain.Sort",
+    "Crm": "ca.magex.crm.api",
     "PersonSummary": "ca.magex.crm.api.crm",
     "ApiException": "ca.magex.crm.api.exceptions",
-    "Crm": "ca.magex.crm.api.services",
     "Identifier": "ca.magex.crm.api.system",
     "Status": "ca.magex.crm.api.system"
   },

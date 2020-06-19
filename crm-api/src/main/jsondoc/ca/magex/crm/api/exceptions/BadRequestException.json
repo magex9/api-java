@@ -7,7 +7,7 @@
     "Arrays": "java.util",
     "List": "java.util",
     "StringUtils": "org.apache.commons.lang3",
-    "Crm": "ca.magex.crm.api.services",
+    "Crm": "ca.magex.crm.api",
     "Identifier": "ca.magex.crm.api.system",
     "Localized": "ca.magex.crm.api.system",
     "Message": "ca.magex.crm.api.system"

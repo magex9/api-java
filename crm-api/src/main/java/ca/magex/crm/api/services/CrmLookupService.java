@@ -1,109 +1,78 @@
 package ca.magex.crm.api.services;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.validation.constraints.NotNull;
-
-import ca.magex.crm.api.lookup.BusinessClassification;
-import ca.magex.crm.api.lookup.BusinessSector;
-import ca.magex.crm.api.lookup.BusinessUnit;
-import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.lookup.Province;
-import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.filters.LookupsFilter;
+import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.system.FilteredPage;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Lookup;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 
 public interface CrmLookupService {
 	
-	List<Status> findStatuses();
+	public static final String STATUSES_LOOKUP = "STATUSES";
 	
-	Status findStatusByCode(
-		@NotNull String code
+	public static final String LOCALES_LOOKUP = "LOCALES";
+	
+	public static final String SALUTATION_LOOKUP = "SALUTATION";
+	
+	public static final String LANGUAGE_LOOKUP = "LANGUAGE";
+	
+	public static final String COUNTRY_LOOKUP = "COUNTRY";
+	
+	public static final String CA_PROVINCE_LOOKUP = "CA_PROVINCE";
+	
+	public static final String US_PROVINCE_LOOKUP = "US_PROVINCE";
+	
+	public static final String MX_PROVINCE_LOOKUP = "MX_PROVINCE";
+	
+	default Lookup prototypeLookup(Localized name, Option parent) {
+		return new Lookup(null, Status.PENDING, true, name, parent);
+	}
+
+	default Lookup createLookup(Lookup lookup) {
+		return createLookup(lookup.getName(), lookup.getParent());
+	}
+
+	Lookup createLookup(Localized name, Option parent);
+	
+	Lookup findLookup(
+		Identifier lookupId
 	);
 	
-	Status findStatusByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
+	Lookup updateLookupName(Identifier lookupId, Localized name);
 	
-	List<Country> findCountries();
+	default Lookup findLookupByCode(String code) {
+		return (Lookup)findLookups(
+			defaultLookupsFilter().withLookupCode(code),
+			LookupsFilter.getDefaultPaging()
+		).getSingleItem();
+	}
 	
-	Country findCountryByCode(
-		@NotNull String code
-	);
-	
-	Country findCountryByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
-	
-	List<Province> findProvinces(String country);
-	
-	Province findProvinceByCode(
-		@NotNull String province,
-		@NotNull String country
-	);
+	default Lookup findLookupByTypeWithParent(Lookup parent) {
+		return (Lookup)findLookups(
+			defaultLookupsFilter().withParentCode(parent.getCode()),
+			LookupsFilter.getDefaultPaging()
+		).getSingleItem();
+	}
 		
-	Province findProvinceByLocalizedName(
-		@NotNull Locale locale,
-		@NotNull String province,
-		@NotNull String country
-	);
-		
-	List<Language> findLanguages();
-	
-	Language findLanguageByCode(
-		@NotNull String code
-	);
-	
-	Language findLanguageByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
-	
-	List<Salutation> findSalutations();
-	
-	Salutation findSalutationByCode(
-		@NotNull String code
-	);
-	
-	Salutation findSalutationByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
-    
-	List<BusinessSector> findBusinessSectors();
-	
-	BusinessSector findBusinessSectorByCode(
-		@NotNull String code
-	);
-	
-	BusinessSector findBusinessSectorByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
-    
-	List<BusinessUnit> findBusinessUnits();
-	
-	BusinessUnit findBusinessUnitByCode(
-		@NotNull String code
-	);
-	
-	BusinessUnit findBusinessUnitByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
-    
-	List<BusinessClassification> findBusinessClassifications();
-	
-	BusinessClassification findBusinessClassificationByCode(
-		@NotNull String code
-	);
-	
-	BusinessClassification findBusinessClassificationByLocalizedName(
-		@NotNull Locale locale, 
-		@NotNull String name
-	);
+	Lookup enableLookup(Identifier lookupId);
+
+	Lookup disableLookup(Identifier lookupId);
+
+	default LookupsFilter defaultLookupsFilter() {
+		return new LookupsFilter();
+	};
+
+	FilteredPage<Lookup> findLookups(LookupsFilter filter, Paging paging);
+
+	default FilteredPage<Lookup> findLookups(LookupsFilter filter) {
+		return findLookups(filter, defaultLookupPaging());
+	}
+
+	default Paging defaultLookupPaging() {
+		return new Paging(LookupsFilter.getSortOptions().get(0));
+	}
     
 }

@@ -1,0 +1,122 @@
+{
+  "name": "BasicLookupService",
+  "package": "ca.magex.crm.api.services.basic",
+  "imports": {
+    "LookupsFilter": "ca.magex.crm.api.filters",
+    "Paging": "ca.magex.crm.api.filters",
+    "CrmRepositories": "ca.magex.crm.api.repositories",
+    "CrmLookupService": "ca.magex.crm.api.services",
+    "FilteredPage": "ca.magex.crm.api.system",
+    "Identifier": "ca.magex.crm.api.system",
+    "Localized": "ca.magex.crm.api.system",
+    "Lookup": "ca.magex.crm.api.system",
+    "Option": "ca.magex.crm.api.system",
+    "Status": "ca.magex.crm.api.system"
+  },
+  "type": "class",
+  "modifiers": ["public"],
+  "implements": ["CrmLookupService"],
+  "constructors": [{
+    "name": "BasicLookupService",
+    "modifiers": ["public"],
+    "parameters": [{
+      "name": "repos",
+      "type": "CrmRepositories"
+    }],
+    "body": "{\n    this.repos = repos;\n}"
+  }],
+  "fields": [{
+    "name": "repos",
+    "modifiers": ["private"],
+    "type": "CrmRepositories"
+  }],
+  "methods": [
+    {
+      "name": "createLookup",
+      "modifiers": ["public"],
+      "type": "Lookup",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "name",
+          "type": "Localized"
+        },
+        {
+          "name": "parent",
+          "type": "Option"
+        }
+      ],
+      "body": "{\n    return repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, true, name, parent));\n}"
+    },
+    {
+      "name": "findLookup",
+      "modifiers": ["public"],
+      "type": "Lookup",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    return repos.findLookup(lookupId);\n}"
+    },
+    {
+      "name": "updateLookupName",
+      "modifiers": ["public"],
+      "type": "Lookup",
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "lookupId",
+          "type": "Identifier"
+        },
+        {
+          "name": "name",
+          "type": "Localized"
+        }
+      ],
+      "body": "{\n    Lookup lookup = repos.findLookup(lookupId);\n    if (lookup == null) {\n        return null;\n    }\n    return repos.saveLookup(lookup.withName(name));\n}"
+    },
+    {
+      "name": "enableLookup",
+      "modifiers": ["public"],
+      "type": "Lookup",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    Lookup lookup = repos.findLookup(lookupId);\n    if (lookup == null) {\n        return null;\n    }\n    return repos.saveLookup(lookup.withStatus(Status.ACTIVE));\n}"
+    },
+    {
+      "name": "disableLookup",
+      "modifiers": ["public"],
+      "type": "Lookup",
+      "annotations": [{"name": "Override"}],
+      "parameters": [{
+        "name": "lookupId",
+        "type": "Identifier"
+      }],
+      "body": "{\n    Lookup lookup = repos.findLookup(lookupId);\n    if (lookup == null) {\n        return null;\n    }\n    return repos.saveLookup(lookup.withStatus(Status.INACTIVE));\n}"
+    },
+    {
+      "name": "findLookups",
+      "modifiers": ["public"],
+      "type": {
+        "class": "FilteredPage",
+        "generics": ["Lookup"]
+      },
+      "annotations": [{"name": "Override"}],
+      "parameters": [
+        {
+          "name": "filter",
+          "type": "LookupsFilter"
+        },
+        {
+          "name": "paging",
+          "type": "Paging"
+        }
+      ],
+      "body": "{\n    return findLookups(filter, paging);\n}"
+    }
+  ]
+}

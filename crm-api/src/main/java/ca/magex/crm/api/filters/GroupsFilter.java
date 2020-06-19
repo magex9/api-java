@@ -11,9 +11,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 
@@ -117,13 +117,13 @@ public class GroupsFilter implements CrmFilter<Group> {
 	@Override
 	public boolean apply(Group instance) {
 		return List.of(instance)
-				.stream()
-				.filter(g -> this.getCode() == null || StringUtils.equalsIgnoreCase(this.getCode(), g.getCode()))
-				.filter(g -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.ENGLISH),this.getEnglishName()))
-				.filter(g -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.FRENCH),this.getFrenchName()))
-				.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
-				.findAny()
-				.isPresent();
+			.stream()
+			.filter(g -> this.getCode() == null || StringUtils.equalsIgnoreCase(this.getCode(), g.getCode()))
+			.filter(g -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.ENGLISH),this.getEnglishName()))
+			.filter(g -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getName(Lang.FRENCH),this.getFrenchName()))
+			.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
+			.findAny()
+			.isPresent();
 	}
 	
 	@Override
