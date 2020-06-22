@@ -16,12 +16,12 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String getRoot() {
-		if (!crm.isInitialized()) {			
+		if (!crm.isInitialized()) {
 			return "redirect:/initialize";
 		}
-		return "redirect:/home";		
+		return "redirect:/home";
 	}
-	
+
 	@GetMapping("/home")
 	public String getHomePage(Model model, HttpServletRequest req) {
 		model.addAttribute("username", req.getUserPrincipal().getName());

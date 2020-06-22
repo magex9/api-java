@@ -144,7 +144,7 @@ type Mutation {
 	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean	
 }
 
-# Main Types
+# Domain Models
 type Group {
 	groupId: String!
 	code: String!
@@ -199,13 +199,17 @@ type User {
 	roles: [Role]!
 }
 
-# Complex Subtypes
 type Communication {
 	jobTitle: String
 	language: String
 	email: String
 	homePhone: Telephone
 	faxNumber: String
+}
+
+type Telephone {
+	number: String
+	extension: String
 }
 
 type PersonName {
@@ -229,7 +233,7 @@ type MailingAddress {
 	postalCode: String
 }
 
-# Pagination Types
+# Pagination Models
 type GroupPage {
 	number: Int!
 	numberOfElements: Int!
@@ -284,12 +288,7 @@ type UserPage {
 	content: [User]
 }
 
-# Simple Types
-type Telephone {
-	number: String
-	extension: String
-}
-
+# Lookups
 type CodeLookup {
 	parent: CodeLookup
 	code: String
