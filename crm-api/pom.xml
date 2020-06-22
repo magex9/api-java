@@ -81,9 +81,9 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>crm-json-maven-plugin</artifactId>
-				<version>${project.version}</version>
+				<groupId>ca.magex.json</groupId>
+				<artifactId>json-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<phase>process-resources</phase>

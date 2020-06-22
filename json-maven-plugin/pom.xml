@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-json-javadoc</artifactId>
+			<artifactId>json-javadoc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
