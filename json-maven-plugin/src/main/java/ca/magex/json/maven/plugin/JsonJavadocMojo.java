@@ -1,4 +1,4 @@
-package ca.magex.crm.maven.plugin;
+package ca.magex.json.maven.plugin;
 
 import java.io.File;
 import java.util.List;
