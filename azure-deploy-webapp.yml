@@ -10,7 +10,24 @@ parameters:
 ##########################################
 
 steps:
- 
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'appdev webapps connection'
+    appType: 'webAppLinux'
+    WebAppName: 'AppDevWebAppTest'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'AppDev_WebApps'
+    SlotName: 'production'
+    packageForLinux: '$(application_package_publish_dir)/$(application_package_name)'
+    RuntimeStack: 'JAVA|11-java11'
+    StartupCommand: 'java -jar $(application_name)/$(application_jar_name)'
+    #ScriptType: 'Inline Script'
+    #InlineScript: ':: You can provide your deployment commands here. One command per line.'
+    AppSettings: '-Dspring.application.name=crm-helloworld -Dspring.cloud.config.uri=http://40.86.226.36:8888 -Dspring.profiles.active=ut -Dmanagement.endpoints.web.exposure.include=refresh'
+
+
 - task: CopyFilesOverSSH@0
   displayName: "Send package to server"
   inputs:
@@ -43,7 +60,7 @@ steps:
     inline: |
       echo "deploying package $(application_package_name) to ${{parameters.sshEndpoint}}"
       rm -rf /var/data/finuser/apps/${{parameters.application_name}} > /dev/null
-      unzip /var/data/finuser/builds/$(application_package_name) -d /var/data/finuser/apps/
+      tar -C /var/data/finuser/apps/ -xvzf /var/data/finuser/builds/$(application_package_name)
     readyTimeout: '20000'
 - task: SSH@0
   displayName: (Re)Start Application ${{parameters.application_name}}
