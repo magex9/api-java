@@ -25,7 +25,7 @@ steps:
     StartupCommand: 'java -jar $(application_name)/$(application_jar_name)'
     #ScriptType: 'Inline Script'
     #InlineScript: ':: You can provide your deployment commands here. One command per line.'
-    AppSettings: '-Dspring.application.name=crm-helloworld -Dspring.cloud.config.uri=http://40.86.226.36:8888 -Dspring.profiles.active=ut -Dmanagement.endpoints.web.exposure.include=refresh'
+    #AppSettings: '-Dspring.application.name=crm-helloworld -Dspring.cloud.config.uri=http://40.86.226.36:8888 -Dspring.profiles.active=ut -Dmanagement.endpoints.web.exposure.include=refresh'
 
 
 - task: CopyFilesOverSSH@0
