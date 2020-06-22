@@ -88,7 +88,7 @@ steps:
     #copy jar files
     jarpath=`ls ${application_package_target_dir}/*-bootable.jar | head -n 1`
     jarname=`basename $jarpath`
-    cp ${jarpath}/ ${application_package_build_dir}/
+    cp ${jarpath} ${application_package_build_dir}/
     
     echo "application_jar_name=${jarname}"
     application_jar_name=${jarname}
