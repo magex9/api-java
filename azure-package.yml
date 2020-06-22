@@ -42,8 +42,8 @@ steps:
     
     config_dir=${application_package_root_dir}/config
     echo "config_dir=${config_dir}"
-    source ${application_package_root_dir}/maven-archiver/pom.properties
-    cat ${application_package_root_dir}/maven-archiver/pom.properties
+    source ${application_package_target_dir}/maven-archiver/pom.properties
+    cat ${application_package_target_dir}/maven-archiver/pom.properties
     
     # Application Version (make it accessible from outside this script)
     echo "application_version=${version}"
