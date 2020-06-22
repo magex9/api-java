@@ -21,7 +21,7 @@ public class BasicLookupService implements CrmLookupService {
 
 	@Override
 	public Lookup createLookup(Localized name, Option parent) {
-		return repos.saveLookup(new Lookup(repos.generateId(), Status.ACTIVE, true, name, parent));
+		return repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, name, parent));
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class BasicLookupService implements CrmLookupService {
 
 	@Override
 	public FilteredPage<Lookup> findLookups(LookupsFilter filter, Paging paging) {
-		return findLookups(filter, paging);
+		return repos.findLookups(filter, paging);
 	}
 	
 }

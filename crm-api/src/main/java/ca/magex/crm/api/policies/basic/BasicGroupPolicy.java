@@ -28,11 +28,12 @@ public class BasicGroupPolicy implements CrmGroupPolicy {
 
 	@Override
 	public boolean canViewGroup(String group) {
-		/* can view a group if it exists */
-		if (groups.findGroupByCode(group) == null) {
+		try {
+			/* can view a group if it exists */
+			return groups.findGroupByCode(group) != null;
+		} catch (ItemNotFoundException e) {
 			throw new ItemNotFoundException("Group Code '" + group + "'");
 		}
-		return true;
 	}
 
 	@Override

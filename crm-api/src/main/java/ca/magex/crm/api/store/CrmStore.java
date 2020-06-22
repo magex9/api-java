@@ -1,4 +1,4 @@
-package ca.magex.crm.api.repositories;
+package ca.magex.crm.api.store;
 
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -50,7 +50,7 @@ public interface CrmStore {
 		getRoles().clear();
 		getOrganizations().clear();
 		getLocations().clear();
-		getLocations().clear();
+		getPersons().clear();
 		getUsers().clear();
 	}
 	
@@ -62,7 +62,7 @@ public interface CrmStore {
 		dump(getRoles(), os);
 		dump(getOrganizations(), os);
 		dump(getLocations(), os);
-		dump(getLocations(), os);
+		dump(getPersons(), os);
 		dump(getUsers(), os);
 	}
 	

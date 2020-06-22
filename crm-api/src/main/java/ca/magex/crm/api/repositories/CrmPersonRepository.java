@@ -8,6 +8,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmPersonRepository {
+	
+	public Identifier generatePersonId();
 
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging); 
 

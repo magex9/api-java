@@ -10,8 +10,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmRoleRepository;
-import ca.magex.crm.api.repositories.CrmStore;
 import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
@@ -24,6 +24,11 @@ public class BasicRoleRepository implements CrmRoleRepository {
 	public BasicRoleRepository(CrmStore store, CrmUpdateNotifier notifier) {
 		this.store = store;
 		this.notifier = notifier;
+	}
+	
+	@Override
+	public Identifier generateRoleId() {
+		return CrmStore.generateId(Role.class);
 	}
 	
 	private Stream<Role> apply(RolesFilter filter) {

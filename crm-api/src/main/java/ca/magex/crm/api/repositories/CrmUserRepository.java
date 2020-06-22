@@ -7,6 +7,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmUserRepository {
+	
+	public Identifier generateUserId();
 
 	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging); 
 

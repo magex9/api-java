@@ -10,7 +10,7 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLookupRepository;
-import ca.magex.crm.api.repositories.CrmStore;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lookup;
@@ -24,6 +24,11 @@ public class BasicLookupRepository implements CrmLookupRepository {
 	public BasicLookupRepository(CrmStore store, CrmUpdateNotifier notifier) {
 		this.store = store;
 		this.notifier = notifier;
+	}
+	
+	@Override
+	public Identifier generateLookupId() {
+		return CrmStore.generateId(Lookup.class);
 	}
 	
 	private Stream<Lookup> apply(LookupsFilter filter) {

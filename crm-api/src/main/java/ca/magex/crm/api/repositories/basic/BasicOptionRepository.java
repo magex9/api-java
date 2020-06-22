@@ -10,7 +10,7 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOptionRepository;
-import ca.magex.crm.api.repositories.CrmStore;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
@@ -24,6 +24,11 @@ public class BasicOptionRepository implements CrmOptionRepository {
 	public BasicOptionRepository(CrmStore store, CrmUpdateNotifier notifier) {
 		this.store = store;
 		this.notifier = notifier;
+	}
+	
+	@Override
+	public Identifier generateOptionId() {
+		return CrmStore.generateId(Option.class);
 	}
 	
 	private Stream<Option> apply(OptionsFilter filter) {

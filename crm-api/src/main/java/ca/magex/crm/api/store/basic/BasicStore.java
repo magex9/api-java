@@ -1,4 +1,4 @@
-package ca.magex.crm.api.repositories.basic;
+package ca.magex.crm.api.store.basic;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -7,10 +7,10 @@ import java.util.Map;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.repositories.CrmStore;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;

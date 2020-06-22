@@ -7,6 +7,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmRoleRepository {
+	
+	public Identifier generateRoleId();
 
 	public FilteredPage<Role> findRoles(RolesFilter filter, Paging paging); 
 

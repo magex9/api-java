@@ -38,10 +38,12 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	
 	@Override
 	public boolean canViewUser(String username) {
-		if (users.findUserByUsername(username) == null) {
+		try {
+			/* can view a group if it exists */
+			return users.findUserByUsername(username)!= null;
+		} catch (ItemNotFoundException e) {
 			throw new ItemNotFoundException("Username '" + username + "'");
 		}
-		return true;
 	}
 
 	@Override

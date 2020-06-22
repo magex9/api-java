@@ -10,8 +10,8 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmGroupRepository;
-import ca.magex.crm.api.repositories.CrmStore;
 import ca.magex.crm.api.roles.Group;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
@@ -24,6 +24,11 @@ public class BasicGroupRepository implements CrmGroupRepository {
 	public BasicGroupRepository(CrmStore store, CrmUpdateNotifier notifier) {
 		this.store = store;
 		this.notifier = notifier;
+	}
+	
+	@Override
+	public Identifier generateGroupId() {
+		return CrmStore.generateId(Group.class);
 	}
 
 	private synchronized Stream<Group> apply(GroupsFilter filter) {

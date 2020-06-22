@@ -7,6 +7,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmGroupRepository {
+	
+	public Identifier generateGroupId();
 
 	public FilteredPage<Group> findGroups(GroupsFilter filter, Paging paging); 
 	

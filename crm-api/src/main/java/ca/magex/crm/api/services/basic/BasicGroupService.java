@@ -20,7 +20,7 @@ public class BasicGroupService implements CrmGroupService {
 
 	@Override
 	public Group createGroup(Localized name) {
-		return repos.saveGroup(new Group(repos.generateId(), Status.ACTIVE, name));
+		return repos.saveGroup(new Group(repos.generateGroupId(), Status.ACTIVE, name));
 	}
 
 	@Override

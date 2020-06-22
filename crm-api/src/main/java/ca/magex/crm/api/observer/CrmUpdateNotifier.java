@@ -1,13 +1,24 @@
 package ca.magex.crm.api.observer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.magex.crm.api.system.Identifier;
 
-public class CrmUpdateNotifier implements CrmUpdateObserver {
+public class CrmUpdateNotifier implements CrmUpdateObserver { 
+ 	// Publisher<CrmUpdateObserver> {
 	
 	private List<CrmUpdateObserver> observers;
 	
+//	@Override
+//	public void subscribe(Subscriber<? super CrmUpdateObserver> subscriber) {
+//		register(subscriber.);
+//	}
+	
+	public CrmUpdateNotifier() {
+		this.observers = new ArrayList<>();
+	}
+
 	public void register(CrmUpdateObserver observer) {
 		observers.add(observer);
 	}

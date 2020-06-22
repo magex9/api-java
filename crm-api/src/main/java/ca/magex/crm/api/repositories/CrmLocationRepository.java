@@ -8,6 +8,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmLocationRepository {
+	
+	public Identifier generateLocationId();
 
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging); 
 

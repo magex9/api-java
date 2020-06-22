@@ -390,7 +390,7 @@ public class CrmValidation {
 		// Salutation
 		if (StringUtils.isNotBlank(name.getSalutation())) {
 			try {
-				crm.findOptionByCode(crm.findLookupByCode(Crm.LANGUAGE_LOOKUP).getLookupId(), name.getSalutation());
+				crm.findOptionByCode(crm.findLookupByCode(Crm.SALUTATION_LOOKUP).getLookupId(), name.getSalutation());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", prefix + ".salutation", new Localized(Lang.ENGLISH, "Salutation code is not in the lookup")));
 			}

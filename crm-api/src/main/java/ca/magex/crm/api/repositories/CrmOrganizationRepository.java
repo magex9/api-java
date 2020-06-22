@@ -8,6 +8,8 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmOrganizationRepository {
+	
+	public Identifier generateOrganizationId();
 
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging); 
 

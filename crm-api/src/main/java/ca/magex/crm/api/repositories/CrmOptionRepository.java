@@ -8,6 +8,8 @@ import ca.magex.crm.api.system.Option;
 
 public interface CrmOptionRepository {
 	
+	public Identifier generateOptionId();
+	
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
 	
 	public long countOptions(OptionsFilter filter);

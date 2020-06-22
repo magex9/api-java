@@ -1,7 +1,7 @@
 package ca.magex.crm.api.authentication.basic;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class BasicPasswordEncoder implements PasswordEncoder {
 

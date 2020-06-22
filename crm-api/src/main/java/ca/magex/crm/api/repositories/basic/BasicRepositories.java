@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import ca.magex.crm.api.adapters.CrmRepositoriesAdapter;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmRepositories;
-import ca.magex.crm.api.repositories.CrmStore;
+import ca.magex.crm.api.store.CrmStore;
 
 public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepositories {
 	
@@ -25,6 +25,8 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 			new BasicPersonRepository(store, notifier),
 			new BasicUserRepository(store, notifier)
 		);
+		this.store = store;
+		this.notifier = notifier;
 	}
 
 	@Override

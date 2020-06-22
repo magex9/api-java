@@ -37,10 +37,10 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (!isInitialized()) {
 			initialize(repos);
-			Identifier organizationId = repos.generateId();
-			Identifier mainLocationId = repos.generateId();
-			Identifier mainContactId = repos.generateId();
-			Identifier systemId = repos.generateId();
+			Identifier organizationId = repos.generateOrganizationId();
+			Identifier mainLocationId = repos.generateLocationId();
+			Identifier mainContactId = repos.generatePersonId();
+			Identifier systemId = repos.generateUserId();
 			
 			MailingAddress address = new MailingAddress("221b Baker Street", "London", "England", "GB", "NW1 6XE");
 			Communication communication = new Communication("System Admin", "en", email, null, null);
@@ -51,7 +51,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
 		}
-		return null;
+		return repos.findUsers(new UsersFilter().withRole("SYS_ADMIN").withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
 	}
 		
 	@Override

@@ -12,7 +12,7 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
-import ca.magex.crm.api.repositories.CrmStore;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
@@ -25,6 +25,11 @@ public class BasicLocationRepository implements CrmLocationRepository {
 	public BasicLocationRepository(CrmStore store, CrmUpdateNotifier notifier) {
 		this.store = store;
 		this.notifier = notifier;
+	}
+	
+	@Override
+	public Identifier generateLocationId() {
+		return CrmStore.generateId(LocationDetails.class);
 	}
 
 	private Stream<LocationDetails> apply(LocationsFilter filter) {

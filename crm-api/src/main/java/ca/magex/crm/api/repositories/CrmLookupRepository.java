@@ -8,6 +8,8 @@ import ca.magex.crm.api.system.Lookup;
 
 public interface CrmLookupRepository {
 	
+	public Identifier generateLookupId();
+	
 	public FilteredPage<Lookup> findLookups(LookupsFilter filter, Paging paging);
 	
 	public long countLookups(LookupsFilter filter);

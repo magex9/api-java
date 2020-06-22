@@ -12,9 +12,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 
 public class FilteredPage<T> extends PageImpl<T> {
-
+	
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
-
+	
 	private Serializable filter;
 	
 	private Paging paging;
@@ -35,9 +35,9 @@ public class FilteredPage<T> extends PageImpl<T> {
 	
 	public T getSingleItem() {
 		if (getTotalElements() < 1)
-			throw new ItemNotFoundException("No items found: " + filter);
+			throw new ItemNotFoundException(filter.getClass().getSimpleName() + "(" + filter + ")");
 		if (getTotalElements() > 1)
-			throw new DuplicateItemFoundException("Duplicate items found: " + filter);
+			throw new DuplicateItemFoundException(filter.getClass().getSimpleName() + "(" + filter + ")");
 		return getContent().get(0);
 	}
 	

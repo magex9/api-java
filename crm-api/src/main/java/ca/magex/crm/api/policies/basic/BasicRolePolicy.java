@@ -41,11 +41,12 @@ public class BasicRolePolicy implements CrmRolePolicy {
 
 	@Override
 	public boolean canViewRole(String code) {
-		/* can view a specific role if it exists */
-		if (roles.findRoleByCode(code) == null) {
+		try {
+			/* can view a specific role if it exists */
+			return roles.findRoleByCode(code) != null;
+		} catch (ItemNotFoundException e) {
 			throw new ItemNotFoundException("Role Code '" + code + "'");
 		}
-		return true;
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ca.magex.crm.api.authentication.CrmPasswordRepository;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.repositories.CrmStore;
+import ca.magex.crm.api.store.CrmStore;
 
 public class BasicPasswordRepository implements CrmPasswordRepository {
 
@@ -24,6 +24,7 @@ public class BasicPasswordRepository implements CrmPasswordRepository {
 	}
 	
 	public BasicPasswordRepository(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
 		this.passwords = new HashMap<String, BasicPasswordDetails>();
 	}
 	

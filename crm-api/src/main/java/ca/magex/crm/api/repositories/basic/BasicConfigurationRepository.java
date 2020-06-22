@@ -1,7 +1,7 @@
 package ca.magex.crm.api.repositories.basic;
 
 import ca.magex.crm.api.repositories.CrmConfigurationRepository;
-import ca.magex.crm.api.repositories.CrmStore;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.Identifier;
 
 public class BasicConfigurationRepository implements CrmConfigurationRepository {

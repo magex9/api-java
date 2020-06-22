@@ -20,7 +20,7 @@ public class BasicRoleService implements CrmRoleService {
 
 	@Override
 	public Role createRole(Identifier groupId, Localized name) {
-		return repos.saveRole(new Role(repos.generateId(), groupId, Status.ACTIVE, name));
+		return repos.saveRole(new Role(repos.generateRoleId(), groupId, Status.ACTIVE, name));
 	}
 
 	@Override

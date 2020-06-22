@@ -9,9 +9,9 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
-import ca.magex.crm.api.repositories.CrmStore;
 import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
@@ -24,6 +24,11 @@ public class BasicUserRepository implements CrmUserRepository {
 	public BasicUserRepository(CrmStore store, CrmUpdateNotifier notifier) {
 		this.store = store;
 		this.notifier = notifier;
+	}
+	
+	@Override
+	public Identifier generateUserId() {
+		return CrmStore.generateId(User.class);
 	}
 	
 	private Stream<User> apply(UsersFilter filter) {
