@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>CRM Home Page</title>
+    <title>CRM Login Page</title>
 
+    <link rel="icon" type="image/ico" href="/crm/favicon.ico"/>
     <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/crm.css}"/>
 
@@ -37,6 +38,8 @@
 </main>
 <!-- /.container -->
 
+<!-- must load JQuery before loading Bootstrap or else bad things happen -->
+<script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 <script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
 </body>
 </html>

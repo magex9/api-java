@@ -6,6 +6,7 @@
 
     <title>CRM Initialization Page</title>
 
+    <link rel="icon" type="image/ico" href="/crm/favicon.ico"/>
     <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/crm.css}"/>
 
@@ -35,6 +36,9 @@
     </div>    
 </main>
 <!-- /.container -->
+
+<!-- must load JQuery before loading Bootstrap or else bad things happen -->
+<script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 <script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
 </body>
 </html>
