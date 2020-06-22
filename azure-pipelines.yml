@@ -86,6 +86,7 @@ stages:
                 environment: 'ut'
                 application_name: crm-helloworld
             - template: azure-deploy-vm.yml
+              parameters:
                 application_name: crm-helloworld
                 sshEndpoint: 'ssh - RD3'
 
