@@ -1,6 +1,0 @@
-{
-  "name": "AuthenticatedPolicies",
-  "package": "ca.magex.crm.api.policies.authenticated",
-  "type": "class",
-  "modifiers": ["public"]
-}
