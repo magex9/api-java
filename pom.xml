@@ -32,13 +32,15 @@
 		</repository>
 	</repositories>
 	
-	<modules>	
-		<module>crm-maven-parent</module>
-		<module>crm-json</module>
-		<module>crm-json-javadoc</module>
-		<module>crm-json-maven-plugin</module>
+	<modules>
+		<!-- Json objects to be split out -->
+		<module>json-maven-parent</module>
+		<module>json-objects</module>
+		<module>json-javadoc</module>
+		<module>json-maven-plugin</module>
 		
 		<!-- Support Modules -->
+		<module>crm-maven-parent</module>
 		<module>crm-api</module>		
 		<module>crm-json-transformers</module>
 		<module>crm-resources</module>		

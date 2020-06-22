@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>crm-json-javadoc</artifactId>
+	<artifactId>json-javadoc</artifactId>
 
 	<parent>
-		<groupId>ca.magex.crm</groupId>
-		<artifactId>crm-maven-parent</artifactId>
+		<groupId>ca.magex.json</groupId>
+		<artifactId>json-maven-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../crm-maven-parent/pom.xml</relativePath>
+		<relativePath>../json-maven-parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
