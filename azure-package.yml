@@ -86,7 +86,7 @@ steps:
     echo "export SPRING_CONFIG_SERVER_URI=${CONFIG_SERVER_URI}" >> ${application_config_path}
     
     #copy jar files
-    jarpath=`ls application_package_target_dir}/*-bootable.jar | head -n 1`
+    jarpath=`ls ${application_package_target_dir}/*-bootable.jar | head -n 1`
     jarname=`basename $jarpath`
     cp ${jarpath}/ ${application_package_build_dir}/
     
