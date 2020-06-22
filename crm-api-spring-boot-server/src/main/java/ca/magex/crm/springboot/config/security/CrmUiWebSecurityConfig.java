@@ -21,10 +21,10 @@ public class CrmUiWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		httpSecurity
 			.requestMatchers()
-				.antMatchers( "/", "/initialize", "/home", "/login")
+				.antMatchers( "/", "/initialize", "/home", "/login", "/graphql/query")
 				.and()
 			.authorizeRequests()
-				.antMatchers("/home").hasAnyRole("CRM_USER", "CRM_ADMIN")
+				.antMatchers("/home", "/graphql/query").hasAnyRole("CRM_USER", "CRM_ADMIN")
 				.antMatchers("/", "/initialize", "/login").permitAll()
 				.and()
 			.formLogin()

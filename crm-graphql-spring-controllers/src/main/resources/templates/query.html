@@ -7,14 +7,8 @@
     <title>CRM GraphQL Query Tool</title>
 
     <link rel="icon" type="image/ico" href="/crm/favicon.ico"/>
-    
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/crm-graphql.css">
-    
-    <!-- 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/crm-graphql.css}"/> 
-    -->
 
 </head>
 
@@ -29,26 +23,95 @@
     </ul>
 </nav>
 
-<main role="main" class="container">
+<main role="main" class="container-fluid">
 
     <div class="query-template">
-        <h1>CRM Home Page</h1>
-        <form th:action="@{/logout}" method="POST">
-            <input type="submit" value="Sign Out"/>
-        </form>
+        <h1>CRM GraphQL Query</h1>        
     </div>
     
+    <div class="row m-1 p-1">
+      <div class="col-sm-12 col-xl-6 border bg-light">
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="queryInput">Query:</label>
+           </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <textarea id="query-input" class="form-control query-input" rows="20"></textarea>
+          </div>
+        </div>            
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="queryInput">Bearer Token:</label>
+           </div>
+        </div>
+        <div class="row">        
+          <div class="col-sm-12">
+            <input id="bearer-token" type="text" class="form-control"/>
+          </div>          
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <button id="query-button" class="btn btn-outline-primary float-right mt-3 mb-3">Execute</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-sm-12 col-xl-6 border bg-light">        
+         <label for="queryInput">Response:</label>
+         <textarea id="query-response" class="form-control query-input" rows="23"></textarea> 
+         <button class="btn btn-outline-primary float-right mt-3 mb-3">Copy</button>
+      </div>
+    </div>
+    
+    <form th:action="@{/logout}" method="POST">
+      <input type="submit" value="Sign Out"/>
+    </form>
 </main>
 <!-- /.container -->
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-<!-- must load JQuery before loading Bootstrap or else bad things happen -->
-<!-- 
-<script type="text/jacvascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- must load JQuery before loading Bootstrap or else bad things happen --> 
+<script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 <script type="text/javascript" th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
- -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function(){
+  $("#query-button").click(function(){
+  var token = $("#bearer-token").val();
+  var queryRequest = {
+    query: $("#query-input").val()
+  }
+  
+  var server = /*[[${server}]]*/;
+  
+  jQuery.ajax(
+    {
+      type: "POST",
+      url:  server + "/graphql",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(queryRequest),
+      success: function(result) {
+        if (result.dataPresent) {
+          var queryResponse = JSON.stringify(result.data, null, 3);
+          $("#query-response").val(queryResponse);
+        }
+        else {
+          var queryError = JSON.stringify(result.errors, null, 3);
+          $("#query-response").val(queryError);
+        }
+      },
+      headers: {
+        Authorization : "Bearer " + token,        
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        alert(textStatus + errorThrown);
+      }
+    });
+  });
+});
+/*]]>*/
+</script>
 </body>
 </html>
