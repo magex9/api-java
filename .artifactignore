@@ -1,4 +1,4 @@
 **/*
 !*/target/*-bootable.jar
+!*/target/maven-archiver/*
 !*/config/*
-!*/maven-archiver/*
