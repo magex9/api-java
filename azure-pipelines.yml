@@ -36,7 +36,7 @@ stages:
     - task: Maven@3
       inputs:
         goals: 'install'
-        mavenPomFile: 'pom.xml'
+        mavenPomFile: 'crm-helloworld/pom.xml'
         #options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -91,35 +91,35 @@ stages:
                 sshEndpoint: 'ssh - RD3'
 
             #Deploy crm-graphql-spring-boot-server
-            - template: azure-package.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-graphql-spring-boot-server
-            - template: azure-deploy-vm.yml
-              parameters:
-                application_name: crm-graphql-spring-boot-server
-                sshEndpoint: 'ssh - RD3'
+            # - template: azure-package.yml
+            #   parameters:
+            #     environment: 'ut'
+            #     application_name: crm-graphql-spring-boot-server
+            # - template: azure-deploy-vm.yml
+            #   parameters:
+            #     application_name: crm-graphql-spring-boot-server
+            #     sshEndpoint: 'ssh - RD3'
 
             #Deploy crm-restful-spring-boot-server
 
-            - template: azure-package.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-restful-spring-boot-server
+            # - template: azure-package.yml
+            #   parameters:
+            #     environment: 'ut'
+            #     application_name: crm-restful-spring-boot-server
             
-            - template: azure-deploy-vm.yml
-              parameters:
-                application_name: crm-restful-spring-boot-server
-                sshEndpoint: 'ssh - RD3'
+            # - template: azure-deploy-vm.yml
+            #   parameters:
+            #     application_name: crm-restful-spring-boot-server
+            #     sshEndpoint: 'ssh - RD3'
 
             #Deploy crm-auth-spring-boot-server
 
-            - template: azure-package.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-auth-spring-boot-server
+            # - template: azure-package.yml
+            #   parameters:
+            #     environment: 'ut'
+            #     application_name: crm-auth-spring-boot-server
                 
-            - template: azure-deploy-vm.yml
-              parameters:
-                application_name: crm-auth-spring-boot-server
-                sshEndpoint: 'ssh - RD3'      
+            # - template: azure-deploy-vm.yml
+            #   parameters:
+            #     application_name: crm-auth-spring-boot-server
+            #     sshEndpoint: 'ssh - RD3'      
