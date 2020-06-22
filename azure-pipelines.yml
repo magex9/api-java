@@ -80,23 +80,45 @@ stages:
               path: adlc  # path to check out source code, relative to the agent's build directory (e.g. \_work\1)
               persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
       
-            - template: azure-deploy.yml
+            #Deploy crm-helloworld
+            - template: azure-package.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-helloworld
+            - template: azure-deploy-vm.yml
+                application_name: crm-helloworld
                 sshEndpoint: 'ssh - RD3'
-            - template: azure-deploy.yml
+
+            #Deploy crm-graphql-spring-boot-server
+            - template: azure-package.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-graphql-spring-boot-server
+            - template: azure-deploy-vm.yml
+              parameters:
+                application_name: crm-graphql-spring-boot-server
                 sshEndpoint: 'ssh - RD3'
-            - template: azure-deploy.yml
+
+            #Deploy crm-restful-spring-boot-server
+
+            - template: azure-package.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-restful-spring-boot-server
+            
+            - template: azure-deploy-vm.yml
+              parameters:
+                application_name: crm-restful-spring-boot-server
                 sshEndpoint: 'ssh - RD3'
-            - template: azure-deploy.yml
+
+            #Deploy crm-auth-spring-boot-server
+
+            - template: azure-package.yml
               parameters:
                 environment: 'ut'
+                application_name: crm-auth-spring-boot-server
+                
+            - template: azure-deploy-vm.yml
+              parameters:
                 application_name: crm-auth-spring-boot-server
                 sshEndpoint: 'ssh - RD3'      
