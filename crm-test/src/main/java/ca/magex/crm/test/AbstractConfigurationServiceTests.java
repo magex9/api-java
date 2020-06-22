@@ -12,20 +12,18 @@ import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 
-public abstract class AbstractInitializationServiceTests {
+public abstract class AbstractConfigurationServiceTests {
 
+	@Autowired
 	private Crm crm;
-	
-	public AbstractInitializationServiceTests(Crm crm) {
-		this.crm = crm;
-	}
 	
 	@Before
 	public void setup() {
