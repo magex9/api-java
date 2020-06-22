@@ -3,7 +3,7 @@ package ca.magex.crm.api.services.basic;
 import java.io.OutputStream;
 import java.util.List;
 
-import ca.magex.crm.api.authentication.CrmPasswordRepository;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -21,9 +21,9 @@ public class BasicConfigurationService implements CrmConfigurationService {
 
 	private CrmRepositories repos;
 	
-	private CrmPasswordRepository passwords;
+	private CrmPasswordService passwords;
 	
-	public BasicConfigurationService(CrmRepositories repos, CrmPasswordRepository passwords) {
+	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords) {
 		this.repos = repos;
 		this.passwords = passwords;
 	}

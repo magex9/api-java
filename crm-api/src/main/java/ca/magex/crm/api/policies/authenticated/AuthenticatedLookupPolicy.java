@@ -1,10 +1,10 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.SYS_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.SYS_ADMIN;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmLookupPolicy;
 import ca.magex.crm.api.policies.basic.BasicLookupPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Identifier;
 

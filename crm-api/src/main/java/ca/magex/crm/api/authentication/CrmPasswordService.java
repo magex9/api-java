@@ -1,6 +1,6 @@
 package ca.magex.crm.api.authentication;
 
-public interface CrmPasswordRepository {
+public interface CrmPasswordService {
 
 	String getEncodedPassword(String username);
 

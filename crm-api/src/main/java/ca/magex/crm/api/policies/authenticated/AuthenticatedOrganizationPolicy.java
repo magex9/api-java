@@ -1,11 +1,11 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
-import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.basic.BasicOrganizationPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 
@@ -49,7 +49,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 			return true;
 		}
 		/* return true if the person is associated with the organization */
-		return auth.getOrganizationId().equals(organizationId);
+		return auth.getAuthenticatedOrganizationId().equals(organizationId);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 			return true;
 		}
 		/* ensure the current user is associated with the organization, and return true if they are an RE Admin */
-		if (auth.getOrganizationId().equals(organizationId)) {
+		if (auth.getAuthenticatedOrganizationId().equals(organizationId)) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user is not associated with the organization */

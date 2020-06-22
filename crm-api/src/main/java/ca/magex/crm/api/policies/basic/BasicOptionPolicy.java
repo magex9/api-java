@@ -40,6 +40,16 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 		/* can always view options */
 		return true;
 	}
+	
+	@Override
+	public boolean canViewOption(Identifier lookupId, String optionCode) {
+		/* can view a specific option if it exists */
+		try {
+			return options.findOptionByCode(lookupId, optionCode) != null;
+		} catch (ItemNotFoundException e) {
+			throw new ItemNotFoundException("Option Code '" + optionCode + "'");
+		}
+	}
 
 	@Override
 	public boolean canViewOption(Identifier optionId) {

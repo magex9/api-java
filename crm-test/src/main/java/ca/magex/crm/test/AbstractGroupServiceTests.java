@@ -2,11 +2,15 @@ package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.ADMIN;
 import static ca.magex.crm.test.CrmAsserts.GROUP;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
 import static ca.magex.crm.test.CrmAsserts.assertMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
@@ -32,9 +37,19 @@ public abstract class AbstractGroupServiceTests {
 	@Autowired
 	protected Crm crm;
 	
+	@Autowired
+	protected BasicAuthenticationService auth;
+	
 	@Before
 	public void setup() {
 		crm.reset();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		auth.login("admin", "admin");
+	}
+	
+	@After
+	public void cleanup() {
+		auth.logout();
 	}
 
 	@Test
@@ -120,37 +135,38 @@ public abstract class AbstractGroupServiceTests {
 		g3 = crm.enableGroup(g3.getGroupId());
 
 		/* paging */
-		Page<Group> page = crm.findGroups(new GroupsFilter(), new Paging(1, 5, Sort.by("name:" + Lang.ENGLISH)));
+		Page<Group> page = crm.findGroups(new GroupsFilter(), new Paging(1, 10, Sort.by("name:" + Lang.ENGLISH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
-		Assert.assertEquals(3, page.getNumberOfElements());
-		Assert.assertEquals(5, page.getSize());
-		Assert.assertEquals(3, page.getContent().size());
+		Assert.assertEquals(7, page.getNumberOfElements());
+		Assert.assertEquals(10, page.getSize());
+		Assert.assertEquals(7, page.getContent().size());
 		/* order should be 1, 3, 2 */
-		Assert.assertEquals(g1, page.getContent().get(0));
-		Assert.assertEquals(g3, page.getContent().get(1));
-		Assert.assertEquals(g2, page.getContent().get(2));
+		Assert.assertEquals(g1, page.getContent().get(2));
+		Assert.assertEquals(g2, page.getContent().get(6));
+		Assert.assertEquals(g3, page.getContent().get(5));
 
-		page = crm.findGroups(new GroupsFilter(), new Paging(1, 5, Sort.by("name:" + Lang.FRENCH)));
+		page = crm.findGroups(new GroupsFilter(), new Paging(1, 10, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
-		Assert.assertEquals(3, page.getNumberOfElements());
-		Assert.assertEquals(5, page.getSize());
-		Assert.assertEquals(3, page.getContent().size());
+		Assert.assertEquals(7, page.getNumberOfElements());
+		Assert.assertEquals(10, page.getSize());
+		Assert.assertEquals(7, page.getContent().size());
 		/* order should be 2, 3, 1 */
-		Assert.assertEquals(g2, page.getContent().get(0));
-		Assert.assertEquals(g3, page.getContent().get(1));
-		Assert.assertEquals(g1, page.getContent().get(2));
+		Assert.assertEquals(g1, page.getContent().get(6));
+		Assert.assertEquals(g2, page.getContent().get(1));
+		Assert.assertEquals(g3, page.getContent().get(5));
 
-		page = crm.findGroups(new GroupsFilter(), new Paging(1, 2, Sort.by("name:" + Lang.FRENCH)));
+		page = crm.findGroups(new GroupsFilter(), new Paging(1, 10, Sort.by("name:" + Lang.ROOT)));
 		Assert.assertEquals(1, page.getNumber());
-		Assert.assertEquals(2, page.getTotalPages());
-		Assert.assertEquals(2, page.getNumberOfElements());
-		Assert.assertEquals(2, page.getSize());
-		Assert.assertEquals(2, page.getContent().size());
+		Assert.assertEquals(1, page.getTotalPages());
+		Assert.assertEquals(7, page.getNumberOfElements());
+		Assert.assertEquals(10, page.getSize());
+		Assert.assertEquals(7, page.getContent().size());
 		/* order should be 2, 3 */
-		Assert.assertEquals(g2, page.getContent().get(0));
-		Assert.assertEquals(g3, page.getContent().get(1));
+		Assert.assertEquals(g1, page.getContent().get(0));
+		Assert.assertEquals(g2, page.getContent().get(2));
+		Assert.assertEquals(g3, page.getContent().get(3));
 	}
 
 	@Test

@@ -596,11 +596,18 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			validate(findRole(roleId).withStatus(Status.INACTIVE)).getRoleId());
 	}
 
+	public Lookup validate(Lookup lookup) {
+		List<Message> messages = validation.validate(lookup);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Lookup has validation errors", messages);
+		return lookup;
+	}
+
 	@Override
 	public Lookup createLookup(Localized name, Option parent) {
 		if (!canCreateLookup())
 			throw new PermissionDeniedException("createLookup: " + name + ", " + parent);
-		return lookupService.createLookup(name, parent);
+		return lookupService.createLookup(validate(prototypeLookup(name, parent)));
 	}
 
 	@Override
@@ -611,24 +618,33 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
+	public Lookup findLookupByCode(String lookupCode) {
+		if (!canViewLookup(lookupCode))
+			throw new PermissionDeniedException("findLookupByCode: " + lookupCode);
+		return lookupService.findLookupByCode(lookupCode);
+	}
+
+	@Override
 	public Lookup updateLookupName(Identifier lookupId, Localized name) {
 		if (!canUpdateLookup(lookupId))
 			throw new PermissionDeniedException("updateLookupName: " + lookupId + ", " + name);
-		return lookupService.updateLookupName(lookupId, name);
+		return lookupService.updateLookupName(lookupId, validate(findLookup(lookupId).withName(name)).getName());
 	}
 
 	@Override
 	public Lookup enableLookup(Identifier lookupId) {
 		if (!canEnableLookup(lookupId))
 			throw new PermissionDeniedException("enableLookup: " + lookupId);
-		return lookupService.enableLookup(lookupId);
+		return lookupService.enableLookup(
+				validate(lookupService.findLookup(lookupId).withStatus(Status.ACTIVE)).getLookupId());
 	}
 
 	@Override
 	public Lookup disableLookup(Identifier lookupId) {
 		if (!canDisableLookup(lookupId))
 			throw new PermissionDeniedException("disableLookup: " + lookupId);
-		return lookupService.disableLookup(lookupId);
+		return lookupService.disableLookup(
+				validate(lookupService.findLookup(lookupId).withStatus(Status.INACTIVE)).getLookupId());
 	}
 
 	@Override
@@ -636,11 +652,18 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return lookupService.findLookups(filter, paging);
 	}
 
+	public Option validate(Option option) {
+		List<Message> messages = validation.validate(option);
+		if (!messages.isEmpty())
+			throw new BadRequestException("Organization has validation errors", messages);
+		return option;
+	}
+
 	@Override
 	public Option createOption(Identifier lookupId, Localized name) {
 		if (!canCreateOption(lookupId))
 			throw new PermissionDeniedException("createOption: " + lookupId + ", " + name);
-		return optionService.createOption(lookupId, name);
+		return optionService.createOption(validate(prototypeOption(lookupId, name)));
 	}
 
 	@Override
@@ -651,24 +674,33 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
+	public Option findOptionByCode(Identifier lookupId, String optionCode) {
+		if (!canViewOption(lookupId, optionCode))
+			throw new PermissionDeniedException("findOptionByCode: " + lookupId + ", " + optionCode);
+		return optionService.findOptionByCode(lookupId, optionCode);
+	}
+
+	@Override
 	public Option updateOptionName(Identifier optionId, Localized name) {
 		if (!canUpdateOption(optionId))
 			throw new PermissionDeniedException("updateOptionName: " + optionId + ", " + name);
-		return optionService.updateOptionName(optionId, name);
+		return optionService.updateOptionName(optionId, validate(findOption(optionId).withName(name)).getName());
 	}
 
 	@Override
 	public Option enableOption(Identifier optionId) {
 		if (!canEnableOption(optionId))
 			throw new PermissionDeniedException("enableOption: " + optionId);
-		return optionService.enableOption(optionId);
+		return optionService.enableOption(
+				validate(optionService.findOption(optionId).withStatus(Status.ACTIVE)).getOptionId());
 	}
 
 	@Override
 	public Option disableOption(Identifier optionId) {
 		if (!canDisableOption(optionId))
 			throw new PermissionDeniedException("disableOption: " + optionId);
-		return optionService.disableOption(optionId);
+		return optionService.disableOption(
+				validate(optionService.findOption(optionId).withStatus(Status.INACTIVE)).getOptionId());
 	}
 
 	@Override

@@ -98,7 +98,7 @@
 							<description>Logging and delegate decorators for the CRM services and policies</description>
 							<targetPackage>ca.magex.crm.api.decorators</targetPackage>
 							<interfaces>
-								<interface>ca.magex.crm.api.authentication.CrmPasswordRepository</interface>
+								<interface>ca.magex.crm.api.authentication.CrmPasswordService</interface>
 								<interface>ca.magex.crm.api.observer.CrmUpdateObserver</interface>
 								<interface>ca.magex.crm.api.repositories.CrmConfigurationRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmConfigurationService</interface>

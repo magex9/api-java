@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.authentication.CrmPasswordRepository;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
 public abstract class AbstractPasswordServiceTests {
@@ -19,7 +19,7 @@ public abstract class AbstractPasswordServiceTests {
 	protected Crm crm;
 
 	@Autowired
-	protected CrmPasswordRepository passwords;
+	protected CrmPasswordService passwords;
 	
 	@Before
 	public void setup() {

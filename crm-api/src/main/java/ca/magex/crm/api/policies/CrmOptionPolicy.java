@@ -6,6 +6,7 @@ public interface CrmOptionPolicy {
 
 	boolean canCreateOption(Identifier lookupId);
     boolean canViewOptions(Identifier lookupId);
+    boolean canViewOption(Identifier lookupId, String optionCode);
     boolean canViewOption(Identifier optionId);
     boolean canUpdateOption(Identifier optionId);
     boolean canEnableOption(Identifier optionId);

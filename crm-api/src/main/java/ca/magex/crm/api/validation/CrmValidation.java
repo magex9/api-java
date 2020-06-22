@@ -16,6 +16,8 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.GroupsFilter;
+import ca.magex.crm.api.filters.LookupsFilter;
+import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
@@ -24,7 +26,9 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 
 public class CrmValidation {
@@ -100,9 +104,9 @@ public class CrmValidation {
 
 		// Must be a valid role code
 		if (StringUtils.isBlank(role.getCode())) {
-			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must not be blank")));
+			messages.add(new Message(role.getRoleId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must not be blank")));
 		} else if (!role.getCode().matches("[A-Z0-9_]{1,20}")) {
-			messages.add(new Message(role.getGroupId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must match: [A-Z0-9_]{1,20}")));
+			messages.add(new Message(role.getRoleId(), "error", "code", new Localized(Lang.ENGLISH, "Role code must match: [A-Z0-9_]{1,20}")));
 		}
 
 		// Make sure the existing code didn't change
@@ -136,6 +140,112 @@ public class CrmValidation {
 			messages.add(new Message(role.getRoleId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
 		} else if (role.getName(Lang.FRENCH).length() > 50) {
 			messages.add(new Message(role.getRoleId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
+		}
+
+		return messages;
+	}
+
+	public List<Message> validate(Lookup lookup) {
+		List<Message> messages = new ArrayList<Message>();
+
+		// Status
+		if (lookup.getStatus() == null) {
+			messages.add(new Message(lookup.getLookupId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a lookup")));
+		} else if (lookup.getStatus() == Status.PENDING && lookup.getLookupId() != null) {
+			messages.add(new Message(lookup.getLookupId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+		}
+
+		// Must be a valid group code
+		if (StringUtils.isBlank(lookup.getCode())) {
+			messages.add(new Message(lookup.getLookupId(), "error", "code", new Localized(Lang.ENGLISH, "Lookup code must not be blank")));
+		} else if (!lookup.getCode().matches("[A-Z0-9_]{1,20}")) {
+			messages.add(new Message(lookup.getLookupId(), "error", "code", new Localized(Lang.ENGLISH, "Lookup code must match: [A-Z0-9_]{1,20}")));
+		}
+
+		// Make sure the existing code didn't change
+		if (lookup.getLookupId() != null) {
+			try {			
+				if (!crm.findLookup(lookup.getLookupId()).getCode().equals(lookup.getCode())) {
+					messages.add(new Message(lookup.getLookupId(), "error", "code", new Localized(Lang.ENGLISH, "Lookup code must not change during updates")));
+				}
+			} catch (ItemNotFoundException e) {
+				/* no existing group, so don't care */
+			}
+		}
+
+		// Make sure the code is unique
+		FilteredPage<Lookup> lookups = crm.findLookups(crm.defaultLookupsFilter().withLookupCode(lookup.getCode()), LookupsFilter.getDefaultPaging().allItems());
+		for (Lookup existing : lookups.getContent()) {
+			if (!existing.getLookupId().equals(lookup.getLookupId())) {
+				messages.add(new Message(lookup.getLookupId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another lookup: " + existing.getLookupId())));
+			}
+		}
+
+		// Make sure there is an English description
+		if (StringUtils.isBlank(lookup.getName(Lang.ENGLISH))) {
+			messages.add(new Message(lookup.getLookupId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
+		} else if (lookup.getName(Lang.ENGLISH).length() > 50) {
+			messages.add(new Message(lookup.getLookupId(), "error", "englishName", new Localized(Lang.ENGLISH, "English name must be 50 characters or less")));
+		}
+
+		// Make sure there is a French description
+		if (StringUtils.isBlank(lookup.getName(Lang.FRENCH))) {
+			messages.add(new Message(lookup.getLookupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
+		} else if (lookup.getName(Lang.FRENCH).length() > 50) {
+			messages.add(new Message(lookup.getLookupId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
+		}
+
+		return messages;
+	}
+
+	public List<Message> validate(Option option) {
+		List<Message> messages = new ArrayList<Message>();
+
+		// Status
+		if (option.getStatus() == null) {
+			messages.add(new Message(option.getOptionId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a option")));
+		} else if (option.getStatus() == Status.PENDING && option.getOptionId() != null) {
+			messages.add(new Message(option.getOptionId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+		}
+
+		// Must be a valid option code
+		if (StringUtils.isBlank(option.getCode())) {
+			messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Option code must not be blank")));
+		} else if (!option.getCode().matches("[A-Z0-9_]{1,20}")) {
+			messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Option code must match: [A-Z0-9_]{1,20}")));
+		}
+
+		// Make sure the existing code didn't change
+		if (option.getOptionId() != null) {
+			try {
+				if (!crm.findOption(option.getOptionId()).getCode().equals(option.getCode())) {
+					messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Option code must not change during updates")));
+				}
+			} catch (ItemNotFoundException e) {
+				/* no existing option, so don't care */
+			}
+		}
+
+		// Make sure the code is unique
+		FilteredPage<Option> options = crm.findOptions(crm.defaultOptionsFilter().withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems());
+		for (Option existing : options.getContent()) {
+			if (!existing.getOptionId().equals(option.getOptionId())) {
+				messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another option: " + existing.getOptionId())));
+			}
+		}
+
+		// Make sure there is an English description
+		if (StringUtils.isBlank(option.getName(Lang.ENGLISH))) {
+			messages.add(new Message(option.getOptionId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
+		} else if (option.getName(Lang.ENGLISH).length() > 50) {
+			messages.add(new Message(option.getOptionId(), "error", "englishName", new Localized(Lang.ENGLISH, "English name must be 50 characters or less")));
+		}
+
+		// Make sure there is a French description
+		if (StringUtils.isBlank(option.getName(Lang.FRENCH))) {
+			messages.add(new Message(option.getOptionId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
+		} else if (option.getName(Lang.FRENCH).length() > 50) {
+			messages.add(new Message(option.getOptionId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
 		}
 
 		return messages;

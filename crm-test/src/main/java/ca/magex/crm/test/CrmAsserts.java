@@ -109,6 +109,12 @@ public class CrmAsserts {
 	
 	public static final MailingAddress DE_ADDRESS = new MailingAddress("Porschepl. 1", "Stuttgart", MIDI_PYRENESE.getEnglishName(), GERMANY.getCode(), "70435");
 	
+	public static final String SYSTEM_ORG = "System";
+	
+	public static final PersonName SYSTEM_PERSON = new PersonName(null, "System", null, "Admin");
+	
+	public static final String SYSTEM_EMAIL = "root@localhost";
+	
 	public static final PersonName PERSON_NAME = new PersonName("3", "Chris", "P", "Bacon");
 	
 	public static final String PERSON_EMAIL = "crhis@bacon.com";

@@ -1,19 +1,19 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmConfigurationPolicy;
 import ca.magex.crm.api.policies.basic.BasicConfigurationPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmConfigurationService;
 
-public class AuthenticatedInitializationPolicy implements CrmConfigurationPolicy {
+public class AuthenticatedConfigurationPolicy implements CrmConfigurationPolicy {
 	
 	private CrmAuthenticationService auth;
 
 	private CrmConfigurationPolicy delegate;
 	
-	public AuthenticatedInitializationPolicy(
+	public AuthenticatedConfigurationPolicy(
 			CrmAuthenticationService auth,
 			CrmConfigurationService init) {
 		this.auth = auth;

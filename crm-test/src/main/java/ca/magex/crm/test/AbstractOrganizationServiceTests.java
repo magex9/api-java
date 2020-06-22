@@ -7,6 +7,9 @@ import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ONTARIO;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static ca.magex.crm.test.CrmAsserts.QUEBEC;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
 import static ca.magex.crm.test.CrmAsserts.assertMessage;
@@ -16,6 +19,7 @@ import static org.junit.Assert.fail;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -43,14 +48,23 @@ public abstract class AbstractOrganizationServiceTests {
 	@Autowired
 	protected Crm crm;
 	
+	@Autowired
+	protected BasicAuthenticationService auth;
+	
 	@Before
 	public void setup() {
 		crm.reset();
-		crm.initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		auth.login("admin", "admin");
 		crm.createGroup(new Localized("NHL", "NHL", "LNH"));
 		crm.createGroup(new Localized("PLAYOFFS", "Playoffs", "Playoffs"));
 		crm.createGroup(new Localized("ONTARIO", "Ontario", "Ontario"));
 		crm.createGroup(new Localized("QUEBEC", "Quebec", "Québec"));
+	}
+	
+	@After
+	public void cleanup() {
+		auth.logout();
 	}
 
 	@Test

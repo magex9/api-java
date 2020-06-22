@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import ca.magex.crm.api.authentication.CrmPasswordRepository;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.store.CrmStore;
 
-public class BasicPasswordRepository implements CrmPasswordRepository {
+public class BasicPasswordService implements CrmPasswordService {
 
 	private long expiration = TimeUnit.DAYS.toMillis(365);
 	
@@ -19,11 +19,11 @@ public class BasicPasswordRepository implements CrmPasswordRepository {
 	
 	private PasswordEncoder passwordEncoder;
 	
-	public BasicPasswordRepository() {
+	public BasicPasswordService() {
 		this(new BasicPasswordEncoder());
 	}
 	
-	public BasicPasswordRepository(PasswordEncoder passwordEncoder) {
+	public BasicPasswordService(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
 		this.passwords = new HashMap<String, BasicPasswordDetails>();
 	}

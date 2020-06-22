@@ -4,12 +4,16 @@ import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ILLINOIS;
 import static ca.magex.crm.test.CrmAsserts.MASSACHUSETTS;
 import static ca.magex.crm.test.CrmAsserts.NEW_YORK;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static ca.magex.crm.test.CrmAsserts.UNITED_STATES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
@@ -32,10 +37,19 @@ public abstract class AbstractLocationServiceTests {
 	@Autowired
 	protected Crm crm;
 	
+	@Autowired
+	protected CrmAuthenticationService auth;
+	
 	@Before
 	public void setup() {
 		crm.reset();
-		crm.initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		auth.login("admin", "admin");
+	}
+	
+	@After
+	public void cleanup() {
+		auth.logout();
 	}
 	
 	@Test

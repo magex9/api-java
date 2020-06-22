@@ -1,10 +1,6 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.CANADA;
-import static ca.magex.crm.test.CrmAsserts.ENGLISH;
-import static ca.magex.crm.test.CrmAsserts.ONTARIO;
-import static ca.magex.crm.test.CrmAsserts.SYS;
-import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -56,16 +53,20 @@ public class CrmServicesTestSuite {
 	private static final Logger logger = LoggerFactory.getLogger(CrmServicesTestSuite.class);
 
 	private Crm crm;
+	
+	private CrmAuthenticationService auth;
 
-	public CrmServicesTestSuite(Crm crm) {
+	public CrmServicesTestSuite(Crm crm, CrmAuthenticationService auth) {
 		this.crm = crm;
+		this.auth = auth;
 	}
 	
 	public void runAllTests() throws Exception {
 		crm.reset();
 		if (!crm.isInitialized())
-			crm.initializeSystem("system", new PersonName(null, "Sys", null, "Admin"), "system@admin.com", "admin", "admin");
-		crm.dump(System.out);
+			crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		//crm.dump(System.out);
+		auth.login("admin", "admin");
 //		runLookupServiceTests();
 		try {
 			runCreatePermissions();

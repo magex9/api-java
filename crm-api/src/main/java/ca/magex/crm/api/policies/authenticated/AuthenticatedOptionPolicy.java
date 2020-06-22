@@ -1,10 +1,10 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.SYS_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.SYS_ADMIN;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.basic.BasicOptionPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Identifier;
@@ -42,6 +42,15 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	@Override
 	public boolean canViewOptions(Identifier lookupId) {
 		if (!delegate.canViewOptions(lookupId)) {
+			return false;
+		}
+		/* anybody can view options */
+		return true;
+	}
+	
+	@Override
+	public boolean canViewOption(Identifier lookupId, String optionCode) {
+		if (!delegate.canViewOption(lookupId, optionCode)) {
 			return false;
 		}
 		/* anybody can view options */

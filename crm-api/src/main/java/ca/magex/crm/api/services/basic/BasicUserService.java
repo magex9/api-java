@@ -2,7 +2,7 @@ package ca.magex.crm.api.services.basic;
 
 import java.util.List;
 
-import ca.magex.crm.api.authentication.CrmPasswordRepository;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
@@ -16,9 +16,9 @@ public class BasicUserService implements CrmUserService {
 
 	private CrmRepositories repos;
 	
-	private CrmPasswordRepository passwords;
+	private CrmPasswordService passwords;
 	
-	public BasicUserService(CrmRepositories repos, CrmPasswordRepository passwords) {
+	public BasicUserService(CrmRepositories repos, CrmPasswordService passwords) {
 		this.repos = repos;
 		this.passwords = passwords;
 	}

@@ -23,19 +23,17 @@ public class BasicLookupPolicy implements CrmLookupPolicy {
 
 	@Override
 	public boolean canCreateLookup() {
-		// TODO should be able to create new business units and province lists.
-		//if (province or business unit sublist)
-		//	return true;
-		return false;
+		return true;
 	}
 
 	@Override
-	public boolean canViewLookup(String lookup) {
-		/* can view a lookup if it exists */
-		if (lookups.findLookupByCode(lookup) == null) {
-			throw new ItemNotFoundException("Lookup Code '" + lookup + "'");
+	public boolean canViewLookup(String lookupCode) {
+		try {
+			/* can view a lookup if it exists */
+			return lookups.findLookupByCode(lookupCode) != null;
+		} catch (ItemNotFoundException e) {
+			throw new ItemNotFoundException("Lookup Code '" + lookupCode + "'");
 		}
-		return true;
 	}
 
 	@Override

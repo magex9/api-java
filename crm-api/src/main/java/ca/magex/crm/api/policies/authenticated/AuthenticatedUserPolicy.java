@@ -1,11 +1,11 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
-import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.policies.basic.BasicUserPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
@@ -47,7 +47,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated with the organization the person belongs to */
-		if (auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* current user not associated to the organization of the person */
@@ -64,7 +64,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		return auth.getOrganizationId().equals(users.findUserByUsername(username).getPerson().getOrganizationId());
+		return auth.getAuthenticatedOrganizationId().equals(users.findUserByUsername(username).getPerson().getOrganizationId());
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		return auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId());
+		return auth.getAuthenticatedOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId());
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */
@@ -107,11 +107,11 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* current user can update their own password */
-		if (auth.getUserId().equals(userId)) {
+		if (auth.getAuthenticatedUserId().equals(userId)) {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */
@@ -128,7 +128,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */
@@ -145,7 +145,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */

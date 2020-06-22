@@ -12,55 +12,33 @@ import ca.magex.crm.api.system.Status;
 
 public interface CrmRoleService {
 
-	default Role prototypeRole(
-		Identifier groupId, 
-		Localized name
-	) {
+	default Role prototypeRole(Identifier groupId, Localized name) {
 		return new Role(null, groupId, Status.PENDING, name);
 	}
-	
-	default Role createRole(
-		Role role
-	) {
+
+	default Role createRole(Role role) {
 		return createRole(role.getGroupId(), role.getName());
 	}
-	
-	Role createRole(
-			Identifier groupId, 
-			Localized name
-		);
 
-	Role findRole(
-		Identifier roleId
-	);
+	Role createRole(Identifier groupId, Localized name);
 
-	default Role findRoleByCode(
-		String code
-	) {
+	Role findRole(Identifier roleId);
+
+	default Role findRoleByCode(String code) {
 		return findRoles(
 			defaultRolesFilter().withCode(code), 
 			RolesFilter.getDefaultPaging()
 		).getSingleItem();
 	};
 
-	Role updateRoleName(
-		Identifier roleId, 
-		Localized name
-	);
+	Role updateRoleName(Identifier roleId, Localized name);
 
-	Role enableRole(
-		Identifier roleId
-	);
+	Role enableRole(Identifier roleId);
 
-	Role disableRole(
-		Identifier roleId
-	);
-	
-	FilteredPage<Role> findRoles(
-		RolesFilter filter, 
-		Paging paging
-	);
-	
+	Role disableRole(Identifier roleId);
+
+	FilteredPage<Role> findRoles(RolesFilter filter, Paging paging);
+
 	default FilteredPage<Role> findRoles(RolesFilter filter) {
 		return findRoles(filter, defaultRolePaging());
 	}
@@ -74,8 +52,8 @@ public interface CrmRoleService {
 	
 	default RolesFilter defaultRolesFilter() {
 		return new RolesFilter();
-	};
-	
+	}
+
 	default Paging defaultRolePaging() {
 		return new Paging(RolesFilter.getSortOptions().get(0));
 	}

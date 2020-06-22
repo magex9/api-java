@@ -3,7 +3,7 @@ package ca.magex.crm.api.config;
 import org.springframework.context.annotation.Bean;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.authentication.CrmPasswordRepository;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 
 /**
  * Used to configure the Crm Subsystem
@@ -13,7 +13,7 @@ import ca.magex.crm.api.authentication.CrmPasswordRepository;
 public interface CrmConfigurer {
 
 	@Bean
-	public CrmPasswordRepository passwords();
+	public CrmPasswordService passwords();
 	
 	@Bean
 	public Crm crm();
