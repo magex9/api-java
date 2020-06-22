@@ -6,10 +6,6 @@ body {
   text-align: center;
 }
 
-#h1{
-#	color:#0000FF;
-#}
-
-h2{
-	color:#FF0000;
+.query-input {
+	resize: none;
 }

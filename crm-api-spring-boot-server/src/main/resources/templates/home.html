@@ -27,6 +27,13 @@
 
     <div class="starter-template">
         <h1>CRM Home Page</h1>
+        
+        <ul>
+        <li><a href="/crm/auth">JWT Authentication Swagger UI</a></li>
+        <li><a href="/crm/rest">CRM Restful Swagger UI</a></li>
+        <li><a href="/crm/graphql/query">CRM GraphQL Query UI</a></li>
+        </ul>
+        
         <form th:action="@{/logout}" method="POST">
             <input type="submit" value="Sign Out"/>
         </form>
