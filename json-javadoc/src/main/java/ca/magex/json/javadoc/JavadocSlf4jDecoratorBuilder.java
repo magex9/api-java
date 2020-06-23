@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.util.FormattedStringBuilder;
 
@@ -65,6 +66,8 @@ public class JavadocSlf4jDecoratorBuilder {
 	}
 	
 	private static void buildMethod(FormattedStringBuilder sb, JsonObject cls, JsonObject method) {
+		if (method.contains("modifiers", JsonArray.class) && method.getArray("modifiers", String.class).contains("static"))
+			return;
 		String methodParams = !method.contains("parameters") ? "" :
 			method.getArray("parameters", JsonObject.class).stream()
 				.map(o -> buildType(cls, o) + " " + o.getString("name"))

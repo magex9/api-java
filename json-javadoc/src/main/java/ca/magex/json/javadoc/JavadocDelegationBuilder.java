@@ -126,6 +126,8 @@ public class JavadocDelegationBuilder {
 	}
 	
 	private static void buildMethod(FormattedStringBuilder sb, JsonObject cls, JsonObject method) {
+		if (method.contains("modifiers", JsonArray.class) && method.getArray("modifiers", String.class).contains("static"))
+			return;
 		String methodParams = !method.contains("parameters") ? "" :
 			method.getArray("parameters", JsonObject.class).stream()
 				.map(o -> buildType(cls, o) + " " + o.getString("name"))

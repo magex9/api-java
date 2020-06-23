@@ -4,6 +4,7 @@ import java.io.OutputStream;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.filters.LookupsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
@@ -23,9 +24,11 @@ public interface CrmConfigurationService {
 
 	User initializeSystem(String organization, PersonName name, String email, String username, String password);
 	
-	public boolean reset();
+	CrmDictionary getDictionary();
 	
-	public void dump(OutputStream os);
+	boolean reset();
+	
+	void dump(OutputStream os);
 	
 	/**
 	 * Default initialization of the system into the given repositories

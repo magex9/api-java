@@ -4,24 +4,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
+import ca.magex.crm.api.dictionary.basic.BasicDictionary;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
-import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
-import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
-import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicServices;
-import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 
 @Configuration
 public class BasicTestConfig {
 
 	@Bean 
-	public CrmStore store() {
+	public BasicStore store() {
 		return new BasicStore();
 	}
 	
@@ -31,17 +27,21 @@ public class BasicTestConfig {
 	}
 	
 	@Bean
-	public CrmRepositories repos() {
+	public BasicRepositories repos() {
 		return new BasicRepositories(store(), notifier());
 	}
 	
+	public BasicDictionary dictionary() {
+		return new BasicDictionary().initialize();
+	}
+	
 	@Bean 
-	public CrmServices services() {
-		return new BasicServices(repos(), passwords());
+	public BasicServices services() {
+		return new BasicServices(repos(), passwords(), dictionary());
 	}
 	
 	@Bean
-	public CrmPolicies policies() {
+	public AuthenticatedPolicies policies() {
 		return new AuthenticatedPolicies(auth(), services());
 	}
 	
@@ -51,7 +51,7 @@ public class BasicTestConfig {
 	}
 	
 	@Bean
-	public CrmPasswordService passwords() {
+	public BasicPasswordService passwords() {
 		return new BasicPasswordService();
 	}
 	

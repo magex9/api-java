@@ -10,6 +10,7 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.roles.User;
@@ -23,9 +24,12 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	
 	private CrmPasswordService passwords;
 	
-	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords) {
+	private CrmDictionary dictionary;
+	
+	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords, CrmDictionary dictionary) {
 		this.repos = repos;
 		this.passwords = passwords;
+		this.dictionary = dictionary;
 	}
 
 	@Override
@@ -52,6 +56,11 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			passwords.updatePassword(username, passwords.encodePassword(password));
 		}
 		return repos.findUsers(new UsersFilter().withRole("SYS_ADMIN").withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+	}
+
+	@Override
+	public CrmDictionary getDictionary() {
+		return dictionary;
 	}
 		
 	@Override

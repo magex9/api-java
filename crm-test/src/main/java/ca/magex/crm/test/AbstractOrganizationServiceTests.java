@@ -37,11 +37,11 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 public abstract class AbstractOrganizationServiceTests {
 
@@ -552,10 +552,9 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
 		crm.createGroup(GROUP).getGroupId();
-		CrmValidation validation = new CrmValidation(crm);
-		List<Message> messages = validation.validate(new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
+		List<Message> messages = CrmOrganizationService.validateOrganizationDetails(crm, new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
 		assertEquals(1, messages.size());
-		assertMessage(messages.get(0), new Identifier("org"), "error", "status", "Status is mandatory for an organization");
+		assertMessage(messages.get(0), new Identifier("org"), "error", "status", crm.getDictionary().getMessage("validation.organization.status.required").getEnglishName());
 	}
 
 }

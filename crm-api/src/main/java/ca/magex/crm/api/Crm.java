@@ -1,5 +1,14 @@
 package ca.magex.crm.api;
 
+import static ca.magex.crm.api.services.CrmGroupService.validateGroup;
+import static ca.magex.crm.api.services.CrmLocationService.validateLocationDetails;
+import static ca.magex.crm.api.services.CrmLookupService.validateLookup;
+import static ca.magex.crm.api.services.CrmOptionService.validateOption;
+import static ca.magex.crm.api.services.CrmOrganizationService.validateOrganizationDetails;
+import static ca.magex.crm.api.services.CrmPersonService.validatePersonDetails;
+import static ca.magex.crm.api.services.CrmRoleService.validateRole;
+import static ca.magex.crm.api.services.CrmUserService.validateUser;
+
 import java.io.OutputStream;
 import java.util.List;
 
@@ -14,6 +23,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
@@ -56,7 +66,6 @@ import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
 
 public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies {
 	
@@ -79,8 +88,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	private final CrmPersonService personService;
 	
 	private final CrmUserService userService;
-	
-	private final CrmValidation validation;
 	
 	public Crm(Crm crm) {
 		this(crm, crm);
@@ -163,7 +170,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		this.locationService = locationService;
 		this.personService = personService;
 		this.userService = userService;
-		this.validation = new CrmValidation(this);
 	}
 	
 	@Override
@@ -179,6 +185,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
+	public CrmDictionary getDictionary() {
+		return configurationService.getDictionary();
+	}
+	
+	@Override
 	public boolean reset() {
 		return configurationService.reset();
 	}
@@ -189,7 +200,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public OrganizationDetails validate(OrganizationDetails organization) {
-		List<Message> messages = validation.validate(organization);
+		List<Message> messages = validateOrganizationDetails(this, organization);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Organization has validation errors", messages);
 		return organization;
@@ -270,7 +281,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public LocationDetails validate(LocationDetails location) {
-		List<Message> messages = validation.validate(location);
+		List<Message> messages = validateLocationDetails(this, location);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Location has validation errors", messages);
 		return location;
@@ -334,7 +345,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public PersonDetails validate(PersonDetails person) {
-		List<Message> messages = validation.validate(person);
+		List<Message> messages = validatePersonDetails(this, person);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Person has validation errors", messages);
 		return person;
@@ -409,7 +420,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public User validate(User user) {
-		List<Message> messages = validation.validate(user);
+		List<Message> messages = validateUser(this, user);
 		if (!messages.isEmpty())
 			throw new BadRequestException("User has validation errors", messages);
 		return user;
@@ -483,7 +494,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public Group validate(Group group) {
-		List<Message> messages = validation.validate(group);
+		List<Message> messages = validateGroup(this, group);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Group has validation errors", messages);
 		return group;
@@ -539,7 +550,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public Role validate(Role role) {
-		List<Message> messages = validation.validate(role);
+		List<Message> messages = validateRole(this, role);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Role has validation errors", messages);
 		return role;
@@ -597,7 +608,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public Lookup validate(Lookup lookup) {
-		List<Message> messages = validation.validate(lookup);
+		List<Message> messages = validateLookup(this, lookup);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Lookup has validation errors", messages);
 		return lookup;
@@ -653,7 +664,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	public Option validate(Option option) {
-		List<Message> messages = validation.validate(option);
+		List<Message> messages = validateOption(this, option);
 		if (!messages.isEmpty())
 			throw new BadRequestException("Organization has validation errors", messages);
 		return option;
