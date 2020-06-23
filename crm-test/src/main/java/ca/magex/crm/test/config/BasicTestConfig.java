@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
+import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.dictionary.basic.BasicDictionary;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
@@ -14,7 +15,7 @@ import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicStore;
 
 @Configuration
-public class BasicTestConfig {
+public class BasicTestConfig implements CrmConfigurer {
 
 	@Bean 
 	public BasicStore store() {
@@ -31,6 +32,7 @@ public class BasicTestConfig {
 		return new BasicRepositories(store(), notifier());
 	}
 	
+	@Bean
 	public BasicDictionary dictionary() {
 		return new BasicDictionary().initialize();
 	}

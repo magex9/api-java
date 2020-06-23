@@ -12,7 +12,7 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 
 @Configuration
-public class MockConfig {
+public class MockTestConfig {
 
 	@Bean("PrincipalLookupService")
 	public CrmLookupService mockLookupService() {
