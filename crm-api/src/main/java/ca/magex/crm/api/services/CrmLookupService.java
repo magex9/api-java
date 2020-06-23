@@ -2,6 +2,7 @@ package ca.magex.crm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,6 +58,20 @@ public interface CrmLookupService {
 			defaultLookupsFilter().withLookupCode(code),
 			LookupsFilter.getDefaultPaging()
 		).getSingleItem();
+	}
+	
+	default Lookup findLookupByLocalizedName(Locale locale, String name) {
+		if (Lang.isEnglish(locale)) {
+			return (Lookup)findLookups(
+				defaultLookupsFilter().withEnglishName(name),
+				LookupsFilter.getDefaultPaging()
+			).getSingleItem();
+		} else {
+			return (Lookup)findLookups(
+				defaultLookupsFilter().withFrenchName(name),
+				LookupsFilter.getDefaultPaging()
+			).getSingleItem();
+		}
 	}
 	
 	default Lookup findLookupByTypeWithParent(Lookup parent) {

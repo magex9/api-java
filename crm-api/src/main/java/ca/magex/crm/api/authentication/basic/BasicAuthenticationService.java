@@ -1,5 +1,7 @@
 package ca.magex.crm.api.authentication.basic;
 
+import java.util.Stack;
+
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.CrmPasswordService;
@@ -13,7 +15,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	
 	private CrmPasswordService passwords;
 	
-	private User currentUser;
+	private Stack<User> currentUser;
 
 	public BasicAuthenticationService(Crm crm) {
 		this(crm, new BasicPasswordService());
@@ -22,63 +24,63 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	public BasicAuthenticationService(CrmUserService users, CrmPasswordService passwords) {
 		this.users = users;
 		this.passwords = passwords;
-		this.currentUser = null;
+		this.currentUser = new Stack<>();
 	}
 	
 	public CrmPasswordService getPasswords() {
 		return passwords;
 	}
 	
+	@Override
 	public boolean login(String username, String password) {
 		if (!passwords.verifyPassword(username, password))
 			throw new IllegalArgumentException("Invalid username or password");
-		currentUser = users.findUserByUsername(username);
+		currentUser.push(users.findUserByUsername(username));
 		return true;
 	}
 	
+	@Override
 	public boolean logout() {
-		currentUser = null;
+		currentUser.pop();
 		return true;
 	}
 	
 	@Override
 	public boolean isAuthenticated() {
-		return currentUser != null;
+		return !currentUser.isEmpty();
 	}
 
 	@Override
 	public User getAuthenticatedUser() {
-		if (currentUser == null)
-			return null;
-		return currentUser;
+		return currentUser.peek();
 	}
 
 	@Override
 	public boolean isUserInRole(String role) {
-		if (currentUser == null)
+		if (!isAuthenticated())
 			return false;
-		return currentUser.getRoles().contains(role);
+		return currentUser.peek().getRoles().contains(role);
 	}
 
 	@Override
 	public Identifier getAuthenticatedUserId() {
-		if (currentUser == null)
+		if (!isAuthenticated())
 			return null;
-		return currentUser.getUserId();
+		return currentUser.peek().getUserId();
 	}
 
 	@Override
 	public Identifier getAuthenticatedPersonId() {
-		if (currentUser == null)
+		if (!isAuthenticated())
 			return null;
-		return currentUser.getPerson().getPersonId();
+		return currentUser.peek().getPerson().getPersonId();
 	}
 
 	@Override
 	public Identifier getAuthenticatedOrganizationId() {
-		if (currentUser == null)
+		if (!isAuthenticated())
 			return null;
-		return currentUser.getPerson().getOrganizationId();
+		return currentUser.peek().getPerson().getOrganizationId();
 	}
 
 }

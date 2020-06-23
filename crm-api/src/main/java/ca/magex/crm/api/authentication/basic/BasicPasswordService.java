@@ -70,18 +70,18 @@ public class BasicPasswordService implements CrmPasswordService {
 		BasicPasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails != null) {
 			passwords.put(
-					username, 
-					passwordDetails.withTemporaryPassword(
-							encodePassword(tempPassword), 
-							new Date(System.currentTimeMillis() + expiration)));
+				username, 
+				passwordDetails.withTemporaryPassword(
+					encodePassword(tempPassword), 
+					new Date(System.currentTimeMillis() + expiration)));
 		}
 		else {
 			passwords.put(
-					username, 
-					new BasicPasswordDetails(
-							encodePassword(tempPassword), 
-							true, 
-							new Date(System.currentTimeMillis() + expiration)));
+				username, 
+				new BasicPasswordDetails(
+					encodePassword(tempPassword), 
+					true, 
+					new Date(System.currentTimeMillis() + expiration)));
 		}
 		return tempPassword;
 	}
