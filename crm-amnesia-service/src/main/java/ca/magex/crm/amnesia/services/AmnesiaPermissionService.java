@@ -3,7 +3,6 @@ package ca.magex.crm.amnesia.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
 @Service("PrincipalPermissionService")
-//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPermissionService implements CrmPermissionService {
 

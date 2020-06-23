@@ -1,5 +1,7 @@
 package ca.magex.crm.spring.security.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,11 +15,9 @@ import ca.magex.crm.api.system.Identifier;
 @Component
 public class SpringSecurityAuthenticationService implements CrmAuthenticationService {
 
+	@Autowired
+	@Qualifier("PrincipalUserService")
 	private CrmUserService userService;
-	
-	public SpringSecurityAuthenticationService(CrmUserService userService) {
-		this.userService = userService;
-	}
 
 	@Override
 	public boolean isAuthenticated() {

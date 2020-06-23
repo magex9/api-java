@@ -2,7 +2,6 @@ package ca.magex.crm.amnesia.services;
 
 import java.io.OutputStream;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmInitializationService;
 
 @Service("PrincipalInitializationService")
-//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaInitializationService implements CrmInitializationService {
 

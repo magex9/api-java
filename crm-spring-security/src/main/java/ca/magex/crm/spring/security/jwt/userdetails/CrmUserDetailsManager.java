@@ -1,6 +1,7 @@
 package ca.magex.crm.spring.security.jwt.userdetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +22,7 @@ import ca.magex.crm.api.system.Identifier;
 @Component
 public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPasswordService {
 
-	@Autowired private CrmUserService userService;
+	@Autowired @Qualifier("PrincipalUserService") private CrmUserService userService;
 	@Autowired private CrmPasswordService passwordService;
 
 	@Override

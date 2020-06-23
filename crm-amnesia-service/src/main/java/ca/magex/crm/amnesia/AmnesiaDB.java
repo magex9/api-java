@@ -177,6 +177,7 @@ public class AmnesiaDB {
 			CrmRoleInitializer.initialize(permissions);
 			Identifier organizationId = organizations.createOrganization(organization, List.of("SYS", "CRM")).getOrganizationId();
 			Identifier personId = persons.createPerson(organizationId, name, new MailingAddress("123 Main Street", "Ottawa", "ON", "CA", "K4J0R8"), new Communication("Amin", "En", email, new Telephone("555-999-8888"), ""), null).getPersonId();
+			organizations.updateOrganizationMainContact(organizationId, personId);
 			systemId = users.createUser(personId, username, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")).getUserId();
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwordEncoder.encode(password));
