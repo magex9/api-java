@@ -11,14 +11,11 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
@@ -30,18 +27,19 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.caching.config.CachingConfig;
 import ca.magex.crm.caching.config.CachingTestConfig;
+import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.test.CrmAsserts;
-import ca.magex.crm.test.config.MockConfig;
-import ca.magex.crm.test.config.TestConfig;
+import ca.magex.crm.test.config.MockTestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
-@ActiveProfiles(profiles = { CrmProfiles.CRM_NO_AUTH })
+@ContextConfiguration(classes = { CachingTestConfig.class, MockTestConfig.class })
 public class CrmLocationServiceCachingDelegateTests {
 
-	@Autowired @Qualifier("PrincipalLocationService") private CrmLocationService delegate;
+	@Autowired private CrmLocationService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("CrmLocationServiceCachingDelegate") private CrmLocationService locationService;
+	
+	private CacheTemplate cacheTemplate;
+	private CrmLocationServiceCachingDelegate locationService;
 
 	@Before
 	public void reset() {
@@ -50,6 +48,8 @@ public class CrmLocationServiceCachingDelegateTests {
 		cacheManager.getCacheNames().forEach((cacheName) -> {
 			cacheManager.getCache(cacheName).clear();
 		});
+		cacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Locations);
+		locationService = new CrmLocationServiceCachingDelegate(delegate, cacheTemplate);
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
 
 		/* should have added the summary to the cache */
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 	}
 
@@ -85,7 +85,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
 
 		/* should have added the summary to the cache */
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 	}
 
@@ -107,7 +107,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		LocationSummary locSummary = locationService.findLocationSummary(new Identifier("1"));
 		Assert.assertEquals(locSummary, locationService.findLocationSummary(locDetails.getLocationId()));
-		BDDMockito.verify(delegate, Mockito.times(1)).findLocationSummary(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 
 		/* make sure the summary is cached after the disable */
@@ -188,7 +188,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 
 		/* make sure the summary is cached after the disable */
@@ -235,7 +235,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 
 		/* clear cache, update name, and ensure cached */
@@ -243,7 +243,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		locDetails = locationService.updateLocationName(locDetails.getLocationId(), "Bye");
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 
 		/* clear cache, update address, and ensure cached */
@@ -251,7 +251,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		locDetails = locationService.updateLocationAddress(locDetails.getLocationId(), CrmAsserts.CA_ADDRESS);
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(locDetails, locationService.findLocationSummary(locDetails.getLocationId()));
+		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
 		
 		/* update non existent location (should cache the fact that it doesn't exist for the summary) */
@@ -295,13 +295,13 @@ public class CrmLocationServiceCachingDelegateTests {
 		Assert.assertEquals(3, locationService.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());
 
 		Assert.assertEquals(details1, locationService.findLocationDetails(details1.getLocationId()));
-		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+		Assert.assertEquals(details1.asSummary(), locationService.findLocationSummary(details1.getLocationId()));
 
 		Assert.assertEquals(details2, locationService.findLocationDetails(details2.getLocationId()));
-		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+		Assert.assertEquals(details2.asSummary(), locationService.findLocationSummary(details2.getLocationId()));
 
 		Assert.assertEquals(details3, locationService.findLocationDetails(details3.getLocationId()));
-		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+		Assert.assertEquals(details3.asSummary(), locationService.findLocationSummary(details3.getLocationId()));
 
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
@@ -311,13 +311,13 @@ public class CrmLocationServiceCachingDelegateTests {
 		Assert.assertEquals(3, locationService.findLocationDetails(new LocationsFilter()).getNumberOfElements());
 
 		Assert.assertEquals(details1, locationService.findLocationDetails(details1.getLocationId()));
-		Assert.assertEquals(details1, locationService.findLocationSummary(details1.getLocationId()));
+		Assert.assertEquals(details1.asSummary(), locationService.findLocationSummary(details1.getLocationId()));
 
 		Assert.assertEquals(details2, locationService.findLocationDetails(details2.getLocationId()));
-		Assert.assertEquals(details2, locationService.findLocationSummary(details2.getLocationId()));
+		Assert.assertEquals(details2.asSummary(), locationService.findLocationSummary(details2.getLocationId()));
 
 		Assert.assertEquals(details3, locationService.findLocationDetails(details3.getLocationId()));
-		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
+		Assert.assertEquals(details3.asSummary(), locationService.findLocationSummary(details3.getLocationId()));
 
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));

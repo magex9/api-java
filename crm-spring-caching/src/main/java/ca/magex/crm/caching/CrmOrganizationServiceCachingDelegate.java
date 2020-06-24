@@ -1,18 +1,8 @@
 package ca.magex.crm.caching;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-import javax.validation.constraints.NotNull;
-
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.data.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -21,140 +11,151 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.caching.config.CachingConfig;
+import ca.magex.crm.caching.util.CacheTemplate;
+import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
 public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationService {
 
 	private CrmOrganizationService delegate;
-	private CacheManager cacheManager;
+	private CacheTemplate cacheTemplate;
 
 	/**
 	 * Wraps the delegate service using the given cacheManager
 	 * 
 	 * @param delegate
-	 * @param cacheManager
+	 * @param cacheTemplate
 	 */
-	public CrmOrganizationServiceCachingDelegate(CrmOrganizationService delegate, CacheManager cacheManager) {
+	public CrmOrganizationServiceCachingDelegate(CrmOrganizationService delegate, CacheTemplate cacheTemplate) {
 		this.delegate = delegate;
-		this.cacheManager = cacheManager;
+		this.cacheTemplate = cacheTemplate;
 	}
-	
-	private List<Pair<String,Object>> detailsCacheSupplier(OrganizationDetails details) {
+
+	/**
+	 * Provides the list of pairs for caching organization details
+	 * @param details
+	 * @return
+	 */
+	private List<Pair<String, Object>> detailsCacheSupplier(OrganizationDetails details, Identifier key) {
 		return List.of(
-				Pair.of("Details_" + details.getOrganizationId(), details),
-				Pair.of("Summary_" + details.getOrganizationId(), details.asSummary())
-		);
+				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
 	}
-	
-	private List<Pair<String,Object>> summaryCacheSupplier(OrganizationSummary summary) {
+
+	/**
+	 * Provides the list of pairs for caching organization summary
+	 * @param summary
+	 * @param key
+	 * @return
+	 */
+	private List<Pair<String, Object>> summaryCacheSupplier(OrganizationSummary summary, Identifier key) {
 		return List.of(
-				Pair.of("Summary_" + summary.getOrganizationId(), summary)
-		);
+				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
 	}
-	
-	private <R> R cachePut(Supplier<R> supplier, Function<R, List<Pair<String, Object>>> cachingSuppliers) {		
-		Cache cache = cacheManager.getCache(CachingConfig.Caches.Organizations);
-		R value = supplier.get();
-		List<Pair<String, Object>> cachingPairs = cachingSuppliers.apply(value);
-		for (Pair<String, Object> cachePair : cachingPairs) {
-			cache.put(cachePair.getFirst(), cachePair.getSecond());
-		}
-		return value;
-	}
-	
-	private void cacheEvict(List<String> keys) {
-		Cache cache = cacheManager.getCache(CachingConfig.Caches.Organizations);
-		for (String key : keys) {
-			cache.evict(key);
-		}
-	}
-		
+
 	@Override
 	public OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return cachePut(() -> delegate.createOrganization(prototype), this::detailsCacheSupplier); 
+		OrganizationDetails details = delegate.createOrganization(prototype);
+		cacheTemplate.put(detailsCacheSupplier(details, details.getOrganizationId()));
+		return details;
 	}
 
 	@Override
 	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
-		return cachePut(() -> delegate.createOrganization(createOrganization(displayName, groups)), this::detailsCacheSupplier);		
+		OrganizationDetails details = delegate.createOrganization(displayName, groups);
+		cacheTemplate.put(detailsCacheSupplier(details, details.getOrganizationId()));
+		return details;
 	}
 
 	@Override
-	@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
-	@CacheEvict(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)")
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		delegate.enableOrganization(organizationId);
+		OrganizationSummary summary = delegate.enableOrganization(organizationId);
+		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(organizationId));
+		cacheTemplate.put(summaryCacheSupplier(summary, organizationId));
+		return summary;
 	}
 
 	@Override
-	@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
-	@CacheEvict(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)")
 	public OrganizationSummary disableOrganization(Identifier organizationId) {
-		return delegate.disableOrganization(organizationId);
+		OrganizationSummary summary = delegate.disableOrganization(organizationId);
+		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(organizationId));
+		cacheTemplate.put(summaryCacheSupplier(summary, organizationId));
+		return summary;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)"),
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
-	})
 	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
-		return delegate.updateOrganizationDisplayName(organizationId, name);
+		OrganizationDetails details = delegate.updateOrganizationDisplayName(organizationId, name);
+		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
+		return details;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)"),
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
-	})
 	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
-		return delegate.updateOrganizationMainLocation(organizationId, locationId);
+		OrganizationDetails details = delegate.updateOrganizationMainLocation(organizationId, locationId);
+		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
+		return details;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)"),
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
-	})
 	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
-		return delegate.updateOrganizationMainContact(organizationId, personId);
+		OrganizationDetails details = delegate.updateOrganizationMainContact(organizationId, personId);
+		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
+		return details;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)"),
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
-	})
 	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		return delegate.updateOrganizationGroups(organizationId, groups);
+		OrganizationDetails details = delegate.updateOrganizationGroups(organizationId, groups);
+		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
+		return details;
 	}
 
 	@Override
-	@Cacheable(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
 	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
-		return delegate.findOrganizationSummary(organizationId);
+		return cacheTemplate.get(
+				() -> delegate.findOrganizationSummary(organizationId),
+				organizationId,
+				CrmCacheKeyGenerator::generateSummaryKey,
+				this::summaryCacheSupplier);
 	}
 
 	@Override
-	@Cacheable(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)")
 	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
-		return delegate.findOrganizationDetails(organizationId);
+		return cacheTemplate.get(
+				() -> delegate.findOrganizationDetails(organizationId),
+				organizationId,
+				CrmCacheKeyGenerator::generateDetailsKey,
+				this::detailsCacheSupplier);
 	}
-	
-	
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
 		return delegate.countOrganizations(filter);
 	}
+	
+	@Override
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
+		FilteredPage<OrganizationSummary> page = delegate.findOrganizationSummaries(filter, paging);
+		page.forEach((summary) -> {
+			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getOrganizationId()));
+		});
+		return page;
+	}
 
+	@Override
+	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
+		FilteredPage<OrganizationSummary> page = delegate.findOrganizationSummaries(filter);
+		page.forEach((summary) -> {
+			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getOrganizationId()));
+		});
+		return page;
+	}
+	
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		FilteredPage<OrganizationDetails> page = delegate.findOrganizationDetails(filter, paging);
-		Cache organizationsCache = cacheManager.getCache(CachingConfig.Caches.Organizations);
 		page.forEach((details) -> {
-			organizationsCache.putIfAbsent("Details_" + details.getOrganizationId(), details);
-			organizationsCache.putIfAbsent("Summary_" + details.getOrganizationId(), details);
+			cacheTemplate.putIfAbsent(detailsCacheSupplier(details, details.getOrganizationId()));
 		});
 		return page;
 	}
@@ -162,33 +163,9 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
 		FilteredPage<OrganizationDetails> page = delegate.findOrganizationDetails(filter);
-		Cache organizationsCache = cacheManager.getCache(CachingConfig.Caches.Organizations);
 		page.forEach((details) -> {
-			organizationsCache.putIfAbsent("Details_" + details.getOrganizationId(), details);
-			organizationsCache.putIfAbsent("Summary_" + details.getOrganizationId(), details);
+			cacheTemplate.putIfAbsent(detailsCacheSupplier(details, details.getOrganizationId()));
 		});
 		return page;
 	}
-
-	@Override
-	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		FilteredPage<OrganizationSummary> page = delegate.findOrganizationSummaries(filter, paging);
-		Cache organizationsCache = cacheManager.getCache(CachingConfig.Caches.Organizations);
-		page.forEach((summary) -> {
-			organizationsCache.putIfAbsent("Summary_" + summary.getOrganizationId(), summary);
-		});
-		return page;
-	}
-
-	@Override
-	public FilteredPage<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
-		FilteredPage<OrganizationSummary> page = delegate.findOrganizationSummaries(filter);
-		Cache organizationsCache = cacheManager.getCache(CachingConfig.Caches.Organizations);
-		page.forEach((summary) -> {
-			organizationsCache.putIfAbsent("Summary_" + summary.getOrganizationId(), summary);
-		});
-		return page;
-	}
-	
-	
 }

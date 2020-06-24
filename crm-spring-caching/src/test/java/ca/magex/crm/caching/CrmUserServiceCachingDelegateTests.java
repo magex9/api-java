@@ -11,14 +11,11 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
@@ -28,18 +25,20 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.caching.config.CachingConfig;
 import ca.magex.crm.caching.config.CachingTestConfig;
-import ca.magex.crm.test.config.MockConfig;
-import ca.magex.crm.test.config.TestConfig;
+import ca.magex.crm.caching.util.CacheTemplate;
+import ca.magex.crm.test.config.MockTestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
-@ActiveProfiles(profiles = { CrmProfiles.CRM_NO_AUTH })
+@ContextConfiguration(classes = { CachingTestConfig.class, MockTestConfig.class })
 public class CrmUserServiceCachingDelegateTests {
 
-	@Autowired @Qualifier("PrincipalUserService") private CrmUserService delegate;
+	@Autowired private CrmUserService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("CrmUserServiceCachingDelegate") private CrmUserService userService;
+	
+	private CacheTemplate cacheTemplate;
+	private CrmUserServiceCachingDelegate userService;
 
 	@Before
 	public void reset() {
@@ -48,6 +47,8 @@ public class CrmUserServiceCachingDelegateTests {
 		cacheManager.getCacheNames().forEach((cacheName) -> {
 			cacheManager.getCache(cacheName).clear();
 		});
+		cacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Users);
+		userService = new CrmUserServiceCachingDelegate(delegate, cacheTemplate);
 	}
 
 	@Test

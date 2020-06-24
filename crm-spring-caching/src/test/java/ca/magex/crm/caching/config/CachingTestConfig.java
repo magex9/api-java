@@ -1,5 +1,7 @@
 package ca.magex.crm.caching.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,4 +11,6 @@ import org.springframework.context.annotation.Configuration;
 		})
 public class CachingTestConfig {
 
+	@Autowired CacheManager cacheManager;
+	
 }

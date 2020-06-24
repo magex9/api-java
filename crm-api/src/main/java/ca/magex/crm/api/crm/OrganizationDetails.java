@@ -63,7 +63,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	}
 	
 	public OrganizationSummary asSummary() {
-		return new OrganizationSummary(mainContactId, status, displayName);
+		return new OrganizationSummary(organizationId, status, displayName);
 	}
 
 	@Override
