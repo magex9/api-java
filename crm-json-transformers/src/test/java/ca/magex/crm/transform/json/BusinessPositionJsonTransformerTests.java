@@ -16,7 +16,6 @@ import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -91,7 +90,6 @@ public class BusinessPositionJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(position, Lang.ENGLISH);
-		JsonAsserts.print(english, "english");
 		assertEquals(List.of("@type", "sector", "unit", "classification"), english.keys());
 		assertEquals("BusinessPosition", english.getString("@type"));
 		assertEquals("IM/IT", english.getString("sector"));

@@ -182,20 +182,20 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		return json.contains(key) ? json.getBoolean(key) : null;
 	}
 	
-	public Option parseOption(String key, JsonObject json, String lookupCode, Locale locale) {
+	public String parseOption(String key, JsonObject json, String lookupCode, Locale locale) {
 		Identifier lookupId = crm.findLookupByCode(lookupCode).getLookupId();
 		if (!json.contains(key)) {
 			return null;
 		} else if (json.contains(key, JsonObject.class)) {
-			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value"));
+			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value")).getCode();
 		} else if (json.contains(key, JsonText.class)) {
-			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key));
+			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key)).getCode();
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}
 	}
 	
-	public Option parseOption(String key, JsonObject json, String lookupCode, String parentCode, String parentKey, Locale locale) {
+	public String parseOption(String key, JsonObject json, String lookupCode, String parentCode, String parentKey, Locale locale) {
 		Identifier parentId = crm.findLookupByCode(parentCode).getLookupId();
 		Option parent = null;
 		if (!json.contains(parentKey)) {
@@ -212,9 +212,9 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		if (!json.contains(key)) {
 			return null;
 		} else if (json.contains(key, JsonObject.class)) {
-			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value"));
+			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value")).getCode();
 		} else if (json.contains(key, JsonText.class)) {
-			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key));
+			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key)).getCode();
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}

@@ -1,5 +1,6 @@
 package ca.magex.crm.restful.controllers;
 
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,11 +20,23 @@ import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.json.model.JsonObject;
 
-public class InitializationControllerTest extends AbstractControllerTests {
+public class ConfigurationControllerTest extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
 		crm.reset();
+	}
+	
+	@Test
+	public void testSwaggerUI() throws Exception {
+		String html = mockMvc.perform(MockMvcRequestBuilders
+			.get("/rest")
+			.header("Locale", Lang.ENGLISH))
+			.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString();
+		
+		assertTrue(html.contains("/crm/rest/api.json"));
 	}
 	
 	@Test
@@ -84,7 +97,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 		assertEquals(List.of("APP", "CRM", "ORG", "SYS"), crm.findGroups(crm.defaultGroupsFilter(), GroupsFilter.getDefaultPaging()).stream().map(g -> g.getCode()).collect(Collectors.toList()));
 		assertEquals(List.of("APP_AUTH_REQUEST", "CRM_ADMIN", "CRM_USER", "ORG_ADMIN", "ORG_USER", "SYS_ACCESS", "SYS_ACTUATOR", "SYS_ADMIN"), crm.findRoles(crm.defaultRolesFilter(), RolesFilter.getDefaultPaging()).stream().map(r -> r.getCode()).collect(Collectors.toList()));
 		assertEquals(List.of("System Orgainzation"), crm.findOrganizationSummaries(crm.defaultOrganizationsFilter()).stream().map(o -> o.getDisplayName()).collect(Collectors.toList()));
-		assertEquals(List.of(), crm.findLocationSummaries(crm.defaultLocationsFilter()).stream().map(l -> l.getDisplayName()).collect(Collectors.toList()));
+		assertEquals(List.of("System Administrator"), crm.findLocationSummaries(crm.defaultLocationsFilter()).stream().map(l -> l.getDisplayName()).collect(Collectors.toList()));
 		assertEquals(List.of("Last, First"), crm.findPersonSummaries(crm.defaultPersonsFilter()).stream().map(p -> p.getDisplayName()).collect(Collectors.toList()));
 		assertEquals(List.of("system"), crm.findUsers(crm.defaultUsersFilter()).stream().map(u -> u.getUsername()).collect(Collectors.toList()));
 
@@ -106,7 +119,7 @@ public class InitializationControllerTest extends AbstractControllerTests {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		crm.dump(baos);
 		String[] lines = baos.toString().split("\n");
-		assertEquals(15, lines.length);
+		assertEquals(151, lines.length);
 	}
 	
 }

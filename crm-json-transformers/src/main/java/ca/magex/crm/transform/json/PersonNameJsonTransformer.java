@@ -42,7 +42,7 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 
 	@Override
 	public PersonName parseJsonObject(JsonObject json, Locale locale) {
-		String salutation = parseOption("salutation", json, Crm.SALUTATION, locale).getCode();
+		String salutation = parseOption("salutation", json, Crm.SALUTATION, locale);
 		String firstName = parseText("firstName", json);
 		String middleName = parseText("middleName", json);
 		String lastName = parseText("lastName", json);

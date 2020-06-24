@@ -23,11 +23,17 @@ import ca.magex.json.model.JsonObject;
 
 public class LocationsControllerTests extends AbstractControllerTests {
 
+	private Identifier systemOrgId;
+	
+	private Identifier systemLocationId;
+	
 	private Identifier organizationId;
 	
 	@Before
 	public void setup() {
 		initialize();
+		systemOrgId = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withGroup("SYS")).getSingleItem().getOrganizationId();
+		systemLocationId = crm.findLocationDetails(crm.defaultLocationsFilter()).getSingleItem().getLocationId();
 		organizationId = crm.createOrganization("Test Org", List.of("ORG")).getOrganizationId();
 	}
 	
@@ -40,12 +46,23 @@ public class LocationsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(1, json.getInt("page"));
-		assertEquals(0, json.getInt("total"));
+		
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
+		assertEquals(1, json.getNumber("page"));
+		assertEquals(10, json.getNumber("limit"));
+		assertEquals(1, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(0, json.getArray("content").size());
+		assertEquals(1, json.getArray("content").size());
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
+		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(systemLocationId.toString(), json.getArray("content").getObject(0).getString("locationId"));
+		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("SYSTEM", json.getArray("content").getObject(0).getString("reference").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("System Administrator", json.getArray("content").getObject(0).getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/locations")
@@ -152,17 +169,25 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
-		assertEquals(1, json.getNumber("total"));
+		assertEquals(2, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(1, json.getArray("content").size());
+		assertEquals(2, json.getArray("content").size());
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
-		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type"));
+		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals(locationId.toString(), json.getArray("content").getObject(0).getString("locationId"));
 		assertEquals(organizationId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("LOC", json.getArray("content").getObject(0).getString("reference"));
-		assertEquals("Organization", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("LOC", json.getArray("content").getObject(0).getString("reference").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Organization", json.getArray("content").getObject(0).getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(1).keys());
+		assertEquals("LocationSummary", json.getArray("content").getObject(1).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(systemLocationId.toString(), json.getArray("content").getObject(1).getString("locationId"));
+		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals("Active", json.getArray("content").getObject(1).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("SYSTEM", json.getArray("content").getObject(1).getString("reference").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("System Administrator", json.getArray("content").getObject(1).getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+
 	}
 	
 	@Test

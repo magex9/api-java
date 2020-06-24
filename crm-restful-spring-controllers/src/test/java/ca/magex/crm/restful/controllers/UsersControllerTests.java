@@ -61,13 +61,13 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
 		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
 		assertEquals(systemUserId.toString(), json.getArray("content").getObject(0).getString("userId"));
-		assertEquals("system", json.getArray("content").getObject(0).getString("username"));
+		assertEquals("admin", json.getArray("content").getObject(0).getString("username"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
 		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
 		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
+		assertEquals("Admin, System", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
 		assertEquals(4, json.getArray("content").getObject(0).getArray("roles").size());
 		assertEquals("SYS_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
@@ -80,7 +80,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
 				.with("personId", testPersonId.toString())
-				.with("username", "bob")
+				.with("username", "chloe")
 				.with("roles", List.of("ORG_ADMIN", "CRM_ADMIN"))
 				.toString()))
 			//.andDo(MockMvcResultHandlers.print())
@@ -89,7 +89,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
 		assertEquals("User", json.getString("@type"));
-		assertEquals("bob", json.getString("username"));
+		assertEquals("chloe", json.getString("username"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
 		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
 		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
@@ -113,7 +113,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
 		assertEquals("User", json.getString("@type"));
 		assertEquals(userId.toString(), json.getString("userId"));
-		assertEquals("bob", json.getString("username"));
+		assertEquals("chloe", json.getString("username"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
 		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
 		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
@@ -135,7 +135,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
 		assertEquals("User", json.getString("@type"));
 		assertEquals(userId.toString(), json.getString("userId"));
-		assertEquals("bob", json.getString("username"));
+		assertEquals("chloe", json.getString("username"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
 		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
 		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
@@ -156,7 +156,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
 		assertEquals("User", json.getString("@type"));
 		assertEquals(userId.toString(), json.getString("userId"));
-		assertEquals("bob", json.getString("username"));
+		assertEquals("chloe", json.getString("username"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
 		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
 		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
@@ -183,35 +183,36 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(2, json.getArray("content").size());
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(userId.toString(), json.getArray("content").getObject(0).getString("userId"));
-		assertEquals("bob", json.getArray("content").getObject(0).getString("username"));
+		assertEquals("User", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(systemUserId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals("admin", json.getArray("content").getObject(0).getString("username").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(1));
+		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
+		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
+		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Admin, System", json.getArray("content").getObject(0).getObject("person").getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(4, json.getArray("content").getObject(0).getArray("roles").size());
+		assertEquals("SYS_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(0).getArray("roles").getString(1).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("SYS_ACCESS", json.getArray("content").getObject(0).getArray("roles").getString(2).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(3).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemUserId.toString(), json.getArray("content").getObject(1).getString("userId"));
-		assertEquals("system", json.getArray("content").getObject(1).getString("username"));
+		assertEquals("User", json.getArray("content").getObject(1).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(userId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals("chloe", json.getArray("content").getObject(1).getString("username").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
-		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(4, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(1).getArray("roles").getString(1));
-		assertEquals("SYS_ACCESS", json.getArray("content").getObject(1).getArray("roles").getString(2));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(3));
+		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(testPersonId.toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
+		assertEquals(testOrgId.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
+		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("LaRue, Chloé", json.getArray("content").getObject(1).getObject("person").getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Active", json.getArray("content").getObject(1).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(2, json.getArray("content").getObject(1).getArray("roles").size());
+		assertEquals("ORG_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("CRM_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(1).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+
 	}
 	
 	@Test
@@ -346,9 +347,9 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("8881234567", data.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), data.getObject("position").keys());
 		assertEquals("BusinessPosition", data.getObject("position").getString("@type"));
-		assertEquals("1", data.getObject("position").getString("sector"));
-		assertEquals("1", data.getObject("position").getString("unit"));
-		assertEquals("1", data.getObject("position").getString("classification"));
+		assertEquals("execs", data.getObject("position").getString("sector").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("ceo", data.getObject("position").getString("unit").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("director", data.getObject("position").getString("classification").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		
 		assertEquals(data, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/rest/user/chloe/person")
@@ -393,9 +394,9 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("8881234567", english.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), english.getObject("position").keys());
 		assertEquals("BusinessPosition", english.getObject("position").getString("@type"));
-		assertEquals("External", english.getObject("position").getString("sector"));
-		assertEquals("Solutions", english.getObject("position").getString("unit"));
-		assertEquals("Developer", english.getObject("position").getString("classification"));
+		assertEquals("Executives", english.getObject("position").getString("sector").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Chief Executive Officer", english.getObject("position").getString("unit").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Director", english.getObject("position").getString("classification").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		
 		assertEquals(english, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/rest/user/chloe/person")
@@ -440,9 +441,9 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("8881234567", french.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), french.getObject("position").keys());
 		assertEquals("BusinessPosition", french.getObject("position").getString("@type"));
-		assertEquals("External", french.getObject("position").getString("sector"));
-		assertEquals("Solutions", french.getObject("position").getString("unit"));
-		assertEquals("Développeur", french.getObject("position").getString("classification"));
+		assertEquals("Cadres", french.getObject("position").getString("sector").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Directeur Général", french.getObject("position").getString("unit").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Réalisateur", french.getObject("position").getString("classification").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		
 		assertEquals(french, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/rest/user/chloe/person")
