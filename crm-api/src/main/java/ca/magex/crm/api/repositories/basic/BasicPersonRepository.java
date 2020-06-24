@@ -10,7 +10,6 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmPersonRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
@@ -19,12 +18,9 @@ import ca.magex.crm.api.system.Identifier;
 public class BasicPersonRepository implements CrmPersonRepository {
 
 	private CrmStore store;
-	
-	private CrmUpdateNotifier notifier;
 
-	public BasicPersonRepository(CrmStore store, CrmUpdateNotifier notifier) {
+	public BasicPersonRepository(CrmStore store) {
 		this.store = store;
-		this.notifier = notifier;
 	}
 	
 	@Override
@@ -69,7 +65,7 @@ public class BasicPersonRepository implements CrmPersonRepository {
 
 	@Override
 	public PersonDetails savePersonDetails(PersonDetails person) {
-		notifier.personUpdated(System.nanoTime(), person.getPersonId());
+		store.getNotifier().personUpdated(System.nanoTime(), person.getPersonId());
 		store.getPersons().put(person.getPersonId(), person);
 		return person;
 	}

@@ -11,6 +11,7 @@ import static ca.magex.crm.api.services.CrmUserService.validateUser;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Locale;
 
 import ca.magex.crm.api.adapters.CrmPoliciesAdapter;
 import ca.magex.crm.api.common.BusinessPosition;
@@ -683,12 +684,32 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			throw new PermissionDeniedException("findOption: " + optionId);
 		return optionService.findOption(optionId);
 	}
+	
+	@Override
+	public Option findOption(String lookupCode, String optionCode) {
+		Option option = findOptionByCode(lookupCode, optionCode);
+		if (!canViewOption(option.getOptionId()))
+			throw new PermissionDeniedException("findOption: " + lookupCode + ", " + optionCode);
+		return option;
+	}
 
 	@Override
 	public Option findOptionByCode(Identifier lookupId, String optionCode) {
 		if (!canViewOption(lookupId, optionCode))
 			throw new PermissionDeniedException("findOptionByCode: " + lookupId + ", " + optionCode);
 		return optionService.findOptionByCode(lookupId, optionCode);
+	}
+	
+	public Option findOptionByCode(String lookupCode, String optionCode) {
+		return optionService.findOptionByCode(lookupService.findLookupByCode(lookupCode).getLookupId(), optionCode);
+	}
+	
+	public Option findOptionByLocalizedName(String lookupCode, Locale locale, String name) {
+		return optionService.findOptionByLocalizedName(lookupService.findLookupByCode(lookupCode).getLookupId(), locale, name);
+	}
+
+	public Option findOptionByLocalizedName(String lookupCode, String parentCode, Locale locale, String name) {
+		return optionService.findOptionByLocalizedName(lookupService.findLookupByCode(lookupCode, parentCode).getLookupId(), locale, name);
 	}
 
 	@Override

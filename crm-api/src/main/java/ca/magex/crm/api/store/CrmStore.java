@@ -9,6 +9,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
@@ -23,6 +24,8 @@ public interface CrmStore {
 	public static Identifier generateId(Class<?> type) {
 		return new Identifier(RandomStringUtils.random(10, BASE_58));
 	}
+	
+	public CrmUpdateNotifier getNotifier();
 	
 	public Map<Identifier, Serializable> getConfigurations();
 	
@@ -43,6 +46,7 @@ public interface CrmStore {
 	public Map<Identifier, User> getUsers();
 	
 	default public void reset() {
+		getNotifier().clear();
 		getConfigurations().clear();
 		getLookups().clear();
 		getOptions().clear();

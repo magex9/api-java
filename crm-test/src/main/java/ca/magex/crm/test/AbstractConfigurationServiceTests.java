@@ -55,7 +55,7 @@ public abstract class AbstractConfigurationServiceTests {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		crm.dump(baos);
 		String[] lines = baos.toString().split("\n");
-		assertEquals(138, lines.length);
+		assertEquals(151, lines.length);
 		for (String line : lines) {
 			line = line.replaceAll("\\[SYS, CRM\\]", "[\"SYS\", \"CRM\"]").replaceAll("\\[SYS_ADMIN, CRM_ADMIN\\]", "[\"SYS_ADMIN\", \"CRM_ADMIN\"]");
 			Matcher m = Pattern.compile("([A-Za-z0-9]+) => (\\{.*\\})").matcher(line);

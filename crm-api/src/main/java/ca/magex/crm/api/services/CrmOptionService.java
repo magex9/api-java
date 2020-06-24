@@ -2,11 +2,13 @@ package ca.magex.crm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.LookupsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
@@ -31,13 +33,22 @@ public interface CrmOptionService {
 
 	Option findOption(Identifier optionId);
 
+	Option findOption(String lookupCode, String optionCode);
+
 	default Option findOptionByCode(Identifier lookupId, String optionCode) {
 		return findOptions(
 			defaultOptionsFilter().withLookupId(lookupId).withOptionCode(optionCode), 
 			OptionsFilter.getDefaultPaging()
 		).getSingleItem();
 	};
-
+	
+	default Option findOptionByLocalizedName(Identifier lookupId, Locale locale, String name) {
+		return (Option)findOptions(
+			defaultOptionsFilter().withLookupId(lookupId).withLocalizedName(locale, name),
+			LookupsFilter.getDefaultPaging()
+		).getSingleItem();
+	};
+	
 	Option updateOptionName(Identifier optionId, Localized name);
 
 	Option enableOption(Identifier optionId);

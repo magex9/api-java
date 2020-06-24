@@ -26,6 +26,10 @@ public class CrmUpdateNotifier implements CrmUpdateObserver {
 	public void unregister(CrmUpdateObserver observer) {
 		observers.remove(observer);
 	}
+	
+	public void clear() {
+		observers.clear();
+	}
 
 	@Override
 	public CrmUpdateObserver lookupUpdated(Long timestamp, Identifier lookupId) {

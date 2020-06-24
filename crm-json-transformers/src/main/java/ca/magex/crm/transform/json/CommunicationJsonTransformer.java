@@ -6,22 +6,24 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Option;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
 @Component
 public class CommunicationJsonTransformer extends AbstractJsonTransformer<Communication> {
 	
-	private LanguageJsonTransformer languageJsonTransformer;
+	private OptionJsonTransformer optionJsonTransformer;
 	
 	private TelephoneJsonTransformer telephoneJsonTransformer;
 
 	public CommunicationJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.languageJsonTransformer = new LanguageJsonTransformer(crm);
+		this.optionJsonTransformer = new OptionJsonTransformer(crm);
 		this.telephoneJsonTransformer = new TelephoneJsonTransformer(crm);
 	}
 
@@ -41,8 +43,8 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 		formatType(pairs);
 		formatText(pairs, "jobTitle", communication);
 		if (communication.getLanguage() != null) {
-			pairs.add(new JsonPair("language", languageJsonTransformer
-				.format(crm.findLanguageByCode(communication.getLanguage()), locale)));
+			Option option = crm.findOptionByCode(crm.findLookupByCode(Crm.LANGUAGE).getLookupId(), communication.getLanguage());
+			pairs.add(new JsonPair("language", optionJsonTransformer.format(option, locale)));
 		}
 		formatText(pairs, "email", communication);
 		if (communication.getHomePhone() != null) {
@@ -56,7 +58,7 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	@Override
 	public Communication parseJsonObject(JsonObject json, Locale locale) {
 		String jobTitle = parseText("jobTitle", json);
-		String language = parseObject("language", json, languageJsonTransformer, locale).getCode();
+		String language = parseOption("language", json, Crm.LANGUAGE, locale).getCode();
 		String email = parseText("email", json);
 		Telephone homePhone = parseObject("homePhone", json, telephoneJsonTransformer, locale);
 		String faxNumber = parseText("faxNumber", json);

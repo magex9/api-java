@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.services.CrmInitializationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { 
@@ -36,18 +36,18 @@ public class CrmRestfulJwtApplication {
 	public ApplicationRunner dataInitializer() {
 		return new ApplicationRunner() {			
 			
-			@Autowired CrmInitializationService initializationService;
+			@Autowired CrmConfigurationService configurations;
 			
 			@Override
 			public void run(ApplicationArguments args) throws Exception {
 				Logger LOG = LoggerFactory.getLogger(CrmRestfulJwtApplication.class);
 
-				if (initializationService.isInitialized()) {
+				if (configurations.isInitialized()) {
 					return;
 				}
 				
 				LOG.info("Initializing CRM System");
-				initializationService.initializeSystem("Magex", new PersonName(null, "Admin", "", "Admin"), "admin@magex.ca", "sysadmin", "sysadmin");
+				configurations.initializeSystem("Magex", new PersonName(null, "Admin", "", "Admin"), "admin@magex.ca", "sysadmin", "sysadmin");
 			}
 		};
 	}

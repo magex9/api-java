@@ -69,7 +69,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(3).getString("@type"));
 		assertEquals(org0.toString(), json.getArray("content").getObject(3).getString("organizationId"));
 		assertEquals("active", json.getArray("content").getObject(3).getString("status"));
-		assertEquals("System Administrator", json.getArray("content").getObject(3).getString("displayName"));
+		assertEquals("System", json.getArray("content").getObject(3).getString("displayName"));
 	}
 	
 	@Test
@@ -107,7 +107,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(3).getString("@type"));
 		assertEquals(org0.toString(), json.getArray("content").getObject(3).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(3).getString("status"));
-		assertEquals("System Administrator", json.getArray("content").getObject(3).getString("displayName"));
+		assertEquals("System", json.getArray("content").getObject(3).getString("displayName"));
 	}
 	
 	@Test
@@ -145,7 +145,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(3).getString("@type"));
 		assertEquals(org0.toString(), json.getArray("content").getObject(3).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(3).getString("status"));
-		assertEquals("System Administrator", json.getArray("content").getObject(3).getString("displayName"));
+		assertEquals("System", json.getArray("content").getObject(3).getString("displayName"));
 	}
 	
 	@Test
@@ -218,7 +218,7 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(0).getString("@type"));
 		assertEquals(org0.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("System Administrator", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("System", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("OrganizationSummary", json.getArray("content").getObject(1).getString("@type"));
 		assertEquals(org2.toString(), json.getArray("content").getObject(1).getString("organizationId"));

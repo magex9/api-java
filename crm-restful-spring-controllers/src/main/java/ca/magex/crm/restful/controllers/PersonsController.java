@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -43,7 +44,7 @@ public class PersonsController extends AbstractCrmController {
 	public PersonsFilter extractPersonFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
 		Identifier organizationId = req.getParameter("organization") == null ? null : new Identifier(req.getParameter("organization"));
 		String displayName = req.getParameter("displayName");
-		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
 		return new PersonsFilter(organizationId, displayName, status);
 	}
 	

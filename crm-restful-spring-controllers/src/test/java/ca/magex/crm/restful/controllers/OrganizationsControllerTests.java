@@ -18,13 +18,13 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.amnesia.generator.LoremIpsumGenerator;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.util.LoremIpsumGenerator;
 
 public class OrganizationsControllerTests extends AbstractControllerTests {
 	

@@ -1,6 +1,9 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -9,11 +12,12 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -23,16 +27,17 @@ public class PersonNameJsonTransformerTests {
 	
 	private Transformer<PersonName, JsonElement> transformer;
 	
-	private Salutation salutation;
+	private Option mr;
 	
 	private PersonName personName;
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonNameJsonTransformer(crm);
-		salutation = crm.findSalutationByLocalizedName(Lang.ENGLISH, "Mr.");
-		personName = PERSON_NAME.withSalutation(salutation.getCode());
+		mr = crm.findOptionByLocalizedName(Crm.SALUTATION, Lang.ENGLISH, "Mr.");
+		personName = PERSON_NAME.withSalutation(mr.getCode());
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package ca.magex.crm.api.services.basic;
 
+import ca.magex.crm.api.filters.LookupsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmRepositories;
@@ -26,6 +27,11 @@ public class BasicOptionService implements CrmOptionService {
 	@Override
 	public Option findOption(Identifier optionId) {
 		return repos.findOption(optionId);
+	}
+
+	@Override
+	public Option findOption(String lookupCode, String optionCode) {
+		return findOptionByCode(repos.findLookups(new LookupsFilter().withLookupCode(lookupCode), LookupsFilter.getDefaultPaging()).getSingleItem().getLookupId(), optionCode);
 	}
 
 	@Override
@@ -59,4 +65,5 @@ public class BasicOptionService implements CrmOptionService {
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
 		return repos.findOptions(filter, paging);
 	}
+	
 }

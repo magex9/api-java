@@ -1,6 +1,7 @@
 package ca.magex.crm.api.filters;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -107,6 +108,16 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public OptionsFilter withFrenchName(String frenchName) {
 		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
 	}
+	
+	public OptionsFilter withLocalizedName(Locale locale, String name) {
+		if (locale == null || Lang.ROOT.equals(locale)) {
+			return new OptionsFilter(lookupId, null, null, name, status);
+		} else if (Lang.isEnglish(locale)) {
+			return new OptionsFilter(lookupId, name, null, null, status);
+		} else {
+			return new OptionsFilter(lookupId, null, name, null, status);
+		}
+	}
 
 	public OptionsFilter withOptionCode(String optionCode) {
 		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
@@ -133,8 +144,8 @@ public class OptionsFilter implements CrmFilter<Option> {
 		return List.of(instance)
 			.stream()
 			.filter(o -> this.getLookupId() == null || this.getLookupId().equals(o.getLookupId()))
-			.filter(o -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(o.getName(Lang.ENGLISH), this.getEnglishName()))
-			.filter(o -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(o.getName(Lang.FRENCH), this.getFrenchName()))
+			.filter(o -> this.getEnglishName() == null || StringUtils.equalsIgnoreCase(o.getName(Lang.ENGLISH), this.getEnglishName()))
+			.filter(o -> this.getFrenchName() == null || StringUtils.equalsIgnoreCase(o.getName(Lang.FRENCH), this.getFrenchName()))
 			.filter(o -> this.getOptionCode() == null || StringUtils.equalsIgnoreCase(this.getOptionCode(), o.getCode()))
 			.filter(o -> this.getStatus() == null || this.getStatus().equals(o.getStatus()))
 			.findAny()

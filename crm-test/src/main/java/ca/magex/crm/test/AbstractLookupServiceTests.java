@@ -134,35 +134,35 @@ public abstract class AbstractLookupServiceTests {
 		Page<Lookup> page = crm.findLookups(new LookupsFilter(), new Paging(1, 100, Sort.by("name:" + Lang.ENGLISH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
-		Assert.assertEquals(11, page.getNumberOfElements());
+		Assert.assertEquals(15, page.getNumberOfElements());
 		Assert.assertEquals(100, page.getSize());
-		Assert.assertEquals(11, page.getContent().size());
+		Assert.assertEquals(15, page.getContent().size());
 		/* order should be 1, 3, 2 */
-		Assert.assertEquals(g1, page.getContent().get(6));
-		Assert.assertEquals(g2, page.getContent().get(10));
-		Assert.assertEquals(g3, page.getContent().get(9));
+		Assert.assertEquals(g1, page.getContent().get(10));
+		Assert.assertEquals(g2, page.getContent().get(14));
+		Assert.assertEquals(g3, page.getContent().get(13));
 
 		page = crm.findLookups(new LookupsFilter(), new Paging(1, 100, Sort.by("name:" + Lang.FRENCH)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
-		Assert.assertEquals(11, page.getNumberOfElements());
+		Assert.assertEquals(15, page.getNumberOfElements());
 		Assert.assertEquals(100, page.getSize());
-		Assert.assertEquals(11, page.getContent().size());
+		Assert.assertEquals(15, page.getContent().size());
 		/* order should be 2, 3, 1 */
-		Assert.assertEquals(g1, page.getContent().get(10));
-		Assert.assertEquals(g2, page.getContent().get(1));
-		Assert.assertEquals(g3, page.getContent().get(9));
+		Assert.assertEquals(g1, page.getContent().get(12));
+		Assert.assertEquals(g2, page.getContent().get(2));
+		Assert.assertEquals(g3, page.getContent().get(11));
 
 		page = crm.findLookups(new LookupsFilter(), new Paging(1, 100, Sort.by("name:" + Lang.ROOT)));
 		Assert.assertEquals(1, page.getNumber());
 		Assert.assertEquals(1, page.getTotalPages());
-		Assert.assertEquals(11, page.getNumberOfElements());
+		Assert.assertEquals(15, page.getNumberOfElements());
 		Assert.assertEquals(100, page.getSize());
-		Assert.assertEquals(11, page.getContent().size());
+		Assert.assertEquals(15, page.getContent().size());
 		/* order should be 2, 3 */
 		Assert.assertEquals(g1, page.getContent().get(0));
 		Assert.assertEquals(g2, page.getContent().get(1));
-		Assert.assertEquals(g3, page.getContent().get(2));
+		Assert.assertEquals(g3, page.getContent().get(6));
 	}
 
 	@Test

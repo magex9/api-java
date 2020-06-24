@@ -9,25 +9,25 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonPair;
 
 public class CommonJsonTransformerTests {
 
 	@Test
 	public void testFormatTextNull() throws Exception {
-		CrmServices crm = new AmnesiaCrm();
+		CrmServices crm = TestCrm.build();
 		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
 		transformer.formatText(null, null, null);
 	}
 	
 	@Test
 	public void testFormatTextKey() throws Exception {
-		CrmServices crm = new AmnesiaCrm();
+		CrmServices crm = TestCrm.build();
 		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
@@ -36,7 +36,7 @@ public class CommonJsonTransformerTests {
 	
 	@Test
 	public void testGetPropertyOptions() throws Exception {
-		CrmServices crm = new AmnesiaCrm();
+		CrmServices crm = TestCrm.build();
 		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
 		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
 		try {

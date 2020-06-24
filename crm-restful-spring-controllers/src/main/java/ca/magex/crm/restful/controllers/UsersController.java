@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -43,7 +44,7 @@ public class UsersController extends AbstractCrmController {
 		Identifier organizationId = req.getParameter("organization") == null ? null : new Identifier(req.getParameter("organization"));
 		Identifier personId = req.getParameter("person") == null ? null : new Identifier(req.getParameter("person"));
 		String username = req.getParameter("username");
-		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
 		String role = req.getParameter("role");
 		return new UsersFilter(organizationId, personId, status, username, role);
 	}

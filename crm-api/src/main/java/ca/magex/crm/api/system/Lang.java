@@ -16,9 +16,9 @@ public class Lang {
 	public static final List<Locale> SUPPORTED = Arrays.asList(ENGLISH, FRENCH);
 	
 	public static final Map<Locale, Localized> NAMES = Map.of(
-		ROOT, new Localized("root", "API", "IPA"),
-		ENGLISH, new Localized("en", "English", "Anglais"),
-		FRENCH, new Localized("fr", "French", "Francais")
+		ROOT, new Localized("ROOT", "API", "IPA"),
+		ENGLISH, new Localized("EN", "English", "Anglais"),
+		FRENCH, new Localized("FR", "French", "Francais")
 	);
 	
 	public static boolean isEnglish(Locale locale) {

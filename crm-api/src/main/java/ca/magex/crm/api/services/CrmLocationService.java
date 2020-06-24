@@ -178,7 +178,7 @@ public interface CrmLocationService {
 			messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country is mandatory")));
 		} else {
 			try {
-				crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY_LOOKUP).getLookupId(), address.getCountry()).getCode();
+				crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY).getLookupId(), address.getCountry()).getCode();
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country code is not in the lookup")));
 			}
@@ -186,7 +186,7 @@ public interface CrmLocationService {
 
 		// Postal Code
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
-			if (address.getCountry() != null && crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY_LOOKUP).getLookupId(), address.getCountry()).getCode().equals("CA")) {
+			if (address.getCountry() != null && crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY).getLookupId(), address.getCountry()).getCode().equals("CA")) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
 					messages.add(new Message(identifier, "error", path + ".provinceCode", new Localized(Lang.ENGLISH, "Canadian province format is invalid")));
 				}
