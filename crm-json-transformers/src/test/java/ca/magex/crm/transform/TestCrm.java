@@ -7,7 +7,8 @@ import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.dictionary.basic.BasicDictionary;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.observer.CrmUpdateObserver;
+import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.CrmRepositories;
@@ -21,8 +22,8 @@ public class TestCrm {
 
 	public static Crm build() {
 		CrmStore store = new BasicStore();
-		CrmUpdateNotifier notifier = new CrmUpdateNotifier();
-		CrmRepositories repos = new BasicRepositories(store, notifier);
+		CrmUpdateObserver observer = new BasicUpdateObserver();
+		CrmRepositories repos = new BasicRepositories(store, observer);
 		CrmPasswordService passwords = new BasicPasswordService();
 		CrmDictionary dictionary = new BasicDictionary().initialize();
 		CrmServices services = new BasicServices(repos, passwords, dictionary);

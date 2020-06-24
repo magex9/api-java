@@ -1,50 +1,65 @@
 package ca.magex.crm.restful;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.CrmPermissionService;
+import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
+import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.policies.CrmPolicies;
-import ca.magex.crm.api.policies.basic.BasicPolicies;
-import ca.magex.crm.api.services.CrmConfigurationService;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.dictionary.basic.BasicDictionary;
+import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
+import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
+import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.basic.BasicServices;
+import ca.magex.crm.api.store.basic.BasicStore;
 
 @Configuration
 public class RestfulCrmConfigurer implements CrmConfigurer {
 
-	/* autowired services */
-	@Autowired private CrmConfigurationService initializationService;	
-	@Autowired private CrmLookupService lookupService;	
-	@Autowired private CrmOrganizationService organizationService;
-	@Autowired private CrmLocationService locationService;
-	@Autowired private CrmPersonService personService;
-	@Autowired private CrmUserService userService;
-	@Autowired private CrmPermissionService permissionService;
-		
-	@Bean
-	@Override
-	public Crm crm() {		
-		return new Crm(
-				initializationService, 
-				lookupService, 
-				permissionService, 
-				organizationService, 
-				locationService, 
-				personService,
-				userService, 
-				crmPolicies());
+	@Bean 
+	public BasicStore store() {
+		return new BasicStore();
+	}
+	
+	@Bean 
+	public BasicUpdateObserver observer() {
+		return new BasicUpdateObserver();
 	}
 	
 	@Bean
-	@Override
-	public CrmPolicies crmPolicies() {
-		return new BasicPolicies(lookupService, permissionService, organizationService, locationService, personService, userService);
+	public BasicRepositories repos() {
+		return new BasicRepositories(store(), observer());
 	}
+	
+	@Bean
+	public BasicDictionary dictionary() {
+		return new BasicDictionary().initialize();
+	}
+	
+	@Bean 
+	public BasicServices services() {
+		return new BasicServices(repos(), passwords(), dictionary());
+	}
+	
+	@Bean
+	public AuthenticatedPolicies policies() {
+		return new AuthenticatedPolicies(auth(), services());
+	}
+	
+	@Bean 
+	public BasicAuthenticationService auth() {
+		return new BasicAuthenticationService(services(), passwords());
+	}
+	
+	@Bean
+	public BasicPasswordService passwords() {
+		return new BasicPasswordService();
+	}
+	
+	@Bean
+	public Crm crm() {
+		return new Crm(services(), policies());
+	}
+	
 }

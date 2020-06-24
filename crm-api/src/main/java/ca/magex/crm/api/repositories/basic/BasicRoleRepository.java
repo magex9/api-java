@@ -8,7 +8,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.RolesFilter;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmRoleRepository;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.store.CrmStore;
@@ -18,12 +17,9 @@ import ca.magex.crm.api.system.Identifier;
 public class BasicRoleRepository implements CrmRoleRepository {
 
 	private CrmStore store;
-	
-	private CrmUpdateNotifier notifier;
 
-	public BasicRoleRepository(CrmStore store, CrmUpdateNotifier notifier) {
+	public BasicRoleRepository(CrmStore store) {
 		this.store = store;
-		this.notifier = notifier;
 	}
 	
 	@Override
@@ -55,7 +51,7 @@ public class BasicRoleRepository implements CrmRoleRepository {
 
 	@Override
 	public Role saveRole(Role role) {
-		notifier.roleUpdated(System.nanoTime(), role.getRoleId());
+		store.getNotifier().roleUpdated(System.nanoTime(), role.getRoleId());
 		store.getRoles().put(role.getRoleId(), role);
 		return role;
 	}

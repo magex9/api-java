@@ -68,7 +68,7 @@ public class PersonsControllerTests extends AbstractControllerTests {
 		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/persons")
@@ -270,7 +270,7 @@ public class PersonsControllerTests extends AbstractControllerTests {
 		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(1).getString("displayName"));
+		assertEquals("Admin, System", json.getArray("content").getObject(1).getString("displayName"));
 	}
 	
 	@Test

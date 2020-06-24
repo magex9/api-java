@@ -129,19 +129,19 @@ public class CrmAsserts {
 	
 	public static final Communication WORK_COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
 	
-	public static final String BUSINESS_SECTOR = "1";
+	public static final String BUSINESS_SECTOR = "execs";
 	
-	public static final String BUSINESS_UNIT = "1";
+	public static final String BUSINESS_UNIT = "ceo";
 	
-	public static final String BUSINESS_CLASSIFICATION = "1";
+	public static final String BUSINESS_CLASSIFICATION = "director";
 	
 	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition(BUSINESS_SECTOR, BUSINESS_UNIT, BUSINESS_CLASSIFICATION);
 	
-	public static final String DEVELOPER_SECTOR = "2";
+	public static final String DEVELOPER_SECTOR = "imit";
 	
-	public static final String DEVELOPER_UNIT = "2";
+	public static final String DEVELOPER_UNIT = "ops";
 	
-	public static final String DEVELOPER_CLASSIFICATION = "2";
+	public static final String DEVELOPER_CLASSIFICATION = "sysadmin";
 	
 	public static final BusinessPosition DEVELOPER_POSITION = new BusinessPosition(DEVELOPER_SECTOR, DEVELOPER_UNIT, DEVELOPER_CLASSIFICATION);
 	

@@ -7,6 +7,7 @@ import java.util.Map;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.roles.Group;
 import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
@@ -16,6 +17,8 @@ import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
 
 public class BasicStore implements CrmStore {
+	
+	private CrmUpdateNotifier notifier; 
 	
 	private Map<Identifier, Serializable> configurations;
 	
@@ -36,6 +39,7 @@ public class BasicStore implements CrmStore {
 	private Map<Identifier, User> users;
 	
 	public BasicStore() {
+		notifier = new CrmUpdateNotifier();
 		configurations = new HashMap<Identifier, Serializable>();
 		lookups = new HashMap<Identifier, Lookup>();
 		options = new HashMap<Identifier, Option>();
@@ -45,6 +49,11 @@ public class BasicStore implements CrmStore {
 		locations = new HashMap<Identifier, LocationDetails>();
 		persons = new HashMap<Identifier, PersonDetails>();
 		users = new HashMap<Identifier, User>();
+	}
+	
+	@Override
+	public CrmUpdateNotifier getNotifier() {
+		return notifier;
 	}
 	
 	@Override

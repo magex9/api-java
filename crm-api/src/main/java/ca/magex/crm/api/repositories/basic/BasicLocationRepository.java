@@ -10,7 +10,6 @@ import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
@@ -19,12 +18,9 @@ import ca.magex.crm.api.system.Identifier;
 public class BasicLocationRepository implements CrmLocationRepository {
 
 	private CrmStore store;
-	
-	private CrmUpdateNotifier notifier;
 
-	public BasicLocationRepository(CrmStore store, CrmUpdateNotifier notifier) {
+	public BasicLocationRepository(CrmStore store) {
 		this.store = store;
-		this.notifier = notifier;
 	}
 	
 	@Override
@@ -69,7 +65,7 @@ public class BasicLocationRepository implements CrmLocationRepository {
 
 	@Override
 	public LocationDetails saveLocationDetails(LocationDetails location) {
-		notifier.locationUpdated(System.nanoTime(), location.getLocationId());
+		store.getNotifier().locationUpdated(System.nanoTime(), location.getLocationId());
 		store.getLocations().put(location.getLocationId(), location);
 		return location;
 	}

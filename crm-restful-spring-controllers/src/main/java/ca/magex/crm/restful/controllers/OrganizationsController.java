@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -40,7 +41,7 @@ public class OrganizationsController extends AbstractCrmController {
 	}
 	
 	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
-		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
 		String displayName = req.getParameter("displayName");
 		String group = req.getParameter("group");
 		return new OrganizationsFilter(displayName, status, group);

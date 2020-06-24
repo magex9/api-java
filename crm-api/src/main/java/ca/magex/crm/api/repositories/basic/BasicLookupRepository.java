@@ -8,7 +8,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import ca.magex.crm.api.filters.LookupsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLookupRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
@@ -19,11 +18,8 @@ public class BasicLookupRepository implements CrmLookupRepository {
 
 	private CrmStore store;
 	
-	private CrmUpdateNotifier notifier;
-	
-	public BasicLookupRepository(CrmStore store, CrmUpdateNotifier notifier) {
+	public BasicLookupRepository(CrmStore store) {
 		this.store = store;
-		this.notifier = notifier;
 	}
 	
 	@Override
@@ -55,7 +51,7 @@ public class BasicLookupRepository implements CrmLookupRepository {
 
 	@Override
 	public Lookup saveLookup(Lookup lookup) {
-		notifier.lookupUpdated(System.nanoTime(), lookup.getLookupId());
+		store.getNotifier().lookupUpdated(System.nanoTime(), lookup.getLookupId());
 		store.getLookups().put(lookup.getLookupId(), lookup);
 		return lookup;
 	}
