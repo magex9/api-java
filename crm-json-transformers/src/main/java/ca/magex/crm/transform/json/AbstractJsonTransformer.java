@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Locale;
 
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonBoolean;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
@@ -103,6 +107,52 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			parent.add(new JsonPair(key, new JsonText(text)));
 	}
 	
+	public void formatOption(List<JsonPair> parent, String key, Object obj, String lookupCode, Locale locale) {
+		if (obj == null)
+			return;
+		String code = getProperty(obj, key, String.class);
+		if (code != null) {
+			Option option = crm.findOptionByCode(crm.findLookupByCode(lookupCode).getLookupId(), code);
+			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+		}
+	}
+	
+	public void formatOption(List<JsonPair> parent, String key, Object obj, String lookupCode, String parentCode, Locale locale) {
+		if (obj == null)
+			return;
+		String code = getProperty(obj, key, String.class);
+		if (code != null) {
+			Option option = crm.findOptionByCode(crm.findLookupByCode(lookupCode, parentCode).getLookupId(), code);
+			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+		}
+	}
+	
+	public void formatIdentifier(List<JsonPair> parent, String key, Object obj, Locale locale) {
+		if (obj == null)
+			return;
+		Identifier code = getProperty(obj, key, Identifier.class);
+		if (code != null) {
+			parent.add(new JsonPair(key, new IdentifierJsonTransformer(crm).format(new Identifier(code), locale)));
+		}
+	}
+	
+	public void formatLocalized(List<JsonPair> parent, String key, Object obj, Locale locale) {
+		if (obj == null)
+			return;
+		Localized name = getProperty(obj, key, Localized.class);
+		if (name != null) {
+			parent.add(new JsonPair(key, new LocalizedJsonTransformer(crm).format(name, locale)));
+		}
+	}
+	
+	public void formatBoolean(List<JsonPair> parent, String key, Object obj) {
+		if (obj == null)
+			return;
+		Boolean bool = getProperty(obj, key, Boolean.class);
+		if (bool != null)
+			parent.add(new JsonPair(key, new JsonBoolean(bool)));
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void formatTexts(List<JsonPair> parent, String key, Object obj, Class<?> type) {
 		if (obj != null) {
@@ -128,6 +178,48 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		return json.contains(key) ? json.getString(key) : null;
 	}
 	
+	public Boolean parseBoolean(String key, JsonObject json) {
+		return json.contains(key) ? json.getBoolean(key) : null;
+	}
+	
+	public Option parseOption(String key, JsonObject json, String lookupCode, Locale locale) {
+		Identifier lookupId = crm.findLookupByCode(lookupCode).getLookupId();
+		if (!json.contains(key)) {
+			return null;
+		} else if (json.contains(key, JsonObject.class)) {
+			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value"));
+		} else if (json.contains(key, JsonText.class)) {
+			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key));
+		} else {
+			throw new IllegalArgumentException("Unexpected type of option: " + key);
+		}
+	}
+	
+	public Option parseOption(String key, JsonObject json, String lookupCode, String parentCode, String parentKey, Locale locale) {
+		Identifier parentId = crm.findLookupByCode(parentCode).getLookupId();
+		Option parent = null;
+		if (!json.contains(parentKey)) {
+			throw null;
+		} else if (json.contains(parentKey, JsonObject.class)) {
+			parent = crm.findOptionByCode(parentId, json.getObject(parentKey).getString("@value"));
+		} else if (json.contains(parentKey, JsonText.class)) {
+			parent = crm.findOptionByLocalizedName(parentId, locale, json.getString(parentKey));
+		} else {
+			throw new IllegalArgumentException("Unexpected type of option: " + parentKey);
+		}
+		
+		Identifier lookupId = crm.findLookupByCode(lookupCode, parent.getCode()).getLookupId();
+		if (!json.contains(key)) {
+			return null;
+		} else if (json.contains(key, JsonObject.class)) {
+			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value"));
+		} else if (json.contains(key, JsonText.class)) {
+			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key));
+		} else {
+			throw new IllegalArgumentException("Unexpected type of option: " + key);
+		}
+	}
+
 	public List<String> parseTexts(String key, JsonObject json) {
 		List<String> list = new ArrayList<String>();
 		for (JsonElement child : json.getArray(key).values()) {

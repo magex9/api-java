@@ -370,7 +370,7 @@ public class CrmAsserts {
 		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
 	}
 	
-	public void printLookupAsserts(JsonObject json) {
+	public static void printLookupAsserts(JsonObject json) {
 		System.out.println("====================================================");
 		System.out.println("\t\t//printLookupAsserts(json);");
 		System.out.println("\t\tassertEquals(" + json.getArray("content").size() + ", json.getInt(\"total\"));");

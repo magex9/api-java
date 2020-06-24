@@ -1,6 +1,7 @@
 package ca.magex.crm.api.filters;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +103,16 @@ public class LookupsFilter implements CrmFilter<Lookup> {
 	
 	public LookupsFilter withFrenchName(String frenchName) {
 		return new LookupsFilter(englishName, frenchName, lookupCode, parentCode, status);
+	}
+	
+	public LookupsFilter withLocalizedName(Locale locale, String name) {
+		if (locale == null || Lang.ROOT.equals(locale)) {
+			return new LookupsFilter(null, null, name, parentCode, status);
+		} else if (Lang.isEnglish(locale)) {
+			return new LookupsFilter(name, null, null, parentCode, status);
+		} else {
+			return new LookupsFilter(null, name, null, parentCode, status);
+		}
 	}
 	
 	public LookupsFilter withLookupCode(String lookupCode) {

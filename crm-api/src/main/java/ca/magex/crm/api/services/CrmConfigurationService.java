@@ -47,6 +47,7 @@ public interface CrmConfigurationService {
 		createCanadianProvinces(repos);
 		createAmericanStates(repos);
 		createMexicanProvinces(repos);
+		createBusinessPositions(repos);
 	}
 	
 	/**
@@ -109,7 +110,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createStatusLookup(CrmRepositories repos) {
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.STATUSES_LOOKUP, "Statuses", "Statuts"), null)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.STATUSES, "Statuses", "Statuts"), null)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Status.ACTIVE.getName()));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Status.INACTIVE.getName()));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Status.PENDING.getName()));
@@ -120,7 +121,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createLocaleLookup(CrmRepositories repos) {
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.LOCALES_LOOKUP, "Locales", "Locaux"), null)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.LOCALES, "Locales", "Locaux"), null)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.ROOT)));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.ENGLISH)));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.FRENCH)));
@@ -131,9 +132,31 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createLanguageLookup(CrmRepositories repos) {
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.LANGUAGE_LOOKUP, "Languages", "Langages"), null)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.LANGUAGE, "Languages", "Langages"), null)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.ENGLISH)));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, Lang.NAMES.get(Lang.FRENCH)));
+	}
+	/**
+	 * Create a default set of business positions.
+	 * @param repos
+	 */
+	default void createBusinessPositions(CrmRepositories repos) {
+		Identifier sectorId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.BUSINESS_SECTOR, "Business Sector", "Secteur d'activité"), null)).getLookupId();
+		Option execs = repos.saveOption(new Option(repos.generateOptionId(), sectorId, Status.ACTIVE, new Localized("execs", "Executives", "Cadres")));
+		Option imit = repos.saveOption(new Option(repos.generateOptionId(), sectorId, Status.ACTIVE, new Localized("imit", "IM/IT", "GI / TI")));
+		
+		Identifier execsId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.BUSINESS_UNIT, "IM/IT Units", "Unit des GI / TI"), execs)).getLookupId();
+		repos.saveOption(new Option(repos.generateOptionId(), execsId, Status.ACTIVE, new Localized("ceo", "Chief Executive Officer", "Directeur Général")));
+		
+		Identifier imitId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.BUSINESS_UNIT, "Executive Unit", "Unit des Cadres"), imit)).getLookupId();
+		repos.saveOption(new Option(repos.generateOptionId(), imitId, Status.ACTIVE, new Localized("ops", "Operations", "Operations")));
+		
+		Identifier classificationId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.BUSINESS_CLASSIFICATION, "Business Classification", "Classification des entreprises"), null)).getLookupId();
+		repos.saveOption(new Option(repos.generateOptionId(), classificationId, Status.ACTIVE, new Localized("director", "Director", "Réalisateur")));
+		repos.saveOption(new Option(repos.generateOptionId(), classificationId, Status.ACTIVE, new Localized("manager", "Manager", "Directeur")));
+		repos.saveOption(new Option(repos.generateOptionId(), classificationId, Status.ACTIVE, new Localized("teamlead", "Team Lead", "Chef d'équipe")));
+		repos.saveOption(new Option(repos.generateOptionId(), classificationId, Status.ACTIVE, new Localized("developer", "Developer", "Développeur")));
+		repos.saveOption(new Option(repos.generateOptionId(), classificationId, Status.ACTIVE, new Localized("sysadmin", "System Administrator", "Administrateur du système")));
 	}
 	
 	/**
@@ -141,7 +164,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createSalutationsLookup(CrmRepositories repos) {
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.SALUTATION_LOOKUP, "Salutations", "Salutations"), null)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, false, new Localized(Crm.SALUTATION, "Salutations", "Salutations"), null)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("1", "Miss", "Mlle.")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("2", "Mrs.", "Mme.")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("3", "Mr.", "M.")));
@@ -152,7 +175,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCountriesLookup(CrmRepositories repos) {
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.COUNTRY_LOOKUP, "Countries", "Des pays"), null)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.COUNTRY, "Countries", "Des pays"), null)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("CA", "Canada", "Canada")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("GB", "United Kingdom", "Royaume-Uni")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("DE", "Germany", "Allemagne")));
@@ -167,9 +190,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCanadianProvinces(CrmRepositories repos) {
-		Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY_LOOKUP), LookupsFilter.getDefaultPaging()).getSingleItem();
+		Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY), LookupsFilter.getDefaultPaging()).getSingleItem();
 		Option ca = repos.findOptions(new OptionsFilter().withLookupId(countries.getLookupId()).withOptionCode("CA"), OptionsFilter.getDefaultPaging()).getSingleItem();
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.CA_PROVINCE_LOOKUP, "Canadian Provinces", "Provinces canadiennes"), ca)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.PROVINCE, "Canadian Provinces", "Provinces canadiennes"), ca)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("AB", "Alberta", "Alberta")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("BC", "British Columbia", "Colombie-Britannique")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("MB", "Manitoba", "Manitoba")));
@@ -190,9 +213,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createAmericanStates(CrmRepositories repos) {
-		Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY_LOOKUP), LookupsFilter.getDefaultPaging()).getSingleItem();
+		Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY), LookupsFilter.getDefaultPaging()).getSingleItem();
 		Option us = repos.findOptions(new OptionsFilter().withLookupId(countries.getLookupId()).withOptionCode("US"), OptionsFilter.getDefaultPaging()).getSingleItem();
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.US_PROVINCE_LOOKUP, "America States", "États d'Amérique"), us)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.PROVINCE, "America States", "États d'Amérique"), us)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("AK", "Alaska", "Alaska")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("AL", "Alabama", "Alabama")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("AR", "Arkansas", "Arkansas")));
@@ -251,9 +274,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createMexicanProvinces(CrmRepositories repos) {
-		Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY_LOOKUP), LookupsFilter.getDefaultPaging()).getSingleItem();
+		Lookup countries = repos.findLookups(new LookupsFilter().withLookupCode(Crm.COUNTRY), LookupsFilter.getDefaultPaging()).getSingleItem();
 		Option mx = repos.findOptions(new OptionsFilter().withLookupId(countries.getLookupId()).withOptionCode("MX"), OptionsFilter.getDefaultPaging()).getSingleItem();
-		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.MX_PROVINCE_LOOKUP, "Mexican Provinces", "Provinces mexicaines"), mx)).getLookupId();
+		Identifier lookupId = repos.saveLookup(new Lookup(repos.generateLookupId(), Status.ACTIVE, true, new Localized(Crm.PROVINCE, "Mexican Provinces", "Provinces mexicaines"), mx)).getLookupId();
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("AG", "Aguascalientas", "Aguascalientas")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("BA", "Baja California (North)", "Baja California (Nord)")));
 		repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, new Localized("BJ", "Baja California (South)", "Baja California (Sud)")));

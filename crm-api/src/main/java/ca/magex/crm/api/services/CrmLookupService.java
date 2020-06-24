@@ -21,21 +21,25 @@ import ca.magex.crm.api.system.Status;
 
 public interface CrmLookupService {
 	
-	public static final String STATUSES_LOOKUP = "STATUSES";
+	public static final String LOOKUPS = "Lookups";
 	
-	public static final String LOCALES_LOOKUP = "LOCALES";
+	public static final String STATUSES = "Status";
 	
-	public static final String SALUTATION_LOOKUP = "SALUTATION";
+	public static final String LOCALES = "Locale";
 	
-	public static final String LANGUAGE_LOOKUP = "LANGUAGE";
+	public static final String SALUTATION = "Salutation";
 	
-	public static final String COUNTRY_LOOKUP = "COUNTRY";
+	public static final String LANGUAGE = "Language";
 	
-	public static final String CA_PROVINCE_LOOKUP = "CA_PROVINCE";
+	public static final String COUNTRY = "Country";
 	
-	public static final String US_PROVINCE_LOOKUP = "US_PROVINCE";
+	public static final String PROVINCE = "Province";
 	
-	public static final String MX_PROVINCE_LOOKUP = "MX_PROVINCE";
+	public static final String BUSINESS_UNIT = "BusinessUnit";
+	
+	public static final String BUSINESS_CLASSIFICATION = "BusinessClassification";
+	
+	public static final String BUSINESS_SECTOR = "BusinessSector";
 	
 	default Lookup prototypeLookup(Localized name, Option parent) {
 		return new Lookup(null, Status.PENDING, true, name, parent);
@@ -53,30 +57,37 @@ public interface CrmLookupService {
 	
 	Lookup updateLookupName(Identifier lookupId, Localized name);
 	
-	default Lookup findLookupByCode(String code) {
+	default Lookup findLookupByCode(String lookupCode) {
 		return (Lookup)findLookups(
-			defaultLookupsFilter().withLookupCode(code),
+			defaultLookupsFilter().withLookupCode(lookupCode),
+			LookupsFilter.getDefaultPaging()
+		).getSingleItem();
+	}
+	
+	default Lookup findLookupByCode(String lookupCode, String parentCode) {
+		return (Lookup)findLookups(
+			defaultLookupsFilter().withLookupCode(lookupCode).withParentCode(parentCode),
 			LookupsFilter.getDefaultPaging()
 		).getSingleItem();
 	}
 	
 	default Lookup findLookupByLocalizedName(Locale locale, String name) {
-		if (Lang.isEnglish(locale)) {
-			return (Lookup)findLookups(
-				defaultLookupsFilter().withEnglishName(name),
-				LookupsFilter.getDefaultPaging()
-			).getSingleItem();
-		} else {
-			return (Lookup)findLookups(
-				defaultLookupsFilter().withFrenchName(name),
-				LookupsFilter.getDefaultPaging()
-			).getSingleItem();
-		}
+		return (Lookup)findLookups(
+			defaultLookupsFilter().withLocalizedName(locale, name),
+			LookupsFilter.getDefaultPaging()
+		).getSingleItem();
 	}
 	
-	default Lookup findLookupByTypeWithParent(Lookup parent) {
+	default Lookup findLookupByLocalizedName(Locale locale, String name, String parentCode) {
 		return (Lookup)findLookups(
-			defaultLookupsFilter().withParentCode(parent.getCode()),
+			defaultLookupsFilter().withLocalizedName(locale, name).withParentCode(parentCode),
+			LookupsFilter.getDefaultPaging()
+		).getSingleItem();
+	}
+	
+	default Lookup findLookupByTypeWithParent(String lookupCode, Option parent) {
+		return (Lookup)findLookups(
+			defaultLookupsFilter().withLookupCode(lookupCode).withParentCode(parent.getCode()),
 			LookupsFilter.getDefaultPaging()
 		).getSingleItem();
 	}

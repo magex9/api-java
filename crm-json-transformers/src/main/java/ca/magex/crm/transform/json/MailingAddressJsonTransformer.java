@@ -6,12 +6,14 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.lookup.Province;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Lookup;
+import ca.magex.crm.api.system.Option;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
@@ -19,11 +21,8 @@ import ca.magex.json.model.JsonText;
 @Component
 public class MailingAddressJsonTransformer extends AbstractJsonTransformer<MailingAddress> {
 	
-	private CountryJsonTransformer countryJsonTransformer;
-
 	public MailingAddressJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.countryJsonTransformer = new CountryJsonTransformer(crm);
 	}
 
 	@Override
@@ -43,10 +42,7 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 		formatText(pairs, "street", address);
 		formatText(pairs, "city", address);
 		formatProvince(pairs, "province", address, locale);
-		if (address.getCountry() != null) {
-			pairs.add(new JsonPair("country", countryJsonTransformer
-				.format(crm.findCountryByCode(address.getCountry()), locale)));
-		}
+		formatOption(pairs, "country", address, Crm.COUNTRY, locale);
 		formatText(pairs, "postalCode", address);
 		return new JsonObject(pairs);
 	}
@@ -59,16 +55,18 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 			return;
 		} else {
 			try {
-				Province province = crm.findProvinceByCode(address.getProvince(), address.getCountry());
+				Option country = crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY).getLookupId(), address.getCountry());
+				Lookup provinces = crm.findLookupByTypeWithParent(Crm.PROVINCE, country);
+				Option province = crm.findOptionByCode(provinces.getLookupId(), address.getProvince());
 				if (locale == null) {
 					List<JsonPair> pairs = new ArrayList<JsonPair>();
-					pairs.add(new JsonPair("@type", getType(Province.class)));
+					pairs.add(new JsonPair("@type", Crm.PROVINCE));
 					pairs.add(new JsonPair("@value", province.getCode()));
 					pairs.add(new JsonPair("@en", province.getName(Lang.ENGLISH)));
 					pairs.add(new JsonPair("@fr", province.getName(Lang.FRENCH)));
 					parent.add(new JsonPair(key, new JsonObject(pairs)));
 				} else {
-					parent.add(new JsonPair(key, new JsonText(province.get(locale))));
+					parent.add(new JsonPair(key, new JsonText(province.getName(locale))));
 				}
 			} catch (IllegalArgumentException | ItemNotFoundException e) { 
 				parent.add(new JsonPair(key, new JsonText(address.getProvince())));
@@ -80,36 +78,32 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	public MailingAddress parseJsonObject(JsonObject json, Locale locale) {
 		String street = parseText("street", json);
 		String city = parseText("city", json);
-		Country country = parseCountry("country", json, locale);
+		Option country = parseOption("country", json, Crm.COUNTRY, locale);
 		String province = parseProvince("province", "country", json, locale);
 		String postalCode = parseText("postalCode", json);
 		return new MailingAddress(street, city, province, country == null ? null : country.getCode(), postalCode);
 	}
 	
-	public Country parseCountry(String key, JsonObject json, Locale locale) {
-		if (!json.contains(key))
-			return null;
-		return parseObject("country", json, countryJsonTransformer, locale);
-	}
-	
 	public String parseProvince(String provinceKey, String countryKey, JsonObject json, Locale locale) {
 		if (json == null || !json.contains(provinceKey))
 			return null;
-		Country country = parseCountry("country", json, locale);
+		Option country = parseOption("country", json, Crm.COUNTRY, locale);
 		if (country == null) {
 			return json.getString(provinceKey);
 		} else if (json.get(provinceKey) instanceof JsonText) {
 			String province = ((JsonText)json.get(provinceKey)).value();
 			try {
-				return crm.findProvinceByLocalizedName(locale == null ? Lang.ROOT : locale, province, country.get(locale == null ? Lang.ROOT : locale)).getCode();
-			} catch (IllegalArgumentException e) {
+				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, country).getLookupId();
+				return crm.findOptionByLocalizedName(lookupId, locale, province).getCode(); 
+			} catch (IllegalArgumentException | ItemNotFoundException e) {
 				return province;
 			}
 		} else if (json.get(provinceKey) instanceof JsonObject) {
 			String province = ((JsonObject)json.get(provinceKey)).getString("@value");
 			try {
-				return crm.findProvinceByLocalizedName(locale == null ? Lang.ROOT : locale, province, country.get(locale == null ? Lang.ROOT : locale)).getCode();
-			} catch (IllegalArgumentException e) {
+				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, country).getLookupId();
+				return crm.findOptionByLocalizedName(lookupId, locale, province).getCode(); 
+			} catch (IllegalArgumentException | ItemNotFoundException e) {
 				return province;
 			}
 		}

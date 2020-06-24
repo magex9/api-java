@@ -9,6 +9,7 @@ import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.dictionary.basic.BasicDictionary;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
 import ca.magex.crm.api.services.basic.BasicServices;
@@ -23,13 +24,13 @@ public class BasicTestConfig implements CrmConfigurer {
 	}
 	
 	@Bean 
-	public CrmUpdateNotifier notifier() {
-		return new CrmUpdateNotifier();
+	public BasicUpdateObserver observer() {
+		return new BasicUpdateObserver();
 	}
 	
 	@Bean
 	public BasicRepositories repos() {
-		return new BasicRepositories(store(), notifier());
+		return new BasicRepositories(store(), new CrmUpdateNotifier(), observer());
 	}
 	
 	@Bean
