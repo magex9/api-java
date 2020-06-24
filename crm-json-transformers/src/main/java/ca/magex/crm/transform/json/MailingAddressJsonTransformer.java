@@ -78,22 +78,22 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	public MailingAddress parseJsonObject(JsonObject json, Locale locale) {
 		String street = parseText("street", json);
 		String city = parseText("city", json);
-		Option country = parseOption("country", json, Crm.COUNTRY, locale);
+		String country = parseOption("country", json, Crm.COUNTRY, locale);
 		String province = parseProvince("province", "country", json, locale);
 		String postalCode = parseText("postalCode", json);
-		return new MailingAddress(street, city, province, country == null ? null : country.getCode(), postalCode);
+		return new MailingAddress(street, city, province, country == null ? null : country, postalCode);
 	}
 	
 	public String parseProvince(String provinceKey, String countryKey, JsonObject json, Locale locale) {
 		if (json == null || !json.contains(provinceKey))
 			return null;
-		Option country = parseOption("country", json, Crm.COUNTRY, locale);
+		String country = parseOption("country", json, Crm.COUNTRY, locale);
 		if (country == null) {
 			return json.getString(provinceKey);
 		} else if (json.get(provinceKey) instanceof JsonText) {
 			String province = ((JsonText)json.get(provinceKey)).value();
 			try {
-				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, country).getLookupId();
+				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, crm.findOption(Crm.COUNTRY, country)).getLookupId();
 				return crm.findOptionByLocalizedName(lookupId, locale, province).getCode(); 
 			} catch (IllegalArgumentException | ItemNotFoundException e) {
 				return province;
@@ -101,7 +101,7 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 		} else if (json.get(provinceKey) instanceof JsonObject) {
 			String province = ((JsonObject)json.get(provinceKey)).getString("@value");
 			try {
-				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, country).getLookupId();
+				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, crm.findOption(Crm.COUNTRY, country)).getLookupId();
 				return crm.findOptionByLocalizedName(lookupId, locale, province).getCode(); 
 			} catch (IllegalArgumentException | ItemNotFoundException e) {
 				return province;

@@ -51,13 +51,13 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, List.of("SYS", "CRM")));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
-			repos.saveUser(new User(systemId, username, repos.findPersonSummary(mainContactId), Status.ACTIVE, List.of("SYS_ADMIN", "CRM_ADMIN")));
+			repos.saveUser(new User(systemId, username, repos.findPersonSummary(mainContactId), Status.ACTIVE, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
 		}
 		return repos.findUsers(new UsersFilter().withRole("SYS_ADMIN").withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
 	}
-
+	
 	@Override
 	public CrmDictionary getDictionary() {
 		return dictionary;

@@ -12,8 +12,6 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 	
 	private CrmStore store;
 	
-	private CrmUpdateNotifier notifier = new CrmUpdateNotifier();
-	
 	public BasicRepositories(CrmStore store, CrmUpdateObserver observer) {
 		super(
 			new BasicConfigurationRepository(store),
@@ -27,7 +25,7 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 			new BasicUserRepository(store)
 		);
 		this.store = store;
-		notifier.register(observer);
+		store.getNotifier().register(observer);
 	}
 
 	@Override
@@ -40,7 +38,7 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 	}
 	
 	public CrmUpdateNotifier getNotifier() {
-		return notifier;
+		return store.getNotifier();
 	}
 
 	@Override

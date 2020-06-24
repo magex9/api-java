@@ -41,9 +41,9 @@ public class BusinessPositionJsonTransformer extends AbstractJsonTransformer<Bus
 
 	@Override
 	public BusinessPosition parseJsonObject(JsonObject json, Locale locale) {
-		String sector = parseOption("sector", json, Crm.BUSINESS_SECTOR, locale).getCode();
-		String unit = parseOption("unit", json, Crm.BUSINESS_UNIT, Crm.BUSINESS_SECTOR, "sector", locale).getCode();
-		String classification = parseOption("classification", json, Crm.BUSINESS_CLASSIFICATION, locale).getCode();
+		String sector = parseOption("sector", json, Crm.BUSINESS_SECTOR, locale);
+		String unit = parseOption("unit", json, Crm.BUSINESS_UNIT, Crm.BUSINESS_SECTOR, "sector", locale);
+		String classification = parseOption("classification", json, Crm.BUSINESS_CLASSIFICATION, locale);
 		return new BusinessPosition(sector, unit, classification);
 	}
 

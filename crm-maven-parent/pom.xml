@@ -15,6 +15,7 @@
 		<relativePath />
 	</parent>
 
+	<!-- 
 	<repositories>
 		<repository>
 			<id>finapplicationdevelopment-snapshots</id>
@@ -27,6 +28,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	-->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

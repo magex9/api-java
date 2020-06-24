@@ -1,12 +1,13 @@
 package ca.magex.crm.spring.security.auth;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 
@@ -25,7 +26,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 	}
 
 	@Override
-	public User getCurrentUser() {
+	public User getAuthenticatedUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
 			return null;
@@ -35,21 +36,31 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public boolean isUserInRole(String role) {
-		return getCurrentUser().getRoles().contains(role);
+		return getAuthenticatedUser().getRoles().contains(role);
 	}
 
 	@Override
-	public Identifier getUserId() {
-		return getCurrentUser().getUserId();
+	public Identifier getAuthenticatedUserId() {
+		return getAuthenticatedUser().getUserId();
 	}
 
 	@Override
-	public Identifier getPersonId() {
-		return getCurrentUser().getPerson().getPersonId();
+	public Identifier getAuthenticatedPersonId() {
+		return getAuthenticatedUser().getPerson().getPersonId();
 	}
 
 	@Override
-	public Identifier getOrganizationId() {
-		return getCurrentUser().getPerson().getOrganizationId();
+	public Identifier getAuthenticatedOrganizationId() {
+		return getAuthenticatedUser().getPerson().getOrganizationId();
+	}
+
+	@Override
+	public boolean login(String username, String password) {
+		throw new NotImplementedException("unimplemented");
+	}
+
+	@Override
+	public boolean logout() {
+		throw new NotImplementedException("unimplemented");
 	}
 }

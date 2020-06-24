@@ -15,7 +15,7 @@ import ca.magex.json.model.JsonFormatter;
 import ca.magex.json.model.JsonObject;
 
 @Controller
-public class InitializationController extends AbstractCrmController {
+public class ConfigurationController extends AbstractCrmController {
 
 	@GetMapping("/rest/initialized")
 	public void initialized(HttpServletRequest req, HttpServletResponse res) throws IOException {

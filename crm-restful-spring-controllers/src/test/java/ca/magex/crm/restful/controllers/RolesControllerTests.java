@@ -8,7 +8,6 @@ import static ca.magex.crm.test.CrmAsserts.ORG;
 import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
 import static ca.magex.crm.test.CrmAsserts.ORG_ASSISTANT;
 import static ca.magex.crm.test.CrmAsserts.SYS;
-import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,15 +29,19 @@ import ca.magex.json.util.LoremIpsumGenerator;
 
 public class RolesControllerTests extends AbstractControllerTests {
 	
+	private Localized role;
+	
+	private Identifier sysId;
+	
 	@Before
 	public void setup() {
-		crm.reset();
+		initialize();
+		role = new Localized("NEW_ROLE", "New Role", "Nouveau rôle");
+		sysId = crm.findGroupByCode(SYS.getCode()).getGroupId();
 	}
 
 	@Test
 	public void testCreateRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		
 		// Get the initial list of groups to make sure they are blank
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -46,21 +49,27 @@ public class RolesControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(1, json.getInt("page"));
-		assertEquals(0, json.getInt("total"));
+		
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
+		assertEquals(1, json.getNumber("page"));
+		assertEquals(10, json.getNumber("limit"));
+		assertEquals(8, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(0, json.getArray("content").size());
+		assertEquals(8, json.getArray("content").size());
+		
+		assertEquals(List.of("Authorization Requestor", "CRM Admin", "CRM Viewer", "Organization Admin", "Organization Viewer", "System Access", "System Actuator", "System Administrator"), 
+				json.getArray("content", JsonObject.class).stream().map(r -> r.getString("name")).collect(Collectors.toList()));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", groupId.toString())
-				.with("code", SYS_ADMIN.getCode())
-				.with("englishName", SYS_ADMIN.getEnglishName())
-				.with("frenchName", SYS_ADMIN.getFrenchName())
+				.with("groupId", sysId.toString())
+				.with("code", role.getCode())
+				.with("englishName", role.getEnglishName())
+				.with("frenchName", role.getFrenchName())
 				.toString()))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -76,10 +85,10 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), json.getString("roleId"));
-		assertEquals(groupId.toString(), json.getString("groupId"));
+		assertEquals(sysId.toString(), json.getString("groupId"));
 		assertEquals("Active", json.getString("status"));
-		assertEquals("SYS_ADMIN", json.getString("code"));
-		assertEquals("System Administrator", json.getString("name"));
+		assertEquals(role.getCode(), json.getString("code"));
+		assertEquals(role.getEnglishName(), json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles/" + roleId)
@@ -88,9 +97,9 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), json.getString("roleId"));
-		assertEquals(groupId.toString(), json.getString("groupId"));
+		assertEquals(sysId.toString(), json.getString("groupId"));
 		assertEquals("Actif", json.getString("status"));
-		assertEquals("Adminstrator du système", json.getString("name"));
+		assertEquals(role.getFrenchName(), json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles/" + roleId))
@@ -98,9 +107,9 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), json.getString("roleId"));
-		assertEquals(groupId.toString(), json.getString("groupId"));
+		assertEquals(sysId.toString(), json.getString("groupId"));
 		assertEquals("active", json.getString("status"));
-		assertEquals("SYS_ADMIN", json.getString("name"));
+		assertEquals(role.getCode(), json.getString("name"));
 
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -109,28 +118,26 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
-		assertEquals(1, json.getInt("total"));
+		assertEquals(9, json.getInt("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(1, json.getArray("content").size());
-		assertEquals(groupId.toString(), json.getArray("content").getObject(0).getString("groupId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("System Administrator", json.getArray("content").getObject(0).getString("name"));
+		assertEquals(9, json.getArray("content").size());
+		
+		assertEquals(List.of("Authorization Requestor", "CRM Admin", "CRM Viewer", "New Role", "Organization Admin", "Organization Viewer", "System Access", "System Actuator", "System Administrator"), 
+			json.getArray("content", JsonObject.class).stream().map(r -> r.getString("name")).collect(Collectors.toList()));
 	}
 	
 	@Test
 	public void testCreateRoleEnglishNameTests() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		
 		JsonArray missing = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", groupId.toString())
-				.with("code", SYS_ADMIN.getCode())
-				//.with("englishName", SYS_ADMIN.getEnglishName())
-				.with("frenchName", SYS_ADMIN.getFrenchName())
+				.with("groupId", sysId.toString())
+				.with("code", role.getCode())
+				//.with("englishName", role.getEnglishName())
+				.with("frenchName", role.getFrenchName())
 				.toString()))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -144,14 +151,15 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", groupId.toString())
-				.with("code", SYS_ADMIN.getCode())
+				.with("groupId", sysId.toString())
+				.with("code", role.getCode())
 				.with("englishName", "  ")
-				.with("frenchName", SYS_ADMIN.getFrenchName())
+				.with("frenchName", role.getFrenchName())
 				.toString()))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn().getResponse().getContentAsString());
+		System.out.println(spaces);
 		assertEquals(1, spaces.size());
 		assertEquals("error", spaces.getObject(0).getString("type"));
 		assertEquals("englishName", spaces.getObject(0).getString("path"));
@@ -161,10 +169,10 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", groupId.toString())
-				.with("code", SYS_ADMIN.getCode())
+				.with("groupId", sysId.toString())
+				.with("code", role.getCode())
 				.with("englishName", true)
-				.with("frenchName", SYS_ADMIN.getFrenchName())
+				.with("frenchName", role.getFrenchName())
 				.toString()))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -178,10 +186,10 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.post("/rest/roles")
 			.header("Locale", Lang.ENGLISH)
 			.content(new JsonObject()
-				.with("groupId", groupId.toString())
-				.with("code", SYS_ADMIN.getCode())
+				.with("groupId", sysId.toString())
+				.with("code", role.getCode())
 				.with("englishName", LoremIpsumGenerator.buildWords(20))
-				.with("frenchName", SYS_ADMIN.getFrenchName())
+				.with("frenchName", role.getFrenchName())
 				.toString()))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -194,8 +202,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFirstPageEnglishSortRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -206,7 +213,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
-		assertEquals(32, json.getInt("total"));
+		assertEquals(40, json.getInt("total"));
 		assertEquals(true, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
@@ -217,8 +224,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testSecondPageEnglishSortRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		JsonObject page2 = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -231,7 +237,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(2, page2.getInt("page"));
-		assertEquals(32, page2.getInt("total"));
+		assertEquals(40, page2.getInt("total"));
 		assertEquals(true, page2.getBoolean("hasNext"));
 		assertEquals(true, page2.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, page2.get("content").getClass());
@@ -242,8 +248,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testInactiveEnglishRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		crm.disableRole(crm.findRoleByCode("E").getRoleId());
 		crm.disableRole(crm.findRoleByCode("F").getRoleId());
@@ -274,13 +279,20 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterRolesByGroupId() throws Exception {
-		Identifier sysId = crm.createGroup(SYS).getGroupId();
-		crm.createRole(sysId, SYS_ADMIN).getRoleId();
+		crm.createRole(sysId, role).getRoleId();
 		crm.disableRole(crm.createRole(sysId, ADMIN).getRoleId());
 		
-		Identifier orgId = crm.createGroup(ORG).getGroupId();
-		crm.createRole(orgId, ORG_ADMIN).getRoleId();
-		crm.createRole(orgId, ORG_ASSISTANT).getRoleId();
+		JsonObject orig = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
+			.get("/rest/roles")
+			.header("Locale", Lang.ENGLISH))
+			//.andDo(MockMvcResultHandlers.print())
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn().getResponse().getContentAsString());
+		assertEquals(10, orig.getInt("total"));
+		
+		Identifier groupId = crm.createGroup(new Localized("NEW_GROUP", "New Group", "Nouveau groupe")).getGroupId();
+		crm.createRole(groupId, new Localized("ROLE_A", "Role A", "A Role")).getRoleId();
+		crm.createRole(groupId, new Localized("ROLE_B", "Role B", "B Role")).getRoleId();
 		
 		JsonObject all = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -288,7 +300,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(4, all.getInt("total"));
+		assertEquals(12, all.getInt("total"));
 		
 		JsonObject inactive = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -301,7 +313,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 			
 		JsonObject activeOrg = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
-			.queryParam("groupId", orgId.toString())
+			.queryParam("groupId", groupId.toString())
 			.queryParam("status", "Actif")
 			.header("Locale", Lang.FRENCH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -311,7 +323,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 				
 		JsonObject inactiveOrg = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
-			.queryParam("groupId", orgId.toString())
+			.queryParam("groupId", groupId.toString())
 			.queryParam("status", "Inactive")
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
@@ -321,7 +333,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 					
 		JsonObject allOrg = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
-			.queryParam("groupId", orgId.toString())
+			.queryParam("groupId", groupId.toString())
 			.header("Locale", Lang.ENGLISH))
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -331,8 +343,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testInactiveSortWithNotLocaleRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		crm.disableRole(crm.findRoleByCode("E").getRoleId());
 		crm.disableRole(crm.findRoleByCode("F").getRoleId());
@@ -358,8 +369,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		Identifier roleId = crm.createRole(groupId, new Localized("ORIG", "Original", "First")).getRoleId();
+		Identifier roleId = crm.createRole(sysId, new Localized("ORIG", "Original", "First")).getRoleId();
 		
 		JsonObject orig = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles/" + roleId)
@@ -425,13 +435,11 @@ public class RolesControllerTests extends AbstractControllerTests {
 		assertEquals("error", errors.getObject(0).getString("type"));
 		assertEquals("code", errors.getObject(0).getString("path"));
 		assertEquals("Role code must not change during updates", errors.getObject(0).getString("reason"));
-		
 	}
 	
 	@Test
 	public void testRoleFilterByEnglishName() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		JsonObject inativeEnglishAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -441,12 +449,12 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeEnglishAsc.getInt("page"));
-		assertEquals(4, inativeEnglishAsc.getInt("total"));
+		assertEquals(5, inativeEnglishAsc.getInt("total"));
 		assertEquals(false, inativeEnglishAsc.getBoolean("hasNext"));
 		assertEquals(false, inativeEnglishAsc.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, inativeEnglishAsc.get("content").getClass());
-		assertEquals(4, inativeEnglishAsc.getArray("content").size());
-		assertEquals(List.of("$ Store", "Montreal", "French", "resume"), inativeEnglishAsc.getArray("content").stream()
+		assertEquals(5, inativeEnglishAsc.getArray("content").size());
+		assertEquals(List.of("Authorization Requestor", "$ Store", "Montreal", "French", "resume"), inativeEnglishAsc.getArray("content").stream()
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 
 		JsonObject englishNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
@@ -461,8 +469,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testRoleFilterByFrenchName() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		JsonObject inativeFrenchAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -492,8 +499,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testRoleFilterByCode() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(groupId, l));
+		LOCALIZED_SORTING_OPTIONS.forEach(l -> crm.createRole(sysId, l));
 		
 		JsonObject activeCodeAsc = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/roles")
@@ -521,8 +527,7 @@ public class RolesControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testEnableDisableRole() throws Exception {
-		Identifier groupId = crm.createGroup(SYS).getGroupId();
-		Identifier roleId = crm.createRole(groupId, SYS_ADMIN).getRoleId();
+		Identifier roleId = crm.createRole(sysId, role).getRoleId();
 		assertEquals(Status.ACTIVE, crm.findRole(roleId).getStatus());
 
 		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
@@ -578,8 +583,8 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), disable.getString("roleId"));
 		assertEquals("Inactive", disable.getString("status"));
-		assertEquals(SYS_ADMIN.getCode(), disable.getString("code"));
-		assertEquals(SYS_ADMIN.getEnglishName(), disable.getString("name"));
+		assertEquals(role.getCode(), disable.getString("code"));
+		assertEquals(role.getEnglishName(), disable.getString("name"));
 		assertEquals(Status.INACTIVE, crm.findRole(roleId).getStatus());
 		
 		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
@@ -635,8 +640,8 @@ public class RolesControllerTests extends AbstractControllerTests {
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(roleId.toString(), enable.getString("roleId"));
 		assertEquals("Actif", enable.getString("status"));
-		assertEquals(SYS_ADMIN.getCode(), enable.getString("code"));
-		assertEquals(SYS_ADMIN.getFrenchName(), enable.getString("name"));
+		assertEquals(role.getCode(), enable.getString("code"));
+		assertEquals(role.getFrenchName(), enable.getString("name"));
 		assertEquals(Status.ACTIVE, crm.findRole(roleId).getStatus());
 	}
 	

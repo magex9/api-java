@@ -27,7 +27,7 @@ public class GroupsControllerTests extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
-		crm.reset();
+		initialize();
 	}
 	
 	@Test
@@ -39,12 +39,34 @@ public class GroupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
-		assertEquals(1, json.getInt("page"));
-		assertEquals(0, json.getInt("total"));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
+		assertEquals(1, json.getNumber("page"));
+		assertEquals(10, json.getNumber("limit"));
+		assertEquals(4, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(0, json.getArray("content").size());
+		assertEquals(4, json.getArray("content").size());
+		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(0).keys());
+		assertEquals("Group", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("APP", json.getArray("content").getObject(0).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Application", json.getArray("content").getObject(0).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(1).keys());
+		assertEquals("Group", json.getArray("content").getObject(1).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Active", json.getArray("content").getObject(1).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("CRM", json.getArray("content").getObject(1).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Customer Relationship Management", json.getArray("content").getObject(1).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(2).keys());
+		assertEquals("Group", json.getArray("content").getObject(2).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Active", json.getArray("content").getObject(2).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("ORG", json.getArray("content").getObject(2).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Organization", json.getArray("content").getObject(2).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(3).keys());
+		assertEquals("Group", json.getArray("content").getObject(3).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Active", json.getArray("content").getObject(3).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("SYS", json.getArray("content").getObject(3).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("System", json.getArray("content").getObject(3).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/groups")
@@ -99,15 +121,16 @@ public class GroupsControllerTests extends AbstractControllerTests {
 			//.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
+		//JsonAsserts.print(json, "json");
 		assertEquals(1, json.getInt("page"));
-		assertEquals(1, json.getInt("total"));
+		assertEquals(5, json.getInt("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
-		assertEquals(1, json.getArray("content").size());
-		assertEquals(groupId.toString(), json.getArray("content").getObject(0).getString("groupId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Group", json.getArray("content").getObject(0).getString("name"));
+		assertEquals(5, json.getArray("content").size());
+		assertEquals(groupId.toString(), json.getArray("content").getObject(2).getString("groupId"));
+		assertEquals("Active", json.getArray("content").getObject(2).getString("status"));
+		assertEquals("Group", json.getArray("content").getObject(2).getString("name"));
 	}
 	
 	@Test
@@ -190,7 +213,7 @@ public class GroupsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, json.getInt("page"));
-		assertEquals(32, json.getInt("total"));
+		assertEquals(36, json.getInt("total"));
 		assertEquals(true, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
@@ -213,7 +236,7 @@ public class GroupsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(2, page2.getInt("page"));
-		assertEquals(32, page2.getInt("total"));
+		assertEquals(36, page2.getInt("total"));
 		assertEquals(true, page2.getBoolean("hasNext"));
 		assertEquals(true, page2.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, page2.get("content").getClass());
@@ -360,12 +383,12 @@ public class GroupsControllerTests extends AbstractControllerTests {
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
 		assertEquals(1, inativeEnglishAsc.getInt("page"));
-		assertEquals(4, inativeEnglishAsc.getInt("total"));
+		assertEquals(5, inativeEnglishAsc.getInt("total"));
 		assertEquals(false, inativeEnglishAsc.getBoolean("hasNext"));
 		assertEquals(false, inativeEnglishAsc.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, inativeEnglishAsc.get("content").getClass());
-		assertEquals(4, inativeEnglishAsc.getArray("content").size());
-		assertEquals(List.of("$ Store", "Montreal", "French", "resume"), inativeEnglishAsc.getArray("content").stream()
+		assertEquals(5, inativeEnglishAsc.getArray("content").size());
+		assertEquals(List.of("$ Store", "Customer Relationship Management", "Montreal", "French", "resume"), inativeEnglishAsc.getArray("content").stream()
 			.map(e -> ((JsonObject)e).getString("name")).collect(Collectors.toList()));
 
 		JsonObject englishNameFilter = new JsonObject(mockMvc.perform(MockMvcRequestBuilders

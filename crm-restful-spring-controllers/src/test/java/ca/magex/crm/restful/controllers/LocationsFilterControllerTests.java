@@ -70,10 +70,10 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
-		assertEquals(8, json.getNumber("total"));
+		assertEquals(9, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(8, json.getArray("content").size());
+		assertEquals(9, json.getArray("content").size());
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type"));
 		assertEquals(usId.toString(), json.getArray("content").getObject(0).getString("locationId"));
@@ -108,10 +108,10 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
-		assertEquals(8, json.getNumber("total"));
+		assertEquals(9, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(8, json.getArray("content").size());
+		assertEquals(9, json.getArray("content").size());
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type"));
 		assertEquals(usId.toString(), json.getArray("content").getObject(0).getString("locationId"));
@@ -146,10 +146,10 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
-		assertEquals(8, json.getNumber("total"));
+		assertEquals(9, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(8, json.getArray("content").size());
+		assertEquals(9, json.getArray("content").size());
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type"));
 		assertEquals(usId.toString(), json.getArray("content").getObject(0).getString("locationId"));
