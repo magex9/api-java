@@ -1,17 +1,18 @@
 package ca.magex.crm.caching;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.stereotype.Service;
+import org.springframework.data.util.Pair;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -22,7 +23,6 @@ import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.caching.config.CachingConfig;
 
-@Service("CrmOrganizationServiceCachingDelegate")
 public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationService {
 
 	private CrmOrganizationService delegate;
@@ -34,34 +34,56 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	 * @param delegate
 	 * @param cacheManager
 	 */
-	public CrmOrganizationServiceCachingDelegate(@Qualifier("PrincipalOrganizationService") CrmOrganizationService delegate, CacheManager cacheManager) {
+	public CrmOrganizationServiceCachingDelegate(CrmOrganizationService delegate, CacheManager cacheManager) {
 		this.delegate = delegate;
 		this.cacheManager = cacheManager;
 	}
 	
+	private List<Pair<String,Object>> detailsCacheSupplier(OrganizationDetails details) {
+		return List.of(
+				Pair.of("Details_" + details.getOrganizationId(), details),
+				Pair.of("Summary_" + details.getOrganizationId(), details.asSummary())
+		);
+	}
+	
+	private List<Pair<String,Object>> summaryCacheSupplier(OrganizationSummary summary) {
+		return List.of(
+				Pair.of("Summary_" + summary.getOrganizationId(), summary)
+		);
+	}
+	
+	private <R> R cachePut(Supplier<R> supplier, Function<R, List<Pair<String, Object>>> cachingSuppliers) {		
+		Cache cache = cacheManager.getCache(CachingConfig.Caches.Organizations);
+		R value = supplier.get();
+		List<Pair<String, Object>> cachingPairs = cachingSuppliers.apply(value);
+		for (Pair<String, Object> cachePair : cachingPairs) {
+			cache.put(cachePair.getFirst(), cachePair.getSecond());
+		}
+		return value;
+	}
+	
+	private void cacheEvict(List<String> keys) {
+		Cache cache = cacheManager.getCache(CachingConfig.Caches.Organizations);
+		for (String key : keys) {
+			cache.evict(key);
+		}
+	}
+		
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#result == null ? '' : #result.organizationId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#result == null ? '' : #result.organizationId)", unless = "#result == null")
-	})
 	public OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return delegate.createOrganization(prototype);
+		return cachePut(() -> delegate.createOrganization(prototype), this::detailsCacheSupplier); 
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#result == null ? '' : #result.organizationId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#result == null ? '' : #result.organizationId)", unless = "#result == null")
-	})
 	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
-		return delegate.createOrganization(displayName, groups);
+		return cachePut(() -> delegate.createOrganization(createOrganization(displayName, groups)), this::detailsCacheSupplier);		
 	}
 
 	@Override
 	@CachePut(cacheNames = CachingConfig.Caches.Organizations, key = "'Summary_'.concat(#organizationId)")
 	@CacheEvict(cacheNames = CachingConfig.Caches.Organizations, key = "'Details_'.concat(#organizationId)")
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
-		return delegate.enableOrganization(organizationId);
+		delegate.enableOrganization(organizationId);
 	}
 
 	@Override
@@ -167,4 +189,6 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 		});
 		return page;
 	}
+	
+	
 }

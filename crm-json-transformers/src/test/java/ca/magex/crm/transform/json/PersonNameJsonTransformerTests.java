@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.lookup.Salutation;
 import ca.magex.crm.api.services.Crm;

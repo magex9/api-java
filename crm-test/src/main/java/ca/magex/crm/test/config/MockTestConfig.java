@@ -14,32 +14,32 @@ import ca.magex.crm.api.services.CrmUserService;
 @Configuration
 public class MockTestConfig {
 
-	@Bean("PrincipalLookupService")
+	@Bean
 	public CrmLookupService mockLookupService() {
 		return Mockito.mock(CrmLookupService.class);
 	}
 
-	@Bean("PrincipalGroupService")
+	@Bean
 	public CrmGroupService mockGroupService() {
 		return Mockito.mock(CrmGroupService.class);
 	}
 
-	@Bean("PrincipalOrganizationService")
+	@Bean
 	public CrmOrganizationService mockOrganizationService() {
 		return Mockito.mock(CrmOrganizationService.class);
 	}
 
-	@Bean("PrincipalLocationService")
+	@Bean
 	public CrmLocationService mockLocationService() {
 		return Mockito.mock(CrmLocationService.class);
 	}
 
-	@Bean("PrincipalPersonService")
+	@Bean
 	public CrmPersonService mockPersonService() {
 		return Mockito.mock(CrmPersonService.class);
 	}
 
-	@Bean("PrincipalUserService")
+	@Bean
 	public CrmUserService mockUserService() {
 		return Mockito.mock(CrmUserService.class);
 	}
