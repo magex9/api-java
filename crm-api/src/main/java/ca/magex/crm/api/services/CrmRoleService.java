@@ -23,8 +23,8 @@ public interface CrmRoleService {
 		return new Role(null, groupId, Status.PENDING, name);
 	}
 
-	default Role createRole(Role role) {
-		return createRole(role.getGroupId(), role.getName());
+	default Role createRole(Role prototype) {
+		return createRole(prototype.getGroupId(), prototype.getName());
 	}
 
 	Role createRole(Identifier groupId, Localized name);

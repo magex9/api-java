@@ -3,7 +3,6 @@ package ca.magex.crm.caching;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.cache.annotation.Cacheable;
 
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -11,10 +10,14 @@ import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.caching.config.CachingConfig;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
+/**
+ * Delegate that intercepts calls and caches the results
+ * 
+ * @author Jonny
+ */
 public class CrmUserServiceCachingDelegate implements CrmUserService {
 
 	private CrmUserService delegate;
@@ -109,7 +112,6 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	@Cacheable(cacheNames = CachingConfig.Caches.Users, key = "'Id_'.concat(#userId)")
 	public User findUser(Identifier userId) {
 		return cacheTemplate.get(
 				() -> delegate.findUser(userId),
@@ -119,7 +121,6 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	@Cacheable(cacheNames = CachingConfig.Caches.Users, key = "'Username_'.concat(#username)")
 	public User findUserByUsername(String username) {
 		return cacheTemplate.get(
 				() -> delegate.findUserByUsername(username),
@@ -136,6 +137,15 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	@Override
 	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		FilteredPage<User> page = delegate.findUsers(filter, paging);
+		page.forEach((details) -> {
+			cacheTemplate.putIfAbsent(userCacheSupplier(details, details.getUserId()));
+		});
+		return page;
+	}
+	
+	@Override
+	public FilteredPage<User> findUsers(UsersFilter filter) {
+		FilteredPage<User> page = delegate.findUsers(filter);
 		page.forEach((details) -> {
 			cacheTemplate.putIfAbsent(userCacheSupplier(details, details.getUserId()));
 		});

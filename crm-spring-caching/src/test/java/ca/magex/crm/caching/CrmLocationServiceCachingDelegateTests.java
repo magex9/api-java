@@ -37,7 +37,7 @@ public class CrmLocationServiceCachingDelegateTests {
 
 	@Autowired private CrmLocationService delegate;
 	@Autowired private CacheManager cacheManager;
-	
+
 	private CacheTemplate cacheTemplate;
 	private CrmLocationServiceCachingDelegate locationService;
 
@@ -95,10 +95,6 @@ public class CrmLocationServiceCachingDelegateTests {
 			return new LocationDetails(invocation.getArgument(0), new Identifier("ABC"), Status.ACTIVE, "HQ", "Head Quarters", CrmAsserts.MAILING_ADDRESS);
 		}).given(delegate).findLocationDetails(Mockito.any(Identifier.class));
 
-		BDDMockito.willAnswer((invocation) -> {
-			return new LocationSummary(invocation.getArgument(0), new Identifier("ABC"), Status.ACTIVE, "HQ", "Head Quarters");
-		}).given(delegate).findLocationSummary(Mockito.any(Identifier.class));
-
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		LocationDetails locDetails = locationService.findLocationDetails(new Identifier("1"));
 		Assert.assertEquals(locDetails, locationService.findLocationDetails(locDetails.getLocationId()));
@@ -115,11 +111,20 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
 		}).given(delegate).findLocationDetails(Mockito.any(Identifier.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).findLocationSummary(Mockito.any(Identifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		Assert.assertNull(locationService.findLocationDetails(new Identifier("1")));
 		Assert.assertNull(locationService.findLocationDetails(new Identifier("1")));
 		BDDMockito.verify(delegate, Mockito.times(1)).findLocationDetails(Mockito.any(Identifier.class));
+		
+		/* this should also cache the result, so the second find doesn't hit the delegate */
+		Assert.assertNull(locationService.findLocationSummary(new Identifier("2")));
+		Assert.assertNull(locationService.findLocationSummary(new Identifier("2")));
+		BDDMockito.verify(delegate, Mockito.times(1)).findLocationSummary(Mockito.any(Identifier.class));
 	}
 
 	@Test
@@ -133,7 +138,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			reference.set(reference.get().withStatus(Status.INACTIVE));
 			return reference.get();
-		}).given(delegate).disableLocation(Mockito.any(Identifier.class));		
+		}).given(delegate).disableLocation(Mockito.any(Identifier.class));
 		BDDMockito.willAnswer((invocation) -> {
 			return reference.get();
 		}).given(delegate).findLocationDetails(Mockito.any(Identifier.class));
@@ -157,7 +162,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findLocationDetails(Mockito.any(Identifier.class));
 		locDetails = locationService.findLocationDetails(locDetails.getOrganizationId());
 		BDDMockito.verify(delegate, Mockito.times(1)).findLocationDetails(Mockito.any(Identifier.class));
-		
+
 		/* disable non existent location (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
@@ -202,7 +207,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findLocationDetails(Mockito.any(Identifier.class));
 		locDetails = locationService.findLocationDetails(locDetails.getOrganizationId());
 		BDDMockito.verify(delegate, Mockito.times(1)).findLocationDetails(Mockito.any(Identifier.class));
-		
+
 		/* enable non existent location (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
@@ -253,7 +258,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationDetails(Mockito.any(Identifier.class));
 		Assert.assertEquals(locDetails.asSummary(), locationService.findLocationSummary(locDetails.getLocationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
-		
+
 		/* update non existent location (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
@@ -261,7 +266,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		Assert.assertNull(locationService.updateLocationName(new Identifier("JJ"), "hello"));
 		Assert.assertNull(locationService.findLocationSummary(new Identifier("JJ")));
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(new Identifier("JJ"));
-		
+
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
 		}).given(delegate).updateLocationAddress(Mockito.eq(new Identifier("KK")), Mockito.any());
@@ -336,7 +341,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
 		}).given(delegate).findLocationSummaries(Mockito.any(LocationsFilter.class));
-		
+
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
 		}).given(delegate).findActiveLocationSummariesForOrg(Mockito.any(Identifier.class));
@@ -370,7 +375,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
 
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
-		
+
 		/* find locations summaries with default paging and ensure cached results */
 		cacheManager.getCache(CachingConfig.Caches.Locations).clear();
 		Assert.assertEquals(3, locationService.findLocationSummaries(new LocationsFilter()).getNumberOfElements());
@@ -382,7 +387,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		Assert.assertEquals(details3, locationService.findLocationSummary(details3.getLocationId()));
 
 		BDDMockito.verify(delegate, Mockito.times(0)).findLocationSummary(Mockito.any(Identifier.class));
-		
+
 		/* find active locations summaries */
 		cacheManager.getCache(CachingConfig.Caches.Locations).clear();
 		Assert.assertEquals(3, locationService.findActiveLocationSummariesForOrg(details1.getOrganizationId()).getNumberOfElements());

@@ -18,6 +18,11 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
+/**
+ * Delegate that intercepts calls and caches the results
+ * 
+ * @author Jonny
+ */
 public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 
 	private CrmPersonService delegate;

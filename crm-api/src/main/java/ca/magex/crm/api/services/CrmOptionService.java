@@ -25,8 +25,8 @@ public interface CrmOptionService {
 		return new Option(null, lookupId, Status.PENDING, name);
 	}
 
-	default Option createOption(Option option) {
-		return createOption(option.getLookupId(), option.getName());
+	default Option createOption(Option prototype) {
+		return createOption(prototype.getLookupId(), prototype.getName());
 	}
 
 	Option createOption(Identifier lookupId, Localized name);

@@ -45,8 +45,8 @@ public interface CrmLookupService {
 		return new Lookup(null, Status.PENDING, true, name, parent);
 	}
 
-	default Lookup createLookup(Lookup lookup) {
-		return createLookup(lookup.getName(), lookup.getParent());
+	default Lookup createLookup(Lookup prototype) {
+		return createLookup(prototype.getName(), prototype.getParent());
 	}
 
 	Lookup createLookup(Localized name, Option parent);

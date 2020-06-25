@@ -24,8 +24,8 @@ public interface CrmGroupService {
 		return new Group(null, Status.PENDING, name);
 	}
 
-	default Group createGroup(Group group) {
-		return createGroup(group.getName());
+	default Group createGroup(Group prototype) {
+		return createGroup(prototype.getName());
 	}
 
 	Group createGroup(Localized name);

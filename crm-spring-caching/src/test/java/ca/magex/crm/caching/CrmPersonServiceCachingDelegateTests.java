@@ -97,11 +97,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return new PersonDetails(invocation.getArgument(0), new Identifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, CrmAsserts.DEVELOPER_POSITION);
 		}).given(delegate).findPersonDetails(Mockito.any(Identifier.class));
-
-		BDDMockito.willAnswer((invocation) -> {
-			return new PersonDetails(invocation.getArgument(0), new Identifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, CrmAsserts.DEVELOPER_POSITION);
-		}).given(delegate).findPersonSummary(Mockito.any(Identifier.class));
-
+		
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		PersonDetails personDetails = personService.findPersonDetails(new Identifier("1"));
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
@@ -118,11 +114,20 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
 		}).given(delegate).findPersonDetails(Mockito.any(Identifier.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).findPersonSummary(Mockito.any(Identifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		Assert.assertNull(personService.findPersonDetails(new Identifier("1")));
 		Assert.assertNull(personService.findPersonDetails(new Identifier("1")));
 		BDDMockito.verify(delegate, Mockito.times(1)).findPersonDetails(Mockito.any(Identifier.class));
+		
+		/* this should also cache the result, so the second find doesn't hit the delegate */
+		Assert.assertNull(personService.findPersonSummary(new Identifier("2")));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("2")));
+		BDDMockito.verify(delegate, Mockito.times(1)).findPersonSummary(Mockito.any(Identifier.class));
 	}
 	
 	@Test

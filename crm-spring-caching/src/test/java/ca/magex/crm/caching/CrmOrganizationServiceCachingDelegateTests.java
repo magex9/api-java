@@ -93,10 +93,6 @@ public class CrmOrganizationServiceCachingDelegateTests {
 			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "Org1", null, null, List.of("ORG"));
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
 
-		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationSummary(invocation.getArgument(0), Status.ACTIVE, "Org1");
-		}).given(delegate).findOrganizationSummary(Mockito.any(Identifier.class));
-
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		OrganizationDetails orgDetails = organizationService.findOrganizationDetails(new Identifier("ABC"));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
@@ -113,11 +109,20 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).findOrganizationSummary(Mockito.any(Identifier.class));
+		
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		Assert.assertNull(organizationService.findOrganizationDetails(new Identifier("ABC")));
 		Assert.assertNull(organizationService.findOrganizationDetails(new Identifier("ABC")));
-
 		BDDMockito.verify(delegate, Mockito.times(1)).findOrganizationDetails(Mockito.any(Identifier.class));
+		
+		/* this should also cache the result, so the second find doesn't hit the delegate */
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("DEF")));
+		Assert.assertNull(organizationService.findOrganizationSummary(new Identifier("DEF")));
+		BDDMockito.verify(delegate, Mockito.times(1)).findOrganizationSummary(Mockito.any(Identifier.class));
 	}
 
 	@Test
