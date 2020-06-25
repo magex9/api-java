@@ -1,8 +1,8 @@
 package ca.magex.crm.api.store.basic;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -16,6 +16,11 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
 
+/**
+ * Simple In memory implementation of the Datastore using ConcurrentHashMap
+ * 
+ * @author Scott
+ */
 public class BasicStore implements CrmStore {
 	
 	private CrmUpdateNotifier notifier; 
@@ -38,17 +43,20 @@ public class BasicStore implements CrmStore {
 	
 	private Map<Identifier, User> users;
 	
+	/**
+	 * Creates a new Basic Store with no data associated to it
+	 */
 	public BasicStore() {
 		notifier = new CrmUpdateNotifier();
-		configurations = new HashMap<Identifier, Serializable>();
-		lookups = new HashMap<Identifier, Lookup>();
-		options = new HashMap<Identifier, Option>();
-		groups = new HashMap<Identifier, Group>();
-		roles = new HashMap<Identifier, Role>();
-		organizations = new HashMap<Identifier, OrganizationDetails>();
-		locations = new HashMap<Identifier, LocationDetails>();
-		persons = new HashMap<Identifier, PersonDetails>();
-		users = new HashMap<Identifier, User>();
+		configurations = new ConcurrentHashMap<Identifier, Serializable>();
+		lookups = new ConcurrentHashMap<Identifier, Lookup>();
+		options = new ConcurrentHashMap<Identifier, Option>();
+		groups = new ConcurrentHashMap<Identifier, Group>();
+		roles = new ConcurrentHashMap<Identifier, Role>();
+		organizations = new ConcurrentHashMap<Identifier, OrganizationDetails>();
+		locations = new ConcurrentHashMap<Identifier, LocationDetails>();
+		persons = new ConcurrentHashMap<Identifier, PersonDetails>();
+		users = new ConcurrentHashMap<Identifier, User>();
 	}
 	
 	@Override
@@ -100,5 +108,4 @@ public class BasicStore implements CrmStore {
 	public Map<Identifier, User> getUsers() {
 		return users;
 	}
-
 }

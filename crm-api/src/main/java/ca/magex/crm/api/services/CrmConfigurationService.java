@@ -29,6 +29,7 @@ public interface CrmConfigurationService {
 	boolean reset();
 	
 	void dump(OutputStream os);
+
 	
 	/**
 	 * Default initialization of the system into the given repositories

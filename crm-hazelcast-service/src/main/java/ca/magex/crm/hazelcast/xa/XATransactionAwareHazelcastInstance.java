@@ -17,28 +17,30 @@ import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import com.hazelcast.transaction.HazelcastXAResource;
 
 import ca.magex.crm.api.CrmProfiles;
-import ca.magex.crm.api.authentication.PasswordDetails;
+import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.repositories.CrmStore;
-import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.hazelcast.service.HazelcastLocationService;
-import ca.magex.crm.hazelcast.service.HazelcastOrganizationService;
-import ca.magex.crm.hazelcast.service.HazelcastPasswordService;
-import ca.magex.crm.hazelcast.service.HazelcastPermissionService;
-import ca.magex.crm.hazelcast.service.HazelcastPersonService;
-import ca.magex.crm.hazelcast.service.HazelcastUserService;
 
 @Component
 @Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class XATransactionAwareHazelcastInstance {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XATransactionAwareHazelcastInstance.class);
+	
+	public static interface Keys {
+		public static final String HZ_CONFIGURATION_KEY			= "Configurations";
+		public static final String HZ_ORGANIZATION_KEY 			= "Organizations";
+		public static final String HZ_LOCATION_KEY 				= "Locations";
+		public static final String HZ_PERSON_KEY 				= "Persons";
+		public static final String HZ_USER_KEY 					= "Users";
+		public static final String HZ_TYPE_KEY	 				= "Types";
+		public static final String HZ_OPTION_KEY 				= "Options";
+		public static final String HZ_PASSWORDS_KEY 			= "Passwords";
+	}
 
 	private HazelcastInstance hzInstance;
 	private TransactionManager tm;
@@ -48,6 +50,17 @@ public class XATransactionAwareHazelcastInstance {
 	public XATransactionAwareHazelcastInstance(HazelcastInstance hzInstance, TransactionManager tm) {
 		this.hzInstance = hzInstance;
 		this.tm = tm;
+	}	
+	
+	public TransactionalMap<String, Object> getConfigurationMap() {
+		try {
+			HazelcastXAResource xaRes = hzInstance.getXAResource();
+			Transaction currentTrans = tm.getTransaction();
+			enlistResource(xaRes, currentTrans);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_CONFIGURATION_KEY);
+		} catch (RollbackException | SystemException e) {
+			throw new ApiException("Error retrieving organizations map", e);
+		}
 	}
 
 	public TransactionalMap<Identifier, OrganizationDetails> getOrganizationsMap() {
@@ -55,7 +68,7 @@ public class XATransactionAwareHazelcastInstance {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
 			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastOrganizationService.HZ_ORGANIZATION_KEY);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_ORGANIZATION_KEY);
 		} catch (RollbackException | SystemException e) {
 			throw new ApiException("Error retrieving organizations map", e);
 		}
@@ -66,7 +79,7 @@ public class XATransactionAwareHazelcastInstance {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
 			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastLocationService.HZ_LOCATION_KEY);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_LOCATION_KEY);
 		} catch (RollbackException | SystemException e) {
 			throw new ApiException("Error retrieving locations map", e);
 		}
@@ -77,7 +90,7 @@ public class XATransactionAwareHazelcastInstance {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
 			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastPersonService.HZ_PERSON_KEY);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_PERSON_KEY);
 		} catch (RollbackException | SystemException e) {
 			throw new ApiException("Error retrieving persons map", e);
 		}
@@ -88,40 +101,40 @@ public class XATransactionAwareHazelcastInstance {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
 			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastUserService.HZ_USER_KEY);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_USER_KEY);
 		} catch (RollbackException | SystemException e) {
 			throw new ApiException("Error retrieving users map", e);
 		}
 	}
 
-	public TransactionalMap<Identifier, Group> getGroupsMap() {
+	public TransactionalMap<Identifier, User> getTypesMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
 			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastPermissionService.HZ_GROUP_KEY);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_TYPE_KEY);
 		} catch (RollbackException | SystemException e) {
-			throw new ApiException("Error retrieving groups map", e);
+			throw new ApiException("Error retrieving types map", e);
+		}
+	}
+	
+	public TransactionalMap<Identifier, User> getOptionsMap() {
+		try {
+			HazelcastXAResource xaRes = hzInstance.getXAResource();
+			Transaction currentTrans = tm.getTransaction();
+			enlistResource(xaRes, currentTrans);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_OPTION_KEY);
+		} catch (RollbackException | SystemException e) {
+			throw new ApiException("Error retrieving options map", e);
 		}
 	}
 
-	public TransactionalMap<Identifier, Role> getRolesMap() {
+	public TransactionalMap<String, CrmPasswordDetails> getPasswordsMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
 			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastPermissionService.HZ_ROLE_KEY);
-		} catch (RollbackException | SystemException e) {
-			throw new ApiException("Error retrieving groups map", e);
-		}
-	}
-
-	public TransactionalMap<String, PasswordDetails> getPasswordsMap() {
-		try {
-			HazelcastXAResource xaRes = hzInstance.getXAResource();
-			Transaction currentTrans = tm.getTransaction();
-			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(HazelcastPasswordService.HZ_PASSWORDS_KEY);
+			return xaRes.getTransactionContext().getMap(Keys.HZ_PASSWORDS_KEY);
 		} catch (RollbackException | SystemException e) {
 			throw new ApiException("Error retrieving passwords map", e);
 		}
