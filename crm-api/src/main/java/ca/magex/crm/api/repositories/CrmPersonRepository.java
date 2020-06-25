@@ -7,20 +7,69 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
+/**
+ * Repository interface used for saving/retrieving a Person
+ * 
+ * @author Jonny
+ */
 public interface CrmPersonRepository {
 	
+	/**
+	 * returns the next identifier to be assigned to a new Person
+	 * 
+	 * @return
+	 */
 	public Identifier generatePersonId();
 
-	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging); 
+	/**
+	 * Save the given person to the repository
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public PersonDetails savePersonDetails(PersonDetails person);
 
-	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging); 
-
-	public long countPersons(PersonsFilter filter); 
-	
+	/**
+	 * returns the full person details associated with the given personId, 
+	 * or null if the personId does not exist
+	 * 
+	 * @param personId
+	 * @return
+	 */
 	public PersonDetails findPersonDetails(Identifier personId);
 
+	/**
+	 * returns the person summary associated with the given personId, 
+	 * or null if the personId does not exist
+	 * 
+	 * @param personId
+	 * @return
+	 */
 	public PersonSummary findPersonSummary(Identifier personId);
-
-	public PersonDetails savePersonDetails(PersonDetails person);
 	
+	/**
+	 * returns the paged results with the full person details for any person that matches the given filter
+	 * 
+	 * @param filter
+	 * @param paging
+	 * @return
+	 */
+	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging); 
+
+	/**
+	 * returns the paged results with the person summary for any person that matches the given filter
+	 * 
+	 * @param filter
+	 * @param paging
+	 * @return
+	 */
+	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging); 
+
+	/**
+	 * returns the number of persons that match the given filter
+	 * 
+	 * @param filter
+	 * @return
+	 */
+	public long countPersons(PersonsFilter filter); 
 }
