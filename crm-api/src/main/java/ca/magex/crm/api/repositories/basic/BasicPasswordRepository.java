@@ -1,6 +1,6 @@
 package ca.magex.crm.api.repositories.basic;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
@@ -13,8 +13,7 @@ import ca.magex.crm.api.store.CrmPasswordStore;
  */
 public class BasicPasswordRepository implements CrmPasswordRepository {
 
-	/* remove vowels so there's no chance the random password could be a curse word */
-	public static final String CHARS = "bcdfghjkmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ";
+	
 	
 	private CrmPasswordStore passwordStore;
 	
@@ -24,12 +23,13 @@ public class BasicPasswordRepository implements CrmPasswordRepository {
 	
 	@Override
 	public String generateTemporaryPassword() {
-		return RandomStringUtils.random(10, CHARS);
+		return CrmPasswordStore.generatePassword();
 	}
 
 	@Override
-	public void savePasswordDetails(CrmPasswordDetails passwordDetails) {
-		passwordStore.getPasswords().put(passwordDetails.getUsername(), passwordDetails);
+	public CrmPasswordDetails savePasswordDetails(CrmPasswordDetails passwordDetails) {
+		passwordStore.getPasswords().put(passwordDetails.getUsername(), SerializationUtils.clone(passwordDetails));
+		return passwordDetails;
 	}
 
 	@Override

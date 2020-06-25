@@ -22,7 +22,7 @@ public interface CrmPasswordRepository {
 	 * @param passwordDetails
 	 * @return
 	 */
-	public void savePasswordDetails(CrmPasswordDetails passwordDetails);
+	public CrmPasswordDetails savePasswordDetails(CrmPasswordDetails passwordDetails);
 	
 	/**
 	 * returns the password details for the given username
