@@ -3,7 +3,6 @@ package ca.magex.crm.api.authentication.basic;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ca.magex.crm.api.authentication.CrmPasswordDetails;
