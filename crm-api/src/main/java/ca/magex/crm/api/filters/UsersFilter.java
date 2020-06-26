@@ -13,11 +13,11 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.repositories.CrmPersonRepository;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -62,7 +62,7 @@ public class UsersFilter implements CrmFilter<User> {
 		try {
 			this.personId = filterCriteria.containsKey("personId") ? new Identifier(CrmPersonRepository.CONTEXT, (String) filterCriteria.get("personId")) : null;
 			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier(CrmOrganizationRepository.CONTEXT, (String) filterCriteria.get("organizationId")) : null;
-			this.roleId = new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("roleId"));
+			this.roleId = filterCriteria.get("roleId") != null ? new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("roleId")) : null;
 			this.username = (String) filterCriteria.get("username");		
 			this.status = null;
 			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {

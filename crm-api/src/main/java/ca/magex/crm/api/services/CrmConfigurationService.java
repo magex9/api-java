@@ -3,10 +3,10 @@ package ca.magex.crm.api.services;
 import java.io.OutputStream;
 
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;

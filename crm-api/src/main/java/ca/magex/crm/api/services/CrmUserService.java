@@ -7,10 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;

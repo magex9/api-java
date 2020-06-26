@@ -3,10 +3,10 @@ package ca.magex.crm.api.services.basic;
 import java.util.List;
 
 import ca.magex.crm.api.authentication.CrmPasswordService;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;

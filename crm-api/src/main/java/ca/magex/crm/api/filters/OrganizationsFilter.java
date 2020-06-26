@@ -56,7 +56,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 				}
 			}
-			this.groupId = new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("group"));
+			this.groupId = filterCriteria.get("group") != null ? new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("group")) : null;
 		}
 		catch(ClassCastException cce) {
 			throw new ApiException("Unable to instantiate organizations filter", cce);

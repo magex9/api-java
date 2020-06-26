@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;

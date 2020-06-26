@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
 

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;

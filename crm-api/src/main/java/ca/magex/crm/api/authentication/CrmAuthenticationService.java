@@ -1,6 +1,6 @@
 package ca.magex.crm.api.authentication;
 
-import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmAuthenticationService {

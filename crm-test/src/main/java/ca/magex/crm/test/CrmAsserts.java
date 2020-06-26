@@ -14,7 +14,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -129,27 +128,27 @@ public class CrmAsserts {
 	
 	public static final Communication WORK_COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
 	
-	public static final String BUSINESS_SECTOR = "execs";
+//	public static final String BUSINESS_SECTOR = "execs";
+//	
+//	public static final String BUSINESS_UNIT = "ceo";
+//	
+//	public static final String BUSINESS_CLASSIFICATION = "director";
+//	
+//	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition(BUSINESS_SECTOR, BUSINESS_UNIT, BUSINESS_CLASSIFICATION);
+//	
+//	public static final String DEVELOPER_SECTOR = "imit";
+//	
+//	public static final String DEVELOPER_UNIT = "ops";
+//	
+//	public static final String DEVELOPER_CLASSIFICATION = "sysadmin";
+//	
+//	public static final BusinessPosition DEVELOPER_POSITION = new BusinessPosition(DEVELOPER_SECTOR, DEVELOPER_UNIT, DEVELOPER_CLASSIFICATION);
 	
-	public static final String BUSINESS_UNIT = "ceo";
-	
-	public static final String BUSINESS_CLASSIFICATION = "director";
-	
-	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition(BUSINESS_SECTOR, BUSINESS_UNIT, BUSINESS_CLASSIFICATION);
-	
-	public static final String DEVELOPER_SECTOR = "imit";
-	
-	public static final String DEVELOPER_UNIT = "ops";
-	
-	public static final String DEVELOPER_CLASSIFICATION = "sysadmin";
-	
-	public static final BusinessPosition DEVELOPER_POSITION = new BusinessPosition(DEVELOPER_SECTOR, DEVELOPER_UNIT, DEVELOPER_CLASSIFICATION);
-	
-	public static final String MISS = "1";
+	public static final String MISS = "MISS";
 
-	public static final String MRS = "2";
+	public static final String MRS = "MRS";
 
-	public static final String MR = "3";
+	public static final String MR = "MR";
 	
 	public static final PersonName ADAM = new PersonName(MR, "Adam", "A", "Anderson");
 	

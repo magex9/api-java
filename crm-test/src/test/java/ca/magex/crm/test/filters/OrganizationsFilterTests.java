@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort.Order;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.repositories.CrmOptionRepository;
+import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -30,7 +32,7 @@ public class OrganizationsFilterTests {
 			if ((field.getModifiers() & Modifier.STATIC) > 0) {
 				continue;
 			}
-			if (field.getName().equals("group")) {
+			if (field.getName().equals("groupId")) {
 				continue;
 			}
 			assertTrue(OrganizationsFilter.getSortOptions().contains(Sort.by(Order.asc(field.getName()))));
@@ -48,21 +50,21 @@ public class OrganizationsFilterTests {
 		OrganizationsFilter filter = new OrganizationsFilter();
 		assertNull(filter.getDisplayName());		
 		assertNull(filter.getStatus());
-		assertEquals("{\"displayName\":null,\"status\":null,\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":null,\"status\":null,\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter(null, null, null), filter);
 		assertEquals(new OrganizationsFilter(null, null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withDisplayName("display");
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"displayName\":\"display\",\"status\":null,\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":\"display\",\"status\":null,\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter("display", null, null), filter);
 		assertEquals(new OrganizationsFilter("display", null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withStatus(Status.ACTIVE);
 		assertEquals("display", filter.getDisplayName());		
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\",\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\",\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null), filter);
 		assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null).hashCode(), filter.hashCode());
 	}
@@ -72,28 +74,28 @@ public class OrganizationsFilterTests {
 		OrganizationsFilter filter = new OrganizationsFilter(Map.of());
 		assertNull(filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"displayName\":null,\"status\":null,\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":null,\"status\":null,\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter(null, null, null), filter);
 		assertEquals(new OrganizationsFilter(null, null, null).hashCode(), filter.hashCode());
 		
 		filter = new OrganizationsFilter(Map.of("displayName", "display"));
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"displayName\":\"display\",\"status\":null,\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":\"display\",\"status\":null,\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter("display", null, null), filter);
 		assertEquals(new OrganizationsFilter("display", null, null).hashCode(), filter.hashCode());
 		
 		filter = new OrganizationsFilter(Map.of("displayName", "display", "status", ""));
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"displayName\":\"display\",\"status\":null,\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":\"display\",\"status\":null,\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter("display", null, null), filter);
 		assertEquals(new OrganizationsFilter("display", null, null).hashCode(), filter.hashCode());
 		
 		filter = new OrganizationsFilter(Map.of("displayName", "display", "status", "active"));
 		assertEquals("display", filter.getDisplayName());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\",\"group\":null}", filter.toString());
+		assertEquals("{\"displayName\":\"display\",\"status\":\"ACTIVE\",\"groupId\":null}", filter.toString());
 		assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null), filter);
 		assertEquals(new OrganizationsFilter("display", Status.ACTIVE, null).hashCode(), filter.hashCode());
 		
@@ -123,7 +125,7 @@ public class OrganizationsFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		OrganizationDetails organization = new OrganizationDetails(new Identifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of("ORG"));
+		OrganizationDetails organization = new OrganizationDetails(new Identifier(CrmOrganizationRepository.CONTEXT, "ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new Identifier(CrmOptionRepository.CONTEXT, "ORG")));
 		/* default filter should match */
 		assertTrue(new OrganizationsFilter().apply(organization));
 		

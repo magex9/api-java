@@ -22,7 +22,7 @@ public enum Type {
 	COUNTRY("COUNTRIES", "Countries", "Des pays", null, false, true),
 	PROVINCE("PROVINCES", "Canadian Provinces", "Provinces canadiennes", COUNTRY, false, true),
 	BUSINESS_GROUP("BUSINESS_GROUPS", "Business Sector", "Secteur d'activité", null, true, true),
-	BUSINESS_ROLE("BUSINESS_GROUPS", "Business Unit", "Équipe commerciale", BUSINESS_GROUP, false, true);
+	BUSINESS_ROLE("BUSINESS_ROLES", "Business Unit", "Équipe commerciale", BUSINESS_GROUP, false, true);
 	
 	private static final Map<String, Type> INDEX = Arrays.asList(values()).stream().collect(Collectors.toMap(t -> t.getCode(), t -> t));
 	

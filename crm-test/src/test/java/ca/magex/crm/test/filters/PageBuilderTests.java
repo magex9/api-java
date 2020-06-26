@@ -7,21 +7,23 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 
+import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.filters.RolesFilter;
-import ca.magex.crm.api.roles.Role;
+import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.test.CrmAsserts;
 
 public class PageBuilderTests {
 
-	private Role roleA = new Role(new Identifier("A"), new Identifier("G1"), Status.ACTIVE, new Localized("a", "a", "a"));
-	private Role roleB = new Role(new Identifier("B"), new Identifier("G1"), Status.ACTIVE, new Localized("b", "b", "b"));
-	private Role roleC = new Role(new Identifier("C"), new Identifier("G1"), Status.ACTIVE, new Localized("c", "c", "c"));
-	private Role roleD = new Role(new Identifier("D"), new Identifier("G1"), Status.ACTIVE, new Localized("d", "d", "d"));
+	private Option roleA = new Option(new Identifier(CrmOptionRepository.CONTEXT, "A"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.CANADA);
+	private Option roleB = new Option(new Identifier(CrmOptionRepository.CONTEXT, "B"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.ENGLAND);
+	private Option roleC = new Option(new Identifier(CrmOptionRepository.CONTEXT, "C"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.MEXICO);
+	private Option roleD = new Option(new Identifier(CrmOptionRepository.CONTEXT, "D"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.UNITED_STATES);
 	
 	@Test
 	public void testInstantiate() {
@@ -30,8 +32,8 @@ public class PageBuilderTests {
 	
 	@Test
 	public void testBuildFirstPage() {
-		FilteredPage<Role> rolePage = PageBuilder.buildPageFor(
-				new RolesFilter(), 
+		FilteredPage<Option> rolePage = PageBuilder.buildPageFor(
+				new OptionsFilter(), 
 				List.of(roleA, roleB, roleC, roleD),
 				new Paging(1, 1, Sort.unsorted()));
 		
@@ -41,8 +43,8 @@ public class PageBuilderTests {
 	
 	@Test
 	public void testBuildSecondPage() {
-		FilteredPage<Role> rolePage = PageBuilder.buildPageFor(
-				new RolesFilter(), 
+		FilteredPage<Option> rolePage = PageBuilder.buildPageFor(
+				new OptionsFilter(), 
 				List.of(roleA, roleB, roleC, roleD),
 				new Paging(2, 1, Sort.unsorted()));
 		
@@ -52,8 +54,8 @@ public class PageBuilderTests {
 	
 	@Test
 	public void testBuildLargerPage() {
-		FilteredPage<Role> rolePage = PageBuilder.buildPageFor(
-				new RolesFilter(), 
+		FilteredPage<Option> rolePage = PageBuilder.buildPageFor(
+				new OptionsFilter(), 
 				List.of(roleA, roleB),
 				new Paging(1, 5, Sort.unsorted()));
 		
@@ -64,8 +66,8 @@ public class PageBuilderTests {
 	
 	@Test
 	public void testBuildFuturePage() {
-		FilteredPage<Role> rolePage = PageBuilder.buildPageFor(
-				new RolesFilter(), 
+		FilteredPage<Option> rolePage = PageBuilder.buildPageFor(
+				new OptionsFilter(), 
 				List.of(roleA, roleB),
 				new Paging(10, 5, Sort.unsorted()));
 		
@@ -74,8 +76,8 @@ public class PageBuilderTests {
 	
 	@Test
 	public void testBuildFullPage() {
-		FilteredPage<Role> rolePage = PageBuilder.buildPageFor(
-				new RolesFilter(), 
+		FilteredPage<Option> rolePage = PageBuilder.buildPageFor(
+				new OptionsFilter(), 
 				List.of(roleA, roleB, roleC, roleD),
 				new Paging(1, 4, Sort.unsorted()));
 		
