@@ -103,15 +103,9 @@
 								<interface>ca.magex.crm.api.repositories.CrmConfigurationRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmConfigurationService</interface>
 								<interface>ca.magex.crm.api.policies.CrmConfigurationPolicy</interface>
-								<interface>ca.magex.crm.api.repositories.CrmLookupRepository</interface>
-								<interface>ca.magex.crm.api.policies.CrmLookupPolicy</interface>
-								<interface>ca.magex.crm.api.services.CrmLookupService</interface>
-								<interface>ca.magex.crm.api.repositories.CrmGroupRepository</interface>
-								<interface>ca.magex.crm.api.services.CrmGroupService</interface>
-								<interface>ca.magex.crm.api.policies.CrmGroupPolicy</interface>
-								<interface>ca.magex.crm.api.repositories.CrmRoleRepository</interface>
-								<interface>ca.magex.crm.api.services.CrmRoleService</interface>
-								<interface>ca.magex.crm.api.policies.CrmRolePolicy</interface>
+								<interface>ca.magex.crm.api.repositories.CrmOptionRepository</interface>
+								<interface>ca.magex.crm.api.policies.CrmOptionPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmOptionService</interface>
 								<interface>ca.magex.crm.api.repositories.CrmOrganizationRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
 								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
@@ -133,10 +127,7 @@
 							<targetClass>ca.magex.crm.api.adapters.CrmRepositoriesAdapter</targetClass>
 							<interfaces>
 								<interface>ca.magex.crm.api.repositories.CrmConfigurationRepository</interface>
-								<interface>ca.magex.crm.api.repositories.CrmLookupRepository</interface>
 								<interface>ca.magex.crm.api.repositories.CrmOptionRepository</interface>
-								<interface>ca.magex.crm.api.repositories.CrmGroupRepository</interface>
-								<interface>ca.magex.crm.api.repositories.CrmRoleRepository</interface>
 								<interface>ca.magex.crm.api.repositories.CrmOrganizationRepository</interface>
 								<interface>ca.magex.crm.api.repositories.CrmLocationRepository</interface>
 								<interface>ca.magex.crm.api.repositories.CrmPersonRepository</interface>
@@ -148,10 +139,7 @@
 							<targetClass>ca.magex.crm.api.adapters.CrmPoliciesAdapter</targetClass>
 							<interfaces>
 								<interface>ca.magex.crm.api.policies.CrmConfigurationPolicy</interface>
-								<interface>ca.magex.crm.api.policies.CrmLookupPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmOptionPolicy</interface>
-								<interface>ca.magex.crm.api.policies.CrmGroupPolicy</interface>
-								<interface>ca.magex.crm.api.policies.CrmRolePolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
@@ -163,10 +151,7 @@
 							<targetClass>ca.magex.crm.api.adapters.CrmServicesAdapter</targetClass>
 							<interfaces>
 								<interface>ca.magex.crm.api.services.CrmConfigurationService</interface>
-								<interface>ca.magex.crm.api.services.CrmLookupService</interface>
 								<interface>ca.magex.crm.api.services.CrmOptionService</interface>
-								<interface>ca.magex.crm.api.services.CrmGroupService</interface>
-								<interface>ca.magex.crm.api.services.CrmRoleService</interface>
 								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
 								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
 								<interface>ca.magex.crm.api.services.CrmPersonService</interface>

@@ -110,6 +110,7 @@ public class JsondocBuilder {
     
     @SuppressWarnings("rawtypes")
 	public static JsonObject processFile(File file) throws FileNotFoundException {
+    	System.out.println("Processing: " + file.getAbsolutePath());
         CompilationUnit cu = StaticJavaParser.parse(file);
         List<TypeDeclaration> types = cu.findAll(TypeDeclaration.class);
         if (types.get(0) instanceof EnumDeclaration) {

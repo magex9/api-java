@@ -20,65 +20,33 @@ import ca.magex.crm.api.system.Status;
 
 public interface CrmUserService {
 	
-	default User prototypeUser(
-			Identifier personId, 
-			String username, 
-			List<String> roles) {
+	default User prototypeUser(Identifier personId, String username, List<Identifier> roles) {
 		return new User(null, username, new PersonSummary(personId, null, null, null), Status.PENDING, roles);
 	};
-	
+
 	default User createUser(User prototype) {
-		return createUser(
-			prototype.getPerson().getPersonId(), 
-			prototype.getUsername(), 
-			prototype.getRoles());
+		return createUser(prototype.getPerson().getPersonId(), prototype.getUsername(), prototype.getRoles());
 	}
 
-	User createUser(
-		Identifier personId, 
-		String username, 
-		List<String> roles
-	);
+	User createUser(Identifier personId, String username, List<Identifier> roles);
 
-	User enableUser(
-		Identifier userId
-	);
+	User enableUser(Identifier userId);
 
-	User disableUser(
-		Identifier userId
-	);
-	
-	User updateUserRoles(
-		Identifier userId, 
-		List<String> roles
-	);
+	User disableUser(Identifier userId);
 
-	boolean changePassword(
-		Identifier userId, 
-		String currentPassword, 
-		String newPassword
-	);
+	User updateUserRoles(Identifier userId, List<Identifier> roles);
 
-	String resetPassword(
-		Identifier userId
-	);
-	
-	User findUser(
-	  	Identifier userId
-	);
-    
-    User findUserByUsername(
-    	String username
-    );
-    
-    long countUsers(
-   		UsersFilter filter
-   	);
-    
-    FilteredPage<User> findUsers(
-    	UsersFilter filter, 
-    	Paging paging
-    );
+	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
+
+	String resetPassword(Identifier userId);
+
+	User findUser(Identifier userId);
+
+	User findUserByUsername(String username);
+
+	long countUsers(UsersFilter filter);
+
+	FilteredPage<User> findUsers(UsersFilter filter, Paging paging);
 
 	default boolean isValidPasswordFormat(String password) {
 		if (StringUtils.isBlank(password))
@@ -93,15 +61,15 @@ public interface CrmUserService {
 	default FilteredPage<User> findUsers(UsersFilter filter) {
 		return findUsers(filter, defaultUsersPaging());
 	}
-	
+
 	default FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
 		return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));
 	}
-	
+
 	default UsersFilter defaultUsersFilter() {
 		return new UsersFilter();
 	};
-	
+
 	default Paging defaultUsersPaging() {
 		return new Paging(UsersFilter.getSortOptions().get(0));
 	}
@@ -139,12 +107,12 @@ public interface CrmUserService {
 			messages.add(new Message(user.getUserId(), "error", "roles", new Localized(Lang.ENGLISH, "Users must have a permission role assigned to them")));
 		} else {
 			for (int i = 0; i < user.getRoles().size(); i++) {
-				String role = user.getRoles().get(i);
+				Identifier roleId = user.getRoles().get(i);
 				try {
-					if (!crm.findRoleByCode(role).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role is not active: " + role)));
+					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
+						messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role is not active: " + roleId)));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role does not exist: " + role)));
+					messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role does not exist: " + roleId)));
 				}
 			}
 		}

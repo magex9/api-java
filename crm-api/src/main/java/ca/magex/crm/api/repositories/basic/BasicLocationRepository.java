@@ -23,11 +23,6 @@ public class BasicLocationRepository implements CrmLocationRepository {
 		this.store = store;
 	}
 	
-	@Override
-	public Identifier generateLocationId() {
-		return CrmStore.generateId(LocationDetails.class);
-	}
-
 	private Stream<LocationDetails> apply(LocationsFilter filter) {
 		return store.getLocations().values().stream().filter(p -> filter.apply(p));
 	}

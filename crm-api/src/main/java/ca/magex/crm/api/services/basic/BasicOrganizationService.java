@@ -20,8 +20,8 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		this.repos = repos;
 	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName, List<String> groups) {
-		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, groups));
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<Identifier> groupIds) {
+		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, groupIds));
 	}
 
 	public OrganizationSummary enableOrganization(Identifier organizationId) {
@@ -64,12 +64,12 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withMainContactId(personId));
 	}
 
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
 		}
-		return repos.saveOrganizationDetails(details.withGroups(groups));
+		return repos.saveOrganizationDetails(details.withGroupIds(groupIds));
 	}
 
 	@Override

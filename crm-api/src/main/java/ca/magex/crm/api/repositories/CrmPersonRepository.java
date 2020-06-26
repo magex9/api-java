@@ -4,13 +4,18 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 
 public interface CrmPersonRepository {
-	
-	public Identifier generatePersonId();
 
+	public static final String CONTEXT = "/persons";
+	
+	default Identifier generatePersonId() {
+		return CrmStore.generateId(CONTEXT);
+	}
+	
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging); 
 
 	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging); 

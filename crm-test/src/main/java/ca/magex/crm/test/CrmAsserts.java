@@ -115,7 +115,7 @@ public class CrmAsserts {
 	
 	public static final String SYSTEM_EMAIL = "root@localhost";
 	
-	public static final PersonName PERSON_NAME = new PersonName("3", "Chris", "P", "Bacon");
+	public static final PersonName PERSON_NAME = new PersonName("MR", "Chris", "P", "Bacon");
 	
 	public static final String PERSON_EMAIL = "crhis@bacon.com";
 	

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort.Order;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
@@ -48,7 +49,7 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 	public PersonsFilter(Map<String, Object> filterCriteria) {
 		try {
 			this.displayName = (String) filterCriteria.get("displayName");
-			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier(CrmOrganizationRepository.CONTEXT, (String) filterCriteria.get("organizationId")) : null;
 			this.status = null;
 			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 				try {

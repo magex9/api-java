@@ -1,4 +1,4 @@
-package ca.magex.crm.api.policies.basic;
+package ca.magex.crm.test.policies;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,9 +37,9 @@ public class BasicLocationPolicyTests {
 
 	@Test
 	public void testCanCreateLocationForOrganization() {
-		Identifier orgId = new Identifier("O1");
-		Identifier orgId2 = new Identifier("O2");
-		Identifier orgId3 = new Identifier("O3");
+		Identifier orgId = new Identifier("/organizations/O1");
+		Identifier orgId2 = new Identifier("/organizations/O2");
+		Identifier orgId3 = new Identifier("/organizations/O3");
 		/* throw item not found for any identifier */
 		BDDMockito.willThrow(new ItemNotFoundException("")).given(organizationService).findOrganizationSummary(Mockito.any());
 		/* return an Active Org Summary for our specific identifier */

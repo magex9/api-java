@@ -1,6 +1,5 @@
 package ca.magex.crm.api.services.basic;
 
-import ca.magex.crm.api.filters.LookupsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmRepositories;
@@ -10,6 +9,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public class BasicOptionService implements CrmOptionService {
 
@@ -20,8 +20,8 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option createOption(Identifier lookupId, Localized name) {
-		return repos.saveOption(new Option(repos.generateOptionId(), lookupId, Status.ACTIVE, name));
+	public Option createOption(Identifier parentId, String typeCode, Localized name) {
+		return repos.saveOption(new Option(repos.generateOptionId(), parentId, Type.of(typeCode), Status.ACTIVE, true, name));
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option findOption(String lookupCode, String optionCode) {
-		return findOptionByCode(repos.findLookups(new LookupsFilter().withLookupCode(lookupCode), LookupsFilter.getDefaultPaging()).getSingleItem().getLookupId(), optionCode);
+	public Option findOptionByCode(String typeCode, String optionCode) {
+		return repos.findOptions(new OptionsFilter().withType(Type.of(typeCode)).withOptionCode(optionCode), OptionsFilter.getDefaultPaging()).getSingleItem();
 	}
 
 	@Override

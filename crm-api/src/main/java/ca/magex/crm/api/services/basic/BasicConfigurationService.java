@@ -1,7 +1,9 @@
 package ca.magex.crm.api.services.basic;
 
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
@@ -11,12 +13,14 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.dictionary.CrmDictionary;
+import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public class BasicConfigurationService implements CrmConfigurationService {
 
@@ -34,7 +38,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 
 	@Override
 	public boolean isInitialized() {
-		return repos.countUsers(new UsersFilter().withRole("SYS_ADMIN").withStatus(Status.ACTIVE)) > 0;
+		return repos.countUsers(new UsersFilter().withRoleId(roles("SYS_ADMIN").get(0)).withStatus(Status.ACTIVE)) > 0;
 	}
 
 	@Override
@@ -48,14 +52,28 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			
 			MailingAddress address = new MailingAddress("221b Baker Street", "London", "England", "GB", "NW1 6XE");
 			Communication communication = new Communication("System Admin", "en", email, null, null);
-			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, List.of("SYS", "CRM")));
+			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, groups("SYS", "CRM")));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
-			repos.saveUser(new User(systemId, username, repos.findPersonSummary(mainContactId), Status.ACTIVE, List.of("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")));
+			repos.saveUser(new User(systemId, username, repos.findPersonSummary(mainContactId), Status.ACTIVE, roles("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
 		}
-		return repos.findUsers(new UsersFilter().withRole("SYS_ADMIN").withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+		return repos.findUsers(new UsersFilter().withRoleId(roles("SYS_ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+	}
+	
+	private List<Identifier> groups(String... codes) {
+		return Arrays.asList(codes).stream()
+				.map(c -> repos.findOptions(new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_ROLE),
+						OptionsFilter.getDefaultPaging()).getSingleItem().getOptionId())
+				.collect(Collectors.toList());
+	}
+
+	private List<Identifier> roles(String... codes) {
+		return Arrays.asList(codes).stream()
+				.map(c -> repos.findOptions(new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_ROLE),
+						OptionsFilter.getDefaultPaging()).getSingleItem().getOptionId())
+				.collect(Collectors.toList());
 	}
 	
 	@Override

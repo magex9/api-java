@@ -5,7 +5,6 @@ import static ca.magex.crm.api.authentication.CrmAuthenticationService.SYS_ADMIN
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.basic.BasicOptionPolicy;
-import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Identifier;
 
@@ -24,15 +23,14 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	 */
 	public AuthenticatedOptionPolicy(
 			CrmAuthenticationService auth,
-			CrmLookupService lookups,
 			CrmOptionService options) {
 		this.auth = auth;
-		this.delegate = new BasicOptionPolicy(lookups, options);
+		this.delegate = new BasicOptionPolicy(options);
 	}
 
 	@Override
-	public boolean canCreateOption(Identifier lookupId) {
-		if (!delegate.canCreateOption(lookupId)) {
+	public boolean canCreateOption(String typeCode) {
+		if (!delegate.canCreateOption(typeCode)) {
 			return false;
 		}
 		/* only a CRM Admin can create a Option */
@@ -40,8 +38,8 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canViewOptions(Identifier lookupId) {
-		if (!delegate.canViewOptions(lookupId)) {
+	public boolean canViewOptions(String typeCode) {
+		if (!delegate.canViewOptions(typeCode)) {
 			return false;
 		}
 		/* anybody can view options */
@@ -49,8 +47,8 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 	
 	@Override
-	public boolean canViewOption(Identifier lookupId, String optionCode) {
-		if (!delegate.canViewOption(lookupId, optionCode)) {
+	public boolean canViewOption(String typeCode, String optionCode) {
+		if (!delegate.canViewOption(typeCode, optionCode)) {
 			return false;
 		}
 		/* anybody can view options */

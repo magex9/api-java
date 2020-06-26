@@ -19,23 +19,23 @@ public class OrganizationDetails extends OrganizationSummary {
 
 	private Identifier mainContactId;
 
-	private List<String> groups;
+	private List<Identifier> groupIds;
 
-	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId, Identifier mainContactId, List<String> groups) {
+	public OrganizationDetails(Identifier organizationId, Status status, String displayName, Identifier mainLocationId, Identifier mainContactId, List<Identifier> groupIds) {
 		super(organizationId, status, displayName);
 		this.mainLocationId = mainLocationId;
 		this.mainContactId = mainContactId;
-		this.groups = new ArrayList<String>(groups);
+		this.groupIds = new ArrayList<Identifier>(groupIds);
 	}
 
 	@Override
 	public OrganizationDetails withStatus(Status status) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groupIds);
 	}
 
 	@Override
 	public OrganizationDetails withDisplayName(String displayName) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groupIds);
 	}
 
 	public Identifier getMainLocationId() {
@@ -43,7 +43,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	}
 
 	public OrganizationDetails withMainLocationId(Identifier mainLocationId) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groupIds);
 	}
 	
 	public Identifier getMainContactId() {
@@ -51,15 +51,15 @@ public class OrganizationDetails extends OrganizationSummary {
 	}
 	
 	public OrganizationDetails withMainContactId(Identifier mainContactId) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groupIds);
 	}
 
-	public List<String> getGroups() {
-		return groups;
+	public List<Identifier> getGroupIds() {
+		return groupIds;
 	}
 
-	public OrganizationDetails withGroups(List<String> groups) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+	public OrganizationDetails withGroupIds(List<Identifier> groupIds) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groupIds);
 	}
 
 	@Override

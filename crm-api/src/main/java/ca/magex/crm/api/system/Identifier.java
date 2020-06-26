@@ -12,11 +12,15 @@ public class Identifier implements CharSequence, Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	public static final Identifier UNDEFINED = new Identifier("undefined");
+	public static final Identifier UNDEFINED = new Identifier("/type/undefined");
 	
-	public static final String PATTERN = "[A-Za-z0-9]+";
+	public static final String PATTERN = "/([a-z/]+)/[A-Za-z0-9]+";
 	
 	private String id;
+
+	public Identifier(String context, String id) {
+		this(context + "/" + id);
+	}
 	
 	public Identifier(String id) {
 		if (StringUtils.isBlank(id))

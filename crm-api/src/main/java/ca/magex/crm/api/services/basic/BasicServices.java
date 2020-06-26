@@ -11,10 +11,7 @@ public class BasicServices extends CrmServicesAdapter implements CrmServices {
 	public BasicServices(CrmRepositories repos, CrmPasswordService passwords, CrmDictionary dictionary) {
 		super(
 			new BasicConfigurationService(repos, passwords, dictionary),
-			new BasicLookupService(repos),
 			new BasicOptionService(repos),
-			new BasicGroupService(repos),
-			new BasicRoleService(repos),
 			new BasicOrganizationService(repos),
 			new BasicLocationService(repos),
 			new BasicPersonService(repos),

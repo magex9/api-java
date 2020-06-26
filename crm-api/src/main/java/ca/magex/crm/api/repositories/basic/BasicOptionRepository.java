@@ -22,11 +22,6 @@ public class BasicOptionRepository implements CrmOptionRepository {
 		this.store = store;
 	}
 	
-	@Override
-	public Identifier generateOptionId() {
-		return CrmStore.generateId(Option.class);
-	}
-	
 	private Stream<Option> apply(OptionsFilter filter) {
 		return store.getOptions().values().stream().filter(p -> filter.apply(p));
 	}

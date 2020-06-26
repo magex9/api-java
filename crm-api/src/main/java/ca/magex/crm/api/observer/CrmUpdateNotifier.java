@@ -32,26 +32,8 @@ public class CrmUpdateNotifier implements CrmUpdateObserver {
 	}
 
 	@Override
-	public CrmUpdateObserver lookupUpdated(Long timestamp, Identifier lookupId) {
-		observers.forEach(o -> o.lookupUpdated(timestamp, lookupId));
-		return this;
-	}
-
-	@Override
 	public CrmUpdateObserver optionUpdated(Long timestamp, Identifier optionId) {
 		observers.forEach(o -> o.optionUpdated(timestamp, optionId));
-		return this;
-	}
-
-	@Override
-	public CrmUpdateObserver groupUpdated(Long timestamp, Identifier groupId) {
-		observers.forEach(o -> o.groupUpdated(timestamp, groupId));
-		return this;
-	}
-
-	@Override
-	public CrmUpdateObserver roleUpdated(Long timestamp, Identifier roleId) {
-		observers.forEach(o -> o.roleUpdated(timestamp, roleId));
 		return this;
 	}
 

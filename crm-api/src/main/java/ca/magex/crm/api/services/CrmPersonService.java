@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -22,83 +21,45 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public interface CrmPersonService {
 	
-	default PersonDetails prototypePerson(
-			Identifier organizationId, 
-			PersonName name, 
-			MailingAddress address, 
-			Communication communication, 
-			BusinessPosition position) {
-		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, position);
+	default PersonDetails prototypePerson(Identifier organizationId, PersonName name, MailingAddress address,
+			Communication communication, List<Identifier> roleIds) {
+		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address,
+				communication, roleIds);
 	};
-	
+
 	default PersonDetails createPerson(PersonDetails prototype) {
-		return createPerson(
-			prototype.getOrganizationId(), 
-			prototype.getLegalName(), 
-			prototype.getAddress(),
-			prototype.getCommunication(),
-			prototype.getPosition());
+		return createPerson(prototype.getOrganizationId(), prototype.getLegalName(), prototype.getAddress(),
+				prototype.getCommunication(), prototype.getRoleIds());
 	}
 
-	PersonDetails createPerson(
-		Identifier organizationId, 
-		PersonName name, 
-		MailingAddress address, 
-		Communication communication, 
-		BusinessPosition position);
+	PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address,
+			Communication communication, List<Identifier> roleIds);
 
-	PersonSummary enablePerson(
-		Identifier personId
-	);
+	PersonSummary enablePerson(Identifier personId);
 
-	PersonSummary disablePerson(
-		Identifier personId
-	);
+	PersonSummary disablePerson(Identifier personId);
 
-	PersonDetails updatePersonName(
-		Identifier personId, 
-		PersonName name
-	);
+	PersonDetails updatePersonName(Identifier personId, PersonName name);
 
-	PersonDetails updatePersonAddress(
-		Identifier personId, 
-		MailingAddress address
-	);
+	PersonDetails updatePersonAddress(Identifier personId, MailingAddress address);
 
-	PersonDetails updatePersonCommunication(
-		Identifier personId, 
-		Communication communication
-	);
+	PersonDetails updatePersonCommunication(Identifier personId, Communication communication);
 
-	PersonDetails updatePersonBusinessPosition(
-		Identifier personId, 
-		BusinessPosition position
-	);
-
-	PersonSummary findPersonSummary(
-		Identifier personId
-	);
-
-	PersonDetails findPersonDetails(
-		Identifier personId
-	);
-
-	long countPersons(
-		PersonsFilter filter
-	);
-
-	FilteredPage<PersonSummary> findPersonSummaries(
-		PersonsFilter filter, 
-		Paging paging
-	);
+	PersonDetails updatePersonRoles(Identifier personId, List<Identifier> roleIds);
 	
-	FilteredPage<PersonDetails> findPersonDetails(
-		PersonsFilter filter, 
-		Paging paging
-	);
+	PersonSummary findPersonSummary(Identifier personId);
+
+	PersonDetails findPersonDetails(Identifier personId);
+
+	long countPersons(PersonsFilter filter);
+
+	FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging);
+
+	FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging);
 	
 	default FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter) {
 		return findPersonDetails(filter, PersonsFilter.getDefaultPaging());
@@ -165,7 +126,7 @@ public interface CrmPersonService {
 		// Salutation
 		if (StringUtils.isNotBlank(name.getSalutation())) {
 			try {
-				crm.findOptionByCode(crm.findLookupByCode(Crm.SALUTATION).getLookupId(), name.getSalutation());
+				crm.findOptionByCode(Type.SALUTATION, name.getSalutation());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Salutation code is not in the lookup")));
 			}

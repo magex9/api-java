@@ -26,15 +26,15 @@ public class User implements Serializable {
 	
 	private Status status;
 	
-	private List<String> roles;
+	private List<Identifier> roleIds;
 	
-	public User(Identifier userId, String username, PersonSummary person, Status status, List<String> roles) {
+	public User(Identifier userId, String username, PersonSummary person, Status status, List<Identifier> roleIds) {
 		super();
 		this.userId = userId;
 		this.username = username;
 		this.person = person;
 		this.status = status;
-		this.roles = new ArrayList<String>(roles);
+		this.roleIds = new ArrayList<Identifier>(roleIds);
 	}
 	
 	public Identifier getUserId() {
@@ -54,19 +54,19 @@ public class User implements Serializable {
 	}
 
 	public User withStatus(Status status) {
-		return new User(userId, username, person, status, roles);
+		return new User(userId, username, person, status, roleIds);
 	}
 	
-	public List<String> getRoles() {
-		return roles;
+	public List<Identifier> getRoles() {
+		return roleIds;
 	}
 	
-	public User withRoles(List<String> roles) {
-		return new User(userId, username, person, status, roles);
+	public User withRoles(List<Identifier> roles) {
+		return new User(userId, username, person, status, roleIds);
 	}
 	
-	public boolean isInRole(String role) {
-		return roles.contains(role);
+	public boolean isInRole(Identifier roleId) {
+		return roleIds.contains(roleId);
 	}
 	
 	@Override

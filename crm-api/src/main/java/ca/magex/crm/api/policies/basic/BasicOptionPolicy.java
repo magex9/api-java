@@ -2,17 +2,14 @@ package ca.magex.crm.api.policies.basic;
 
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
-import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public class BasicOptionPolicy implements CrmOptionPolicy {
 
-	private CrmLookupService lookups;
-	
 	private CrmOptionService options;
 
 	/**
@@ -20,32 +17,30 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	 * 
 	 * @param options
 	 */
-	public BasicOptionPolicy(CrmLookupService lookups, CrmOptionService options) {
-		this.lookups = lookups;
+	public BasicOptionPolicy(CrmOptionService options) {
 		this.options = options;
 	}
 
 	@Override
-	public boolean canCreateOption(Identifier lookupId) {
-		Lookup lookup = lookups.findLookup(lookupId);
-		/* can create a option for this lookup if it exists */
-		if (lookup == null) {
-			throw new ItemNotFoundException("Lookup ID '" + lookupId + "'");
-		}
-		return lookup.isMutable();
+	public boolean canCreateOption(String typeCode) {
+		return Type.of(typeCode).isExtendable();
 	}
 
 	@Override
-	public boolean canViewOptions(Identifier lookupId) {
+	public boolean canViewOptions(String typeCode) {
 		/* can always view options */
-		return true;
+		try {
+			return Type.of(typeCode) != null;
+		} catch (ItemNotFoundException e) {
+			return false;
+		}
 	}
 	
 	@Override
-	public boolean canViewOption(Identifier lookupId, String optionCode) {
+	public boolean canViewOption(String typeCode, String optionCode) {
 		/* can view a specific option if it exists */
 		try {
-			return options.findOptionByCode(lookupId, optionCode) != null;
+			return options.findOptionByCode(typeCode, optionCode) != null;
 		} catch (ItemNotFoundException e) {
 			throw new ItemNotFoundException("Option Code '" + optionCode + "'");
 		}

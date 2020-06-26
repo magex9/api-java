@@ -3,6 +3,7 @@ package ca.magex.crm.api.system;
 import java.io.Serializable;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -16,17 +17,23 @@ public class Option implements Serializable {
 
 	private Identifier optionId;
 	
-	private Identifier lookupId;
+	private Identifier parentId;
+	
+	private Type type;
 	
 	private Status status;
 	
+	private Boolean mutable;
+	
 	private Localized name;
 	
-	public Option(Identifier optionId, Identifier lookupId, Status status, Localized name) {
+	public Option(Identifier optionId, Identifier parentId, Type type, Status status, Boolean mutable, Localized name) {
 		super();
 		this.optionId = optionId;
-		this.lookupId = lookupId;
+		this.parentId = parentId;
+		this.type = type;
 		this.status = status;
+		this.mutable = mutable;
 		this.name = name;
 	}
 	
@@ -34,8 +41,12 @@ public class Option implements Serializable {
 		return optionId;
 	}
 	
-	public Identifier getLookupId() {
-		return lookupId;
+	public Identifier getParentId() {
+		return parentId;
+	}
+	
+	public Type getType() {
+		return type;
 	}
 	
 	public String getCode() {
@@ -47,7 +58,11 @@ public class Option implements Serializable {
 	}
 	
 	public Option withStatus(Status status) {
-		return new Option(optionId, lookupId, status, name);
+		return new Option(optionId, parentId, type, status, mutable, name);
+	}
+	
+	public Boolean getMutable() {
+		return mutable;
 	}
 	
 	public Localized getName() {
@@ -59,7 +74,9 @@ public class Option implements Serializable {
 	}
 	
 	public Option withName(Localized name) {
-		return new Option(optionId, lookupId, status, name);
+		if (!StringUtils.equals(name.getCode(), this.name.getCode()))
+			throw new IllegalArgumentException("Cannot change option codes");
+		return new Option(optionId, parentId, type, status, mutable, name);
 	}
 	
 	@Override

@@ -6,11 +6,15 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Type;
 
 public class BasicAuthenticationService implements CrmAuthenticationService {
 
+	private CrmOptionService options;
+	
 	private CrmUserService users;
 	
 	private CrmPasswordService passwords;
@@ -18,10 +22,10 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	private Stack<User> currentUser;
 
 	public BasicAuthenticationService(Crm crm) {
-		this(crm, new BasicPasswordService());
+		this(crm, crm, new BasicPasswordService());
 	}
 	
-	public BasicAuthenticationService(CrmUserService users, CrmPasswordService passwords) {
+	public BasicAuthenticationService(CrmOptionService options, CrmUserService users, CrmPasswordService passwords) {
 		this.users = users;
 		this.passwords = passwords;
 		this.currentUser = new Stack<>();
@@ -59,7 +63,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	public boolean isUserInRole(String role) {
 		if (!isAuthenticated())
 			return false;
-		return currentUser.peek().getRoles().contains(role);
+		return currentUser.peek().getRoles().contains(options.findOptionByCode(Type.AUTHENTICATION_ROLE, role).getOptionId());
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public interface CrmLocationService {
 	
@@ -178,7 +179,7 @@ public interface CrmLocationService {
 			messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country is mandatory")));
 		} else {
 			try {
-				crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY).getLookupId(), address.getCountry()).getCode();
+				crm.findOptionByCode(Type.COUNTRY, address.getCountry());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country code is not in the lookup")));
 			}
@@ -186,7 +187,7 @@ public interface CrmLocationService {
 
 		// Postal Code
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
-			if (address.getCountry() != null && crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY).getLookupId(), address.getCountry()).getCode().equals("CA")) {
+			if (address.getCountry() != null && crm.findOptionByCode(Type.COUNTRY, address.getCountry()).getCode().equals("CA")) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
 					messages.add(new Message(identifier, "error", path + ".provinceCode", new Localized(Lang.ENGLISH, "Canadian province format is invalid")));
 				}

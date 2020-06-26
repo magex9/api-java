@@ -24,10 +24,8 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public User createUser(Identifier personId, String username, List<String> roles) {
-		User user = repos.saveUser(new User(repos.generateUserId(), username, repos.findPersonSummary(personId), Status.ACTIVE, roles));
-		updateUserRoles(user.getUserId(), roles);
-		return user;
+	public User createUser(Identifier personId, String username, List<Identifier> roleIds) {
+		return repos.saveUser(new User(repos.generateUserId(), username, repos.findPersonSummary(personId), Status.ACTIVE, roleIds));
 	}
 
 	@Override
@@ -59,12 +57,12 @@ public class BasicUserService implements CrmUserService {
 	}	
 
 	@Override
-	public User updateUserRoles(Identifier userId, List<String> roles) {
+	public User updateUserRoles(Identifier userId, List<Identifier> roleIds) {
 		User user = repos.findUser(userId);
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUser(user.withRoles(roles));
+		return repos.saveUser(user.withRoles(roleIds));
 	}
 
 	@Override

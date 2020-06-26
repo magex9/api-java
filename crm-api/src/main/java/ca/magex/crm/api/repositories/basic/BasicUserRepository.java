@@ -22,11 +22,6 @@ public class BasicUserRepository implements CrmUserRepository {
 		this.store = store;
 	}
 	
-	@Override
-	public Identifier generateUserId() {
-		return CrmStore.generateId(User.class);
-	}
-	
 	private Stream<User> apply(UsersFilter filter) {
 		return store.getUsers().values().stream().filter(p -> filter.apply(p));
 	}

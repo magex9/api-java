@@ -1,6 +1,7 @@
 package ca.magex.crm.api.services.basic;
 
-import ca.magex.crm.api.common.BusinessPosition;
+import java.util.List;
+
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -23,8 +24,8 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, BusinessPosition unit) {
-		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, unit));
+	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, List<Identifier> roleIds) {
+		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, roleIds));
 	}
 
 	@Override
@@ -53,14 +54,14 @@ public class BasicPersonService implements CrmPersonService {
 		}
 		return repos.savePersonDetails(person.withCommunication(communication));
 	}
-
+	
 	@Override
-	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
+	public PersonDetails updatePersonRoles(Identifier personId, List<Identifier> roleIds) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withPosition(position));
+		return repos.savePersonDetails(person.withRoleIds(roleIds));
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ca.magex.crm.api.authentication.CrmPasswordService;
@@ -66,7 +67,7 @@ public class BasicPasswordService implements CrmPasswordService {
 
 	@Override
 	public String generateTemporaryPassword(String username) {
-		String tempPassword = CrmStore.generateId(BasicPasswordDetails.class).toString();
+		String tempPassword = RandomStringUtils.random(10, CrmStore.BASE_58).toString();
 		BasicPasswordDetails passwordDetails = passwords.get(username);
 		if (passwordDetails != null) {
 			passwords.put(

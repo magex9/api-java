@@ -47,16 +47,12 @@ import ca.magex.crm.api.system.Status;
  */
 public interface CrmOrganizationService {
 
-	default OrganizationDetails prototypeOrganization(
-			String displayName,
-			List<String> groups) {
-		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groups);
+	default OrganizationDetails prototypeOrganization(String displayName, List<Identifier> groupIds) {
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groupIds);
 	}
 	
 	default OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return createOrganization(
-			prototype.getDisplayName(), 
-			prototype.getGroups());
+		return createOrganization(prototype.getDisplayName(), prototype.getGroupIds());
 	}
 	
 	/**
@@ -73,7 +69,7 @@ public interface CrmOrganizationService {
 	 */
 	OrganizationDetails createOrganization(
 		String displayName,
-		List<String> groups
+		List<Identifier> groupIds
 	);
 
 	/**
@@ -105,7 +101,7 @@ public interface CrmOrganizationService {
 
 	OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId);
 
-	OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups);
+	OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds);
 
 	OrganizationSummary findOrganizationSummary(Identifier organizationId);
 
@@ -173,16 +169,16 @@ public interface CrmOrganizationService {
 		}
 
 		// Group
-		if (organization.getGroups().isEmpty()) {
+		if (organization.getGroupIds().isEmpty()) {
 			messages.add(new Message(organization.getOrganizationId(), "error", "groups", new Localized(Lang.ENGLISH, "Organizations must have a permission group assigned to them")));
 		} else {
-			for (int i = 0; i < organization.getGroups().size(); i++) {
-				String group = organization.getGroups().get(i);
+			for (int i = 0; i < organization.getGroupIds().size(); i++) {
+				Identifier groupId = organization.getGroupIds().get(i);
 				try {
-					if (!crm.findGroupByCode(group).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group is not active: " + group)));
+					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
+						messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group is not active: " + groupId)));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group does not exist: " + group)));
+					messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group does not exist: " + groupId)));
 				}
 			}
 		}

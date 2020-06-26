@@ -23,11 +23,6 @@ public class BasicPersonRepository implements CrmPersonRepository {
 		this.store = store;
 	}
 	
-	@Override
-	public Identifier generatePersonId() {
-		return CrmStore.generateId(PersonDetails.class);
-	}
-	
 	private Stream<PersonDetails> apply(PersonsFilter filter) {
 		return store.getPersons().values().stream().filter(p -> filter.apply(p));
 	}

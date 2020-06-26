@@ -10,32 +10,26 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
-import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 
 public interface CrmStore {
 	
 	public static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 	
-	public static Identifier generateId(Class<?> type) {
-		return new Identifier(RandomStringUtils.random(10, BASE_58));
+	public static Identifier generateId(String context) {
+		return new Identifier(context + "/" + RandomStringUtils.random(10, BASE_58));
 	}
 	
 	public CrmUpdateNotifier getNotifier();
 	
 	public Map<Identifier, Serializable> getConfigurations();
 	
-	public Map<Identifier, Lookup> getLookups();
+	public Map<Identifier, Type> getTypes();
 
 	public Map<Identifier, Option> getOptions();
-
-	public Map<Identifier, Group> getGroups();
-
-	public Map<Identifier, Role> getRoles();
 
 	public Map<Identifier, OrganizationDetails> getOrganizations();
 	
@@ -48,10 +42,8 @@ public interface CrmStore {
 	default public void reset() {
 		getNotifier().clear();
 		getConfigurations().clear();
-		getLookups().clear();
+		getTypes().clear();
 		getOptions().clear();
-		getGroups().clear();
-		getRoles().clear();
 		getOrganizations().clear();
 		getLocations().clear();
 		getPersons().clear();
@@ -60,10 +52,8 @@ public interface CrmStore {
 	
 	default public void dump(OutputStream os) {
 		dump(getConfigurations(), os);
-		dump(getLookups(), os);
+		dump(getTypes(), os);
 		dump(getOptions(), os);
-		dump(getGroups(), os);
-		dump(getRoles(), os);
 		dump(getOrganizations(), os);
 		dump(getLocations(), os);
 		dump(getPersons(), os);

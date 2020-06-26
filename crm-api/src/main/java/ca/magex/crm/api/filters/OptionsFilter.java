@@ -9,60 +9,66 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public class OptionsFilter implements CrmFilter<Option> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public static final List<Sort> SORT_OPTIONS = List.of(
+		Sort.by(Order.asc("optionCode")),
+		Sort.by(Order.desc("optionCode")),
 		Sort.by(Order.asc("englishName")),
 		Sort.by(Order.desc("englishName")),
 		Sort.by(Order.asc("frenchName")),
 		Sort.by(Order.desc("frenchName")),
-		Sort.by(Order.asc("code")),
-		Sort.by(Order.desc("code")),
 		Sort.by(Order.asc("status")),
 		Sort.by(Order.desc("status"))
 	);
+	
+	private ImmutablePair<Locale, String> name;
 
-	private Identifier lookupId;
+	private Identifier parentId;
 
-	private String englishName;
-
-	private String frenchName;
-
-	private String optionCode;
+	private Type type;
 
 	private Status status;
 
 	public OptionsFilter() {
-		this(null, null, null, null, null);
+		this(null, null, null, null);
 	}
 
-	public OptionsFilter(Identifier lookupId, String englishName, String frenchName, String optionCode, Status status) {
-		this.lookupId = lookupId;
-		this.englishName = englishName;
-		this.frenchName = frenchName;
-		this.optionCode = optionCode;
+	public OptionsFilter(ImmutablePair<Locale, String> name, Identifier parentId, Type type, Status status) {
+		this.name = name;
+		this.parentId = parentId;
+		this.type = type;
 		this.status = status;
 	}
 
 	public OptionsFilter(Map<String, Object> filterCriteria) {
 		try {
-			this.lookupId = filterCriteria.containsKey("lookupId") ? new Identifier((String) filterCriteria.get("lookupId")) : null;
-			this.englishName = (String) filterCriteria.get("englishName");
-			this.frenchName = (String) filterCriteria.get("frenchName");
-			this.optionCode = (String) filterCriteria.get("optionCode");
+			this.name = filterCriteria.containsKey("name") ? new ImmutablePair<Locale, String>(Lang.ROOT, (String) filterCriteria.get("name")) : null;
+			this.parentId = filterCriteria.containsKey("parentId") ? new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("parentId")) : null;
+			this.type = null;
+			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
+				try {
+					this.type = Type.valueOf(StringUtils.upperCase((String) filterCriteria.get("type")));
+				} catch (IllegalArgumentException e) {
+					throw new ApiException("Invalid type value '" + filterCriteria.get("type") + "' expected one of {" + StringUtils.join(Type.values(), ",") + "}");
+				}
+			}
 			this.status = null;
 			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 				try {
@@ -77,54 +83,40 @@ public class OptionsFilter implements CrmFilter<Option> {
 		}
 	}
 	
-	public Identifier getLookupId() {
-		return lookupId;
+	public Pair<Locale, String> getName() {
+		return name;
 	}
 	
-	public String getEnglishName() {
-		return englishName;
+	public Identifier getParentId() {
+		return parentId;
 	}
-
-	public String getFrenchName() {
-		return frenchName;
-	}
-
-	public String getOptionCode() {
-		return optionCode;
+	
+	public Type getType() {
+		return type;
 	}
 
 	public Status getStatus() {
 		return status;
 	}
-
-	public OptionsFilter withLookupId(Identifier lookupId) {
-		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
-	}
-
-	public OptionsFilter withEnglishName(String englishName) {
-		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
-	}
-
-	public OptionsFilter withFrenchName(String frenchName) {
-		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
+	
+	public OptionsFilter withName(Locale locale, String name) {
+		return new OptionsFilter(new ImmutablePair<Locale, String>(locale, name), parentId, type, status);
 	}
 	
-	public OptionsFilter withLocalizedName(Locale locale, String name) {
-		if (locale == null || Lang.ROOT.equals(locale)) {
-			return new OptionsFilter(lookupId, null, null, name, status);
-		} else if (Lang.isEnglish(locale)) {
-			return new OptionsFilter(lookupId, name, null, null, status);
-		} else {
-			return new OptionsFilter(lookupId, null, name, null, status);
-		}
+	public OptionsFilter withOptionCode(String optionCode) {
+		return withName(Lang.ROOT, optionCode);
 	}
 
-	public OptionsFilter withOptionCode(String optionCode) {
-		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
+	public OptionsFilter withParentId(Identifier parentId) {
+		return new OptionsFilter(name, parentId, type, status);
+	}
+
+	public OptionsFilter withType(Type type) {
+		return new OptionsFilter(name, parentId, type, status);
 	}
 
 	public OptionsFilter withStatus(Status status) {
-		return new OptionsFilter(lookupId, englishName, frenchName, optionCode, status);
+		return new OptionsFilter(name, parentId, type, status);
 	}
 
 	public static List<Sort> getSortOptions() {
@@ -132,7 +124,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 	}
 
 	public static Sort getDefaultSort() {
-		return Sort.by(Direction.ASC, "optionCode");
+		return Sort.by(Order.asc("optionCode"));
 	}
 
 	public static Paging getDefaultPaging() {
@@ -143,10 +135,9 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public boolean apply(Option instance) {
 		return List.of(instance)
 			.stream()
-			.filter(o -> this.getLookupId() == null || this.getLookupId().equals(o.getLookupId()))
-			.filter(o -> this.getEnglishName() == null || StringUtils.equalsIgnoreCase(o.getName(Lang.ENGLISH), this.getEnglishName()))
-			.filter(o -> this.getFrenchName() == null || StringUtils.equalsIgnoreCase(o.getName(Lang.FRENCH), this.getFrenchName()))
-			.filter(o -> this.getOptionCode() == null || StringUtils.equalsIgnoreCase(this.getOptionCode(), o.getCode()))
+			.filter(g -> this.getName() == null || StringUtils.equalsIgnoreCase(g.getName(this.getName().getLeft()), this.getName().getRight()))
+			.filter(o -> this.getParentId() == null || this.getParentId().equals(o.getParentId()))
+			.filter(o -> this.getType() == null || this.getType().equals(o.getType()))
 			.filter(o -> this.getStatus() == null || this.getStatus().equals(o.getStatus()))
 			.findAny()
 			.isPresent();
@@ -166,4 +157,5 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
+	
 }

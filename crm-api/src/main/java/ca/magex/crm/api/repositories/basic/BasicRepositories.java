@@ -15,10 +15,7 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 	public BasicRepositories(CrmStore store, CrmUpdateObserver observer) {
 		super(
 			new BasicConfigurationRepository(store),
-			new BasicLookupRepository(store),
 			new BasicOptionRepository(store),
-			new BasicGroupRepository(store),
-			new BasicRoleRepository(store),
 			new BasicOrganizationRepository(store),
 			new BasicLocationRepository(store),
 			new BasicPersonRepository(store),

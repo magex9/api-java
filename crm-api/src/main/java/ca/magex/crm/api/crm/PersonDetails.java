@@ -1,11 +1,12 @@
 package ca.magex.crm.api.crm;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -22,33 +23,33 @@ public class PersonDetails extends PersonSummary {
 
 	private Communication communication;
 
-	private BusinessPosition position;
+	private List<Identifier> roleIds;
 
 	public PersonDetails(Identifier personId, Identifier organizationId, Status status, String displayName,
-			PersonName legalName, MailingAddress address, Communication communication, BusinessPosition position) {
+			PersonName legalName, MailingAddress address, Communication communication, List<Identifier> roleIds) {
 		super(personId, organizationId, status, displayName);		
 		this.legalName = legalName;
 		this.address = address;
 		this.communication = communication;
-		this.position = position;		
+		this.roleIds = roleIds;
 	}
 
 	@Override
 	public PersonDetails withStatus(Status status) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}
 
 	@Override
 	public PersonDetails withDisplayName(String displayName) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}
 
 	public PersonName getLegalName() {
 		return legalName;
 	}
-
+	
 	public PersonDetails withLegalName(PersonName legalName) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}
 
 	public MailingAddress getAddress() {
@@ -56,7 +57,7 @@ public class PersonDetails extends PersonSummary {
 	}
 
 	public PersonDetails withAddress(MailingAddress address) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}
 
 	public Communication getCommunication() {
@@ -64,15 +65,15 @@ public class PersonDetails extends PersonSummary {
 	}
 	
 	public PersonDetails withCommunication(Communication communication) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}
 
-	public BusinessPosition getPosition() {
-		return position;
+	public List<Identifier> getRoleIds() {
+		return roleIds;
 	}
 	
-	public PersonDetails withPosition(BusinessPosition position) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, position);
+	public PersonDetails withRoleIds(List<Identifier> roleIds) {
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}	
 
 	public PersonSummary toSummary() {

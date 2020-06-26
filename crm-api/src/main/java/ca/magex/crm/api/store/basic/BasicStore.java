@@ -8,13 +8,11 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
-import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 
 public class BasicStore implements CrmStore {
 	
@@ -22,13 +20,9 @@ public class BasicStore implements CrmStore {
 	
 	private Map<Identifier, Serializable> configurations;
 	
-	private Map<Identifier, Lookup> lookups;
+	private Map<Identifier, Type> types;
 	
 	private Map<Identifier, Option> options;
-	
-	private Map<Identifier, Group> groups;
-	
-	private Map<Identifier, Role> roles;
 	
 	private Map<Identifier, OrganizationDetails> organizations;
 	
@@ -41,10 +35,8 @@ public class BasicStore implements CrmStore {
 	public BasicStore() {
 		notifier = new CrmUpdateNotifier();
 		configurations = new HashMap<Identifier, Serializable>();
-		lookups = new HashMap<Identifier, Lookup>();
+		types = new HashMap<Identifier, Type>();
 		options = new HashMap<Identifier, Option>();
-		groups = new HashMap<Identifier, Group>();
-		roles = new HashMap<Identifier, Role>();
 		organizations = new HashMap<Identifier, OrganizationDetails>();
 		locations = new HashMap<Identifier, LocationDetails>();
 		persons = new HashMap<Identifier, PersonDetails>();
@@ -62,23 +54,13 @@ public class BasicStore implements CrmStore {
 	}
 	
 	@Override
-	public Map<Identifier, Lookup> getLookups() {
-		return lookups;
+	public Map<Identifier, Type> getTypes() {
+		return types;
 	}
 	
 	@Override
 	public Map<Identifier, Option> getOptions() {
 		return options;
-	}
-	
-	@Override
-	public Map<Identifier, Group> getGroups() {
-		return groups;
-	}
-
-	@Override
-	public Map<Identifier, Role> getRoles() {
-		return roles;
 	}
 
 	@Override

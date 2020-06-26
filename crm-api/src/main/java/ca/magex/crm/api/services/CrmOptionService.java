@@ -2,13 +2,11 @@ package ca.magex.crm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.filters.LookupsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
@@ -18,36 +16,27 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 
 public interface CrmOptionService {
 
-	default Option prototypeOption(Identifier lookupId, Localized name) {
-		return new Option(null, lookupId, Status.PENDING, name);
+	default Option prototypeOption(Identifier parentId, String typeCode, Localized name) {
+		return new Option(null, parentId, Type.of(typeCode), Status.PENDING, true, name);
 	}
 
 	default Option createOption(Option option) {
-		return createOption(option.getLookupId(), option.getName());
+		return createOption(option.getParentId(), option.getType().getCode(), option.getName());
 	}
 
-	Option createOption(Identifier lookupId, Localized name);
+	Option createOption(Identifier parentId, String typeCode, Localized name);
 
 	Option findOption(Identifier optionId);
 
-	Option findOption(String lookupCode, String optionCode);
-
-	default Option findOptionByCode(Identifier lookupId, String optionCode) {
-		return findOptions(
-			defaultOptionsFilter().withLookupId(lookupId).withOptionCode(optionCode), 
-			OptionsFilter.getDefaultPaging()
-		).getSingleItem();
-	};
+	Option findOptionByCode(String typeCode, String optionCode);
 	
-	default Option findOptionByLocalizedName(Identifier lookupId, Locale locale, String name) {
-		return (Option)findOptions(
-			defaultOptionsFilter().withLookupId(lookupId).withLocalizedName(locale, name),
-			LookupsFilter.getDefaultPaging()
-		).getSingleItem();
-	};
+	default Option findOptionByCode(Type type, String optionCode) {
+		return findOptionByCode(type.getCode(), optionCode);
+	}
 	
 	Option updateOptionName(Identifier optionId, Localized name);
 

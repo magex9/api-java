@@ -17,26 +17,8 @@ public class BasicUpdateObserver implements CrmUpdateObserver {
 	}
 
 	@Override
-	public CrmUpdateObserver lookupUpdated(Long timestamp, Identifier lookupId) {
-		updates.add(Pair.of(lookupId, timestamp));
-		return this;
-	}
-	
-	@Override
 	public CrmUpdateObserver optionUpdated(Long timestamp, Identifier optionId) {
 		updates.add(Pair.of(optionId, timestamp));
-		return this;
-	}
-
-	@Override
-	public CrmUpdateObserver groupUpdated(Long timestamp, Identifier groupId) {
-		updates.add(Pair.of(groupId, timestamp));
-		return this;
-	}
-
-	@Override
-	public CrmUpdateObserver roleUpdated(Long timestamp, Identifier roleId) {
-		updates.add(Pair.of(roleId, timestamp));
 		return this;
 	}
 

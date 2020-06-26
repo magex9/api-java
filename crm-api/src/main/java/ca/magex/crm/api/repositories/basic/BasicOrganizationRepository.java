@@ -23,11 +23,6 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 		this.store = store;
 	}
 	
-	@Override
-	public Identifier generateOrganizationId() {
-		return CrmStore.generateId(OrganizationDetails.class);
-	}
-	
 	private Stream<OrganizationDetails> apply(OrganizationsFilter filter) {
 		return store.getOrganizations().values().stream().filter(p -> filter.apply(p));
 	}
