@@ -34,7 +34,7 @@ public class BusinessPositionJsonTransformerTests {
 		transformer = new BusinessPositionJsonTransformer(crm);
 		position = new BusinessPosition(
 			crm.findOptionByLocalizedName(Crm.BUSINESS_SECTOR, Lang.ENGLISH, "IM/IT").getCode(),
-			crm.findOptionByLocalizedName(Crm.BUSINESS_UNIT, "imit", Lang.ENGLISH, "Operations").getCode(),
+			crm.findOptionByLocalizedName(Crm.BUSINESS_UNIT, "IMIT", Lang.ENGLISH, "Operations").getCode(),
 			crm.findOptionByLocalizedName(Crm.BUSINESS_CLASSIFICATION, Lang.ENGLISH, "System Administrator").getCode()
 		);
 	}
@@ -58,19 +58,19 @@ public class BusinessPositionJsonTransformerTests {
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@type", "sector", "unit", "classification"), linked.keys());
 		assertEquals("BusinessPosition", linked.getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("sector").keys());
-		assertEquals("BusinessSector", linked.getObject("sector").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("imit", linked.getObject("sector").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("sector").keys());
+		assertEquals("BUSINESS_SECTOR", linked.getObject("sector").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("IMIT", linked.getObject("sector").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals("IM/IT", linked.getObject("sector").getString("@en").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals("GI / TI", linked.getObject("sector").getString("@fr").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("unit").keys());
-		assertEquals("BusinessUnit", linked.getObject("unit").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("ops", linked.getObject("unit").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("unit").keys());
+		assertEquals("BUSINESS_UNIT", linked.getObject("unit").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("OPS", linked.getObject("unit").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals("Operations", linked.getObject("unit").getString("@en").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals("Operations", linked.getObject("unit").getString("@fr").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("classification").keys());
-		assertEquals("BusinessClassification", linked.getObject("classification").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("sysadmin", linked.getObject("classification").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("classification").keys());
+		assertEquals("BUSINESS_CLASSIFICATION", linked.getObject("classification").getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("SYS_ADMIN", linked.getObject("classification").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals("System Administrator", linked.getObject("classification").getString("@en").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals("Administrateur du système", linked.getObject("classification").getString("@fr").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals(position, transformer.parse(linked, null));
@@ -81,9 +81,9 @@ public class BusinessPositionJsonTransformerTests {
 		JsonObject root = (JsonObject)transformer.format(position, Lang.ROOT);
 		assertEquals(List.of("@type", "sector", "unit", "classification"), root.keys());
 		assertEquals("BusinessPosition", root.getString("@type"));
-		assertEquals("imit", root.getString("sector"));
-		assertEquals("ops", root.getString("unit"));
-		assertEquals("sysadmin", root.getString("classification"));
+		assertEquals("IMIT", root.getString("sector"));
+		assertEquals("OPS", root.getString("unit"));
+		assertEquals("SYS_ADMIN", root.getString("classification"));
 		assertEquals(position, transformer.parse(root, Lang.ROOT));
 	}
 	

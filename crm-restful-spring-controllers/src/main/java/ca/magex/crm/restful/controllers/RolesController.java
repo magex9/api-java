@@ -39,7 +39,7 @@ public class RolesController extends AbstractCrmController {
 	
 	private RolesFilter extractRolesFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
 		Identifier groupId = req.getParameter("groupId") == null ? null : new Identifier(req.getParameter("groupId"));
-		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
 		if (req.getParameter("name") != null) {
 			String name = req.getParameter("name");
 			if (locale.equals(Lang.ENGLISH)) {

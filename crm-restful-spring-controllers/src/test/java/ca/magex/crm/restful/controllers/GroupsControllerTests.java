@@ -48,25 +48,25 @@ public class GroupsControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(4, json.getArray("content").size());
 		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(0).keys());
-		assertEquals("Group", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("APP", json.getArray("content").getObject(0).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Application", json.getArray("content").getObject(0).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Group", json.getArray("content").getObject(0).getString("@type"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
+		assertEquals("APP", json.getArray("content").getObject(0).getString("code"));
+		assertEquals("Application", json.getArray("content").getObject(0).getString("name"));
 		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(1).keys());
-		assertEquals("Group", json.getArray("content").getObject(1).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Active", json.getArray("content").getObject(1).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("CRM", json.getArray("content").getObject(1).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Customer Relationship Management", json.getArray("content").getObject(1).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Group", json.getArray("content").getObject(1).getString("@type"));
+		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
+		assertEquals("CRM", json.getArray("content").getObject(1).getString("code"));
+		assertEquals("Customer Relationship Management", json.getArray("content").getObject(1).getString("name"));
 		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(2).keys());
-		assertEquals("Group", json.getArray("content").getObject(2).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Active", json.getArray("content").getObject(2).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("ORG", json.getArray("content").getObject(2).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Organization", json.getArray("content").getObject(2).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Group", json.getArray("content").getObject(2).getString("@type"));
+		assertEquals("Active", json.getArray("content").getObject(2).getString("status"));
+		assertEquals("ORG", json.getArray("content").getObject(2).getString("code"));
+		assertEquals("Organization", json.getArray("content").getObject(2).getString("name"));
 		assertEquals(List.of("@type", "groupId", "status", "code", "name"), json.getArray("content").getObject(3).keys());
-		assertEquals("Group", json.getArray("content").getObject(3).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("Active", json.getArray("content").getObject(3).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("SYS", json.getArray("content").getObject(3).getString("code").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-		assertEquals("System", json.getArray("content").getObject(3).getString("name").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Group", json.getArray("content").getObject(3).getString("@type"));
+		assertEquals("Active", json.getArray("content").getObject(3).getString("status"));
+		assertEquals("SYS", json.getArray("content").getObject(3).getString("code"));
+		assertEquals("System", json.getArray("content").getObject(3).getString("name"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/groups")

@@ -59,13 +59,13 @@ public class GroupJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("groupId").keys());
 		assertEquals("Identifier", linked.getObject("groupId").getString("@type"));
 		assertEquals("abc", linked.getObject("groupId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("pending", linked.getObject("status").getString("@value"));
 		assertEquals("Pending", linked.getObject("status").getString("@en"));
 		assertEquals("En attente", linked.getObject("status").getString("@fr"));
 		assertEquals("GRP", linked.getString("code"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("name").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("name").keys());
 		assertEquals("Localized", linked.getObject("name").getString("@type"));
 		assertEquals("GRP", linked.getObject("name").getString("@value"));
 		assertEquals("Group", linked.getObject("name").getString("@en"));

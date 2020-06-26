@@ -49,7 +49,7 @@ public class StatusJsonTransformerTests {
 	@Test
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(Status.ACTIVE, null);
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), root.keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), root.keys());
 		assertEquals("Status", root.getString("@type"));
 		assertEquals("active", root.getString("@value"));
 		assertEquals("Active", root.getString("@en"));

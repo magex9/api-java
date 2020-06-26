@@ -11,14 +11,11 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -31,19 +28,21 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.caching.config.CachingConfig;
 import ca.magex.crm.caching.config.CachingTestConfig;
+import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.test.CrmAsserts;
-import ca.magex.crm.test.config.MockConfig;
-import ca.magex.crm.test.config.TestConfig;
+import ca.magex.crm.test.config.MockTestConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CachingTestConfig.class, TestConfig.class, MockConfig.class })
-@ActiveProfiles(profiles = { CrmProfiles.CRM_NO_AUTH })
+@ContextConfiguration(classes = { CachingTestConfig.class, MockTestConfig.class })
 public class CrmPersonServiceCachingDelegateTests {
 
-	@Autowired @Qualifier("PrincipalPersonService") private CrmPersonService delegate;
+	@Autowired private CrmPersonService delegate;
 	@Autowired private CacheManager cacheManager;
-	@Autowired @Qualifier("CrmPersonServiceCachingDelegate") private CrmPersonService personService;
+	
+	private CacheTemplate cacheTemplate;
+	private CrmPersonServiceCachingDelegate personService;
 
 	@Before
 	public void reset() {
@@ -52,6 +51,8 @@ public class CrmPersonServiceCachingDelegateTests {
 		cacheManager.getCacheNames().forEach((cacheName) -> {
 			cacheManager.getCache(cacheName).clear();
 		});
+		cacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Persons);
+		personService = new CrmPersonServiceCachingDelegate(delegate, cacheTemplate);
 	}
 
 	@Test
@@ -68,7 +69,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
 
 		/* should have added the summary to the cache */
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 	}
 	
@@ -87,7 +88,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
 
 		/* should have added the summary to the cache */
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 	}
 	
@@ -96,11 +97,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return new PersonDetails(invocation.getArgument(0), new Identifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, CrmAsserts.DEVELOPER_POSITION);
 		}).given(delegate).findPersonDetails(Mockito.any(Identifier.class));
-
-		BDDMockito.willAnswer((invocation) -> {
-			return new PersonDetails(invocation.getArgument(0), new Identifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, CrmAsserts.DEVELOPER_POSITION);
-		}).given(delegate).findPersonSummary(Mockito.any(Identifier.class));
-
+		
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		PersonDetails personDetails = personService.findPersonDetails(new Identifier("1"));
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
@@ -109,7 +106,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		PersonSummary personSummary = personService.findPersonSummary(new Identifier("1"));
 		Assert.assertEquals(personSummary, personService.findPersonSummary(personSummary.getPersonId()));
-		BDDMockito.verify(delegate, Mockito.times(1)).findPersonSummary(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 	}
 	
 	@Test
@@ -117,11 +114,20 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
 		}).given(delegate).findPersonDetails(Mockito.any(Identifier.class));
+		
+		BDDMockito.willAnswer((invocation) -> {
+			return null;
+		}).given(delegate).findPersonSummary(Mockito.any(Identifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
 		Assert.assertNull(personService.findPersonDetails(new Identifier("1")));
 		Assert.assertNull(personService.findPersonDetails(new Identifier("1")));
 		BDDMockito.verify(delegate, Mockito.times(1)).findPersonDetails(Mockito.any(Identifier.class));
+		
+		/* this should also cache the result, so the second find doesn't hit the delegate */
+		Assert.assertNull(personService.findPersonSummary(new Identifier("2")));
+		Assert.assertNull(personService.findPersonSummary(new Identifier("2")));
+		BDDMockito.verify(delegate, Mockito.times(1)).findPersonSummary(Mockito.any(Identifier.class));
 	}
 	
 	@Test
@@ -145,7 +151,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 
 		/* make sure the summary is cached after the disable */
@@ -190,7 +196,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 
 		/* make sure the summary is cached after the disable */
@@ -245,7 +251,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 
 		/* clear cache, update name, and ensure cached */
@@ -253,7 +259,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		personDetails = personService.updatePersonName(personDetails.getPersonId(), CrmAsserts.ADAM);
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 
 		/* clear cache, update address, and ensure cached */
@@ -261,7 +267,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		personDetails = personService.updatePersonAddress(personDetails.getPersonId(), CrmAsserts.DE_ADDRESS);
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 	
 		/* clear cache, update address, and ensure cached */
@@ -269,7 +275,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		personDetails = personService.updatePersonCommunication(personDetails.getPersonId(), CrmAsserts.WORK_COMMUNICATIONS);
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 		
 		/* clear cache, update address, and ensure cached */
@@ -277,7 +283,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		personDetails = personService.updatePersonBusinessPosition(personDetails.getPersonId(), CrmAsserts.BUSINESS_POSITION);
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
-		Assert.assertEquals(personDetails, personService.findPersonSummary(personDetails.getPersonId()));
+		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
 		
 		/* update non existent person (should cache the fact that it doesn't exist for the summary) */
@@ -346,13 +352,13 @@ public class CrmPersonServiceCachingDelegateTests {
 		Assert.assertEquals(3, personService.findPersonDetails(new PersonsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());
 
 		Assert.assertEquals(details1, personService.findPersonDetails(details1.getPersonId()));
-		Assert.assertEquals(details1, personService.findPersonSummary(details1.getPersonId()));
+		Assert.assertEquals(details1.asSummary(), personService.findPersonSummary(details1.getPersonId()));
 
 		Assert.assertEquals(details2, personService.findPersonDetails(details2.getPersonId()));
-		Assert.assertEquals(details2, personService.findPersonSummary(details2.getPersonId()));
+		Assert.assertEquals(details2.asSummary(), personService.findPersonSummary(details2.getPersonId()));
 
 		Assert.assertEquals(details3, personService.findPersonDetails(details3.getPersonId()));
-		Assert.assertEquals(details3, personService.findPersonSummary(details3.getPersonId()));
+		Assert.assertEquals(details3.asSummary(), personService.findPersonSummary(details3.getPersonId()));
 
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));
@@ -362,13 +368,13 @@ public class CrmPersonServiceCachingDelegateTests {
 		Assert.assertEquals(3, personService.findPersonDetails(new PersonsFilter()).getNumberOfElements());
 
 		Assert.assertEquals(details1, personService.findPersonDetails(details1.getPersonId()));
-		Assert.assertEquals(details1, personService.findPersonSummary(details1.getPersonId()));
+		Assert.assertEquals(details1.asSummary(), personService.findPersonSummary(details1.getPersonId()));
 
 		Assert.assertEquals(details2, personService.findPersonDetails(details2.getPersonId()));
-		Assert.assertEquals(details2, personService.findPersonSummary(details2.getPersonId()));
+		Assert.assertEquals(details2.asSummary(), personService.findPersonSummary(details2.getPersonId()));
 
 		Assert.assertEquals(details3, personService.findPersonDetails(details3.getPersonId()));
-		Assert.assertEquals(details3, personService.findPersonSummary(details3.getPersonId()));
+		Assert.assertEquals(details3.asSummary(), personService.findPersonSummary(details3.getPersonId()));
 
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(Identifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(Identifier.class));

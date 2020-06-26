@@ -1,8 +1,8 @@
 package ca.magex.crm.api.store.basic;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -14,6 +14,11 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
 
+/**
+ * Simple In memory implementation of the Datastore using ConcurrentHashMap
+ * 
+ * @author Scott
+ */
 public class BasicStore implements CrmStore {
 	
 	private CrmUpdateNotifier notifier; 
@@ -32,15 +37,17 @@ public class BasicStore implements CrmStore {
 	
 	private Map<Identifier, User> users;
 	
+	/**
+	 * Creates a new Basic Store with no data associated to it
+	 */
 	public BasicStore() {
 		notifier = new CrmUpdateNotifier();
-		configurations = new HashMap<Identifier, Serializable>();
-		types = new HashMap<Identifier, Type>();
-		options = new HashMap<Identifier, Option>();
-		organizations = new HashMap<Identifier, OrganizationDetails>();
-		locations = new HashMap<Identifier, LocationDetails>();
-		persons = new HashMap<Identifier, PersonDetails>();
-		users = new HashMap<Identifier, User>();
+		configurations = new ConcurrentHashMap<Identifier, Serializable>();
+		options = new ConcurrentHashMap<Identifier, Option>();
+		organizations = new ConcurrentHashMap<Identifier, OrganizationDetails>();
+		locations = new ConcurrentHashMap<Identifier, LocationDetails>();
+		persons = new ConcurrentHashMap<Identifier, PersonDetails>();
+		users = new ConcurrentHashMap<Identifier, User>();
 	}
 	
 	@Override
@@ -82,5 +89,4 @@ public class BasicStore implements CrmStore {
 	public Map<Identifier, User> getUsers() {
 		return users;
 	}
-
 }

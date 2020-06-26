@@ -17,11 +17,15 @@ import org.junit.Test;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.repositories.CrmOrganizationRepository;
+import ca.magex.crm.api.repositories.CrmPersonRepository;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -40,10 +44,10 @@ public class PersonDetailsJsonTransformerTests {
 		transformer = new PersonDetailsJsonTransformer(crm);
 		BusinessPosition position = new BusinessPosition(
 			crm.findOptionByLocalizedName(Crm.BUSINESS_SECTOR, Lang.ENGLISH, "IM/IT").getCode(),
-			crm.findOptionByLocalizedName(Crm.BUSINESS_UNIT, "imit", Lang.ENGLISH, "Operations").getCode(),
+			crm.findOptionByLocalizedName(Crm.BUSINESS_UNIT, "IMIT", Lang.ENGLISH, "Operations").getCode(),
 			crm.findOptionByLocalizedName(Crm.BUSINESS_CLASSIFICATION, Lang.ENGLISH, "System Administrator").getCode()
 		);
-		person = new PersonDetails(new Identifier("prsn"), new Identifier("org"), Status.ACTIVE, 
+		person = new PersonDetails(new Identifier(CrmPersonRepository.CONTEXT, "prsn1"), new Identifier(CrmOrganizationRepository.CONTEXT, "org1"), Status.ACTIVE, 
 			PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, position);
 	}
 	
@@ -63,7 +67,8 @@ public class PersonDetailsJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(person, null);
-		//JsonAsserts.print(linked, "linked");
+		System.out.println(linked);
+		JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), linked.keys());
 		assertEquals("PersonDetails", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("personId").keys());
@@ -72,7 +77,7 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));
@@ -80,9 +85,9 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("Bacon, Chris P", linked.getString("displayName"));
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), linked.getObject("legalName").keys());
 		assertEquals("PersonName", linked.getObject("legalName").getString("@type"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("legalName").getObject("salutation").keys());
-		assertEquals("Salutation", linked.getObject("legalName").getObject("salutation").getString("@type"));
-		assertEquals("3", linked.getObject("legalName").getObject("salutation").getString("@value"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("legalName").getObject("salutation").keys());
+		assertEquals("SALUTATION", linked.getObject("legalName").getObject("salutation").getString("@type"));
+		assertEquals("MR", linked.getObject("legalName").getObject("salutation").getString("@value"));
 		assertEquals("Mr.", linked.getObject("legalName").getObject("salutation").getString("@en"));
 		assertEquals("M.", linked.getObject("legalName").getObject("salutation").getString("@fr"));
 		assertEquals("Chris", linked.getObject("legalName").getString("firstName"));
@@ -92,13 +97,13 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("MailingAddress", linked.getObject("address").getString("@type"));
 		assertEquals("123 Main St", linked.getObject("address").getString("street"));
 		assertEquals("Ottawa", linked.getObject("address").getString("city"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("address").getObject("province").keys());
-		assertEquals("Province", linked.getObject("address").getObject("province").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("address").getObject("province").keys());
+		assertEquals("PROVINCE", linked.getObject("address").getObject("province").getString("@type"));
 		assertEquals("QC", linked.getObject("address").getObject("province").getString("@value"));
 		assertEquals("Quebec", linked.getObject("address").getObject("province").getString("@en"));
 		assertEquals("Québec", linked.getObject("address").getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("address").getObject("country").keys());
-		assertEquals("Country", linked.getObject("address").getObject("country").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("address").getObject("country").keys());
+		assertEquals("COUNTRY", linked.getObject("address").getObject("country").getString("@type"));
 		assertEquals("CA", linked.getObject("address").getObject("country").getString("@value"));
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@en"));
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@fr"));
@@ -106,8 +111,8 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), linked.getObject("communication").keys());
 		assertEquals("Communication", linked.getObject("communication").getString("@type"));
 		assertEquals("Developer", linked.getObject("communication").getString("jobTitle"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("communication").getObject("language").keys());
-		assertEquals("Language", linked.getObject("communication").getObject("language").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("communication").getObject("language").keys());
+		assertEquals("LANGUAGE", linked.getObject("communication").getObject("language").getString("@type"));
 		assertEquals("EN", linked.getObject("communication").getObject("language").getString("@value"));
 		assertEquals("English", linked.getObject("communication").getObject("language").getString("@en"));
 		assertEquals("Anglais", linked.getObject("communication").getObject("language").getString("@fr"));
@@ -119,19 +124,19 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("8881234567", linked.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), linked.getObject("position").keys());
 		assertEquals("BusinessPosition", linked.getObject("position").getString("@type"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("position").getObject("sector").keys());
-		assertEquals("BusinessSector", linked.getObject("position").getObject("sector").getString("@type"));
-		assertEquals("imit", linked.getObject("position").getObject("sector").getString("@value"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("position").getObject("sector").keys());
+		assertEquals("BUSINESS_SECTOR", linked.getObject("position").getObject("sector").getString("@type"));
+		assertEquals("IMIT", linked.getObject("position").getObject("sector").getString("@value"));
 		assertEquals("IM/IT", linked.getObject("position").getObject("sector").getString("@en"));
 		assertEquals("GI / TI", linked.getObject("position").getObject("sector").getString("@fr"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("position").getObject("unit").keys());
-		assertEquals("BusinessUnit", linked.getObject("position").getObject("unit").getString("@type"));
-		assertEquals("ops", linked.getObject("position").getObject("unit").getString("@value"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("position").getObject("unit").keys());
+		assertEquals("BUSINESS_UNIT", linked.getObject("position").getObject("unit").getString("@type"));
+		assertEquals("OPS", linked.getObject("position").getObject("unit").getString("@value"));
 		assertEquals("Operations", linked.getObject("position").getObject("unit").getString("@en"));
 		assertEquals("Operations", linked.getObject("position").getObject("unit").getString("@fr"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("position").getObject("classification").keys());
-		assertEquals("BusinessClassification", linked.getObject("position").getObject("classification").getString("@type"));
-		assertEquals("sysadmin", linked.getObject("position").getObject("classification").getString("@value"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("position").getObject("classification").keys());
+		assertEquals("BUSINESS_CLASSIFICATION", linked.getObject("position").getObject("classification").getString("@type"));
+		assertEquals("SYS_ADMIN", linked.getObject("position").getObject("classification").getString("@value"));
 		assertEquals("System Administrator", linked.getObject("position").getObject("classification").getString("@en"));
 		assertEquals("Administrateur du système", linked.getObject("position").getObject("classification").getString("@fr"));
 		assertEquals(person, transformer.parse(linked, null));
@@ -149,7 +154,7 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("Bacon, Chris P", root.getString("displayName"));
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), root.getObject("legalName").keys());
 		assertEquals("PersonName", root.getObject("legalName").getString("@type"));
-		assertEquals("3", root.getObject("legalName").getString("salutation"));
+		assertEquals("MR", root.getObject("legalName").getString("salutation"));
 		assertEquals("Chris", root.getObject("legalName").getString("firstName"));
 		assertEquals("P", root.getObject("legalName").getString("middleName"));
 		assertEquals("Bacon", root.getObject("legalName").getString("lastName"));
@@ -172,9 +177,9 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("8881234567", root.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), root.getObject("position").keys());
 		assertEquals("BusinessPosition", root.getObject("position").getString("@type"));
-		assertEquals("imit", root.getObject("position").getString("sector"));
-		assertEquals("ops", root.getObject("position").getString("unit"));
-		assertEquals("sysadmin", root.getObject("position").getString("classification"));
+		assertEquals("IMIT", root.getObject("position").getString("sector"));
+		assertEquals("OPS", root.getObject("position").getString("unit"));
+		assertEquals("SYS_ADMIN", root.getObject("position").getString("classification"));
 	}
 	
 	@Test

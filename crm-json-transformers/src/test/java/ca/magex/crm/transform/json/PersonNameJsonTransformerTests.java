@@ -58,9 +58,10 @@ public class PersonNameJsonTransformerTests {
 		JsonObject linked = (JsonObject)transformer.format(personName, null);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), linked.keys());
 		assertEquals("PersonName", linked.getString("@type"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
-		assertEquals("Salutation", linked.getObject("salutation").getString("@type"));
-		assertEquals("3", linked.getObject("salutation").getString("@value"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
+		assertEquals("Option", linked.getObject("salutation").getString("@type"));
+		assertEquals("SALUTATION", linked.getObject("salutation").getString("@lookup"));
+		assertEquals("MR", linked.getObject("salutation").getString("@value"));
 		assertEquals("Mr.", linked.getObject("salutation").getString("@en"));
 		assertEquals("M.", linked.getObject("salutation").getString("@fr"));
 		assertEquals("Chris", linked.getString("firstName"));
@@ -74,7 +75,7 @@ public class PersonNameJsonTransformerTests {
 		JsonObject root = (JsonObject)transformer.format(personName, Lang.ROOT);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), root.keys());
 		assertEquals("PersonName", root.getString("@type"));
-		assertEquals("3", root.getString("salutation"));
+		assertEquals("MR", root.getString("salutation"));
 		assertEquals("Chris", root.getString("firstName"));
 		assertEquals("P", root.getString("middleName"));
 		assertEquals("Bacon", root.getString("lastName"));

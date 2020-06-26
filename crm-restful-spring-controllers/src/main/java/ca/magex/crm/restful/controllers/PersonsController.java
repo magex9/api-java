@@ -44,7 +44,7 @@ public class PersonsController extends AbstractCrmController {
 	public PersonsFilter extractPersonFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
 		Identifier organizationId = req.getParameter("organization") == null ? null : new Identifier(req.getParameter("organization"));
 		String displayName = req.getParameter("displayName");
-		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
 		return new PersonsFilter(organizationId, displayName, status);
 	}
 	

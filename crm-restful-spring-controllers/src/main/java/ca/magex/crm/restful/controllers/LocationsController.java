@@ -67,7 +67,7 @@ public class LocationsController extends AbstractCrmController {
 		Identifier organizationId = req.getParameter("organization") == null ? null : new Identifier(req.getParameter("organization"));
 		String displayName = req.getParameter("displayName");
 		String reference = req.getParameter("reference");
-		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 

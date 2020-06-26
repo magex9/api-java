@@ -10,6 +10,7 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonElement;
@@ -32,11 +33,23 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	@Override
 	public JsonElement formatRoot(Option option) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@type", crm.findLookup(option.getLookupId()).getCode()));
+		pairs.add(new JsonPair("@context", buildContext(option)));
 		pairs.add(new JsonPair("@value", option.getCode()));
 		pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
 		pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
 		return new JsonObject(pairs);
+	}
+	
+	public String buildContext(Option option) {
+		Lookup lookup = crm.findLookup(option.getLookupId());
+		StringBuilder sb = new StringBuilder();
+		sb.append("http://magex.ca/crm/lookups/");
+		sb.append(lookup.getCode());
+		if (lookup.getParent() != null) {
+			sb.append("/");
+			sb.append(lookup.getParent().getCode());
+		}
+		return sb.toString();
 	}
 	
 	@Override

@@ -72,13 +72,13 @@ public class UserJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("person").getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("person").getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("person").getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("person").getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("person").getObject("status").keys());
 		assertEquals("Status", linked.getObject("person").getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("person").getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("person").getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("person").getObject("status").getString("@fr"));
 		assertEquals("ADMIN", linked.getObject("person").getString("displayName"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));

@@ -61,6 +61,10 @@ public class OrganizationDetails extends OrganizationSummary {
 	public OrganizationDetails withGroupIds(List<Identifier> groupIds) {
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groupIds);
 	}
+	
+	public OrganizationSummary asSummary() {
+		return new OrganizationSummary(organizationId, status, displayName);
+	}
 
 	@Override
 	public int hashCode() {

@@ -9,6 +9,7 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonBoolean;
@@ -37,7 +38,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	}
 	
 	public void formatType(List<JsonPair> parent) {
-		parent.add(new JsonPair("@type", getSourceType().getSimpleName()));
+		parent.add(new JsonPair("@context", "http://magex.ca/crm/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/")));
 	}
 	
 	public final JsonElement format(T obj, Locale locale) {
@@ -131,9 +132,20 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		if (obj == null)
 			return;
 		Identifier code = getProperty(obj, key, Identifier.class);
-		if (code != null) {
-			parent.add(new JsonPair(key, new IdentifierJsonTransformer(crm).format(new Identifier(code), locale)));
-		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("http://magex.ca/crm");
+		sb.append(code.toString());
+		parent.add(new JsonPair(key, sb.toString()));
+	}
+	
+	public void formatStatus(List<JsonPair> parent, String key, Object obj, Locale locale) {
+		if (obj == null)
+			return;
+		Status status = getProperty(obj, key, Status.class);
+		StringBuilder sb = new StringBuilder();
+		sb.append("http://magex.ca/crm/statuses/");
+		sb.append(status.toString().toLowerCase());
+		parent.add(new JsonPair(key, sb.toString()));
 	}
 	
 	public void formatLocalized(List<JsonPair> parent, String key, Object obj, Locale locale) {

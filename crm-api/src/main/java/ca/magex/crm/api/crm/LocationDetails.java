@@ -43,7 +43,7 @@ public class LocationDetails extends LocationSummary {
 		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
 	}
 
-	public LocationSummary toSummary() {
+	public LocationSummary asSummary() {
 		return new LocationSummary(locationId, organizationId, status, reference, displayName);
 	}
 	

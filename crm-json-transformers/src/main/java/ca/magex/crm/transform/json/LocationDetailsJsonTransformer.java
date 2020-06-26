@@ -44,14 +44,8 @@ public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<Loca
 	public JsonObject formatLocalized(LocationDetails location, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		if (location.getLocationId() != null) {
-			pairs.add(new JsonPair("locationId",identifierJsonTransformer
-				.format(location.getLocationId(), locale)));
-		}
-		if (location.getOrganizationId() != null) {
-			pairs.add(new JsonPair("organizationId", identifierJsonTransformer
-				.format(location.getOrganizationId(), locale)));
-		}
+		formatIdentifier(pairs, "locationId", location, locale);
+		formatIdentifier(pairs, "organizationId", location, locale);
 		if (location.getStatus() != null) {
 			pairs.add(new JsonPair("status", statusJsonTransformer
 				.format(location.getStatus(), locale)));

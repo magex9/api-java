@@ -76,7 +76,7 @@ public class PersonDetails extends PersonSummary {
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roleIds);
 	}	
 
-	public PersonSummary toSummary() {
+	public PersonSummary asSummary() {
 		return new PersonSummary(personId, organizationId, status, displayName);
 	}
 	

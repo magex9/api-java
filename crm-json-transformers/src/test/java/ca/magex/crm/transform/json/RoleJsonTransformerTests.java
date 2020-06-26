@@ -62,13 +62,13 @@ public class RoleJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("groupId").keys());
 		assertEquals("Identifier", linked.getObject("groupId").getString("@type"));
 		assertEquals("grp", linked.getObject("groupId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("pending", linked.getObject("status").getString("@value"));
 		assertEquals("Pending", linked.getObject("status").getString("@en"));
 		assertEquals("En attente", linked.getObject("status").getString("@fr"));
 		assertEquals("ORG_ADMIN", linked.getString("code"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("name").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("name").keys());
 		assertEquals("Localized", linked.getObject("name").getString("@type"));
 		assertEquals("ORG_ADMIN", linked.getObject("name").getString("@value"));
 		assertEquals("Organization Administrator", linked.getObject("name").getString("@en"));

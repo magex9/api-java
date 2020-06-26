@@ -1,14 +1,12 @@
 package ca.magex.crm.caching.config;
 
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableCaching
 public class CachingConfig {
 	
 	public static interface Caches {
@@ -21,8 +19,9 @@ public class CachingConfig {
 	}
 
 	@Bean
-    public CacheManager cacheManager() {
+    public CacheManager cacheManager() {		
 		return new TransactionAwareCacheManagerProxy(
+				// TOOD switch to Caffeine Cache Manager
 				new ConcurrentMapCacheManager(
 						Caches.Organizations, 
 						Caches.Locations,

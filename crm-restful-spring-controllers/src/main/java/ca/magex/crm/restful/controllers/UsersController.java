@@ -44,7 +44,7 @@ public class UsersController extends AbstractCrmController {
 		Identifier organizationId = req.getParameter("organization") == null ? null : new Identifier(req.getParameter("organization"));
 		Identifier personId = req.getParameter("person") == null ? null : new Identifier(req.getParameter("person"));
 		String username = req.getParameter("username");
-		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
 		String role = req.getParameter("role");
 		return new UsersFilter(organizationId, personId, status, username, role);
 	}

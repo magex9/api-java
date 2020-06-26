@@ -51,7 +51,7 @@ public class LocalizedJsonTransformerTests {
 	@Test
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(GROUP, null);
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), root.keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), root.keys());
 		assertEquals("Localized", root.getString("@type"));
 		assertEquals("GRP", root.getString("@value"));
 		assertEquals("Group", root.getString("@en"));

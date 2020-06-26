@@ -62,7 +62,7 @@ public class MessageJsonTransformerTests {
 		assertEquals("abc", linked.getObject("identifier").getString("@id"));
 		assertEquals("error", linked.getString("type"));
 		assertEquals("prop", linked.getString("path"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("reason").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("reason").keys());
 		assertEquals("Localized", linked.getObject("reason").getString("@type"));
 		assertEquals("message.reason", linked.getObject("reason").getString("@value"));
 		assertEquals("English reason", linked.getObject("reason").getString("@en"));

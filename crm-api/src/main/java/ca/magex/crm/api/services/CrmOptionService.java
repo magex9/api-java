@@ -24,8 +24,8 @@ public interface CrmOptionService {
 		return new Option(null, parentId, Type.of(typeCode), Status.PENDING, true, name);
 	}
 
-	default Option createOption(Option option) {
-		return createOption(option.getParentId(), option.getType().getCode(), option.getName());
+	default Option createOption(Option prototype) {
+		return createOption(prototype.getParentId(), prototype.getType().getCode(), prototype.getName());
 	}
 
 	Option createOption(Identifier parentId, String typeCode, Localized name);

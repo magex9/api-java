@@ -61,7 +61,7 @@ public class LocationSummaryJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));

@@ -58,8 +58,9 @@ public class OrganizationSummaryJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
-		assertEquals("Status", linked.getObject("status").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals("Option", linked.getObject("status").getString("@type"));
+		assertEquals("STATUS", linked.getObject("status").getString("@lookup"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));

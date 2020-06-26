@@ -35,7 +35,7 @@ public class LocationDetailsJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new LocationDetailsJsonTransformer(crm);
-		location = new LocationDetails(new Identifier("loc"), new Identifier("org"), Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS);
+		location = new LocationDetails(new Identifier("/locations/loc"), new Identifier("/organizations/org"), Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS);
 	}
 	
 	@Test
@@ -54,6 +54,7 @@ public class LocationDetailsJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(location, null);
+		System.out.println(linked);
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), linked.keys());
 		assertEquals("LocationDetails", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("locationId").keys());
@@ -62,8 +63,9 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
-		assertEquals("Status", linked.getObject("status").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals("Option", linked.getObject("status").getString("@type"));
+		assertEquals("STATUS", linked.getObject("status").getString("@lookup"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));
@@ -73,12 +75,12 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("MailingAddress", linked.getObject("address").getString("@type"));
 		assertEquals("123 Main St", linked.getObject("address").getString("street"));
 		assertEquals("Ottawa", linked.getObject("address").getString("city"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("address").getObject("province").keys());
-		assertEquals("Province", linked.getObject("address").getObject("province").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("address").getObject("province").keys());
+		assertEquals("PROVINCE", linked.getObject("address").getObject("province").getString("@type"));
 		assertEquals("QC", linked.getObject("address").getObject("province").getString("@value"));
 		assertEquals("Quebec", linked.getObject("address").getObject("province").getString("@en"));
 		assertEquals("Québec", linked.getObject("address").getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("address").getObject("country").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("address").getObject("country").keys());
 		assertEquals("Country", linked.getObject("address").getObject("country").getString("@type"));
 		assertEquals("CA", linked.getObject("address").getObject("country").getString("@value"));
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@en"));

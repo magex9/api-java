@@ -39,7 +39,7 @@ public class GroupsController extends AbstractCrmController {
 	}
 	
 	private GroupsFilter extractGroupsFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
-		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUSES, locale, req.getParameter("status")).getCode().toUpperCase());
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
 		if (req.getParameter("name") != null) {
 			String name = req.getParameter("name");
 			if (locale.equals(Lang.ENGLISH)) {

@@ -43,7 +43,29 @@ public class LookupJsonTransformer extends AbstractJsonTransformer<Lookup> {
 
 	@Override
 	public JsonElement formatRoot(Lookup lookup) {
-		return formatLocalized(lookup, null);
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		formatType(pairs);
+		if (lookup.getLookupId() != null) {
+			pairs.add(new JsonPair("lookupId", identifierJsonTransformer
+				.formatRoot(lookup.getLookupId())));
+		}
+		if (lookup.getStatus() != null) {
+			pairs.add(new JsonPair("status", statusJsonTransformer
+				.formatRoot(lookup.getStatus())));
+		}
+		formatBoolean(pairs, "mutable", lookup);
+		if (lookup.getCode() != null) {
+			pairs.add(new JsonPair("code", new JsonText(lookup.getCode())));
+		}
+		if (lookup.getName() != null) {
+			pairs.add(new JsonPair("name", localizedJsonTransformer
+				.formatRoot(lookup.getName())));
+		}
+		if (lookup.getParent() != null) {
+			pairs.add(new JsonPair("parent", optionJsonTransformer
+				.formatRoot(lookup.getParent())));
+		}
+		return new JsonObject(pairs);
 	}
 	
 	@Override
@@ -59,16 +81,16 @@ public class LookupJsonTransformer extends AbstractJsonTransformer<Lookup> {
 				.format(lookup.getStatus(), locale)));
 		}
 		formatBoolean(pairs, "mutable", lookup);
-		if (lookup.getCode() != null) {
-			pairs.add(new JsonPair("code", new JsonText(lookup.getCode())));
-		}
 		if (lookup.getName() != null) {
-			pairs.add(new JsonPair("name", localizedJsonTransformer
-				.format(lookup.getName(), locale)));
+			pairs.add(new JsonPair("code", lookup.getCode()));
+			pairs.add(new JsonPair("name", lookup.getName(locale)));
 		}
 		if (lookup.getParent() != null) {
-			pairs.add(new JsonPair("parent", optionJsonTransformer
-				.format(lookup.getParent(), locale)));
+			pairs.add(new JsonPair("parent", new JsonObject()
+				.with("lookup", formatLocalized(crm.findLookup(lookup.getParent().getLookupId()), locale))
+				.with("code", lookup.getParent().getCode())
+				.with("name", lookup.getName(locale))
+			));
 		}
 		return new JsonObject(pairs);
 	}

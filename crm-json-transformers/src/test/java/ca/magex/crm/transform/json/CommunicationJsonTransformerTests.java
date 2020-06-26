@@ -17,6 +17,7 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -52,11 +53,16 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(communication, null);
+		System.out.println(linked);
+		
+		JsonAsserts.print(linked, "linked");
+		
 		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), linked.keys());
 		assertEquals("Communication", linked.getString("@type"));
 		assertEquals("Developer", linked.getString("jobTitle"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("language").keys());
-		assertEquals("Language", linked.getObject("language").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("language").keys());
+		assertEquals("Option", linked.getObject("language").getString("@type"));
+		assertEquals("LANGUAGE", linked.getObject("language").getString("@lookup"));
 		assertEquals("EN", linked.getObject("language").getString("@value"));
 		assertEquals("English", linked.getObject("language").getString("@en"));
 		assertEquals("Anglais", linked.getObject("language").getString("@fr"));
