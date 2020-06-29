@@ -50,7 +50,6 @@ public abstract class AbstractConfigurationServiceTests {
 		} catch (DuplicateItemFoundException expected) { }
 	}
 	
-	@Ignore
 	@Test
 	public void testDataDump() throws Exception {
 		crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
