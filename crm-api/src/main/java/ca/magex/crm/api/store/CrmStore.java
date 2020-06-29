@@ -1,5 +1,6 @@
 package ca.magex.crm.api.store;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
@@ -28,6 +29,10 @@ public interface CrmStore {
 	public static String generateId() {
 		return RandomStringUtils.random(10, BASE_58);
 	}
+	
+	public String encode(Object obj) throws IOException;
+	
+	public Object decode(String text) throws IOException, ClassNotFoundException;
 	
 	public CrmUpdateNotifier getNotifier();
 	
@@ -66,7 +71,7 @@ public interface CrmStore {
 		}
 	}
 	
-	public static void dump(Map<? extends Identifier, ? extends Serializable> map, OutputStream os) {
+	default void dump(Map<? extends Identifier, ? extends Serializable> map, OutputStream os) {
 		map.keySet()
 			.stream()
 			.sorted((x, y) -> x.toString().compareTo(y.toString()))
