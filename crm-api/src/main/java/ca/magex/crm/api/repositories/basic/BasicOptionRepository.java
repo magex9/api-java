@@ -11,8 +11,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class BasicOptionRepository implements CrmOptionRepository {
 
@@ -40,7 +40,7 @@ public class BasicOptionRepository implements CrmOptionRepository {
 	}
 
 	@Override
-	public Option findOption(Identifier optionId) {
+	public Option findOption(OptionIdentifier optionId) {
 		return store.getOptions().get(optionId);
 	}
 
