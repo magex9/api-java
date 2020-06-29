@@ -2,13 +2,13 @@ package ca.magex.crm.api.authentication.basic;
 
 import java.util.Stack;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -27,7 +27,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	
 	private Stack<User> currentUser;
 
-	public BasicAuthenticationService(Crm crm, CrmPasswordRepository repo) {
+	public BasicAuthenticationService(CrmServices crm, CrmPasswordRepository repo) {
 		this(crm, crm, crm, new BasicPasswordService(repo));
 	}
 	

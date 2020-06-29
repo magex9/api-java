@@ -5,6 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -43,8 +48,6 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	public boolean isInitialized() {
 		return repos.isInitialized();
 	}
-	
-	
 
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
@@ -94,6 +97,22 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	@Override
 	public void dump(OutputStream os) {
 		repos.dump(os);
+	}
+
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
 }

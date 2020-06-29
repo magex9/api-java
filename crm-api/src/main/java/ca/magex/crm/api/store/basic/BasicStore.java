@@ -1,6 +1,5 @@
 package ca.magex.crm.api.store.basic;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,6 +9,7 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.store.CrmStore;
+import ca.magex.crm.api.system.Configuration;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.id.ConfigurationIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -27,9 +27,7 @@ public class BasicStore implements CrmStore {
 	
 	private CrmUpdateNotifier notifier; 
 	
-	private Map<ConfigurationIdentifier, Serializable> configurations;
-	
-//	private Map<Identifier, Type> types;
+	private Map<ConfigurationIdentifier, Configuration> configurations;
 	
 	private Map<OptionIdentifier, Option> options;
 	
@@ -46,28 +44,23 @@ public class BasicStore implements CrmStore {
 	 */
 	public BasicStore() {
 		notifier = new CrmUpdateNotifier();
-		configurations = new ConcurrentHashMap<ConfigurationIdentifier, Serializable>();
-		options = new ConcurrentHashMap<OptionIdentifier, Option>();
-		organizations = new ConcurrentHashMap<OrganizationIdentifier, OrganizationDetails>();
-		locations = new ConcurrentHashMap<LocationIdentifier, LocationDetails>();
-		persons = new ConcurrentHashMap<PersonIdentifier, PersonDetails>();
-		users = new ConcurrentHashMap<UserIdentifier, User>();
+		configurations = new ConcurrentHashMap<>();
+		options = new ConcurrentHashMap<>();
+		organizations = new ConcurrentHashMap<>();
+		locations = new ConcurrentHashMap<>();
+		persons = new ConcurrentHashMap<>();
+		users = new ConcurrentHashMap<>();
 	}
 	
 	@Override
 	public CrmUpdateNotifier getNotifier() {
 		return notifier;
 	}
-	
+
 	@Override
-	public Map<ConfigurationIdentifier, Serializable> getConfigurations() {
+	public Map<ConfigurationIdentifier, Configuration> getConfigurations() {
 		return configurations;
 	}
-	
-//	@Override
-//	public Map<Identifier, Type> getTypes() {
-//		return types;
-//	}
 	
 	@Override
 	public Map<OptionIdentifier, Option> getOptions() {

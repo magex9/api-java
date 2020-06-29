@@ -11,6 +11,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.system.Configuration;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.id.ConfigurationIdentifier;
@@ -30,8 +31,8 @@ public interface CrmStore {
 	
 	public CrmUpdateNotifier getNotifier();
 	
-	public Map<ConfigurationIdentifier, Serializable> getConfigurations();
-
+	public Map<ConfigurationIdentifier, Configuration> getConfigurations();
+	
 	public Map<OptionIdentifier, Option> getOptions();
 
 	public Map<OrganizationIdentifier, OrganizationDetails> getOrganizations();
@@ -53,12 +54,16 @@ public interface CrmStore {
 	}
 	
 	default public void dump(OutputStream os) {
-		dump(getConfigurations(), os);
-		dump(getOptions(), os);
-		dump(getOrganizations(), os);
-		dump(getLocations(), os);
-		dump(getPersons(), os);
-		dump(getUsers(), os);
+		try {
+			dump(getConfigurations(), os);
+			dump(getOptions(), os);
+			dump(getOrganizations(), os);
+			dump(getLocations(), os);
+			dump(getPersons(), os);
+			dump(getUsers(), os);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to dump store to outputstream", e);
+		}
 	}
 	
 	public static void dump(Map<? extends Identifier, ? extends Serializable> map, OutputStream os) {

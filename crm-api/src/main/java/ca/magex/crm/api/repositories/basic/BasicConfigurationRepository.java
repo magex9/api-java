@@ -1,24 +1,39 @@
 package ca.magex.crm.api.repositories.basic;
 
+import java.time.LocalDateTime;
+
 import ca.magex.crm.api.repositories.CrmConfigurationRepository;
 import ca.magex.crm.api.store.CrmStore;
+import ca.magex.crm.api.system.Configuration;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.ConfigurationIdentifier;
 
 public class BasicConfigurationRepository implements CrmConfigurationRepository {
 
+	private Configuration latest;
+	
 	private CrmStore store;
 	
 	public BasicConfigurationRepository(CrmStore store) {
 		this.store = store;
+		this.latest = null;
 	}
 
 	@Override
 	public boolean isInitialized() {
-		return store.getConfigurations().containsKey(new ConfigurationIdentifier("initialized"));
+		if (latest == null)
+			return false;
+		return latest.getStatus().equals(Status.ACTIVE);
 	}
 	
 	@Override
 	public void setInitialized() {
-		store.getConfigurations().put(new ConfigurationIdentifier("initialized"), Boolean.TRUE);
+		if (latest == null) {
+			latest = new Configuration(new ConfigurationIdentifier(CrmStore.generateId()), Status.ACTIVE, LocalDateTime.now());
+		} else {
+			latest = latest.withStatus(Status.ACTIVE);
+		}
+		store.getConfigurations().put(latest.getConfigurationId(), latest);
 	}
+	
 }
