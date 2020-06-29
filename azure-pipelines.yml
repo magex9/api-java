@@ -81,7 +81,7 @@ stages:
               persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
       
             #Deploy crm-helloworld
-            - template: azure-package.yml
+            - template: azure-package-webapp.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-helloworld
