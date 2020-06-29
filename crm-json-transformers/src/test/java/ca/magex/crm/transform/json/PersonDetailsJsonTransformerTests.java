@@ -15,14 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.repositories.CrmOrganizationRepository;
-import ca.magex.crm.api.repositories.CrmPersonRepository;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonAsserts;
@@ -42,13 +41,11 @@ public class PersonDetailsJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonDetailsJsonTransformer(crm);
-		BusinessPosition position = new BusinessPosition(
-			crm.findOptionByLocalizedName(Crm.BUSINESS_SECTOR, Lang.ENGLISH, "IM/IT").getCode(),
-			crm.findOptionByLocalizedName(Crm.BUSINESS_UNIT, "IMIT", Lang.ENGLISH, "Operations").getCode(),
-			crm.findOptionByLocalizedName(Crm.BUSINESS_CLASSIFICATION, Lang.ENGLISH, "System Administrator").getCode()
+		List<BusinessRoleIdentifier> roleIds = List.of(
+			crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/APPDEV/APPS/DEV").getOptionId()
 		);
-		person = new PersonDetails(new Identifier(CrmPersonRepository.CONTEXT, "prsn1"), new Identifier(CrmOrganizationRepository.CONTEXT, "org1"), Status.ACTIVE, 
-			PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, position);
+		person = new PersonDetails(new PersonIdentifier("prsn1"), new OrganizationIdentifier("org1"), Status.ACTIVE, 
+			PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds);
 	}
 	
 	@Test

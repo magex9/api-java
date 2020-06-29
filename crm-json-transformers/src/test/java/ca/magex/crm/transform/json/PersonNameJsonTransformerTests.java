@@ -16,6 +16,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
@@ -36,7 +37,10 @@ public class PersonNameJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonNameJsonTransformer(crm);
-		mr = crm.findOptionByLocalizedName(Crm.SALUTATION, Lang.ENGLISH, "Mr.");
+		mr = crm.findOptions(crm.defaultOptionsFilter()
+			.withType(Type.SALUTATION)
+			.withName(Lang.ENGLISH, "Mr.")
+		).getSingleItem();
 		personName = PERSON_NAME.withSalutation(mr.getCode());
 	}
 	

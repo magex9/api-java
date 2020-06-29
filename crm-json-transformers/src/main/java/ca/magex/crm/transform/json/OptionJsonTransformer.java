@@ -7,12 +7,12 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
-import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
@@ -41,13 +41,12 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	}
 	
 	public String buildContext(Option option) {
-		Lookup lookup = crm.findLookup(option.getLookupId());
 		StringBuilder sb = new StringBuilder();
 		sb.append("http://magex.ca/crm/lookups/");
-		sb.append(lookup.getCode());
-		if (lookup.getParent() != null) {
+		sb.append(option.getCode());
+		if (option.getParentId() != null) {
 			sb.append("/");
-			sb.append(lookup.getParent().getCode());
+			sb.append(crm.findOption(option.getParentId()).getCode());
 		}
 		return sb.toString();
 	}
@@ -59,11 +58,13 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 
 	@Override
 	public Option parseJsonObject(JsonObject json, Locale locale) {
-		Identifier optionId = parseObject("optionId", json, new IdentifierJsonTransformer(crm), locale);
-		Identifier lookupId = parseObject("lookupId", json, new IdentifierJsonTransformer(crm), locale);
+		OptionIdentifier optionId = parseIdentifier("optionId", json, OptionIdentifier.class, locale);
+		OptionIdentifier parentId = parseIdentifier("parentId", json, OptionIdentifier.class, locale);
+		Type type = null;
+		Boolean mutable = false;
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		Localized name = parseObject("name", json, new LocalizedJsonTransformer(crm), locale);
-		return new Option(optionId, lookupId, status, name);
+		return new Option(optionId, parentId, type, status, mutable, name);
 	}
 
 }

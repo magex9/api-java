@@ -13,9 +13,9 @@ import org.junit.Test;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.OrganizationSummary;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
@@ -34,7 +34,7 @@ public class OrganizationSummaryJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new OrganizationSummaryJsonTransformer(crm);
-		organization = new OrganizationSummary(new Identifier("org"), Status.ACTIVE, "Org Name");
+		organization = new OrganizationSummary(new OrganizationIdentifier("org"), Status.ACTIVE, "Org Name");
 	}
 	
 	@Test

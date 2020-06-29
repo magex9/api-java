@@ -6,14 +6,12 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Lookup;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
@@ -42,7 +40,7 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 		formatText(pairs, "street", address);
 		formatText(pairs, "city", address);
 		formatProvince(pairs, "province", address, locale);
-		formatOption(pairs, "country", address, Crm.COUNTRY, locale);
+		formatOption(pairs, "country", address, Type.COUNTRY, locale);
 		formatText(pairs, "postalCode", address);
 		return new JsonObject(pairs);
 	}
@@ -55,12 +53,15 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 			return;
 		} else {
 			try {
-				Option country = crm.findOptionByCode(crm.findLookupByCode(Crm.COUNTRY).getLookupId(), address.getCountry());
-				Lookup provinces = crm.findLookupByTypeWithParent(Crm.PROVINCE, country);
-				Option province = crm.findOptionByCode(provinces.getLookupId(), address.getProvince());
+				Option country = crm.findOptionByCode(Type.COUNTRY, address.getCountry());
+				Option province = crm.findOptions(crm.defaultOptionsFilter()
+					.withType(Type.PROVINCE)
+					.withOptionCode(address.getProvince())
+					.withParentId(country.getOptionId())
+				).getSingleItem();
 				if (locale == null) {
 					List<JsonPair> pairs = new ArrayList<JsonPair>();
-					pairs.add(new JsonPair("@type", Crm.PROVINCE));
+					pairs.add(new JsonPair("@type", Type.PROVINCE.getCode()));
 					pairs.add(new JsonPair("@value", province.getCode()));
 					pairs.add(new JsonPair("@en", province.getName(Lang.ENGLISH)));
 					pairs.add(new JsonPair("@fr", province.getName(Lang.FRENCH)));
@@ -78,7 +79,7 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	public MailingAddress parseJsonObject(JsonObject json, Locale locale) {
 		String street = parseText("street", json);
 		String city = parseText("city", json);
-		String country = parseOption("country", json, Crm.COUNTRY, locale);
+		String country = parseOption("country", json, Type.COUNTRY, locale);
 		String province = parseProvince("province", "country", json, locale);
 		String postalCode = parseText("postalCode", json);
 		return new MailingAddress(street, city, province, country == null ? null : country, postalCode);
@@ -87,22 +88,28 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	public String parseProvince(String provinceKey, String countryKey, JsonObject json, Locale locale) {
 		if (json == null || !json.contains(provinceKey))
 			return null;
-		String country = parseOption("country", json, Crm.COUNTRY, locale);
+		String country = parseOption("country", json, Type.COUNTRY, locale);
 		if (country == null) {
 			return json.getString(provinceKey);
 		} else if (json.get(provinceKey) instanceof JsonText) {
 			String province = ((JsonText)json.get(provinceKey)).value();
 			try {
-				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, crm.findOption(Crm.COUNTRY, country)).getLookupId();
-				return crm.findOptionByLocalizedName(lookupId, locale, province).getCode(); 
+				return crm.findOptions(crm.defaultOptionsFilter()
+					.withType(Type.PROVINCE)
+					.withName(locale, province)
+					.withParentId(crm.findOptionByCode(Type.COUNTRY, country).getOptionId())
+				).getSingleItem().getCode();
 			} catch (IllegalArgumentException | ItemNotFoundException e) {
 				return province;
 			}
 		} else if (json.get(provinceKey) instanceof JsonObject) {
 			String province = ((JsonObject)json.get(provinceKey)).getString("@value");
 			try {
-				Identifier lookupId = crm.findLookupByTypeWithParent(Crm.PROVINCE, crm.findOption(Crm.COUNTRY, country)).getLookupId();
-				return crm.findOptionByLocalizedName(lookupId, locale, province).getCode(); 
+				return crm.findOptions(crm.defaultOptionsFilter()
+					.withType(Type.PROVINCE)
+					.withName(locale, province)
+					.withParentId(crm.findOptionByCode(Type.COUNTRY, country).getOptionId())
+				).getSingleItem().getCode();
 			} catch (IllegalArgumentException | ItemNotFoundException e) {
 				return province;
 			}

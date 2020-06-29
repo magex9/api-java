@@ -38,14 +38,14 @@ public class IdentifierJsonTransformer extends AbstractJsonTransformer<Identifie
 		return new JsonText(identifier.toString());
 	}
 
-	@Override
-	public Identifier parseJsonText(JsonText json, Locale locale) {
-		return new Identifier(json.value());
-	}
-
-	@Override
-	public Identifier parseJsonObject(JsonObject json, Locale locale) {
-		return new Identifier(json.getString("@id"));
-	}
+//	@Override
+//	public Identifier parseJsonText(JsonText json, Locale locale) {
+//		return new Identifier(json.value());
+//	}
+//
+//	@Override
+//	public Identifier parseJsonObject(JsonObject json, Locale locale) {
+//		return new Identifier(json.getString("@id"));
+//	}
 
 }
