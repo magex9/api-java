@@ -14,6 +14,10 @@ import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class Option implements Serializable {
 
+	public static final boolean MUTABLE = true;
+	
+	public static final boolean IMMUTABLE = false;
+	
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	private OptionIdentifier optionId;

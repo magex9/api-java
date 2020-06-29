@@ -2,9 +2,7 @@ package ca.magex.crm.api.repositories;
 
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
@@ -21,78 +19,78 @@ import ca.magex.crm.api.system.id.StatusIdentifier;
 
 public interface CrmOptionRepository {
 	
-	default OptionIdentifier generateForType(Type type) {
+	default OptionIdentifier generateForType(Type type, String lookup) {
 		switch (type) {
 		case AUTHENTICATION_GROUP:
-			return generateAuthenticationGroupId();
+			return generateAuthenticationGroupId(lookup);
 		case AUTHENTICATION_ROLE:
-			return generateAuthenticationRoleId();
+			return generateAuthenticationRoleId(lookup);
 		case BUSINESS_GROUP:
-			return generateBusinessGroupId();
+			return generateBusinessGroupId(lookup);
 		case BUSINESS_ROLE:
-			return generateBusinessRoleId();
+			return generateBusinessRoleId(lookup);
 		case COUNTRY:
-			return generateCountryId();
+			return generateCountryId(lookup);
 		case PROVINCE:
-			return generateProvinceId();
+			return generateProvinceId(lookup);
 		case LANGUAGE:
-			return generateLanguageId();
+			return generateLanguageId(lookup);
 		case LOCALE:
-			return generateLocaleId();
+			return generateLocaleId(lookup);
 		case SALUTATION:
-			return generateSalutationId();
+			return generateSalutationId(lookup);
 		case STATUS:
-			return generateStatusId();
+			return generateStatusId(lookup);
 		default:
 			throw new IllegalArgumentException("Unknown Type: " + type);
 		}
 	}
 	
-	default AuthenticationGroupIdentifier generateAuthenticationGroupId() {
-		return new AuthenticationGroupIdentifier(CrmStore.generateId());
+	default AuthenticationGroupIdentifier generateAuthenticationGroupId(String lookup) {
+		return new AuthenticationGroupIdentifier(lookup);
 	}
 	
-	default AuthenticationRoleIdentifier generateAuthenticationRoleId() {
-		return new AuthenticationRoleIdentifier(CrmStore.generateId());
+	default AuthenticationRoleIdentifier generateAuthenticationRoleId(String lookup) {
+		return new AuthenticationRoleIdentifier(lookup);
 	}
 	
-	default BusinessGroupIdentifier generateBusinessGroupId() {
-		return new BusinessGroupIdentifier(CrmStore.generateId());
+	default BusinessGroupIdentifier generateBusinessGroupId(String lookup) {
+		return new BusinessGroupIdentifier(lookup);
 	}
 	
-	default BusinessRoleIdentifier generateBusinessRoleId() {
-		return new BusinessRoleIdentifier(CrmStore.generateId());
+	default BusinessRoleIdentifier generateBusinessRoleId(String lookup) {
+		return new BusinessRoleIdentifier(lookup);
 	}
 	
-	default StatusIdentifier generateStatusId() {
-		return new StatusIdentifier(CrmStore.generateId());
+	default StatusIdentifier generateStatusId(String lookup) {
+		return new StatusIdentifier(lookup);
 	}
 	
-	default LocaleIdentifier generateLocaleId() {
-		return new LocaleIdentifier(CrmStore.generateId());
+	default LocaleIdentifier generateLocaleId(String lookup) {
+		return new LocaleIdentifier(lookup);
 	}
 	
-	default LanguageIdentifier generateLanguageId() {
-		return new LanguageIdentifier(CrmStore.generateId());
+	default LanguageIdentifier generateLanguageId(String lookup) {
+		return new LanguageIdentifier(lookup);
 	}
 	
-	default SalutationIdentifier generateSalutationId() {
-		return new SalutationIdentifier(CrmStore.generateId());
+	default SalutationIdentifier generateSalutationId(String lookup) {
+		return new SalutationIdentifier(lookup);
 	}
 	
-	default CountryIdentifier generateCountryId() {
-		return new CountryIdentifier(CrmStore.generateId());
+	default CountryIdentifier generateCountryId(String lookup) {
+		return new CountryIdentifier(lookup);
 	}
 	
-	default ProvinceIdentifier generateProvinceId() {
-		return new ProvinceIdentifier(CrmStore.generateId());
+	default ProvinceIdentifier generateProvinceId(String lookup) {
+		return new ProvinceIdentifier(lookup);
 	}
 	
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
 	
 	public long countOptions(OptionsFilter filter);
 	
-	public Option findOption(Identifier lookupId);
+	public Option findOption(OptionIdentifier lookupId);
 
 	public Option saveOption(Option lookup);
 

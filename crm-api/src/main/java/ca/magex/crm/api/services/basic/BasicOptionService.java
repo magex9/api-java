@@ -21,7 +21,11 @@ public class BasicOptionService implements CrmOptionService {
 
 	@Override
 	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
-		return repos.saveOption(new Option(repos.generateForType(type), parentId, type, Status.ACTIVE, true, name));
+		Option parent = repos.findOption(parentId);
+		if (parent == null) {
+			return repos.saveOption(new Option(repos.generateForType(type, name.getCode()), parentId, type, Status.ACTIVE, true, name));
+		}
+		return repos.saveOption(new Option(repos.generateForType(type, findOption(parentId).getCode() + "/" + name.getCode()), parentId, type, Status.ACTIVE, true, name));
 	}
 
 	@Override
@@ -31,7 +35,7 @@ public class BasicOptionService implements CrmOptionService {
 
 	@Override
 	public Option findOptionByCode(Type type, String optionCode) {
-		return repos.findOptions(new OptionsFilter().withType(type).withOptionCode(optionCode), OptionsFilter.getDefaultPaging()).getSingleItem();
+		return repos.findOption(repos.generateForType(type, optionCode));
 	}
 
 	@Override
