@@ -6,15 +6,15 @@ import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.data.domain.PageImpl;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.Crm;
 
 public class FilteredPage<T> extends PageImpl<T> {
-
+	
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
-
+	
 	private Serializable filter;
 	
 	private Paging paging;
@@ -35,9 +35,9 @@ public class FilteredPage<T> extends PageImpl<T> {
 	
 	public T getSingleItem() {
 		if (getTotalElements() < 1)
-			throw new ItemNotFoundException("No items found: " + filter);
+			throw new ItemNotFoundException(filter.getClass().getSimpleName() + "(" + filter + ")");
 		if (getTotalElements() > 1)
-			throw new DuplicateItemFoundException("Duplicate items found: " + filter);
+			throw new DuplicateItemFoundException(filter.getClass().getSimpleName() + "(" + filter + ")");
 		return getContent().get(0);
 	}
 	

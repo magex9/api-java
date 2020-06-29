@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -24,7 +24,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
  * @author Jonny
  */
 @Component
-@Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
+@Profile(CrmProfiles.AUTH_EMBEDDED_JWT)
 public class JwtTokenService implements Serializable {
 
 	private static final long serialVersionUID = -3887579290326971481L;

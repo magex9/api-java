@@ -1,33 +1,19 @@
 package ca.magex.crm.api.authentication;
 
-import javax.validation.constraints.NotNull;
-
 public interface CrmPasswordService {
-	
-	String getEncodedPassword(
-		@NotNull String username
-	);
-	
-	boolean isTempPassword(
-		@NotNull String username
-	);
-	
-	boolean isExpiredPassword(
-		@NotNull String username
-	);
-	
-	boolean verifyPassword(
-		@NotNull String username, 
-		@NotNull String rawPassword
-	);
-	
-	String generateTemporaryPassword(
-		@NotNull String username
-	);
-	
-	void updatePassword(
-		@NotNull String username,
-		@NotNull String encodedPassword
-	);
-	
+
+	String getEncodedPassword(String username);
+
+	boolean isTempPassword(String username);
+
+	boolean isExpiredPassword(String username);
+
+	boolean verifyPassword(String username, String rawPassword);
+
+	String generateTemporaryPassword(String username);
+
+	void updatePassword(String username, String encodedPassword);
+
+	String encodePassword(String rawPassword);
+
 }

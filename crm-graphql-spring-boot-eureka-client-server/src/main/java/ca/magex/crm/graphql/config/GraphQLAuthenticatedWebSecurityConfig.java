@@ -13,14 +13,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
 @Order(3)
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-@Profile(MagexCrmProfiles.CRM_AUTH)
+@Profile(CrmProfiles.CRM_AUTH)
 public class GraphQLAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired private JwtRequestFilter jwtRequestFilter;

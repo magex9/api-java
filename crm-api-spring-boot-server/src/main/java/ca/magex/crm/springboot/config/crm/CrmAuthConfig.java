@@ -6,15 +6,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.caching.config.CrmCachingConfigurerAdapter;
 
 @Configuration
-@Profile(MagexCrmProfiles.CRM_AUTH)
+@Profile(CrmProfiles.CRM_AUTH)
 @Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
 public class CrmAuthConfig extends CrmCachingConfigurerAdapter {	
 	

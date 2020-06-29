@@ -7,23 +7,41 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
+/**
+ * Contains the tombstone information for a Person within the System
+ * 
+ * @author Jonny
+ */
 public class PersonSummary implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	protected Identifier personId;
+	/** a unique identifier for the person within the system */
+	protected PersonIdentifier personId;
 
-	protected Identifier organizationId;
+	/** the unique organization this person belongs to */
+	protected OrganizationIdentifier organizationId;
 
+	/** current status of the person */
 	protected Status status;
 
+	/** name of the person for display purposes */
 	protected String displayName;
 
-	public PersonSummary(Identifier personId, Identifier organizationId, Status status, String displayName) {
+	/**
+	 * Constructs a new Person Summary from the provided information
+	 * 
+	 * @param personId
+	 * @param organizationId
+	 * @param status
+	 * @param displayName
+	 */
+	public PersonSummary(PersonIdentifier personId, OrganizationIdentifier organizationId, Status status, String displayName) {
 		super();
 		this.personId = personId;
 		this.organizationId = organizationId;
@@ -31,26 +49,52 @@ public class PersonSummary implements Serializable {
 		this.displayName = displayName;
 	}
 
-	public Identifier getPersonId() {
+	/**
+	 * returns the unique identifier associated with this person
+	 * @return
+	 */
+	public PersonIdentifier getPersonId() {
 		return personId;
 	}
 
-	public Identifier getOrganizationId() {
+	/**
+	 * returns the unique identifier of the organization this person is associated to
+	 * @return
+	 */
+	public OrganizationIdentifier getOrganizationId() {
 		return organizationId;
 	}
 
+	/**
+	 * returns the current status of the person
+	 * @return
+	 */
 	public Status getStatus() {
 		return status;
 	}
-
-	public PersonSummary withStatus(Status status) {
-		return new PersonSummary(personId, organizationId, status, displayName);
-	}
-
+	
+	/**
+	 * returns the display name associated with the person
+	 * @return
+	 */
 	public String getDisplayName() {
 		return displayName;
 	}
 
+	/**
+	 * returns a copy of the person with the given status
+	 * @param status
+	 * @return
+	 */
+	public PersonSummary withStatus(Status status) {
+		return new PersonSummary(personId, organizationId, status, displayName);
+	}
+
+	/**
+	 * returns a copy of the person with the given display name
+	 * @param displayName
+	 * @return
+	 */
 	public PersonSummary withDisplayName(String displayName) {
 		return new PersonSummary(personId, organizationId, status, displayName);
 	}

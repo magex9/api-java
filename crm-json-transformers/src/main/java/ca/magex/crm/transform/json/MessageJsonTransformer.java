@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
@@ -16,14 +16,8 @@ import ca.magex.json.model.JsonPair;
 @Component
 public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 
-	private IdentifierJsonTransformer identifierJsonTransformer;
-	
-	private LocalizedJsonTransformer localizedJsonTransformer;
-	
 	public MessageJsonTransformer(Crm crm) {
 		super(crm);
-		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
-		this.localizedJsonTransformer = new LocalizedJsonTransformer(crm);
 	}
 
 	@Override
@@ -40,25 +34,19 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 	public JsonObject formatLocalized(Message message, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		if (message.getIdentifier() != null) {
-			pairs.add(new JsonPair("identifier", identifierJsonTransformer
-				.format(message.getIdentifier(), locale)));
-		}
+		formatIdentifier(pairs, "identifier", message, locale);
 		formatText(pairs, "type", message);
 		formatText(pairs, "path", message);
-		if (message.getReason() != null) {
-			pairs.add(new JsonPair("reason", localizedJsonTransformer
-				.format(message.getReason(), locale)));
-		}
+		formatLocalized(pairs, "reason", message, locale);
 		return new JsonObject(pairs);
 	}
 
 	@Override
 	public Message parseJsonObject(JsonObject json, Locale locale) {
-		Identifier identifier = json.contains("identifier") ? parseObject("identifier", json, identifierJsonTransformer, locale) : null;
+		Identifier identifier = json.contains("identifier") ? parseObject("identifier", json, new IdentifierJsonTransformer(crm), locale) : null;
 		String type = parseText("type", json);
 		String path = parseText("path", json);
-		Localized reason = parseObject("reason", json, localizedJsonTransformer, locale);
+		Localized reason = parseObject("reason", json, new LocalizedJsonTransformer(crm), locale);
 		return new Message(identifier, type, path, reason);
 	}
 	

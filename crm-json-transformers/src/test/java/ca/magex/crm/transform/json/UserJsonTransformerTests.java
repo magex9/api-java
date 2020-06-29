@@ -1,5 +1,8 @@
 package ca.magex.crm.transform.json;
 
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -8,14 +11,17 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -31,10 +37,14 @@ public class UserJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new UserJsonTransformer(crm);
-		person = new PersonSummary(new Identifier("prsn"), new Identifier("org"), Status.ACTIVE, "ADMIN");
-		user = new User(new Identifier("usr"), "admin", person, Status.ACTIVE, List.of("SYS_ADMIN", "ORG_USER"));
+		person = new PersonSummary(new PersonIdentifier("prsn"), new OrganizationIdentifier("org"), Status.ACTIVE, "ADMIN");
+		user = new User(new UserIdentifier("usr"), new PersonIdentifier("prsn"), "admin", Status.ACTIVE, List.of(
+			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "CRM/ADMIN").getOptionId(),
+			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "ORG/ADMIN").getOptionId()
+		));
 	}
 	
 	@Test
@@ -68,13 +78,13 @@ public class UserJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("person").getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("person").getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("person").getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("person").getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("person").getObject("status").keys());
 		assertEquals("Status", linked.getObject("person").getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("person").getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("person").getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("person").getObject("status").getString("@fr"));
 		assertEquals("ADMIN", linked.getObject("person").getString("displayName"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));

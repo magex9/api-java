@@ -7,26 +7,45 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
+/**
+ * Contains the tombstone information for a Location within the System
+ * 
+ * @author Jonny
+ */
 public class LocationSummary implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	protected Identifier locationId;
+	/** a unique identifier for the location within the system */
+	protected LocationIdentifier locationId;
 	
-	protected Identifier organizationId;
+	/** the unique organization this location belongs to */
+	protected OrganizationIdentifier organizationId;
 	
+	/** current status of the organization */
 	protected Status status;
 	
+	/** a unique reference for the location within the organization */
 	protected String reference;
 	
+	/** name of the location for display purposes */
 	protected String displayName;
 	
-	public LocationSummary(Identifier locationId, Identifier organizationId, Status status, String reference,
-			String displayName) {
+	/**
+	 * Constructs a new Organization Summary from the provided information
+	 * 
+	 * @param locationId
+	 * @param organizationId
+	 * @param status
+	 * @param reference
+	 * @param displayName
+	 */
+	public LocationSummary(LocationIdentifier locationId, OrganizationIdentifier organizationId, Status status, String reference, String displayName) {
 		super();
 		this.locationId = locationId;
 		this.organizationId = organizationId;
@@ -35,34 +54,69 @@ public class LocationSummary implements Serializable {
 		this.displayName = displayName;
 	}
 
-	public Identifier getLocationId() {
+	/**
+	 * returns the unique identifier for the location
+	 * @return
+	 */
+	public LocationIdentifier getLocationId() {
 		return locationId;
 	}
-
-	public Identifier getOrganizationId() {
+	
+	/**
+	 * returns the unique identifier for the associated organization
+	 * @return
+	 */
+	public OrganizationIdentifier getOrganizationId() {
 		return organizationId;
 	}
+	
+	/**
+	 * returns the reference for this location
+	 * @return
+	 */
+	public String getReference() {
+		return reference;
+	}
 
+	/**
+	 * returns the current status of this location
+	 * @return
+	 */
 	public Status getStatus() {
 		return status;
 	}
 	
-	public LocationSummary withStatus(Status status) {
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
-	}
-
-	public String getReference() {
-		return reference;
-	}
-	
-	public LocationSummary withReference(String reference) {
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
-	}
-
+	/**
+	 * returns the display name associated with the location
+	 * @return
+	 */
 	public String getDisplayName() {
 		return displayName;
 	}
 	
+	/**
+	 * returns a copy of the location with the new status provided
+	 * @param status
+	 * @return
+	 */
+	public LocationSummary withStatus(Status status) {
+		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+	}
+	
+	/**
+	 * returns a copy of the location with the new reference provided
+	 * @param reference
+	 * @return
+	 */
+	public LocationSummary withReference(String reference) {
+		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+	}
+
+	/**
+	 * returns a copy of the location with the new display name provided
+	 * @param displayName
+	 * @return
+	 */
 	public LocationSummary withDisplayName(String displayName) {
 		return new LocationSummary(locationId, organizationId, status, reference, displayName);
 	}

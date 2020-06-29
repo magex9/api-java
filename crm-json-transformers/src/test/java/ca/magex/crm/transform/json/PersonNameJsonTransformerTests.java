@@ -1,6 +1,9 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -9,12 +12,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -24,16 +28,20 @@ public class PersonNameJsonTransformerTests {
 	
 	private Transformer<PersonName, JsonElement> transformer;
 	
-	private Salutation salutation;
+	private Option mr;
 	
 	private PersonName personName;
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonNameJsonTransformer(crm);
-		salutation = crm.findSalutationByLocalizedName(Lang.ENGLISH, "Mr.");
-		personName = PERSON_NAME.withSalutation(salutation.getCode());
+		mr = crm.findOptions(crm.defaultOptionsFilter()
+			.withType(Type.SALUTATION)
+			.withName(Lang.ENGLISH, "Mr.")
+		).getSingleItem();
+		personName = PERSON_NAME.withSalutation(mr.getCode());
 	}
 	
 	@Test
@@ -54,9 +62,10 @@ public class PersonNameJsonTransformerTests {
 		JsonObject linked = (JsonObject)transformer.format(personName, null);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), linked.keys());
 		assertEquals("PersonName", linked.getString("@type"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
-		assertEquals("Salutation", linked.getObject("salutation").getString("@type"));
-		assertEquals("3", linked.getObject("salutation").getString("@value"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
+		assertEquals("Option", linked.getObject("salutation").getString("@type"));
+		assertEquals("SALUTATION", linked.getObject("salutation").getString("@lookup"));
+		assertEquals("MR", linked.getObject("salutation").getString("@value"));
 		assertEquals("Mr.", linked.getObject("salutation").getString("@en"));
 		assertEquals("M.", linked.getObject("salutation").getString("@fr"));
 		assertEquals("Chris", linked.getString("firstName"));
@@ -70,7 +79,7 @@ public class PersonNameJsonTransformerTests {
 		JsonObject root = (JsonObject)transformer.format(personName, Lang.ROOT);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), root.keys());
 		assertEquals("PersonName", root.getString("@type"));
-		assertEquals("3", root.getString("salutation"));
+		assertEquals("MR", root.getString("salutation"));
 		assertEquals("Chris", root.getString("firstName"));
 		assertEquals("P", root.getString("middleName"));
 		assertEquals("Bacon", root.getString("lastName"));

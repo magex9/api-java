@@ -18,5 +18,6 @@ public class PageBuilder {
 			toIndex = items.size();
 		}
 		return new FilteredPage<T>(filter, paging, items.subList(fromIndex, toIndex), items.size());
-	}	
+	}
+	
 }

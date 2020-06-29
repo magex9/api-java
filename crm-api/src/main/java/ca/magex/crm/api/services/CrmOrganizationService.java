@@ -1,16 +1,27 @@
 package ca.magex.crm.api.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 /**
  * The CRM Organization service is used to manage organizations that are owned
@@ -39,16 +50,12 @@ import ca.magex.crm.api.system.Status;
  */
 public interface CrmOrganizationService {
 
-	default OrganizationDetails prototypeOrganization(
-			@NotNull String displayName,
-			@NotNull List<String> groups) {
-		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groups);
+	default OrganizationDetails prototypeOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groupIds);
 	}
 	
 	default OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return createOrganization(
-			prototype.getDisplayName(), 
-			prototype.getGroups());
+		return createOrganization(prototype.getDisplayName(), prototype.getGroupIds());
 	}
 	
 	/**
@@ -63,10 +70,7 @@ public interface CrmOrganizationService {
 	 * @param groups The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(
-		@NotNull String displayName,
-		@NotNull List<String> groups
-	);
+	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -75,9 +79,7 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to enable.
 	 * @return The organization that was enabled.
 	 */
-	OrganizationSummary enableOrganization(
-		@NotNull Identifier organizationId
-	);
+	OrganizationSummary enableOrganization(OrganizationIdentifier organizationId);
 
 	/**
 	 * Disable an existing organization that is active. If the organization is
@@ -89,61 +91,97 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to disable.
 	 * @return The organization that was disabled.
 	 */
-	OrganizationSummary disableOrganization(
-		@NotNull Identifier organizationId
-	);
+	OrganizationSummary disableOrganization(OrganizationIdentifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(
-		@NotNull Identifier organizationId, 
-		@NotNull String name
-	);
+	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name);
 
-	OrganizationDetails updateOrganizationMainLocation(
-		@NotNull Identifier organizationId, 
-		@NotNull Identifier locationId
-	);
+	OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId);
 
-	OrganizationDetails updateOrganizationMainContact(
-		@NotNull Identifier organizationId, 
-		@NotNull Identifier personId
-	);
+	OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId);
 
-	OrganizationDetails updateOrganizationGroups(
-		@NotNull Identifier organizationId, 
-		@NotNull List<String> groups
-	);
+	OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds);
 
-	OrganizationSummary findOrganizationSummary(
-		@NotNull Identifier organizationId
-	);
+	OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId);
 
-	OrganizationDetails findOrganizationDetails(
-		@NotNull Identifier organizationId
-	);
+	OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId);
 
-	long countOrganizations(
-		@NotNull OrganizationsFilter filter
-	);
+	long countOrganizations(OrganizationsFilter filter);
 
-	FilteredPage<OrganizationDetails> findOrganizationDetails(
-		@NotNull OrganizationsFilter filter, 
-		@NotNull Paging paging
-	);
+	FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging);
 
-	FilteredPage<OrganizationSummary> findOrganizationSummaries(
-		@NotNull OrganizationsFilter filter, 
-		@NotNull Paging paging
-	);
+	FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging);
 	
-	default FilteredPage<OrganizationDetails> findOrganizationDetails(@NotNull OrganizationsFilter filter) {
+	default FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
 		return findOrganizationDetails(filter, OrganizationsFilter.getDefaultPaging());
 	};
 	
-	default FilteredPage<OrganizationSummary> findOrganizationSummaries(@NotNull OrganizationsFilter filter) {
+	default FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
 		return findOrganizationSummaries(filter, OrganizationsFilter.getDefaultPaging());
 	};
 	
 	default OrganizationsFilter defaultOrganizationsFilter() {
 		return new OrganizationsFilter();
 	};
+
+	static List<Message> validateOrganizationDetails(Crm crm, OrganizationDetails organization) {
+		List<Message> messages = new ArrayList<Message>();
+
+		// Status
+		if (organization.getStatus() == null) {
+			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for an organization")));
+		} else if (organization.getStatus() == Status.PENDING && organization.getOrganizationId() != null) {
+			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+		}
+
+		// Display Name
+		if (StringUtils.isBlank(organization.getDisplayName())) {
+			messages.add(new Message(organization.getOrganizationId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+		} else if (organization.getDisplayName().length() > 60) {
+			messages.add(new Message(organization.getOrganizationId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+		}
+
+		// Main contact reference
+		if (organization.getMainContactId() != null) {
+			PersonSummary person = crm.findPersonSummary(organization.getMainContactId());
+			// Make sure main contact belongs to current org
+			if (!person.getOrganizationId().equals(organization.getOrganizationId())) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainContactId", new Localized(Lang.ENGLISH, "Main contact organization has invalid referential integrity")));
+			}
+			// Make sure main contact is active
+			if (!person.getStatus().equals(Status.ACTIVE)) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainContactId", new Localized(Lang.ENGLISH, "Main contact must be active")));
+			}
+		}
+
+		// Main location reference
+		if (organization.getMainLocationId() != null) {
+			LocationSummary location = crm.findLocationSummary(organization.getMainLocationId());
+			// Make sure main location belongs to current org
+			if (!location.getOrganizationId().equals(organization.getOrganizationId())) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainLocationId", new Localized(Lang.ENGLISH, "Main location organization has invalid referential integrity")));
+			}
+			// Make sure main location is active
+			if (!location.getStatus().equals(Status.ACTIVE)) {
+				messages.add(new Message(organization.getOrganizationId(), "error", "mainLocationId", new Localized(Lang.ENGLISH, "Main location must be active")));
+			}
+		}
+
+		// Group
+		if (organization.getGroupIds().isEmpty()) {
+			messages.add(new Message(organization.getOrganizationId(), "error", "groups", new Localized(Lang.ENGLISH, "Organizations must have a permission group assigned to them")));
+		} else {
+			for (int i = 0; i < organization.getGroupIds().size(); i++) {
+				AuthenticationGroupIdentifier groupId = organization.getGroupIds().get(i);
+				try {
+					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
+						messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group is not active: " + groupId)));
+				} catch (ItemNotFoundException e) {
+					messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group does not exist: " + groupId)));
+				}
+			}
+		}
+
+		return messages;
+	}
+	
 }

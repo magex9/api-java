@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.services.Crm;
 
 //@Component
 public class CrmContextListener implements ApplicationListener<ApplicationReadyEvent> {

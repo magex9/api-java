@@ -6,9 +6,12 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
@@ -29,7 +32,7 @@ public class StatusJsonTransformer extends AbstractJsonTransformer<Status> {
 	@Override
 	public JsonElement formatRoot(Status status) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@type", getType(Status.class)));
+		pairs.add(new JsonPair("@context", "http://magex.ca/crm/lookups/statuses"));
 		pairs.add(new JsonPair("@value", status.getCode()));
 		pairs.add(new JsonPair("@en", status.getName(Lang.ENGLISH)));
 		pairs.add(new JsonPair("@fr", status.getName(Lang.FRENCH)));
@@ -43,7 +46,8 @@ public class StatusJsonTransformer extends AbstractJsonTransformer<Status> {
 
 	@Override
 	public Status parseJsonText(JsonText json, Locale locale) {
-		return crm.findStatusByLocalizedName(locale, json.value());
+		Option option = crm.findOptions(new OptionsFilter().withType(Type.STATUS).withName(locale, json.value())).getSingleItem();
+		return Status.valueOf(option.getCode().toUpperCase());
 	}
 
 	@Override

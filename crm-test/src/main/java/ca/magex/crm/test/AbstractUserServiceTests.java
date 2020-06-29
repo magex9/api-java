@@ -1,10 +1,15 @@
 package ca.magex.crm.test;
 
+import static ca.magex.crm.test.CrmAsserts.ADAM;
+import static ca.magex.crm.test.CrmAsserts.BOB;
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG;
 import static ca.magex.crm.test.CrmAsserts.ORG_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,35 +17,38 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
 
+@Transactional
 public abstract class AbstractUserServiceTests {
 
+	@Autowired
 	protected Crm crm;
 	
-	protected AbstractUserServiceTests() {}
+	@Autowired
+	protected CrmAuthenticationService auth;
 	
-	public AbstractUserServiceTests(Crm crm) {
-		this.crm = crm;
-	}
-
 	private PersonDetails adam;
 
 	private PersonDetails bob;
@@ -50,7 +58,8 @@ public abstract class AbstractUserServiceTests {
 	@Before
 	public void setup() {
 		crm.reset();
-		crm.initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		auth.login("admin", "admin");
 		Identifier aaId = crm.createGroup(new Localized("AA", "Army Ants", "French Army Ants")).getGroupId();
 		crm.createRole(aaId, new Localized("ADM", "ADM", "ADM"));
 
@@ -62,19 +71,24 @@ public abstract class AbstractUserServiceTests {
 
 		adam = crm.createPerson(
 				tAndA.getOrganizationId(),
-				new PersonName("", "Adam", "", ""),
+				ADAM,
 				MAILING_ADDRESS,
 				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION);
 
 		bob = crm.createPerson(
 				tAndA.getOrganizationId(),
-				new PersonName("", "Bob", "", ""),
+				BOB,
 				MAILING_ADDRESS,
 				WORK_COMMUNICATIONS,
 				BUSINESS_POSITION);
 	}
 
+	@After
+	public void cleanup() {
+		auth.logout();
+	}
+	
 	@Test
 	public void testUsers() {
 		User u1 = crm.createUser(adam.getPersonId(), "adam21", List.of("USR", "PPL"));

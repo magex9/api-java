@@ -8,7 +8,7 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import ca.magex.crm.api.roles.User;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.system.Status;
 
 /**

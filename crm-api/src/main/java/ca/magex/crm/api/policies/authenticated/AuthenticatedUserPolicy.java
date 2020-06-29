@@ -1,14 +1,17 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
-import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.policies.basic.BasicUserPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class AuthenticatedUserPolicy implements CrmUserPolicy {
 
@@ -38,7 +41,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canCreateUserForPerson(Identifier personId) {
+	public boolean canCreateUserForPerson(PersonIdentifier personId) {
 		if (!delegate.canCreateUserForPerson(personId)) {
 			return false;
 		}
@@ -47,7 +50,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated with the organization the person belongs to */
-		if (auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* current user not associated to the organization of the person */
@@ -64,11 +67,13 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		return auth.getOrganizationId().equals(users.findUserByUsername(username).getPerson().getOrganizationId());
+		User user = users.findUserByUsername(username);
+		PersonSummary person = persons.findPersonSummary(user.getPersonId());
+		return auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId());
 	}
 
 	@Override
-	public boolean canViewUser(Identifier userId) {
+	public boolean canViewUser(UserIdentifier userId) {
 		if (!delegate.canViewUser(userId)) {
 			return false;
 		}
@@ -76,12 +81,13 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 		if (auth.isUserInRole(CRM_ADMIN)) {
 			return true;
 		}
-		/* ensure the current user is associated to the users organization */
-		return auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId());
+		User user = users.findUser(userId);
+		PersonSummary person = persons.findPersonSummary(user.getPersonId());
+		return auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId());
 	}
 
 	@Override
-	public boolean canUpdateUserRole(Identifier userId) {
+	public boolean canUpdateUserRole(UserIdentifier userId) {
 		if (!delegate.canUpdateUserRole(userId)) {
 			return false;
 		}
@@ -90,7 +96,9 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		User user = users.findUser(userId);
+		PersonSummary person = persons.findPersonSummary(user.getPersonId());
+		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */
@@ -98,7 +106,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canUpdateUserPassword(Identifier userId) {
+	public boolean canUpdateUserPassword(UserIdentifier userId) {
 		if (!delegate.canUpdateUserPassword(userId)) {
 			return false;
 		}
@@ -107,11 +115,13 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* current user can update their own password */
-		if (auth.getUserId().equals(userId)) {
+		if (auth.getAuthenticatedUserId().equals(userId)) {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		User user = users.findUser(userId);
+		PersonSummary person = persons.findPersonSummary(user.getPersonId());
+		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */
@@ -119,7 +129,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canEnableUser(Identifier userId) {
+	public boolean canEnableUser(UserIdentifier userId) {
 		if (!delegate.canEnableUser(userId)) {
 			return false;
 		}
@@ -128,7 +138,9 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		User user = users.findUser(userId);
+		PersonSummary person = persons.findPersonSummary(user.getPersonId());
+		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */
@@ -136,7 +148,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canDisableUser(Identifier userId) {
+	public boolean canDisableUser(UserIdentifier userId) {
 		if (!delegate.canDisableUser(userId)) {
 			return false;
 		}
@@ -145,7 +157,9 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		if (auth.getOrganizationId().equals(users.findUser(userId).getPerson().getOrganizationId())) {
+		User user = users.findUser(userId);
+		PersonSummary person = persons.findPersonSummary(user.getPersonId());
+		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* ensure the current user is associated to the users organization */

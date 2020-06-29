@@ -1,6 +1,6 @@
 package ca.magex.crm.api.exceptions;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
 
 public class DuplicateItemFoundException extends ApiException {
 

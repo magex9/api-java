@@ -8,7 +8,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmInitializationService;
@@ -18,9 +18,9 @@ import ca.magex.crm.test.CrmServicesTestSuite;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = {
-		MagexCrmProfiles.AUTH_EMBEDDED_JWT,
-		MagexCrmProfiles.CRM_NO_AUTH,
-		MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED
+		CrmProfiles.AUTH_EMBEDDED_JWT,
+		CrmProfiles.CRM_NO_AUTH,
+		CrmProfiles.CRM_DATASTORE_CENTRALIZED
 })
 public class CrmGraphQLNoauthClientTest {
 

@@ -1,6 +1,9 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.PERSON_TELEPHONE;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -9,11 +12,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -27,7 +30,8 @@ public class TelephoneJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new TelephoneJsonTransformer(crm);
 		telephone = PERSON_TELEPHONE;
 	}

@@ -4,7 +4,7 @@ import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
-import static ca.magex.crm.test.CrmAsserts.SYS_ADMIN;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.assertSingleJsonMessage;
 import static org.junit.Assert.assertNull;
@@ -18,13 +18,13 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.amnesia.generator.LoremIpsumGenerator;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.util.LoremIpsumGenerator;
 
 public class OrganizationsControllerTests extends AbstractControllerTests {
 	
@@ -48,7 +48,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, json.get("content").getClass());
 		assertEquals(1, json.getArray("content").size());
-		assertEquals("System Administrator", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("System", json.getArray("content").getObject(0).getString("displayName"));
 		
 		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/organizations")
@@ -130,7 +130,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(ORG_NAME.getEnglishName(), json.getArray("content").getObject(0).getString("displayName"));
 
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(SYS_ADMIN.getEnglishName(), json.getArray("content").getObject(1).getString("displayName"));
+		assertEquals(SYSTEM_ORG, json.getArray("content").getObject(1).getString("displayName"));
 	}
 	
 	@Test
@@ -294,9 +294,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("8881234567", data.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), data.getObject("position").keys());
 		assertEquals("BusinessPosition", data.getObject("position").getString("@type"));
-		assertEquals("1", data.getObject("position").getString("sector"));
-		assertEquals("1", data.getObject("position").getString("unit"));
-		assertEquals("1", data.getObject("position").getString("classification"));
+		assertEquals("execs", data.getObject("position").getString("sector").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("ceo", data.getObject("position").getString("unit").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("director", data.getObject("position").getString("classification").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 
 		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/rest/organizations/" + organizationId + "/mainContact")
@@ -336,9 +336,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("8881234567", english.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), english.getObject("position").keys());
 		assertEquals("BusinessPosition", english.getObject("position").getString("@type"));
-		assertEquals("External", english.getObject("position").getString("sector"));
-		assertEquals("Solutions", english.getObject("position").getString("unit"));
-		assertEquals("Developer", english.getObject("position").getString("classification"));
+		assertEquals("Executives", english.getObject("position").getString("sector").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Chief Executive Officer", english.getObject("position").getString("unit").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Director", english.getObject("position").getString("classification").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		
 		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 				.get("/rest/organizations/" + organizationId + "/mainContact")
@@ -378,9 +378,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("8881234567", french.getObject("communication").getString("faxNumber"));
 		assertEquals(List.of("@type", "sector", "unit", "classification"), french.getObject("position").keys());
 		assertEquals("BusinessPosition", french.getObject("position").getString("@type"));
-		assertEquals("External", french.getObject("position").getString("sector"));
-		assertEquals("Solutions", french.getObject("position").getString("unit"));
-		assertEquals("Développeur", french.getObject("position").getString("classification"));
+		assertEquals("Cadres", french.getObject("position").getString("sector").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Directeur Général", french.getObject("position").getString("unit").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Réalisateur", french.getObject("position").getString("classification").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 	}
 	
 	@Test

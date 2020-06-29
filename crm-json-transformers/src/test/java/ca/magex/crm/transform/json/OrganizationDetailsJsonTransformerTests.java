@@ -1,5 +1,8 @@
 package ca.magex.crm.transform.json;
 
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -8,13 +11,16 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -29,9 +35,14 @@ public class OrganizationDetailsJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new OrganizationDetailsJsonTransformer(crm);
-		organization = new OrganizationDetails(new Identifier("org"), Status.ACTIVE, "Org Name", new Identifier("mainLoc"), new Identifier("mainContact"), List.of("G1", "G2"));
+		organization = new OrganizationDetails(new OrganizationIdentifier("org"), Status.ACTIVE, "Org Name", 
+			new LocationIdentifier("mainLoc"), new PersonIdentifier("mainContact"), List.of(
+				crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "CRM").getOptionId(),
+				crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "ORG").getOptionId()
+			));
 	}
 	
 	@Test
@@ -55,7 +66,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
 		assertEquals("Identifier", linked.getObject("organizationId").getString("@type"));
 		assertEquals("org", linked.getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("Status", linked.getObject("status").getString("@type"));
 		assertEquals("active", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));

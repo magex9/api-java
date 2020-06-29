@@ -1,33 +1,49 @@
 package ca.magex.crm.api.system;
 
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.utils.StringEscapeUtils;
 
 public class Identifier implements CharSequence, Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	public static final Identifier UNDEFINED = new Identifier("undefined");
+	public static final String CONTEXT = "/";
 	
-	public static final String PATTERN = "[A-Za-z0-9]+";
+	public static final String COMPONENT_REGEX = "[A-Za-z0-9/]+";
+		
+	private CharSequence id;
 	
-	private String id;
-	
-	public Identifier(String id) {
-		if (StringUtils.isBlank(id))
+	/**
+	 * Creates a new Identifier by validating the ID and appending the Context as Required
+	 * 
+	 * @param id
+	 */
+	protected Identifier(CharSequence id) {
+		CharSequence fullId = (Pattern.matches(COMPONENT_REGEX, id) && !StringUtils.startsWith(id, "/")) ? getContext() + id : id;
+		if (StringUtils.isBlank(fullId)) {
 			throw new IllegalArgumentException("Id cannot be blank");
-		if (!id.matches(PATTERN))
-			throw new IllegalArgumentException("Id must match the pattern " + PATTERN);
-		this.id = id;
+		}
+		String pattern = StringEscapeUtils.escapeRegex(getContext()) + "[A-Za-z0-9/]+";
+		if (!Pattern.matches(pattern, fullId)) {
+			throw new IllegalArgumentException("Id '" + fullId + "' must match the pattern " + pattern);
+		}
+		this.id = fullId;
 	}
 	
-	public Identifier(Identifier identifier) {
-		this(identifier.id);
+	/**
+	 * Returns the context associated with the given identifier
+	 * 
+	 * @return
+	 */
+	public String getContext() {
+		return CONTEXT;
 	}
 
 	@Override
@@ -47,7 +63,7 @@ public class Identifier implements CharSequence, Serializable {
 	
 	@Override
 	public String toString() {
-		return id;
+		return id == null ? null : id.toString();
 	}
 	
 	@Override

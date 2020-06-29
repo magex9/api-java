@@ -22,7 +22,7 @@ public class SwaggerRestfulController {
 	@Value("${server.port:9002}") 
 	private String serverPort;
 	
-	@Value("${server.servlet.context-path:/}") 
+	@Value("${server.servlet.context-path:/crm}") 
 	private String contextPath;
 	
 	@GetMapping("/rest/api.json")

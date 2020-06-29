@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -33,7 +33,7 @@ import ca.magex.crm.spring.security.jwt.JwtToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = { MagexCrmProfiles.AUTH_EMBEDDED_JWT, MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED })
+@ActiveProfiles(value = { CrmProfiles.AUTH_EMBEDDED_JWT, CrmProfiles.CRM_DATASTORE_CENTRALIZED })
 public class AuthClientTests {
 
 	@LocalServerPort private int randomPort;

@@ -1,7 +1,6 @@
 package ca.magex.crm.test;
 
 import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
-import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.FRANCE;
 import static ca.magex.crm.test.CrmAsserts.FRENCH;
@@ -9,17 +8,26 @@ import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ILE_DE_FRANCE;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
+import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -30,24 +38,28 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
+@Transactional
 public abstract class AbstractPersonServiceTests {
 
+	@Autowired
 	protected Crm crm;
 	
-	protected AbstractPersonServiceTests() {}
+	@Autowired
+	protected CrmAuthenticationService auth;
 	
-	public AbstractPersonServiceTests(Crm crm) {
-		this.crm = crm;
-	}
-		
 	@Before
 	public void setup() {
 		crm.reset();
-		crm.initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		auth.login("admin", "admin");
+	}
+	
+	@After
+	public void cleanup() {
+		auth.logout();
 	}
 
 	@Test

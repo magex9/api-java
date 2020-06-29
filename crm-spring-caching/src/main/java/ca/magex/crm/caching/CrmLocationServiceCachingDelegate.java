@@ -1,15 +1,10 @@
 package ca.magex.crm.caching;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.tuple.Pair;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
@@ -19,120 +14,124 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.caching.config.CachingConfig;
+import ca.magex.crm.caching.util.CacheTemplate;
+import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
-@Service("CrmLocationServiceCachingDelegate")
+/**
+ * Delegate that intercepts calls and caches the results
+ * 
+ * @author Jonny
+ */
 public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 
 	private CrmLocationService delegate;
-	private CacheManager cacheManager;
+	private CacheTemplate cacheTemplate;
 
 	/**
 	 * Wraps the delegate service using the given cacheManager
 	 * 
 	 * @param delegate
-	 * @param cacheManager
+	 * @param cacheTemplate
 	 */
-	public CrmLocationServiceCachingDelegate(@Qualifier("PrincipalLocationService") CrmLocationService delegate, CacheManager cacheManager) {
+	public CrmLocationServiceCachingDelegate(CrmLocationService delegate, CacheTemplate cacheTemplate) {
 		this.delegate = delegate;
-		this.cacheManager = cacheManager;
+		this.cacheTemplate = cacheTemplate;
+	}
+	
+	/**
+	 * Provides the list of pairs for caching location details
+	 * @param details
+	 * @return
+	 */
+	private List<Pair<String, Object>> detailsCacheSupplier(LocationDetails details, Identifier key) {
+		return List.of(
+				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
+	}
+	
+	/**
+	 * Provides the list of pairs for caching location summary
+	 * @param summary
+	 * @param key
+	 * @return
+	 */
+	private List<Pair<String, Object>> summaryCacheSupplier(LocationSummary summary, Identifier key) {
+		return List.of(
+				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null")
-	})
 	public LocationDetails createLocation(LocationDetails prototype) {
-		return delegate.createLocation(prototype);
+		LocationDetails details = delegate.createLocation(prototype);
+		cacheTemplate.put(detailsCacheSupplier(details, details.getLocationId()));
+		return details;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null"),
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#result == null ? '' : #result.locationId)", unless = "#result == null")
-	})
 	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) {
-		return delegate.createLocation(organizationId, displayName, reference, address);
+		LocationDetails details = delegate.createLocation(organizationId, displayName, reference, address);
+		cacheTemplate.put(detailsCacheSupplier(details, details.getLocationId()));
+		return details;
 	}
 
 	@Override
-	@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
-	@CacheEvict(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)")
 	public LocationSummary enableLocation(Identifier locationId) {
-		return delegate.enableLocation(locationId);
+		LocationSummary summary = delegate.enableLocation(locationId);
+		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(locationId));
+		cacheTemplate.put(summaryCacheSupplier(summary, locationId));
+		return summary;
 	}
 
 	@Override
-	@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
-	@CacheEvict(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)")
 	public LocationSummary disableLocation(Identifier locationId) {
-		return delegate.disableLocation(locationId);
+		LocationSummary summary = delegate.disableLocation(locationId);
+		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(locationId));
+		cacheTemplate.put(summaryCacheSupplier(summary, locationId));
+		return summary;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)"),
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
-	})
 	public LocationDetails updateLocationName(Identifier locationId, String displaysName) {
-		return delegate.updateLocationName(locationId, displaysName);
+		LocationDetails details = delegate.updateLocationName(locationId, displaysName);
+		cacheTemplate.put(detailsCacheSupplier(details, locationId));
+		return details;
 	}
 
 	@Override
-	@Caching(put = {
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)"),
-			@CachePut(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
-	})
 	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
-		return delegate.updateLocationAddress(locationId, address);
+		LocationDetails details = delegate.updateLocationAddress(locationId, address);
+		cacheTemplate.put(detailsCacheSupplier(details, locationId));
+		return details;
 	}
 
 	@Override
-	@Cacheable(cacheNames = CachingConfig.Caches.Locations, key = "'Summary_'.concat(#locationId)")
 	public LocationSummary findLocationSummary(Identifier locationId) {
-		return delegate.findLocationSummary(locationId);
+		return cacheTemplate.get(
+				() -> delegate.findLocationSummary(locationId),
+				locationId,
+				CrmCacheKeyGenerator::generateSummaryKey,
+				this::summaryCacheSupplier);
 	}
 
 	@Override
-	@Cacheable(cacheNames = CachingConfig.Caches.Locations, key = "'Details_'.concat(#locationId)")
 	public LocationDetails findLocationDetails(Identifier locationId) {
-		return delegate.findLocationDetails(locationId);
+		return cacheTemplate.get(
+				() -> delegate.findLocationDetails(locationId),
+				locationId,
+				CrmCacheKeyGenerator::generateDetailsKey,
+				this::detailsCacheSupplier);
 	}
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
 		return delegate.countLocations(filter);
 	}
-
-	@Override
-	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		FilteredPage<LocationDetails> page = delegate.findLocationDetails(filter, paging);
-		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
-		page.forEach((details) -> {
-			locationsCache.putIfAbsent("Details_" + details.getLocationId(), details);
-			locationsCache.putIfAbsent("Summary_" + details.getLocationId(), details);
-		});
-		return page;
-	}
-
-	@Override
-	public FilteredPage<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {
-		FilteredPage<LocationDetails> page = delegate.findLocationDetails(filter);
-		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
-		page.forEach((details) -> {
-			locationsCache.putIfAbsent("Details_" + details.getLocationId(), details);
-			locationsCache.putIfAbsent("Summary_" + details.getLocationId(), details);
-		});
-		return page;
-	}
-
+	
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
 		FilteredPage<LocationSummary> page = delegate.findLocationSummaries(filter, paging);
-		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((summary) -> {
-			locationsCache.putIfAbsent("Summary_" + summary.getLocationId(), summary);
+			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getLocationId()));
 		});
 		return page;
 	}
@@ -140,19 +139,35 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(@NotNull LocationsFilter filter) {
 		FilteredPage<LocationSummary> page = delegate.findLocationSummaries(filter);
-		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
 		page.forEach((summary) -> {
-			locationsCache.putIfAbsent("Summary_" + summary.getLocationId(), summary);
+			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getLocationId()));
+		});
+		return page;
+	}
+	
+	@Override
+	public FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(Identifier organizationId) {
+		FilteredPage<LocationSummary> page = delegate.findActiveLocationSummariesForOrg(organizationId);
+		page.forEach((summary) -> {
+			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getLocationId()));
 		});
 		return page;
 	}
 
 	@Override
-	public FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(Identifier organizationId) {
-		FilteredPage<LocationSummary> page = delegate.findActiveLocationSummariesForOrg(organizationId);
-		Cache locationsCache = cacheManager.getCache(CachingConfig.Caches.Locations);
-		page.forEach((summary) -> {
-			locationsCache.putIfAbsent("Summary_" + summary.getLocationId(), summary);
+	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
+		FilteredPage<LocationDetails> page = delegate.findLocationDetails(filter, paging);
+		page.forEach((details) -> {
+			cacheTemplate.putIfAbsent(detailsCacheSupplier(details, details.getLocationId()));
+		});
+		return page;
+	}
+
+	@Override
+	public FilteredPage<LocationDetails> findLocationDetails(@NotNull LocationsFilter filter) {
+		FilteredPage<LocationDetails> page = delegate.findLocationDetails(filter);
+		page.forEach((details) -> {
+			cacheTemplate.putIfAbsent(detailsCacheSupplier(details, details.getLocationId()));
 		});
 		return page;
 	}

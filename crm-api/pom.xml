@@ -22,6 +22,21 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>jakarta.validation</groupId>
@@ -32,10 +47,20 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
 		</dependency>
 
 		<!-- Test Dependencies -->
@@ -61,9 +86,9 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>crm-json-maven-plugin</artifactId>
-				<version>${project.version}</version>
+				<groupId>ca.magex.json</groupId>
+				<artifactId>json-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<phase>process-resources</phase>
@@ -79,15 +104,23 @@
 							<targetPackage>ca.magex.crm.api.decorators</targetPackage>
 							<interfaces>
 								<interface>ca.magex.crm.api.authentication.CrmPasswordService</interface>
-								<interface>ca.magex.crm.api.observer.CrmDataObserver</interface>
-								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
-								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
+								<interface>ca.magex.crm.api.observer.CrmUpdateObserver</interface>
+								<interface>ca.magex.crm.api.repositories.CrmConfigurationRepository</interface>
+								<interface>ca.magex.crm.api.services.CrmConfigurationService</interface>
+								<interface>ca.magex.crm.api.policies.CrmConfigurationPolicy</interface>
+								<interface>ca.magex.crm.api.repositories.CrmOptionRepository</interface>
+								<interface>ca.magex.crm.api.policies.CrmOptionPolicy</interface>
+								<interface>ca.magex.crm.api.services.CrmOptionService</interface>
+								<interface>ca.magex.crm.api.repositories.CrmOrganizationRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
 								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
+								<interface>ca.magex.crm.api.repositories.CrmLocationRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
 								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
+								<interface>ca.magex.crm.api.repositories.CrmPersonRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmPersonService</interface>
 								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
+								<interface>ca.magex.crm.api.repositories.CrmUserRepository</interface>
 								<interface>ca.magex.crm.api.services.CrmUserService</interface>
 								<interface>ca.magex.crm.api.policies.CrmUserPolicy</interface>
 							</interfaces>
@@ -95,11 +128,23 @@
 					</decorators>
 					<adapters>
 						<adapter>
+							<description>Aggregate adapter for all the CRM repositories</description>
+							<targetClass>ca.magex.crm.api.adapters.CrmRepositoriesAdapter</targetClass>
+							<interfaces>
+								<interface>ca.magex.crm.api.repositories.CrmConfigurationRepository</interface>
+								<interface>ca.magex.crm.api.repositories.CrmOptionRepository</interface>
+								<interface>ca.magex.crm.api.repositories.CrmOrganizationRepository</interface>
+								<interface>ca.magex.crm.api.repositories.CrmLocationRepository</interface>
+								<interface>ca.magex.crm.api.repositories.CrmPersonRepository</interface>
+								<interface>ca.magex.crm.api.repositories.CrmUserRepository</interface>
+							</interfaces>
+						</adapter>
+						<adapter>
 							<description>Aggregate adapter for all the CRM policies</description>
 							<targetClass>ca.magex.crm.api.adapters.CrmPoliciesAdapter</targetClass>
 							<interfaces>
-								<interface>ca.magex.crm.api.policies.CrmLookupPolicy</interface>
-								<interface>ca.magex.crm.api.policies.CrmPermissionPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmConfigurationPolicy</interface>
+								<interface>ca.magex.crm.api.policies.CrmOptionPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmPersonPolicy</interface>
@@ -110,8 +155,8 @@
 							<description>Aggregate adapter for all the CRM services</description>
 							<targetClass>ca.magex.crm.api.adapters.CrmServicesAdapter</targetClass>
 							<interfaces>
-								<interface>ca.magex.crm.api.services.CrmLookupService</interface>
-								<interface>ca.magex.crm.api.services.CrmPermissionService</interface>
+								<interface>ca.magex.crm.api.services.CrmConfigurationService</interface>
+								<interface>ca.magex.crm.api.services.CrmOptionService</interface>
 								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
 								<interface>ca.magex.crm.api.services.CrmLocationService</interface>
 								<interface>ca.magex.crm.api.services.CrmPersonService</interface>

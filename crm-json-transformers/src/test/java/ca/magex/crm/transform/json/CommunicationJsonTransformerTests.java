@@ -1,5 +1,8 @@
 package ca.magex.crm.transform.json;
 
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -9,11 +12,12 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -27,7 +31,8 @@ public class CommunicationJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new CommunicationJsonTransformer(crm);
 		communication = WORK_COMMUNICATIONS;
 	}
@@ -48,11 +53,16 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(communication, null);
+		System.out.println(linked);
+		
+		JsonAsserts.print(linked, "linked");
+		
 		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), linked.keys());
 		assertEquals("Communication", linked.getString("@type"));
 		assertEquals("Developer", linked.getString("jobTitle"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("language").keys());
-		assertEquals("Language", linked.getObject("language").getString("@type"));
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("language").keys());
+		assertEquals("Option", linked.getObject("language").getString("@type"));
+		assertEquals("LANGUAGE", linked.getObject("language").getString("@lookup"));
 		assertEquals("EN", linked.getObject("language").getString("@value"));
 		assertEquals("English", linked.getObject("language").getString("@en"));
 		assertEquals("Anglais", linked.getObject("language").getString("@fr"));

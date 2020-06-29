@@ -1,146 +1,121 @@
 package ca.magex.crm.restful.controllers;
-	
-import java.util.List;
+
+import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
-import ca.magex.crm.api.lookup.BusinessClassification;
-import ca.magex.crm.api.lookup.BusinessSector;
-import ca.magex.crm.api.lookup.BusinessUnit;
-import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.lookup.Province;
-import ca.magex.crm.api.lookup.Salutation;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.filters.LookupsFilter;
+import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Lookup;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.json.model.JsonObject;
 
 @Controller
 public class LookupsController extends AbstractCrmController {
 
-	@GetMapping("/rest/lookup/status")
-	public void findStatuses(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, Status.class, (messages, transformer, locale) -> { 
-			return createList(crm.findStatuses(), transformer, locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/status/{status}")
-	public void findStatus(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("status") String status) throws Exception {
-		handle(req, res, Status.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findStatusByCode(status), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/salutations")
-	public void findSalutations(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, Salutation.class, (messages, transformer, locale) -> { 
-			return createList(crm.findSalutations(), transformer, locale, new Localized.Comparator<Salutation>(locale));
-		});
-	}
-
-	@GetMapping("/rest/lookup/salutations/{salutation}")
-	public void findSalutations(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("salutation") String salutation) throws Exception {
-		handle(req, res, Salutation.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findSalutationByCode(salutation), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/languages")
-	public void findLanguages(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, Language.class, (messages, transformer, locale) -> { 
-			return createList(crm.findLanguages(), transformer, locale, new Localized.Comparator<Language>(locale, List.of("EN", "FR"), List.of()));
-		});
-	}
-
-	@GetMapping("/rest/lookup/languages/{language}")
-	public void findLanguage(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("language") String language) throws Exception {
-		handle(req, res, Language.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findLanguageByCode(language), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/countries")
-	public void findCountries(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, Country.class, (messages, transformer, locale) -> { 
-			return createList(crm.findCountries(), transformer, locale, new Localized.Comparator<Country>(locale, List.of("CA", "US", "MX"), List.of("ZZ")));
-		});
-	}
-
-	@GetMapping("/rest/lookup/countries/{country}")
-	public void findCountry(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("country") String country) throws Exception {
-		handle(req, res, Country.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findCountryByCode(country), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/countries/{country}/provinces")
-	public void findProvinces(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("country") String country) throws Exception {
-		handle(req, res, Province.class, (messages, transformer, locale) -> { 
-			return createList(crm.findProvinces(country), transformer, locale, new Localized.Comparator<Province>(locale));
-		});
-	}
-
-	@GetMapping("/rest/lookup/countries/{country}/provinces/{province}")
-	public void findProvince(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("country") String country, @PathVariable("province") String province) throws Exception {
-		handle(req, res, Province.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findProvinceByCode(province, country), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/business/sectors")
-	public void findBusinessSectors(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, BusinessSector.class, (messages, transformer, locale) -> { 
-			return createList(crm.findBusinessSectors(), transformer, locale, new Localized.Comparator<BusinessSector>(locale));
-		});
-	}
-
-	@GetMapping("/rest/lookup/business/sectors/{sector}")
-	public void findBusinessSectors(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("sector") String sector) throws Exception {
-		handle(req, res, BusinessSector.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findBusinessSectorByCode(sector), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/business/units")
-	public void findBusinessUnits(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, BusinessUnit.class, (messages, transformer, locale) -> { 
-			return createList(crm.findBusinessUnits(), transformer, locale, new Localized.Comparator<BusinessUnit>(locale));
-		});
-	}
-
-	@GetMapping("/rest/lookup/business/units/{unit}")
-	public void findBusinessUnits(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("unit") String unit) throws Exception {
-		handle(req, res, BusinessUnit.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findBusinessUnitByCode(unit), locale);
-		});
-	}
-
-	@GetMapping("/rest/lookup/business/classifications")
-	public void findBusinessClassifications(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		handle(req, res, BusinessClassification.class, (messages, transformer, locale) -> { 
-			return createList(crm.findBusinessClassifications(), transformer, locale, new Localized.Comparator<BusinessClassification>(locale));
+	@GetMapping("/rest/lookups")
+	public void findLookups(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, Lookup.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findLookups(
+					extractLookupsFilter(locale, req), 
+					extractPaging(LookupsFilter.getDefaultPaging(), req)
+				), transformer, locale
+			);
 		});
 	}
 	
-	@GetMapping("/rest/lookup/business/classifications/{classification}")
-	public void findBusinessClassifications(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("classification") String classification) throws Exception {
-		handle(req, res, BusinessClassification.class, (messages, transformer, locale) -> { 
-			return transformer.format(crm.findBusinessClassificationByCode(classification), locale);
+	private LookupsFilter extractLookupsFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
+		if (req.getParameter("name") != null) {
+			String name = req.getParameter("name");
+			if (locale.equals(Lang.ENGLISH)) {
+				return new LookupsFilter(name, null, null, null, status);
+			} else if (locale.equals(Lang.FRENCH)) {
+				return new LookupsFilter(null, name, null, null, status);
+			} else {
+				return new LookupsFilter(null, null, name, null, status);
+			}
+		} else {
+			String englishName = req.getParameter("englishName") == null ? null : req.getParameter("englishName");
+			String frenchName = req.getParameter("frenchName") == null ? null : req.getParameter("frenchName");
+			String code = req.getParameter("code") == null ? null : req.getParameter("code");
+			return new LookupsFilter(englishName, frenchName, code, null, status);
+		}
+	}
+
+	@PostMapping("/rest/lookups")
+	public void createLookup(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, Lookup.class, (messages, transformer, locale) -> {
+			JsonObject body = extractBody(req);
+			String code = getString(body, "code", "", null, messages);
+			String englishName = getString(body, "englishName", "", null, messages);
+			String frenchName = getString(body, "frenchName", "", null, messages);
+			Localized name = new Localized(code, englishName, frenchName);
+			String parentLookup = getString(body, "parentLookup", null, null, messages);
+			String parentCode = getString(body, "parentCode", null, null, messages);
+			Option parent = (StringUtils.isNotBlank(parentLookup) && StringUtils.isNotBlank(parentCode)) ? crm.findOption(parentLookup, parentCode) : null;
+			validate(messages);
+			return transformer.format(crm.createLookup(name, parent), locale);
 		});
 	}
-	
+
+	@GetMapping("/rest/lookups/{lookupId}")
+	public void getLookup(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("lookupId") Identifier lookupId) throws IOException {
+		handle(req, res, Lookup.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findLookup(lookupId), locale);
+		});
+	}
+
+	@PatchMapping("/rest/lookups/{lookupId}")
+	public void updateLookup(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("lookupId") Identifier lookupId) throws IOException {
+		handle(req, res, Lookup.class, (messages, transformer, locale) -> {
+			JsonObject body = extractBody(req);
+			String code = getString(body, "code", "", null, messages);
+			String englishName = getString(body, "englishName", "", null, messages);
+			String frenchName = getString(body, "frenchName", "", null, messages);
+			Localized name = new Localized(code, englishName, frenchName);
+			validate(messages);
+			crm.updateLookupName(lookupId, name);
+			return transformer.format(crm.findLookup(lookupId), locale);
+		});
+	}
+
+	@PutMapping("/rest/lookups/{lookupId}/enable")
+	public void enableLookup(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("lookupId") Identifier lookupId) throws IOException {
+		handle(req, res, Lookup.class, (messages, transformer, locale) -> {
+			confirm(extractBody(req), lookupId, messages);
+			crm.enableLookup(lookupId);
+			return transformer.format(crm.findLookup(lookupId), locale);
+		});
+	}
+
+	@PutMapping("/rest/lookups/{lookupId}/disable")
+	public void disableLookup(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("lookupId") Identifier lookupId) throws IOException {
+		handle(req, res, Lookup.class, (messages, transformer, locale) -> {
+			confirm(extractBody(req), lookupId, messages);
+			crm.disableLookup(lookupId);
+			return transformer.format(crm.findLookup(lookupId), locale);
+		});
+	}
+
 }

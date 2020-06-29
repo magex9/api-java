@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -22,11 +23,12 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
 public class OrganizationsController extends AbstractCrmController {
-
+		
 	@GetMapping("/rest/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
@@ -40,7 +42,7 @@ public class OrganizationsController extends AbstractCrmController {
 	}
 	
 	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
-		Status status = req.getParameter("status") == null ? null : crm.findStatusByLocalizedName(locale, req.getParameter("status"));
+		Status status = req.getParameter("status") == null ? null : Status.valueOf(crm.findOptionByLocalizedName(Crm.STATUS, locale, req.getParameter("status")).getCode().toUpperCase());
 		String displayName = req.getParameter("displayName");
 		String group = req.getParameter("group");
 		return new OrganizationsFilter(displayName, status, group);
@@ -57,7 +59,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}")
+	@GetMapping("/rest/" + OrganizationIdentifier.CONTEXT + "/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {

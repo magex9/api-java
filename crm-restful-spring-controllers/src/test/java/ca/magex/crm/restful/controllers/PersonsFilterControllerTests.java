@@ -69,7 +69,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	}
 	
 	@Test
-	public void testOrganizationFilterDefaultRoot() throws Exception {
+	public void testPersonsFilterDefaultRoot() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/persons"))
 			//.andDo(MockMvcResultHandlers.print())
@@ -85,16 +85,16 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(7, json.getArray("content").size());
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(adamId.toString(), json.getArray("content").getObject(0).getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getString("personId"));
+		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Anderson, Adam A", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(adamId.toString(), json.getArray("content").getObject(1).getString("personId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(1).getString("displayName"));
+		assertEquals("Anderson, Adam A", json.getArray("content").getObject(1).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(2).getString("@type"));
 		assertEquals(chloeId.toString(), json.getArray("content").getObject(2).getString("personId"));
@@ -128,7 +128,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	}
 	
 	@Test
-	public void testOrganizationFilterDefaultEnglish() throws Exception {
+	public void testPersonsFilterDefaultEnglish() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/persons")
 			.header("Locale", Lang.ENGLISH))
@@ -145,16 +145,16 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(7, json.getArray("content").size());
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(adamId.toString(), json.getArray("content").getObject(0).getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getString("personId"));
+		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Anderson, Adam A", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(adamId.toString(), json.getArray("content").getObject(1).getString("personId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(1).getString("displayName"));
+		assertEquals("Anderson, Adam A", json.getArray("content").getObject(1).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(2).getString("@type"));
 		assertEquals(chloeId.toString(), json.getArray("content").getObject(2).getString("personId"));
@@ -188,7 +188,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	}
 	
 	@Test
-	public void testOrganizationFilterDefaultFrench() throws Exception {
+	public void testPersonsFilterDefaultFrench() throws Exception {
 		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/persons")
 			.header("Locale", Lang.FRENCH))
@@ -205,16 +205,16 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(7, json.getArray("content").size());
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(adamId.toString(), json.getArray("content").getObject(0).getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getString("personId"));
+		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Anderson, Adam A", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(adamId.toString(), json.getArray("content").getObject(1).getString("personId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(1).getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(1).getString("displayName"));
+		assertEquals("Anderson, Adam A", json.getArray("content").getObject(1).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(2).getString("@type"));
 		assertEquals(chloeId.toString(), json.getArray("content").getObject(2).getString("personId"));
@@ -260,28 +260,22 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
 		assertEquals(10, json.getNumber("limit"));
-		assertEquals(3, json.getNumber("total"));
+		assertEquals(2, json.getNumber("total"));
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(3, json.getArray("content").size());
+		assertEquals(2, json.getArray("content").size());
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(chloeId.toString(), json.getArray("content").getObject(0).getString("personId"));
+		assertEquals(org1.toString(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("LaRue, Chloé", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("PersonSummary", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(chloeId.toString(), json.getArray("content").getObject(1).getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(1).getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals("LaRue, Chloé", json.getArray("content").getObject(1).getString("displayName"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(elaineId.toString(), json.getArray("content").getObject(2).getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(2).getString("organizationId"));
-		assertEquals("Inactive", json.getArray("content").getObject(2).getString("status"));
-		assertEquals("McKay, Elaine M", json.getArray("content").getObject(2).getString("displayName"));
+		assertEquals(elaineId.toString(), json.getArray("content").getObject(1).getString("personId"));
+		assertEquals(org2.toString(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals("Inactive", json.getArray("content").getObject(1).getString("status"));
+		assertEquals("McKay, Elaine M", json.getArray("content").getObject(1).getString("displayName"));
 	}
 	
 	@Test

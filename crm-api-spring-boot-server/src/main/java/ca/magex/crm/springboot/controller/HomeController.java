@@ -7,7 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.services.CrmAuthenticationService;
 
 @Controller()
 public class HomeController {

@@ -11,6 +11,10 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
@@ -18,14 +22,8 @@ import ca.magex.json.model.JsonText;
 @Component
 public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<OrganizationDetails> {
 
-	private IdentifierJsonTransformer identifierJsonTransformer;
-	
-	private StatusJsonTransformer statusJsonTransformer;
-	
 	public OrganizationDetailsJsonTransformer(CrmServices crm) {
 		super(crm);
-		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
-		this.statusJsonTransformer = new StatusJsonTransformer(crm);
 	}
 
 	@Override
@@ -42,35 +40,23 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 	public JsonObject formatLocalized(OrganizationDetails organization, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		if (organization.getOrganizationId() != null) {
-			pairs.add(new JsonPair("organizationId", identifierJsonTransformer
-				.format(organization.getOrganizationId(), locale)));
-		}
-		if (organization.getStatus() != null) {
-			pairs.add(new JsonPair("status", statusJsonTransformer
-				.format(organization.getStatus(), locale)));
-		}
+		formatIdentifier(pairs, "organizationId", organization, locale);
+		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
-		if (organization.getMainLocationId() != null) {
-			pairs.add(new JsonPair("mainLocationId", identifierJsonTransformer
-				.format(organization.getMainLocationId(), locale)));
-		}
-		if (organization.getMainContactId() != null) {
-			pairs.add(new JsonPair("mainContactId", identifierJsonTransformer
-				.format(organization.getMainContactId(), locale)));
-		}
-		formatTexts(pairs, "groups", organization, String.class);
+		formatIdentifier(pairs, "mainLocationId", organization, locale);
+		formatIdentifier(pairs, "getMainContactId", organization, locale);
+		formatObjects(pairs, "groups", organization, Identifier.class);
 		return new JsonObject(pairs);
 	}
 
 	@Override
 	public OrganizationDetails parseJsonObject(JsonObject json, Locale locale) {
-		Identifier organizationId = parseObject("organizationId", json, identifierJsonTransformer, locale);
-		Status status = parseObject("status", json, statusJsonTransformer, locale);
+		OrganizationIdentifier organizationId = parseIdentifier("organizationId", json, OrganizationIdentifier.class, locale);
+		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		String displayName = parseText("displayName", json);
-		Identifier mainLocationId = parseObject("mainLocationId", json, identifierJsonTransformer, locale);
-		Identifier mainContactId = parseObject("mainContactId", json, identifierJsonTransformer, locale);
-		List<String> groups = json.getArray("groups").stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
+		LocationIdentifier mainLocationId = parseIdentifier("mainLocationId", json, LocationIdentifier.class, locale);
+		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
+		List<AuthenticationGroupIdentifier> groups = json.getArray("groups").stream().map(e -> new AuthenticationGroupIdentifier(((JsonText)e).value())).collect(Collectors.toList());
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
 

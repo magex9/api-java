@@ -1,5 +1,8 @@
 package ca.magex.crm.transform.json;
 
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -8,11 +11,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
@@ -25,7 +28,8 @@ public class StatusJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		crm = TestCrm.build();
+		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new StatusJsonTransformer(crm);
 	}
 	
@@ -45,7 +49,7 @@ public class StatusJsonTransformerTests {
 	@Test
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(Status.ACTIVE, null);
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), root.keys());
+		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), root.keys());
 		assertEquals("Status", root.getString("@type"));
 		assertEquals("active", root.getString("@value"));
 		assertEquals("Active", root.getString("@en"));

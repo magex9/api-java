@@ -3,7 +3,6 @@ package ca.magex.crm.restful.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -21,11 +20,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.util.StreamUtils;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -145,17 +144,17 @@ public abstract class AbstractCrmController {
 			.with("content", new JsonArray(page.getContent().stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
 	}
 	
-	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale) {
-		return new JsonObject()
-			.with("total", list.size())
-			.with("content", new JsonArray(list.stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
-	}
-	
-	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale, Comparator<T> comparator) {
-		return new JsonObject()
-			.with("total", list.size())
-			.with("content", new JsonArray(list.stream().sorted(comparator).map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
-	}
+//	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale) {
+//		return new JsonObject()
+//			.with("total", list.size())
+//			.with("content", new JsonArray(list.stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
+//	}
+//	
+//	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale, Comparator<T> comparator) {
+//		return new JsonObject()
+//			.with("total", list.size())
+//			.with("content", new JsonArray(list.stream().sorted(comparator).map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
+//	}
 	
 	protected JsonArray createErrorMessages(Locale locale, BadRequestException e) {
 		List<JsonElement> elements = new ArrayList<JsonElement>();
