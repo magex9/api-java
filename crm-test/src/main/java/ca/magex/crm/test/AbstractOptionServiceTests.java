@@ -6,11 +6,14 @@ import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 
+@Transactional
 public abstract class AbstractOptionServiceTests {
 
 	@Autowired
@@ -31,5 +34,10 @@ public abstract class AbstractOptionServiceTests {
 		auth.logout();
 	}
 	
+	
+	@Test
+	public void testAddOptions() {
+		
+	}
 	
 }

@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
@@ -37,6 +38,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 
+@Transactional
 public abstract class AbstractOrganizationServiceTests {
 
 	@Autowired

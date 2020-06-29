@@ -8,11 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
+@Transactional
 public abstract class AbstractPasswordServiceTests {
 
 	@Autowired
