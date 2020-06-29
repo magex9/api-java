@@ -12,8 +12,10 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class BasicPersonService implements CrmPersonService {
 
@@ -24,12 +26,12 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails createPerson(Identifier organizationId, PersonName legalName, MailingAddress address, Communication communication, List<Identifier> roleIds) {
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
 		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, roleIds));
 	}
 
 	@Override
-	public PersonDetails updatePersonName(Identifier personId, PersonName legalName) {
+	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName legalName) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
@@ -38,7 +40,7 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
+	public PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
@@ -47,7 +49,7 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
+	public PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
@@ -56,7 +58,7 @@ public class BasicPersonService implements CrmPersonService {
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(Identifier personId, List<Identifier> roleIds) {
+	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
@@ -65,7 +67,7 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary enablePerson(Identifier personId) {
+	public PersonSummary enablePerson(PersonIdentifier personId) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
@@ -74,7 +76,7 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary disablePerson(Identifier personId) {
+	public PersonSummary disablePerson(PersonIdentifier personId) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
@@ -83,12 +85,12 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary findPersonSummary(Identifier personId) {
+	public PersonSummary findPersonSummary(PersonIdentifier personId) {
 		return repos.findPersonSummary(personId);
 	}
 
 	@Override
-	public PersonDetails findPersonDetails(Identifier personId) {
+	public PersonDetails findPersonDetails(PersonIdentifier personId) {
 		return repos.findPersonDetails(personId);
 	}
 

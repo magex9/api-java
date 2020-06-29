@@ -8,7 +8,8 @@ import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.basic.BasicPersonPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 
@@ -36,7 +37,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canCreatePersonForOrganization(Identifier organizationId) {
+	public boolean canCreatePersonForOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canCreatePersonForOrganization(organizationId)) {
 			return false;
 		}
@@ -53,7 +54,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canViewPerson(Identifier personId) {
+	public boolean canViewPerson(PersonIdentifier personId) {
 		if (!delegate.canViewPerson(personId)) {
 			return false;
 		}
@@ -66,7 +67,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canUpdatePerson(Identifier personId) {
+	public boolean canUpdatePerson(PersonIdentifier personId) {
 		if (!delegate.canUpdatePerson(personId)) {
 			return false;
 		}
@@ -87,7 +88,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canEnablePerson(Identifier personId) {
+	public boolean canEnablePerson(PersonIdentifier personId) {
 		if (!delegate.canEnablePerson(personId)) {
 			return false;
 		}
@@ -104,7 +105,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canDisablePerson(Identifier personId) {
+	public boolean canDisablePerson(PersonIdentifier personId) {
 		if (!delegate.canDisablePerson(personId)) {
 			return false;
 		}

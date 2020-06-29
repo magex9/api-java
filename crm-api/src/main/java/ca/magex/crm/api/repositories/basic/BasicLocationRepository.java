@@ -13,7 +13,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
 
 public class BasicLocationRepository implements CrmLocationRepository {
 
@@ -22,7 +22,7 @@ public class BasicLocationRepository implements CrmLocationRepository {
 	public BasicLocationRepository(CrmStore store) {
 		this.store = store;
 	}
-	
+
 	private Stream<LocationDetails> apply(LocationsFilter filter) {
 		return store.getLocations().values().stream().filter(p -> filter.apply(p));
 	}
@@ -30,17 +30,17 @@ public class BasicLocationRepository implements CrmLocationRepository {
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList()), paging);
+				.map(i -> SerializationUtils.clone(i))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList()), paging);
 	}
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummary(LocationsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList()), paging);
+				.map(i -> SerializationUtils.clone(i))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList()), paging);
 	}
 
 	@Override
@@ -49,12 +49,12 @@ public class BasicLocationRepository implements CrmLocationRepository {
 	}
 
 	@Override
-	public LocationDetails findLocationDetails(Identifier locationId) {
+	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
 		return store.getLocations().get(locationId);
 	}
 
 	@Override
-	public LocationSummary findLocationSummary(Identifier locationId) {
+	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
 		return findLocationDetails(locationId);
 	}
 

@@ -5,7 +5,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 /**
  * Repository interface used for saving/retrieving an Organization
@@ -14,15 +14,13 @@ import ca.magex.crm.api.system.Identifier;
  */
 public interface CrmUserRepository {
 
-	public static final String CONTEXT = "/users";
-	
 	/**
 	 * returns the next identifier to be assigned to a new User
 	 * 
 	 * @return
 	 */
-	default Identifier generateUserId() {
-		return CrmStore.generateId(CONTEXT);
+	default UserIdentifier generateUserId() {
+		return new UserIdentifier(CrmStore.generateId());
 	}
 		
 	/**
@@ -40,7 +38,7 @@ public interface CrmUserRepository {
 	 * @param userId
 	 * @return
 	 */
-	public User findUser(Identifier userId);
+	public User findUser(UserIdentifier userId);
 	
 	/**
 	 * returns the paged results with the user details for any user that matches the given filter

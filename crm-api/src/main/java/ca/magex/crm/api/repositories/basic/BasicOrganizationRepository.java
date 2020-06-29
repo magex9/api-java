@@ -13,7 +13,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class BasicOrganizationRepository implements CrmOrganizationRepository {
 
@@ -22,7 +22,7 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 	public BasicOrganizationRepository(CrmStore store) {
 		this.store = store;
 	}
-	
+
 	private Stream<OrganizationDetails> apply(OrganizationsFilter filter) {
 		return store.getOrganizations().values().stream().filter(p -> filter.apply(p));
 	}
@@ -30,17 +30,17 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList()), paging);
+				.map(i -> SerializationUtils.clone(i))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList()), paging);
 	}
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummary(OrganizationsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList()), paging);
+				.map(i -> SerializationUtils.clone(i))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList()), paging);
 	}
 
 	@Override
@@ -49,12 +49,12 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 	}
 
 	@Override
-	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
+	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId) {
 		return store.getOrganizations().get(organizationId);
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
 		return findOrganizationDetails(organizationId);
 	}
 
@@ -64,5 +64,4 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 		store.getOrganizations().put(organization.getOrganizationId(), organization);
 		return organization;
 	}
-	
 }

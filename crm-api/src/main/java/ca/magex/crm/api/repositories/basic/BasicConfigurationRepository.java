@@ -2,7 +2,7 @@ package ca.magex.crm.api.repositories.basic;
 
 import ca.magex.crm.api.repositories.CrmConfigurationRepository;
 import ca.magex.crm.api.store.CrmStore;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.ConfigurationIdentifier;
 
 public class BasicConfigurationRepository implements CrmConfigurationRepository {
 
@@ -14,6 +14,6 @@ public class BasicConfigurationRepository implements CrmConfigurationRepository 
 
 	@Override
 	public boolean isInitialized() {
-		return store.getConfigurations().containsKey(new Identifier("initialized"));
+		return store.getConfigurations().containsKey(new ConfigurationIdentifier("initialized"));
 	}
 }

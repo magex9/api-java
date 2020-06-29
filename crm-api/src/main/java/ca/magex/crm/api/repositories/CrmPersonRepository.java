@@ -6,7 +6,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 /**
  * Repository interface used for saving/retrieving a Person
@@ -14,16 +14,14 @@ import ca.magex.crm.api.system.Identifier;
  * @author Jonny
  */
 public interface CrmPersonRepository {
-
-	public static final String CONTEXT = "/persons";
 	
 	/**
 	 * returns the next identifier to be assigned to a new Person
 	 * 
 	 * @return
 	 */
-	default Identifier generatePersonId() {
-		return CrmStore.generateId(CONTEXT);
+	default PersonIdentifier generatePersonId() {
+		return new PersonIdentifier(CrmStore.generateId());
 	}
 	
 	/**
@@ -41,7 +39,7 @@ public interface CrmPersonRepository {
 	 * @param personId
 	 * @return
 	 */
-	public PersonDetails findPersonDetails(Identifier personId);
+	public PersonDetails findPersonDetails(PersonIdentifier personId);
 
 	/**
 	 * returns the person summary associated with the given personId, 
@@ -50,7 +48,7 @@ public interface CrmPersonRepository {
 	 * @param personId
 	 * @return
 	 */
-	public PersonSummary findPersonSummary(Identifier personId);
+	public PersonSummary findPersonSummary(PersonIdentifier personId);
 	
 	/**
 	 * returns the paged results with the full person details for any person that matches the given filter

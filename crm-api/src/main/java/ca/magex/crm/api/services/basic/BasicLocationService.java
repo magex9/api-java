@@ -8,8 +8,9 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class BasicLocationService implements CrmLocationService {
 
@@ -19,11 +20,11 @@ public class BasicLocationService implements CrmLocationService {
 		this.repos = repos;
 	}
 	
-	public LocationDetails createLocation(Identifier organizationId, String locationReference, String locationName, MailingAddress address) {
+	public LocationDetails createLocation(OrganizationIdentifier organizationId, String locationReference, String locationName, MailingAddress address) {
 		return repos.saveLocationDetails(new LocationDetails(repos.generateLocationId(), organizationId, Status.ACTIVE, locationReference, locationName, address));
 	}
 
-	public LocationDetails updateLocationName(Identifier locationId, String locationName) {
+	public LocationDetails updateLocationName(LocationIdentifier locationId, String locationName) {
 		LocationDetails loc = repos.findLocationDetails(locationId);
 		if (loc == null) {
 			return null;
@@ -31,7 +32,7 @@ public class BasicLocationService implements CrmLocationService {
 		return repos.saveLocationDetails(loc.withDisplayName(locationName));
 	}
 
-	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
+	public LocationDetails updateLocationAddress(LocationIdentifier locationId, MailingAddress address) {
 		LocationDetails loc = repos.findLocationDetails(locationId);
 		if (loc == null) {
 			return null;
@@ -39,7 +40,7 @@ public class BasicLocationService implements CrmLocationService {
 		return repos.saveLocationDetails(loc.withAddress(address));
 	}
 
-	public LocationSummary enableLocation(Identifier locationId) {		
+	public LocationSummary enableLocation(LocationIdentifier locationId) {		
 		LocationDetails loc = repos.findLocationDetails(locationId);
 		if (loc == null) {
 			return null;
@@ -47,7 +48,7 @@ public class BasicLocationService implements CrmLocationService {
 		return repos.saveLocationDetails(loc.withStatus(Status.ACTIVE));
 	}
 
-	public LocationSummary disableLocation(Identifier locationId) {
+	public LocationSummary disableLocation(LocationIdentifier locationId) {
 		LocationDetails loc = repos.findLocationDetails(locationId);
 		if (loc == null) {
 			return null;
@@ -55,11 +56,11 @@ public class BasicLocationService implements CrmLocationService {
 		return repos.saveLocationDetails(loc.withStatus(Status.INACTIVE));
 	}
 	
-	public LocationSummary findLocationSummary(Identifier locationId) {
+	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
 		return repos.findLocationSummary(locationId);
 	}
 	
-	public LocationDetails findLocationDetails(Identifier locationId) {
+	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
 		return repos.findLocationDetails(locationId);
 	}
 	

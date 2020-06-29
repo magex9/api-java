@@ -6,8 +6,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class BasicUserPolicy implements CrmUserPolicy {
 
@@ -27,7 +28,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canCreateUserForPerson(Identifier personId) {
+	public boolean canCreateUserForPerson(PersonIdentifier personId) {
 		/* can create a user for a given person if the person exists */
 		PersonSummary summary = persons.findPersonSummary(personId);
 		if (summary == null) {
@@ -47,7 +48,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canViewUser(Identifier userId) {
+	public boolean canViewUser(UserIdentifier userId) {
 		/* can view a user if it exists */
 		if (users.findUser(userId) == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -56,7 +57,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canUpdateUserRole(Identifier userId) {
+	public boolean canUpdateUserRole(UserIdentifier userId) {
 		/* can view a user if it exists and is active */
 		User user = users.findUser(userId);
 		if (user == null) {
@@ -66,7 +67,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canUpdateUserPassword(Identifier userId) {
+	public boolean canUpdateUserPassword(UserIdentifier userId) {
 		/* can view a user password if it exists and is active */
 		User user = users.findUser(userId);
 		if (user == null) {
@@ -76,7 +77,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canEnableUser(Identifier userId) {
+	public boolean canEnableUser(UserIdentifier userId) {
 		/* can enable a user if it exists */
 		if (users.findUser(userId) == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
@@ -85,7 +86,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canDisableUser(Identifier userId) {
+	public boolean canDisableUser(UserIdentifier userId) {
 		/* can disable a user if it exists */
 		if (users.findUser(userId) == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");

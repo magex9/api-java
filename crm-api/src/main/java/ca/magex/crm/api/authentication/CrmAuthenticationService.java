@@ -1,7 +1,9 @@
 package ca.magex.crm.api.authentication;
 
 import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmAuthenticationService {
 	
@@ -23,11 +25,11 @@ public interface CrmAuthenticationService {
 	
 	User getAuthenticatedUser();
 	
-	Identifier getAuthenticatedUserId();
+	UserIdentifier getAuthenticatedUserId();
 	
-	Identifier getAuthenticatedPersonId();
+	PersonIdentifier getAuthenticatedPersonId();
 	
-	Identifier getAuthenticatedOrganizationId();
+	OrganizationIdentifier getAuthenticatedOrganizationId();
 	
 	boolean isUserInRole(String role);
 	

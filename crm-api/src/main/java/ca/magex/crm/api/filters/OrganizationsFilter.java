@@ -14,9 +14,9 @@ import org.springframework.data.domain.Sort.Direction;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 
 public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 
@@ -33,13 +33,13 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 
 	private Status status;
 	
-	private Identifier groupId;
+	private AuthenticationGroupIdentifier groupId;
 
 	public OrganizationsFilter() {
 		this(null, null, null);
 	}
 	
-	public OrganizationsFilter(String displayName, Status status, Identifier groupId) {
+	public OrganizationsFilter(String displayName, Status status, AuthenticationGroupIdentifier groupId) {
 		this.displayName = displayName;
 		this.status = status;
 		this.groupId = groupId;
@@ -56,7 +56,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 				}
 			}
-			this.groupId = filterCriteria.get("group") != null ? new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("group")) : null;
+			this.groupId = filterCriteria.get("group") != null ? new AuthenticationGroupIdentifier((CharSequence) filterCriteria.get("group")) : null;
 		}
 		catch(ClassCastException cce) {
 			throw new ApiException("Unable to instantiate organizations filter", cce);
@@ -83,7 +83,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 		return groupId;
 	}
 	
-	public OrganizationsFilter withGroup(Identifier groupId) {
+	public OrganizationsFilter withGroup(AuthenticationGroupIdentifier groupId) {
 		return new OrganizationsFilter(displayName, status, groupId);
 	}
 

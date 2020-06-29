@@ -8,7 +8,8 @@ import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.basic.BasicLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	
@@ -37,7 +38,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canCreateLocationForOrganization(Identifier organizationId) {
+	public boolean canCreateLocationForOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canCreateLocationForOrganization(organizationId)) {
 			return false;
 		}
@@ -54,7 +55,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canViewLocation(Identifier locationId) {
+	public boolean canViewLocation(LocationIdentifier locationId) {
 		if (!delegate.canViewLocation(locationId)) {
 			return false;
 		}
@@ -67,7 +68,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canUpdateLocation(Identifier locationId) {
+	public boolean canUpdateLocation(LocationIdentifier locationId) {
 		if (!delegate.canUpdateLocation(locationId)) {
 			return false;
 		}
@@ -84,7 +85,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canEnableLocation(Identifier locationId) {
+	public boolean canEnableLocation(LocationIdentifier locationId) {
 		if (!delegate.canEnableLocation(locationId)) {
 			return false;
 		}
@@ -101,7 +102,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canDisableLocation(Identifier locationId) {
+	public boolean canDisableLocation(LocationIdentifier locationId) {
 		if (!delegate.canDisableLocation(locationId)) {
 			return false;
 		}

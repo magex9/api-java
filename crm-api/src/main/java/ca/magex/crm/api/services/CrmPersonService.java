@@ -22,38 +22,37 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public interface CrmPersonService {
 	
-	default PersonDetails prototypePerson(Identifier organizationId, PersonName name, MailingAddress address,
-			Communication communication, List<Identifier> roleIds) {
-		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address,
-				communication, roleIds);
+	default PersonDetails prototypePerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
+		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, roleIds);
 	};
 
 	default PersonDetails createPerson(PersonDetails prototype) {
-		return createPerson(prototype.getOrganizationId(), prototype.getLegalName(), prototype.getAddress(),
-				prototype.getCommunication(), prototype.getRoleIds());
+		return createPerson(prototype.getOrganizationId(), prototype.getLegalName(), prototype.getAddress(), prototype.getCommunication(), prototype.getRoleIds());
 	}
 
-	PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address,
-			Communication communication, List<Identifier> roleIds);
+	PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds);
 
-	PersonSummary enablePerson(Identifier personId);
+	PersonSummary enablePerson(PersonIdentifier personId);
 
-	PersonSummary disablePerson(Identifier personId);
+	PersonSummary disablePerson(PersonIdentifier personId);
 
-	PersonDetails updatePersonName(Identifier personId, PersonName name);
+	PersonDetails updatePersonName(PersonIdentifier personId, PersonName name);
 
-	PersonDetails updatePersonAddress(Identifier personId, MailingAddress address);
+	PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address);
 
-	PersonDetails updatePersonCommunication(Identifier personId, Communication communication);
+	PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication);
 
-	PersonDetails updatePersonRoles(Identifier personId, List<Identifier> roleIds);
+	PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds);
 	
-	PersonSummary findPersonSummary(Identifier personId);
+	PersonSummary findPersonSummary(PersonIdentifier personId);
 
-	PersonDetails findPersonDetails(Identifier personId);
+	PersonDetails findPersonDetails(PersonIdentifier personId);
 
 	long countPersons(PersonsFilter filter);
 
@@ -69,7 +68,7 @@ public interface CrmPersonService {
 		return findPersonSummaries(filter, PersonsFilter.getDefaultPaging());
 	}
 	
-	default FilteredPage<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
+	default FilteredPage<PersonSummary> findActivePersonSummariesForOrg(OrganizationIdentifier organizationId) {
 		return findPersonSummaries(new PersonsFilter(organizationId, null, Status.ACTIVE), PersonsFilter.getDefaultPaging());
 	}
 	

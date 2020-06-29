@@ -6,8 +6,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class BasicPersonPolicy implements CrmPersonPolicy {
 
@@ -27,7 +28,7 @@ public class BasicPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canCreatePersonForOrganization(Identifier organizationId) {
+	public boolean canCreatePersonForOrganization(OrganizationIdentifier organizationId) {
 		/* can only create a location for the organization, if the organization exists, and is active */
 		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
 		if (summary == null) {
@@ -37,7 +38,7 @@ public class BasicPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canViewPerson(Identifier personId) {
+	public boolean canViewPerson(PersonIdentifier personId) {
 		/* can view a person if the person exists */
 		if (persons.findPersonSummary(personId) == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -46,7 +47,7 @@ public class BasicPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canUpdatePerson(Identifier personId) {
+	public boolean canUpdatePerson(PersonIdentifier personId) {
 		/* can only update a location if it exists, and is active */
 		PersonSummary summary = persons.findPersonSummary(personId);
 		if (summary == null) {
@@ -57,7 +58,7 @@ public class BasicPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canEnablePerson(Identifier personId) {
+	public boolean canEnablePerson(PersonIdentifier personId) {
 		//* can view a person if the person exists */
 		if (persons.findPersonSummary(personId) == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
@@ -66,7 +67,7 @@ public class BasicPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canDisablePerson(Identifier personId) {
+	public boolean canDisablePerson(PersonIdentifier personId) {
 		/* can view a person if the person exists */
 		if (persons.findPersonSummary(personId) == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");

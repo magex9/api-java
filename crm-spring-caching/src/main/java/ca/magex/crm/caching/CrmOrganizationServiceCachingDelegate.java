@@ -65,8 +65,8 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	}
 
 	@Override
-	public OrganizationDetails createOrganization(String displayName, List<String> groups) {
-		OrganizationDetails details = delegate.createOrganization(displayName, groups);
+	public OrganizationDetails createOrganization(String displayName, List<Identifier> groupIds) {
+		OrganizationDetails details = delegate.createOrganization(displayName, groupIds);
 		cacheTemplate.put(detailsCacheSupplier(details, details.getOrganizationId()));
 		return details;
 	}
@@ -109,8 +109,8 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<String> groups) {
-		OrganizationDetails details = delegate.updateOrganizationGroups(organizationId, groups);
+	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds) {
+		OrganizationDetails details = delegate.updateOrganizationGroups(organizationId, groupIds);
 		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
 		return details;
 	}

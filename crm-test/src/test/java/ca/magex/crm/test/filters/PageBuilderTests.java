@@ -10,20 +10,19 @@ import org.springframework.data.domain.Sort;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.test.CrmAsserts;
 
 public class PageBuilderTests {
 
-	private Option roleA = new Option(new Identifier(CrmOptionRepository.CONTEXT, "A"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.CANADA);
-	private Option roleB = new Option(new Identifier(CrmOptionRepository.CONTEXT, "B"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.ENGLAND);
-	private Option roleC = new Option(new Identifier(CrmOptionRepository.CONTEXT, "C"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.MEXICO);
-	private Option roleD = new Option(new Identifier(CrmOptionRepository.CONTEXT, "D"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.UNITED_STATES);
+	private Option roleA = new Option(new CountryIdentifier("A"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.CANADA);
+	private Option roleB = new Option(new CountryIdentifier("B"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.ENGLAND);
+	private Option roleC = new Option(new CountryIdentifier("C"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.MEXICO);
+	private Option roleD = new Option(new CountryIdentifier("D"), null, Type.COUNTRY, Status.ACTIVE, true, CrmAsserts.UNITED_STATES);
 	
 	@Test
 	public void testInstantiate() {

@@ -9,8 +9,11 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class BasicOrganizationService implements CrmOrganizationService {
 
@@ -20,11 +23,11 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		this.repos = repos;
 	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName, List<Identifier> groupIds) {
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<AuthenticationGroupIdentifier> groupIds) {
 		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, groupIds));
 	}
 
-	public OrganizationSummary enableOrganization(Identifier organizationId) {
+	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
@@ -32,7 +35,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withStatus(Status.ACTIVE));
 	}
 
-	public OrganizationSummary disableOrganization(Identifier organizationId) {
+	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
@@ -40,7 +43,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withStatus(Status.INACTIVE));
 	}
 
-	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
@@ -48,7 +51,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withDisplayName(name));
 	}
 
-	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
@@ -56,7 +59,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withMainLocationId(locationId));
 	}
 	
-	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
@@ -64,7 +67,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withMainContactId(personId));
 	}
 
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds) {
+	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
@@ -73,11 +76,11 @@ public class BasicOrganizationService implements CrmOrganizationService {
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
 		return repos.findOrganizationSummary(organizationId);
 	}
 	
-	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
+	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId) {
 		return repos.findOrganizationDetails(organizationId);
 	}
 	

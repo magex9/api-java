@@ -5,11 +5,11 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class BasicOptionService implements CrmOptionService {
 
@@ -20,12 +20,13 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option createOption(Identifier parentId, String typeCode, Localized name) {
-		return repos.saveOption(new Option(repos.generateOptionId(), parentId, Type.of(typeCode), Status.ACTIVE, true, name));
+	public Option createOption(OptionIdentifier parentId, String typeCode, Localized name) {
+		Type type = Type.of(typeCode);
+		return repos.saveOption(new Option(repos.generateForType(type), parentId, type, Status.ACTIVE, true, name));
 	}
 
 	@Override
-	public Option findOption(Identifier optionId) {
+	public Option findOption(OptionIdentifier optionId) {
 		return repos.findOption(optionId);
 	}
 
@@ -35,7 +36,7 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option updateOptionName(Identifier optionId, Localized name) {
+	public Option updateOptionName(OptionIdentifier optionId, Localized name) {
 		Option option = repos.findOption(optionId);
 		if (option == null) {
 			return null;
@@ -44,7 +45,7 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option enableOption(Identifier optionId) {
+	public Option enableOption(OptionIdentifier optionId) {
 		Option option = repos.findOption(optionId);
 		if (option == null) {
 			return null;
@@ -53,7 +54,7 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option disableOption(Identifier optionId) {
+	public Option disableOption(OptionIdentifier optionId) {
 		Option option = repos.findOption(optionId);
 		if (option == null) {
 			return null;

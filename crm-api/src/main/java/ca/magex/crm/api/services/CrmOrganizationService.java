@@ -14,11 +14,14 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 /**
  * The CRM Organization service is used to manage organizations that are owned
@@ -47,7 +50,7 @@ import ca.magex.crm.api.system.Status;
  */
 public interface CrmOrganizationService {
 
-	default OrganizationDetails prototypeOrganization(String displayName, List<Identifier> groupIds) {
+	default OrganizationDetails prototypeOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
 		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groupIds);
 	}
 	
@@ -67,10 +70,7 @@ public interface CrmOrganizationService {
 	 * @param groups The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(
-		String displayName,
-		List<Identifier> groupIds
-	);
+	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -79,9 +79,7 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to enable.
 	 * @return The organization that was enabled.
 	 */
-	OrganizationSummary enableOrganization(
-		Identifier organizationId
-	);
+	OrganizationSummary enableOrganization(OrganizationIdentifier organizationId);
 
 	/**
 	 * Disable an existing organization that is active. If the organization is
@@ -93,19 +91,19 @@ public interface CrmOrganizationService {
 	 * @param organizationId The organization id to disable.
 	 * @return The organization that was disabled.
 	 */
-	OrganizationSummary disableOrganization(Identifier organizationId);
+	OrganizationSummary disableOrganization(OrganizationIdentifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name);
+	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name);
 
-	OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId);
+	OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId);
 
-	OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId);
+	OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId);
 
-	OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds);
+	OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds);
 
-	OrganizationSummary findOrganizationSummary(Identifier organizationId);
+	OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId);
 
-	OrganizationDetails findOrganizationDetails(Identifier organizationId);
+	OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId);
 
 	long countOrganizations(OrganizationsFilter filter);
 
@@ -173,7 +171,7 @@ public interface CrmOrganizationService {
 			messages.add(new Message(organization.getOrganizationId(), "error", "groups", new Localized(Lang.ENGLISH, "Organizations must have a permission group assigned to them")));
 		} else {
 			for (int i = 0; i < organization.getGroupIds().size(); i++) {
-				Identifier groupId = organization.getGroupIds().get(i);
+				AuthenticationGroupIdentifier groupId = organization.getGroupIds().get(i);
 				try {
 					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
 						messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group is not active: " + groupId)));

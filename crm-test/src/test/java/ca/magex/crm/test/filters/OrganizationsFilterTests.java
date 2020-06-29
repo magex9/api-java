@@ -17,10 +17,9 @@ import org.springframework.data.domain.Sort.Order;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.repositories.CrmOptionRepository;
-import ca.magex.crm.api.repositories.CrmOrganizationRepository;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class OrganizationsFilterTests {
 
@@ -125,7 +124,7 @@ public class OrganizationsFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		OrganizationDetails organization = new OrganizationDetails(new Identifier(CrmOrganizationRepository.CONTEXT, "ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new Identifier(CrmOptionRepository.CONTEXT, "ORG")));
+		OrganizationDetails organization = new OrganizationDetails(new OrganizationIdentifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new AuthenticationGroupIdentifier("ORG")));
 		/* default filter should match */
 		assertTrue(new OrganizationsFilter().apply(organization));
 		

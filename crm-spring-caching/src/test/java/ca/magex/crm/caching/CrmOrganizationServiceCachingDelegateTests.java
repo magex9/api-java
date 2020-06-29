@@ -20,6 +20,8 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.repositories.CrmOptionRepository;
+import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
@@ -56,7 +58,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			return new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1));
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList());
-		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
+		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of(new Identifier(CrmOrganizationRepository.CONTEXT, new Identifier(CrmOrganizationRepository.CONTEXT, "ORG"))));
 		BDDMockito.verify(delegate, Mockito.times(1)).createOrganization(Mockito.anyString(), Mockito.anyList());
 
 		/* should have added the details to the cache */
@@ -75,7 +77,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 			OrganizationDetails orgDetails = invocation.getArgument(0);
 			return new OrganizationDetails(new Identifier(Integer.toString(orgIndex.incrementAndGet())), orgDetails.getStatus(), orgDetails.getDisplayName(), orgDetails.getMainLocationId(), orgDetails.getMainContactId(), orgDetails.getGroups());
 		}).given(delegate).createOrganization(Mockito.any(OrganizationDetails.class));
-		OrganizationDetails orgDetails = organizationService.createOrganization(new OrganizationDetails(null, Status.ACTIVE, "Hello", null, null, List.of("ORG")));
+		OrganizationDetails orgDetails = organizationService.createOrganization(new OrganizationDetails(null, Status.ACTIVE, "Hello", null, null, List.of(new Identifier(CrmOrganizationRepository.CONTEXT, "ORG"))));
 		BDDMockito.verify(delegate, Mockito.times(1)).createOrganization(Mockito.any(OrganizationDetails.class));
 
 		/* should have added the details to the cache */
@@ -90,7 +92,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 	@Test
 	public void testCacheExistingOrg() {
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "Org1", null, null, List.of("ORG"));
+			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "Org1", null, null, List.of(new Identifier(CrmOrganizationRepository.CONTEXT, "ORG")));
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
@@ -141,7 +143,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 			return reference.get();
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
 
-		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
+		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of(new Identifier(CrmOrganizationRepository.CONTEXT, "ORG")));
 		Assert.assertEquals(reference.get(), orgDetails);
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
@@ -186,7 +188,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 			return reference.get();
 		}).given(delegate).findOrganizationDetails(Mockito.any(Identifier.class));
 
-		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
+		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of(new Identifier(CrmOrganizationRepository.CONTEXT, "ORG")));
 		Assert.assertEquals(reference.get(), orgDetails);
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
@@ -241,7 +243,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		}).given(delegate).updateOrganizationGroups(Mockito.any(Identifier.class), Mockito.anyList());
 
 		/* create and ensure cached */
-		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of("ORG"));
+		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of(new Identifier(CrmOrganizationRepository.CONTEXT, "ORG")));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
 		Assert.assertEquals(orgDetails.asSummary(), organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));
@@ -273,7 +275,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 
 		/* clear cache, update groups, and ensure cached */
 		cacheManager.getCache(CachingConfig.Caches.Organizations).clear();
-		orgDetails = organizationService.updateOrganizationGroups(orgDetails.getOrganizationId(), List.of("ADM"));
+		orgDetails = organizationService.updateOrganizationGroups(orgDetails.getOrganizationId(), List.of(new Identifier(CrmOptionRepository.CONTEXT, "ADM")));
 		Assert.assertEquals(orgDetails, organizationService.findOrganizationDetails(orgDetails.getOrganizationId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findOrganizationDetails(Mockito.any(Identifier.class));
 		Assert.assertEquals(orgDetails.asSummary(), organizationService.findOrganizationSummary(orgDetails.getOrganizationId()));

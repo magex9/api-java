@@ -7,12 +7,12 @@ import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmConfigurationService {
 
@@ -56,10 +56,10 @@ public interface CrmConfigurationService {
 	 * </ul>
 	 */
 	default void createSysGroup(CrmRepositories repos) {
-		Identifier sysGroupId = repos.saveOption(new Option(repos.generateOptionId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, new Localized("SYS", "System", "Système"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), sysGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ADMIN", "System Administrator", "Adminstrator du système"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), sysGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ACTUATOR", "System Actuator", "Actuator du système"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), sysGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ACCESS", "System Access", "Access du système"))).getOptionId();
+		OptionIdentifier sysGroupId = repos.saveOption(new Option(repos.generateAuthenticationGroupId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, new Localized("SYS", "System", "Système"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), sysGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ADMIN", "System Administrator", "Adminstrator du système"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), sysGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ACTUATOR", "System Actuator", "Actuator du système"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), sysGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ACCESS", "System Access", "Access du système"))).getOptionId();
 	}
 
 	/**
@@ -70,8 +70,8 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createAppGroup(CrmRepositories repos) {
-		Identifier appGroupId = repos.saveOption(new Option(repos.generateOptionId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, new Localized("APP", "Application", "Application"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), appGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("AUTHENTICATOR", "Authorization Requestor", "Demandeur d'Autorisation"))).getOptionId();
+		OptionIdentifier appGroupId = repos.saveOption(new Option(repos.generateAuthenticationGroupId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, new Localized("APP", "Application", "Application"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), appGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("AUTHENTICATOR", "Authorization Requestor", "Demandeur d'Autorisation"))).getOptionId();
 	}
 	
 	/**
@@ -83,9 +83,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCrmGroup(CrmRepositories repos) {
-		Identifier crmGroupId = repos.saveOption(new Option(repos.generateOptionId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, new Localized("CRM", "Customer Relationship Management", "Gestion de la relation client"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), crmGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ADMIN", "CRM Admin", "Administrateur GRC"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), crmGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("USER", "CRM Viewer", "Visionneuse GRC"))).getOptionId();
+		OptionIdentifier crmGroupId = repos.saveOption(new Option(repos.generateAuthenticationGroupId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, new Localized("CRM", "Customer Relationship Management", "Gestion de la relation client"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), crmGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("ADMIN", "CRM Admin", "Administrateur GRC"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), crmGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, false, new Localized("USER", "CRM Viewer", "Visionneuse GRC"))).getOptionId();
 	}
 
 	/**
@@ -97,9 +97,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createOrgGroup(CrmRepositories repos) {
-		Identifier orgGroupId = repos.saveOption(new Option(repos.generateOptionId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, true, new Localized("ORG", "Organization", "Organisation"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), orgGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, true, new Localized("ADMIN", "Organization Admin", "Administrateur GRC"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), orgGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, true, new Localized("USER", "Organization Viewer", "Visionneuse GRC"))).getOptionId();
+		OptionIdentifier orgGroupId = repos.saveOption(new Option(repos.generateAuthenticationGroupId(), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, true, new Localized("ORG", "Organization", "Organisation"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), orgGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, true, new Localized("ADMIN", "Organization Admin", "Administrateur GRC"))).getOptionId();
+		repos.saveOption(new Option(repos.generateAuthenticationRoleId(), orgGroupId, Type.AUTHENTICATION_ROLE, Status.ACTIVE, true, new Localized("USER", "Organization Viewer", "Visionneuse GRC"))).getOptionId();
 	}
 
 	/**
@@ -107,9 +107,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createStatusLookup(CrmRepositories repos) {
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.STATUS, Status.ACTIVE, false, Status.ACTIVE.getName())).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.STATUS, Status.ACTIVE, false, Status.INACTIVE.getName())).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.STATUS, Status.ACTIVE, false, Status.PENDING.getName())).getOptionId();
+		repos.saveOption(new Option(repos.generateStatusId(), null, Type.STATUS, Status.ACTIVE, false, Status.ACTIVE.getName())).getOptionId();
+		repos.saveOption(new Option(repos.generateStatusId(), null, Type.STATUS, Status.ACTIVE, false, Status.INACTIVE.getName())).getOptionId();
+		repos.saveOption(new Option(repos.generateStatusId(), null, Type.STATUS, Status.ACTIVE, false, Status.PENDING.getName())).getOptionId();
 	}
 	
 	/**
@@ -117,9 +117,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createLocaleLookup(CrmRepositories repos) {
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.LOCALE, Status.ACTIVE, false, Lang.NAMES.get(Lang.ROOT))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.LOCALE, Status.ACTIVE, false, Lang.NAMES.get(Lang.ENGLISH))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.LOCALE, Status.ACTIVE, false, Lang.NAMES.get(Lang.FRENCH))).getOptionId();
+		repos.saveOption(new Option(repos.generateLocaleId(), null, Type.LOCALE, Status.ACTIVE, false, Lang.NAMES.get(Lang.ROOT))).getOptionId();
+		repos.saveOption(new Option(repos.generateLocaleId(), null, Type.LOCALE, Status.ACTIVE, false, Lang.NAMES.get(Lang.ENGLISH))).getOptionId();
+		repos.saveOption(new Option(repos.generateLocaleId(), null, Type.LOCALE, Status.ACTIVE, false, Lang.NAMES.get(Lang.FRENCH))).getOptionId();
 	}
 	
 	/**
@@ -127,8 +127,8 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createLanguageLookup(CrmRepositories repos) {
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.LANGUAGE, Status.ACTIVE, true, Lang.NAMES.get(Lang.ROOT))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.LANGUAGE, Status.ACTIVE, true, Lang.NAMES.get(Lang.ENGLISH))).getOptionId();
+		repos.saveOption(new Option(repos.generateLanguageId(), null, Type.LANGUAGE, Status.ACTIVE, true, Lang.NAMES.get(Lang.ROOT))).getOptionId();
+		repos.saveOption(new Option(repos.generateLanguageId(), null, Type.LANGUAGE, Status.ACTIVE, true, Lang.NAMES.get(Lang.ENGLISH))).getOptionId();
 	}
 	
 	/**
@@ -136,43 +136,43 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createBusinessPositions(CrmRepositories repos) {
-		Identifier execsId = repos.saveOption(new Option(repos.generateOptionId(), null, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("EXECS", "Executives", "Cadres"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CEO", "Chief Executive Officer", "Directeur général"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CFO", "Chief Financial Officer", "Directeur financier"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("COO", "Chief Operations Officer", "Directeur des opérations"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CIO", "Chief Information Officer", "Directeur de l'information"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CHRO", "Chief Human Resources Officer", "Directeur des ressources humaines"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CTO", "Chief Technology Officer", "Directeur de la technologie"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CSO", "Chief Security Officer", "Directeur de sécurité"))).getOptionId();
+		OptionIdentifier execsId = repos.saveOption(new Option(repos.generateBusinessGroupId(), null, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("EXECS", "Executives", "Cadres"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CEO", "Chief Executive Officer", "Directeur général"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CFO", "Chief Financial Officer", "Directeur financier"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("COO", "Chief Operations Officer", "Directeur des opérations"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CIO", "Chief Information Officer", "Directeur de l'information"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CHRO", "Chief Human Resources Officer", "Directeur des ressources humaines"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CTO", "Chief Technology Officer", "Directeur de la technologie"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), execsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("CSO", "Chief Security Officer", "Directeur de sécurité"))).getOptionId();
 
-		Identifier imitId = repos.saveOption(new Option(repos.generateOptionId(), null, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("IMIT", "IM/IT", "GI / TI"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), imitId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("DIRECTOR", "Director", "Réalisateur")));
+		OptionIdentifier imitId = repos.saveOption(new Option(repos.generateBusinessGroupId(), null, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("IMIT", "IM/IT", "GI / TI"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), imitId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("DIRECTOR", "Director", "Réalisateur")));
 
-		Identifier opsId = repos.saveOption(new Option(repos.generateOptionId(), imitId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("OPS", "Operations", "Operations"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), opsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("MANAGER", "Manager", "Gestionnaire")));
+		OptionIdentifier opsId = repos.saveOption(new Option(repos.generateBusinessGroupId(), imitId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("OPS", "Operations", "Operations"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), opsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("MANAGER", "Manager", "Gestionnaire")));
 		
-		Identifier hdId = repos.saveOption(new Option(repos.generateOptionId(), opsId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("HD", "Help Desk", "Bureau d'aide"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), hdId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
-		repos.saveOption(new Option(repos.generateOptionId(), hdId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TECHNICIAN", "Help Desk Technician", "Technicien de bureau d'aide")));
+		OptionIdentifier hdId = repos.saveOption(new Option(repos.generateBusinessGroupId(), opsId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("HD", "Help Desk", "Bureau d'aide"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), hdId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), hdId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TECHNICIAN", "Help Desk Technician", "Technicien de bureau d'aide")));
 		
-		Identifier infraId = repos.saveOption(new Option(repos.generateOptionId(), opsId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("INFRA", "Infrastructure", "Infrastructure"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), infraId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
-		repos.saveOption(new Option(repos.generateOptionId(), infraId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("ADMIN", "System Administrator", "Administrateur du système")));
+		OptionIdentifier infraId = repos.saveOption(new Option(repos.generateBusinessGroupId(), opsId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("INFRA", "Infrastructure", "Infrastructure"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), infraId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), infraId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("ADMIN", "System Administrator", "Administrateur du système")));
 		
-		Identifier devId = repos.saveOption(new Option(repos.generateOptionId(), imitId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("DEV", "Application Development", "Directeur général"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), devId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("MANAGER", "Manager", "Gestionnaire")));
+		OptionIdentifier devId = repos.saveOption(new Option(repos.generateBusinessGroupId(), imitId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("DEV", "Application Development", "Directeur général"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), devId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("MANAGER", "Manager", "Gestionnaire")));
 
-		Identifier dmId = repos.saveOption(new Option(repos.generateOptionId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("DM", "Data Management", "Gestion de données"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), dmId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
-		repos.saveOption(new Option(repos.generateOptionId(), dmId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("DBA", "Database Administrator", "Administrateur de base de données")));
+		OptionIdentifier dmId = repos.saveOption(new Option(repos.generateBusinessGroupId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("DM", "Data Management", "Gestion de données"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), dmId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), dmId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("DBA", "Database Administrator", "Administrateur de base de données")));
 		
-		Identifier appsId = repos.saveOption(new Option(repos.generateOptionId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("APPS", "Applications", "Applications"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), appsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
-		repos.saveOption(new Option(repos.generateOptionId(), appsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("DEV", "Developer", "Développeur")));
+		OptionIdentifier appsId = repos.saveOption(new Option(repos.generateBusinessGroupId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("APPS", "Applications", "Applications"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), appsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), appsId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("DEV", "Developer", "Développeur")));
 		
-		Identifier qaId = repos.saveOption(new Option(repos.generateOptionId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("QA", "Quality Assurance", "Assurance qualité"))).getOptionId();
-		repos.saveOption(new Option(repos.generateOptionId(), qaId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
-		repos.saveOption(new Option(repos.generateOptionId(), qaId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TESTER", "Quality Tester", "Testeur de qualité")));
+		OptionIdentifier qaId = repos.saveOption(new Option(repos.generateBusinessGroupId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("QA", "Quality Assurance", "Assurance qualité"))).getOptionId();
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), qaId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
+		repos.saveOption(new Option(repos.generateBusinessRoleId(), qaId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TESTER", "Quality Tester", "Testeur de qualité")));
 	}
 	
 	/**
@@ -180,9 +180,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createSalutationsLookup(CrmRepositories repos) {
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.SALUTATION, Status.ACTIVE, true, new Localized("MISS", "Miss", "Mlle.")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.SALUTATION, Status.ACTIVE, true, new Localized("MRS", "Mrs.", "Mme.")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.SALUTATION, Status.ACTIVE, true, new Localized("MR", "Mr.", "M.")));
+		repos.saveOption(new Option(repos.generateSalutationId(), null, Type.SALUTATION, Status.ACTIVE, true, new Localized("MISS", "Miss", "Mlle.")));
+		repos.saveOption(new Option(repos.generateSalutationId(), null, Type.SALUTATION, Status.ACTIVE, true, new Localized("MRS", "Mrs.", "Mme.")));
+		repos.saveOption(new Option(repos.generateSalutationId(), null, Type.SALUTATION, Status.ACTIVE, true, new Localized("MR", "Mr.", "M.")));
 	}
 	
 	/**
@@ -190,13 +190,13 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCountriesLookup(CrmRepositories repos) {
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("CA", "Canada", "Canada")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("GB", "United Kingdom", "Royaume-Uni")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("DE", "Germany", "Allemagne")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("FR", "France", "France")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("IT", "Italy", "Italie")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("MX", "Mexico", "Mexique")));
-		repos.saveOption(new Option(repos.generateOptionId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("US", "United States", "États-Unis d'Amérique")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("CA", "Canada", "Canada")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("GB", "United Kingdom", "Royaume-Uni")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("DE", "Germany", "Allemagne")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("FR", "France", "France")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("IT", "Italy", "Italie")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("MX", "Mexico", "Mexique")));
+		repos.saveOption(new Option(repos.generateCountryId(), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("US", "United States", "États-Unis d'Amérique")));
 	}
 	
 	/**
@@ -205,19 +205,19 @@ public interface CrmConfigurationService {
 	 */
 	default void createCanadianProvinces(CrmRepositories repos) {
 		Option ca = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("CA"), OptionsFilter.getDefaultPaging()).getSingleItem();
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AB", "Alberta", "Alberta")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("BC", "British Columbia", "Colombie-Britannique")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MB", "Manitoba", "Manitoba")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NB", "New Brunswick", "Nouveau-Brunswick")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NL", "Newfoundland and Labrador", "Terre-Neuve et Labrador")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NS", "Nova Scotia", "Nouvelle-Ècosse")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NT", "Northwest Territories", "Territoires du Nord-Ouest")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NU", "Nunavut", "Nunavut")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ON", "Ontario", "Ontario")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("PE", "Prince Edward Island", "Île-du-Prince-Èdouard")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("QC", "Quebec", "Québec")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SK", "Saskatchewan", "Saskatchewan")));
-		repos.saveOption(new Option(repos.generateOptionId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("YT", "Yukon", "Yukon")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AB", "Alberta", "Alberta")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("BC", "British Columbia", "Colombie-Britannique")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MB", "Manitoba", "Manitoba")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NB", "New Brunswick", "Nouveau-Brunswick")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NL", "Newfoundland and Labrador", "Terre-Neuve et Labrador")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NS", "Nova Scotia", "Nouvelle-Ècosse")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NT", "Northwest Territories", "Territoires du Nord-Ouest")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NU", "Nunavut", "Nunavut")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ON", "Ontario", "Ontario")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("PE", "Prince Edward Island", "Île-du-Prince-Èdouard")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("QC", "Quebec", "Québec")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SK", "Saskatchewan", "Saskatchewan")));
+		repos.saveOption(new Option(repos.generateProvinceId(), ca.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("YT", "Yukon", "Yukon")));
 	}
 	
 	/**
@@ -226,57 +226,57 @@ public interface CrmConfigurationService {
 	 */
 	default void createAmericanStates(CrmRepositories repos) {
 		Option us = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("US"), OptionsFilter.getDefaultPaging()).getSingleItem();
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AK", "Alaska", "Alaska")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AL", "Alabama", "Alabama")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AR", "Arkansas", "Arkansas")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AZ", "Arizona", "Arizona")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CA", "California", "Californie")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CO", "Colorado", "Colorado")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CT", "Connecticut", "Connecticut")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DC", "District of Columbia", "District fédéral de Columbia")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DE", "Delaware", "Delaware")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("FL", "Florida", "Floride")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("GA", "Georgia", "Géorgie")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("HI", "Hawaii", "Hawai")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("IA", "Iowa", "Iowa")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ID", "Idaho", "Idaho")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("IL", "Illinois", "Illinois")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("IN", "Indiana", "Indiana")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("KS", "Kansas", "Kansas")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("KY", "Kentucky", "Kentucky")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("LA", "Louisiana", "Louisiane")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MA", "Massachusetts", "Massachusetts")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MD", "Maryland", "Maryland")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ME", "Maine", "Maine")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MI", "Michigan", "Michigan")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MN", "Minnesota", "Minnesota")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MO", "Missouri", "Missouri")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MS", "Mississippi", "Mississippi")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MT", "Montana", "Montana")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NC", "North Carolina", "Caroline du Nord")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ND", "North Dakota", "Dakota du Nord")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NE", "Nebraska", "Nebraska")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NH", "New Hampshire", "New Hampshire")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NJ", "New Jersey", "New Jersey")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NM", "New Mexico", "Nouveau-Mexique")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NV", "Nevada", "Nevada")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NY", "New York", "New York")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OH", "Ohio", "Ohio")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OK", "Oklahoma", "Oklahoma")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OR", "Oregon", "Orégon")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("PA", "Pennsylvania", "Pennsylvanie")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("RI", "Rhode Island", "Rhode Island")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SC", "South Carolina", "Carolina du Sud")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SD", "South Dakota", "Dakota du Sud")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TN", "Tennessee", "Tennessee")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TX", "Texas", "Texas")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("UT", "Utah", "Utah")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("VA", "Virginia", "Virginie")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("VT", "Vermont", "Vermont")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WA", "Washington", "Washington")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WI", "Wisconsin", "Wisconsin")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WV", "West Virginia", "Virginie-Occidentale")));
-		repos.saveOption(new Option(repos.generateOptionId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WY", "Wyoming", "Wyoming")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AK", "Alaska", "Alaska")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AL", "Alabama", "Alabama")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AR", "Arkansas", "Arkansas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AZ", "Arizona", "Arizona")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CA", "California", "Californie")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CO", "Colorado", "Colorado")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CT", "Connecticut", "Connecticut")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DC", "District of Columbia", "District fédéral de Columbia")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DE", "Delaware", "Delaware")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("FL", "Florida", "Floride")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("GA", "Georgia", "Géorgie")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("HI", "Hawaii", "Hawai")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("IA", "Iowa", "Iowa")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ID", "Idaho", "Idaho")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("IL", "Illinois", "Illinois")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("IN", "Indiana", "Indiana")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("KS", "Kansas", "Kansas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("KY", "Kentucky", "Kentucky")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("LA", "Louisiana", "Louisiane")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MA", "Massachusetts", "Massachusetts")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MD", "Maryland", "Maryland")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ME", "Maine", "Maine")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MI", "Michigan", "Michigan")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MN", "Minnesota", "Minnesota")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MO", "Missouri", "Missouri")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MS", "Mississippi", "Mississippi")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MT", "Montana", "Montana")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NC", "North Carolina", "Caroline du Nord")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ND", "North Dakota", "Dakota du Nord")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NE", "Nebraska", "Nebraska")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NH", "New Hampshire", "New Hampshire")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NJ", "New Jersey", "New Jersey")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NM", "New Mexico", "Nouveau-Mexique")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NV", "Nevada", "Nevada")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NY", "New York", "New York")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OH", "Ohio", "Ohio")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OK", "Oklahoma", "Oklahoma")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OR", "Oregon", "Orégon")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("PA", "Pennsylvania", "Pennsylvanie")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("RI", "Rhode Island", "Rhode Island")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SC", "South Carolina", "Carolina du Sud")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SD", "South Dakota", "Dakota du Sud")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TN", "Tennessee", "Tennessee")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TX", "Texas", "Texas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("UT", "Utah", "Utah")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("VA", "Virginia", "Virginie")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("VT", "Vermont", "Vermont")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WA", "Washington", "Washington")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WI", "Wisconsin", "Wisconsin")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WV", "West Virginia", "Virginie-Occidentale")));
+		repos.saveOption(new Option(repos.generateProvinceId(), us.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("WY", "Wyoming", "Wyoming")));
 	}
 
 	/**
@@ -285,38 +285,38 @@ public interface CrmConfigurationService {
 	 */
 	default void createMexicanProvinces(CrmRepositories repos) {
 		Option mx = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("MX"), OptionsFilter.getDefaultPaging()).getSingleItem();
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AG", "Aguascalientas", "Aguascalientas")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("BA", "Baja California (North)", "Baja California (Nord)")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("BJ", "Baja California (South)", "Baja California (Sud)")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CE", "Campeche", "Campeche")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CH", "Chihuahua", "Chihuahua")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CI", "Chiapas", "Chiapas")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CL", "Colima", "Colima")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CU", "Coahuila de Zaragoza", "Coahuila de Zaragoza")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DF", "Distrito", "Distrito (Federal)")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DO", "Durango", "Durango")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("GR", "Guerreo", "Guerreo")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("GU", "Guanajuato", "Guanajuato")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("HL", "Hidalgo", "Hidalgo")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("JL", "Jalisco", "Jalisco")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MC", "Michoacan de Ocampo", "Michoacan de Ocampo")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MR", "Morelos", "Morelos")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MX", "Mexico (State)", "Mexico (Ètat)")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NA", "Nayarit", "Nayarit")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NL", "Nuevo Leon", "Nuevo Leon")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OA", "Oaxaca", "Oaxaca")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("PB", "Puebla", "Puebla")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("QR", "Quintana Roo", "Quintana Roo")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("QU", "Queretaro de Arteaga", "Queretaro de Arteaga")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SI", "Sinaloa", "Sinaloa")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SL", "San Luis Potosi", "San Luis Potosi")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SO", "Sonora", "Sonora")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TA", "Tamaulipas", "Tamaulipas")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TB", "Tabasco", "Tabasco")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TL", "Tlaxcala", "Tlaxcala")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("VC", "Veracruz-Llave", "Veracruz-Llave")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("YU", "Yucatan", "Yucatan")));
-		repos.saveOption(new Option(repos.generateOptionId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ZA", "Zacatecas", "Zacatecas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("AG", "Aguascalientas", "Aguascalientas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("BA", "Baja California (North)", "Baja California (Nord)")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("BJ", "Baja California (South)", "Baja California (Sud)")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CE", "Campeche", "Campeche")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CH", "Chihuahua", "Chihuahua")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CI", "Chiapas", "Chiapas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CL", "Colima", "Colima")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("CU", "Coahuila de Zaragoza", "Coahuila de Zaragoza")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DF", "Distrito", "Distrito (Federal)")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("DO", "Durango", "Durango")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("GR", "Guerreo", "Guerreo")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("GU", "Guanajuato", "Guanajuato")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("HL", "Hidalgo", "Hidalgo")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("JL", "Jalisco", "Jalisco")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MC", "Michoacan de Ocampo", "Michoacan de Ocampo")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MR", "Morelos", "Morelos")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("MX", "Mexico (State)", "Mexico (Ètat)")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NA", "Nayarit", "Nayarit")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("NL", "Nuevo Leon", "Nuevo Leon")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("OA", "Oaxaca", "Oaxaca")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("PB", "Puebla", "Puebla")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("QR", "Quintana Roo", "Quintana Roo")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("QU", "Queretaro de Arteaga", "Queretaro de Arteaga")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SI", "Sinaloa", "Sinaloa")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SL", "San Luis Potosi", "San Luis Potosi")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("SO", "Sonora", "Sonora")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TA", "Tamaulipas", "Tamaulipas")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TB", "Tabasco", "Tabasco")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("TL", "Tlaxcala", "Tlaxcala")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("VC", "Veracruz-Llave", "Veracruz-Llave")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("YU", "Yucatan", "Yucatan")));
+		repos.saveOption(new Option(repos.generateProvinceId(), mx.getOptionId(), Type.PROVINCE, Status.ACTIVE, true, new Localized("ZA", "Zacatecas", "Zacatecas")));
 	}
 	
 }

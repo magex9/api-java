@@ -8,9 +8,12 @@ import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class BasicAuthenticationService implements CrmAuthenticationService {
 
@@ -20,14 +23,17 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	
 	private CrmPasswordService passwords;
 	
+	private CrmPersonService persons;
+	
 	private Stack<User> currentUser;
 
 	public BasicAuthenticationService(Crm crm, CrmPasswordRepository repo) {
-		this(crm, crm, new BasicPasswordService(repo));
+		this(crm, crm, crm, new BasicPasswordService(repo));
 	}
 	
-	public BasicAuthenticationService(CrmOptionService options, CrmUserService users, CrmPasswordService passwords) {
+	public BasicAuthenticationService(CrmOptionService options, CrmUserService users, CrmPersonService persons, CrmPasswordService passwords) {
 		this.users = users;
+		this.persons = persons;
 		this.passwords = passwords;
 		this.currentUser = new Stack<>();
 	}
@@ -68,24 +74,23 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	}
 
 	@Override
-	public Identifier getAuthenticatedUserId() {
+	public UserIdentifier getAuthenticatedUserId() {
 		if (!isAuthenticated())
 			return null;
 		return currentUser.peek().getUserId();
 	}
 
 	@Override
-	public Identifier getAuthenticatedPersonId() {
+	public PersonIdentifier getAuthenticatedPersonId() {
 		if (!isAuthenticated())
 			return null;
-		return currentUser.peek().getPerson().getPersonId();
+		return currentUser.peek().getPersonId();
 	}
 
 	@Override
-	public Identifier getAuthenticatedOrganizationId() {
+	public OrganizationIdentifier getAuthenticatedOrganizationId() {
 		if (!isAuthenticated())
 			return null;
-		return currentUser.peek().getPerson().getOrganizationId();
+		return persons.findPersonSummary(currentUser.peek().getPersonId()).getOrganizationId();
 	}
-
 }

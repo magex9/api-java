@@ -1,45 +1,37 @@
 package ca.magex.crm.test.policies;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.policies.basic.BasicLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
-@TestInstance(Lifecycle.PER_CLASS)
 public class BasicLocationPolicyTests {
 
 	private CrmOrganizationService organizationService;
 	private CrmLocationService locationService;
 	private BasicLocationPolicy policy;
 
-	@BeforeAll
+	@Before
 	public void initializeMocks() {
 		organizationService = Mockito.mock(CrmOrganizationService.class);
 		locationService = Mockito.mock(CrmLocationService.class);
 		policy = new BasicLocationPolicy(organizationService, locationService);
 	}
 
-	@BeforeEach
-	public void resetMocks() {
-		Mockito.reset(organizationService, locationService);
-	}
-
 	@Test
 	public void testCanCreateLocationForOrganization() {
-		Identifier orgId = new Identifier("/organizations/O1");
-		Identifier orgId2 = new Identifier("/organizations/O2");
-		Identifier orgId3 = new Identifier("/organizations/O3");
+		OrganizationIdentifier orgId = new OrganizationIdentifier("O1");
+		OrganizationIdentifier orgId2 = new OrganizationIdentifier("O2");
+		OrganizationIdentifier orgId3 = new OrganizationIdentifier("O3");
 		/* throw item not found for any identifier */
 		BDDMockito.willThrow(new ItemNotFoundException("")).given(organizationService).findOrganizationSummary(Mockito.any());
 		/* return an Active Org Summary for our specific identifier */
@@ -47,13 +39,13 @@ public class BasicLocationPolicyTests {
 		/* return an Active Org Summary for our specific identifier */
 		BDDMockito.willReturn(new OrganizationSummary(orgId2, Status.INACTIVE, "Org 2")).given(organizationService).findOrganizationSummary(orgId2);
 		/* should be able to create a location for an active org */
-		Assertions.assertTrue(policy.canCreateLocationForOrganization(orgId));
+		Assert.assertTrue(policy.canCreateLocationForOrganization(orgId));
 		/* should not be able to create a location for an inactive org */
-		Assertions.assertFalse(policy.canCreateLocationForOrganization(orgId2));
+		Assert.assertFalse(policy.canCreateLocationForOrganization(orgId2));
 		/* should not be able to create a location for an org that doesn't exist */
 		try {
 			policy.canCreateLocationForOrganization(orgId3);
-			Assertions.fail("Item was not found");
+			Assert.fail("Item was not found");
 		} catch (ItemNotFoundException expected) { } 
 	}
 

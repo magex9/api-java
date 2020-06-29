@@ -16,12 +16,12 @@ import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class OptionsFilter implements CrmFilter<Option> {
 
@@ -40,7 +40,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 	
 	private ImmutablePair<Locale, String> name;
 
-	private Identifier parentId;
+	private OptionIdentifier parentId;
 
 	private Type type;
 
@@ -50,7 +50,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 		this(null, null, null, null);
 	}
 
-	public OptionsFilter(ImmutablePair<Locale, String> name, Identifier parentId, Type type, Status status) {
+	public OptionsFilter(ImmutablePair<Locale, String> name, OptionIdentifier parentId, Type type, Status status) {
 		this.name = name;
 		this.parentId = parentId;
 		this.type = type;
@@ -60,7 +60,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public OptionsFilter(Map<String, Object> filterCriteria) {
 		try {
 			this.name = filterCriteria.containsKey("name") ? new ImmutablePair<Locale, String>(Lang.ROOT, (String) filterCriteria.get("name")) : null;
-			this.parentId = filterCriteria.containsKey("parentId") ? new Identifier(CrmOptionRepository.CONTEXT, (String) filterCriteria.get("parentId")) : null;
+			this.parentId = filterCriteria.containsKey("parentId") ? OptionIdentifier.forId((CharSequence)filterCriteria.get("parentId")) : null;
 			this.type = null;
 			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
 				try {
@@ -107,7 +107,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 		return withName(Lang.ROOT, optionCode);
 	}
 
-	public OptionsFilter withParentId(Identifier parentId) {
+	public OptionsFilter withParentId(OptionIdentifier parentId) {
 		return new OptionsFilter(name, parentId, type, status);
 	}
 

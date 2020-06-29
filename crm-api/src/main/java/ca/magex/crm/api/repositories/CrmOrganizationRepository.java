@@ -6,7 +6,7 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 /**
  * Repository interface used for saving/retrieving an Organization
@@ -14,16 +14,14 @@ import ca.magex.crm.api.system.Identifier;
  * @author Jonny
  */
 public interface CrmOrganizationRepository {
-
-	public static final String CONTEXT = "/organizations";
 	
 	/**
 	 * returns the next identifier to be assigned to a new Organization
 	 * 
 	 * @return
 	 */
-	default Identifier generateOrganizationId() {
-		return CrmStore.generateId(CONTEXT);
+	default OrganizationIdentifier generateOrganizationId() {
+		return new OrganizationIdentifier(CrmStore.generateId());
 	}
 	
 	/**
@@ -41,7 +39,7 @@ public interface CrmOrganizationRepository {
 	 * @param organizationId
 	 * @return
 	 */
-	public OrganizationDetails findOrganizationDetails(Identifier organizationId);
+	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId);
 
 	/**
 	 * returns the organization summary associated with the given organizationId, 
@@ -50,7 +48,7 @@ public interface CrmOrganizationRepository {
 	 * @param organizationId
 	 * @return
 	 */
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId);
+	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId);
 
 	/**
 	 * returns the paged results with the full organization details for any organization that matches the given filter

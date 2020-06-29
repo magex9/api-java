@@ -12,7 +12,7 @@ import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class BasicUserRepository implements CrmUserRepository {
 
@@ -40,7 +40,7 @@ public class BasicUserRepository implements CrmUserRepository {
 	}
 
 	@Override
-	public User findUser(Identifier userId) {
+	public User findUser(UserIdentifier userId) {
 		return store.getUsers().get(userId);
 	}
 

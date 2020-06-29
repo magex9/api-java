@@ -9,8 +9,10 @@ import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class BasicUserService implements CrmUserService {
 
@@ -24,12 +26,12 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public User createUser(Identifier personId, String username, List<Identifier> roleIds) {
-		return repos.saveUser(new User(repos.generateUserId(), username, repos.findPersonSummary(personId), Status.ACTIVE, roleIds));
+	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
+		return repos.saveUser(new User(repos.generateUserId(), personId, username, Status.ACTIVE, roleIds));
 	}
 
 	@Override
-	public User enableUser(Identifier userId) {
+	public User enableUser(UserIdentifier userId) {
 		User user = repos.findUser(userId);
 		if (user == null) {
 			return null;
@@ -38,7 +40,7 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public User disableUser(Identifier userId) {
+	public User disableUser(UserIdentifier userId) {
 		User user = repos.findUser(userId);
 		if (user == null) {
 			return null;
@@ -47,7 +49,7 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public User findUser(Identifier userId) {
+	public User findUser(UserIdentifier userId) {
 		return repos.findUser(userId);
 	}
 	
@@ -57,7 +59,7 @@ public class BasicUserService implements CrmUserService {
 	}	
 
 	@Override
-	public User updateUserRoles(Identifier userId, List<Identifier> roleIds) {
+	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roleIds) {
 		User user = repos.findUser(userId);
 		if (user == null) {
 			return null;
@@ -66,7 +68,7 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+	public boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword) {
 		if (!isValidPasswordFormat(newPassword))
 			return false;
 		User user = repos.findUser(userId);
@@ -80,7 +82,7 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public String resetPassword(Identifier userId) {
+	public String resetPassword(UserIdentifier userId) {
 		return passwords.generateTemporaryPassword(repos.findUser(userId).getUsername());
 	}
 
@@ -92,6 +94,5 @@ public class BasicUserService implements CrmUserService {
 	@Override
 	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
 		return repos.findUsers(filter, paging);
-	}
-	
+	}	
 }

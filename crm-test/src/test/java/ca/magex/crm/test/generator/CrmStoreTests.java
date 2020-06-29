@@ -11,7 +11,7 @@ public class CrmStoreTests {
 	@Test
 	public void testBase58Generator() throws Exception {
 		for (int i = 0; i < 10; i++) {
-			assertTrue(CrmStore.generateId("/objects").toString().matches("[123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]+"));
+			assertTrue(CrmStore.generateId().toString().matches("[123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]+"));
 		}
 	}
 	

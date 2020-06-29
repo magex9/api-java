@@ -3,10 +3,10 @@ package ca.magex.crm.api.policies.basic;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.services.CrmOptionService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class BasicOptionPolicy implements CrmOptionPolicy {
 
@@ -47,7 +47,7 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canViewOption(Identifier optionId) {
+	public boolean canViewOption(OptionIdentifier optionId) {
 		/* can view a specific option if it exists */
 		if (options.findOption(optionId) == null) {
 			throw new ItemNotFoundException("Option ID '" + optionId + "'");
@@ -56,7 +56,7 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canUpdateOption(Identifier optionId) {
+	public boolean canUpdateOption(OptionIdentifier optionId) {
 		/* can view a specific option if it exists and is active */
 		Option option = options.findOption(optionId);
 		if (option == null) {
@@ -66,7 +66,7 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canEnableOption(Identifier optionId) {
+	public boolean canEnableOption(OptionIdentifier optionId) {
 		/* can enable a specific option if it exists */
 		if (options.findOption(optionId) == null) {
 			throw new ItemNotFoundException("Option ID '" + optionId + "'");
@@ -75,7 +75,7 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canDisableOption(Identifier optionId) {
+	public boolean canDisableOption(OptionIdentifier optionId) {
 		/* can disable a specific option if it exists */
 		if (options.findOption(optionId) == null) {
 			throw new ItemNotFoundException("Option ID '" + optionId + "'");

@@ -6,41 +6,42 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmUserService {
-	
-	default User prototypeUser(Identifier personId, String username, List<Identifier> roles) {
-		return new User(null, username, new PersonSummary(personId, null, null, null), Status.PENDING, roles);
+
+	default User prototypeUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
+		return new User(null, personId, username, Status.PENDING, roles);
 	};
 
 	default User createUser(User prototype) {
-		return createUser(prototype.getPerson().getPersonId(), prototype.getUsername(), prototype.getRoles());
+		return createUser(prototype.getPersonId(), prototype.getUsername(), prototype.getRoles());
 	}
 
-	User createUser(Identifier personId, String username, List<Identifier> roles);
+	User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles);
 
-	User enableUser(Identifier userId);
+	User enableUser(UserIdentifier userId);
 
-	User disableUser(Identifier userId);
+	User disableUser(UserIdentifier userId);
 
-	User updateUserRoles(Identifier userId, List<Identifier> roles);
+	User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles);
 
-	boolean changePassword(Identifier userId, String currentPassword, String newPassword);
+	boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword);
 
-	String resetPassword(Identifier userId);
+	String resetPassword(UserIdentifier userId);
 
-	User findUser(Identifier userId);
+	User findUser(UserIdentifier userId);
 
 	User findUserByUsername(String username);
 
@@ -57,13 +58,9 @@ public interface CrmUserService {
 			return false;
 		return true;
 	}
-	
+
 	default FilteredPage<User> findUsers(UsersFilter filter) {
 		return findUsers(filter, defaultUsersPaging());
-	}
-
-	default FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
-		return findUsers(new UsersFilter(organizationId, null, Status.ACTIVE, null, null));
 	}
 
 	default UsersFilter defaultUsersFilter() {
@@ -85,13 +82,13 @@ public interface CrmUserService {
 		}
 
 		// Organization
-		if (user.getPerson() == null || user.getPerson().getPersonId() == null) {
+		if (user.getPersonId() == null) {
 			messages.add(new Message(null, "error", "person", new Localized(Lang.ENGLISH, "Person cannot be null")));
 		} else {
 			try {
-				crm.findPersonDetails(user.getPerson().getPersonId());
+				crm.findPersonDetails(user.getPersonId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(user.getPerson().getPersonId(), "error", "person", new Localized(Lang.ENGLISH, "Person does not exist")));
+				messages.add(new Message(user.getPersonId(), "error", "person", new Localized(Lang.ENGLISH, "Person does not exist")));
 			}
 		}
 
@@ -107,7 +104,7 @@ public interface CrmUserService {
 			messages.add(new Message(user.getUserId(), "error", "roles", new Localized(Lang.ENGLISH, "Users must have a permission role assigned to them")));
 		} else {
 			for (int i = 0; i < user.getRoles().size(); i++) {
-				Identifier roleId = user.getRoles().get(i);
+				AuthenticationRoleIdentifier roleId = user.getRoles().get(i);
 				try {
 					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
 						messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role is not active: " + roleId)));
@@ -119,5 +116,5 @@ public interface CrmUserService {
 
 		return messages;
 	}
-	
+
 }

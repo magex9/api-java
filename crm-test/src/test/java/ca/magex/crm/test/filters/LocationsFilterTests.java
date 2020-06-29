@@ -18,6 +18,8 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class LocationsFilterTests {
 
@@ -54,41 +56,41 @@ public class LocationsFilterTests {
 		assertEquals(new LocationsFilter(null, null, null, null), filter);
 		assertEquals(new LocationsFilter(null, null, null, null).hashCode(), filter.hashCode());
 		
-		filter = filter.withOrganizationId(new Identifier("G1"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		filter = filter.withOrganizationId(new OrganizationIdentifier("G1"));
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertNull(filter.getDisplayName());
 		assertNull(filter.getReference());
 		assertNull(filter.getStatus());		
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), null, null, null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), null, null, null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withDisplayName("display");
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getReference());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", null, null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", null, null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":null,\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withReference("ref");
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals("ref", filter.getReference());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());		
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());		
 		
 		filter = filter.withStatus(Status.ACTIVE);
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals("ref", filter.getReference());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":\"ACTIVE\"}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", Status.ACTIVE), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", Status.ACTIVE).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":\"ACTIVE\"}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE).hashCode(), filter.hashCode());
 	}
 	
 	@Test
@@ -103,50 +105,50 @@ public class LocationsFilterTests {
 		assertEquals(new LocationsFilter(null, null, null, null).hashCode(), filter.hashCode());
 		
 		filter = new LocationsFilter(Map.of("organizationId", "G1"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertNull(filter.getDisplayName());
 		assertNull(filter.getReference());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), null, null, null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), null, null, null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null).hashCode(), filter.hashCode());
 		
 		
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getReference());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", null, null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", null, null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":null,\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null).hashCode(), filter.hashCode());
 		
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals("ref", filter.getReference());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());
 						
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref", "status", ""));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals("ref", filter.getReference());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", null), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());
 		
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref", "status", "active"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals("ref", filter.getReference());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":\"ACTIVE\"}", filter.toString());
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", Status.ACTIVE), filter);
-		assertEquals(new LocationsFilter(new Identifier("G1"), "display", "ref", Status.ACTIVE).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":\"ACTIVE\"}", filter.toString());
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE), filter);
+		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE).hashCode(), filter.hashCode());
 		
 		try {
 			new LocationsFilter(Map.of("organizationId", 1));
@@ -190,13 +192,13 @@ public class LocationsFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		LocationSummary location = new LocationSummary(new Identifier("ABC"), new Identifier("G1"), Status.ACTIVE, "RT", "Road and Track");
+		LocationSummary location = new LocationSummary(new LocationIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "RT", "Road and Track");
 		/* default filter should match */
 		assertTrue(new LocationsFilter().apply(location));
 		
 		/* test organization match */
-		assertTrue(new LocationsFilter().withOrganizationId(new Identifier("G1")).apply(location));
-		assertFalse(new LocationsFilter().withOrganizationId(new Identifier("G2")).apply(location));
+		assertTrue(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("G1")).apply(location));
+		assertFalse(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("G2")).apply(location));
 		
 		/* test display name match */
 		assertTrue(new LocationsFilter().withDisplayName("ROAD").apply(location));

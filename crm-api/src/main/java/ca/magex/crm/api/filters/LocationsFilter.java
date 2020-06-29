@@ -17,6 +17,7 @@ import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class LocationsFilter implements CrmFilter<LocationSummary> {
 
@@ -33,7 +34,7 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		Sort.by(Order.desc("status"))
 	);
 
-	private Identifier organizationId;
+	private OrganizationIdentifier organizationId;
 
 	private String displayName;
 
@@ -45,7 +46,7 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		this(null, null, null, null);
 	}
 
-	public LocationsFilter(Identifier organizationId, String displayName, String reference, Status status) {
+	public LocationsFilter(OrganizationIdentifier organizationId, String displayName, String reference, Status status) {
 		this.organizationId = organizationId;
 		this.displayName = displayName;
 		this.reference = reference;
@@ -56,7 +57,7 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		try {
 			this.displayName = (String) filterCriteria.get("displayName");
 			this.reference = (String) filterCriteria.get("reference");
-			this.organizationId = filterCriteria.keySet().contains("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.organizationId = filterCriteria.keySet().contains("organizationId") ? new OrganizationIdentifier((CharSequence) filterCriteria.get("organizationId")) : null;
 			this.status = null;
 			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 				try {
@@ -87,7 +88,7 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		return status;
 	}
 	
-	public LocationsFilter withOrganizationId(Identifier organizationId) {
+	public LocationsFilter withOrganizationId(OrganizationIdentifier organizationId) {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 

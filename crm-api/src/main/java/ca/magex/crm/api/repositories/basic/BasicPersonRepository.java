@@ -13,7 +13,7 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.repositories.CrmPersonRepository;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class BasicPersonRepository implements CrmPersonRepository {
 
@@ -22,7 +22,7 @@ public class BasicPersonRepository implements CrmPersonRepository {
 	public BasicPersonRepository(CrmStore store) {
 		this.store = store;
 	}
-	
+
 	private Stream<PersonDetails> apply(PersonsFilter filter) {
 		return store.getPersons().values().stream().filter(p -> filter.apply(p));
 	}
@@ -30,17 +30,17 @@ public class BasicPersonRepository implements CrmPersonRepository {
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList()), paging);
+				.map(i -> SerializationUtils.clone(i))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList()), paging);
 	}
 
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
-			.sorted(filter.getComparator(paging))
-			.collect(Collectors.toList()), paging);
+				.map(i -> SerializationUtils.clone(i))
+				.sorted(filter.getComparator(paging))
+				.collect(Collectors.toList()), paging);
 	}
 
 	@Override
@@ -49,12 +49,12 @@ public class BasicPersonRepository implements CrmPersonRepository {
 	}
 
 	@Override
-	public PersonDetails findPersonDetails(Identifier personId) {
+	public PersonDetails findPersonDetails(PersonIdentifier personId) {
 		return store.getPersons().get(personId);
 	}
 
 	@Override
-	public PersonSummary findPersonSummary(Identifier personId) {
+	public PersonSummary findPersonSummary(PersonIdentifier personId) {
 		return findPersonDetails(personId);
 	}
 

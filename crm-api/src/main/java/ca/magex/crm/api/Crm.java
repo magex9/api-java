@@ -45,11 +45,18 @@ import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies {
 	
@@ -149,21 +156,21 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return organization;
 	}
 	
-	public OrganizationDetails createOrganization(String displayName, List<Identifier> groupIds) {
+	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
 		return organizationService.createOrganization(
 			validate(prototypeOrganization(displayName, groupIds)));
 	}
 
-	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationDisplayName: " + organizationId);
 		return organizationService.updateOrganizationDisplayName(organizationId, 
 			validate(organizationService.findOrganizationDetails(organizationId).withDisplayName(name)).getDisplayName());
 	}
 
-	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
 		return organizationService.updateOrganizationMainLocation(organizationId, 
@@ -171,41 +178,41 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
 		return organizationService.updateOrganizationMainContact(organizationId, 
 			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());
 	}
 	
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds) {
+	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groupIds);
 		return organizationService.updateOrganizationGroups(organizationId, 
 			validate(organizationService.findOrganizationDetails(organizationId).withGroupIds(groupIds)).getGroupIds());
 	}
 
-	public OrganizationSummary enableOrganization(Identifier organizationId) {
+	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
 		if (!canEnableOrganization(organizationId))
 			throw new PermissionDeniedException("enableOrganization: " + organizationId);
 		return organizationService.enableOrganization(
 			validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.ACTIVE)).getOrganizationId());
 	}
 
-	public OrganizationSummary disableOrganization(Identifier organizationId) {
+	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
 		if (!canDisableOrganization(organizationId))
 			throw new PermissionDeniedException("disableOrganization: " + organizationId);
 		return organizationService.disableOrganization(
 			validate(organizationService.findOrganizationDetails(organizationId).withStatus(Status.INACTIVE)).getOrganizationId());
 	}
 	
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
 		if (!canViewOrganization(organizationId))
 			throw new PermissionDeniedException("findOrganization: " + organizationId);
 		return organizationService.findOrganizationSummary(organizationId);
 	}
 	
-	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
+	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId) {
 		if (!canViewOrganization(organizationId))
 			throw new PermissionDeniedException("findOrganization: " + organizationId);
 		return organizationService.findOrganizationDetails(organizationId);
@@ -230,46 +237,46 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return location;
 	}
 	
-	public LocationDetails createLocation(Identifier organizationId, String reference, String displayName, 
+	public LocationDetails createLocation(OrganizationIdentifier organizationId, String reference, String displayName, 
 			MailingAddress address) {
 		if (!canCreateLocationForOrganization(organizationId))
 			throw new PermissionDeniedException("createLocation: " + organizationId);
 		return locationService.createLocation(validate(prototypeLocation(organizationId, reference, displayName, address)));
 	}
 
-	public LocationDetails updateLocationName(Identifier locationId, String displayName) {
+	public LocationDetails updateLocationName(LocationIdentifier locationId, String displayName) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationName: " + locationId);
 		return locationService.updateLocationName(locationId, validate(locationService.findLocationDetails(locationId).withDisplayName(displayName)).getDisplayName());
 	}
 
-	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
+	public LocationDetails updateLocationAddress(LocationIdentifier locationId, MailingAddress address) {
 		if (!canUpdateLocation(locationId))
 			throw new PermissionDeniedException("updateLocationAddress: " + locationId);
 		return locationService.updateLocationAddress(locationId, validate(findLocationDetails(locationId).withAddress(address)).getAddress());
 	}
 
-	public LocationSummary enableLocation(Identifier locationId) {
+	public LocationSummary enableLocation(LocationIdentifier locationId) {
 		if (!canEnableLocation(locationId))
 			throw new PermissionDeniedException("enableLocation: " + locationId);
 		return locationService.enableLocation(
 			validate(locationService.findLocationDetails(locationId).withStatus(Status.ACTIVE)).getLocationId());
 	}
 
-	public LocationSummary disableLocation(Identifier locationId) {
+	public LocationSummary disableLocation(LocationIdentifier locationId) {
 		if (!canDisableLocation(locationId))
 			throw new PermissionDeniedException("disableLocation: " + locationId);
 		return locationService.disableLocation(
 			validate(locationService.findLocationDetails(locationId).withStatus(Status.INACTIVE)).getLocationId());
 	}
 
-	public LocationSummary findLocationSummary(Identifier locationId) {
+	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
 		if (!canViewLocation(locationId))
 			throw new PermissionDeniedException("findLocation: " + locationId);
 		return locationService.findLocationSummary(locationId);
 	}
 	
-	public LocationDetails findLocationDetails(Identifier locationId) {
+	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
 		if (!canViewLocation(locationId))
 			throw new PermissionDeniedException("findLocation: " + locationId);
 		return locationService.findLocationDetails(locationId);
@@ -294,58 +301,58 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return person;
 	}
 
-	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, List<Identifier> roleIds) {
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
 		return personService.createPerson(validate(prototypePerson(organizationId, name, address, communication, roleIds)));
 	}
 
-	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
+	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName name) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonName: " + personId);
 		return personService.updatePersonName(personId, validate(findPersonDetails(personId).withLegalName(name)).getLegalName());
 	}
 
-	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
+	public PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonAddress: " + personId);
 		return personService.updatePersonAddress(personId, validate(findPersonDetails(personId).withAddress(address)).getAddress());
 	}
 
-	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
+	public PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonCommunication: " + personId);
 		return personService.updatePersonCommunication(personId, validate(findPersonDetails(personId).withCommunication(communication)).getCommunication());
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(Identifier personId, List<Identifier> roleIds) {
+	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
 		return personService.updatePersonRoles(personId, validate(findPersonDetails(personId).withRoleIds(roleIds)).getRoleIds());
 	}
 
-	public PersonSummary enablePerson(Identifier personId) {
+	public PersonSummary enablePerson(PersonIdentifier personId) {
 		if (!canEnablePerson(personId))
 			throw new PermissionDeniedException("enablePerson: " + personId);
 		return personService.enablePerson(
 			validate(personService.findPersonDetails(personId).withStatus(Status.ACTIVE)).getPersonId());
 	}
 
-	public PersonSummary disablePerson(Identifier personId) {
+	public PersonSummary disablePerson(PersonIdentifier personId) {
 		if (!canDisablePerson(personId))
 			throw new PermissionDeniedException("disablePerson: " + personId);
 		return personService.disablePerson(
 			validate(personService.findPersonDetails(personId).withStatus(Status.INACTIVE)).getPersonId());
 	}
 
-	public PersonSummary findPersonSummary(Identifier personId) {
+	public PersonSummary findPersonSummary(PersonIdentifier personId) {
 		if (!canViewPerson(personId))
 			throw new PermissionDeniedException("findPerson: " + personId);
 		return personService.findPersonSummary(personId);
 	}
 	
-	public PersonDetails findPersonDetails(Identifier personId) {
+	public PersonDetails findPersonDetails(PersonIdentifier personId) {
 		if (!canViewPerson(personId))
 			throw new PermissionDeniedException("findPerson: " + personId);
 		return personService.findPersonDetails(personId);
@@ -371,14 +378,14 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public User createUser(Identifier personId, String username, List<Identifier> roles) {
+	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
 		return userService.createUser(validate(prototypeUser(personId, username, roles)));
 	}
 
 	@Override
-	public User enableUser(Identifier userId) {
+	public User enableUser(UserIdentifier userId) {
 		if (!canEnableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
 		return userService.enableUser(
@@ -386,7 +393,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public User disableUser(Identifier userId) {
+	public User disableUser(UserIdentifier userId) {
 		if (!canDisableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
 		return userService.disableUser(
@@ -394,7 +401,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public User findUser(Identifier userId) {
+	public User findUser(UserIdentifier userId) {
 		if (!canViewUser(userId))
 			throw new PermissionDeniedException("findUser: " + userId);
 		return userService.findUser(userId);
@@ -408,19 +415,19 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public User updateUserRoles(Identifier userId, List<Identifier> roles) {
+	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
 		return userService.updateUserRoles(userId, validate(findUser(userId).withRoles(roles)).getRoles());
 	}
 
 	@Override
-	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+	public boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword) {
 		return userService.changePassword(userId, currentPassword, newPassword);
 	}
 
 	@Override
-	public String resetPassword(Identifier userId) {
+	public String resetPassword(UserIdentifier userId) {
 		if (!canUpdateUserPassword(userId)) {
 			throw new PermissionDeniedException("resetPassword:" + userId);
 		}
@@ -445,14 +452,14 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public Option createOption(Identifier parentId, String typeCode, Localized name) {
+	public Option createOption(OptionIdentifier parentId, String typeCode, Localized name) {
 		if (!canCreateOption(typeCode))
 			throw new PermissionDeniedException("createOption: " + typeCode + ", " + name);
 		return optionService.createOption(validate(prototypeOption(parentId, typeCode, name)));
 	}
 
 	@Override
-	public Option findOption(Identifier optionId) {
+	public Option findOption(OptionIdentifier optionId) {
 		if (!canViewOption(optionId))
 			throw new PermissionDeniedException("findOption: " + optionId);
 		return optionService.findOption(optionId);
@@ -466,14 +473,14 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public Option updateOptionName(Identifier optionId, Localized name) {
+	public Option updateOptionName(OptionIdentifier optionId, Localized name) {
 		if (!canUpdateOption(optionId))
 			throw new PermissionDeniedException("updateOptionName: " + optionId + ", " + name);
 		return optionService.updateOptionName(optionId, validate(findOption(optionId).withName(name)).getName());
 	}
 
 	@Override
-	public Option enableOption(Identifier optionId) {
+	public Option enableOption(OptionIdentifier optionId) {
 		if (!canEnableOption(optionId))
 			throw new PermissionDeniedException("enableOption: " + optionId);
 		return optionService.enableOption(
@@ -481,7 +488,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public Option disableOption(Identifier optionId) {
+	public Option disableOption(OptionIdentifier optionId) {
 		if (!canDisableOption(optionId))
 			throw new PermissionDeniedException("disableOption: " + optionId);
 		return optionService.disableOption(

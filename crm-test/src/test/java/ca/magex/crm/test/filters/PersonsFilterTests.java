@@ -18,6 +18,8 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class PersonsFilterTests {
 
@@ -52,29 +54,29 @@ public class PersonsFilterTests {
 		assertEquals(new PersonsFilter(null, null, null), filter);
 		assertEquals(new PersonsFilter(null, null, null).hashCode(), filter.hashCode());
 		
-		filter = filter.withOrganizationId(new Identifier("G1"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		filter = filter.withOrganizationId(new OrganizationIdentifier("G1"));
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertNull(filter.getDisplayName());
 		assertNull(filter.getStatus());		
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":null,\"status\":null}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), null, null), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), null, null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":null,\"status\":null}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), null, null), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), null, null).hashCode(), filter.hashCode());
 		
 		filter = filter.withDisplayName("display");
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"status\":null}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", null), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"status\":null}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", null), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", null).hashCode(), filter.hashCode());
 				
 		filter = filter.withStatus(Status.ACTIVE);
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"status\":\"ACTIVE\"}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", Status.ACTIVE), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", Status.ACTIVE).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"status\":\"ACTIVE\"}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", Status.ACTIVE), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", Status.ACTIVE).hashCode(), filter.hashCode());
 	}
 	
 	@Test
@@ -88,36 +90,36 @@ public class PersonsFilterTests {
 		assertEquals(new PersonsFilter(null, null, null).hashCode(), filter.hashCode());
 		
 		filter = new PersonsFilter(Map.of("organizationId", "G1"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertNull(filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":null,\"status\":null}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), null, null), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), null, null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":null,\"status\":null}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), null, null), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), null, null).hashCode(), filter.hashCode());
 				
 		filter = new PersonsFilter(Map.of("organizationId", "G1", "displayName", "display"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"status\":null}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", null), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", null).hashCode(), filter.hashCode());		
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"status\":null}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", null), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", null).hashCode(), filter.hashCode());		
 						
 		filter = new PersonsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref", "status", ""));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"status\":null}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", null), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", null).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"status\":null}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", null), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", null).hashCode(), filter.hashCode());
 		
 		filter = new PersonsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref", "status", "active"));
-		assertEquals(new Identifier("G1"), filter.getOrganizationId());
+		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
 		assertEquals("display", filter.getDisplayName());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"organizationId\":\"G1\",\"displayName\":\"display\",\"status\":\"ACTIVE\"}", filter.toString());
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", Status.ACTIVE), filter);
-		assertEquals(new PersonsFilter(new Identifier("G1"), "display", Status.ACTIVE).hashCode(), filter.hashCode());
+		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"status\":\"ACTIVE\"}", filter.toString());
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", Status.ACTIVE), filter);
+		assertEquals(new PersonsFilter(new OrganizationIdentifier("G1"), "display", Status.ACTIVE).hashCode(), filter.hashCode());
 		
 		try {
 			new PersonsFilter(Map.of("organizationId", 1));
@@ -153,13 +155,13 @@ public class PersonsFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		PersonSummary person = new PersonSummary(new Identifier("ABC"), new Identifier("G1"), Status.ACTIVE, "Bobby Thomson");
+		PersonSummary person = new PersonSummary(new PersonIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "Bobby Thomson");
 		/* default filter should match */
 		assertTrue(new PersonsFilter().apply(person));
 		
 		/* test organization match */
-		assertTrue(new PersonsFilter().withOrganizationId(new Identifier("G1")).apply(person));
-		assertFalse(new PersonsFilter().withOrganizationId(new Identifier("G2")).apply(person));
+		assertTrue(new PersonsFilter().withOrganizationId(new OrganizationIdentifier("G1")).apply(person));
+		assertFalse(new PersonsFilter().withOrganizationId(new OrganizationIdentifier("G2")).apply(person));
 		
 		/* test display name match */
 		assertTrue(new PersonsFilter().withDisplayName("BOBBY").apply(person));

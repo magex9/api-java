@@ -10,17 +10,17 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmOptionService {
 
-	default Option prototypeOption(Identifier parentId, String typeCode, Localized name) {
+	default Option prototypeOption(OptionIdentifier parentId, String typeCode, Localized name) {
 		return new Option(null, parentId, Type.of(typeCode), Status.PENDING, true, name);
 	}
 
@@ -28,9 +28,9 @@ public interface CrmOptionService {
 		return createOption(prototype.getParentId(), prototype.getType().getCode(), prototype.getName());
 	}
 
-	Option createOption(Identifier parentId, String typeCode, Localized name);
+	Option createOption(OptionIdentifier parentId, String typeCode, Localized name);
 
-	Option findOption(Identifier optionId);
+	Option findOption(OptionIdentifier optionId);
 
 	Option findOptionByCode(String typeCode, String optionCode);
 	
@@ -38,11 +38,11 @@ public interface CrmOptionService {
 		return findOptionByCode(type.getCode(), optionCode);
 	}
 	
-	Option updateOptionName(Identifier optionId, Localized name);
+	Option updateOptionName(OptionIdentifier optionId, Localized name);
 
-	Option enableOption(Identifier optionId);
+	Option enableOption(OptionIdentifier optionId);
 
-	Option disableOption(Identifier optionId);
+	Option disableOption(OptionIdentifier optionId);
 
 	FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
 

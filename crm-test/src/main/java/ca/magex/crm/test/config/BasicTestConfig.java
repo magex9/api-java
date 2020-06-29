@@ -61,7 +61,7 @@ public class BasicTestConfig implements CrmConfigurer {
 	
 	@Bean 
 	public BasicAuthenticationService auth() {
-		return new BasicAuthenticationService(services(), services(), passwords());
+		return new BasicAuthenticationService(services(), services(), services(), passwords());
 	}
 	
 	@Bean

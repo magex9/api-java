@@ -6,7 +6,7 @@ import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.basic.BasicOptionPolicy;
 import ca.magex.crm.api.services.CrmOptionService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	
@@ -56,7 +56,7 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canViewOption(Identifier optionId) {
+	public boolean canViewOption(OptionIdentifier optionId) {
 		if (!delegate.canViewOption(optionId)) {
 			return false;
 		}
@@ -65,7 +65,7 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canUpdateOption(Identifier optionId) {
+	public boolean canUpdateOption(OptionIdentifier optionId) {
 		if (!delegate.canUpdateOption(optionId)) {
 			return false;
 		}
@@ -74,7 +74,7 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canEnableOption(Identifier optionId) {
+	public boolean canEnableOption(OptionIdentifier optionId) {
 		if (!delegate.canEnableOption(optionId)) {
 			return false;
 		}
@@ -83,7 +83,7 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canDisableOption(Identifier optionId) {
+	public boolean canDisableOption(OptionIdentifier optionId) {
 		if (!delegate.canDisableOption(optionId)) {
 			return false;
 		}

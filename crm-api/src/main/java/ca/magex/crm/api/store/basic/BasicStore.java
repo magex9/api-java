@@ -10,9 +10,13 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.store.CrmStore;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
-import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.ConfigurationIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 /**
  * Simple In memory implementation of the Datastore using ConcurrentHashMap
@@ -23,31 +27,31 @@ public class BasicStore implements CrmStore {
 	
 	private CrmUpdateNotifier notifier; 
 	
-	private Map<Identifier, Serializable> configurations;
+	private Map<ConfigurationIdentifier, Serializable> configurations;
 	
-	private Map<Identifier, Type> types;
+//	private Map<Identifier, Type> types;
 	
-	private Map<Identifier, Option> options;
+	private Map<OptionIdentifier, Option> options;
 	
-	private Map<Identifier, OrganizationDetails> organizations;
+	private Map<OrganizationIdentifier, OrganizationDetails> organizations;
 	
-	private Map<Identifier, LocationDetails> locations;
+	private Map<LocationIdentifier, LocationDetails> locations;
 	
-	private Map<Identifier, PersonDetails> persons;
+	private Map<PersonIdentifier, PersonDetails> persons;
 	
-	private Map<Identifier, User> users;
+	private Map<UserIdentifier, User> users;
 	
 	/**
 	 * Creates a new Basic Store with no data associated to it
 	 */
 	public BasicStore() {
 		notifier = new CrmUpdateNotifier();
-		configurations = new ConcurrentHashMap<Identifier, Serializable>();
-		options = new ConcurrentHashMap<Identifier, Option>();
-		organizations = new ConcurrentHashMap<Identifier, OrganizationDetails>();
-		locations = new ConcurrentHashMap<Identifier, LocationDetails>();
-		persons = new ConcurrentHashMap<Identifier, PersonDetails>();
-		users = new ConcurrentHashMap<Identifier, User>();
+		configurations = new ConcurrentHashMap<ConfigurationIdentifier, Serializable>();
+		options = new ConcurrentHashMap<OptionIdentifier, Option>();
+		organizations = new ConcurrentHashMap<OrganizationIdentifier, OrganizationDetails>();
+		locations = new ConcurrentHashMap<LocationIdentifier, LocationDetails>();
+		persons = new ConcurrentHashMap<PersonIdentifier, PersonDetails>();
+		users = new ConcurrentHashMap<UserIdentifier, User>();
 	}
 	
 	@Override
@@ -56,37 +60,37 @@ public class BasicStore implements CrmStore {
 	}
 	
 	@Override
-	public Map<Identifier, Serializable> getConfigurations() {
+	public Map<ConfigurationIdentifier, Serializable> getConfigurations() {
 		return configurations;
 	}
 	
-	@Override
-	public Map<Identifier, Type> getTypes() {
-		return types;
-	}
+//	@Override
+//	public Map<Identifier, Type> getTypes() {
+//		return types;
+//	}
 	
 	@Override
-	public Map<Identifier, Option> getOptions() {
+	public Map<OptionIdentifier, Option> getOptions() {
 		return options;
 	}
 
 	@Override
-	public Map<Identifier, OrganizationDetails> getOrganizations() {
+	public Map<OrganizationIdentifier, OrganizationDetails> getOrganizations() {
 		return organizations;
 	}
 
 	@Override
-	public Map<Identifier, LocationDetails> getLocations() {
+	public Map<LocationIdentifier, LocationDetails> getLocations() {
 		return locations;
 	}
 
 	@Override
-	public Map<Identifier, PersonDetails> getPersons() {
+	public Map<PersonIdentifier, PersonDetails> getPersons() {
 		return persons;
 	}
 
 	@Override
-	public Map<Identifier, User> getUsers() {
+	public Map<UserIdentifier, User> getUsers() {
 		return users;
 	}
 }

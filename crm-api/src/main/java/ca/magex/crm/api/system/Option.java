@@ -10,14 +10,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class Option implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
-	private Identifier optionId;
+	private OptionIdentifier optionId;
 	
-	private Identifier parentId;
+	private OptionIdentifier parentId;
 	
 	private Type type;
 	
@@ -27,7 +28,7 @@ public class Option implements Serializable {
 	
 	private Localized name;
 	
-	public Option(Identifier optionId, Identifier parentId, Type type, Status status, Boolean mutable, Localized name) {
+	public Option(OptionIdentifier optionId, OptionIdentifier parentId, Type type, Status status, Boolean mutable, Localized name) {
 		super();
 		this.optionId = optionId;
 		this.parentId = parentId;
@@ -37,11 +38,11 @@ public class Option implements Serializable {
 		this.name = name;
 	}
 	
-	public Identifier getOptionId() {
+	public OptionIdentifier getOptionId() {
 		return optionId;
 	}
 	
-	public Identifier getParentId() {
+	public OptionIdentifier getParentId() {
 		return parentId;
 	}
 	
