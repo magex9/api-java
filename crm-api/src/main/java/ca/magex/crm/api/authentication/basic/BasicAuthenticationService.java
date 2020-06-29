@@ -10,6 +10,7 @@ import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -32,6 +33,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	}
 	
 	public BasicAuthenticationService(CrmOptionService options, CrmUserService users, CrmPersonService persons, CrmPasswordService passwords) {
+		this.options = options;
 		this.users = users;
 		this.persons = persons;
 		this.passwords = passwords;
@@ -70,7 +72,8 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	public boolean isUserInRole(String role) {
 		if (!isAuthenticated())
 			return false;
-		return currentUser.peek().getRoles().contains(options.findOptionByCode(Type.AUTHENTICATION_ROLE, role).getOptionId());
+		Option authenticationOption = options.findOptionByCode(Type.AUTHENTICATION_ROLE, role);
+		return currentUser.peek().getRoles().contains(authenticationOption.getOptionId());
 	}
 
 	@Override

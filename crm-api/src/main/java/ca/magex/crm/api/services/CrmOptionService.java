@@ -90,7 +90,7 @@ public interface CrmOptionService {
 		}
 
 		// Make sure the code is unique
-		FilteredPage<Option> options = crm.findOptions(crm.defaultOptionsFilter().withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems());
+		FilteredPage<Option> options = crm.findOptions(crm.defaultOptionsFilter().withOptionCode(option.getCode()).withParentId(option.getParentId()), OptionsFilter.getDefaultPaging().allItems());
 		for (Option existing : options.getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another option: " + existing.getOptionId())));

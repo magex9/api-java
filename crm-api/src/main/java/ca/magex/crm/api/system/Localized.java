@@ -52,6 +52,10 @@ public class Localized implements Serializable {
 		return text.get(locale);
 	}
 	
+	public Localized withCode(String code) {		
+		return new Localized(code, getEnglishName(), getFrenchName());
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
