@@ -1,6 +1,5 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
@@ -89,7 +88,6 @@ public abstract class AbstractConfigurationServiceTests {
 	public void testDataDumpToInvalidFile() throws Exception {
 		crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
 		auth.login("admin", "admin");
-		crm.createGroup(GROUP);
 		try {
 			crm.dump(null);
 			fail("Exception will be thrown");
