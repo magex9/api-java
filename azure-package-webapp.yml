@@ -33,7 +33,7 @@ steps:
     application_package_build_dir=${PIPELINE_WORKSPACE}/build/${{parameters.application_name}}
     echo "application_package_build_dir=${application_package_build_dir}"
 
-    --------------------------------------#---------------
+    #-----------------------------------------------------
     #Package Directory -> Where we put the final package
     echo "application_package_publish_dir=${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}/"
     echo "##vso[task.setvariable variable=application_package_publish_dir]${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}/"
