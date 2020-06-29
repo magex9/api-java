@@ -16,7 +16,7 @@ public class Identifier implements CharSequence, Serializable {
 	
 	public static final String CONTEXT = "/";
 	
-	public static final String COMPONENT_REGEX = "[A-Za-z0-9]+";
+	public static final String COMPONENT_REGEX = "[A-Za-z0-9/]+";
 		
 	private CharSequence id;
 	
@@ -26,11 +26,11 @@ public class Identifier implements CharSequence, Serializable {
 	 * @param id
 	 */
 	protected Identifier(CharSequence id) {
-		CharSequence fullId = Pattern.matches(COMPONENT_REGEX, id) ? getContext() + id : id;
+		CharSequence fullId = (Pattern.matches(COMPONENT_REGEX, id) && !StringUtils.startsWith(id, "/")) ? getContext() + id : id;
 		if (StringUtils.isBlank(fullId)) {
 			throw new IllegalArgumentException("Id cannot be blank");
 		}
-		String pattern = StringEscapeUtils.escapeRegex(getContext()) + "[A-Za-z0-9]+";
+		String pattern = StringEscapeUtils.escapeRegex(getContext()) + "[A-Za-z0-9/]+";
 		if (!Pattern.matches(pattern, fullId)) {
 			throw new IllegalArgumentException("Id '" + fullId + "' must match the pattern " + pattern);
 		}

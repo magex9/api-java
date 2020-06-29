@@ -16,4 +16,9 @@ public class BasicConfigurationRepository implements CrmConfigurationRepository 
 	public boolean isInitialized() {
 		return store.getConfigurations().containsKey(new ConfigurationIdentifier("initialized"));
 	}
+	
+	@Override
+	public void setInitialized() {
+		store.getConfigurations().put(new ConfigurationIdentifier("initialized"), Boolean.TRUE);
+	}
 }

@@ -12,6 +12,7 @@ import ca.magex.crm.test.config.BasicTestConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { BasicTestConfig.class })
 @ActiveProfiles(CrmProfiles.CRM_DATASTORE_CENTRALIZED)
-public class BasicInitializationServiceTests extends AbstractConfigurationServiceTests {
+public class BasicConfigurationServiceTests extends AbstractConfigurationServiceTests {
+
 	
 }

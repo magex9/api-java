@@ -1,7 +1,9 @@
 package ca.magex.crm.test.config;
 
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
@@ -19,6 +21,11 @@ import ca.magex.crm.api.store.basic.BasicStore;
 @Configuration
 public class BasicTestConfig implements CrmConfigurer {
 
+	@Bean 
+	public PlatformTransactionManager txManager() {
+		return Mockito.mock(PlatformTransactionManager.class);
+	}
+	
 	@Bean 
 	public BasicStore store() {
 		return new BasicStore();

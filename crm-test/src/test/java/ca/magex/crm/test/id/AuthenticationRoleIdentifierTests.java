@@ -14,20 +14,26 @@ public class AuthenticationRoleIdentifierTests {
 	
 	@Test
 	public void testContext() {
-		AuthenticationRoleIdentifier orgId = new AuthenticationRoleIdentifier("A");
-		Assert.assertEquals("/options/authenticationRoles/", orgId.getContext());
+		AuthenticationRoleIdentifier authRoleId = new AuthenticationRoleIdentifier("A");
+		Assert.assertEquals(AuthenticationRoleIdentifier.CONTEXT, authRoleId.getContext());
 	}
 
 	@Test
 	public void testCreateAuthenticationRoleIdentifier() {
-		AuthenticationRoleIdentifier orgId = new AuthenticationRoleIdentifier("ABC");
-		Assert.assertEquals("/options/authenticationRoles/ABC", orgId.toString());
+		AuthenticationRoleIdentifier authRoleId = new AuthenticationRoleIdentifier("ABC");
+		Assert.assertEquals(AuthenticationRoleIdentifier.CONTEXT + "ABC", authRoleId.toString());
+	}
+	
+	@Test
+	public void testCreateNestedAuthenticationRoleIdentifier() {
+		AuthenticationRoleIdentifier authRoleId = new AuthenticationRoleIdentifier("SYS/ABC");
+		Assert.assertEquals(AuthenticationRoleIdentifier.CONTEXT + "SYS/ABC", authRoleId.toString());
 	}
 	
 	@Test
 	public void testLoadAuthenticationRoleIdentifier() {
-		AuthenticationRoleIdentifier orgId = new AuthenticationRoleIdentifier("/options/authenticationRoles/ABC");
-		Assert.assertEquals("/options/authenticationRoles/ABC", orgId.toString());
+		AuthenticationRoleIdentifier authRoleId = new AuthenticationRoleIdentifier("/options/authentication-roles/ABC");
+		Assert.assertEquals(AuthenticationRoleIdentifier.CONTEXT + "ABC", authRoleId.toString());
 	}
 	
 	@Test
@@ -37,7 +43,7 @@ public class AuthenticationRoleIdentifierTests {
 			Assert.fail("should have failed on invalid identifier");
 		}
 		catch(IllegalArgumentException iae) {
-			Assert.assertEquals("Id '/persons/ABC' must match the pattern /options/authenticationRoles/[A-Za-z0-9]+",  iae.getMessage());
+			Assert.assertEquals("Id '/persons/ABC' must match the pattern /options/authentication-roles/[A-Za-z0-9/]+",  iae.getMessage());
 		}
 	}
 }

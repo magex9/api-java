@@ -14,12 +14,10 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.dictionary.CrmDictionary;
-import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -43,8 +41,10 @@ public class BasicConfigurationService implements CrmConfigurationService {
 
 	@Override
 	public boolean isInitialized() {
-		return repos.countUsers(new UsersFilter().withRoleId(roles("ADMIN").get(0)).withStatus(Status.ACTIVE)) > 0;
+		return repos.isInitialized();
 	}
+	
+	
 
 	@Override
 	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
@@ -60,28 +60,23 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, groups("SYS", "CRM")));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
-			repos.saveUser(new User(systemId, mainContactId, username, Status.ACTIVE, roles("SYS_ADMIN", "SYS_ACTUATOR", "SYS_ACCESS", "CRM_ADMIN")));
+			repos.saveUser(new User(systemId, mainContactId, username, Status.ACTIVE, roles("SYS/ADMIN", "SYS/ACTUATOR", "SYS/ACCESS", "CRM/ADMIN")));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
+			repos.setInitialized();
 		}
-		return repos.findUsers(new UsersFilter().withRoleId(roles("SYS_ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+		return repos.findUsers(new UsersFilter().withRoleId(roles("SYS/ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
 	}
 	
 	private List<AuthenticationGroupIdentifier> groups(String... codes) {
 		return Arrays.asList(codes).stream()
-				.map(c -> (AuthenticationGroupIdentifier) repos.findOptions(new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_GROUP),
-						OptionsFilter.getDefaultPaging()).getSingleItem().getOptionId())
+				.map(c -> new AuthenticationGroupIdentifier(c))
 				.collect(Collectors.toList());
 	}
 
-	private List<AuthenticationRoleIdentifier> roles(String... codes) {
-		return Arrays.asList(codes).stream()
-				.map(c -> (AuthenticationRoleIdentifier) repos
-						.findOptions(
-								new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_ROLE),
-								OptionsFilter.getDefaultPaging())
-						.getSingleItem()
-						.getOptionId())
+	private List<AuthenticationRoleIdentifier> roles(String... roleCodes) {
+		return Arrays.asList(roleCodes).stream()
+				.map(c -> new AuthenticationRoleIdentifier(c))
 				.collect(Collectors.toList());
 	}
 	
