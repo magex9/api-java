@@ -13,9 +13,10 @@ import org.junit.Test;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationSummary;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
@@ -34,7 +35,7 @@ public class LocationSummaryJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new LocationSummaryJsonTransformer(crm);
-		location = new LocationSummary(new Identifier("loc"), new Identifier("org"), Status.ACTIVE, "REF", "Location Name");
+		location = new LocationSummary(new LocationIdentifier("loc"), new OrganizationIdentifier("org"), Status.ACTIVE, "REF", "Location Name");
 	}
 	
 	@Test

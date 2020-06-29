@@ -33,7 +33,7 @@ public class TestCrm {
 		CrmPasswordService passwords = new BasicPasswordService(passwordRepo);
 		CrmDictionary dictionary = new BasicDictionary().initialize();
 		CrmServices services = new BasicServices(repos, passwords, dictionary);
-		CrmAuthenticationService auth = new BasicAuthenticationService(services, passwords);
+		CrmAuthenticationService auth = new BasicAuthenticationService(services, passwordRepo);
 		CrmPolicies policies = new AuthenticatedPolicies(auth, services);
 		return new Crm(services, policies);
 	}

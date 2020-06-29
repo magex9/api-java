@@ -23,11 +23,12 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
 public class OrganizationsController extends AbstractCrmController {
-
+		
 	@GetMapping("/rest/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
@@ -58,7 +59,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}")
+	@GetMapping("/rest/" + OrganizationIdentifier.CONTEXT + "/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") Identifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {

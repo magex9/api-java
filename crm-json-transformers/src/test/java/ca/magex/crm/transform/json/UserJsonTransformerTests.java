@@ -14,9 +14,12 @@ import org.junit.Test;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
 import ca.magex.json.model.JsonElement;
@@ -37,8 +40,11 @@ public class UserJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new UserJsonTransformer(crm);
-		person = new PersonSummary(new Identifier("prsn"), new Identifier("org"), Status.ACTIVE, "ADMIN");
-		user = new User(new Identifier("usr"), "admin", person, Status.ACTIVE, List.of("SYS_ADMIN", "ORG_USER"));
+		person = new PersonSummary(new PersonIdentifier("prsn"), new OrganizationIdentifier("org"), Status.ACTIVE, "ADMIN");
+		user = new User(new UserIdentifier("usr"), new PersonIdentifier("prsn"), "admin", Status.ACTIVE, List.of(
+			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "CRM/ADMIN").getOptionId(),
+			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "ORG/ADMIN").getOptionId()
+		));
 	}
 	
 	@Test
