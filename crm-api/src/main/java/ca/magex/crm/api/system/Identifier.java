@@ -14,7 +14,9 @@ public class Identifier implements CharSequence, Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	public static String COMPONENT_REGEX = "[A-Za-z0-9]+";
+	public static final String CONTEXT = "/";
+	
+	public static final String COMPONENT_REGEX = "[A-Za-z0-9]+";
 		
 	private CharSequence id;
 	
@@ -41,7 +43,7 @@ public class Identifier implements CharSequence, Serializable {
 	 * @return
 	 */
 	public String getContext() {
-		return "/";
+		return CONTEXT;
 	}
 
 	@Override

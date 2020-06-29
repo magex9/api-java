@@ -12,12 +12,14 @@ public class PersonIdentifier extends Identifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	public static final String CONTEXT = Identifier.CONTEXT + "persons/";	
+	
 	public PersonIdentifier(CharSequence id) {
 		super(id);
 	}
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "persons/";
+		return PersonIdentifier.CONTEXT;
 	}
 }

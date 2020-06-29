@@ -10,6 +10,8 @@ import ca.magex.crm.api.Crm;
 public class AuthenticationGroupIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "authentication-groups/";
 
 	public AuthenticationGroupIdentifier(CharSequence id) {
 		super(id);
@@ -17,6 +19,6 @@ public class AuthenticationGroupIdentifier extends OptionIdentifier {
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "authenticationGroups/";
+		return AuthenticationGroupIdentifier.CONTEXT;
 	}
 }

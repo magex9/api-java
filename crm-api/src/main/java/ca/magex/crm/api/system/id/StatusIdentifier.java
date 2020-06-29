@@ -11,12 +11,14 @@ public class StatusIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "statuses/";
+
 	public StatusIdentifier(CharSequence id) {
 		super(id);
 	}
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "statuses/";
+		return StatusIdentifier.CONTEXT;
 	}
 }

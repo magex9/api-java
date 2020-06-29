@@ -10,6 +10,8 @@ import ca.magex.crm.api.Crm;
 public class CountryIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "countries/";
 
 	public CountryIdentifier(CharSequence id) {
 		super(id);
@@ -17,6 +19,6 @@ public class CountryIdentifier extends OptionIdentifier {
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "countries/";
+		return CountryIdentifier.CONTEXT;
 	}
 }

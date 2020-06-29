@@ -12,12 +12,15 @@ public class OrganizationIdentifier extends Identifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	public static final String CONTEXT = Identifier.CONTEXT + "organizations/";	
+	
 	public OrganizationIdentifier(CharSequence id) {		
 		super(id);
 	}
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "organizations/";
+		return OrganizationIdentifier.CONTEXT;
 	}
+	
 }

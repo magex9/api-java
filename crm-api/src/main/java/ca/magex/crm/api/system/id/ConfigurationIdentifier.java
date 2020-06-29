@@ -11,13 +11,15 @@ import ca.magex.crm.api.system.Identifier;
 public class ConfigurationIdentifier extends Identifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final String CONTEXT = Identifier.CONTEXT + "configurations/";
 
 	public ConfigurationIdentifier(CharSequence id) {
 		super(id);
 	}
-
+	
 	@Override
 	public String getContext() {
-		return super.getContext() + "configurations/";
+		return ConfigurationIdentifier.CONTEXT;
 	}
 }

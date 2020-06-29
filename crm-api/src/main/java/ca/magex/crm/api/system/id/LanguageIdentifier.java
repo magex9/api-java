@@ -10,6 +10,8 @@ import ca.magex.crm.api.Crm;
 public class LanguageIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "languages/";
 
 	public LanguageIdentifier(CharSequence id) {
 		super(id);
@@ -17,6 +19,6 @@ public class LanguageIdentifier extends OptionIdentifier {
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "languages/";
+		return LanguageIdentifier.CONTEXT;
 	}
 }

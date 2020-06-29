@@ -10,6 +10,8 @@ import ca.magex.crm.api.Crm;
 public class AuthenticationRoleIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "authentication-roles/";
 
 	public AuthenticationRoleIdentifier(CharSequence id) {
 		super(id);
@@ -17,6 +19,6 @@ public class AuthenticationRoleIdentifier extends OptionIdentifier {
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "authenticationRoles/";
+		return AuthenticationRoleIdentifier.CONTEXT;
 	}
 }

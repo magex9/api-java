@@ -11,12 +11,14 @@ public class ProvinceIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "provinces/";
+
 	public ProvinceIdentifier(CharSequence id) {
 		super(id);
 	}
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "provinces/";
+		return ProvinceIdentifier.CONTEXT;
 	}
 }

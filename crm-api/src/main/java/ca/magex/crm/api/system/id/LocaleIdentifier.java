@@ -10,6 +10,8 @@ import ca.magex.crm.api.Crm;
 public class LocaleIdentifier extends OptionIdentifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	public static final String CONTEXT = OptionIdentifier.CONTEXT + "locales/";
 
 	public LocaleIdentifier(CharSequence id) {
 		super(id);
@@ -17,6 +19,6 @@ public class LocaleIdentifier extends OptionIdentifier {
 	
 	@Override
 	public String getContext() {
-		return super.getContext() + "locales/";
+		return LocaleIdentifier.CONTEXT;
 	}
 }
