@@ -6,6 +6,7 @@ import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.basic.BasicOptionPolicy;
 import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
@@ -29,8 +30,8 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canCreateOption(String typeCode) {
-		if (!delegate.canCreateOption(typeCode)) {
+	public boolean canCreateOption(Type type) {
+		if (!delegate.canCreateOption(type)) {
 			return false;
 		}
 		/* only a CRM Admin can create a Option */
@@ -38,8 +39,8 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canViewOptions(String typeCode) {
-		if (!delegate.canViewOptions(typeCode)) {
+	public boolean canViewOptions(Type type) {
+		if (!delegate.canViewOptions(type)) {
 			return false;
 		}
 		/* anybody can view options */
@@ -47,8 +48,8 @@ public class AuthenticatedOptionPolicy implements CrmOptionPolicy {
 	}
 	
 	@Override
-	public boolean canViewOption(String typeCode, String optionCode) {
-		if (!delegate.canViewOption(typeCode, optionCode)) {
+	public boolean canViewOption(Type type, String optionCode) {
+		if (!delegate.canViewOption(type, optionCode)) {
 			return false;
 		}
 		/* anybody can view options */

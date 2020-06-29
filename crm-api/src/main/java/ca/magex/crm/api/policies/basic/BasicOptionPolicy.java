@@ -22,25 +22,21 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	}
 
 	@Override
-	public boolean canCreateOption(String typeCode) {
-		return Type.of(typeCode).isExtendable();
+	public boolean canCreateOption(Type type) {
+		return type != null && type.isExtendable();
 	}
 
 	@Override
-	public boolean canViewOptions(String typeCode) {
+	public boolean canViewOptions(Type type) {
 		/* can always view options */
-		try {
-			return Type.of(typeCode) != null;
-		} catch (ItemNotFoundException e) {
-			return false;
-		}
+		return type != null;
 	}
 	
 	@Override
-	public boolean canViewOption(String typeCode, String optionCode) {
+	public boolean canViewOption(Type type, String optionCode) {
 		/* can view a specific option if it exists */
 		try {
-			return options.findOptionByCode(typeCode, optionCode) != null;
+			return options.findOptionByCode(type, optionCode) != null;
 		} catch (ItemNotFoundException e) {
 			throw new ItemNotFoundException("Option Code '" + optionCode + "'");
 		}

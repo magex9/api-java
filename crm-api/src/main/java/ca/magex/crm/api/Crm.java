@@ -49,6 +49,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
@@ -452,10 +453,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public Option createOption(OptionIdentifier parentId, String typeCode, Localized name) {
-		if (!canCreateOption(typeCode))
-			throw new PermissionDeniedException("createOption: " + typeCode + ", " + name);
-		return optionService.createOption(validate(prototypeOption(parentId, typeCode, name)));
+	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
+		if (!canCreateOption(type))
+			throw new PermissionDeniedException("createOption: " + type.getCode() + ", " + name);
+		return optionService.createOption(validate(prototypeOption(parentId, type, name)));
 	}
 
 	@Override
@@ -466,10 +467,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public Option findOptionByCode(String typeCode, String optionCode) {
-		if (!canViewOption(typeCode, optionCode))
-			throw new PermissionDeniedException("findOptionByCode: " + typeCode + ", " + optionCode);
-		return optionService.findOptionByCode(typeCode, optionCode);
+	public Option findOptionByCode(Type type, String optionCode) {
+		if (!canViewOption(type, optionCode))
+			throw new PermissionDeniedException("findOptionByCode: " + type + ", " + optionCode);
+		return optionService.findOptionByCode(type, optionCode);
 	}
 
 	@Override

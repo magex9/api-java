@@ -38,8 +38,9 @@ public class Option implements Serializable {
 		this.name = name;
 	}
 	
-	public OptionIdentifier getOptionId() {
-		return optionId;
+	@SuppressWarnings("unchecked")
+	public <T extends OptionIdentifier> T getOptionId() {
+		return (T) optionId;
 	}
 	
 	public OptionIdentifier getParentId() {

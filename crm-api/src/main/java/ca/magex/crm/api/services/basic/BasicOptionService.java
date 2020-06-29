@@ -20,8 +20,7 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option createOption(OptionIdentifier parentId, String typeCode, Localized name) {
-		Type type = Type.of(typeCode);
+	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
 		return repos.saveOption(new Option(repos.generateForType(type), parentId, type, Status.ACTIVE, true, name));
 	}
 
@@ -31,8 +30,8 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option findOptionByCode(String typeCode, String optionCode) {
-		return repos.findOptions(new OptionsFilter().withType(Type.of(typeCode)).withOptionCode(optionCode), OptionsFilter.getDefaultPaging()).getSingleItem();
+	public Option findOptionByCode(Type type, String optionCode) {
+		return repos.findOptions(new OptionsFilter().withType(type).withOptionCode(optionCode), OptionsFilter.getDefaultPaging()).getSingleItem();
 	}
 
 	@Override

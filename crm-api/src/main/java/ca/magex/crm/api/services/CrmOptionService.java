@@ -20,23 +20,19 @@ import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmOptionService {
 
-	default Option prototypeOption(OptionIdentifier parentId, String typeCode, Localized name) {
-		return new Option(null, parentId, Type.of(typeCode), Status.PENDING, true, name);
+	default Option prototypeOption(OptionIdentifier parentId, Type type, Localized name) {
+		return new Option(null, parentId, type, Status.PENDING, true, name);
 	}
 
 	default Option createOption(Option prototype) {
-		return createOption(prototype.getParentId(), prototype.getType().getCode(), prototype.getName());
+		return createOption(prototype.getParentId(), prototype.getType(), prototype.getName());
 	}
 
-	Option createOption(OptionIdentifier parentId, String typeCode, Localized name);
+	Option createOption(OptionIdentifier parentId, Type type, Localized name);
 
 	Option findOption(OptionIdentifier optionId);
 
-	Option findOptionByCode(String typeCode, String optionCode);
-	
-	default Option findOptionByCode(Type type, String optionCode) {
-		return findOptionByCode(type.getCode(), optionCode);
-	}
+	Option findOptionByCode(Type type, String optionCode);
 	
 	Option updateOptionName(OptionIdentifier optionId, Localized name);
 
