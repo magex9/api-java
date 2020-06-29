@@ -84,6 +84,18 @@
 			<name>Spring Milestones</name>
 			<url>https://repo.spring.io/milestone</url>
 		</repository>
+	
+
+		<repository>
+			<id>finapplicationdevelopment-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 </project>
