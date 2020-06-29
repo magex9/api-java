@@ -381,18 +381,18 @@ public class CrmAsserts {
 		System.out.println("====================================================");
 	}
 	
-	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
-			String reason) {
-		assertEquals(1, json.size());
-		if (identifier == null) {
-			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
-		} else {
-			assertEquals(List.of("identifier", "type", "path", "reason"), json.getObject(0).keys());
-			assertEquals(identifier, new Identifier(json.getObject(0).getString("identifier")));
-		}
-		assertEquals(type, json.getObject(0).getString("type"));
-		assertEquals(path, json.getObject(0).getString("path"));
-		assertEquals(reason, json.getObject(0).getString("reason"));
-	}
+//	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
+//			String reason) {
+//		assertEquals(1, json.size());
+//		if (identifier == null) {
+//			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
+//		} else {
+//			assertEquals(List.of("identifier", "type", "path", "reason"), json.getObject(0).keys());
+//			assertEquals(identifier, new Identifier(json.getObject(0).getString("identifier")));
+//		}
+//		assertEquals(type, json.getObject(0).getString("type"));
+//		assertEquals(path, json.getObject(0).getString("path"));
+//		assertEquals(reason, json.getObject(0).getString("reason"));
+//	}
 
 }

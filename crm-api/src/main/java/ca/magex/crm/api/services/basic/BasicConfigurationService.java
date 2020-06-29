@@ -43,7 +43,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 
 	@Override
 	public boolean isInitialized() {
-		return repos.countUsers(new UsersFilter().withRoleId(roles("SYS_ADMIN").get(0)).withStatus(Status.ACTIVE)) > 0;
+		return repos.countUsers(new UsersFilter().withRoleId(roles("ADMIN").get(0)).withStatus(Status.ACTIVE)) > 0;
 	}
 
 	@Override
@@ -69,15 +69,19 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	
 	private List<AuthenticationGroupIdentifier> groups(String... codes) {
 		return Arrays.asList(codes).stream()
-				.map(c -> (AuthenticationGroupIdentifier) repos.findOptions(new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_ROLE),
+				.map(c -> (AuthenticationGroupIdentifier) repos.findOptions(new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_GROUP),
 						OptionsFilter.getDefaultPaging()).getSingleItem().getOptionId())
 				.collect(Collectors.toList());
 	}
 
 	private List<AuthenticationRoleIdentifier> roles(String... codes) {
 		return Arrays.asList(codes).stream()
-				.map(c -> (AuthenticationRoleIdentifier) repos.findOptions(new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_ROLE),
-						OptionsFilter.getDefaultPaging()).getSingleItem().getOptionId())
+				.map(c -> (AuthenticationRoleIdentifier) repos
+						.findOptions(
+								new OptionsFilter().withOptionCode(c).withType(Type.AUTHENTICATION_ROLE),
+								OptionsFilter.getDefaultPaging())
+						.getSingleItem()
+						.getOptionId())
 				.collect(Collectors.toList());
 	}
 	
