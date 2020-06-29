@@ -159,7 +159,7 @@ public interface CrmConfigurationService {
 		repos.saveOption(new Option(repos.generateOptionId(), infraId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe")));
 		repos.saveOption(new Option(repos.generateOptionId(), infraId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("ADMIN", "System Administrator", "Administrateur du système")));
 		
-		Identifier devId = repos.saveOption(new Option(repos.generateOptionId(), imitId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("DEV", "Application Development", "Directeur général"))).getOptionId();
+		Identifier devId = repos.saveOption(new Option(repos.generateOptionId(), imitId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("APPDEV", "Application Development", "Directeur général"))).getOptionId();
 		repos.saveOption(new Option(repos.generateOptionId(), devId, Type.BUSINESS_ROLE, Status.ACTIVE, true, new Localized("MANAGER", "Manager", "Gestionnaire")));
 
 		Identifier dmId = repos.saveOption(new Option(repos.generateOptionId(), devId, Type.BUSINESS_GROUP, Status.ACTIVE, true, new Localized("DM", "Data Management", "Gestion de données"))).getOptionId();
