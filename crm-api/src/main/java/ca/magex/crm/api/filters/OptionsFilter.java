@@ -28,16 +28,15 @@ public class OptionsFilter implements CrmFilter<Option> {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public static final List<Sort> SORT_OPTIONS = List.of(
-		Sort.by(Order.asc("code")),
-		Sort.by(Order.desc("code")),
-		Sort.by(Order.asc("englishName")),
-		Sort.by(Order.desc("englishName")),
-		Sort.by(Order.asc("frenchName")),
-		Sort.by(Order.desc("frenchName")),
-		Sort.by(Order.asc("status")),
-		Sort.by(Order.desc("status"))
-	);
-	
+			Sort.by(Order.asc("code")),
+			Sort.by(Order.desc("code")),
+			Sort.by(Order.asc("englishName")),
+			Sort.by(Order.desc("englishName")),
+			Sort.by(Order.asc("frenchName")),
+			Sort.by(Order.desc("frenchName")),
+			Sort.by(Order.asc("status")),
+			Sort.by(Order.desc("status")));
+
 	private ImmutablePair<Locale, String> name;
 
 	private OptionIdentifier parentId;
@@ -59,8 +58,16 @@ public class OptionsFilter implements CrmFilter<Option> {
 
 	public OptionsFilter(Map<String, Object> filterCriteria) {
 		try {
-			this.name = filterCriteria.containsKey("name") ? new ImmutablePair<Locale, String>(Lang.ROOT, (String) filterCriteria.get("name")) : null;
-			this.parentId = filterCriteria.containsKey("parentId") ? OptionIdentifier.forId((CharSequence)filterCriteria.get("parentId")) : null;
+			if (filterCriteria.containsKey("name")) {
+				this.name = new ImmutablePair<Locale, String>(Lang.ROOT, (String) filterCriteria.get("name"));
+			} else if (filterCriteria.containsKey("englishName")) {
+				this.name = new ImmutablePair<Locale, String>(Lang.ENGLISH, (String) filterCriteria.get("englishName"));
+			} else if (filterCriteria.containsKey("frenchName")) {
+				this.name = new ImmutablePair<Locale, String>(Lang.FRENCH, (String) filterCriteria.get("frenchName"));
+			} else {
+				this.name = null;
+			}
+			this.parentId = filterCriteria.containsKey("parentId") ? OptionIdentifier.forId((CharSequence) filterCriteria.get("parentId")) : null;
 			this.type = null;
 			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
 				try {
@@ -77,20 +84,19 @@ public class OptionsFilter implements CrmFilter<Option> {
 					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 				}
 			}
-		}
-		catch(ClassCastException cce) {
+		} catch (ClassCastException cce) {
 			throw new ApiException("Unable to instantiate roles filter", cce);
 		}
 	}
-	
+
 	public Pair<Locale, String> getName() {
 		return name;
 	}
-	
+
 	public Identifier getParentId() {
 		return parentId;
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
@@ -98,11 +104,11 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public Status getStatus() {
 		return status;
 	}
-	
+
 	public OptionsFilter withName(Locale locale, String name) {
 		return new OptionsFilter(new ImmutablePair<Locale, String>(locale, name), parentId, type, status);
 	}
-	
+
 	public OptionsFilter withOptionCode(String optionCode) {
 		return withName(Lang.ROOT, optionCode);
 	}
@@ -134,15 +140,15 @@ public class OptionsFilter implements CrmFilter<Option> {
 	@Override
 	public boolean apply(Option instance) {
 		return List.of(instance)
-			.stream()
-			.filter(o -> this.getName() == null || 
-				(this.getName().getLeft() == Lang.ROOT && StringUtils.endsWith(o.getCode(), "/" + this.getName().getRight()))  || 
-				(this.getName().getLeft() != Lang.ROOT && StringUtils.equalsIgnoreCase(o.getName(this.getName().getLeft()), this.getName().getRight())))
-			.filter(o -> this.getParentId() == null || this.getParentId().equals(o.getParentId()))
-			.filter(o -> this.getType() == null || this.getType().equals(o.getType()))
-			.filter(o -> this.getStatus() == null || this.getStatus().equals(o.getStatus()))
-			.findAny()
-			.isPresent();
+				.stream()
+				.filter(o -> this.getName() == null ||
+						(this.getName().getLeft() == Lang.ROOT && StringUtils.endsWith(o.getCode(), "/" + this.getName().getRight())) ||
+						(this.getName().getLeft() != Lang.ROOT && StringUtils.equalsIgnoreCase(o.getName(this.getName().getLeft()), this.getName().getRight())))
+				.filter(o -> this.getParentId() == null || this.getParentId().equals(o.getParentId()))
+				.filter(o -> this.getType() == null || this.getType().equals(o.getType()))
+				.filter(o -> this.getStatus() == null || this.getStatus().equals(o.getStatus()))
+				.findAny()
+				.isPresent();
 	}
 
 	@Override
@@ -157,7 +163,12 @@ public class OptionsFilter implements CrmFilter<Option> {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+		return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+				.append("name", name == null ? (Object) null : ToStringBuilder.reflectionToString(getName(), ToStringStyle.JSON_STYLE))
+				.append("parentId", parentId == null ? (Object) null : parentId)
+				.append("type", type == null ? (Object) null : type.name())
+				.append("status", status == null ? (Object) null : status)
+				.build();
 	}
-	
+
 }
