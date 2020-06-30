@@ -135,7 +135,9 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public boolean apply(Option instance) {
 		return List.of(instance)
 			.stream()
-			.filter(g -> this.getName() == null || StringUtils.equalsIgnoreCase(g.getName(this.getName().getLeft()), this.getName().getRight()))
+			.filter(o -> this.getName() == null || 
+				(this.getName().getLeft() == Lang.ROOT && StringUtils.endsWith(o.getCode(), "/" + this.getName().getRight()))  || 
+				(this.getName().getLeft() != Lang.ROOT && StringUtils.equalsIgnoreCase(o.getName(this.getName().getLeft()), this.getName().getRight())))
 			.filter(o -> this.getParentId() == null || this.getParentId().equals(o.getParentId()))
 			.filter(o -> this.getType() == null || this.getType().equals(o.getType()))
 			.filter(o -> this.getStatus() == null || this.getStatus().equals(o.getStatus()))

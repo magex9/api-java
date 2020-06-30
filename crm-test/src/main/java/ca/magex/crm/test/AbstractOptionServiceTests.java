@@ -184,13 +184,13 @@ public abstract class AbstractOptionServiceTests {
 		Assert.assertEquals(Status.ACTIVE, iUser.getStatus());
 		
 		/* find our options */
-		OptionsFilter filter = new OptionsFilter().withType(Type.AUTHENTICATION_GROUP);
-		Paging paging = new Paging(1, 25, Sort.by("englishName"));
+		OptionsFilter filter = new OptionsFilter().withType(Type.AUTHENTICATION_GROUP).withParentId(external.getOptionId());
+		Paging paging = new Paging(1, 10, Sort.by("englishName"));
 		
-//		FilteredPage<Option> optionsPage = crm.findOptions(filter, paging);
-//		Assert.assertEquals(1, optionsPage.getNumber());
-//		Assert.assertEquals(25, optionsPage.getSize());
-//		Assert.assertEquals(5, optionsPage.getNumberOfElements());
+		FilteredPage<Option> optionsPage = crm.findOptions(filter, paging);
+		Assert.assertEquals(1, optionsPage.getNumber());
+		Assert.assertEquals(10, optionsPage.getSize());
+		Assert.assertEquals(2, optionsPage.getNumberOfElements());
 		
 	}		
 }
