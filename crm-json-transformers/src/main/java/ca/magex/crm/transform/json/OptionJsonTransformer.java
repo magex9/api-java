@@ -17,6 +17,7 @@ import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
+import ca.magex.json.util.StringConverter;
 
 @Component
 public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
@@ -33,27 +34,48 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	@Override
 	public JsonElement formatRoot(Option option) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@context", buildContext(option)));
+		pairs.add(new JsonPair("@context", buildContext(option, false)));
+		pairs.add(new JsonPair("@id", buildContext(option, true) + "/" + StringConverter.upperToLowerCase(option.getCode())));
 		pairs.add(new JsonPair("@value", option.getCode()));
 		pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
 		pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
 		return new JsonObject(pairs);
 	}
 	
-	public String buildContext(Option option) {
+	public String buildContext(Option option, boolean identifier) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("http://magex.ca/crm/lookups/");
-		sb.append(option.getCode());
-		if (option.getParentId() != null) {
+		if (option.getParentId() != null && identifier) {
+			Option parent = crm.findOption(option.getParentId());
+			sb.append(buildContext(parent, identifier));
 			sb.append("/");
-			sb.append(crm.findOption(option.getParentId()).getCode());
+			sb.append(StringConverter.upperToLowerCase(parent.getCode()));
+			sb.append("/");
+		} else {
+			if (identifier) {
+				sb.append("http://api.magex.ca/crm/rest/lookups/");
+			} else {
+				sb.append("http://api.magex.ca/crm/schema/lookup/");
+			}
 		}
+		sb.append(formatType(option.getType(), identifier));
 		return sb.toString();
+	}
+	
+	public String formatType(Type type, boolean identifier) {
+		if (identifier) {
+			return StringConverter.upperToLowerCase(type.getCode());
+		} else {
+			return StringConverter.upperToTitleCase(type.getCode());
+		}
 	}
 	
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
-		return new JsonText(option.getName(locale));
+		if (Lang.ROOT.equals(locale)) {
+			return new JsonText(buildContext(option, true) + "/" + StringConverter.upperToLowerCase(option.getCode()));
+		} else {
+			return new JsonText(option.getName(locale));
+		}
 	}
 
 	@Override

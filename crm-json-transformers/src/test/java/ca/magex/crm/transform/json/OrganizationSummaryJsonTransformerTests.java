@@ -81,6 +81,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(organization, Lang.ENGLISH);
+		System.out.println(english);
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), english.keys());
 		assertEquals("OrganizationSummary", english.getString("@type"));
 		assertEquals("org", english.getString("organizationId"));

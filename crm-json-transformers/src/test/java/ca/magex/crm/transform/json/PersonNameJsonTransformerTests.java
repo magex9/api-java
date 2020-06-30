@@ -60,6 +60,7 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(personName, null);
+		System.out.println(linked);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), linked.keys());
 		assertEquals("PersonName", linked.getString("@type"));
 		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
@@ -77,6 +78,7 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(personName, Lang.ROOT);
+		System.out.println(root);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), root.keys());
 		assertEquals("PersonName", root.getString("@type"));
 		assertEquals("MR", root.getString("salutation"));
@@ -89,6 +91,7 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(personName, Lang.ENGLISH);
+		System.out.println(english);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), english.keys());
 		assertEquals("PersonName", english.getString("@type"));
 		assertEquals("Mr.", english.getString("salutation"));
@@ -101,6 +104,7 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(personName, Lang.FRENCH);
+		System.out.println(french);
 		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), french.keys());
 		assertEquals("PersonName", french.getString("@type"));
 		assertEquals("M.", french.getString("salutation"));

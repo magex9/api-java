@@ -34,7 +34,7 @@ public class MessageJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new MessageJsonTransformer(crm);
-		message = new Message(new OrganizationIdentifier("abc"), "error", "prop", 
+		message = new Message(new OrganizationIdentifier("abc"), "ERROR", "prop", 
 			new Localized("message.reason", "English reason", "Raison française"));
 	}
 	
@@ -54,6 +54,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(message, null);
+		System.out.println(linked);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), linked.keys());
 		assertEquals("Message", linked.getString("@type"));
@@ -73,6 +74,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(message, Lang.ROOT);
+		System.out.println(root);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), root.keys());
 		assertEquals("Message", root.getString("@type"));
@@ -85,6 +87,7 @@ public class MessageJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(message, Lang.ENGLISH);
+		System.out.println(english);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), english.keys());
 		assertEquals("Message", english.getString("@type"));

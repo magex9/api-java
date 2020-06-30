@@ -61,6 +61,7 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(MAILING_ADDRESS, null);
+		System.out.println(linked);
 		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), linked.keys());
 		assertEquals("MailingAddress", linked.getString("@type"));
 		assertEquals("123 Main St", linked.getString("street"));

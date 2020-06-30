@@ -12,6 +12,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonBoolean;
@@ -40,7 +41,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	}
 	
 	public void formatType(List<JsonPair> parent) {
-		parent.add(new JsonPair("@context", "http://magex.ca/crm/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/")));
+		parent.add(new JsonPair("@context", "http://api.magex.ca/crm/rest/schema/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/").replaceAll("^crm", "organization")));
 	}
 	
 	public final JsonElement format(T obj, Locale locale) {
@@ -125,11 +126,10 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <O> void formatTransformer(List<JsonPair> parent, String key, Object obj, Transformer<O, JsonElement> transformer, Locale locale) {
 		if (obj == null)
 			return;
-		O property = (O)getProperty(obj, key, Object.class);
+		O property = (O)getProperty(obj, key, transformer.getSourceType());
 		if (property != null) {
 			parent.add(new JsonPair(key, transformer.format(property, locale)));
 		}
@@ -145,12 +145,12 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		}
 	}
 	
-	public void formatIdentifier(List<JsonPair> parent, String key, Object obj, Locale locale) {
+	public <O extends Identifier> void formatIdentifier(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
 		if (obj == null)
 			return;
-		Identifier code = getProperty(obj, key, Identifier.class);
+		O code = getProperty(obj, key, cls);
 		StringBuilder sb = new StringBuilder();
-		sb.append("http://magex.ca/crm");
+		sb.append("http://api.magex.ca/crm/rest");
 		sb.append(code.toString());
 		parent.add(new JsonPair(key, sb.toString()));
 	}
@@ -159,10 +159,10 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		if (obj == null)
 			return;
 		Status status = getProperty(obj, key, Status.class);
-		StringBuilder sb = new StringBuilder();
-		sb.append("http://magex.ca/crm/statuses/");
-		sb.append(status.toString().toLowerCase());
-		parent.add(new JsonPair(key, sb.toString()));
+		if (status != null) {
+			Option option = crm.findOptionByCode(Type.STATUS, status.toString());
+			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+		}
 	}
 	
 	public void formatLocalized(List<JsonPair> parent, String key, Object obj, Locale locale) {
@@ -184,6 +184,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	
 	@SuppressWarnings("unchecked")
 	public <O> void formatObjects(List<JsonPair> parent, String key, Object obj, Class<O> type) {
+		boolean option = OptionIdentifier.class.isAssignableFrom(type);
 		if (obj != null) {
 			try {
 				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
@@ -193,7 +194,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 				List<JsonElement> elements = new ArrayList<JsonElement>();
 				if (list != null) {
 					for (O item : list) {
-						elements.add(new JsonText(item.toString()));
+						elements.add(new JsonText("http://api.magex.ca/crm/rest" + (option ? item.toString().toLowerCase() : item.toString())));
 					}
 				}
 				parent.add(new JsonPair(key, new JsonArray(elements)));
