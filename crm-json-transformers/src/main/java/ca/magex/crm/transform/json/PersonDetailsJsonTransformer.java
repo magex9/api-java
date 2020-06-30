@@ -42,8 +42,8 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 	public JsonObject formatLocalized(PersonDetails person, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		formatIdentifier(pairs, "personId", person, locale);
-		formatIdentifier(pairs, "organizationId", person, locale);
+		formatIdentifier(pairs, "personId", person, PersonIdentifier.class, locale);
+		formatIdentifier(pairs, "organizationId", person, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", person, locale);
 		formatText(pairs, "displayName", person);
 		formatTransformer(pairs, "legalName", person, new PersonNameJsonTransformer(crm), locale);

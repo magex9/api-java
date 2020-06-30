@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
 import ca.magex.json.model.JsonObject;
@@ -59,17 +58,9 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 					.withOptionCode(address.getProvince())
 					.withParentId(country.getOptionId())
 				).getSingleItem();
-				if (locale == null) {
-					List<JsonPair> pairs = new ArrayList<JsonPair>();
-					pairs.add(new JsonPair("@type", Type.PROVINCE.getCode()));
-					pairs.add(new JsonPair("@value", province.getCode()));
-					pairs.add(new JsonPair("@en", province.getName(Lang.ENGLISH)));
-					pairs.add(new JsonPair("@fr", province.getName(Lang.FRENCH)));
-					parent.add(new JsonPair(key, new JsonObject(pairs)));
-				} else {
-					parent.add(new JsonPair(key, new JsonText(province.getName(locale))));
-				}
+				parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(province, locale)));
 			} catch (IllegalArgumentException | ItemNotFoundException e) { 
+				e.printStackTrace();
 				parent.add(new JsonPair(key, new JsonText(address.getProvince())));
 			}
 		}

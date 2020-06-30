@@ -34,7 +34,7 @@ public class OrganizationSummaryJsonTransformer extends AbstractJsonTransformer<
 	public JsonObject formatLocalized(OrganizationSummary organization, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		formatIdentifier(pairs, "organizationId", organization, locale);
+		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
 		return new JsonObject(pairs);

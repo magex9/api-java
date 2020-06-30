@@ -29,7 +29,8 @@ public class LocalizedJsonTransformer extends AbstractJsonTransformer<Localized>
 	@Override
 	public JsonElement formatRoot(Localized localized) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@type", getType(Localized.class)));
+		formatType(pairs);
+		pairs.add(new JsonPair("@id", new JsonText("http://api.magex.ca/crm/rest/dictionary/" + localized.getCode().replaceAll("\\.", "/"))));
 		pairs.add(new JsonPair("@value", localized.getCode()));
 		pairs.add(new JsonPair("@en", localized.get(Lang.ENGLISH)));
 		pairs.add(new JsonPair("@fr", localized.get(Lang.FRENCH)));
@@ -38,7 +39,11 @@ public class LocalizedJsonTransformer extends AbstractJsonTransformer<Localized>
 	
 	@Override
 	public JsonElement formatLocalized(Localized localized, Locale locale) {
-		return new JsonText(localized.get(locale));
+		if (Lang.ROOT.equals(locale)) {
+			return new JsonText("http://api.magex.ca/crm/rest/dictionary/" + localized.getCode().replaceAll("\\.", "/"));
+		} else {
+			return new JsonText(localized.get(locale));
+		}
 	}
 	
 	@Override

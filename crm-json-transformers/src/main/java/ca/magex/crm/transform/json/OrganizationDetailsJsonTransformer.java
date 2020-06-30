@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -40,12 +39,12 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 	public JsonObject formatLocalized(OrganizationDetails organization, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		formatIdentifier(pairs, "organizationId", organization, locale);
+		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
-		formatIdentifier(pairs, "mainLocationId", organization, locale);
-		formatIdentifier(pairs, "getMainContactId", organization, locale);
-		formatObjects(pairs, "groups", organization, Identifier.class);
+		formatIdentifier(pairs, "mainLocationId", organization, LocationIdentifier.class, locale);
+		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
+		formatObjects(pairs, "groupIds", organization, AuthenticationGroupIdentifier.class);
 		return new JsonObject(pairs);
 	}
 
@@ -56,7 +55,7 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		String displayName = parseText("displayName", json);
 		LocationIdentifier mainLocationId = parseIdentifier("mainLocationId", json, LocationIdentifier.class, locale);
 		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
-		List<AuthenticationGroupIdentifier> groups = json.getArray("groups").stream().map(e -> new AuthenticationGroupIdentifier(((JsonText)e).value())).collect(Collectors.toList());
+		List<AuthenticationGroupIdentifier> groups = json.getArray("groupIds").stream().map(e -> new AuthenticationGroupIdentifier(((JsonText)e).value())).collect(Collectors.toList());
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
 

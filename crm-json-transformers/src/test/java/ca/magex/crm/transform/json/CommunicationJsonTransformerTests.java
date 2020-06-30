@@ -94,6 +94,7 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(communication, Lang.ENGLISH);
+		System.out.println(english);
 		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), english.keys());
 		assertEquals("Communication", english.getString("@type"));
 		assertEquals("Developer", english.getString("jobTitle"));

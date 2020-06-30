@@ -10,6 +10,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.Type;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
@@ -34,8 +35,8 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 	public JsonObject formatLocalized(Message message, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs);
-		formatIdentifier(pairs, "identifier", message, locale);
-		formatText(pairs, "type", message);
+		formatIdentifier(pairs, "identifier", message, Identifier.class, locale);
+		formatOption(pairs, "type", message, Type.MESSAGE_TYPE, locale);
 		formatText(pairs, "path", message);
 		formatLocalized(pairs, "reason", message, locale);
 		return new JsonObject(pairs);
