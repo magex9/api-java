@@ -14,6 +14,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.Configuration;
 import ca.magex.crm.api.system.Option;
@@ -59,7 +60,7 @@ public class BasicStore implements CrmStore {
 	}
 	
 	@Override
-	public String encode(Object obj) throws IOException {
+	public String encode(Object obj, CrmServices crm) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
 		oos.writeObject(obj);
@@ -68,7 +69,7 @@ public class BasicStore implements CrmStore {
 	}
 
 	@Override
-	public Object decode(String text) throws IOException, ClassNotFoundException {
+	public Object decode(String text, CrmServices crm) throws IOException, ClassNotFoundException {
 		byte[] data = Base64.getDecoder().decode(text);
 		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
 		Object o = ois.readObject();
