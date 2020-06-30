@@ -28,8 +28,8 @@ public class OptionsFilter implements CrmFilter<Option> {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public static final List<Sort> SORT_OPTIONS = List.of(
-		Sort.by(Order.asc("optionCode")),
-		Sort.by(Order.desc("optionCode")),
+		Sort.by(Order.asc("code")),
+		Sort.by(Order.desc("code")),
 		Sort.by(Order.asc("englishName")),
 		Sort.by(Order.desc("englishName")),
 		Sort.by(Order.asc("frenchName")),
@@ -124,7 +124,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 	}
 
 	public static Sort getDefaultSort() {
-		return Sort.by(Order.asc("optionCode"));
+		return Sort.by(Order.asc("code"));
 	}
 
 	public static Paging getDefaultPaging() {

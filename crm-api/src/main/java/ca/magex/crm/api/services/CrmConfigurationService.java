@@ -50,12 +50,16 @@ public interface CrmConfigurationService {
 	}
 	
 	default OptionIdentifier createRootOption(CrmRepositories repos, Type type, Boolean mutable, Localized name) {
-		return createNestedOption(repos, null, type, mutable, name);
+		OptionIdentifier optionId = repos.generateForType(type, name.getCode());
+		return repos.saveOption(new Option(optionId, null, type, Status.ACTIVE, mutable, name)).getOptionId();
 	}
 	
 	default OptionIdentifier createNestedOption(CrmRepositories repos, OptionIdentifier parentId, Type type, Boolean mutable, Localized name) {
-		OptionIdentifier optionId = repos.generateForType(type, parentId == null ? name.getCode() : repos.findOption(parentId).getCode() + "/" + name.getCode());
-		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, mutable, name)).getOptionId();
+		Option parent = repos.findOption(parentId);
+		/* update the code to prepend the parent code */
+		Localized updatedName = name.withCode(parent.getCode() + "/" + name.getCode());
+		OptionIdentifier optionId = repos.generateForType(type, updatedName.getCode());
+		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, mutable, updatedName)).getOptionId();
 	}
 	
 	/**
