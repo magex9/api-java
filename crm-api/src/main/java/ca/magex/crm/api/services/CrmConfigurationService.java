@@ -12,6 +12,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmConfigurationService {
@@ -38,6 +39,7 @@ public interface CrmConfigurationService {
 		createOrgGroup(repos);
 		createStatusLookup(repos);
 		createLocaleLookup(repos);
+		createMessageTypeLookup(repos);
 		createLanguageLookup(repos);
 		createSalutationsLookup(repos);
 		createCountriesLookup(repos);
@@ -132,6 +134,17 @@ public interface CrmConfigurationService {
 	}
 	
 	/**
+	 * Create a default set of message types that are immutable.
+	 * @param repos
+	 */
+	default void createMessageTypeLookup(CrmRepositories repos) {
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("ERROR", "Error", "Erreur"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("WARNING", "Warning", "Avertissement"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("INFO", "Notification", "Notification"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("SUCCESS", "Success", "Succès"));
+	}
+	
+	/**
 	 * Create a default set of statuses that are immutable.
 	 * @param repos
 	 */
@@ -213,7 +226,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCanadianProvinces(CrmRepositories repos) {
-		Option ca = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("CA"), OptionsFilter.getDefaultPaging()).getSingleItem();
+		Option ca = repos.findOption(new CountryIdentifier("CA"));
 		createNestedOption(repos, ca.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AB", "Alberta", "Alberta"));
 		createNestedOption(repos, ca.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("BC", "British Columbia", "Colombie-Britannique"));
 		createNestedOption(repos, ca.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("MB", "Manitoba", "Manitoba"));
@@ -234,7 +247,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createAmericanStates(CrmRepositories repos) {
-		Option us = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("US"), OptionsFilter.getDefaultPaging()).getSingleItem();
+		Option us = repos.findOption(new CountryIdentifier("US"));
 		createNestedOption(repos, us.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AK", "Alaska", "Alaska"));
 		createNestedOption(repos, us.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AL", "Alabama", "Alabama"));
 		createNestedOption(repos, us.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AR", "Arkansas", "Arkansas"));
@@ -293,7 +306,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createMexicanProvinces(CrmRepositories repos) {
-		Option mx = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("MX"), OptionsFilter.getDefaultPaging()).getSingleItem();
+		Option mx = repos.findOption(new CountryIdentifier("MX"));
 		createNestedOption(repos, mx.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AG", "Aguascalientas", "Aguascalientas"));
 		createNestedOption(repos, mx.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("BA", "Baja California (North)", "Baja California (Nord)"));
 		createNestedOption(repos, mx.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("BJ", "Baja California (South)", "Baja California (Sud)"));

@@ -12,6 +12,7 @@ import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.LocaleIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
@@ -29,6 +30,8 @@ public interface CrmOptionRepository {
 			return generateBusinessGroupId(lookup);
 		case BUSINESS_ROLE:
 			return generateBusinessRoleId(lookup);
+		case MESSAGE_TYPE:
+			return generateMessageTypeId(lookup);
 		case COUNTRY:
 			return generateCountryId(lookup);
 		case PROVINCE:
@@ -60,6 +63,10 @@ public interface CrmOptionRepository {
 	
 	default BusinessRoleIdentifier generateBusinessRoleId(String lookup) {
 		return new BusinessRoleIdentifier(lookup);
+	}
+	
+	default MessageTypeIdentifier generateMessageTypeId(String lookup) {
+		return new MessageTypeIdentifier(lookup);
 	}
 	
 	default StatusIdentifier generateStatusId(String lookup) {
