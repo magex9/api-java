@@ -12,6 +12,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Configuration;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
@@ -30,9 +31,9 @@ public interface CrmStore {
 		return RandomStringUtils.random(10, BASE_58);
 	}
 	
-	public String encode(Object obj) throws IOException;
+	public String encode(Object objm, CrmServices crm) throws IOException;
 	
-	public Object decode(String text) throws IOException, ClassNotFoundException;
+	public Object decode(String text, CrmServices crm) throws IOException, ClassNotFoundException;
 	
 	public CrmUpdateNotifier getNotifier();
 	
