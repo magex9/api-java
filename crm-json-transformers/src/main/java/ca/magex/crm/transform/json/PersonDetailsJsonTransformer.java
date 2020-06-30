@@ -12,7 +12,6 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -49,7 +48,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		formatTransformer(pairs, "legalName", person, new PersonNameJsonTransformer(crm), locale);
 		formatTransformer(pairs, "address", person, new MailingAddressJsonTransformer(crm), locale);
 		formatTransformer(pairs, "communication", person, new CommunicationJsonTransformer(crm), locale);
-		formatObjects(pairs, "roles", person, Identifier.class);
+		formatObjects(pairs, "roleIds", person, BusinessRoleIdentifier.class);
 		return new JsonObject(pairs);
 	}
 
@@ -62,7 +61,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		PersonName legalName = parseObject("legalName", json, new PersonNameJsonTransformer(crm), locale);
 		MailingAddress address = parseObject("address", json, new MailingAddressJsonTransformer(crm), locale);
 		Communication communication = parseObject("communication", json, new CommunicationJsonTransformer(crm), locale);
-		List<BusinessRoleIdentifier> roles = json.getArray("roles").stream().map(e -> new BusinessRoleIdentifier(((JsonText)e).value())).collect(Collectors.toList());
+		List<BusinessRoleIdentifier> roles = json.getArray("roleIds").stream().map(e -> new BusinessRoleIdentifier(((JsonText)e).value())).collect(Collectors.toList());
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roles);
 	}
 

@@ -34,28 +34,30 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	@Override
 	public JsonElement formatRoot(Option option) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@context", buildContext(option, false)));
-		pairs.add(new JsonPair("@id", buildContext(option, true) + "/" + StringConverter.upperToLowerCase(option.getCode())));
+		pairs.add(new JsonPair("@context", buildContext(option, false, null)));
+		pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
 		pairs.add(new JsonPair("@value", option.getCode()));
 		pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
 		pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
 		return new JsonObject(pairs);
 	}
 	
-	public String buildContext(Option option, boolean identifier) {
+	public String buildContext(Option option, boolean identifier, Locale locale) {
 		StringBuilder sb = new StringBuilder();
 		if (option.getParentId() != null && identifier) {
 			Option parent = crm.findOption(option.getParentId());
-			sb.append(buildContext(parent, identifier));
+			sb.append(buildContext(parent, identifier, locale));
 			sb.append("/");
-			sb.append(StringConverter.upperToLowerCase(parent.getCode()));
+			sb.append(StringConverter.upperToLowerCase(parent.getName().getCode()));
 			sb.append("/");
-		} else {
+		} else if (locale == null) {
 			if (identifier) {
 				sb.append("http://api.magex.ca/crm/rest/lookups/");
 			} else {
 				sb.append("http://api.magex.ca/crm/schema/lookup/");
 			}
+		} else {
+			sb.append("/lookups/");
 		}
 		sb.append(formatType(option.getType(), identifier));
 		return sb.toString();
@@ -72,7 +74,7 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
 		if (Lang.ROOT.equals(locale)) {
-			return new JsonText(buildContext(option, true) + "/" + StringConverter.upperToLowerCase(option.getCode()));
+			return new JsonText(buildContext(option, true, locale) + "/" + option.getName().getCode().replaceAll("_", "-").toLowerCase());
 		} else {
 			return new JsonText(option.getName(locale));
 		}

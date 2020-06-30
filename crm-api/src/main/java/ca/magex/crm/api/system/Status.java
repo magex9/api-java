@@ -11,7 +11,7 @@ public enum Status {
 	private Localized name;
 
 	private Status(String english, String french) {
-		this.name = new Localized(toString().toLowerCase(), english, french);
+		this.name = new Localized(toString(), english, french);
 	}
 	
 	public String getCode() {

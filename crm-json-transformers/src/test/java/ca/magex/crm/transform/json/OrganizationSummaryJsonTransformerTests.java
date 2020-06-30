@@ -53,6 +53,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(organization, null);
+		System.out.println(linked);
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), linked.keys());
 		assertEquals("OrganizationSummary", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
@@ -71,6 +72,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(organization, Lang.ROOT);
+		System.out.println(root);
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), root.keys());
 		assertEquals("OrganizationSummary", root.getString("@type"));
 		assertEquals("org", root.getString("organizationId"));
@@ -92,6 +94,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(organization, Lang.FRENCH);
+		System.out.println(french);
 		assertEquals(List.of("@type", "organizationId", "status", "displayName"), french.keys());
 		assertEquals("OrganizationSummary", french.getString("@type"));
 		assertEquals("org", french.getString("organizationId"));

@@ -24,7 +24,6 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -65,7 +64,7 @@ public class PersonDetailsJsonTransformerTests {
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(person, null);
 		System.out.println(linked);
-		JsonAsserts.print(linked, "linked");
+		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), linked.keys());
 		assertEquals("PersonDetails", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("personId").keys());
@@ -142,6 +141,7 @@ public class PersonDetailsJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(person, Lang.ROOT);
+		System.out.println(root);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), root.keys());
 		assertEquals("PersonDetails", root.getString("@type"));
@@ -182,6 +182,7 @@ public class PersonDetailsJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(person, Lang.ENGLISH);
+		System.out.println(english);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), english.keys());
 		assertEquals("PersonDetails", english.getString("@type"));

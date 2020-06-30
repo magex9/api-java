@@ -150,7 +150,9 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			return;
 		O code = getProperty(obj, key, cls);
 		StringBuilder sb = new StringBuilder();
-		sb.append("http://api.magex.ca/crm/rest");
+		if (locale == null) {
+			sb.append("http://api.magex.ca/crm/rest");
+		}
 		sb.append(code.toString());
 		parent.add(new JsonPair(key, sb.toString()));
 	}
