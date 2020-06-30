@@ -123,11 +123,16 @@ public interface CrmPersonService {
 		List<Message> messages = new ArrayList<Message>();
 		
 		// Salutation
-		if (StringUtils.isNotBlank(name.getSalutation())) {
-			try {
-				crm.findOptionByCode(Type.SALUTATION, name.getSalutation());
-			} catch (ItemNotFoundException e) {
-				messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Salutation code is not in the lookup")));
+		if (!name.getSalutation().isEmpty()) {
+			if (name.getSalutation().isIdentifer()) {
+				try {
+					if (!crm.findOption(name.getSalutation().getIdentifier()).getType().equals(Type.SALUTATION))
+						messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Salutation code must be a Salutation")));
+				} catch (ItemNotFoundException e) {
+					messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Salutation code is not in the lookup")));
+				}
+			} else {
+				messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Other salutation not allowed")));
 			}
 		}
 

@@ -8,6 +8,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.ProvinceIdentifier;
 
 public class MailingAddress implements Serializable {
 
@@ -17,13 +20,13 @@ public class MailingAddress implements Serializable {
 
 	private String city;
 
-	private String province;
+	private Choice<ProvinceIdentifier> province;
 
-	private String country;
+	private Choice<CountryIdentifier> country;
 
 	private String postalCode;
 
-	public MailingAddress(String street, String city, String province, String country, String postalCode) {
+	public MailingAddress(String street, String city, Choice<ProvinceIdentifier> province, Choice<CountryIdentifier> country, String postalCode) {
 		super();
 		this.street = street;
 		this.city = city;
@@ -48,19 +51,19 @@ public class MailingAddress implements Serializable {
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
-	public String getProvince() {
+	public Choice<ProvinceIdentifier> getProvince() {
 		return province;
 	}
 	
-	public MailingAddress withProvince(String province) {
+	public MailingAddress withProvince(Choice<ProvinceIdentifier> province) {
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 
-	public String getCountry() {
+	public Choice<CountryIdentifier> getCountry() {
 		return country;
 	}
 	
-	public MailingAddress withCountry(String country) {
+	public MailingAddress withCountry(Choice<CountryIdentifier> country) {
 		return new MailingAddress(street, city, province, country, postalCode);
 	}
 

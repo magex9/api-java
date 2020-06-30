@@ -251,18 +251,19 @@ public interface CrmLocationService {
 		}
 
 		// Province
-		if (StringUtils.isBlank(address.getProvince())) {
+		if (address.getProvince().isEmpty()) {
 			messages.add(new Message(identifier, "error", path + ".province", new Localized(Lang.ENGLISH, "Province is mandatory")));
-		} else if (address.getCountry() == null) {
+		} else if (address.getCountry().isEmpty()) {
 			messages.add(new Message(identifier, "error", path + ".province", new Localized(Lang.ENGLISH, "Province is forbidden unless there is a country")));
 		}
 
 		// Country
-		if (address.getCountry() == null) {
+		if (address.getCountry().isEmpty()) {
 			messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country is mandatory")));
 		} else {
 			try {
-				crm.findOptionByCode(Type.COUNTRY, address.getCountry());
+				if (!crm.findOption(address.getCountry().getIdentifier()).getType().equals(Type.COUNTRY))
+					messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country code must be a country")));
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country code is not in the lookup")));
 			}
@@ -270,7 +271,7 @@ public interface CrmLocationService {
 
 		// Postal Code
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
-			if (address.getCountry() != null && crm.findOptionByCode(Type.COUNTRY, address.getCountry()).getCode().equals("CA")) {
+			if (address.getCountry() != null && address.getCountry().isIdentifer() && address.getCountry().getIdentifier().equals(crm.findOptionByCode(Type.COUNTRY, "CA").getOptionId())) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
 					messages.add(new Message(identifier, "error", path + ".provinceCode", new Localized(Lang.ENGLISH, "Canadian province format is invalid")));
 				}

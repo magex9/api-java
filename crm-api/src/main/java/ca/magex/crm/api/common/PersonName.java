@@ -9,12 +9,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.id.SalutationIdentifier;
 
 public class PersonName implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	private String salutation;
+	private Choice<SalutationIdentifier> salutation;
 
 	private String firstName;
 
@@ -24,7 +26,7 @@ public class PersonName implements Serializable {
 
 	private String displayName;
 
-	public PersonName(String salutation, String firstName, String middleName, String lastName) {
+	public PersonName(Choice<SalutationIdentifier> salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
 		this.firstName = firstName;
@@ -43,11 +45,11 @@ public class PersonName implements Serializable {
 			displayName += middleName;
 	}
 
-	public String getSalutation() {
+	public Choice<SalutationIdentifier> getSalutation() {
 		return salutation;
 	}
 	
-	public PersonName withSalutation(String salutation) {
+	public PersonName withSalutation(Choice<SalutationIdentifier> salutation) {
 		return new PersonName(salutation, firstName, middleName, lastName);
 	}
 

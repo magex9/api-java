@@ -8,6 +8,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
 
 public class Communication implements Serializable {
 
@@ -15,7 +18,7 @@ public class Communication implements Serializable {
 
 	private String jobTitle;
 	
-	private String language;
+	private Choice<LanguageIdentifier> language;
 	
 	private String email;
 	
@@ -23,7 +26,7 @@ public class Communication implements Serializable {
 	
 	private String faxNumber;
 
-	public Communication(String jobTitle, String language, String email, Telephone homePhone, String faxNumber) {
+	public Communication(String jobTitle, Choice<LanguageIdentifier> language, String email, Telephone homePhone, String faxNumber) {
 		super();
 		this.jobTitle = jobTitle;
 		this.language = language;
@@ -40,11 +43,11 @@ public class Communication implements Serializable {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 
-	public String getLanguage() {
+	public Choice<LanguageIdentifier> getLanguage() {
 		return language;
 	}
 
-	public Communication withLanguage(String language) {
+	public Communication withLanguage(Choice<LanguageIdentifier> language) {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 
