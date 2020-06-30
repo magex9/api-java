@@ -59,14 +59,14 @@ public abstract class AbstractOrganizationServiceTests {
 		crm.initializeSystem(CrmAsserts.SYSTEM_ORG, CrmAsserts.SYSTEM_PERSON, CrmAsserts.SYSTEM_EMAIL, "admin", "admin");
 		
 		auth.login("admin", "admin");
-		NHL = crm.createOption(null, Type.AUTHENTICATION_GROUP.toString(), new Localized("NHL", "NHL", "LNH")).getOptionId();
-		PLAYOFFS = crm.createOption(NHL, Type.AUTHENTICATION_GROUP.toString(), new Localized("PLAYOFFS", "Playoffs", "Playoffs")).getOptionId();
-		ONTARIO = crm.createOption(NHL, Type.AUTHENTICATION_GROUP.toString(), new Localized("ONTARIO", "Ontario", "Ontario")).getOptionId();		
-		QUEBEC = crm.createOption(NHL, Type.AUTHENTICATION_GROUP.toString(), new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();
+		NHL = crm.createOption(null, Type.AUTHENTICATION_GROUP, new Localized("NHL", "NHL", "LNH")).getOptionId();
+		PLAYOFFS = crm.createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("PLAYOFFS", "Playoffs", "Playoffs")).getOptionId();
+		ONTARIO = crm.createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("ONTARIO", "Ontario", "Ontario")).getOptionId();		
+		QUEBEC = crm.createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();
 	
-		crm.createOption(NHL, Type.AUTHENTICATION_ROLE.toString(), new Localized("GM", "General Manager", "Gestionnaire Genèrale"));
+		crm.createOption(NHL, Type.AUTHENTICATION_ROLE, new Localized("GM", "General Manager", "Gestionnaire Genèrale"));
 		
-		GM = crm.createOption(null, Type.BUSINESS_ROLE.toString(), new Localized("Exec", "Owner", "Owner")).getOptionId();
+		GM = crm.createOption(null, Type.BUSINESS_ROLE, new Localized("Exec", "Owner", "Owner")).getOptionId();
 		
 	}
 	
@@ -450,7 +450,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledGroup() throws Exception {		
-		AuthenticationGroupIdentifier authGroupA = (AuthenticationGroupIdentifier) crm.createOption(null, Type.AUTHENTICATION_GROUP.toString(), new Localized("A", "A", "A")).getOptionId();
+		AuthenticationGroupIdentifier authGroupA = (AuthenticationGroupIdentifier) crm.createOption(null, Type.AUTHENTICATION_GROUP, new Localized("A", "A", "A")).getOptionId();
 		crm.disableOption(authGroupA);
 		
 		OrganizationDetails organization = crm.createOrganization("ORG", List.of(NHL));
