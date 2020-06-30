@@ -42,7 +42,7 @@ public class PersonDetailsJsonTransformerTests {
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonDetailsJsonTransformer(crm);
 		List<BusinessRoleIdentifier> roleIds = List.of(
-			crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/APPDEV/APPS/DEV").getOptionId()
+			crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/DEV/APPS/DEV").getOptionId()
 		);
 		person = new PersonDetails(new PersonIdentifier("prsn1"), new OrganizationIdentifier("org1"), Status.ACTIVE, 
 			PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds);
