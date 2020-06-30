@@ -20,11 +20,11 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {		
+	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
 		if (parentId == null) {
 			return repos.saveOption(new Option(repos.generateForType(type, name.getCode()), parentId, type, Status.ACTIVE, true, name));
 		}
-		Option parent = repos.findOption(parentId);				
+		Option parent = repos.findOption(parentId);
 		/* update the code to prepend the parent code */
 		Localized updatedName = name.withCode(parent.getCode() + "/" + name.getCode());
 		/* construct the identifier based off of the fully qualified code */
@@ -48,6 +48,9 @@ public class BasicOptionService implements CrmOptionService {
 		if (option == null) {
 			return null;
 		}
+		if (option.getName().equals(name)) {
+			return option;
+		}
 		return repos.saveOption(option.withName(name));
 	}
 
@@ -56,6 +59,9 @@ public class BasicOptionService implements CrmOptionService {
 		Option option = repos.findOption(optionId);
 		if (option == null) {
 			return null;
+		}
+		if (option.getStatus() == Status.ACTIVE) {
+			return option;
 		}
 		return repos.saveOption(option.withStatus(Status.ACTIVE));
 	}
@@ -66,12 +72,15 @@ public class BasicOptionService implements CrmOptionService {
 		if (option == null) {
 			return null;
 		}
+		if (option.getStatus() == Status.INACTIVE) {
+			return option;
+		}
 		return repos.saveOption(option.withStatus(Status.INACTIVE));
 	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		return repos.findOptions(filter, paging);
+		FilteredPage<Option> page = repos.findOptions(filter, paging);
+		return page;
 	}
-	
 }
