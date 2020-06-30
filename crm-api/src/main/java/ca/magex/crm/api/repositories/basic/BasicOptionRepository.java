@@ -29,7 +29,7 @@ public class BasicOptionRepository implements CrmOptionRepository {
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
-			.map(i -> SerializationUtils.clone(i))
+			.map(i -> SerializationUtils.clone(i)) // return a clone of what is in the repository
 			.sorted(filter.getComparator(paging))
 			.collect(Collectors.toList()), paging);
 	}
@@ -41,13 +41,17 @@ public class BasicOptionRepository implements CrmOptionRepository {
 
 	@Override
 	public Option findOption(OptionIdentifier optionId) {
-		return store.getOptions().get(optionId);
+		Option option = store.getOptions().get(optionId);
+		if (option == null) {
+			return null;
+		}
+		return SerializationUtils.clone(option); // return a clone of what is in the repository
 	}
 
 	@Override
 	public Option saveOption(Option option) {
 		store.getNotifier().optionUpdated(System.nanoTime(), option.getOptionId());
-		store.getOptions().put(option.getOptionId(), option);
+		store.getOptions().put(option.getOptionId(), SerializationUtils.clone(option)); // store a clone of the object in the repository
 		return option;
 	}
 
