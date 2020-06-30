@@ -25,6 +25,12 @@ import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmStore {
 	
+	public static void main(String[] args) {
+		for (int i = 0; i < 10; i++) {
+			System.out.println(generateId());
+		}
+	}
+	
 	public static final String BASE_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 	
 	public static String generateId() {
