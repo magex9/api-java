@@ -9,14 +9,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.filters.OptionsFilter;
-import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -43,6 +42,11 @@ public abstract class AbstractOptionServiceTests {
 		auth.logout();
 	}
 	
+	@Test
+	public void testInitializedRoles() {
+		Option option = crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/DEV/APPS/DEV");
+		Assert.assertNotNull(option);
+	}
 	
 	@Test
 	public void testAuthenticationOptions() {
@@ -183,14 +187,36 @@ public abstract class AbstractOptionServiceTests {
 		Assert.assertEquals("User Interne", iUser.getName().getFrenchName());
 		Assert.assertEquals(Status.ACTIVE, iUser.getStatus());
 		
-		/* find our options */
-		OptionsFilter filter = new OptionsFilter().withType(Type.AUTHENTICATION_GROUP).withParentId(external.getOptionId());
-		Paging paging = new Paging(1, 10, Sort.by("englishName"));
-		
-		FilteredPage<Option> optionsPage = crm.findOptions(filter, paging);
+		/* find all of our groups within the external group */
+		FilteredPage<Option> optionsPage = crm.findOptions(
+				new OptionsFilter().withType(Type.AUTHENTICATION_GROUP).withParentId(external.getOptionId()), 
+				OptionsFilter.getDefaultPaging());
 		Assert.assertEquals(1, optionsPage.getNumber());
 		Assert.assertEquals(10, optionsPage.getSize());
 		Assert.assertEquals(2, optionsPage.getNumberOfElements());
+		Assert.assertTrue(optionsPage.getContent().contains(eSending));
+		Assert.assertTrue(optionsPage.getContent().contains(eReceiving));
 		
-	}		
+		/* find all of our ADM coded roles */
+		optionsPage = crm.findOptions(
+				new OptionsFilter().withType(Type.AUTHENTICATION_ROLE).withOptionCode("ADM"), 
+				OptionsFilter.getDefaultPaging());
+		Assert.assertEquals(1, optionsPage.getNumber());
+		Assert.assertEquals(10, optionsPage.getSize());
+		Assert.assertEquals(3, optionsPage.getNumberOfElements());
+		Assert.assertTrue(optionsPage.getContent().contains(iAdmin));
+		Assert.assertTrue(optionsPage.getContent().contains(esAdmin));
+		Assert.assertTrue(optionsPage.getContent().contains(erAdmin));
+		
+		/* find all of our Admin named roles */
+		optionsPage = crm.findOptions(
+				new OptionsFilter().withType(Type.AUTHENTICATION_ROLE).withName(Lang.ENGLISH, "Admin"), 
+				OptionsFilter.getDefaultPaging());
+		Assert.assertEquals(1, optionsPage.getNumber());
+		Assert.assertEquals(10, optionsPage.getSize());
+		Assert.assertEquals(3, optionsPage.getNumberOfElements());
+		Assert.assertTrue(optionsPage.getContent().contains(iAdmin));
+		Assert.assertTrue(optionsPage.getContent().contains(esAdmin));
+		Assert.assertTrue(optionsPage.getContent().contains(erAdmin));
+	}
 }
