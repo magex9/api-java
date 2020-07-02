@@ -16,7 +16,7 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
@@ -44,8 +44,8 @@ public interface CrmOptionService {
 
 	FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
 	
-	default MessageIdentifier findMessageId(String key) {
-		return findOptionByCode(Type.MESSAGE, key).getOptionId();
+	default PhraseIdentifier findMessageId(String key) {
+		return findOptionByCode(Type.PHRASE, key).getOptionId();
 	}
 
 	default FilteredPage<Option> findOptions(OptionsFilter filter) {

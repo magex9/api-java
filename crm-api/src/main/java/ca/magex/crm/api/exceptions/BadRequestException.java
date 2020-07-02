@@ -11,7 +11,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
-import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 
 public class BadRequestException extends ApiException {
@@ -25,7 +25,7 @@ public class BadRequestException extends ApiException {
 		this.messages = messages;
 	}
 	
-	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, Choice<MessageIdentifier> reason) {
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, Choice<PhraseIdentifier> reason) {
 		this(message, Arrays.asList(new Message(base, type, path, reason)));
 	}
 

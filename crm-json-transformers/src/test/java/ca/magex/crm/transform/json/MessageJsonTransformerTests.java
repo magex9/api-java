@@ -15,7 +15,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
@@ -31,7 +31,7 @@ public class MessageJsonTransformerTests {
 	
 	private MessageTypeIdentifier error;
 	
-	private MessageIdentifier reason;
+	private PhraseIdentifier reason;
 	
 	private Message message;
 	

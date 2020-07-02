@@ -11,7 +11,7 @@ import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
@@ -49,7 +49,7 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 		Identifier identifier = json.contains("identifier") ? parseObject("identifier", json, new IdentifierJsonTransformer(crm), locale) : null;
 		MessageTypeIdentifier type = parseOption("type", json, Type.MESSAGE_TYPE, locale);
 		String path = parseText("path", json);
-		Choice<MessageIdentifier> reason = parseChoice("reason", json, Type.MESSAGE, locale);
+		Choice<PhraseIdentifier> reason = parseChoice("reason", json, Type.PHRASE, locale);
 		return new Message(identifier, type, path, reason);
 	}
 	
