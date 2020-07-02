@@ -26,9 +26,11 @@ import org.junit.Test;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.MailingAddress;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -167,6 +169,7 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonAmericanAddress() throws Exception {
 		JsonObject us = (JsonObject)transformer.format(US_ADDRESS, null);
+		System.out.println(us);
 		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), us.keys());
 		assertEquals("MailingAddress", us.getString("@type"));
 		assertEquals("465 Huntington Ave", us.getString("street"));
@@ -189,6 +192,7 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonMexicanAddress() throws Exception {
 		JsonObject mx = (JsonObject)transformer.format(MX_ADDRESS, null);
+		System.out.println(mx);
 		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), mx.keys());
 		assertEquals("MailingAddress", mx.getString("@type"));
 		assertEquals("120 Col. Hipodromo Condesa", mx.getString("street"));
@@ -211,6 +215,7 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonBritishAddress() throws Exception {
 		JsonObject en = (JsonObject)transformer.format(EN_ADDRESS, null);
+		System.out.println(en);
 		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), en.keys());
 		assertEquals("MailingAddress", en.getString("@type"));
 		assertEquals("35 Tower Hill", en.getString("street"));
@@ -229,6 +234,7 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonFranceAddress() throws Exception {
 		JsonObject fr = (JsonObject)transformer.format(FR_ADDRESS, null);
+		System.out.println(fr);
 		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), fr.keys());
 		assertEquals("MailingAddress", fr.getString("@type"));
 		assertEquals("5 Avenue Anatole", fr.getString("street"));
@@ -248,6 +254,7 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonGermanAddress() throws Exception {
 		JsonObject de = (JsonObject)transformer.format(DE_ADDRESS, null);
+		System.out.println(de);
 		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), de.keys());
 		assertEquals("MailingAddress", de.getString("@type"));
 		assertEquals("Porschepl. 1", de.getString("street"));
@@ -278,8 +285,9 @@ public class MailingAddressJsonTransformerTests {
 	
 	@Test
 	public void testCountryOnly() throws Exception {
-		MailingAddress address = new MailingAddress(null, null, null, CANADA.getCode(), null);
+		MailingAddress address = new MailingAddress(null, null, null, CANADA, null);
 		JsonObject json = (JsonObject)transformer.format(address, null);
+		JsonAsserts.print(json, "json");
 		assertEquals(List.of("@type", "country"), json.keys());
 		assertEquals("MailingAddress", json.getString("@type"));
 		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), json.getObject("country").keys());
@@ -294,7 +302,7 @@ public class MailingAddressJsonTransformerTests {
 	
 	@Test
 	public void testProvinceCodeOnly() throws Exception {
-		MailingAddress address = new MailingAddress(null, null, NEWFOUNDLAND.getCode(), null, null);
+		MailingAddress address = new MailingAddress(null, null, NEWFOUNDLAND, null, null);
 		JsonObject json = (JsonObject)transformer.format(address, null);
 		assertEquals(List.of("@type", "province"), json.keys());
 		assertEquals("MailingAddress", json.getString("@type"));
@@ -305,7 +313,7 @@ public class MailingAddressJsonTransformerTests {
 	
 	@Test
 	public void testProvinceNameOnly() throws Exception {
-		MailingAddress address = new MailingAddress(null, null, NEWFOUNDLAND.getEnglishName(), null, null);
+		MailingAddress address = new MailingAddress(null, null, new Choice<>("Ontario"), null, null);
 		JsonObject json = (JsonObject)transformer.format(address, Lang.ENGLISH);
 		assertEquals(List.of("@type", "province"), json.keys());
 		assertEquals("MailingAddress", json.getString("@type"));
@@ -316,7 +324,7 @@ public class MailingAddressJsonTransformerTests {
 	
 	@Test
 	public void testNewfoundlandNeuvoLeonConflicts() throws Exception {
-		MailingAddress address = new MailingAddress(null, null, NEWFOUNDLAND.getCode(), null, null);
+		MailingAddress address = new MailingAddress(null, null, NEWFOUNDLAND, null, null);
 		JsonObject code = (JsonObject)transformer.format(address, Lang.ENGLISH);
 		assertEquals(List.of("@type", "province"), code.keys());
 		assertEquals("MailingAddress", code.getString("@type"));
@@ -324,22 +332,22 @@ public class MailingAddressJsonTransformerTests {
 		assertEquals(address, transformer.parse(code, null));
 		assertEquals(address.toString(), transformer.parse(code, null).toString());
 
-		JsonObject ca = (JsonObject)transformer.format(address.withCountry(CANADA.getCode()), Lang.ENGLISH);
+		JsonObject ca = (JsonObject)transformer.format(address.withCountry(CANADA), Lang.ENGLISH);
 		assertEquals(List.of("@type", "province", "country"), ca.keys());
 		assertEquals("MailingAddress", ca.getString("@type"));
 		assertEquals("Newfoundland and Labrador", ca.getString("province"));
 
-		JsonObject mx = (JsonObject)transformer.format(address.withCountry(MEXICO.getCode()), Lang.ENGLISH);
+		JsonObject mx = (JsonObject)transformer.format(address.withCountry(MEXICO), Lang.ENGLISH);
 		assertEquals(List.of("@type", "province", "country"), ca.keys());
 		assertEquals("MailingAddress", mx.getString("@type"));
 		assertEquals("Nuevo Leon", mx.getString("province"));
 
-		JsonObject us = (JsonObject)transformer.format(address.withCountry(UNITED_STATES.getCode()), Lang.ENGLISH);
+		JsonObject us = (JsonObject)transformer.format(address.withCountry(UNITED_STATES), Lang.ENGLISH);
 		assertEquals(List.of("@type", "province", "country"), ca.keys());
 		assertEquals("MailingAddress", us.getString("@type"));
 		assertEquals("NL", us.getString("province"));
 
-		JsonObject fr = (JsonObject)transformer.format(address.withCountry(FRANCE.getCode()), Lang.ENGLISH);
+		JsonObject fr = (JsonObject)transformer.format(address.withCountry(FRANCE), Lang.ENGLISH);
 		assertEquals(List.of("@type", "province", "country"), ca.keys());
 		assertEquals("MailingAddress", fr.getString("@type"));
 		assertEquals("NL", fr.getString("province"));

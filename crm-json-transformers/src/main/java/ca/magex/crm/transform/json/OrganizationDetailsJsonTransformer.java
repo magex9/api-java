@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -38,13 +39,13 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 	@Override
 	public JsonObject formatLocalized(OrganizationDetails organization, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
 		formatIdentifier(pairs, "mainLocationId", organization, LocationIdentifier.class, locale);
 		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
-		formatObjects(pairs, "groupIds", organization, AuthenticationGroupIdentifier.class);
+		formatOptions(pairs, "groupIds", organization, Type.AUTHENTICATION_GROUP, locale);
 		return new JsonObject(pairs);
 	}
 

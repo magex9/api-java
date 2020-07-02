@@ -17,12 +17,11 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 
@@ -78,35 +77,37 @@ public interface CrmPersonService {
 	
 	static List<Message> validatePersonDetails(Crm crm, PersonDetails person) throws BadRequestException {
 		List<Message> messages = new ArrayList<Message>();
+		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 
 		// Organization
 		if (person.getOrganizationId() == null) {
-			messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization cannot be null")));
+			messages.add(new Message(person.getPersonId(), error, "organizationId", crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				crm.findOrganizationDetails(person.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(person.getPersonId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization does not exist")));
+				messages.add(new Message(person.getPersonId(), error, "organizationId", crm.findMessageId("validation.organization.missing")));
 			}
 		}
 
 		// Status
 		if (person.getStatus() == null) {
-			messages.add(new Message(person.getPersonId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a person")));
+			messages.add(new Message(person.getPersonId(), error, "status", crm.findMessageId("validation.field.required")));
 		} else if (person.getStatus() == Status.PENDING && person.getPersonId() != null) {
-			messages.add(new Message(person.getPersonId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+			messages.add(new Message(person.getPersonId(), error, "status", crm.findMessageId("validation.status.pending")));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(person.getDisplayName())) {
-			messages.add(new Message(person.getPersonId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for a person")));
+			messages.add(new Message(person.getPersonId(), error, "displayName", crm.findMessageId("validation.field.required")));
 		} else if (person.getDisplayName().length() > 60) {
-			messages.add(new Message(person.getPersonId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(person.getPersonId(), error, "displayName", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Legal Name
 		if (person.getLegalName() == null) {
-			messages.add(new Message(person.getPersonId(), "error", "legalName", new Localized(Lang.ENGLISH, "Legal name is mandatory for a person")));
+			messages.add(new Message(person.getPersonId(), error, "legalName", crm.findMessageId("validation.field.required")));
 		} else {
 			messages.addAll(validatePersonName(crm, person.getLegalName(), person.getPersonId(), "legalName"));
 		}
@@ -122,37 +123,39 @@ public interface CrmPersonService {
 	static List<Message> validatePersonName(Crm crm, PersonName name, Identifier identifier, String path) {
 		List<Message> messages = new ArrayList<Message>();
 		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
+		
 		// Salutation
 		if (name.getSalutation() != null && !name.getSalutation().isEmpty()) {
 			if (name.getSalutation().isIdentifer()) {
 				try {
 					if (!crm.findOption(name.getSalutation().getIdentifier()).getType().equals(Type.SALUTATION))
-						messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Salutation code must be a Salutation")));
+						messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.option.type")));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Salutation code is not in the lookup")));
+					messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.option.missing")));
 				}
 			} else {
-				messages.add(new Message(identifier, "error", path + ".salutation", new Localized(Lang.ENGLISH, "Other salutation not allowed")));
+				messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.option.other")));
 			}
 		}
 
 		// First Name
 		if (StringUtils.isBlank(name.getFirstName())) {
-			messages.add(new Message(identifier, "error", path + ".firstName", new Localized(Lang.ENGLISH, "First name is required")));
+			messages.add(new Message(identifier, error, path + ".firstName", crm.findMessageId("validation.field.required")));
 		} else if (name.getFirstName().length() > 60) {
-			messages.add(new Message(identifier, "error", path + ".firstName", new Localized(Lang.ENGLISH, "First name must be 60 characters or less")));
+			messages.add(new Message(identifier, error, path + ".firstName", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Middle Name
 		if (name.getFirstName().length() > 30) {
-			messages.add(new Message(identifier, "error", path + ".middleName", new Localized(Lang.ENGLISH, "Middle name must be 60 characters or less")));
+			messages.add(new Message(identifier, error, path + ".middleName", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Last Name
 		if (StringUtils.isBlank(name.getFirstName())) {
-			messages.add(new Message(identifier, "error", path + ".lastName", new Localized(Lang.ENGLISH, "Last name is required")));
+			messages.add(new Message(identifier, error, path + ".lastName", crm.findMessageId("validation.field.required")));
 		} else if (name.getFirstName().length() > 60) {
-			messages.add(new Message(identifier, "error", path + ".lastName", new Localized(Lang.ENGLISH, "Last name must be 60 characters or less")));
+			messages.add(new Message(identifier, error, path + ".lastName", crm.findMessageId("validation.field.maxlength")));
 		}
 		
 		return messages;

@@ -15,9 +15,10 @@ public enum Type {
 	
 	STATUS("STATUSES", "Statuses", "Statuts", null, false, false, false), 
 	LOCALE("LOCALES", "Locales", "Locaux", null, false, false, false), 
+	PHRASE("PHRASES", "Phrases", "Phrases", null, true, true, true),
+	MESSAGE_TYPE("MESSAGE_TYPES", "Message Types", "Types de messages", null, false, true, false),
 	AUTHENTICATION_GROUP("AUTH_GROUPS", "Authentication Groups", "Groupes d'authentification", null, true, true, false), 
 	AUTHENTICATION_ROLE("AUTH_ROLES", "Authentication Roles", "Rôles d'authentification", AUTHENTICATION_GROUP, false, true, false),
-	MESSAGE_TYPE("MESSAGE_TYPES", "Message Types", "Types de messages", null, false, true, false),
 	SALUTATION("SALUTATIONS", "Salutations", "Salutations", null, false, true, true), 
 	LANGUAGE("LANGUAGES", "Languages", "Langages", null, false, true, true),
 	COUNTRY("COUNTRIES", "Countries", "Des pays", null, false, true, true),

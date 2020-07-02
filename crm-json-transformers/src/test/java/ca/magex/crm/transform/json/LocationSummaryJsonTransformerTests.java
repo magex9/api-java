@@ -75,6 +75,7 @@ public class LocationSummaryJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(location, Lang.ROOT);
+		System.out.println(root);
 		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), root.keys());
 		assertEquals("LocationSummary", root.getString("@type"));
 		assertEquals("loc", root.getString("locationId"));

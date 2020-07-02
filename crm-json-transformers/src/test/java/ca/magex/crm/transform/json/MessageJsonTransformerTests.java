@@ -13,8 +13,10 @@ import org.junit.Test;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
@@ -27,15 +29,23 @@ public class MessageJsonTransformerTests {
 	
 	private Transformer<Message, JsonElement> transformer;
 	
+	private MessageTypeIdentifier error;
+	
+	private PhraseIdentifier reason;
+	
 	private Message message;
+	
+	private OrganizationIdentifier organizationId;
 	
 	@Before
 	public void setup() {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		organizationId = new OrganizationIdentifier("KJj15ntU2G");
 		transformer = new MessageJsonTransformer(crm);
-		message = new Message(new OrganizationIdentifier("abc"), "ERROR", "prop", 
-			new Localized("message.reason", "English reason", "Raison française"));
+		error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
+		reason = crm.findMessageId("message.reason");
+		message = new Message(organizationId, error, "prop", reason);
 	}
 	
 	@Test
@@ -60,7 +70,7 @@ public class MessageJsonTransformerTests {
 		assertEquals("Message", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("identifier").keys());
 		assertEquals("Identifier", linked.getObject("identifier").getString("@type"));
-		assertEquals("abc", linked.getObject("identifier").getString("@id"));
+		assertEquals(organizationId.toString(), linked.getObject("identifier").getString("@id"));
 		assertEquals("error", linked.getString("type"));
 		assertEquals("prop", linked.getString("path"));
 		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("reason").keys());
@@ -78,7 +88,7 @@ public class MessageJsonTransformerTests {
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), root.keys());
 		assertEquals("Message", root.getString("@type"));
-		assertEquals("abc", root.getString("identifier"));
+		assertEquals(organizationId.toString(), root.getString("identifier"));
 		assertEquals("error", root.getString("type"));
 		assertEquals("prop", root.getString("path"));
 		assertEquals("message.reason", root.getString("reason"));
@@ -91,7 +101,7 @@ public class MessageJsonTransformerTests {
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), english.keys());
 		assertEquals("Message", english.getString("@type"));
-		assertEquals("abc", english.getString("identifier"));
+		assertEquals(organizationId.toString(), english.getString("identifier"));
 		assertEquals("error", english.getString("type"));
 		assertEquals("prop", english.getString("path"));
 		assertEquals("English reason", english.getString("reason"));
@@ -103,7 +113,7 @@ public class MessageJsonTransformerTests {
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), french.keys());
 		assertEquals("Message", french.getString("@type"));
-		assertEquals("abc", french.getString("identifier"));
+		assertEquals(organizationId.toString(), french.getString("identifier"));
 		assertEquals("error", french.getString("type"));
 		assertEquals("prop", french.getString("path"));
 		assertEquals("Raison française", french.getString("reason"));

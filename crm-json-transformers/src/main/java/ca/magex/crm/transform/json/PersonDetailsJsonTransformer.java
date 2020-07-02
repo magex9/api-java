@@ -13,6 +13,7 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -40,7 +41,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 	@Override
 	public JsonObject formatLocalized(PersonDetails person, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "personId", person, PersonIdentifier.class, locale);
 		formatIdentifier(pairs, "organizationId", person, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", person, locale);
@@ -48,7 +49,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		formatTransformer(pairs, "legalName", person, new PersonNameJsonTransformer(crm), locale);
 		formatTransformer(pairs, "address", person, new MailingAddressJsonTransformer(crm), locale);
 		formatTransformer(pairs, "communication", person, new CommunicationJsonTransformer(crm), locale);
-		formatObjects(pairs, "roleIds", person, BusinessRoleIdentifier.class);
+		formatOptions(pairs, "roleIds", person, Type.BUSINESS_ROLE, locale);
 		return new JsonObject(pairs);
 	}
 

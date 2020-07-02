@@ -18,14 +18,11 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.dictionary.CrmDictionary;
-import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
@@ -41,12 +38,9 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	
 	private CrmPasswordService passwords;
 	
-	private CrmDictionary dictionary;
-	
-	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords, CrmDictionary dictionary) {
+	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords) {
 		this.repos = repos;
 		this.passwords = passwords;
-		this.dictionary = dictionary;
 	}
 
 	@Override
@@ -86,11 +80,6 @@ public class BasicConfigurationService implements CrmConfigurationService {
 		return Arrays.asList(roleCodes).stream()
 				.map(c -> new AuthenticationRoleIdentifier(c))
 				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public CrmDictionary getDictionary() {
-		return dictionary;
 	}
 		
 	@Override

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
@@ -40,8 +40,9 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		return JsonElement.class;
 	}
 	
-	public void formatType(List<JsonPair> parent) {
-		parent.add(new JsonPair("@context", "http://api.magex.ca/crm/rest/schema/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/").replaceAll("^crm", "organization")));
+	public void formatType(List<JsonPair> parent, Locale locale) {
+		if (locale == null)
+			parent.add(new JsonPair("@context", "http://api.magex.ca/crm/rest/schema/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/").replaceAll("^crm", "organization")));
 	}
 	
 	public final JsonElement format(T obj, Locale locale) {
@@ -81,7 +82,8 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	
 	@SuppressWarnings("unchecked")
 	public <O extends Identifier> O parseIdentifier(String key, JsonObject json, Class<O> cls, Locale locale) {
-		return (O)parseObject(key, json, new IdentifierJsonTransformer(crm), locale);
+		return (O)new IdentifierJsonTransformer(crm).parse(json.get(key), locale);
+		//return (O)parseObject(key, json.get(key), new IdentifierJsonTransformer(crm), locale);
 	}
 	
 	public <O> O parseObject(String key, JsonObject json, Transformer<O, JsonElement> transformer, Locale locale) {
@@ -116,6 +118,20 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			parent.add(new JsonPair(key, new JsonText(text)));
 	}
 	
+	public void formatChoice(List<JsonPair> parent, String key, Object obj, Type type, Locale locale) {
+		if (obj == null)
+			return;
+		Choice<?> choice = getProperty(obj, key, Choice.class);
+		if (choice != null) {
+			if (choice.isIdentifer()) {
+				Option option = crm.findOption(choice.getIdentifier());
+				parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+			} else if (choice.isOther()) {
+				parent.add(new JsonPair(key, choice.getOther()));
+			}
+		}
+	}
+	
 	public void formatOption(List<JsonPair> parent, String key, Object obj, Type type, Locale locale) {
 		if (obj == null)
 			return;
@@ -134,27 +150,62 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			parent.add(new JsonPair(key, transformer.format(property, locale)));
 		}
 	}
-	
-	public void formatOption(List<JsonPair> parent, String key, Object obj, Type type, String parentCode, Locale locale) {
+
+	@SuppressWarnings("unchecked")
+	public <O extends OptionIdentifier> void formatOptions(List<JsonPair> parent, String key, Object obj, Type type, Locale locale) {
 		if (obj == null)
 			return;
-		String optionCode = getProperty(obj, key, String.class);
-		if (optionCode != null) {
-			Option option = crm.findOptionByCode(type, optionCode);
-			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+		try {
+			Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
+			if (!m.getReturnType().equals(List.class))
+				throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
+			List<O> list = (List<O>)m.invoke(obj, new Object[] { });
+			List<JsonElement> elements = new ArrayList<JsonElement>();
+			if (list != null) {
+				for (O optionId : list) {
+					Option option = crm.findOptionByCode(type, optionId.toString());
+					elements.add(new OptionJsonTransformer(crm).format(option, locale));
+				}
+			}
+			parent.add(new JsonPair(key, new JsonArray(elements)));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
+
 	public <O extends Identifier> void formatIdentifier(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
 		if (obj == null)
 			return;
-		O code = getProperty(obj, key, cls);
-		StringBuilder sb = new StringBuilder();
+		O identifier = getProperty(obj, key, cls);
 		if (locale == null) {
+			StringBuilder sb = new StringBuilder();
 			sb.append("http://api.magex.ca/crm/rest");
+			sb.append(identifier.toString());
+			parent.add(new JsonPair(key, sb.toString()));
+		} else {
+			parent.add(new JsonPair(key, identifier.getId()));
 		}
-		sb.append(code.toString());
-		parent.add(new JsonPair(key, sb.toString()));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <O extends Identifier> void formatIdentifiers(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
+		if (obj == null)
+			return;
+		try {
+			Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
+			if (!m.getReturnType().equals(List.class))
+				throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
+			List<O> list = (List<O>)m.invoke(obj, new Object[] { });
+			List<JsonElement> elements = new ArrayList<JsonElement>();
+			if (list != null) {
+				for (O identifier : list) {
+					elements.add(new JsonText("http://api.magex.ca/crm/rest" + identifier));
+				}
+			}
+			parent.add(new JsonPair(key, new JsonArray(elements)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void formatStatus(List<JsonPair> parent, String key, Object obj, Locale locale) {
@@ -184,28 +235,6 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			parent.add(new JsonPair(key, new JsonBoolean(bool)));
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <O> void formatObjects(List<JsonPair> parent, String key, Object obj, Class<O> type) {
-		boolean option = OptionIdentifier.class.isAssignableFrom(type);
-		if (obj != null) {
-			try {
-				Method m = obj.getClass().getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[] { });
-				if (!m.getReturnType().equals(List.class))
-					throw new IllegalArgumentException("Unexpected return codes, expected List but got: " + m.getReturnType().getName());
-				List<O> list = (List<O>)m.invoke(obj, new Object[] { });
-				List<JsonElement> elements = new ArrayList<JsonElement>();
-				if (list != null) {
-					for (O item : list) {
-						elements.add(new JsonText("http://api.magex.ca/crm/rest" + (option ? item.toString().toLowerCase() : item.toString())));
-					}
-				}
-				parent.add(new JsonPair(key, new JsonArray(elements)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	public String parseText(String key, JsonObject json) {
 		return json.contains(key) ? json.getString(key) : null;
 	}
@@ -214,13 +243,23 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		return json.contains(key) ? json.getBoolean(key) : null;
 	}
 	
-	public String parseOption(String key, JsonObject json, Type type, Locale locale) {
+	public <I extends OptionIdentifier> I parseOption(String key, JsonObject json, Type type, Locale locale) {
 		if (!json.contains(key)) {
 			return null;
 		} else if (json.contains(key, JsonObject.class)) {
-			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).getCode();
+			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).getOptionId();
+		} else {
+			throw new IllegalArgumentException("Unexpected type of option: " + key);
+		}
+	}
+	
+	public <I extends OptionIdentifier> Choice<I> parseChoice(String key, JsonObject json, Type type, Locale locale) {
+		if (!json.contains(key)) {
+			return null;
+		} else if (json.contains(key, JsonObject.class)) {
+			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).asChoice();
 		} else if (json.contains(key, JsonText.class)) {
-			return crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, json.getString(key)), OptionsFilter.getDefaultPaging()).getSingleItem().getCode();
+			return new Choice<I>(json.getString(key));
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}

@@ -31,7 +31,7 @@ public class TelephoneJsonTransformer extends AbstractJsonTransformer<Telephone>
 	@Override
 	public JsonObject formatLocalized(Telephone name, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatText(pairs, "number", name);
 		formatText(pairs, "extension", name);
 		return new JsonObject(pairs);

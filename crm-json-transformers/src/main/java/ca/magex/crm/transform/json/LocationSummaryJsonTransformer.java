@@ -34,7 +34,7 @@ public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<Loca
 	@Override
 	public JsonObject formatLocalized(LocationSummary location, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "locationId", location, LocationIdentifier.class, locale);
 		formatIdentifier(pairs, "organizationId", location, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", location, locale);

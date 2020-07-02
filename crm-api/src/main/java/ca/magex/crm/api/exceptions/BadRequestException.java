@@ -8,9 +8,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 
 public class BadRequestException extends ApiException {
 
@@ -23,7 +25,7 @@ public class BadRequestException extends ApiException {
 		this.messages = messages;
 	}
 	
-	public BadRequestException(String message, Identifier base, String type, String path, Localized reason) {
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, Choice<PhraseIdentifier> reason) {
 		this(message, Arrays.asList(new Message(base, type, path, reason)));
 	}
 

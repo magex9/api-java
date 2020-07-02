@@ -20,9 +20,9 @@ import ca.magex.json.model.JsonText;
 import ca.magex.json.util.StringConverter;
 
 @Component
-public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
+public class ChoiceJsonTransformer extends AbstractJsonTransformer<Option> {
 
-	public OptionJsonTransformer(CrmServices crm) {
+	public ChoiceJsonTransformer(CrmServices crm) {
 		super(crm);
 	}
 
@@ -71,12 +71,11 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
-//		if (Lang.ROOT.equals(locale)) {
-//			//return new JsonText(buildContext(option, true, locale) + "/" + option.getName().getCode().replaceAll("_", "-").toLowerCase());
-//			return new JsonText(option.getName().getCode());
-//		} else {
+		if (Lang.ROOT.equals(locale)) {
+			return new JsonText(buildContext(option, true, locale) + "/" + option.getName().getCode().replaceAll("_", "-").toLowerCase());
+		} else {
 			return new JsonText(option.getName(locale));
-//		}
+		}
 	}
 
 	@Override
