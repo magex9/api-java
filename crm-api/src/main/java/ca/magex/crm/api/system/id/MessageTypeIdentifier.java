@@ -3,7 +3,7 @@ package ca.magex.crm.api.system.id;
 import ca.magex.crm.api.Crm;
 
 /**
- * A Specific Identifier used for Business Role Option Identification
+ * A Specific Identifier used for Message Type Option Identification
  * 
  * @author Jonny
  */

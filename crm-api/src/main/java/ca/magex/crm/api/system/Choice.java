@@ -8,8 +8,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 
-public class Choice<I extends Identifier> implements Serializable {
+public class Choice<I extends OptionIdentifier> implements Serializable {
 	
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 

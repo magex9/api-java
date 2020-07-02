@@ -11,11 +11,11 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
@@ -73,43 +73,45 @@ public interface CrmUserService {
 
 	static List<Message> validateUser(Crm crm, User user) {
 		List<Message> messages = new ArrayList<Message>();
+		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 
 		// Status
 		if (user.getStatus() == null) {
-			messages.add(new Message(user.getUserId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a person")));
+			messages.add(new Message(user.getUserId(), error, "status", crm.findMessageId("validation.field.required")));
 		} else if (user.getStatus() == Status.PENDING && user.getUserId() != null) {
-			messages.add(new Message(user.getUserId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+			messages.add(new Message(user.getUserId(), error, "status", crm.findMessageId("validation.status.pending")));
 		}
 
 		// Organization
 		if (user.getPersonId() == null) {
-			messages.add(new Message(null, "error", "person", new Localized(Lang.ENGLISH, "Person cannot be null")));
+			messages.add(new Message(null, error, "person", crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				crm.findPersonDetails(user.getPersonId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(user.getPersonId(), "error", "person", new Localized(Lang.ENGLISH, "Person does not exist")));
+				messages.add(new Message(user.getPersonId(), error, "person", crm.findMessageId("validation.person.missing")));
 			}
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(user.getUsername())) {
-			messages.add(new Message(user.getUserId(), "error", "username", new Localized(Lang.ENGLISH, "Username is mandatory for a user")));
+			messages.add(new Message(user.getUserId(), error, "username", crm.findMessageId("validation.field.required")));
 		} else if (user.getUsername().length() > 20) {
-			messages.add(new Message(user.getUserId(), "error", "username", new Localized(Lang.ENGLISH, "Username must be 20 characters or less")));
+			messages.add(new Message(user.getUserId(), error, "username", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Roles
 		if (user.getRoles().isEmpty()) {
-			messages.add(new Message(user.getUserId(), "error", "roles", new Localized(Lang.ENGLISH, "Users must have a permission role assigned to them")));
+			messages.add(new Message(user.getUserId(), error, "roles", crm.findMessageId("validation.field.empty")));
 		} else {
 			for (int i = 0; i < user.getRoles().size(); i++) {
 				AuthenticationRoleIdentifier roleId = user.getRoles().get(i);
 				try {
 					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role is not active: " + roleId)));
+						messages.add(new Message(user.getUserId(), error, "roles[" + i + "]", crm.findMessageId("validation.field.inactive")));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(user.getUserId(), "error", "roles[" + i + "]", new Localized(Lang.ENGLISH, "Role does not exist: " + roleId)));
+					messages.add(new Message(user.getUserId(), error, "roles[" + i + "]", crm.findMessageId("validation.field.missing")));
 				}
 			}
 		}

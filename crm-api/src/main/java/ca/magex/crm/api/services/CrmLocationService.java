@@ -14,12 +14,11 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 /**
@@ -182,42 +181,44 @@ public interface CrmLocationService {
 	 */
 	static List<Message> validateLocationDetails(Crm crm, LocationDetails location) {
 		List<Message> messages = new ArrayList<Message>();
-
+		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
+		
 		// Organization
 		if (location.getOrganizationId() == null) {
-			messages.add(new Message(location.getLocationId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization cannot be null")));
+			messages.add(new Message(location.getLocationId(), error, "organizationId", crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				crm.findOrganizationDetails(location.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(location.getLocationId(), "error", "organizationId", new Localized(Lang.ENGLISH, "Organization does not exist")));
+				messages.add(new Message(location.getLocationId(), error, "organizationId", crm.findMessageId("validation.entity.missing")));
 			}
 		}
 
 		// Status
 		if (location.getStatus() == null) {
-			messages.add(new Message(location.getLocationId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a location")));
+			messages.add(new Message(location.getLocationId(), error, "status", crm.findMessageId("validation.field.required")));
 		} else if (location.getStatus() == Status.PENDING && location.getLocationId() != null) {
-			messages.add(new Message(location.getLocationId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+			messages.add(new Message(location.getLocationId(), error, "status", crm.findMessageId("validation.status.pending")));
 		}
 
 		// Reference
 		if (StringUtils.isBlank(location.getReference())) {
-			messages.add(new Message(location.getLocationId(), "error", "reference", new Localized(Lang.ENGLISH, "Reference is mandatory for a location")));
+			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.field.required")));
 		} else if (!location.getReference().matches("[A-Z0-9-]{1,60}")) {
-			messages.add(new Message(location.getLocationId(), "error", "reference", new Localized(Lang.ENGLISH, "Reference is not in the correct format")));
+			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.format.invalid")));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(location.getDisplayName())) {
-			messages.add(new Message(location.getLocationId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for a location")));
+			messages.add(new Message(location.getLocationId(), error, "displayName", crm.findMessageId("validation.field.required")));
 		} else if (location.getDisplayName().length() > 60) {
-			messages.add(new Message(location.getLocationId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(location.getLocationId(), error, "displayName", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Address
 		if (location.getAddress() == null) {
-			messages.add(new Message(location.getLocationId(), "error", "address", new Localized(Lang.ENGLISH, "Mailing address is mandatory for a location")));
+			messages.add(new Message(location.getLocationId(), error, "address", crm.findMessageId("validation.field.required")));
 		} else {
 			messages.addAll(validateMailingAddress(crm, location.getAddress(), location.getLocationId(), "address"));
 		}
@@ -235,37 +236,39 @@ public interface CrmLocationService {
 	 */
 	static List<Message> validateMailingAddress(Crm crm, MailingAddress address, Identifier identifier, String path) {
 		List<Message> messages = new ArrayList<Message>();
+		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 
 		// Street
 		if (StringUtils.isBlank(address.getStreet())) {
-			messages.add(new Message(identifier, "error", path + ".street", new Localized(Lang.ENGLISH, "Street address is mandatory")));
+			messages.add(new Message(identifier, error, path + ".street", crm.findMessageId("validation.field.required")));
 		} else if (address.getStreet().length() > 60) {
-			messages.add(new Message(identifier, "error", path + ".street", new Localized(Lang.ENGLISH, "Street must be 60 characters or less")));
+			messages.add(new Message(identifier, error, path + ".street", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// City
 		if (StringUtils.isBlank(address.getCity())) {
-			messages.add(new Message(identifier, "error", path + ".city", new Localized(Lang.ENGLISH, "City is mandatory")));
+			messages.add(new Message(identifier, error, path + ".city", crm.findMessageId("validation.field.required")));
 		} else if (address.getCity().length() > 60) {
-			messages.add(new Message(identifier, "error", path + ".city", new Localized(Lang.ENGLISH, "City must be 60 characters or less")));
+			messages.add(new Message(identifier, error, path + ".city", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Province
 		if (address.getProvince().isEmpty()) {
-			messages.add(new Message(identifier, "error", path + ".province", new Localized(Lang.ENGLISH, "Province is mandatory")));
+			messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.field.required")));
 		} else if (address.getCountry().isEmpty()) {
-			messages.add(new Message(identifier, "error", path + ".province", new Localized(Lang.ENGLISH, "Province is forbidden unless there is a country")));
+			messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.field.forbidden")));
 		}
 
 		// Country
 		if (address.getCountry().isEmpty()) {
-			messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country is mandatory")));
+			messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				if (!crm.findOption(address.getCountry().getIdentifier()).getType().equals(Type.COUNTRY))
-					messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country code must be a country")));
+					messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.option.type")));
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(identifier, "error", path + ".country", new Localized(Lang.ENGLISH, "Country code is not in the lookup")));
+				messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.option.missing")));
 			}
 		}
 
@@ -273,7 +276,7 @@ public interface CrmLocationService {
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
 			if (address.getCountry() != null && address.getCountry().isIdentifer() && address.getCountry().getIdentifier().equals(crm.findOptionByCode(Type.COUNTRY, "CA").getOptionId())) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
-					messages.add(new Message(identifier, "error", path + ".provinceCode", new Localized(Lang.ENGLISH, "Canadian province format is invalid")));
+					messages.add(new Message(identifier, error, path + ".provinceCode", crm.findMessageId("validation.field.format.invalid")));
 				}
 			}
 		}

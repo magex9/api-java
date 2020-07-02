@@ -20,7 +20,6 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.dictionary.CrmDictionary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
@@ -133,11 +132,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		if (isInitialized())
 			throw new DuplicateItemFoundException("The system is already initialized");
 		return configurationService.initializeSystem(organization, name, email, username, password); 
-	}
-	
-	@Override
-	public CrmDictionary getDictionary() {
-		return configurationService.getDictionary();
 	}
 	
 	@Override

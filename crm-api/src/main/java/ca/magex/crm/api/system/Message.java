@@ -8,6 +8,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 
 public class Message implements Serializable {
 
@@ -15,13 +17,21 @@ public class Message implements Serializable {
 	
 	private Identifier identifier;
 	
-	private String type;
+	private MessageTypeIdentifier type;
 	
 	private String path;
 	
-	private Localized reason;
+	private Choice<MessageIdentifier> reason;
 
-	public Message(Identifier identifier, String type, String path, Localized reason) {
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String reason) {
+		this(identifier, type, path, new Choice<>(reason));
+	}
+
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, MessageIdentifier reason) {
+		this(identifier, type, path, new Choice<>(reason));
+	}
+	
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, Choice<MessageIdentifier> reason) {
 		super();
 		this.identifier = identifier;
 		this.type = type;
@@ -33,7 +43,7 @@ public class Message implements Serializable {
 		return identifier;
 	}
 
-	public String getType() {
+	public MessageTypeIdentifier getType() {
 		return type;
 	}
 
@@ -41,7 +51,7 @@ public class Message implements Serializable {
 		return path;
 	}
 
-	public Localized getReason() {
+	public Choice<MessageIdentifier> getReason() {
 		return reason;
 	}
 	

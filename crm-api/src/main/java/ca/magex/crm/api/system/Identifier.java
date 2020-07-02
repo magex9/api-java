@@ -17,7 +17,7 @@ public class Identifier implements CharSequence, Serializable {
 	public static final String CONTEXT = "/";
 	
 	public static final String COMPONENT_REGEX = "[A-Za-z0-9/]+";
-		
+	
 	private CharSequence id;
 	
 	/**
@@ -44,6 +44,10 @@ public class Identifier implements CharSequence, Serializable {
 	 */
 	public String getContext() {
 		return CONTEXT;
+	}
+	
+	public String getId() {
+		return id.subSequence(getContext().length(), length()).toString();
 	}
 
 	@Override

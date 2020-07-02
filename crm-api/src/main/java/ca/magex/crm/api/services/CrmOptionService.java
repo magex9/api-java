@@ -16,6 +16,8 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmOptionService {
@@ -41,6 +43,10 @@ public interface CrmOptionService {
 	Option disableOption(OptionIdentifier optionId);
 
 	FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
+	
+	default MessageIdentifier findMessageId(String key) {
+		return findOptionByCode(Type.MESSAGE, key).getOptionId();
+	}
 
 	default FilteredPage<Option> findOptions(OptionsFilter filter) {
 		return findOptions(filter, defaultOptionPaging());
@@ -63,27 +69,28 @@ public interface CrmOptionService {
 
 	static List<Message> validateOption(Crm crm, Option option) {
 		List<Message> messages = new ArrayList<Message>();
+		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 
 		// Status
 		if (option.getStatus() == null) {
-			messages.add(new Message(option.getOptionId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for a option")));
+			messages.add(new Message(option.getOptionId(), error, "status", crm.findMessageId("validation.field.required")));
 		} else if (option.getStatus() == Status.PENDING && option.getOptionId() != null) {
-			messages.add(new Message(option.getOptionId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+			messages.add(new Message(option.getOptionId(), error, "status", crm.findMessageId("validation.status.pending")));
 		}
 
 		// Must be a valid option code
 		if (StringUtils.isBlank(option.getCode())) {
-			messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Option code must not be blank")));
+			messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.field.required")));
 		} else if (!option.getCode().matches("([A-Z0-9/]{1,20})(/[A-Z0-9/]{1,20})*")) {
-			messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Option code must match: [A-Z0-9/]{1,100}")));
+			messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.option.format")));
 		}
 
 		// Make sure the existing code didn't change
 		if (option.getOptionId() != null) {
 			try {
-				if (!crm.findOption(option.getOptionId()).getCode().equals(option.getCode())) {
-					messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Option code must not change during updates")));
-				}
+				if (!crm.findOption(option.getOptionId()).getCode().equals(option.getCode()))
+					messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.option.immutable")));
 			} catch (ItemNotFoundException e) {
 				/* no existing option, so don't care */
 			}
@@ -93,22 +100,22 @@ public interface CrmOptionService {
 		FilteredPage<Option> options = crm.findOptions(crm.defaultOptionsFilter().withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems());
 		for (Option existing : options.getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
-				messages.add(new Message(option.getOptionId(), "error", "code", new Localized(Lang.ENGLISH, "Duplicate code found in another option: " + existing.getOptionId())));
+				messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure there is an English description
 		if (StringUtils.isBlank(option.getName(Lang.ENGLISH))) {
-			messages.add(new Message(option.getOptionId(), "error", "englishName", new Localized(Lang.ENGLISH, "An English description is required")));
+			messages.add(new Message(option.getOptionId(), error, "englishName", crm.findMessageId("validation.field.required")));
 		} else if (option.getName(Lang.ENGLISH).length() > 50) {
-			messages.add(new Message(option.getOptionId(), "error", "englishName", new Localized(Lang.ENGLISH, "English name must be 50 characters or less")));
+			messages.add(new Message(option.getOptionId(), error, "englishName", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Make sure there is a French description
 		if (StringUtils.isBlank(option.getName(Lang.FRENCH))) {
-			messages.add(new Message(option.getOptionId(), "error", "frenchName", new Localized(Lang.ENGLISH, "An French description is required")));
+			messages.add(new Message(option.getOptionId(), error, "frenchName", crm.findMessageId("validation.field.required")));
 		} else if (option.getName(Lang.FRENCH).length() > 50) {
-			messages.add(new Message(option.getOptionId(), "error", "frenchName", new Localized(Lang.ENGLISH, "French name must be 50 characters or less")));
+			messages.add(new Message(option.getOptionId(), error, "frenchName", crm.findMessageId("validation.field.maxlength")));
 		}
 
 		return messages;

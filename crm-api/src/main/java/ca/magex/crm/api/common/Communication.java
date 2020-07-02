@@ -9,7 +9,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Choice;
-import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
 
 public class Communication implements Serializable {
