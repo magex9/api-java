@@ -28,6 +28,7 @@ import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.TypeParameter;
@@ -111,15 +112,19 @@ public class JsondocBuilder {
     @SuppressWarnings("rawtypes")
 	public static JsonObject processFile(File file) throws FileNotFoundException {
     	System.out.println("Processing: " + file.getAbsolutePath());
-        CompilationUnit cu = StaticJavaParser.parse(file);
-        List<TypeDeclaration> types = cu.findAll(TypeDeclaration.class);
-        if (types.get(0) instanceof EnumDeclaration) {
-        	return processEnum(cu, (EnumDeclaration)types.get(0));
-        } else if (types.get(0) instanceof ClassOrInterfaceDeclaration) {
-        	return processClass(cu, (ClassOrInterfaceDeclaration)types.get(0));
-        } else {
-        	throw new IllegalArgumentException("Unknown type of declaration: " + types.get(0));
-        }
+    	try {
+	        CompilationUnit cu = StaticJavaParser.parse(file);
+	        List<TypeDeclaration> types = cu.findAll(TypeDeclaration.class);
+	        if (types.get(0) instanceof EnumDeclaration) {
+	        	return processEnum(cu, (EnumDeclaration)types.get(0));
+	        } else if (types.get(0) instanceof ClassOrInterfaceDeclaration) {
+	        	return processClass(cu, (ClassOrInterfaceDeclaration)types.get(0));
+	        } else {
+	        	throw new IllegalArgumentException("Unknown type of declaration: " + types.get(0));
+	        }
+    	} catch (Exception e) {
+    		throw new RuntimeException("Unable to process file: " + file.getAbsolutePath(), e);
+    	}
     }
 
     public static JsonObject processEnum(CompilationUnit cu, EnumDeclaration declaration) throws FileNotFoundException {
@@ -221,6 +226,8 @@ public class JsondocBuilder {
     private static JsonElement buildType(Node type) {
     	if (type instanceof PrimitiveType) {
         	return new JsonText(((PrimitiveType)type).getElementType().toString());
+    	} else if (type instanceof ArrayType) {
+    		return new JsonText(type.toString());
     	} else if (type instanceof SimpleName) {
     		return new JsonText(type.toString());
     	} else if (type instanceof WildcardType) {
