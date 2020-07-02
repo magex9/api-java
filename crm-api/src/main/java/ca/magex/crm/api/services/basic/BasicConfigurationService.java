@@ -19,11 +19,13 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.dictionary.CrmDictionary;
+import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
@@ -60,9 +62,9 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			LocationIdentifier mainLocationId = repos.generateLocationId();
 			PersonIdentifier mainContactId = repos.generatePersonId();
 			UserIdentifier systemId = repos.generateUserId();
-			
+
 			MailingAddress address = new MailingAddress("221b Baker Street", "London", new Choice<>("England"), new Choice<>(new CountryIdentifier("GB")), "NW1 6XE");
-			Communication communication = new Communication("System Admin", new Choice<LanguageIdentifier>(new LanguageIdentifier("EN")), email, null, null);
+			Communication communication = new Communication("System Admin", new Choice<>(new LanguageIdentifier("EN")), email, null, null);
 			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, groups("SYS", "CRM")));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
