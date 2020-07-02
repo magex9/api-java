@@ -38,8 +38,8 @@ public class OrganizationDetailsJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new OrganizationDetailsJsonTransformer(crm);
-		organization = new OrganizationDetails(new OrganizationIdentifier("org"), Status.ACTIVE, "Org Name", 
-			new LocationIdentifier("mainLoc"), new PersonIdentifier("mainContact"), List.of(
+		organization = new OrganizationDetails(new OrganizationIdentifier("Mc9rbFKPqf"), Status.ACTIVE, "Org Name", 
+			new LocationIdentifier("Z9XCi4sCTk"), new PersonIdentifier("5Z7cuX3K2T"), List.of(
 				crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "CRM").getOptionId(),
 				crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "ORG").getOptionId()
 			));
@@ -57,7 +57,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertNull(transformer.format(null, Lang.ENGLISH));
 		assertNull(transformer.format(null, Lang.FRENCH));
 	}
-		
+	
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(organization, null);
@@ -86,6 +86,7 @@ public class OrganizationDetailsJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(organization, Lang.ROOT);
+		System.out.println(root);
 		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainLocationId", "mainContactId", "groups"), root.keys());
 		assertEquals("OrganizationDetails", root.getString("@type"));
 		assertEquals("org", root.getString("organizationId"));
@@ -113,6 +114,7 @@ public class OrganizationDetailsJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(organization, Lang.FRENCH);
+		System.out.println(french);
 		assertEquals(List.of("@type", "organizationId", "status", "displayName", "mainLocationId", "mainContactId", "groups"), french.keys());
 		assertEquals("OrganizationDetails", french.getString("@type"));
 		assertEquals("org", french.getString("organizationId"));

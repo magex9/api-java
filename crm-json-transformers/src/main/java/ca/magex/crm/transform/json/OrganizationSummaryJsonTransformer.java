@@ -33,7 +33,7 @@ public class OrganizationSummaryJsonTransformer extends AbstractJsonTransformer<
 	@Override
 	public JsonObject formatLocalized(OrganizationSummary organization, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);

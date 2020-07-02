@@ -24,6 +24,7 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -33,6 +34,10 @@ public class PersonDetailsJsonTransformerTests {
 	
 	private Transformer<PersonDetails, JsonElement> transformer;
 	
+	private PersonIdentifier personId;
+	
+	private OrganizationIdentifier organizationId;
+	
 	private PersonDetails person;
 	
 	@Before
@@ -40,10 +45,12 @@ public class PersonDetailsJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonDetailsJsonTransformer(crm);
+		personId = new PersonIdentifier("bN2ifcbtzA");
+		organizationId = new OrganizationIdentifier("Q2Tf7v7tzJ");
 		List<BusinessRoleIdentifier> roleIds = List.of(
 			crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/DEV/APPS/DEV").getOptionId()
 		);
-		person = new PersonDetails(new PersonIdentifier("prsn1"), new OrganizationIdentifier("org1"), Status.ACTIVE, 
+		person = new PersonDetails(personId, organizationId, Status.ACTIVE, 
 			PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds);
 	}
 	
@@ -63,8 +70,7 @@ public class PersonDetailsJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(person, null);
-		System.out.println(linked);
-		//JsonAsserts.print(linked, "linked");
+		JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), linked.keys());
 		assertEquals("PersonDetails", linked.getString("@type"));
 		assertEquals(List.of("@type", "@id"), linked.getObject("personId").keys());

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
@@ -33,7 +35,7 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	@Override
 	public JsonObject formatLocalized(Communication communication, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatText(pairs, "jobTitle", communication);
 		formatOption(pairs, "language", communication, Type.LANGUAGE, locale);
 		formatText(pairs, "email", communication);
@@ -45,7 +47,7 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	@Override
 	public Communication parseJsonObject(JsonObject json, Locale locale) {
 		String jobTitle = parseText("jobTitle", json);
-		String language = parseOption("language", json, Type.LANGUAGE, locale);
+		Choice<LanguageIdentifier> language = parseChoice("language", json, Type.LANGUAGE, locale);
 		String email = parseText("email", json);
 		Telephone homePhone = parseObject("homePhone", json, new TelephoneJsonTransformer(crm), locale);
 		String faxNumber = parseText("faxNumber", json);

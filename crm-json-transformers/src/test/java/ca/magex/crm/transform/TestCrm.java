@@ -3,8 +3,6 @@ package ca.magex.crm.transform;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
-import ca.magex.crm.api.dictionary.CrmDictionary;
-import ca.magex.crm.api.dictionary.basic.BasicDictionary;
 import ca.magex.crm.api.observer.CrmUpdateObserver;
 import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.CrmPolicies;
@@ -29,8 +27,7 @@ public class TestCrm {
 		CrmRepositories repos = new BasicRepositories(store, observer);
 		CrmPasswordRepository passwordRepo = new BasicPasswordRepository(passwordStore);
 		CrmPasswordService passwords = new BasicPasswordService(passwordRepo);
-		CrmDictionary dictionary = new BasicDictionary().initialize();
-		CrmServices services = new BasicServices(repos, passwords, dictionary);
+		CrmServices services = new BasicServices(repos, passwords);
 		CrmPolicies policies = new BasicPolicies(services);
 		return new Crm(services, policies);
 	}

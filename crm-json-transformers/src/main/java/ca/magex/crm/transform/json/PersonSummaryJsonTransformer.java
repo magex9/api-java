@@ -34,7 +34,7 @@ public class PersonSummaryJsonTransformer extends AbstractJsonTransformer<Person
 	@Override
 	public JsonObject formatLocalized(PersonSummary person, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "personId", person, PersonIdentifier.class, locale);
 		formatIdentifier(pairs, "organizationId", person, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", person, locale);

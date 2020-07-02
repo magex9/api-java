@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
@@ -38,12 +38,12 @@ public class UserJsonTransformer extends AbstractJsonTransformer<User> {
 	@Override
 	public JsonObject formatLocalized(User user, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "userId", user, UserIdentifier.class, locale);
 		formatIdentifier(pairs, "personId", user, PersonIdentifier.class, locale);
 		formatText(pairs, "username", user);
 		formatStatus(pairs, "status", user, locale);
-		formatObjects(pairs, "roleIds", user, Identifier.class);
+		formatOptions(pairs, "roleIds", user, Type.AUTHENTICATION_ROLE, locale);
 		return new JsonObject(pairs);
 	}
 

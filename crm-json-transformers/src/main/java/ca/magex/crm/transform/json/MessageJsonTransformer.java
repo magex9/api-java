@@ -7,10 +7,12 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.MessageIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
@@ -34,7 +36,7 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 	@Override
 	public JsonObject formatLocalized(Message message, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatIdentifier(pairs, "identifier", message, Identifier.class, locale);
 		formatOption(pairs, "type", message, Type.MESSAGE_TYPE, locale);
 		formatText(pairs, "path", message);
@@ -45,9 +47,9 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 	@Override
 	public Message parseJsonObject(JsonObject json, Locale locale) {
 		Identifier identifier = json.contains("identifier") ? parseObject("identifier", json, new IdentifierJsonTransformer(crm), locale) : null;
-		String type = parseText("type", json);
+		MessageTypeIdentifier type = parseOption("type", json, Type.MESSAGE_TYPE, locale);
 		String path = parseText("path", json);
-		Localized reason = parseObject("reason", json, new LocalizedJsonTransformer(crm), locale);
+		Choice<MessageIdentifier> reason = parseChoice("reason", json, Type.MESSAGE, locale);
 		return new Message(identifier, type, path, reason);
 	}
 	

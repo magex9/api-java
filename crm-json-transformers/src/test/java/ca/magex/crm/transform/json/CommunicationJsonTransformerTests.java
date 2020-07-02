@@ -17,7 +17,6 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -53,22 +52,19 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(communication, null);
-		System.out.println(linked);
-		
-		JsonAsserts.print(linked, "linked");
-		
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), linked.keys());
-		assertEquals("Communication", linked.getString("@type"));
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", linked.getString("@context"));
 		assertEquals("Developer", linked.getString("jobTitle"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("language").keys());
-		assertEquals("Option", linked.getObject("language").getString("@type"));
-		assertEquals("LANGUAGE", linked.getObject("language").getString("@lookup"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("language").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Languages", linked.getObject("language").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/languages/en", linked.getObject("language").getString("@id"));
 		assertEquals("EN", linked.getObject("language").getString("@value"));
 		assertEquals("English", linked.getObject("language").getString("@en"));
 		assertEquals("Anglais", linked.getObject("language").getString("@fr"));
 		assertEquals("user@work.ca", linked.getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), linked.getObject("homePhone").keys());
-		assertEquals("Telephone", linked.getObject("homePhone").getString("@type"));
+		assertEquals(List.of("@context", "number", "extension"), linked.getObject("homePhone").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", linked.getObject("homePhone").getString("@context"));
 		assertEquals("5551234567", linked.getObject("homePhone").getString("number"));
 		assertEquals("42", linked.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", linked.getString("faxNumber"));
@@ -78,13 +74,14 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(communication, Lang.ROOT);
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), root.keys());
-		assertEquals("Communication", root.getString("@type"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), root.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", root.getString("@context"));
 		assertEquals("Developer", root.getString("jobTitle"));
-		assertEquals("EN", root.getString("language"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/languages/en", root.getString("language"));
 		assertEquals("user@work.ca", root.getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), root.getObject("homePhone").keys());
-		assertEquals("Telephone", root.getObject("homePhone").getString("@type"));
+		assertEquals(List.of("@context", "number", "extension"), root.getObject("homePhone").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", root.getObject("homePhone").getString("@context"));
 		assertEquals("5551234567", root.getObject("homePhone").getString("number"));
 		assertEquals("42", root.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", root.getString("faxNumber"));
@@ -94,14 +91,14 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(communication, Lang.ENGLISH);
-		System.out.println(english);
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), english.keys());
-		assertEquals("Communication", english.getString("@type"));
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), english.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", english.getString("@context"));
 		assertEquals("Developer", english.getString("jobTitle"));
 		assertEquals("English", english.getString("language"));
 		assertEquals("user@work.ca", english.getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), english.getObject("homePhone").keys());
-		assertEquals("Telephone", english.getObject("homePhone").getString("@type"));
+		assertEquals(List.of("@context", "number", "extension"), english.getObject("homePhone").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", english.getObject("homePhone").getString("@context"));
 		assertEquals("5551234567", english.getObject("homePhone").getString("number"));
 		assertEquals("42", english.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", english.getString("faxNumber"));
@@ -111,13 +108,14 @@ public class CommunicationJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(communication, Lang.FRENCH);
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), french.keys());
-		assertEquals("Communication", french.getString("@type"));
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), french.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", french.getString("@context"));
 		assertEquals("Developer", french.getString("jobTitle"));
 		assertEquals("Anglais", french.getString("language"));
 		assertEquals("user@work.ca", french.getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), french.getObject("homePhone").keys());
-		assertEquals("Telephone", french.getObject("homePhone").getString("@type"));
+		assertEquals(List.of("@context", "number", "extension"), french.getObject("homePhone").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", french.getObject("homePhone").getString("@context"));
 		assertEquals("5551234567", french.getObject("homePhone").getString("number"));
 		assertEquals("42", french.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", french.getString("faxNumber"));
