@@ -85,7 +85,7 @@ public class UsersFilterTests {
 		assertEquals("Admin", filter.getUsername());
 		assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
 		assertNull(filter.getStatus());
-		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":null,\"username\":\"Admin\",\"roleId\":\"\\/options\\/authenticationRoles\\/USR\"}", filter.toString());
+		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":null,\"username\":\"Admin\",\"roleId\":\"\\/options\\/authentication-roles\\/USR\"}", filter.toString());
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")).hashCode(), filter.hashCode());
 				
@@ -94,7 +94,7 @@ public class UsersFilterTests {
 		assertEquals("Admin", filter.getUsername());
 		assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":\"ACTIVE\",\"username\":\"Admin\",\"roleId\":\"\\/options\\/authenticationRoles\\/USR\"}", filter.toString());
+		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":\"ACTIVE\",\"username\":\"Admin\",\"roleId\":\"\\/options\\/authentication-roles\\/USR\"}", filter.toString());
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), Status.ACTIVE, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), Status.ACTIVE, "Admin", new AuthenticationRoleIdentifier("USR")).hashCode(), filter.hashCode());
 	}
@@ -133,7 +133,7 @@ public class UsersFilterTests {
 		assertEquals("Admin", filter.getUsername());
 		assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
 		assertNull(filter.getStatus());
-		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":null,\"username\":\"Admin\",\"roleId\":\"\\/options\\/authenticationRoles\\/USR\"}", filter.toString());
+		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":null,\"username\":\"Admin\",\"roleId\":\"\\/options\\/authentication-roles\\/USR\"}", filter.toString());
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")).hashCode(), filter.hashCode());
 		
@@ -142,7 +142,7 @@ public class UsersFilterTests {
 		assertEquals("Admin", filter.getUsername());
 		assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
 		assertNull(filter.getStatus());
-		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":null,\"username\":\"Admin\",\"roleId\":\"\\/options\\/authenticationRoles\\/USR\"}", filter.toString());
+		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":null,\"username\":\"Admin\",\"roleId\":\"\\/options\\/authentication-roles\\/USR\"}", filter.toString());
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")).hashCode(), filter.hashCode());
 				
@@ -151,7 +151,7 @@ public class UsersFilterTests {
 		assertEquals("Admin", filter.getUsername());
 		assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
 		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":\"ACTIVE\",\"username\":\"Admin\",\"roleId\":\"\\/options\\/authenticationRoles\\/USR\"}", filter.toString());
+		assertEquals("{\"personId\":\"\\/persons\\/P1\",\"status\":\"ACTIVE\",\"username\":\"Admin\",\"roleId\":\"\\/options\\/authentication-roles\\/USR\"}", filter.toString());
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), Status.ACTIVE, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 		assertEquals(new UsersFilter(new PersonIdentifier("P1"), Status.ACTIVE, "Admin", new AuthenticationRoleIdentifier("USR")).hashCode(), filter.hashCode());
 		

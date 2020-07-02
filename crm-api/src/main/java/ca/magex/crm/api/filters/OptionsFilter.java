@@ -3,6 +3,8 @@ package ca.magex.crm.api.filters;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -72,8 +74,8 @@ public class OptionsFilter implements CrmFilter<Option> {
 			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
 				try {
 					this.type = Type.valueOf(StringUtils.upperCase((String) filterCriteria.get("type")));
-				} catch (IllegalArgumentException e) {
-					throw new ApiException("Invalid type value '" + filterCriteria.get("type") + "' expected one of {" + StringUtils.join(Type.values(), ",") + "}");
+				} catch (IllegalArgumentException e) {					
+					throw new ApiException("Invalid type value '" + filterCriteria.get("type") + "' expected one of {" + Stream.of(Type.values()).map(Type::name).collect(Collectors.joining(",")) + "}");
 				}
 			}
 			this.status = null;
@@ -81,7 +83,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 				try {
 					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
 				} catch (IllegalArgumentException e) {
-					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
+					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + Stream.of(Status.values()).map(Status::name).collect(Collectors.joining(",")) + "}");
 				}
 			}
 		} catch (ClassCastException cce) {
@@ -142,7 +144,10 @@ public class OptionsFilter implements CrmFilter<Option> {
 		return List.of(instance)
 				.stream()
 				.filter(o -> this.getName() == null ||
-						(this.getName().getLeft() == Lang.ROOT && StringUtils.endsWith(o.getCode(), "/" + this.getName().getRight())) ||
+						(this.getName().getLeft() == Lang.ROOT && (
+								StringUtils.endsWith(o.getCode(), "/" + this.getName().getRight())) ||
+								StringUtils.equals(o.getCode(), this.getName().getRight())
+						) ||
 						(this.getName().getLeft() != Lang.ROOT && StringUtils.equalsIgnoreCase(o.getName(this.getName().getLeft()), this.getName().getRight())))
 				.filter(o -> this.getParentId() == null || this.getParentId().equals(o.getParentId()))
 				.filter(o -> this.getType() == null || this.getType().equals(o.getType()))
@@ -170,5 +175,4 @@ public class OptionsFilter implements CrmFilter<Option> {
 				.append("status", status == null ? (Object) null : status)
 				.build();
 	}
-
 }
