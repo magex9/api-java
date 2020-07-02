@@ -123,7 +123,7 @@ public interface CrmPersonService {
 		List<Message> messages = new ArrayList<Message>();
 		
 		// Salutation
-		if (!name.getSalutation().isEmpty()) {
+		if (name.getSalutation() != null && !name.getSalutation().isEmpty()) {
 			if (name.getSalutation().isIdentifer()) {
 				try {
 					if (!crm.findOption(name.getSalutation().getIdentifier()).getType().equals(Type.SALUTATION))

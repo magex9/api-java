@@ -58,6 +58,5 @@ public class Choice<I extends Identifier> implements Serializable {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-	}	
-	
+	}
 }

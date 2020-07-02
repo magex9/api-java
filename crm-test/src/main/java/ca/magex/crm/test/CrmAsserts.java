@@ -60,27 +60,27 @@ public class CrmAsserts {
 	
 	public static final Choice<CountryIdentifier> CANADA = new Choice<CountryIdentifier>(new CountryIdentifier("CA"));
 	
-	public static final Choice<ProvinceIdentifier> ALBERTA = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("AB"));
+	public static final Choice<ProvinceIdentifier> ALBERTA = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/AB"));
 	
-	public static final Choice<ProvinceIdentifier> BRITISH_COLUMBIA = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("BC"));
+	public static final Choice<ProvinceIdentifier> BRITISH_COLUMBIA = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/BC"));
 	
-	public static final Choice<ProvinceIdentifier> ONTARIO = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("ON"));
+	public static final Choice<ProvinceIdentifier> ONTARIO = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/ON"));
 	
-	public static final Choice<ProvinceIdentifier> QUEBEC = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("QC"));
+	public static final Choice<ProvinceIdentifier> QUEBEC = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/QC"));
 	
-	public static final Choice<ProvinceIdentifier> NEWFOUNDLAND = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("NL"));
+	public static final Choice<ProvinceIdentifier> NEWFOUNDLAND = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/NL"));
 	
 	public static final Choice<CountryIdentifier> UNITED_STATES = new Choice<CountryIdentifier>(new CountryIdentifier("US"));
 	
-	public static final Choice<ProvinceIdentifier> NEW_YORK = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("NY"));
+	public static final Choice<ProvinceIdentifier> NEW_YORK = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("US/NY"));
 	
-	public static final Choice<ProvinceIdentifier> MASSACHUSETTS = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("MA"));
+	public static final Choice<ProvinceIdentifier> MASSACHUSETTS = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("US/MA"));
 	
-	public static final Choice<ProvinceIdentifier> ILLINOIS = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("IL"));
+	public static final Choice<ProvinceIdentifier> ILLINOIS = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("US/IL"));
 	
 	public static final Choice<CountryIdentifier> MEXICO = new Choice<CountryIdentifier>(new CountryIdentifier("MX"));
 	
-	public static final Choice<ProvinceIdentifier> NUEVO_LEON = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("NL"));
+	public static final Choice<ProvinceIdentifier> NUEVO_LEON = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("MX/NL"));
 	
 	public static final Choice<CountryIdentifier> ENGLAND = new Choice<CountryIdentifier>(new CountryIdentifier("GB"));
 	
