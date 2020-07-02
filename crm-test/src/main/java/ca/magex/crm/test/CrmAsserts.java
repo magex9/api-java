@@ -22,15 +22,21 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocalizedFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
-import ca.magex.json.model.JsonArray;
+import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
+import ca.magex.crm.api.system.id.ProvinceIdentifier;
+import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.json.model.JsonObject;
 
 public class CrmAsserts {
+	
+	public static final String BASE_URL = "http://api.magex.ca/crm/rest";
 	
 	public static final Localized GROUP = new Localized("GRP", "Group", "Groupe");
 	
@@ -48,65 +54,71 @@ public class CrmAsserts {
 	
 	public static final Localized ORG_ASSISTANT = new Localized("ORG_ASSISTANT", "Organization Assistant", "Assistant du l'organization");
 	
-	public static final Localized ENGLISH = new Localized("EN", "English", "Anglais");
+	public static final Choice<LanguageIdentifier> ENGLISH = new Choice<LanguageIdentifier>(new LanguageIdentifier("EN"));
 	
-	public static final Localized FRENCH = new Localized("FR", "French", "Français");
+	public static final Choice<LanguageIdentifier> FRENCH = new Choice<LanguageIdentifier>(new LanguageIdentifier("FR"));
 	
-	public static final Localized CANADA = new Localized("CA", "Canada", "Canada");
+	public static final Choice<CountryIdentifier> CANADA = new Choice<CountryIdentifier>(new CountryIdentifier("CA"));
 	
-	public static final Localized ALBERTA = new Localized("AB", "Alberta", "Alberta");
+	public static final Choice<ProvinceIdentifier> ALBERTA = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("AB"));
 	
-	public static final Localized BRITISH_COLUMBIA = new Localized("BC", "British Columbia", "Colombie britannique");
+	public static final Choice<ProvinceIdentifier> BRITISH_COLUMBIA = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("BC"));
 	
-	public static final Localized ONTARIO = new Localized("ON", "Ontario", "Ontario");
+	public static final Choice<ProvinceIdentifier> ONTARIO = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("ON"));
 	
-	public static final Localized QUEBEC = new Localized("QC", "Quebec", "Québec");
+	public static final Choice<ProvinceIdentifier> QUEBEC = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("QC"));
 	
-	public static final Localized NEWFOUNDLAND = new Localized("NL", "Newfoundland and Labrador", "Terre-Neuve et Labrador");
+	public static final Choice<ProvinceIdentifier> NEWFOUNDLAND = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("NL"));
 	
-	public static final Localized UNITED_STATES = new Localized("US", "United States", "États Unis");
+	public static final Choice<CountryIdentifier> UNITED_STATES = new Choice<CountryIdentifier>(new CountryIdentifier("US"));
 	
-	public static final Localized NEW_YORK = new Localized("NY", "United States", "États Unis");
+	public static final Choice<ProvinceIdentifier> NEW_YORK = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("NY"));
 	
-	public static final Localized MASSACHUSETTS = new Localized("MA", "Massachusetts", "Massachusetts");
+	public static final Choice<ProvinceIdentifier> MASSACHUSETTS = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("MA"));
 	
-	public static final Localized ILLINOIS = new Localized("IL", "Illinois", "Illinois");
+	public static final Choice<ProvinceIdentifier> ILLINOIS = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("IL"));
 	
-	public static final Localized MEXICO = new Localized("MX", "Mexico", "Mexique");
+	public static final Choice<CountryIdentifier> MEXICO = new Choice<CountryIdentifier>(new CountryIdentifier("MX"));
 	
-	public static final Localized NUEVO_LEON = new Localized("NL", "Nuevo Leon", "Nuevo Leon");
+	public static final Choice<ProvinceIdentifier> NUEVO_LEON = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("NL"));
 	
-	public static final Localized ENGLAND = new Localized("GB", "England", "Angleterre");
+	public static final Choice<CountryIdentifier> ENGLAND = new Choice<CountryIdentifier>(new CountryIdentifier("GB"));
 	
-	public static final Localized LONDON = new Localized("JS", "Greater London", "Le Grand Londres");
+	public static final Choice<ProvinceIdentifier> LONDON = new Choice<ProvinceIdentifier>("Greater London");
 	
-	public static final Localized CHESHIRE = new Localized("CH", "Cheshire", "Cheshire");
+	public static final Choice<ProvinceIdentifier> CHESHIRE = new Choice<ProvinceIdentifier>("Cheshire");
 	
-	public static final Localized FRANCE = new Localized("FR", "France", "Franche");
+	public static final Choice<CountryIdentifier> FRANCE = new Choice<CountryIdentifier>(new CountryIdentifier("FR"));
 	
-	public static final Localized ILE_DE_FRANCE = new Localized("IF", "Île-de-France", "Île-de-France");
+	public static final Choice<ProvinceIdentifier> ILE_DE_FRANCE = new Choice<ProvinceIdentifier>("Île-de-France");
 	
-	public static final Localized MIDI_PYRENESE = new Localized("MD", "Midi-Pyrénées", "Midi-Pyrénées");
+	public static final Choice<ProvinceIdentifier> MIDI_PYRENESE = new Choice<ProvinceIdentifier>("Midi-Pyrénées");
 	
-	public static final Localized GERMANY = new Localized("DE", "Germany", "Allemagne");
+	public static final Choice<CountryIdentifier> GERMANY = new Choice<CountryIdentifier>(new CountryIdentifier("DE"));
 	
-	public static final Localized RHINE = new Localized("RH", "North Rhine-Westphalia", "Rhénanie du Nord-Westphalie");
+	public static final Choice<ProvinceIdentifier> RHINE = new Choice<ProvinceIdentifier>("North Rhine-Westphalia");
 	
-	public static final MailingAddress MAILING_ADDRESS = new MailingAddress("123 Main St", "Ottawa", QUEBEC.getCode(), CANADA.getCode(), "K1K1K1");
+	public static final MailingAddress MAILING_ADDRESS = new MailingAddress("123 Main St", "Ottawa", QUEBEC, CANADA, "K1K1K1");
 
-	public static final MailingAddress CA_ADDRESS = new MailingAddress("111 Wellington Street", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K1A 0A9");
+	public static final MailingAddress CA_ADDRESS = new MailingAddress("111 Wellington Street", "Ottawa", ONTARIO, CANADA, "K1A 0A9");
 	
-	public static final MailingAddress NL_ADDRESS = new MailingAddress("90 Avalon Drive", "Labrador City", NEWFOUNDLAND.getCode(), CANADA.getCode(), "A2V 2Y2");
+	public static final MailingAddress NL_ADDRESS = new MailingAddress("90 Avalon Drive", "Labrador City", NEWFOUNDLAND, CANADA, "A2V 2Y2");
 
-	public static final MailingAddress US_ADDRESS = new MailingAddress("465 Huntington Ave", "Boston", MASSACHUSETTS.getCode(), UNITED_STATES.getCode(), "02115");
+	public static final MailingAddress US_ADDRESS = new MailingAddress("465 Huntington Ave", "Boston", MASSACHUSETTS, UNITED_STATES, "02115");
 	
-	public static final MailingAddress MX_ADDRESS = new MailingAddress("120 Col. Hipodromo Condesa", "Monterrey", NUEVO_LEON.getCode(), MEXICO.getCode(), "06100");
+	public static final MailingAddress MX_ADDRESS = new MailingAddress("120 Col. Hipodromo Condesa", "Monterrey", NUEVO_LEON, MEXICO, "06100");
 	
-	public static final MailingAddress EN_ADDRESS = new MailingAddress("35 Tower Hill", "London", LONDON.getEnglishName(), ENGLAND.getCode(), "EC3N 4DR");
+	public static final MailingAddress EN_ADDRESS = new MailingAddress("35 Tower Hill", "London", LONDON, ENGLAND, "EC3N 4DR");
 	
-	public static final MailingAddress FR_ADDRESS = new MailingAddress("5 Avenue Anatole", "Paris", ILE_DE_FRANCE.getEnglishName(), FRANCE.getCode(), "75007");
+	public static final MailingAddress FR_ADDRESS = new MailingAddress("5 Avenue Anatole", "Paris", ILE_DE_FRANCE, FRANCE, "75007");
 	
-	public static final MailingAddress DE_ADDRESS = new MailingAddress("Porschepl. 1", "Stuttgart", MIDI_PYRENESE.getEnglishName(), GERMANY.getCode(), "70435");
+	public static final MailingAddress DE_ADDRESS = new MailingAddress("Porschepl. 1", "Stuttgart", MIDI_PYRENESE, GERMANY, "70435");
+	
+	public static final Choice<SalutationIdentifier> MISS = new Choice<SalutationIdentifier>(new SalutationIdentifier("MISS"));
+	
+	public static final Choice<SalutationIdentifier> MRS = new Choice<SalutationIdentifier>(new SalutationIdentifier("MRS"));
+	
+	public static final Choice<SalutationIdentifier> MR = new Choice<SalutationIdentifier>(new SalutationIdentifier("MR"));
 	
 	public static final String SYSTEM_ORG = "System";
 	
@@ -114,7 +126,7 @@ public class CrmAsserts {
 	
 	public static final String SYSTEM_EMAIL = "root@localhost";
 	
-	public static final PersonName PERSON_NAME = new PersonName("MR", "Chris", "P", "Bacon");
+	public static final PersonName PERSON_NAME = new PersonName(MR, "Chris", "P", "Bacon");
 	
 	public static final String PERSON_EMAIL = "crhis@bacon.com";
 	
@@ -124,31 +136,9 @@ public class CrmAsserts {
 	
 	public static final String PERSON_FAX = "6138884567";
 	
-	public static final Communication HOME_COMMUNICATIONS = new Communication(null, ENGLISH.getCode(), "user@home.ca", new Telephone("5558883333", null), null);
+	public static final Communication HOME_COMMUNICATIONS = new Communication(null, ENGLISH, "user@home.ca", new Telephone("5558883333", null), null);
 	
-	public static final Communication WORK_COMMUNICATIONS = new Communication("Developer", ENGLISH.getCode(), "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
-	
-//	public static final String BUSINESS_SECTOR = "execs";
-//	
-//	public static final String BUSINESS_UNIT = "ceo";
-//	
-//	public static final String BUSINESS_CLASSIFICATION = "director";
-//	
-//	public static final BusinessPosition BUSINESS_POSITION = new BusinessPosition(BUSINESS_SECTOR, BUSINESS_UNIT, BUSINESS_CLASSIFICATION);
-//	
-//	public static final String DEVELOPER_SECTOR = "imit";
-//	
-//	public static final String DEVELOPER_UNIT = "ops";
-//	
-//	public static final String DEVELOPER_CLASSIFICATION = "sysadmin";
-//	
-//	public static final BusinessPosition DEVELOPER_POSITION = new BusinessPosition(DEVELOPER_SECTOR, DEVELOPER_UNIT, DEVELOPER_CLASSIFICATION);
-	
-	public static final String MISS = "MISS";
-
-	public static final String MRS = "MRS";
-
-	public static final String MR = "MR";
+	public static final Communication WORK_COMMUNICATIONS = new Communication("Developer", ENGLISH, "user@work.ca", new Telephone("5551234567", "42"), "8881234567");
 	
 	public static final PersonName ADAM = new PersonName(MR, "Adam", "A", "Anderson");
 	
@@ -193,7 +183,8 @@ public class CrmAsserts {
 		new Localized("A_B_", "** Footnote", "Jusqu’à ce que"),
 		new Localized("AB_C", "* Astrix", "œil"),
 		new Localized("XYZ", "XYZ", "XYZ"),
-		ENGLISH, FRENCH
+		new Localized("EN", "English", "Anglais"),
+		new Localized("FR", "French", "Français")
 	);
 	
 	public static final List<String> LOCALIZED_SORTED_ENGLISH_ASC = List.of(
