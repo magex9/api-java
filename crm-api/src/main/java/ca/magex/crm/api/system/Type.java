@@ -13,17 +13,17 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
 public enum Type {
 	
-	STATUS("STATUSES", "Statuses", "Statuts", null, false, false), 
-	LOCALE("LOCALES", "Locales", "Locaux", null, false, false), 
-	AUTHENTICATION_GROUP("AUTH_GROUPS", "Authentication Groups", "Groupes d'authentification", null, true, true), 
-	AUTHENTICATION_ROLE("AUTH_ROLES", "Authentication Roles", "Rôles d'authentification", AUTHENTICATION_GROUP, false, true),
-	MESSAGE_TYPE("MESSAGE_TYPES", "Message Types", "Types de messages", null, false, true),
-	SALUTATION("SALUTATIONS", "Salutations", "Salutations", null, false, true), 
-	LANGUAGE("LANGUAGES", "Languages", "Langages", null, false, true),
-	COUNTRY("COUNTRIES", "Countries", "Des pays", null, false, true),
-	PROVINCE("PROVINCES", "Canadian Provinces", "Provinces canadiennes", COUNTRY, false, true),
-	BUSINESS_GROUP("BUSINESS_GROUPS", "Business Sector", "Secteur d'activité", null, true, true),
-	BUSINESS_ROLE("BUSINESS_ROLES", "Business Unit", "Équipe commerciale", BUSINESS_GROUP, false, true);
+	STATUS("STATUSES", "Statuses", "Statuts", null, false, false, false), 
+	LOCALE("LOCALES", "Locales", "Locaux", null, false, false, false), 
+	AUTHENTICATION_GROUP("AUTH_GROUPS", "Authentication Groups", "Groupes d'authentification", null, true, true, false), 
+	AUTHENTICATION_ROLE("AUTH_ROLES", "Authentication Roles", "Rôles d'authentification", AUTHENTICATION_GROUP, false, true, false),
+	MESSAGE_TYPE("MESSAGE_TYPES", "Message Types", "Types de messages", null, false, true, false),
+	SALUTATION("SALUTATIONS", "Salutations", "Salutations", null, false, true, true), 
+	LANGUAGE("LANGUAGES", "Languages", "Langages", null, false, true, true),
+	COUNTRY("COUNTRIES", "Countries", "Des pays", null, false, true, true),
+	PROVINCE("PROVINCES", "Canadian Provinces", "Provinces canadiennes", COUNTRY, false, true, true),
+	BUSINESS_GROUP("BUSINESS_GROUPS", "Business Sector", "Secteur d'activité", null, true, true, false),
+	BUSINESS_ROLE("BUSINESS_ROLES", "Business Unit", "Équipe commerciale", BUSINESS_GROUP, false, true, true);
 	
 	private static final Map<String, Type> INDEX = Arrays.asList(values()).stream().collect(Collectors.toMap(t -> t.getCode(), t -> t));
 	
@@ -45,7 +45,9 @@ public enum Type {
 	
 	private boolean extendable;
 	
-	private Type(String code, String english, String french, Type parent, boolean recurrsive, boolean extendable) {
+	private boolean choice;
+	
+	private Type(String code, String english, String french, Type parent, boolean recurrsive, boolean extendable, boolean choice) {
 		this.name = new Localized(code, english, french);
 		this.parent = parent;
 		this.recrussive = recurrsive;
@@ -74,6 +76,10 @@ public enum Type {
 	
 	public boolean isExtendable() {
 		return extendable;
+	}
+	
+	public boolean isChoice() {
+		return choice;
 	}
 	
 	@Override

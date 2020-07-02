@@ -85,6 +85,15 @@ public class Option implements Serializable {
 		return new Option(optionId, parentId, type, status, mutable, name);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <I extends OptionIdentifier> Choice<I> asChoice() {
+		return new Choice<I>((I)optionId);
+	}
+	
+	public static <I extends OptionIdentifier> Choice<I> of(String text) {
+		return new Choice<I>(text);
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
