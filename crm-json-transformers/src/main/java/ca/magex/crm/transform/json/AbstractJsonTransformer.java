@@ -13,6 +13,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
@@ -23,6 +24,8 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
 public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonElement> {
+	
+	public static final String SCHEMA_BASE = "http://api.magex.ca/crm/schema";
 	
 	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
 	
@@ -90,9 +93,9 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 				String prefix = REST_BASE + cls.getField("CONTEXT").get(null);
 				if (!identifier.startsWith(prefix))
 					throw new IllegalArgumentException("Identifier should start with: " + prefix + " -> " + identifier);
-				return (O)cls.getConstructor(new Class[] { CharSequence.class }).newInstance(new Object[] { identifier.substring(prefix.length()) });
+				return IdentifierFactory.forId(identifier.substring(prefix.length()), cls);
 			} else {
-				return (O)cls.getConstructor(new Class[] { CharSequence.class }).newInstance(new Object[] { json.getString(key) });
+				return IdentifierFactory.forId(json.getString(key), cls);
 			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to build identifier for: " + cls.getName(), e);
@@ -131,7 +134,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			parent.add(new JsonPair(key, new JsonText(text)));
 	}
 	
-	public void formatChoice(List<JsonPair> parent, String key, Object obj, Type type, Locale locale) {
+	public <O extends OptionIdentifier> void formatChoice(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
 		if (obj == null)
 			return;
 		Choice<?> choice = getProperty(obj, key, Choice.class);
@@ -145,12 +148,12 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		}
 	}
 	
-	public void formatOption(List<JsonPair> parent, String key, Object obj, Type type, Locale locale) {
+	public <O extends OptionIdentifier> void formatOption(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
 		if (obj == null)
 			return;
-		String optionCode = getProperty(obj, key, String.class);
-		if (optionCode != null) {
-			Option option = crm.findOptionByCode(type, optionCode);
+		O identifier = getProperty(obj, key, cls);
+		if (identifier != null) {
+			Option option = crm.findOption(identifier);
 			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
 		}
 	}
@@ -261,6 +264,8 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			return null;
 		} else if (json.contains(key, JsonObject.class)) {
 			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).getOptionId();
+		} else if (json.contains(key, JsonText.class)) {
+			return crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, json.getString(key))).getSingleItem().getOptionId();
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}

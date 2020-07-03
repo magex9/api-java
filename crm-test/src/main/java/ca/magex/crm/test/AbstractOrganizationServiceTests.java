@@ -504,7 +504,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.updateOrganizationMainContact(organizationA, personB);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationA, "error", "mainContactId", "Main contact organization has invalid referential integrity");
+			assertBadRequestMessage(e, organizationA, "error", "mainContactId", new Choice<>("Main contact organization has invalid referential integrity"));
 		}
 	}
 
@@ -528,7 +528,7 @@ public abstract class AbstractOrganizationServiceTests {
 				crm, 
 				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(NHL)));
 		assertEquals(1, messages.size());
-//		assertMessage(messages.get(0), new OrganizationIdentifier("org"), "error", "status", crm.findMessageId("validation.required"));
+		assertMessage(messages.get(0), new OrganizationIdentifier("org"), "error", "status", new Choice<>(new PhraseIdentifier("validation.organization.status.required")));
 	}
 
 }

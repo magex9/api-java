@@ -23,6 +23,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public class OptionsFilter implements CrmFilter<Option> {
@@ -69,7 +70,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 			} else {
 				this.name = null;
 			}
-			this.parentId = filterCriteria.containsKey("parentId") ? OptionIdentifier.forId((CharSequence) filterCriteria.get("parentId")) : null;
+			this.parentId = filterCriteria.containsKey("parentId") ? IdentifierFactory.forId((CharSequence) filterCriteria.get("parentId"), OptionIdentifier.class) : null;
 			this.type = null;
 			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
 				try {

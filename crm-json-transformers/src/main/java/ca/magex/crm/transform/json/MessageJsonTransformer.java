@@ -11,8 +11,9 @@ import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.PhraseIdentifier;
+import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
@@ -37,20 +38,33 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 	public JsonObject formatLocalized(Message message, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs, locale);
-		formatIdentifier(pairs, "identifier", message, Identifier.class, locale);
-		formatOption(pairs, "type", message, Type.MESSAGE_TYPE, locale);
+		if (locale == null) {
+			formatIdentifier(pairs, "identifier", message, Identifier.class, locale);
+		} else {
+			pairs.add(new JsonPair("context", message.getIdentifier().getContext().substring(1, message.getIdentifier().getContext().length() - 1)));
+			formatIdentifier(pairs, "identifier", message, Identifier.class, locale);
+		}
+		formatOption(pairs, "type", message, MessageTypeIdentifier.class, locale);
 		formatText(pairs, "path", message);
-		formatLocalized(pairs, "reason", message, locale);
+		formatChoice(pairs, "reason", message, PhraseIdentifier.class, locale);
 		return new JsonObject(pairs);
 	}
 
 	@Override
 	public Message parseJsonObject(JsonObject json, Locale locale) {
-		Identifier identifier = json.contains("identifier") ? parseObject("identifier", json, new IdentifierJsonTransformer(crm), locale) : null;
+		Identifier identifier = parseIdentifier(json, locale);
 		MessageTypeIdentifier type = parseOption("type", json, Type.MESSAGE_TYPE, locale);
 		String path = parseText("path", json);
 		Choice<PhraseIdentifier> reason = parseChoice("reason", json, Type.PHRASE, locale);
 		return new Message(identifier, type, path, reason);
+	}
+	
+	public Identifier parseIdentifier(JsonObject json, Locale locale) {
+		if (locale == null) {
+			return IdentifierFactory.forId(json.getString("identifier").substring(REST_BASE.length()));
+		} else {
+			return IdentifierFactory.forId("/" + json.getString("context") + "/" + json.getString("identifier"));
+		}
 	}
 	
 }
