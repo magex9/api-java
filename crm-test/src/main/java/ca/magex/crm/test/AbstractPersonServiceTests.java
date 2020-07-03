@@ -34,7 +34,6 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 

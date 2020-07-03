@@ -20,16 +20,9 @@ public class BasicOptionService implements CrmOptionService {
 	}
 
 	@Override
-	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
-		if (parentId == null) {
-			return repos.saveOption(new Option(repos.generateForType(type, name.getCode()), parentId, type, Status.ACTIVE, true, name));
-		}
-		Option parent = repos.findOption(parentId);
-		/* update the code to prepend the parent code */
-		Localized updatedName = name.withCode(parent.getCode() + "/" + name.getCode());
-		/* construct the identifier based off of the fully qualified code */
-		OptionIdentifier optionId = repos.generateForType(type, updatedName.getCode());
-		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, true, updatedName));
+	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {	
+		OptionIdentifier optionId = repos.generateForType(type, name.getCode());
+		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, true, name));
 	}
 
 	@Override

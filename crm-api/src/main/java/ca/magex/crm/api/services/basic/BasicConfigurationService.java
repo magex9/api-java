@@ -62,7 +62,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, groups("SYS", "CRM")));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
-			repos.saveUser(new User(systemId, mainContactId, username, Status.ACTIVE, roles("SYS/ADMIN", "SYS/ACTUATOR", "SYS/ACCESS", "CRM/ADMIN")));
+			repos.saveUser(new User(systemId, organizationId, mainContactId, username, Status.ACTIVE, roles("SYS/ADMIN", "SYS/ACTUATOR", "SYS/ACCESS", "CRM/ADMIN")));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
 			repos.setInitialized();

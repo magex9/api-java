@@ -1,14 +1,10 @@
 package ca.magex.crm.test.filters;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
@@ -35,184 +31,162 @@ public class LocationsFilterTests {
 			if (Identifier.class.isAssignableFrom(field.getType())) {
 				continue;
 			}
-			assertTrue(LocationsFilter.getSortOptions().contains(Sort.by(Order.asc(field.getName()))));
-			assertTrue(LocationsFilter.getSortOptions().contains(Sort.by(Order.desc(field.getName()))));
+			Assert.assertTrue(LocationsFilter.getSortOptions().contains(Sort.by(Order.asc(field.getName()))));
+			Assert.assertTrue(LocationsFilter.getSortOptions().contains(Sort.by(Order.desc(field.getName()))));
 		}
 		/* default sort should be display name ascending */
-		assertEquals(Sort.by(Order.asc("displayName")), LocationsFilter.getDefaultSort());
-		
+		Assert.assertEquals(Sort.by(Order.asc("displayName")), LocationsFilter.getDefaultSort());
+
 		/* default paging, should use default sort */
-		assertEquals(LocationsFilter.getDefaultSort(), LocationsFilter.getDefaultPaging().getSort());
+		Assert.assertEquals(LocationsFilter.getDefaultSort(), LocationsFilter.getDefaultPaging().getSort());
 	}
-	
+
+	private void assertFilterEquals(LocationsFilter expected, LocationsFilter actual) {
+		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(expected.toString(), actual.toString());
+		Assert.assertEquals(expected.hashCode(), actual.hashCode());
+	}
+
 	@Test
 	public void testFilterConstructs() {
 		LocationsFilter filter = new LocationsFilter();
-		assertNull(filter.getOrganizationId());
-		assertNull(filter.getDisplayName());
-		assertNull(filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":null,\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(null, null, null, null), filter);
-		assertEquals(new LocationsFilter(null, null, null, null).hashCode(), filter.hashCode());
-		
+		Assert.assertNull(filter.getOrganizationId());
+		Assert.assertNull(filter.getDisplayName());
+		Assert.assertNull(filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(null, null, null, null), filter);
+
 		filter = filter.withOrganizationId(new OrganizationIdentifier("G1"));
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertNull(filter.getDisplayName());
-		assertNull(filter.getReference());
-		assertNull(filter.getStatus());		
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null).hashCode(), filter.hashCode());
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertNull(filter.getDisplayName());
+		Assert.assertNull(filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null), filter);
+
 		filter = filter.withDisplayName("display");
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertNull(filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null).hashCode(), filter.hashCode());
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertNull(filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null), filter);
+
 		filter = filter.withReference("ref");
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertEquals("ref", filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());		
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertEquals("ref", filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
+
 		filter = filter.withStatus(Status.ACTIVE);
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertEquals("ref", filter.getReference());
-		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":\"ACTIVE\"}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE).hashCode(), filter.hashCode());
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertEquals("ref", filter.getReference());
+		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE), filter);
 	}
-	
+
 	@Test
 	public void testFilterMapConstructions() {
 		LocationsFilter filter = new LocationsFilter(Map.of());
-		assertNull(filter.getOrganizationId());
-		assertNull(filter.getDisplayName());
-		assertNull(filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":null,\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(null, null, null, null), filter);
-		assertEquals(new LocationsFilter(null, null, null, null).hashCode(), filter.hashCode());
-		
+		Assert.assertNull(filter.getOrganizationId());
+		Assert.assertNull(filter.getDisplayName());
+		Assert.assertNull(filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(null, null, null, null), filter);
+
 		filter = new LocationsFilter(Map.of("organizationId", "G1"));
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertNull(filter.getDisplayName());
-		assertNull(filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":null,\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null).hashCode(), filter.hashCode());
-		
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertNull(filter.getDisplayName());
+		Assert.assertNull(filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), null, null, null), filter);
+
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display"));
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertNull(filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":null,\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null).hashCode(), filter.hashCode());
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertNull(filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", null, null), filter);
+
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref"));
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertEquals("ref", filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());
-						
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertEquals("ref", filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
+
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref", "status", ""));
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertEquals("ref", filter.getReference());
-		assertNull(filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":null}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null).hashCode(), filter.hashCode());
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertEquals("ref", filter.getReference());
+		Assert.assertNull(filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", null), filter);
+
 		filter = new LocationsFilter(Map.of("organizationId", "G1", "displayName", "display", "reference", "ref", "status", "active"));
-		assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
-		assertEquals("display", filter.getDisplayName());
-		assertEquals("ref", filter.getReference());
-		assertEquals(Status.ACTIVE, filter.getStatus());
-		assertEquals("{\"organizationId\":\"\\/organizations\\/G1\",\"displayName\":\"display\",\"reference\":\"ref\",\"status\":\"ACTIVE\"}", filter.toString());
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE), filter);
-		assertEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE).hashCode(), filter.hashCode());
-		
+		Assert.assertEquals(new OrganizationIdentifier("G1"), filter.getOrganizationId());
+		Assert.assertEquals("display", filter.getDisplayName());
+		Assert.assertEquals("ref", filter.getReference());
+		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
+		assertFilterEquals(new LocationsFilter(new OrganizationIdentifier("G1"), "display", "ref", Status.ACTIVE), filter);
+
 		try {
 			new LocationsFilter(Map.of("organizationId", 1));
+		} catch (ApiException apie) {
+			Assert.assertEquals("Unable to instantiate locations filter", apie.getMessage());
+			Assert.assertTrue(apie.getCause() instanceof ClassCastException);
 		}
-		catch(ApiException apie) {
-			assertEquals("Unable to instantiate locations filter", apie.getMessage());
-			assertTrue(apie.getCause() instanceof ClassCastException);
-		}
-		
+
 		try {
 			new LocationsFilter(Map.of("displayName", 1));
+		} catch (ApiException apie) {
+			Assert.assertEquals("Unable to instantiate locations filter", apie.getMessage());
+			Assert.assertTrue(apie.getCause() instanceof ClassCastException);
 		}
-		catch(ApiException apie) {
-			assertEquals("Unable to instantiate locations filter", apie.getMessage());
-			assertTrue(apie.getCause() instanceof ClassCastException);
-		}
-		
+
 		try {
 			new LocationsFilter(Map.of("reference", 1));
+		} catch (ApiException apie) {
+			Assert.assertEquals("Unable to instantiate locations filter", apie.getMessage());
+			Assert.assertTrue(apie.getCause() instanceof ClassCastException);
 		}
-		catch(ApiException apie) {
-			assertEquals("Unable to instantiate locations filter", apie.getMessage());
-			assertTrue(apie.getCause() instanceof ClassCastException);
-		}		
-		
+
 		try {
 			new LocationsFilter(Map.of("status", 1));
+		} catch (ApiException apie) {
+			Assert.assertEquals("Unable to instantiate locations filter", apie.getMessage());
+			Assert.assertTrue(apie.getCause() instanceof ClassCastException);
 		}
-		catch(ApiException apie) {
-			assertEquals("Unable to instantiate locations filter", apie.getMessage());
-			assertTrue(apie.getCause() instanceof ClassCastException);
-		}
-		
+
 		try {
 			new LocationsFilter(Map.of("status", "dormant"));
+		} catch (ApiException apie) {
+			Assert.assertEquals("Invalid status value 'dormant' expected one of {ACTIVE,INACTIVE,PENDING}", apie.getMessage());
 		}
-		catch(ApiException apie) {
-			assertEquals("Invalid status value 'dormant' expected one of {ACTIVE,INACTIVE,PENDING}", apie.getMessage());
-		}		
 	}
-	
+
 	@Test
 	public void testApplyFilter() {
 		LocationSummary location = new LocationSummary(new LocationIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "RT", "Road and Track");
 		/* default filter should match */
-		assertTrue(new LocationsFilter().apply(location));
-		
+		Assert.assertTrue(new LocationsFilter().apply(location));
+
 		/* test organization match */
-		assertTrue(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("G1")).apply(location));
-		assertFalse(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("G2")).apply(location));
-		
+		Assert.assertTrue(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("G1")).apply(location));
+		Assert.assertFalse(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("G2")).apply(location));
+
 		/* test display name match */
-		assertTrue(new LocationsFilter().withDisplayName("ROAD").apply(location));
-		assertTrue(new LocationsFilter().withDisplayName("Road and Track").apply(location));
-		assertFalse(new LocationsFilter().withDisplayName("bobby").apply(location));
-		
+		Assert.assertTrue(new LocationsFilter().withDisplayName("ROAD").apply(location));
+		Assert.assertTrue(new LocationsFilter().withDisplayName("Road and Track").apply(location));
+		Assert.assertFalse(new LocationsFilter().withDisplayName("bobby").apply(location));
+
 		/* test reference match */
-		assertTrue(new LocationsFilter().withReference("R").apply(location));
-		assertTrue(new LocationsFilter().withReference("rt").apply(location));
-		assertFalse(new LocationsFilter().withReference("bobby").apply(location));
-		
+		Assert.assertTrue(new LocationsFilter().withReference("R").apply(location));
+		Assert.assertTrue(new LocationsFilter().withReference("rt").apply(location));
+		Assert.assertFalse(new LocationsFilter().withReference("bobby").apply(location));
+
 		/* test status match */
-		assertTrue(new LocationsFilter().withStatus(Status.ACTIVE).apply(location));
-		assertFalse(new LocationsFilter().withStatus(Status.INACTIVE).apply(location));
-		
+		Assert.assertTrue(new LocationsFilter().withStatus(Status.ACTIVE).apply(location));
+		Assert.assertFalse(new LocationsFilter().withStatus(Status.INACTIVE).apply(location));
+
 	}
 }

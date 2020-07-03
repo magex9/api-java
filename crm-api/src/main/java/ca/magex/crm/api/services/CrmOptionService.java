@@ -16,14 +16,21 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 
 public interface CrmOptionService {
 
-	default Option prototypeOption(OptionIdentifier parentId, Type type, Localized name) {
-		return new Option(null, parentId, type, Status.PENDING, true, name);
+	default Option prototypeOption(Option parent, Type type, Localized name) {
+		/* if we have a parent provided, then we need to prepend the parent code */
+		if (parent != null) {
+			return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name.withCode(parent.getCode() + "/" + name.getCode()));
+		}
+		/* no parent provided just do a pass through */
+		else {
+			return new Option(null, null, type, Status.PENDING, true, name);
+		}
 	}
 
 	default Option createOption(Option prototype) {
@@ -85,6 +92,14 @@ public interface CrmOptionService {
 		} else if (!option.getCode().matches("([A-Z0-9/]{1,20})(/[A-Z0-9/]{1,20})*")) {
 			messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.field.format")));
 		}
+		
+		// if we have a parent, the parent code MUST be a prefix of our code */
+		if (option.getParentId() != null) {
+			Option parentOption = crm.findOption(option.getParentId());
+			if (!option.getCode().startsWith(parentOption.getCode())) {
+				messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.field.invalid")));
+			}
+		}
 
 		// Make sure the existing code didn't change
 		if (option.getOptionId() != null) {
@@ -96,22 +111,22 @@ public interface CrmOptionService {
 			}
 		}
 
-		// Make sure the code is unique
-		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withType(option.getType()).withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
+		// Make sure the code is unique within a particular parent
+		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
-		// Make sure the english name is unique
-		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withType(option.getType()).withName(Lang.ENGLISH, option.getName(Lang.ENGLISH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
+		// Make sure the english name is unique within a particular parent
+		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(Lang.ENGLISH, option.getName(Lang.ENGLISH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), error, "englishName", crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure the french name is unique
-		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withType(option.getType()).withName(Lang.FRENCH, option.getName(Lang.FRENCH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
+		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(Lang.FRENCH, option.getName(Lang.FRENCH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), error, "frenchName", crm.findMessageId("validation.option.duplicate")));
 			}

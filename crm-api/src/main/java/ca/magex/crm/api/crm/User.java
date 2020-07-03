@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
@@ -33,6 +34,9 @@ public class User implements Serializable {
 	/** the person summary this user is associated with */
 	private PersonIdentifier personId;
 	
+	/** the organization this user is associated with */
+	private OrganizationIdentifier organizationId;
+	
 	/** the current status of the user */
 	private Status status;
 	
@@ -47,9 +51,10 @@ public class User implements Serializable {
 	 * @param status
 	 * @param roleIds
 	 */
-	public User(UserIdentifier userId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> roleIds) {
+	public User(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> roleIds) {
 		super();
 		this.userId = userId;
+		this.organizationId = organizationId;
 		this.personId = personId;
 		this.username = username;		
 		this.status = status;
@@ -65,12 +70,12 @@ public class User implements Serializable {
 	}
 	
 	/**
-	 * returns the unique username for the user
+	 * returns the unique identifier for the organization
 	 * @return
 	 */
-	public String getUsername() {
-		return username;
-	}
+	public OrganizationIdentifier getOrganizationId() {
+		return organizationId;
+	}	
 	
 	/** 
 	 * returns the unique identifier of the person associated with the user
@@ -78,6 +83,14 @@ public class User implements Serializable {
 	 */
 	public PersonIdentifier getPersonId() {
 		return personId;
+	}
+	
+	/**
+	 * returns the unique username for the user
+	 * @return
+	 */
+	public String getUsername() {
+		return username;
 	}
 	
 	/**
@@ -102,7 +115,7 @@ public class User implements Serializable {
 	 * @return
 	 */
 	public User withStatus(Status status) {
-		return new User(userId, personId, username, status, roleIds);
+		return new User(userId, organizationId, personId, username, status, roleIds);
 	}	
 	
 	/**
@@ -111,7 +124,7 @@ public class User implements Serializable {
 	 * @return
 	 */
 	public User withRoles(List<AuthenticationRoleIdentifier> roleIds) {
-		return new User(userId, personId, username, status, roleIds);
+		return new User(userId, organizationId, personId, username, status, roleIds);
 	}
 	
 	/**

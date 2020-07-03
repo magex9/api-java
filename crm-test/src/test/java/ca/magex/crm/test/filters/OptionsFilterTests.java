@@ -53,6 +53,12 @@ public class OptionsFilterTests {
 		/* default paging, should use default sort */
 		Assert.assertEquals(OptionsFilter.getDefaultSort(), OptionsFilter.getDefaultPaging().getSort());
 	}
+	
+	private void assertFilterEquals(OptionsFilter expected, OptionsFilter actual) {
+		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(expected.toString(), actual.toString());
+		Assert.assertEquals(expected.hashCode(), actual.hashCode());
+	}
 
 	@Test
 	public void testFilterConstructs() {
@@ -61,9 +67,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":null,\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(null, null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(null, null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(null, null, null, null), filter);
 
 		filter = filter.withName(Lang.ROOT, "ADM");
 		Assert.assertEquals(Lang.ROOT, filter.getName().getKey());
@@ -71,9 +75,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"\\\",\\\"right\\\":\\\"ADM\\\"}\",\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null), filter);
 
 		filter = filter.withOptionCode("ADM");
 		Assert.assertEquals(Lang.ROOT, filter.getName().getKey());
@@ -81,9 +83,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"\\\",\\\"right\\\":\\\"ADM\\\"}\",\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null), filter);
 
 		filter = filter.withOptionCode("ADM").withParentId(new AuthenticationGroupIdentifier("DEV"));
 		Assert.assertEquals(Lang.ROOT, filter.getName().getKey());
@@ -91,9 +91,7 @@ public class OptionsFilterTests {
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"\\\",\\\"right\\\":\\\"ADM\\\"}\",\"parentId\":\"\\/options\\/authentication-groups\\/DEV\",\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), null, null), filter);
 
 		filter = filter.withOptionCode("ADM").withParentId(new AuthenticationGroupIdentifier("DEV")).withType(Type.AUTHENTICATION_ROLE);
 		Assert.assertEquals(Lang.ROOT, filter.getName().getKey());
@@ -101,9 +99,7 @@ public class OptionsFilterTests {
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertEquals(Type.AUTHENTICATION_ROLE, filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"\\\",\\\"right\\\":\\\"ADM\\\"}\",\"parentId\":\"\\/options\\/authentication-groups\\/DEV\",\"type\":\"AUTHENTICATION_ROLE\",\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null), filter);
 
 		filter = filter.withOptionCode("ADM").withParentId(new AuthenticationGroupIdentifier("DEV")).withType(Type.AUTHENTICATION_ROLE).withStatus(Status.ACTIVE);
 		Assert.assertEquals(Lang.ROOT, filter.getName().getKey());
@@ -111,9 +107,7 @@ public class OptionsFilterTests {
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertEquals(Type.AUTHENTICATION_ROLE, filter.getType());
 		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"\\\",\\\"right\\\":\\\"ADM\\\"}\",\"parentId\":\"\\/options\\/authentication-groups\\/DEV\",\"type\":\"AUTHENTICATION_ROLE\",\"status\":\"ACTIVE\"}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, Status.ACTIVE), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, Status.ACTIVE).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, Status.ACTIVE), filter);
 	}
 	
 	@Test
@@ -123,9 +117,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":null,\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(null, null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(null, null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(null, null, null, null), filter);
 
 		filter = new OptionsFilter(Map.of("name", "ADM", "type", "", "status", ""));
 		Assert.assertEquals(Lang.ROOT, filter.getName().getKey());
@@ -133,9 +125,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"\\\",\\\"right\\\":\\\"ADM\\\"}\",\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ROOT, "ADM"), null, null, null), filter);
 		
 		filter = new OptionsFilter(Map.of("englishName", "Admin"));
 		Assert.assertEquals(Lang.ENGLISH, filter.getName().getKey());
@@ -143,9 +133,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"en_CA\\\",\\\"right\\\":\\\"Admin\\\"}\",\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ENGLISH, "Admin"), null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.ENGLISH, "Admin"), null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.ENGLISH, "Admin"), null, null, null), filter);
 		
 		filter = new OptionsFilter(Map.of("frenchName", "Admin"));
 		Assert.assertEquals(Lang.FRENCH, filter.getName().getKey());
@@ -153,9 +141,7 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"fr_CA\\\",\\\"right\\\":\\\"Admin\\\"}\",\"parentId\":null,\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), null, null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), null, null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), null, null, null), filter);
 
 		filter = new OptionsFilter(Map.of("frenchName", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString()));
 		Assert.assertEquals(Lang.FRENCH, filter.getName().getKey());		
@@ -163,9 +149,7 @@ public class OptionsFilterTests {
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertNull(filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"fr_CA\\\",\\\"right\\\":\\\"Admin\\\"}\",\"parentId\":\"\\/options\\/authentication-groups\\/DEV\",\"type\":null,\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), null, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), null, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), null, null), filter);
 
 		filter = new OptionsFilter(Map.of("frenchName", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString(), "type", Type.AUTHENTICATION_ROLE.name()));
 		Assert.assertEquals(Lang.FRENCH, filter.getName().getKey());
@@ -173,9 +157,7 @@ public class OptionsFilterTests {
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertEquals(Type.AUTHENTICATION_ROLE, filter.getType());
 		Assert.assertNull(filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"fr_CA\\\",\\\"right\\\":\\\"Admin\\\"}\",\"parentId\":\"\\/options\\/authentication-groups\\/DEV\",\"type\":\"AUTHENTICATION_ROLE\",\"status\":null}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null), filter);
 
 		filter = new OptionsFilter(Map.of("frenchName", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString(), "type", Type.AUTHENTICATION_ROLE.name(), "status", Status.ACTIVE.name()));
 		Assert.assertEquals(Lang.FRENCH, filter.getName().getKey());
@@ -183,9 +165,7 @@ public class OptionsFilterTests {
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertEquals(Type.AUTHENTICATION_ROLE, filter.getType());
 		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
-		Assert.assertEquals("{\"name\":\"{\\\"left\\\":\\\"fr_CA\\\",\\\"right\\\":\\\"Admin\\\"}\",\"parentId\":\"\\/options\\/authentication-groups\\/DEV\",\"type\":\"AUTHENTICATION_ROLE\",\"status\":\"ACTIVE\"}", filter.toString());
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, Status.ACTIVE), filter);
-		Assert.assertEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, Status.ACTIVE).hashCode(), filter.hashCode());
+		assertFilterEquals(new OptionsFilter(new ImmutablePair<>(Lang.FRENCH, "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, Status.ACTIVE), filter);
 		
 		try {
 			new OptionsFilter(Map.of("type", "Canada"));
