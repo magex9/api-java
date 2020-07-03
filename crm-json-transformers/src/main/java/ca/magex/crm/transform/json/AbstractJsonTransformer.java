@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
@@ -22,6 +23,8 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
 public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonElement> {
+	
+	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
 	
 	protected final CrmServices crm;
 	
@@ -80,10 +83,20 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		throw new UnsupportedOperationException("Unsupported json element: " + json.getClass().getSimpleName());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <O extends Identifier> O parseIdentifier(String key, JsonObject json, Class<O> cls, Locale locale) {
-		return (O)new IdentifierJsonTransformer(crm).parse(json.get(key), locale);
-		//return (O)parseObject(key, json.get(key), new IdentifierJsonTransformer(crm), locale);
+		try {
+			if (locale == null) {
+				String identifier = json.getString(key);
+				String prefix = REST_BASE + cls.getField("CONTEXT").get(null);
+				if (!identifier.startsWith(prefix))
+					throw new IllegalArgumentException("Identifier should start with: " + prefix + " -> " + identifier);
+				return (O)cls.getConstructor(new Class[] { CharSequence.class }).newInstance(new Object[] { identifier.substring(prefix.length()) });
+			} else {
+				return (O)cls.getConstructor(new Class[] { CharSequence.class }).newInstance(new Object[] { json.getString(key) });
+			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Unable to build identifier for: " + cls.getName(), e);
+		}
 	}
 	
 	public <O> O parseObject(String key, JsonObject json, Transformer<O, JsonElement> transformer, Locale locale) {
@@ -179,7 +192,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		O identifier = getProperty(obj, key, cls);
 		if (locale == null) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("http://api.magex.ca/crm/rest");
+			sb.append(REST_BASE);
 			sb.append(identifier.toString());
 			parent.add(new JsonPair(key, sb.toString()));
 		} else {
@@ -199,7 +212,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			List<JsonElement> elements = new ArrayList<JsonElement>();
 			if (list != null) {
 				for (O identifier : list) {
-					elements.add(new JsonText("http://api.magex.ca/crm/rest" + identifier));
+					elements.add(new JsonText(REST_BASE + identifier));
 				}
 			}
 			parent.add(new JsonPair(key, new JsonArray(elements)));
@@ -259,37 +272,17 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		} else if (json.contains(key, JsonObject.class)) {
 			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).asChoice();
 		} else if (json.contains(key, JsonText.class)) {
+			if (locale != null) {
+				try {
+					return new Choice<I>(crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, json.getString(key))).getSingleItem().getOptionId());
+				} catch (ItemNotFoundException e) { }
+			}
 			return new Choice<I>(json.getString(key));
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}
 	}
 	
-//	public String parseOption(String key, JsonObject json, String typeCode, String parentCode, String parentKey, Locale locale) {
-//		Identifier parentId = Type.of(parentCode).getLookupId();
-//		Option parent = null;
-//		if (!json.contains(parentKey)) {
-//			throw null;
-//		} else if (json.contains(parentKey, JsonObject.class)) {
-//			parent = crm.findOptionByCode(parentId, json.getObject(parentKey).getString("@value"));
-//		} else if (json.contains(parentKey, JsonText.class)) {
-//			parent = crm.findOptionByLocalizedName(parentId, locale, json.getString(parentKey));
-//		} else {
-//			throw new IllegalArgumentException("Unexpected type of option: " + parentKey);
-//		}
-//		
-//		Identifier lookupId = Type.of(typeCode, parent.getCode()).getLookupId();
-//		if (!json.contains(key)) {
-//			return null;
-//		} else if (json.contains(key, JsonObject.class)) {
-//			return crm.findOptionByCode(lookupId, json.getObject(key).getString("@value")).getCode();
-//		} else if (json.contains(key, JsonText.class)) {
-//			return crm.findOptionByLocalizedName(lookupId, locale, json.getString(key)).getCode();
-//		} else {
-//			throw new IllegalArgumentException("Unexpected type of option: " + key);
-//		}
-//	}
-
 	public List<String> parseTexts(String key, JsonObject json) {
 		List<String> list = new ArrayList<String>();
 		for (JsonElement child : json.getArray(key).values()) {

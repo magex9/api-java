@@ -51,8 +51,10 @@ public class LocalizedJsonTransformerTests {
 	@Test
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(GROUP, null);
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), root.keys());
-		assertEquals("Localized", root.getString("@type"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), root.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/system/Localized", root.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookup/phrases/GRP", root.getString("@id"));
 		assertEquals("GRP", root.getString("@value"));
 		assertEquals("Group", root.getString("@en"));
 		assertEquals("Groupe", root.getString("@fr"));

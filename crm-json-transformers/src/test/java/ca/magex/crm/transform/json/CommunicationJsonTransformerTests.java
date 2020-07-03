@@ -75,30 +75,25 @@ public class CommunicationJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(communication, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), root.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", root.getString("@context"));
+		assertEquals(List.of("jobTitle", "language", "email", "homePhone", "faxNumber"), root.keys());
 		assertEquals("Developer", root.getString("jobTitle"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/languages/en", root.getString("language"));
+		assertEquals("EN", root.getString("language"));
 		assertEquals("user@work.ca", root.getString("email"));
-		assertEquals(List.of("@context", "number", "extension"), root.getObject("homePhone").keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", root.getObject("homePhone").getString("@context"));
+		assertEquals(List.of("number", "extension"), root.getObject("homePhone").keys());
 		assertEquals("5551234567", root.getObject("homePhone").getString("number"));
 		assertEquals("42", root.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", root.getString("faxNumber"));
-		assertEquals(communication, transformer.parse(root, Lang.ROOT));
 	}
 	
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(communication, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), english.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", english.getString("@context"));
+		assertEquals(List.of("jobTitle", "language", "email", "homePhone", "faxNumber"), english.keys());
 		assertEquals("Developer", english.getString("jobTitle"));
 		assertEquals("English", english.getString("language"));
 		assertEquals("user@work.ca", english.getString("email"));
-		assertEquals(List.of("@context", "number", "extension"), english.getObject("homePhone").keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", english.getObject("homePhone").getString("@context"));
+		assertEquals(List.of("number", "extension"), english.getObject("homePhone").keys());
 		assertEquals("5551234567", english.getObject("homePhone").getString("number"));
 		assertEquals("42", english.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", english.getString("faxNumber"));
@@ -109,13 +104,11 @@ public class CommunicationJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(communication, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), french.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", french.getString("@context"));
+		assertEquals(List.of("jobTitle", "language", "email", "homePhone", "faxNumber"), french.keys());
 		assertEquals("Developer", french.getString("jobTitle"));
 		assertEquals("Anglais", french.getString("language"));
 		assertEquals("user@work.ca", french.getString("email"));
-		assertEquals(List.of("@context", "number", "extension"), french.getObject("homePhone").keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", french.getObject("homePhone").getString("@context"));
+		assertEquals(List.of("number", "extension"), french.getObject("homePhone").keys());
 		assertEquals("5551234567", french.getObject("homePhone").getString("number"));
 		assertEquals("42", french.getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", french.getString("faxNumber"));
