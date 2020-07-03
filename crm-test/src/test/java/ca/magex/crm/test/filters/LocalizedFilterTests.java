@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ca.magex.crm.api.filters.LocalizedFilter;
-import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.Localized;
 
 public class LocalizedFilterTests {
