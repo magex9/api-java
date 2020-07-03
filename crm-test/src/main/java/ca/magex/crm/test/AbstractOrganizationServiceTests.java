@@ -28,6 +28,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
@@ -434,7 +435,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.createOrganization("The organization can only have a name with a maximum or 60 characters", List.of(NHL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "displayName", "Display name must be 60 characters or less");
+			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", "Display name must be 60 characters or less");
 		}
 	}
 
@@ -525,7 +526,7 @@ public abstract class AbstractOrganizationServiceTests {
 				crm, 
 				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(NHL)));
 		assertEquals(1, messages.size());
-		assertMessage(messages.get(0), new OrganizationIdentifier("org"), "error", "status", crm.getDictionary().getMessage("validation.organization.status.required").getEnglishName());
+//		assertMessage(messages.get(0), new OrganizationIdentifier("org"), "error", "status", crm.findMessageId("validation.required"));
 	}
 
 }
