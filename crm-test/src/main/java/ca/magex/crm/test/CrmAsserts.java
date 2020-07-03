@@ -356,8 +356,13 @@ public class CrmAsserts {
 	}
 
 	public static void assertBadRequestMessage(BadRequestException e, Identifier identifier, String type, String path, Choice<PhraseIdentifier> reason) {
+		assertEquals(1, e.getMessages().size());
+		assertBadRequestMessage(e, 0, identifier, type, path, reason);
+	}
+	
+	public static void assertBadRequestMessage(BadRequestException e, int index, Identifier identifier, String type, String path, Choice<PhraseIdentifier> reason) {
 		assertEquals(e.getMessages().stream().map((m) -> m.toString()).collect(Collectors.joining()), 1, e.getMessages().size());
-		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
+		assertMessage(e.getMessages().get(index), identifier, type, path, reason);
 	}
 	
 	public static void printLookupAsserts(JsonObject json) {
