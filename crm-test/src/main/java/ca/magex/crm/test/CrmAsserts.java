@@ -29,6 +29,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.json.model.JsonObject;
@@ -346,16 +347,15 @@ public class CrmAsserts {
 		assertEquals(last, page.isLast());
 	}
 	
-	public static void assertMessage(Message message, Identifier identifier, String type, String path, String reason) {
+	public static void assertMessage(Message message, Identifier identifier, String type, String path, Choice<PhraseIdentifier> reason) {
 		if (identifier != null)
 			assertEquals(identifier, message.getIdentifier());
 		assertEquals(type, message.getType());
 		assertEquals(path, message.getPath());
-		// TODO assert the reasons equal
-//		assertTrue(message.getReason().get(Lang.ENGLISH) + " !~ " + reason, message.getReason().get(Lang.ENGLISH).matches(reason));
+		assertEquals(reason, message.getReason());
 	}
 
-	public static void assertBadRequestMessage(BadRequestException e, Identifier identifier, String type, String path, String reason) {
+	public static void assertBadRequestMessage(BadRequestException e, Identifier identifier, String type, String path, Choice<PhraseIdentifier> reason) {
 		assertEquals(e.getMessages().stream().map((m) -> m.toString()).collect(Collectors.joining()), 1, e.getMessages().size());
 		assertMessage(e.getMessages().get(0), identifier, type, path, reason);
 	}
