@@ -14,8 +14,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 public enum Type {
 	
 	STATUS("STATUSES", "Statuses", "Statuts", null, false, false, false), 
-	LOCALE("LOCALES", "Locales", "Locaux", null, false, false, false), 
-	PHRASE("PHRASES", "Phrases", "Phrases", null, true, true, true),
+	LOCALE("LOCALES", "Locales", "Locaux", null, false, false, false),
+	DICTIONARY("DICTIONARIES", "Dictionaries", "Dictionnaires", null, true, true, false),
+	PHRASE("PHRASES", "Phrases", "Phrases", DICTIONARY, true, true, true),
 	MESSAGE_TYPE("MESSAGE_TYPES", "Message Types", "Types de messages", null, false, true, false),
 	AUTHENTICATION_GROUP("AUTH_GROUPS", "Authentication Groups", "Groupes d'authentification", null, true, true, false), 
 	AUTHENTICATION_ROLE("AUTH_ROLES", "Authentication Roles", "Rôles d'authentification", AUTHENTICATION_GROUP, false, true, false),

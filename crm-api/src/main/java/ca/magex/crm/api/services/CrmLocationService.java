@@ -191,7 +191,7 @@ public interface CrmLocationService {
 			try {
 				crm.findOrganizationDetails(location.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(location.getLocationId(), error, "organizationId", crm.findMessageId("validation.entity.missing")));
+				messages.add(new Message(location.getLocationId(), error, "organizationId", crm.findMessageId("validation.entity.invalid")));
 			}
 		}
 
@@ -206,7 +206,7 @@ public interface CrmLocationService {
 		if (StringUtils.isBlank(location.getReference())) {
 			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.field.required")));
 		} else if (!location.getReference().matches("[A-Z0-9-]{1,60}")) {
-			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.format.invalid")));
+			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.field.format")));
 		}
 
 		// Display Name
@@ -256,8 +256,12 @@ public interface CrmLocationService {
 		// Province
 		if (address.getProvince().isEmpty()) {
 			messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.field.required")));
-		} else if (address.getCountry().isEmpty()) {
-			messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.field.forbidden")));
+		} else {
+			try {
+				crm.findOption(address.getProvince().getIdentifier());
+			} catch (ItemNotFoundException e) {
+				messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.option.missing")));
+			}
 		}
 
 		// Country
@@ -265,8 +269,7 @@ public interface CrmLocationService {
 			messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.field.required")));
 		} else {
 			try {
-				if (!crm.findOption(address.getCountry().getIdentifier()).getType().equals(Type.COUNTRY))
-					messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.option.type")));
+				crm.findOption(address.getCountry().getIdentifier());
 			} catch (ItemNotFoundException e) {
 				messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.option.missing")));
 			}
@@ -276,7 +279,7 @@ public interface CrmLocationService {
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
 			if (address.getCountry() != null && address.getCountry().isIdentifer() && address.getCountry().getIdentifier().equals(crm.findOptionByCode(Type.COUNTRY, "CA").getOptionId())) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
-					messages.add(new Message(identifier, error, path + ".provinceCode", crm.findMessageId("validation.field.format.invalid")));
+					messages.add(new Message(identifier, error, path + ".provinceCode", crm.findMessageId("validation.field.format")));
 				}
 			}
 		}
