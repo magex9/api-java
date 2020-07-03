@@ -28,6 +28,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
@@ -38,6 +39,7 @@ import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 
 @Transactional
 public abstract class AbstractOrganizationServiceTests {
@@ -435,7 +437,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.createOrganization("The organization can only have a name with a maximum or 60 characters", List.of(NHL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", "Display name must be 60 characters or less");
+			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(new PhraseIdentifier("options/phrases/VALIDATION/FIELD/MAXLENGTH"))); // TODO make PhraseIdentifier now work
 		}
 	}
 
