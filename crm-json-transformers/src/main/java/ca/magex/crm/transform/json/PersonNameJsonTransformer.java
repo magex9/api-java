@@ -35,7 +35,7 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 	public JsonObject formatLocalized(PersonName name, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs, locale);
-		formatChoice(pairs, "salutation", name, Type.SALUTATION, locale);
+		formatChoice(pairs, "salutation", name, SalutationIdentifier.class, locale);
 		formatText(pairs, "firstName", name);
 		formatText(pairs, "middleName", name);
 		formatText(pairs, "lastName", name);

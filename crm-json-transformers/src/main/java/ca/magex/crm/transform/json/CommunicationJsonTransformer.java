@@ -37,7 +37,7 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs, locale);
 		formatText(pairs, "jobTitle", communication);
-		formatChoice(pairs, "language", communication, Type.LANGUAGE, locale);
+		formatChoice(pairs, "language", communication, LanguageIdentifier.class, locale);
 		formatText(pairs, "email", communication);
 		formatTransformer(pairs, "homePhone", communication, new TelephoneJsonTransformer(crm), locale);
 		formatText(pairs, "faxNumber", communication);

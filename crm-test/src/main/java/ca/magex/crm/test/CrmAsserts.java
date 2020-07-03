@@ -29,6 +29,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
@@ -350,7 +351,7 @@ public class CrmAsserts {
 	public static void assertMessage(Message message, Identifier identifier, String type, String path, Choice<PhraseIdentifier> reason) {
 		if (identifier != null)
 			assertEquals(identifier, message.getIdentifier());
-		assertEquals(type, message.getType());
+		assertEquals(new MessageTypeIdentifier(type), message.getType());
 		assertEquals(path, message.getPath());
 		assertEquals(reason, message.getReason());
 	}

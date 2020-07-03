@@ -38,8 +38,8 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 		formatType(pairs, locale);
 		formatText(pairs, "street", address);
 		formatText(pairs, "city", address);
-		formatChoice(pairs, "province", address, Type.PROVINCE, locale);
-		formatChoice(pairs, "country", address, Type.COUNTRY, locale);
+		formatChoice(pairs, "province", address, ProvinceIdentifier.class, locale);
+		formatChoice(pairs, "country", address, CountryIdentifier.class, locale);
 		formatText(pairs, "postalCode", address);
 		return new JsonObject(pairs);
 	}

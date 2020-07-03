@@ -44,19 +44,12 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	public String buildContext(Option option, boolean identifier, Locale locale) {
 		StringBuilder sb = new StringBuilder();
-//		if (option.getParentId() != null && identifier) {
-//			Option parent = crm.findOption(option.getParentId());
-//			sb.append(buildContext(parent, identifier, locale));
-//			sb.append("/");
-//			sb.append(StringConverter.upperToLowerCase(parent.getName().getCode()));
-//			sb.append("/");
-//		} else {
-			if (identifier) {
-				sb.append("http://api.magex.ca/crm/rest/lookups/");
-			} else {
-				sb.append("http://api.magex.ca/crm/schema/lookup/");
-			}
-//		}
+		if (identifier) {
+			sb.append(REST_BASE);
+		} else {
+			sb.append(SCHEMA_BASE);
+		}
+		sb.append("/lookups/");
 		sb.append(formatType(option.getType(), identifier));
 		return sb.toString();
 	}
@@ -71,12 +64,9 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
-//		if (Lang.ROOT.equals(locale)) {
-//			//return new JsonText(buildContext(option, true, locale) + "/" + option.getName().getCode().replaceAll("_", "-").toLowerCase());
-//			return new JsonText(option.getName().getCode());
-//		} else {
-			return new JsonText(option.getName(locale));
-//		}
+		if (option.getType().equals(Type.PHRASE) && locale == Lang.ROOT)
+			return new JsonText(option.getName(locale).replaceAll("/", ".").toLowerCase());
+		return new JsonText(option.getName(locale));
 	}
 
 	@Override
