@@ -10,10 +10,12 @@ import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.DictionaryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.LocaleIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.StatusIdentifier;
@@ -30,6 +32,10 @@ public interface CrmOptionRepository {
 			return generateBusinessGroupId(lookup);
 		case BUSINESS_ROLE:
 			return generateBusinessRoleId(lookup);
+		case DICTIONARY:
+			return generateDictionaryId(lookup);
+		case PHRASE:
+			return generatePhraseId(lookup);
 		case MESSAGE_TYPE:
 			return generateMessageTypeId(lookup);
 		case COUNTRY:
@@ -63,6 +69,14 @@ public interface CrmOptionRepository {
 	
 	default BusinessRoleIdentifier generateBusinessRoleId(String lookup) {
 		return new BusinessRoleIdentifier(lookup);
+	}
+	
+	default DictionaryIdentifier generateDictionaryId(String lookup) {
+		return new DictionaryIdentifier(lookup);
+	}
+	
+	default PhraseIdentifier generatePhraseId(String lookup) {
+		return new PhraseIdentifier(lookup);
 	}
 	
 	default MessageTypeIdentifier generateMessageTypeId(String lookup) {
