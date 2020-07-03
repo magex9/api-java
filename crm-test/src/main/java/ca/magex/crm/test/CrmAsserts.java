@@ -1,7 +1,6 @@
 package ca.magex.crm.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +81,7 @@ public class CrmAsserts {
 	
 	public static final Choice<ProvinceIdentifier> NUEVO_LEON = new Choice<ProvinceIdentifier>(new ProvinceIdentifier("MX/NL"));
 	
-	public static final Choice<CountryIdentifier> ENGLAND = new Choice<CountryIdentifier>(new CountryIdentifier("MX/GB"));
+	public static final Choice<CountryIdentifier> ENGLAND = new Choice<CountryIdentifier>(new CountryIdentifier("GB"));
 	
 	public static final Choice<ProvinceIdentifier> LONDON = new Choice<ProvinceIdentifier>("Greater London");
 	

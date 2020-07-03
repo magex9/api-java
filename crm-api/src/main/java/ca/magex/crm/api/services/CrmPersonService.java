@@ -87,7 +87,7 @@ public interface CrmPersonService {
 			try {
 				crm.findOrganizationDetails(person.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(person.getPersonId(), error, "organizationId", crm.findMessageId("validation.organization.missing")));
+				messages.add(new Message(person.getPersonId(), error, "organizationId", crm.findMessageId("validation.field.invalid")));
 			}
 		}
 
@@ -129,13 +129,12 @@ public interface CrmPersonService {
 		if (name.getSalutation() != null && !name.getSalutation().isEmpty()) {
 			if (name.getSalutation().isIdentifer()) {
 				try {
-					if (!crm.findOption(name.getSalutation().getIdentifier()).getType().equals(Type.SALUTATION))
-						messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.option.type")));
+					crm.findOption(name.getSalutation().getIdentifier());
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.option.missing")));
+					messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.field.invalid")));
 				}
 			} else {
-				messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.option.other")));
+				messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.field.forbidden")));
 			}
 		}
 

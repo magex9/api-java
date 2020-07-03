@@ -42,6 +42,7 @@ public interface CrmConfigurationService {
 		createAmericanStates(repos);
 		createMexicanProvinces(repos);
 		createBusinessPositions(repos);
+		createValidationPhrases(repos);
 	}
 	
 	default OptionIdentifier createRootOption(CrmRepositories repos, Type type, Boolean mutable, Localized name) {
@@ -194,6 +195,33 @@ public interface CrmConfigurationService {
 		OptionIdentifier qaId = createNestedOption(repos, devId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("QA", "Quality Assurance", "Assurance qualité"));
 		createNestedOption(repos, qaId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe"));
 		createNestedOption(repos, qaId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TESTER", "Quality Tester", "Testeur de qualité"));
+	}
+	
+	/**
+	 * Create a default set of validation phrases
+	 * @param repos
+	 */
+	default void createValidationPhrases(CrmRepositories repos) {
+		OptionIdentifier validationId = createRootOption(repos, Type.DICTIONARY, Option.IMMUTABLE, new Localized("VALIDATION", "Validation Messages", "Messages de validation"));
+
+		OptionIdentifier fieldValidationId = createNestedOption(repos, validationId, Type.DICTIONARY, Option.IMMUTABLE, new Localized("FIELD", "Field Validation", "Validation sur le terrain"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("REQUIRED", "Field is required", "Champ requis"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("FORBIDDEN", "Field is forbidden", "Le champ est interdit"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("INVALID", "Field is invalid", "Le champ n'est pas valide"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("FORMAT", "Format is invalid", "Le format n'est pas valide"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("MINLENGTH", "Field too short", "Champ trop court"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("MAXLENGTH", "Field too long", "Champ trop long"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("INACTIVE", "Field is inactive", "Champ est inactive"));
+
+		OptionIdentifier statusValidationId = createNestedOption(repos, validationId, Type.DICTIONARY, Option.IMMUTABLE, new Localized("STATUS", "Status Validation", "Validation du statut"));
+		createNestedOption(repos, statusValidationId, Type.PHRASE, true, new Localized("PENDING", "Entity should not have a pending status with an identifier", "L'entité ne doit pas avoir de statut en attente avec un identifiant"));
+
+		OptionIdentifier optionValidationId = createNestedOption(repos, validationId, Type.DICTIONARY, Option.IMMUTABLE, new Localized("OPTION", "Option Validation", "Validation des options"));
+		createNestedOption(repos, optionValidationId, Type.PHRASE, true, new Localized("IMMUTABLE", "Option is immutable", "L'option est immuable"));
+		createNestedOption(repos, optionValidationId, Type.PHRASE, true, new Localized("DUPLICATE", "Option is a duplicate", "L'option est un doublon"));
+		createNestedOption(repos, optionValidationId, Type.PHRASE, true, new Localized("INVALID", "Option is an invalid type", "L'option est un type non valide"));
+
+		
 	}
 	
 	/**

@@ -1,7 +1,6 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.BASE_URL;
-import static ca.magex.crm.test.CrmAsserts.CA_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
@@ -43,7 +42,7 @@ public class LocationDetailsJsonTransformerTests {
 		transformer = new LocationDetailsJsonTransformer(crm);
 		locationId = new LocationIdentifier("bN2ifcbtzA");
 		organizationId = new OrganizationIdentifier("EEtP6HwXMo");
-		location = new LocationDetails(locationId, organizationId, Status.ACTIVE, "REF", "Location Name", CA_ADDRESS);
+		location = new LocationDetails(locationId, organizationId, Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS);
 	}
 	
 	@Test
@@ -62,12 +61,11 @@ public class LocationDetailsJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(location, null);
-		System.out.println(linked);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", linked.getString("@context"));
-		assertEquals(BASE_URL + locationId.toString(), linked.getString("locationId"));
-		assertEquals(BASE_URL + organizationId.toString(), linked.getString("organizationId"));
+		assertEquals("http://api.magex.ca/crm/rest/locations/" + locationId.getId(), linked.getString("locationId"));
+		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("http://api.magex.ca/crm/schema/lookup/Statuses", linked.getObject("status").getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/lookups/statuses/active", linked.getObject("status").getString("@id"));
@@ -100,61 +98,57 @@ public class LocationDetailsJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(location, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), root.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", root.getString("@context"));
-		assertEquals(BASE_URL + locationId.toString(), root.getString("locationId"));
-		assertEquals(BASE_URL + organizationId.toString(), root.getString("organizationId"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/statuses/active", root.getString("status"));
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), root.keys());
+		assertEquals(locationId.getId(), root.getString("locationId"));
+		assertEquals(organizationId.getId(), root.getString("organizationId"));
+		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("REF", root.getString("reference"));
 		assertEquals("Location Name", root.getString("displayName"));
-		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), root.getObject("address").keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", root.getObject("address").getString("@context"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), root.getObject("address").keys());
 		assertEquals("123 Main St", root.getObject("address").getString("street"));
 		assertEquals("Ottawa", root.getObject("address").getString("city"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/provinces/ca/qc", root.getObject("address").getString("province"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/ca", root.getObject("address").getString("country"));
+		assertEquals("CA/QC", root.getObject("address").getString("province"));
+		assertEquals("CA", root.getObject("address").getString("country"));
 		assertEquals("K1K1K1", root.getObject("address").getString("postalCode"));
+		assertEquals(location, transformer.parse(root, Lang.ROOT));
 	}
 	
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(location, Lang.ENGLISH);
-		System.out.println(english);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", english.getString("@context"));
-		assertEquals(BASE_URL + locationId.toString(), english.getString("locationId"));
-		assertEquals(BASE_URL + organizationId.toString(), english.getString("organizationId"));
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(locationId.getId(), english.getString("locationId"));
+		assertEquals(organizationId.getId(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("REF", english.getString("reference"));
 		assertEquals("Location Name", english.getString("displayName"));
-		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", english.getObject("address").getString("@context"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
 		assertEquals("123 Main St", english.getObject("address").getString("street"));
 		assertEquals("Ottawa", english.getObject("address").getString("city"));
 		assertEquals("Quebec", english.getObject("address").getString("province"));
 		assertEquals("Canada", english.getObject("address").getString("country"));
 		assertEquals("K1K1K1", english.getObject("address").getString("postalCode"));
+		assertEquals(location, transformer.parse(english, Lang.ENGLISH));
 	}
 	
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(location, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", french.getString("@context"));
-		assertEquals(BASE_URL + locationId.toString(), french.getString("locationId"));
-		assertEquals(BASE_URL + organizationId.toString(), french.getString("organizationId"));
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(locationId.getId(), french.getString("locationId"));
+		assertEquals(organizationId.getId(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("REF", french.getString("reference"));
 		assertEquals("Location Name", french.getString("displayName"));
-		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", french.getObject("address").getString("@context"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
 		assertEquals("123 Main St", french.getObject("address").getString("street"));
 		assertEquals("Ottawa", french.getObject("address").getString("city"));
 		assertEquals("Québec", french.getObject("address").getString("province"));
 		assertEquals("Canada", french.getObject("address").getString("country"));
 		assertEquals("K1K1K1", french.getObject("address").getString("postalCode"));
+		assertEquals(location, transformer.parse(french, Lang.FRENCH));
 	}
 	
 }

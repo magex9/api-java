@@ -90,7 +90,7 @@ public interface CrmUserService {
 			try {
 				crm.findPersonDetails(user.getPersonId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(user.getPersonId(), error, "person", crm.findMessageId("validation.person.missing")));
+				messages.add(new Message(user.getPersonId(), error, "person", crm.findMessageId("validation.field.invalid")));
 			}
 		}
 
@@ -103,15 +103,15 @@ public interface CrmUserService {
 
 		// Roles
 		if (user.getRoles().isEmpty()) {
-			messages.add(new Message(user.getUserId(), error, "roles", crm.findMessageId("validation.field.empty")));
+			messages.add(new Message(user.getUserId(), error, "roleIds", crm.findMessageId("validation.field.required")));
 		} else {
 			for (int i = 0; i < user.getRoles().size(); i++) {
 				AuthenticationRoleIdentifier roleId = user.getRoles().get(i);
 				try {
 					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(user.getUserId(), error, "roles[" + i + "]", crm.findMessageId("validation.field.inactive")));
+						messages.add(new Message(user.getUserId(), error, "roleIds[" + i + "]", crm.findMessageId("validation.field.inactive")));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(user.getUserId(), error, "roles[" + i + "]", crm.findMessageId("validation.field.missing")));
+					messages.add(new Message(user.getUserId(), error, "roleIds[" + i + "]", crm.findMessageId("validation.field.invalid")));
 				}
 			}
 		}

@@ -63,18 +63,20 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(MAILING_ADDRESS, null);
-		System.out.println(linked);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), linked.keys());
-		assertEquals("MailingAddress", linked.getString("@type"));
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", linked.getString("@context"));
 		assertEquals("123 Main St", linked.getString("street"));
 		assertEquals("Ottawa", linked.getString("city"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("province").keys());
-		assertEquals("PROVINCE", linked.getObject("province").getString("@type"));
-		assertEquals("QC", linked.getObject("province").getString("@value"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Provinces", linked.getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/provinces/ca/qc", linked.getObject("province").getString("@id"));
+		assertEquals("CA/QC", linked.getObject("province").getString("@value"));
 		assertEquals("Quebec", linked.getObject("province").getString("@en"));
 		assertEquals("Québec", linked.getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("country").keys());
-		assertEquals("COUNTRY", linked.getObject("country").getString("@type"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", linked.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/ca", linked.getObject("country").getString("@id"));
 		assertEquals("CA", linked.getObject("country").getString("@value"));
 		assertEquals("Canada", linked.getObject("country").getString("@en"));
 		assertEquals("Canada", linked.getObject("country").getString("@fr"));
@@ -85,11 +87,11 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(MAILING_ADDRESS, Lang.ROOT);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), root.keys());
-		assertEquals("MailingAddress", root.getString("@type"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), root.keys());
 		assertEquals("123 Main St", root.getString("street"));
 		assertEquals("Ottawa", root.getString("city"));
-		assertEquals("QC", root.getString("province"));
+		assertEquals("CA/QC", root.getString("province"));
 		assertEquals("CA", root.getString("country"));
 		assertEquals("K1K1K1", root.getString("postalCode"));
 		assertEquals(MAILING_ADDRESS, transformer.parse(root, Lang.ROOT));
@@ -98,8 +100,8 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(MAILING_ADDRESS, Lang.ENGLISH);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), english.keys());
-		assertEquals("MailingAddress", english.getString("@type"));
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.keys());
 		assertEquals("123 Main St", english.getString("street"));
 		assertEquals("Ottawa", english.getString("city"));
 		assertEquals("Quebec", english.getString("province"));
@@ -111,8 +113,8 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(MAILING_ADDRESS, Lang.FRENCH);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), french.keys());
-		assertEquals("MailingAddress", french.getString("@type"));
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.keys());
 		assertEquals("123 Main St", french.getString("street"));
 		assertEquals("Ottawa", french.getString("city"));
 		assertEquals("Québec", french.getString("province"));
@@ -124,18 +126,20 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonCanadianAddress() throws Exception {
 		JsonObject ca = (JsonObject)transformer.format(CA_ADDRESS, null);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), ca.keys());
-		assertEquals("MailingAddress", ca.getString("@type"));
+		//JsonAsserts.print(ca, "ca");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), ca.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", ca.getString("@context"));
 		assertEquals("111 Wellington Street", ca.getString("street"));
 		assertEquals("Ottawa", ca.getString("city"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), ca.getObject("province").keys());
-		assertEquals("Option", ca.getObject("province").getString("@type"));
-		assertEquals("PROVINCE", ca.getObject("province").getString("@lookup"));
-		assertEquals("ON", ca.getObject("province").getString("@value"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), ca.getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Provinces", ca.getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/provinces/ca/on", ca.getObject("province").getString("@id"));
+		assertEquals("CA/ON", ca.getObject("province").getString("@value"));
 		assertEquals("Ontario", ca.getObject("province").getString("@en"));
 		assertEquals("Ontario", ca.getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), ca.getObject("country").keys());
-		assertEquals("COUNTRY", ca.getObject("country").getString("@type"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), ca.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", ca.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/ca", ca.getObject("country").getString("@id"));
 		assertEquals("CA", ca.getObject("country").getString("@value"));
 		assertEquals("Canada", ca.getObject("country").getString("@en"));
 		assertEquals("Canada", ca.getObject("country").getString("@fr"));
@@ -147,17 +151,20 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonNewfoundlandAddress() throws Exception {
 		JsonObject nl = (JsonObject)transformer.format(NL_ADDRESS, null);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), nl.keys());
-		assertEquals("MailingAddress", nl.getString("@type"));
+		//JsonAsserts.print(nl, "nl");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), nl.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", nl.getString("@context"));
 		assertEquals("90 Avalon Drive", nl.getString("street"));
 		assertEquals("Labrador City", nl.getString("city"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), nl.getObject("province").keys());
-		assertEquals("PROVINCE", nl.getObject("province").getString("@type"));
-		assertEquals("NL", nl.getObject("province").getString("@value"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), nl.getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Provinces", nl.getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/provinces/ca/nl", nl.getObject("province").getString("@id"));
+		assertEquals("CA/NL", nl.getObject("province").getString("@value"));
 		assertEquals("Newfoundland and Labrador", nl.getObject("province").getString("@en"));
 		assertEquals("Terre-Neuve et Labrador", nl.getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), nl.getObject("country").keys());
-		assertEquals("COUNTRY", nl.getObject("country").getString("@type"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), nl.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", nl.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/ca", nl.getObject("country").getString("@id"));
 		assertEquals("CA", nl.getObject("country").getString("@value"));
 		assertEquals("Canada", nl.getObject("country").getString("@en"));
 		assertEquals("Canada", nl.getObject("country").getString("@fr"));
@@ -169,18 +176,20 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonAmericanAddress() throws Exception {
 		JsonObject us = (JsonObject)transformer.format(US_ADDRESS, null);
-		System.out.println(us);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), us.keys());
-		assertEquals("MailingAddress", us.getString("@type"));
+		//JsonAsserts.print(us, "us");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), us.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", us.getString("@context"));
 		assertEquals("465 Huntington Ave", us.getString("street"));
 		assertEquals("Boston", us.getString("city"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), us.getObject("province").keys());
-		assertEquals("PROVINCE", us.getObject("province").getString("@type"));
-		assertEquals("MA", us.getObject("province").getString("@value"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), us.getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Provinces", us.getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/provinces/us/ma", us.getObject("province").getString("@id"));
+		assertEquals("US/MA", us.getObject("province").getString("@value"));
 		assertEquals("Massachusetts", us.getObject("province").getString("@en"));
 		assertEquals("Massachusetts", us.getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), us.getObject("country").keys());
-		assertEquals("COUNTRY", us.getObject("country").getString("@type"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), us.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", us.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/us", us.getObject("country").getString("@id"));
 		assertEquals("US", us.getObject("country").getString("@value"));
 		assertEquals("United States", us.getObject("country").getString("@en"));
 		assertEquals("États-Unis d'Amérique", us.getObject("country").getString("@fr"));
@@ -192,18 +201,20 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonMexicanAddress() throws Exception {
 		JsonObject mx = (JsonObject)transformer.format(MX_ADDRESS, null);
-		System.out.println(mx);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), mx.keys());
-		assertEquals("MailingAddress", mx.getString("@type"));
+		//JsonAsserts.print(mx, "mx");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), mx.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", mx.getString("@context"));
 		assertEquals("120 Col. Hipodromo Condesa", mx.getString("street"));
 		assertEquals("Monterrey", mx.getString("city"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), mx.getObject("province").keys());
-		assertEquals("PROVINCE", mx.getObject("province").getString("@type"));
-		assertEquals("NL", mx.getObject("province").getString("@value"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), mx.getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Provinces", mx.getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/provinces/mx/nl", mx.getObject("province").getString("@id"));
+		assertEquals("MX/NL", mx.getObject("province").getString("@value"));
 		assertEquals("Nuevo Leon", mx.getObject("province").getString("@en"));
 		assertEquals("Nuevo Leon", mx.getObject("province").getString("@fr"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), mx.getObject("country").keys());
-		assertEquals("COUNTRY", mx.getObject("country").getString("@type"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), mx.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", mx.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/mx", mx.getObject("country").getString("@id"));
 		assertEquals("MX", mx.getObject("country").getString("@value"));
 		assertEquals("Mexico", mx.getObject("country").getString("@en"));
 		assertEquals("Mexique", mx.getObject("country").getString("@fr"));
@@ -215,14 +226,15 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonBritishAddress() throws Exception {
 		JsonObject en = (JsonObject)transformer.format(EN_ADDRESS, null);
-		System.out.println(en);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), en.keys());
-		assertEquals("MailingAddress", en.getString("@type"));
+		//JsonAsserts.print(en, "en");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), en.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", en.getString("@context"));
 		assertEquals("35 Tower Hill", en.getString("street"));
 		assertEquals("London", en.getString("city"));
 		assertEquals("Greater London", en.getString("province"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), en.getObject("country").keys());
-		assertEquals("COUNTRY", en.getObject("country").getString("@type"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), en.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", en.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/gb", en.getObject("country").getString("@id"));
 		assertEquals("GB", en.getObject("country").getString("@value"));
 		assertEquals("United Kingdom", en.getObject("country").getString("@en"));
 		assertEquals("Royaume-Uni", en.getObject("country").getString("@fr"));
@@ -234,15 +246,15 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonFranceAddress() throws Exception {
 		JsonObject fr = (JsonObject)transformer.format(FR_ADDRESS, null);
-		System.out.println(fr);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), fr.keys());
-		assertEquals("MailingAddress", fr.getString("@type"));
+		//JsonAsserts.print(fr, "fr");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), fr.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", fr.getString("@context"));
 		assertEquals("5 Avenue Anatole", fr.getString("street"));
 		assertEquals("Paris", fr.getString("city"));
 		assertEquals("Île-de-France", fr.getString("province"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), fr.getObject("country").keys());
-		assertEquals("Option", fr.getObject("country").getString("@type"));
-		assertEquals("COUNTRY", fr.getObject("country").getString("@lookup"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), fr.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", fr.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/fr", fr.getObject("country").getString("@id"));
 		assertEquals("FR", fr.getObject("country").getString("@value"));
 		assertEquals("France", fr.getObject("country").getString("@en"));
 		assertEquals("France", fr.getObject("country").getString("@fr"));
@@ -254,15 +266,15 @@ public class MailingAddressJsonTransformerTests {
 	@Test
 	public void testLinkedJsonGermanAddress() throws Exception {
 		JsonObject de = (JsonObject)transformer.format(DE_ADDRESS, null);
-		System.out.println(de);
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), de.keys());
-		assertEquals("MailingAddress", de.getString("@type"));
+		//JsonAsserts.print(de, "de");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), de.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", de.getString("@context"));
 		assertEquals("Porschepl. 1", de.getString("street"));
 		assertEquals("Stuttgart", de.getString("city"));
 		assertEquals("Midi-Pyrénées", de.getString("province"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), de.getObject("country").keys());
-		assertEquals("Option", de.getObject("country").getString("@type"));
-		assertEquals("COUNTRY", de.getObject("country").getString("@lookup"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), de.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/lookup/Countries", de.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/lookups/countries/de", de.getObject("country").getString("@id"));
 		assertEquals("DE", de.getObject("country").getString("@value"));
 		assertEquals("Germany", de.getObject("country").getString("@en"));
 		assertEquals("Allemagne", de.getObject("country").getString("@fr"));
