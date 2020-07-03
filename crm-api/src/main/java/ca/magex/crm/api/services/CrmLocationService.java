@@ -256,7 +256,7 @@ public interface CrmLocationService {
 		// Province
 		if (address.getProvince().isEmpty()) {
 			messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.field.required")));
-		} else {
+		} else if (address.getProvince().isIdentifer()) {
 			try {
 				crm.findOption(address.getProvince().getIdentifier());
 			} catch (ItemNotFoundException e) {

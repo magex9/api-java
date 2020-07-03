@@ -192,7 +192,7 @@ public class OptionsFilterTests {
 			Assert.fail("should have failed on invalid type");
 		}
 		catch(ApiException api) {
-			Assert.assertEquals("Invalid type value 'Canada' expected one of {STATUS,LOCALE,AUTHENTICATION_GROUP,AUTHENTICATION_ROLE,MESSAGE_TYPE,SALUTATION,LANGUAGE,COUNTRY,PROVINCE,BUSINESS_GROUP,BUSINESS_ROLE}", api.getMessage());
+			Assert.assertEquals("Invalid type value 'Canada' expected one of {STATUS,LOCALE,DICTIONARY,PHRASE,MESSAGE_TYPE,AUTHENTICATION_GROUP,AUTHENTICATION_ROLE,SALUTATION,LANGUAGE,COUNTRY,PROVINCE,BUSINESS_GROUP,BUSINESS_ROLE}", api.getMessage());
 		}
 		
 		try {
