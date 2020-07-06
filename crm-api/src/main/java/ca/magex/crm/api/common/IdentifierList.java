@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Identifier;
 
@@ -28,12 +25,12 @@ public class IdentifierList<I extends Identifier> extends ArrayList<I> {
 	
 	@Override
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
+		return super.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
+		return super.equals(obj);
 	}
 	
 	@Override
