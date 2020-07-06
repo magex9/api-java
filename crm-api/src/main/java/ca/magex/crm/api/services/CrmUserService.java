@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
@@ -16,20 +17,21 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmUserService {
 
-	default User prototypeUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
-		return new User(null, personId, username, Status.PENDING, roles);
+	default User prototypeUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
+		return new User(null, organizationId, personId, username, Status.PENDING, roles);
 	};
 
 	default User createUser(User prototype) {
-		return createUser(prototype.getPersonId(), prototype.getUsername(), prototype.getRoleIds());
+		return createUser(prototype.getOrganizationId(), prototype.getPersonId(), prototype.getUsername(), prototype.getRoles());
 	}
 
-	User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles);
+	User createUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles);
 
 	User enableUser(UserIdentifier userId);
 
@@ -85,12 +87,15 @@ public interface CrmUserService {
 
 		// Organization
 		if (user.getPersonId() == null) {
-			messages.add(new Message(null, error, "person", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(null, error, "personId", crm.findMessageId("validation.field.required")));
 		} else {
 			try {
-				crm.findPersonDetails(user.getPersonId());
+				PersonSummary personSummary = crm.findPersonSummary(user.getPersonId());
+				if (!personSummary.getOrganizationId().equals(user.getOrganizationId())) {
+					messages.add(new Message(user.getPersonId(), error, "organizationId", crm.findMessageId("validation.field.invalid")));
+				}
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(user.getPersonId(), error, "person", crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(user.getPersonId(), error, "personId", crm.findMessageId("validation.field.invalid")));
 			}
 		}
 

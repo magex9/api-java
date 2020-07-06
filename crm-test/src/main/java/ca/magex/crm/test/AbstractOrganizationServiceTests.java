@@ -28,6 +28,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
@@ -37,6 +38,7 @@ import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 
 @Transactional
 public abstract class AbstractOrganizationServiceTests {
@@ -66,13 +68,13 @@ public abstract class AbstractOrganizationServiceTests {
 	
 		crm.createOption(NHL, Type.AUTHENTICATION_ROLE, new Localized("GM", "General Manager", "Gestionnaire Genèrale"));
 		
-		GM = crm.createOption(null, Type.BUSINESS_ROLE, new Localized("Exec", "Owner", "Owner")).getOptionId();
+		GM = crm.createOption(null, Type.BUSINESS_ROLE, new Localized("EXEC", "Owner", "Owner")).getOptionId();
 		
 	}
 	
 	@After
 	public void cleanup() {
-//		auth.logout();
+		auth.logout();
 	}
 
 	@Test
@@ -125,7 +127,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o1.getOrganizationId(),
 				"TORONTO",
 				"Toronto",
-				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO.getCode(), CrmAsserts.CANADA.getCode(), "M5J 2X2")).getLocationId();
+				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2")).getLocationId();
 		o1 = crm.updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
@@ -138,7 +140,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o2.getOrganizationId(),
 				"OTTAWA",
 				"Ottawa",
-				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO.getCode(), CrmAsserts.CANADA.getCode(), "K2V 1A5")).getLocationId();
+				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "K2V 1A5")).getLocationId();
 		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
@@ -152,7 +154,7 @@ public abstract class AbstractOrganizationServiceTests {
 				o3.getOrganizationId(),
 				"MONTREAL",
 				"Montreal",
-				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", CrmAsserts.QUEBEC.getCode(), CrmAsserts.CANADA.getCode(), "H4B 5G0")).getLocationId();
+				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", CrmAsserts.QUEBEC, CrmAsserts.CANADA, "H4B 5G0")).getLocationId();
 		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
@@ -165,8 +167,8 @@ public abstract class AbstractOrganizationServiceTests {
 		/* update main contact */
 		PersonIdentifier freddyId = crm.createPerson(
 				o1.getOrganizationId(),
-				new PersonName("1", "Freddy", "R", "Davis"),
-				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO.getCode(), CrmAsserts.CANADA.getCode(), "M5J 2X2"),
+				new PersonName(CrmAsserts.MR, "Freddy", "R", "Davis"),
+				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
 				CrmAsserts.WORK_COMMUNICATIONS,
 				List.of(new BusinessRoleIdentifier("CEO"))).getPersonId();
 		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
@@ -180,8 +182,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 		PersonIdentifier craigId = crm.createPerson(
 				o2.getOrganizationId(),
-				new PersonName("3", "Craig", null, "Phillips"),
-				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO.getCode(), CrmAsserts.CANADA.getCode(), "K2V 1A5"),
+				new PersonName(CrmAsserts.MR, "Craig", null, "Phillips"),
+				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "K2V 1A5"),
 				CrmAsserts.WORK_COMMUNICATIONS,
 				List.of(new BusinessRoleIdentifier("CEO"))).getPersonId();
 		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
@@ -196,7 +198,7 @@ public abstract class AbstractOrganizationServiceTests {
 		PersonIdentifier careyId = crm.createPerson(
 				o3.getOrganizationId(),
 				new PersonName(null, "Carey", null, "Thomas"),
-				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO.getCode(), CrmAsserts.CANADA.getCode(), "M5J 2X2"),
+				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
 				CrmAsserts.WORK_COMMUNICATIONS,
 				List.of(new BusinessRoleIdentifier("CEO"))).getPersonId();
 		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
@@ -354,56 +356,56 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.findOrganizationDetails(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.findOrganizationSummary(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.updateOrganizationDisplayName(new OrganizationIdentifier("abc"), "Oilers");
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.updateOrganizationMainLocation(new OrganizationIdentifier("abc"), new LocationIdentifier("Edmonton"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.updateOrganizationMainContact(new OrganizationIdentifier("abc"), new PersonIdentifier("Mikko"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.updateOrganizationGroups(new OrganizationIdentifier("abc"), Collections.emptyList());
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.disableOrganization(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
 			crm.enableOrganization(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 	}
 
@@ -414,7 +416,7 @@ public abstract class AbstractOrganizationServiceTests {
 			fail("Should have gotten bad request");
 		} catch (BadRequestException e) {
 			assertEquals("Bad Request: Organization has validation errors", e.getMessage());
-			assertBadRequestMessage(e, null, "error", "groups[0]", "Group does not exist: MISSING");
+			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "groupIds[0]", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/INVALID")));
 		}
 	}
 
@@ -424,7 +426,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.createOrganization("", List.of(NHL));
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "displayName", "Display name is mandatory for an organization");
+			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/REQUIRED")));
 		}
 	}
 
@@ -434,7 +436,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.createOrganization("The organization can only have a name with a maximum or 60 characters", List.of(NHL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "displayName", "Display name must be 60 characters or less");
+			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/MAXLENGTH")));
 		}
 	}
 
@@ -444,7 +446,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.createOrganization("Org", List.of()).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "groups", "Organizations must have a permission group assigned to them");
+			assertBadRequestMessage(e, null, "/options/message-types/ERROR", "groupIds", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/REQUIRED")));
 		}
 	}
 
@@ -459,7 +461,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.updateOrganizationGroups(organization.getOrganizationId(), List.of(authGroupA));
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organization.getOrganizationId(), "error", "groups[0]", "Group is not active: A");
+			assertBadRequestMessage(e, organization.getOrganizationId(), "/options/message-types/ERROR", "groupIds[0]", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/INACTIVE")));
 		}
 	}
 
@@ -473,7 +475,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.updateOrganizationMainLocation(organizationId, locationId);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationId, "error", "mainLocationId", "Main location must be active");
+			assertBadRequestMessage(e, organizationId, "/options/message-types/ERROR", "mainLocationId", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/INACTIVE")));
 		}
 	}
 
@@ -487,7 +489,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.updateOrganizationMainContact(organizationId, personId);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationId, "error", "mainContactId", "Main contact must be active");
+			assertBadRequestMessage(e, organizationId, "/options/message-types/ERROR", "mainContactId", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/INACTIVE")));
 		}
 	}
 
@@ -501,7 +503,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.updateOrganizationMainContact(organizationA, personB);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationA, "error", "mainContactId", new Choice<>("Main contact organization has invalid referential integrity"));
+			assertBadRequestMessage(e, organizationA, "/options/message-types/ERROR", "mainContactId", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/INVALID")));
 		}
 	}
 
@@ -515,7 +517,7 @@ public abstract class AbstractOrganizationServiceTests {
 			crm.updateOrganizationMainLocation(organizationA, locationB);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationA, "error", "mainLocationId", "Main location organization has invalid referential integrity");
+			assertBadRequestMessage(e, organizationA, "/options/message-types/ERROR", "mainLocationId", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/INVALID")));
 		}
 	}
 
@@ -525,7 +527,7 @@ public abstract class AbstractOrganizationServiceTests {
 				crm, 
 				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(NHL)));
 		assertEquals(1, messages.size());
-		assertMessage(messages.get(0), new OrganizationIdentifier("org"), "error", "status", new Choice<>(new PhraseIdentifier("validation.organization.status.required"));
+		assertMessage(messages.get(0), new OrganizationIdentifier("org"), "/options/message-types/ERROR", "status", new Choice<>(new PhraseIdentifier("/options/phrases/VALIDATION/FIELD/REQUIRED")));
 	}
 
 }

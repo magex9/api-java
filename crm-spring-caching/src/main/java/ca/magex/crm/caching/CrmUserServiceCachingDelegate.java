@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
@@ -67,8 +70,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	public User createUser(Identifier personId, String username, List<String> roles) {
-		User user = delegate.createUser(personId, username, roles);
+	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
+		User user = delegate.createUser(personId, username, roleIds);
 		cacheTemplate.put(userCacheSupplier(user, user.getUserId()));
 		return user;
 	}
@@ -81,38 +84,38 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	public User enableUser(Identifier userId) {
+	public User enableUser(UserIdentifier userId) {
 		User user = delegate.enableUser(userId);
 		cacheTemplate.put(userCacheSupplier(user, userId));
 		return user;
 	}
 
 	@Override
-	public User disableUser(Identifier userId) {
+	public User disableUser(UserIdentifier userId) {
 		User user = delegate.disableUser(userId);
 		cacheTemplate.put(userCacheSupplier(user, userId));
 		return user;
 	}
 
 	@Override
-	public User updateUserRoles(Identifier userId, List<String> roles) {
-		User user = delegate.updateUserRoles(userId, roles);
+	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roleIds) {
+		User user = delegate.updateUserRoles(userId, roleIds);
 		cacheTemplate.put(userCacheSupplier(user, userId));
 		return user;
 	}
 
 	@Override
-	public boolean changePassword(Identifier userId, String currentPassword, String newPassword) {
+	public boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword) {
 		return delegate.changePassword(userId, currentPassword, newPassword);
 	}
 
 	@Override
-	public String resetPassword(Identifier userId) {
+	public String resetPassword(UserIdentifier userId) {
 		return delegate.resetPassword(userId);
 	}
 
 	@Override
-	public User findUser(Identifier userId) {
+	public User findUser(UserIdentifier userId) {
 		return cacheTemplate.get(
 				() -> delegate.findUser(userId),
 				userId,
@@ -146,15 +149,6 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	@Override
 	public FilteredPage<User> findUsers(UsersFilter filter) {
 		FilteredPage<User> page = delegate.findUsers(filter);
-		page.forEach((details) -> {
-			cacheTemplate.putIfAbsent(userCacheSupplier(details, details.getUserId()));
-		});
-		return page;
-	}
-
-	@Override
-	public FilteredPage<User> findActiveUserForOrg(Identifier organizationId) {
-		FilteredPage<User> page = delegate.findActiveUserForOrg(organizationId);
 		page.forEach((details) -> {
 			cacheTemplate.putIfAbsent(userCacheSupplier(details, details.getUserId()));
 		});

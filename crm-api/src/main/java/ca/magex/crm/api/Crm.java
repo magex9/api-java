@@ -373,10 +373,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
+	public User createUser(OrganizationIdentifier organizationIdentifier, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
-		return userService.createUser(validate(prototypeUser(personId, username, roles)));
+		return userService.createUser(validate(prototypeUser(organizationIdentifier, personId, username, roles)));
 	}
 
 	@Override
@@ -450,7 +450,8 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
 		if (!canCreateOption(type))
 			throw new PermissionDeniedException("createOption: " + type.getCode() + ", " + name);
-		return optionService.createOption(validate(prototypeOption(parentId, type, name)));
+		Option parent = (parentId == null) ? null : findOption(parentId); 
+		return optionService.createOption(validate(prototypeOption(parent, type, name)));
 	}
 
 	@Override

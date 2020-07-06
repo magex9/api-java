@@ -1,19 +1,14 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
 import static ca.magex.crm.test.CrmAsserts.ENGLISH;
 import static ca.magex.crm.test.CrmAsserts.FRANCE;
 import static ca.magex.crm.test.CrmAsserts.FRENCH;
-import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ILE_DE_FRANCE;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -28,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -38,8 +32,10 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 @Transactional
 public abstract class AbstractPersonServiceTests {
@@ -64,80 +60,78 @@ public abstract class AbstractPersonServiceTests {
 
 	@Test
 	public void testPersons() {
-		Identifier blizzardId = crm.createOrganization("Blizzard", List.of("ORG")).getOrganizationId();
+		OrganizationIdentifier blizzardId = crm.createOrganization("Blizzard", List.of(new AuthenticationGroupIdentifier("ORG"))).getOrganizationId();
 		
-		PersonName leroy = new PersonName("1", "Leroy", "MF", "Jenkins");
-		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007");
-		Communication comms = new Communication("Leader", ENGLISH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");
-		BusinessPosition position = new BusinessPosition("IT", "Tester", "Junior");
+		PersonName leroy = new PersonName(CrmAsserts.MR, "Leroy", "MF", "Jenkins");
+		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007");
+		Communication comms = new Communication("Leader", ENGLISH, "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");
+		
 		/* create */
-		PersonDetails p1 = crm.createPerson(blizzardId, leroy, eiffel, comms, position);
+		PersonDetails p1 = crm.createPerson(blizzardId, leroy, eiffel, comms, List.of(CrmAsserts.CEO));
 		Assert.assertEquals("Jenkins, Leroy MF", p1.getDisplayName());
 		Assert.assertEquals(leroy, p1.getLegalName());
 		Assert.assertEquals(eiffel, p1.getAddress());
 		Assert.assertEquals(comms, p1.getCommunication());
-		Assert.assertEquals(position, p1.getPosition());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		
 		crm.createPerson(
 			blizzardId, 
-			new PersonName("2", "Tammy", "GD", "Jones"), 
-			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007"), 
-			new Communication("Leader", ENGLISH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
-			new BusinessPosition("IT", "Tester", "Junior"));
+			new PersonName(CrmAsserts.MRS, "Tammy", "GD", "Jones"), 
+			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007"), 
+			new Communication("Leader", ENGLISH, "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
+			List.of(CrmAsserts.QA_TEAMLEAD));
 		
 		crm.createPerson(
 			blizzardId, 
-			new PersonName("3", "James", "Earl", "Bond"), 
-			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75007"), 
-			new Communication("Leader", FRENCH.getCode(), "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
-			new BusinessPosition("IT", "Tester", "Junior"));
+			new PersonName(CrmAsserts.MR, "James", "Earl", "Bond"), 
+			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007"), 
+			new Communication("Leader", FRENCH, "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"),
+			List.of(CrmAsserts.DEV_TEAMLEAD));
 		
 		/* update */
-		PersonName tommy = new PersonName("1", "Michelle", "Pauline", "Smith");
+		PersonName tommy = new PersonName(CrmAsserts.MRS, "Michelle", "Pauline", "Smith");
 		p1 = crm.updatePersonName(p1.getPersonId(), tommy);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(eiffel, p1.getAddress());
 		Assert.assertEquals(comms, p1.getCommunication());
-		Assert.assertEquals(position, p1.getPosition());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, crm.updatePersonName(p1.getPersonId(), tommy));
 		
-		MailingAddress louvre = new MailingAddress("Rue de Rivoli", "Paris", ILE_DE_FRANCE.getCode(), FRANCE.getCode(), "75001");
+		MailingAddress louvre = new MailingAddress("Rue de Rivoli", "Paris", ILE_DE_FRANCE, FRANCE, "75001");
 		p1 = crm.updatePersonAddress(p1.getPersonId(), louvre);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
 		Assert.assertEquals(comms, p1.getCommunication());
-		Assert.assertEquals(position, p1.getPosition());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, crm.updatePersonAddress(p1.getPersonId(), louvre));
 		
-		Communication comms2 = new Communication("Follower", FRENCH.getCode(), "follower@blizzard.com", new Telephone("666-9898"), "666-9797");
+		Communication comms2 = new Communication("Follower", FRENCH, "follower@blizzard.com", new Telephone("666-9898"), "666-9797");
 		p1 = crm.updatePersonCommunication(p1.getPersonId(), comms2);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
 		Assert.assertEquals(comms2, p1.getCommunication());
-		Assert.assertEquals(position, p1.getPosition());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, crm.updatePersonCommunication(p1.getPersonId(), comms2));
 		
-		BusinessPosition position2 = new BusinessPosition("Legal", "Lawyer", "Senior");
-		p1 = crm.updatePersonBusinessPosition(p1.getPersonId(), position2);
+		p1 = crm.updatePersonRoles(p1.getPersonId(), List.of(CrmAsserts.DEV_TEAMLEAD));
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
 		Assert.assertEquals(comms2, p1.getCommunication());
-		Assert.assertEquals(position2, p1.getPosition());
+		Assert.assertEquals(List.of(CrmAsserts.DEV_TEAMLEAD), p1.getRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
-		Assert.assertEquals(p1, crm.updatePersonBusinessPosition(p1.getPersonId(), position2));
 		
 		/* disable */
 		PersonSummary ps1 = crm.disablePerson(p1.getPersonId());
@@ -159,7 +153,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(3, crm.countPersons(new PersonsFilter(blizzardId, null, Status.ACTIVE)));
 		Assert.assertEquals(1, crm.countPersons(new PersonsFilter(blizzardId, p1.getDisplayName(), Status.ACTIVE)));
 		Assert.assertEquals(0, crm.countPersons(new PersonsFilter(blizzardId, null, Status.INACTIVE)));
-		Assert.assertEquals(0, crm.countPersons(new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE)));
+		Assert.assertEquals(0, crm.countPersons(new PersonsFilter(new OrganizationIdentifier("ACTIVISION"), "SpaceX", Status.INACTIVE)));
 		
 		/* find details */
 		Page<PersonDetails> detailsPage = crm.findPersonDetails(
@@ -208,7 +202,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 		
 		detailsPage = crm.findPersonDetails(
-				new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
+				new PersonsFilter(new OrganizationIdentifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5, detailsPage.getSize());
@@ -263,7 +257,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(1, summariesPage.getTotalElements());
 		
 		summariesPage = crm.findPersonSummaries(
-				new PersonsFilter(new Identifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
+				new PersonsFilter(new OrganizationIdentifier("ACTIVISION"), "SpaceX", Status.INACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5, summariesPage.getSize());
@@ -275,74 +269,59 @@ public abstract class AbstractPersonServiceTests {
 	@Test
 	public void testInvalidPersonId() {
 		try {
-			crm.findPersonDetails(new Identifier("abc"));
+			crm.findPersonDetails(new PersonIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 
 		try {
-			crm.findPersonSummary(new Identifier("abc"));
+			crm.findPersonSummary(new PersonIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 
 		try {
-			crm.updatePersonName(new Identifier("abc"), new PersonName("", "", "", ""));
+			crm.updatePersonName(new PersonIdentifier("abc"), CrmAsserts.ADAM);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.updatePersonAddress(new Identifier("abc"), MAILING_ADDRESS);
+			crm.updatePersonAddress(new PersonIdentifier("abc"), MAILING_ADDRESS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.updatePersonCommunication(new Identifier("abc"), WORK_COMMUNICATIONS);
+			crm.updatePersonCommunication(new PersonIdentifier("abc"), WORK_COMMUNICATIONS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.updatePersonBusinessPosition(new Identifier("abc"), BUSINESS_POSITION);
+			crm.updatePersonRoles(new PersonIdentifier("abc"), List.of(CrmAsserts.CEO));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.disablePerson(new Identifier("abc"));
+			crm.disablePerson(new PersonIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.enablePerson(new Identifier("abc"));
+			crm.enablePerson(new PersonIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Person ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());
 		}
-	}
-	
-	@Test
-	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-
-		assertEquals("Bacon, Chris P", crm.findPersonDetails(personId).getDisplayName());
-		assertEquals("Bacon, Chris P", crm.findPersonSummary(personId).getDisplayName());
-		try {
-			crm.findPersonDetails(groupId);
-			fail("Not a valid identifier");
-		} catch (ItemNotFoundException e) { }
-	}
-	
+	}	
 }

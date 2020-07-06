@@ -14,6 +14,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
@@ -68,14 +70,14 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	}
 
 	@Override
-	public LocationDetails createLocation(Identifier organizationId, String displayName, String reference, MailingAddress address) {
+	public LocationDetails createLocation(OrganizationIdentifier organizationId, String displayName, String reference, MailingAddress address) {
 		LocationDetails details = delegate.createLocation(organizationId, displayName, reference, address);
 		cacheTemplate.put(detailsCacheSupplier(details, details.getLocationId()));
 		return details;
 	}
 
 	@Override
-	public LocationSummary enableLocation(Identifier locationId) {
+	public LocationSummary enableLocation(LocationIdentifier locationId) {
 		LocationSummary summary = delegate.enableLocation(locationId);
 		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(locationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, locationId));
@@ -83,7 +85,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	}
 
 	@Override
-	public LocationSummary disableLocation(Identifier locationId) {
+	public LocationSummary disableLocation(LocationIdentifier locationId) {
 		LocationSummary summary = delegate.disableLocation(locationId);
 		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(locationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, locationId));
@@ -91,21 +93,21 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	}
 
 	@Override
-	public LocationDetails updateLocationName(Identifier locationId, String displaysName) {
+	public LocationDetails updateLocationName(LocationIdentifier locationId, String displaysName) {
 		LocationDetails details = delegate.updateLocationName(locationId, displaysName);
 		cacheTemplate.put(detailsCacheSupplier(details, locationId));
 		return details;
 	}
 
 	@Override
-	public LocationDetails updateLocationAddress(Identifier locationId, MailingAddress address) {
+	public LocationDetails updateLocationAddress(LocationIdentifier locationId, MailingAddress address) {
 		LocationDetails details = delegate.updateLocationAddress(locationId, address);
 		cacheTemplate.put(detailsCacheSupplier(details, locationId));
 		return details;
 	}
 
 	@Override
-	public LocationSummary findLocationSummary(Identifier locationId) {
+	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
 		return cacheTemplate.get(
 				() -> delegate.findLocationSummary(locationId),
 				locationId,
@@ -114,7 +116,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	}
 
 	@Override
-	public LocationDetails findLocationDetails(Identifier locationId) {
+	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
 		return cacheTemplate.get(
 				() -> delegate.findLocationDetails(locationId),
 				locationId,
@@ -146,7 +148,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	}
 	
 	@Override
-	public FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(Identifier organizationId) {
+	public FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(OrganizationIdentifier organizationId) {
 		FilteredPage<LocationSummary> page = delegate.findActiveLocationSummariesForOrg(organizationId);
 		page.forEach((summary) -> {
 			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getLocationId()));

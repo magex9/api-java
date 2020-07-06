@@ -9,7 +9,6 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.dictionary.basic.BasicDictionary;
 import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
@@ -51,14 +50,9 @@ public class BasicTestConfig implements CrmConfigurer {
 		return new BasicPasswordRepository(passwordStore());
 	}
 	
-	@Bean
-	public BasicDictionary dictionary() {
-		return new BasicDictionary().initialize();
-	}
-	
 	@Bean 
 	public BasicServices services() {
-		return new BasicServices(repos(), passwords(), dictionary());
+		return new BasicServices(repos(), passwords());
 	}
 	
 	@Bean

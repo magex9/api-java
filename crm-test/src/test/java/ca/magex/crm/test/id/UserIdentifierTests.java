@@ -37,7 +37,7 @@ public class UserIdentifierTests {
 			Assert.fail("should have failed on invalid identifier");
 		}
 		catch(IllegalArgumentException iae) {
-			Assert.assertEquals("Id '/locations/ABC' must match the pattern /users/[A-Za-z0-9]+",  iae.getMessage());
+			Assert.assertEquals("Id '/locations/ABC' must match the pattern /users/[A-Za-z0-9/]+",  iae.getMessage());
 		}
 	}
 }

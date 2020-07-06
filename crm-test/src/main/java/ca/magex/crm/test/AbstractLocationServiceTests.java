@@ -1,6 +1,5 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static ca.magex.crm.test.CrmAsserts.ILLINOIS;
 import static ca.magex.crm.test.CrmAsserts.MASSACHUSETTS;
 import static ca.magex.crm.test.CrmAsserts.NEW_YORK;
@@ -8,7 +7,6 @@ import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static ca.magex.crm.test.CrmAsserts.UNITED_STATES;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.List;
@@ -30,8 +28,10 @@ import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 @Transactional
 public abstract class AbstractLocationServiceTests {
@@ -55,12 +55,11 @@ public abstract class AbstractLocationServiceTests {
 	}
 	
 	@Test
-	public void testLocations() {
-		
-		Identifier mlbId = crm.createOrganization("MLB", List.of("ORG")).getOrganizationId();
+	public void testLocations() {		
+		OrganizationIdentifier mlbId = crm.createOrganization("MLB", List.of(new AuthenticationGroupIdentifier("ORG"))).getOrganizationId();
 		
 		/* create */
-		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", NEW_YORK.getCode(), UNITED_STATES.getCode(), "10451");
+		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", NEW_YORK, UNITED_STATES, "10451");
 		LocationDetails l1 = crm.createLocation(mlbId, "NYY", "New York", newyork);
 		Assert.assertEquals("New York", l1.getDisplayName());
 		Assert.assertEquals("NYY", l1.getReference());
@@ -68,7 +67,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(newyork, l1.getAddress());
 		Assert.assertEquals(l1, crm.findLocationDetails(l1.getLocationId()));
 
-		MailingAddress boston = new MailingAddress("4 Jersey St", "Boston", MASSACHUSETTS.getCode(), UNITED_STATES.getCode(), "02215");
+		MailingAddress boston = new MailingAddress("4 Jersey St", "Boston", MASSACHUSETTS, UNITED_STATES, "02215");
 		LocationDetails l2 = crm.createLocation(mlbId, "BOS", "Boston", boston);
 		Assert.assertEquals("Boston", l2.getDisplayName());
 		Assert.assertEquals("BOS", l2.getReference());
@@ -76,7 +75,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(boston, l2.getAddress());
 		Assert.assertEquals(l2, crm.findLocationDetails(l2.getLocationId()));
 
-		MailingAddress chicago = new MailingAddress("1060 W Addison St", "Chicago", ILLINOIS.getCode(), UNITED_STATES.getCode(), "60613");
+		MailingAddress chicago = new MailingAddress("1060 W Addison St", "Chicago", ILLINOIS, UNITED_STATES, "60613");
 		LocationDetails l3 = crm.createLocation(mlbId, "CHC", "Chicago", chicago);
 		Assert.assertEquals("Chicago", l3.getDisplayName());
 		Assert.assertEquals("CHC", l3.getReference());
@@ -178,7 +177,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(1, crm.countLocations(new LocationsFilter(mlbId, "Yankee Stadium", null, Status.ACTIVE)));
 		Assert.assertEquals(0, crm.countLocations(new LocationsFilter(mlbId, "Rogers Centre", null, Status.ACTIVE)));
 		Assert.assertEquals(0, crm.countLocations(new LocationsFilter(mlbId, "Yankee Stadium", null, Status.INACTIVE)));
-		Assert.assertEquals(0, crm.countLocations(new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE)));
+		Assert.assertEquals(0, crm.countLocations(new LocationsFilter(new OrganizationIdentifier("MLS"), "TD Place", null, Status.ACTIVE)));
 		
 		/* find locations details */
 		Page<LocationDetails> detailsPage = crm.findLocationDetails(
@@ -236,7 +235,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 		
 		detailsPage = crm.findLocationDetails(
-				new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE), 
+				new LocationsFilter(new OrganizationIdentifier("MLS"), "TD Place", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5, detailsPage.getSize());
@@ -300,7 +299,7 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 		
 		summariesPage = crm.findLocationSummaries(
-				new LocationsFilter(new Identifier("MLS"), "TD Place", null, Status.ACTIVE), 
+				new LocationsFilter(new OrganizationIdentifier("MLS"), "TD Place", null, Status.ACTIVE), 
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5,  summariesPage.getSize());
@@ -312,58 +311,52 @@ public abstract class AbstractLocationServiceTests {
 	@Test
 	public void testInvalidLocId() {
 		try {
-			crm.findLocationDetails(new Identifier("abc"));
+			crm.findLocationDetails(new LocationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Location ID '/locations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.findLocationSummary(new Identifier("abc"));
+			crm.findLocationSummary(new LocationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Location ID '/locations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.updateLocationName(new Identifier("abc"), "name");
+			crm.updateLocationName(new LocationIdentifier("abc"), "name");
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Location ID '/locations/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.updateLocationAddress(new Identifier("abc"), CrmAsserts.MAILING_ADDRESS);
+			crm.updateLocationAddress(new LocationIdentifier("abc"), CrmAsserts.MAILING_ADDRESS);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Location ID '/locations/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.disableLocation(new Identifier("abc"));
+			crm.disableLocation(new LocationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Location ID '/locations/abc'", e.getMessage());
 		}
 		
 		try {
-			crm.enableLocation(new Identifier("abc"));
+			crm.enableLocation(new LocationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Location ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Location ID '/locations/abc'", e.getMessage());
 		}
 	}
 	
 	@Test
 	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
-
-		assertEquals("LOC", crm.findLocationDetails(locationId).getReference());
-		assertEquals("LOC", crm.findLocationSummary(locationId).getReference());
 		try {
-			crm.findLocationDetails(groupId);
+			crm.findLocationDetails(new LocationIdentifier("ABC"));
 			fail("Not a valid identifier");
 		} catch (ItemNotFoundException e) { }
 	}

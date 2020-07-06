@@ -21,9 +21,10 @@ public class BasicConfigurationRepository implements CrmConfigurationRepository 
 
 	@Override
 	public boolean isInitialized() {
-		if (latest == null)
+		if (latest == null || !store.getConfigurations().containsKey(latest.getConfigurationId())) {
 			return false;
-		return latest.getStatus().equals(Status.ACTIVE);
+		}
+		return store.getConfigurations().get(latest.getConfigurationId()).getStatus().equals(Status.ACTIVE);
 	}
 	
 	@Override

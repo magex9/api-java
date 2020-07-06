@@ -126,7 +126,7 @@ public interface CrmPersonService {
 		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 		
 		// Salutation
-		if (!name.getSalutation().isEmpty()) {
+		if (name.getSalutation() != null && !name.getSalutation().isEmpty()) {
 			if (name.getSalutation().isIdentifer()) {
 				try {
 					crm.findOption(name.getSalutation().getIdentifier());

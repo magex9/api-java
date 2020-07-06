@@ -18,6 +18,7 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public class UsersFilter implements CrmFilter<User> {
@@ -36,6 +37,8 @@ public class UsersFilter implements CrmFilter<User> {
 	);
 	
 	private PersonIdentifier personId;
+	
+	private OrganizationIdentifier organizationId;
 
 	private Status status;
 
@@ -44,10 +47,11 @@ public class UsersFilter implements CrmFilter<User> {
 	private AuthenticationRoleIdentifier roleId;
 
 	public UsersFilter() {
-		this(null, null, null, null);
+		this(null, null, null, null, null);
 	}
 	
-	public UsersFilter(PersonIdentifier personId, Status status, String username, AuthenticationRoleIdentifier roleId) {
+	public UsersFilter(OrganizationIdentifier organizationId, PersonIdentifier personId, Status status, String username, AuthenticationRoleIdentifier roleId) {
+		this.organizationId = organizationId;
 		this.personId = personId;
 		this.status = status;
 		this.username = username;
@@ -56,6 +60,7 @@ public class UsersFilter implements CrmFilter<User> {
 	
 	public UsersFilter(Map<String, Object> filterCriteria) {
 		try {
+			this.organizationId = filterCriteria.containsKey("organizationId") ? new OrganizationIdentifier((CharSequence) filterCriteria.get("organizationId")) : null;
 			this.personId = filterCriteria.containsKey("personId") ? new PersonIdentifier((CharSequence) filterCriteria.get("personId")) : null;
 			this.roleId = filterCriteria.get("roleId") != null ? new AuthenticationRoleIdentifier((CharSequence) filterCriteria.get("roleId")) : null;
 			this.username = (String) filterCriteria.get("username");		
@@ -74,12 +79,20 @@ public class UsersFilter implements CrmFilter<User> {
 		}
 	}
 
-	public Identifier getPersonId() {
-		return personId;
+	public OrganizationIdentifier getOrganizationId() {
+		return organizationId;
 	}
 	
+	public UsersFilter withOrganizationId(OrganizationIdentifier organizationId) {
+		return new UsersFilter(organizationId, personId, status, username, roleId);
+	}
+	
+	public Identifier getPersonId() {
+		return personId;
+	}		
+	
 	public UsersFilter withPersonId(PersonIdentifier personId) {
-		return new UsersFilter(personId, status, username, roleId);
+		return new UsersFilter(organizationId, personId, status, username, roleId);
 	}
 
 	public Status getStatus() {
@@ -87,7 +100,7 @@ public class UsersFilter implements CrmFilter<User> {
 	}
 	
 	public UsersFilter withStatus(Status status) {
-		return new UsersFilter(personId, status, username, roleId);
+		return new UsersFilter(organizationId, personId, status, username, roleId);
 	}
 	
 	public String getUsername() {
@@ -95,7 +108,7 @@ public class UsersFilter implements CrmFilter<User> {
 	}
 	
 	public UsersFilter withUsername(String username) {
-		return new UsersFilter(personId, status, username, roleId);
+		return new UsersFilter(organizationId, personId, status, username, roleId);
 	}
 
 	public Identifier getRoleId() {
@@ -103,7 +116,7 @@ public class UsersFilter implements CrmFilter<User> {
 	}
 	
 	public UsersFilter withRoleId(AuthenticationRoleIdentifier roleId) {
-		return new UsersFilter(personId, status, username, roleId);
+		return new UsersFilter(organizationId, personId, status, username, roleId);
 	}
 
 	public static List<Sort> getSortOptions() {
@@ -122,10 +135,11 @@ public class UsersFilter implements CrmFilter<User> {
 	public boolean apply(User instance) {
 		return List.of(instance)
 			.stream()
+			.filter(u -> this.getOrganizationId() == null || this.getOrganizationId().equals(u.getOrganizationId()))
+			.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPersonId()))
 			.filter(u -> this.getUsername() == null || StringUtils.containsIgnoreCase(u.getUsername(), this.getUsername()))
 			.filter(u -> this.getRoleId() == null || u.getRoleIds().contains(this.getRoleId()))
 			.filter(u -> this.getStatus() == null || this.getStatus().equals(u.getStatus()))
-			.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPersonId()))
 			.findAny()
 			.isPresent();
 	}
