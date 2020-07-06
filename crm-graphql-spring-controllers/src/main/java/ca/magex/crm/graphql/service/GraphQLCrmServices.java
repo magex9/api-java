@@ -108,6 +108,7 @@ public class GraphQLCrmServices {
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainContact", personDataFetcher.byOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("authenticationGroups", optionDataFetcher.findAuthenticationGroupsForOrg()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("businessGroups", optionDataFetcher.findBusinessGroupsForOrg()))
 
 				// location data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))

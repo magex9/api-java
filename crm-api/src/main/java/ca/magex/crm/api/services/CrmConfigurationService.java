@@ -167,7 +167,7 @@ public interface CrmConfigurationService {
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CTO", "Chief Technology Officer", "Directeur de la technologie"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CSO", "Chief Security Officer", "Directeur de sécurité"));
 
-		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("IMIT", "IM/IT", "GI / TI"));
+		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("IMIT", "IM/IT", "GI/TI"));
 		createNestedOption(repos, imitId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("DIRECTOR", "Director", "Réalisateur"));
 
 		OptionIdentifier opsId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("OPS", "Operations", "Operations"));
@@ -181,7 +181,7 @@ public interface CrmConfigurationService {
 		createNestedOption(repos, infraId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe"));
 		createNestedOption(repos, infraId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("ADMIN", "System Administrator", "Administrateur du système"));
 		
-		OptionIdentifier devId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("DEV", "Application Development", "Directeur général"));
+		OptionIdentifier devId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("DEV", "Application Development", "Développement d'applications"));
 		createNestedOption(repos, devId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("MANAGER", "Manager", "Gestionnaire"));
 
 		OptionIdentifier dmId = createNestedOption(repos, devId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("DM", "Data Management", "Gestion de données"));

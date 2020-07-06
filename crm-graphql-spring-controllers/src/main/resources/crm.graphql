@@ -110,8 +110,8 @@ type Query {
 
 type Mutation {
 	# Organization Maintenance 
-	createOrganization(displayName: String!, authenticationGroups: [String]!): Organization
-	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, authenticationGroups: [String]): Organization
+	createOrganization(displayName: String!, authenticationGroups: [String]!, businessGroups: [String]!): Organization
+	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, authenticationGroups: [String], businessGroups: [String]): Organization
 	
 	# Location Maintenance
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
@@ -153,6 +153,7 @@ type Organization {
 	mainLocation: Location
 	mainContact: Person
 	authenticationGroups: [Option]!
+	businessGroups: [Option]!
 }
 
 type Location {

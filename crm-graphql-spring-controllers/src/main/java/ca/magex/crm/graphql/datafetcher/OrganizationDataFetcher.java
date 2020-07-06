@@ -13,6 +13,7 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -29,7 +30,8 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());			
 			return crm.createOrganization(
 					environment.getArgument("displayName"), 
-					extractAuthenticationGroups(environment, "authenticationGroups"));
+					extractAuthenticationGroups(environment, "authenticationGroups"),
+					extractBusinessGroups(environment, "businessGroups"));
 		};
 	}
 
@@ -103,7 +105,21 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			if (environment.getArgument("groups") != null) {
 				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroups");
 				if (!org.getAuthenticationGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getAuthenticationGroupIds())) {
-					org = crm.updateOrganizationGroups(organizationId, newGroups);
+					org = crm.updateOrganizationAuthenticationGroups(organizationId, newGroups);
+				}
+			}
+			
+			if (environment.getArgument("authenticationGroups") != null) {
+				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroups");
+				if (!org.getAuthenticationGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getAuthenticationGroupIds())) {
+					org = crm.updateOrganizationAuthenticationGroups(organizationId, newGroups);
+				}
+			}
+			
+			if (environment.getArgument("businessGroups") != null) {
+				List<BusinessGroupIdentifier> newGroups = extractBusinessGroups(environment, "businessGroups");
+				if (!org.getBusinessGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getBusinessGroupIds())) {
+					org = crm.updateOrganizationBusinessGroups(organizationId, newGroups);
 				}
 			}
 

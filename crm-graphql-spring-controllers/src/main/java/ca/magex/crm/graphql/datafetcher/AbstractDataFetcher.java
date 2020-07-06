@@ -22,6 +22,7 @@ import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
@@ -135,7 +136,7 @@ public abstract class AbstractDataFetcher {
 	}
 	
 	/**
-	 * Extracts the groups and converts them to AuthenticationGroupIdentifiers
+	 * Extracts the authentication groups and converts them to AuthenticationGroupIdentifiers
 	 * @param environment
 	 * @param groupsId
 	 * @return
@@ -143,6 +144,17 @@ public abstract class AbstractDataFetcher {
 	public List<AuthenticationGroupIdentifier> extractAuthenticationGroups(DataFetchingEnvironment environment, String groupsId) {
 		List<String> groups = environment.getArgument(groupsId);
 		return groups.stream().map((group) -> new AuthenticationGroupIdentifier(group)).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Extracts the business groups and converts them to BusinessGroupIdentifier
+	 * @param environment
+	 * @param groupsId
+	 * @return
+	 */
+	public List<BusinessGroupIdentifier> extractBusinessGroups(DataFetchingEnvironment environment, String groupsId) {
+		List<String> groups = environment.getArgument(groupsId);
+		return groups.stream().map((group) -> new BusinessGroupIdentifier(group)).collect(Collectors.toList());
 	}
 	
 	/**

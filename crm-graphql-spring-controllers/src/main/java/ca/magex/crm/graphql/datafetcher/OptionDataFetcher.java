@@ -9,9 +9,6 @@ import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.system.Option;
-import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
@@ -25,6 +22,17 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findAuthenticationGroupsForOrg@" + OptionDataFetcher.class.getSimpleName());
 			OrganizationDetails source = environment.getSource();
 			return source.getAuthenticationGroupIds()
+				.stream()
+				.map((id) -> crm.findOption(id))
+				.collect(Collectors.toList());			
+		};
+	}
+	
+	public DataFetcher<List<Option>> findBusinessGroupsForOrg() {
+		return (environment) -> {
+			logger.info("Entering findBusinessGroupsForOrg@" + OptionDataFetcher.class.getSimpleName());
+			OrganizationDetails source = environment.getSource();
+			return source.getBusinessGroupIds()
 				.stream()
 				.map((id) -> crm.findOption(id))
 				.collect(Collectors.toList());			
