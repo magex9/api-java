@@ -66,8 +66,8 @@ public class LocationSummaryJsonTransformerTests {
 		assertEquals("http://api.magex.ca/crm/rest/locations/" + locationId.getId(), linked.getString("locationId"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
-		assertEquals("http://api.magex.ca/crm/schema/lookup/Statuses", linked.getObject("status").getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/statuses/active", linked.getObject("status").getString("@id"));
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
 		assertEquals("ACTIVE", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));

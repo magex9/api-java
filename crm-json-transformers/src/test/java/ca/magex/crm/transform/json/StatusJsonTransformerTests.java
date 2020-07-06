@@ -49,21 +49,22 @@ public class StatusJsonTransformerTests {
 	@Test
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(Status.ACTIVE, null);
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), root.keys());
-		assertEquals("Status", root.getString("@type"));
-		assertEquals("active", root.getString("@value"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("@context", "@value", "@en", "@fr"), root.keys());
+		assertEquals("http://magex.ca/crm/options/Statuses", root.getString("@context"));
+		assertEquals("ACTIVE", root.getString("@value"));
 		assertEquals("Active", root.getString("@en"));
 		assertEquals("Actif", root.getString("@fr"));
 
-		assertEquals(new JsonText("active"), transformer.format(Status.ACTIVE, Lang.ROOT));
+		assertEquals(new JsonText("ACTIVE"), transformer.format(Status.ACTIVE, Lang.ROOT));
 		assertEquals(new JsonText("Active"), transformer.format(Status.ACTIVE, Lang.ENGLISH));
 		assertEquals(new JsonText("Actif"), transformer.format(Status.ACTIVE, Lang.FRENCH));
 
-		assertEquals(new JsonText("inactive"), transformer.format(Status.INACTIVE, Lang.ROOT));
+		assertEquals(new JsonText("INACTIVE"), transformer.format(Status.INACTIVE, Lang.ROOT));
 		assertEquals(new JsonText("Inactive"), transformer.format(Status.INACTIVE, Lang.ENGLISH));
 		assertEquals(new JsonText("Inactif"), transformer.format(Status.INACTIVE, Lang.FRENCH));
 
-		assertEquals(new JsonText("pending"), transformer.format(Status.PENDING, Lang.ROOT));
+		assertEquals(new JsonText("PENDING"), transformer.format(Status.PENDING, Lang.ROOT));
 		assertEquals(new JsonText("Pending"), transformer.format(Status.PENDING, Lang.ENGLISH));
 		assertEquals(new JsonText("En attente"), transformer.format(Status.PENDING, Lang.FRENCH));
 	}

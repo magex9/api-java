@@ -2,8 +2,10 @@ package ca.magex.crm.transform.json;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmServices;
@@ -22,6 +24,7 @@ import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
+import ca.magex.json.util.StringConverter;
 
 public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonElement> {
 	
@@ -85,7 +88,28 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			throw new IllegalArgumentException("Unexpected type for " + getSourceType().getSimpleName() + ": " + json.getString("@type"));
 		throw new UnsupportedOperationException("Unsupported json element: " + json.getClass().getSimpleName());
 	}
-	
+
+	public <O extends OptionIdentifier> List<O> parseOptions(String key, JsonObject json, Class<O> cls, Locale locale) {
+		return json.getArray(key).stream().map(e -> parseOption(e, cls, locale)).collect(Collectors.toList());
+	}
+
+	public <O extends OptionIdentifier> O parseOption(JsonElement e, Class<O> cls, Locale locale) {
+		String value = locale == null ?
+			((JsonObject)e).getString("@id").substring(REST_BASE.length()) :
+			((JsonText)e).value();
+		String code = value;
+		if (locale == null) {
+			String context = IdentifierFactory.getContext(cls);
+			if (!value.startsWith(context))
+				throw new IllegalArgumentException("Expected context not found: " + context + " !^ " + value);
+			code = Arrays.asList(value.substring(context.length()).split("/")).stream().map(s -> StringConverter.lowerToUpperCase(s)).collect(Collectors.joining("/"));
+		} else {
+			Type type = IdentifierFactory.getType(cls);
+			code = crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, value)).getSingleItem().getCode();
+		}
+		return IdentifierFactory.forId(code, cls);
+	}
+
 	public <O extends Identifier> O parseIdentifier(String key, JsonObject json, Class<O> cls, Locale locale) {
 		try {
 			if (locale == null) {

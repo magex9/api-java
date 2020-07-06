@@ -49,7 +49,7 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 		} else {
 			sb.append(SCHEMA_BASE);
 		}
-		sb.append("/lookups/");
+		sb.append("/options/");
 		sb.append(formatType(option.getType(), identifier));
 		return sb.toString();
 	}
@@ -64,8 +64,6 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
-		if (option.getType().equals(Type.PHRASE) && locale == Lang.ROOT)
-			return new JsonText(option.getName(locale).replaceAll("/", ".").toLowerCase());
 		return new JsonText(option.getName(locale));
 	}
 

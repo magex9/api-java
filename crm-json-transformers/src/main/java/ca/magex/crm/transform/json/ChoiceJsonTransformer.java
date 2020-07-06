@@ -44,19 +44,11 @@ public class ChoiceJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	public String buildContext(Option option, boolean identifier, Locale locale) {
 		StringBuilder sb = new StringBuilder();
-//		if (option.getParentId() != null && identifier) {
-//			Option parent = crm.findOption(option.getParentId());
-//			sb.append(buildContext(parent, identifier, locale));
-//			sb.append("/");
-//			sb.append(StringConverter.upperToLowerCase(parent.getName().getCode()));
-//			sb.append("/");
-//		} else {
-			if (identifier) {
-				sb.append("http://api.magex.ca/crm/rest/lookups/");
-			} else {
-				sb.append("http://api.magex.ca/crm/schema/lookup/");
-			}
-//		}
+		if (identifier) {
+			sb.append("http://api.magex.ca/crm/rest/options/");
+		} else {
+			sb.append("http://api.magex.ca/crm/schema/options/");
+		}
 		sb.append(formatType(option.getType(), identifier));
 		return sb.toString();
 	}

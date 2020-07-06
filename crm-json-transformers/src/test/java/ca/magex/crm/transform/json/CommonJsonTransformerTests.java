@@ -64,13 +64,13 @@ public class CommonJsonTransformerTests {
 			transformer.getProperty(option, "code", Option.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unable to get code from {\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"type\":{\"name\":{\"code\":\"AUTH_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true,\"extendable\":true,\"choice\":false},\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+			assertEquals("Unable to get code from {\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"type\":{\"name\":{\"code\":\"AUTHENTICATION_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true,\"extendable\":true,\"choice\":false},\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
 		}
 		try {
 			transformer.getProperty(option, "invalid", String.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unable to get invalid from {\"optionId\":\"g\",\"status\":\"ACTIVE\",\"name\":{\"code\":\"GRP\",\"en\":\"Option\",\"fr\":\"Optione\"}}", e.getMessage());
+			assertEquals("Unable to get invalid from {\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"type\":{\"name\":{\"code\":\"AUTHENTICATION_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true,\"extendable\":true,\"choice\":false},\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
 		}
 	}
 	

@@ -57,8 +57,8 @@ public class CommunicationJsonTransformerTests {
 		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", linked.getString("@context"));
 		assertEquals("Developer", linked.getString("jobTitle"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("language").keys());
-		assertEquals("http://api.magex.ca/crm/schema/lookup/Languages", linked.getObject("language").getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/languages/en", linked.getObject("language").getString("@id"));
+		assertEquals("http://api.magex.ca/crm/schema/options/Languages", linked.getObject("language").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/languages/en", linked.getObject("language").getString("@id"));
 		assertEquals("EN", linked.getObject("language").getString("@value"));
 		assertEquals("English", linked.getObject("language").getString("@en"));
 		assertEquals("Anglais", linked.getObject("language").getString("@fr"));

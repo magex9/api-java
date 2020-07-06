@@ -40,7 +40,7 @@ public class LocalizedJsonTransformer extends AbstractJsonTransformer<Localized>
 	@Override
 	public JsonElement formatLocalized(Localized localized, Locale locale) {
 		if (Lang.ROOT.equals(locale)) {
-			return new JsonText("http://api.magex.ca/crm/rest/dictionary/" + localized.getCode().replaceAll("\\.", "/"));
+			return new JsonText(localized.getCode().replaceAll("\\.", "/"));
 		} else {
 			return new JsonText(localized.get(locale));
 		}

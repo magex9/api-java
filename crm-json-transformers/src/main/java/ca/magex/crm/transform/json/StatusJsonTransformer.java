@@ -32,7 +32,7 @@ public class StatusJsonTransformer extends AbstractJsonTransformer<Status> {
 	@Override
 	public JsonElement formatRoot(Status status) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@context", "http://magex.ca/crm/lookups/Statuses"));
+		pairs.add(new JsonPair("@context", "http://magex.ca/crm/options/Statuses"));
 		pairs.add(new JsonPair("@value", status.getCode()));
 		pairs.add(new JsonPair("@en", status.getName(Lang.ENGLISH)));
 		pairs.add(new JsonPair("@fr", status.getName(Lang.FRENCH)));

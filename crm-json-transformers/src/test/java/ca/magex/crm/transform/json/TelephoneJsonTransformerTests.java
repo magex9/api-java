@@ -52,7 +52,8 @@ public class TelephoneJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(telephone, null);
-		assertEquals(List.of("@type", "number", "extension"), linked.keys());
+		assertEquals(List.of("@context", "number", "extension"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", linked.getString("@context"));
 		assertEquals("6135551234", linked.getString("number"));
 		assertEquals("42", linked.getString("extension"));
 		assertEquals(telephone, transformer.parse(linked, null));
@@ -61,7 +62,7 @@ public class TelephoneJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(telephone, Lang.ROOT);
-		assertEquals(List.of("@type", "number", "extension"), root.keys());
+		assertEquals(List.of("number", "extension"), root.keys());
 		assertEquals("6135551234", root.getString("number"));
 		assertEquals("42", root.getString("extension"));
 		assertEquals(telephone, transformer.parse(root, Lang.ROOT));
@@ -70,7 +71,7 @@ public class TelephoneJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(telephone, Lang.ENGLISH);
-		assertEquals(List.of("@type", "number", "extension"), english.keys());
+		assertEquals(List.of("number", "extension"), english.keys());
 		assertEquals("6135551234", english.getString("number"));
 		assertEquals("42", english.getString("extension"));
 		assertEquals(telephone, transformer.parse(english, Lang.ENGLISH));
@@ -79,7 +80,7 @@ public class TelephoneJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(telephone, Lang.FRENCH);
-		assertEquals(List.of("@type", "number", "extension"), french.keys());
+		assertEquals(List.of("number", "extension"), french.keys());
 		assertEquals("6135551234", french.getString("number"));
 		assertEquals("42", french.getString("extension"));
 		assertEquals(telephone, transformer.parse(french, Lang.FRENCH));

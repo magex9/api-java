@@ -29,6 +29,10 @@ public class PersonSummaryJsonTransformerTests {
 	
 	private Transformer<PersonSummary, JsonElement> transformer;
 	
+	private PersonIdentifier personId;
+	
+	private OrganizationIdentifier organizationId;
+	
 	private PersonSummary person;
 	
 	@Before
@@ -36,7 +40,9 @@ public class PersonSummaryJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonSummaryJsonTransformer(crm);
-		person = new PersonSummary(new PersonIdentifier("prsn"), new OrganizationIdentifier("org"), Status.ACTIVE, PERSON_NAME.getDisplayName());
+		personId = new PersonIdentifier("TkNj8jzNGC");
+		organizationId = new OrganizationIdentifier("DSbVnvGGyf");
+		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_NAME.getDisplayName());
 	}
 	
 	@Test
@@ -55,18 +61,15 @@ public class PersonSummaryJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(person, null);
-		System.out.println(linked);
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), linked.keys());
-		assertEquals("PersonSummary", linked.getString("@type"));
-		assertEquals(List.of("@type", "@id"), linked.getObject("personId").keys());
-		assertEquals("Identifier", linked.getObject("personId").getString("@type"));
-		assertEquals("prsn", linked.getObject("personId").getString("@id"));
-		assertEquals(List.of("@type", "@id"), linked.getObject("organizationId").keys());
-		assertEquals("Identifier", linked.getObject("organizationId").getString("@type"));
-		assertEquals("org", linked.getObject("organizationId").getString("@id"));
-		assertEquals(List.of("@type", "@lookup", "@value", "@en", "@fr"), linked.getObject("status").keys());
-		assertEquals("Status", linked.getObject("status").getString("@type"));
-		assertEquals("active", linked.getObject("status").getString("@value"));
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonSummary", linked.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getId(), linked.getString("personId"));
+		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
+		assertEquals("ACTIVE", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));
 		assertEquals("Bacon, Chris P", linked.getString("displayName"));
@@ -76,37 +79,37 @@ public class PersonSummaryJsonTransformerTests {
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(person, Lang.ROOT);
-		System.out.println(root);
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), root.keys());
-		assertEquals("PersonSummary", root.getString("@type"));
-		assertEquals("prsn", root.getString("personId"));
-		assertEquals("org", root.getString("organizationId"));
-		assertEquals("active", root.getString("status"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("personId", "organizationId", "status", "displayName"), root.keys());
+		assertEquals(personId.getId(), root.getString("personId"));
+		assertEquals(organizationId.getId(), root.getString("organizationId"));
+		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Bacon, Chris P", root.getString("displayName"));
+		assertEquals(person, transformer.parse(root, Lang.ROOT));
 	}
 	
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(person, Lang.ENGLISH);
-		System.out.println(english);
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), english.keys());
-		assertEquals("PersonSummary", english.getString("@type"));
-		assertEquals("prsn", english.getString("personId"));
-		assertEquals("org", english.getString("organizationId"));
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("personId", "organizationId", "status", "displayName"), english.keys());
+		assertEquals(personId.getId(), english.getString("personId"));
+		assertEquals(organizationId.getId(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Bacon, Chris P", english.getString("displayName"));
+		assertEquals(person, transformer.parse(english, Lang.ENGLISH));
 	}
 	
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(person, Lang.FRENCH);
-		System.out.println(french);
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), french.keys());
-		assertEquals("PersonSummary", french.getString("@type"));
-		assertEquals("prsn", french.getString("personId"));
-		assertEquals("org", french.getString("organizationId"));
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("personId", "organizationId", "status", "displayName"), french.keys());
+		assertEquals(personId.getId(), french.getString("personId"));
+		assertEquals(organizationId.getId(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Bacon, Chris P", french.getString("displayName"));
+		assertEquals(person, transformer.parse(french, Lang.FRENCH));
 	}
 	
 }

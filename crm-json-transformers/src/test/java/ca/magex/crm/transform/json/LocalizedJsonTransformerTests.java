@@ -18,6 +18,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
@@ -54,7 +55,7 @@ public class LocalizedJsonTransformerTests {
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), root.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/system/Localized", root.getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/lookup/phrases/GRP", root.getString("@id"));
+		assertEquals("http://api.magex.ca/crm/rest/dictionary/GRP", root.getString("@id"));
 		assertEquals("GRP", root.getString("@value"));
 		assertEquals("Group", root.getString("@en"));
 		assertEquals("Groupe", root.getString("@fr"));

@@ -3,7 +3,6 @@ package ca.magex.crm.transform.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,6 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
-import ca.magex.json.model.JsonText;
 
 @Component
 public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<OrganizationDetails> {
@@ -56,8 +54,8 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		String displayName = parseText("displayName", json);
 		LocationIdentifier mainLocationId = parseIdentifier("mainLocationId", json, LocationIdentifier.class, locale);
 		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
-		List<AuthenticationGroupIdentifier> groups = json.getArray("groupIds").stream().map(e -> new AuthenticationGroupIdentifier(((JsonText)e).value())).collect(Collectors.toList());
+		List<AuthenticationGroupIdentifier> groups = parseOptions("groupIds", json, AuthenticationGroupIdentifier.class, locale);
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
-
+	
 }

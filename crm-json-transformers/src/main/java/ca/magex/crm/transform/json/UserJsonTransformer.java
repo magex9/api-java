@@ -3,7 +3,6 @@ package ca.magex.crm.transform.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
-import ca.magex.json.model.JsonText;
 
 @Component
 public class UserJsonTransformer extends AbstractJsonTransformer<User> {
@@ -50,10 +48,10 @@ public class UserJsonTransformer extends AbstractJsonTransformer<User> {
 	@Override
 	public User parseJsonObject(JsonObject json, Locale locale) {
 		UserIdentifier userId = parseIdentifier("userId", json, UserIdentifier.class, locale);
-		PersonIdentifier personId = parseIdentifier("person", json, PersonIdentifier.class, locale);
+		PersonIdentifier personId = parseIdentifier("personId", json, PersonIdentifier.class, locale);
 		String username = parseText("username", json);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
-		List<AuthenticationRoleIdentifier> roleIds = json.getArray("roleIds").stream().map(e -> new AuthenticationRoleIdentifier(((JsonText)e).value())).collect(Collectors.toList());
+		List<AuthenticationRoleIdentifier> roleIds = parseOptions("roleIds", json, AuthenticationRoleIdentifier.class, locale);
 		return new User(userId, personId, username, status, roleIds);
 	}
 

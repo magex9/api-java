@@ -48,8 +48,8 @@ public class MailingAddressJsonTransformer extends AbstractJsonTransformer<Maili
 	public MailingAddress parseJsonObject(JsonObject json, Locale locale) {
 		String street = parseText("street", json);
 		String city = parseText("city", json);
-		Choice<CountryIdentifier> country = parseChoice("country", json, Type.COUNTRY, locale);
 		Choice<ProvinceIdentifier> province = parseChoice("province", json, Type.PROVINCE, locale);
+		Choice<CountryIdentifier> country = parseChoice("country", json, Type.COUNTRY, locale);
 		String postalCode = parseText("postalCode", json);
 		return new MailingAddress(street, city, province, country, postalCode);
 	}

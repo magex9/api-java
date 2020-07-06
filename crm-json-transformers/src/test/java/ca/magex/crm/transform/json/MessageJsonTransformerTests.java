@@ -20,7 +20,6 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
-import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -70,15 +69,15 @@ public class MessageJsonTransformerTests {
 		assertEquals("http://api.magex.ca/crm/rest/schema/system/Message", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/KJj15ntU2G", linked.getString("identifier"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("type").keys());
-		assertEquals("http://api.magex.ca/crm/schema/lookups/MessageTypes", linked.getObject("type").getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/message-types/error", linked.getObject("type").getString("@id"));
+		assertEquals("http://api.magex.ca/crm/schema/options/MessageTypes", linked.getObject("type").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/message-types/error", linked.getObject("type").getString("@id"));
 		assertEquals("ERROR", linked.getObject("type").getString("@value"));
 		assertEquals("Error", linked.getObject("type").getString("@en"));
 		assertEquals("Erreur", linked.getObject("type").getString("@fr"));
 		assertEquals("prop", linked.getString("path"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("reason").keys());
-		assertEquals("http://api.magex.ca/crm/schema/lookups/Phrases", linked.getObject("reason").getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/lookups/phrases/validation/field/required", linked.getObject("reason").getString("@id"));
+		assertEquals("http://api.magex.ca/crm/schema/options/Phrases", linked.getObject("reason").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/phrases/validation/field/required", linked.getObject("reason").getString("@id"));
 		assertEquals("VALIDATION/FIELD/REQUIRED", linked.getObject("reason").getString("@value"));
 		assertEquals("Field is required", linked.getObject("reason").getString("@en"));
 		assertEquals("Champ requis", linked.getObject("reason").getString("@fr"));
@@ -94,20 +93,20 @@ public class MessageJsonTransformerTests {
 		assertEquals("KJj15ntU2G", root.getString("identifier"));
 		assertEquals("ERROR", root.getString("type"));
 		assertEquals("prop", root.getString("path"));
-		assertEquals("validation.field.required", root.getString("reason"));
+		assertEquals("VALIDATION/FIELD/REQUIRED", root.getString("reason"));
 		assertEquals(message, transformer.parse(root, Lang.ROOT));
 	}
 	
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(message, Lang.ENGLISH);
-		JsonAsserts.print(english, "english");
-		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), english.keys());
-		assertEquals("Message", english.getString("@type"));
-		assertEquals(organizationId.toString(), english.getString("identifier"));
-		assertEquals("error", english.getString("type"));
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("context", "identifier", "type", "path", "reason"), english.keys());
+		assertEquals("organizations", english.getString("context"));
+		assertEquals("KJj15ntU2G", english.getString("identifier"));
+		assertEquals("Error", english.getString("type"));
 		assertEquals("prop", english.getString("path"));
-		assertEquals("English reason", english.getString("reason"));
+		assertEquals("Field is required", english.getString("reason"));
 		assertEquals(message, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -115,12 +114,12 @@ public class MessageJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(message, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("@type", "identifier", "type", "path", "reason"), french.keys());
-		assertEquals("Message", french.getString("@type"));
-		assertEquals(organizationId.toString(), french.getString("identifier"));
-		assertEquals("error", french.getString("type"));
+		assertEquals(List.of("context", "identifier", "type", "path", "reason"), french.keys());
+		assertEquals("organizations", french.getString("context"));
+		assertEquals("KJj15ntU2G", french.getString("identifier"));
+		assertEquals("Erreur", french.getString("type"));
 		assertEquals("prop", french.getString("path"));
-		assertEquals("Raison française", french.getString("reason"));
+		assertEquals("Champ requis", french.getString("reason"));
 		assertEquals(message, transformer.parse(french, Lang.FRENCH));
 	}
 	
