@@ -28,7 +28,7 @@ public interface CrmUserService {
 	};
 
 	default User createUser(User prototype) {
-		return createUser(prototype.getOrganizationId(), prototype.getPersonId(), prototype.getUsername(), prototype.getRoles());
+		return createUser(prototype.getOrganizationId(), prototype.getPersonId(), prototype.getUsername(), prototype.getRoleIds());
 	}
 
 	User createUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles);
