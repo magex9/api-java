@@ -67,7 +67,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			passwords.updatePassword(username, passwords.encodePassword(password));
 			repos.setInitialized();
 		}
-		return repos.findUsers(new UsersFilter().withRoleId(roles("SYS/ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+		return repos.findUsers(new UsersFilter().withAuthenticationRoleId(roles("SYS/ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
 	}
 	
 	private List<AuthenticationGroupIdentifier> groups(String... codes) {

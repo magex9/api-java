@@ -83,19 +83,19 @@ public abstract class AbstractOrganizationServiceTests {
 		OrganizationDetails o1 = crm.createOrganization("Maple Leafs", List.of(new AuthenticationGroupIdentifier("NHL")));
 		Assert.assertEquals("Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroupIds().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
 		OrganizationDetails o2 = crm.createOrganization("Senators", List.of(new AuthenticationGroupIdentifier("NHL")));
 		Assert.assertEquals("Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroupIds().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
 		OrganizationDetails o3 = crm.createOrganization("Canadiens", List.of(new AuthenticationGroupIdentifier("NHL")));
 		Assert.assertEquals("Canadiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroupIds().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
 
@@ -103,21 +103,21 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = crm.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroupIds().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
 		o1 = crm.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		o2 = crm.updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroupIds().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
 		o2 = crm.updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		o3 = crm.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroupIds().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
 		o3 = crm.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
@@ -131,7 +131,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = crm.updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroupIds().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertEquals(torontoId, o1.getMainLocationId());
 		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
 		o1 = crm.updateOrganizationMainLocation(o1.getOrganizationId(), torontoId); // set to duplicate value
@@ -144,7 +144,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroupIds().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertEquals(ottawaId, o2.getMainLocationId());
 		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
 		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
@@ -158,7 +158,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroupIds().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertEquals(montrealId, o3.getMainLocationId());
 		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
 		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
@@ -174,7 +174,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroupIds().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertEquals(freddyId, o1.getMainContactId());
 		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
 		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // set to duplicate value
@@ -189,7 +189,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroupIds().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertEquals(craigId, o2.getMainContactId());
 		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
 		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
@@ -204,7 +204,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroupIds().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertEquals(careyId, o3.getMainContactId());
 		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
 		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
@@ -214,26 +214,26 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = crm.updateOrganizationGroups(o1.getOrganizationId(), List.of(NHL, PLAYOFFS, ONTARIO));
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(List.of(NHL, PLAYOFFS, ONTARIO), o1.getGroupIds());
+		Assert.assertEquals(List.of(NHL, PLAYOFFS, ONTARIO), o1.getAuthenticationGroupIds());
 		Assert.assertEquals(freddyId, o1.getMainContactId());
 		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
 		Assert.assertEquals(o1, crm.updateOrganizationGroups(o1.getOrganizationId(), List.of(NHL, PLAYOFFS, ONTARIO)));
 		o1 = crm.updateOrganizationGroups(o1.getOrganizationId(), List.of(NHL, ONTARIO));
-		Assert.assertEquals(List.of(NHL, ONTARIO), o1.getGroupIds());
+		Assert.assertEquals(List.of(NHL, ONTARIO), o1.getAuthenticationGroupIds());
 		o1 = crm.updateOrganizationGroups(o1.getOrganizationId(), List.of(NHL, PLAYOFFS, ONTARIO));
-		Assert.assertEquals(List.of(NHL, PLAYOFFS, ONTARIO), o1.getGroupIds());
+		Assert.assertEquals(List.of(NHL, PLAYOFFS, ONTARIO), o1.getAuthenticationGroupIds());
 
 		o2 = crm.updateOrganizationGroups(o2.getOrganizationId(), List.of(NHL, ONTARIO));
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(List.of(NHL, ONTARIO), o2.getGroupIds());
+		Assert.assertEquals(List.of(NHL, ONTARIO), o2.getAuthenticationGroupIds());
 		Assert.assertEquals(craigId, o2.getMainContactId());
 		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
 
 		o3 = crm.updateOrganizationGroups(o3.getOrganizationId(), List.of(NHL, QUEBEC));
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(List.of(NHL, QUEBEC), o3.getGroupIds());
+		Assert.assertEquals(List.of(NHL, QUEBEC), o3.getAuthenticationGroupIds());
 		Assert.assertEquals(careyId, o3.getMainContactId());
 		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
 

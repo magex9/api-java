@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort.Direction;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 
@@ -33,16 +32,16 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 
 	private Status status;
 	
-	private AuthenticationGroupIdentifier groupId;
+	private AuthenticationGroupIdentifier authenticationGroupId;
 
 	public OrganizationsFilter() {
 		this(null, null, null);
 	}
 	
-	public OrganizationsFilter(String displayName, Status status, AuthenticationGroupIdentifier groupId) {
+	public OrganizationsFilter(String displayName, Status status, AuthenticationGroupIdentifier authenticationGroupId) {
 		this.displayName = displayName;
 		this.status = status;
-		this.groupId = groupId;
+		this.authenticationGroupId = authenticationGroupId;
 	}
 	
 	public OrganizationsFilter(Map<String, Object> filterCriteria) {
@@ -56,7 +55,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + StringUtils.join(Status.values(), ",") + "}");
 				}
 			}
-			this.groupId = filterCriteria.get("group") != null ? new AuthenticationGroupIdentifier((CharSequence) filterCriteria.get("group")) : null;
+			this.authenticationGroupId = filterCriteria.get("authenticationGroupId") != null ? new AuthenticationGroupIdentifier((CharSequence) filterCriteria.get("authenticationGroupId")) : null;
 		}
 		catch(ClassCastException cce) {
 			throw new ApiException("Unable to instantiate organizations filter", cce);
@@ -68,7 +67,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	}
 	
 	public OrganizationsFilter withStatus(Status status) {
-		return new OrganizationsFilter(displayName, status, groupId);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId);
 	}
 
 	public String getDisplayName() {
@@ -76,15 +75,15 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	}
 	
 	public OrganizationsFilter withDisplayName(String displayName) {
-		return new OrganizationsFilter(displayName, status, groupId);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId);
 	}
 	
-	public Identifier getGroupId() {
-		return groupId;
+	public AuthenticationGroupIdentifier getAuthenticationGroupId() {
+		return authenticationGroupId;
 	}
 	
-	public OrganizationsFilter withGroup(AuthenticationGroupIdentifier groupId) {
-		return new OrganizationsFilter(displayName, status, groupId);
+	public OrganizationsFilter withAuthenticationGroup(AuthenticationGroupIdentifier authenticationGroupId) {
+		return new OrganizationsFilter(displayName, status, authenticationGroupId);
 	}
 
 	public static List<Sort> getSortOptions() {
@@ -103,7 +102,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	public boolean apply(OrganizationDetails instance) {
 		return List.of(instance)
 			.stream()
-			.filter(g -> this.getGroupId() == null || g.getGroupIds().contains(this.getGroupId()))
+			.filter(g -> this.getAuthenticationGroupId() == null || g.getAuthenticationGroupIds().contains(this.getAuthenticationGroupId()))
 			.filter(g -> this.getDisplayName() == null || containsIgnoreCaseAndAccent(g.getDisplayName(), this.getDisplayName()))				
 			.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
 			.findAny()

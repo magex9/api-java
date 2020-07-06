@@ -5,6 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.exceptions.BadRequestException;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 
 /**
  * Test suite for running an end to end test of the CRM Services
@@ -24,26 +28,29 @@ public class CrmServicesTestSuite {
 		this.crm = crm;
 		this.auth = auth;
 	}
-//	
+	
 	public void runAllTests() throws Exception {
-//		crm.reset();
-//		if (!crm.isInitialized())
-//			crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
-//		auth.login("admin", "admin");
-//		try {
-//			runCreatePermissions();
+		crm.reset();
+		if (!crm.isInitialized())
+			crm.initializeSystem(CrmAsserts.SYSTEM_ORG, CrmAsserts.SYSTEM_PERSON, CrmAsserts.SYSTEM_EMAIL, "admin", "admin");
+		auth.login("admin", "admin");
+		try {
+			runCreateOptions();
 //			Identifier orgIdentifier = runOrganizationServiceTests();
 //			runLocationServiceTests(orgIdentifier);
 //			Identifier personIdentifer = runPersonServiceTests(orgIdentifier);
 //			runUserServiceTests(personIdentifer);
-//		} catch (BadRequestException e) {
-//			e.printMessages(System.out);
-//		}
+		} catch (BadRequestException e) {
+			e.printMessages(System.out);
+		}
 	}
-//
-//
-//	private void runCreatePermissions() {
-//		
+
+
+	private void runCreateOptions() {
+		Option devAuthGroup = crm.createOption(null, Type.AUTHENTICATION_GROUP, new Localized("DEV", "Developers", "Dévelopeurs"));
+		
+		
+		
 //		Role sysadmin = crm.findRoleByCode(SYS_ADMIN.getCode());
 //		verifyRoleDetails(sysadmin, sysId, sysadmin.getRoleId(), Status.ACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
 //		verifyRoleDetails(crm.disableRole(sysadmin.getRoleId()), sysId, sysadmin.getRoleId(), Status.INACTIVE, SYS_ADMIN.getCode(), SYS_ADMIN.getEnglishName(), SYS_ADMIN.getFrenchName());
@@ -59,8 +66,8 @@ public class CrmServicesTestSuite {
 //		/* create a second group */
 //		Group dev = crm.createGroup(new Localized("DEV", "developers", "developeurs"));
 //		crm.createRole(dev.getGroupId(), new Localized("JAVA", "java", "java"));
-//	}
-//
+	}
+
 //	private Identifier runOrganizationServiceTests() {
 //		logger.info("----------------------------------");
 //		logger.info("Running Organization Service Tests");

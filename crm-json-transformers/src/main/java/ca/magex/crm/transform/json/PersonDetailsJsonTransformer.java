@@ -47,7 +47,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		formatTransformer(pairs, "legalName", person, new PersonNameJsonTransformer(crm), locale);
 		formatTransformer(pairs, "address", person, new MailingAddressJsonTransformer(crm), locale);
 		formatTransformer(pairs, "communication", person, new CommunicationJsonTransformer(crm), locale);
-		formatOptions(pairs, "roleIds", person, Type.BUSINESS_ROLE, locale);
+		formatOptions(pairs, "businessRoleIds", person, Type.BUSINESS_ROLE, locale);
 		return new JsonObject(pairs);
 	}
 
@@ -60,7 +60,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		PersonName legalName = parseObject("legalName", json, new PersonNameJsonTransformer(crm), locale);
 		MailingAddress address = parseObject("address", json, new MailingAddressJsonTransformer(crm), locale);
 		Communication communication = parseObject("communication", json, new CommunicationJsonTransformer(crm), locale);
-		List<BusinessRoleIdentifier> roles = parseOptions("roleIds", json, BusinessRoleIdentifier.class, locale);
+		List<BusinessRoleIdentifier> roles = parseOptions("businessRoleIds", json, BusinessRoleIdentifier.class, locale);
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roles);
 	}
 

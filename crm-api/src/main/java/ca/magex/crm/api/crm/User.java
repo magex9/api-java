@@ -1,7 +1,7 @@
 package ca.magex.crm.api.crm;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.common.IdentifierList;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -41,7 +42,7 @@ public class User implements Serializable {
 	private Status status;
 	
 	/** the authentication roles associated with this user */
-	private List<AuthenticationRoleIdentifier> roleIds;
+	private IdentifierList<AuthenticationRoleIdentifier> authenticationRoleIds;
 	
 	/**
 	 * Constructs a new user from the information provided
@@ -49,16 +50,16 @@ public class User implements Serializable {
 	 * @param personId
 	 * @param username
 	 * @param status
-	 * @param roleIds
+	 * @param authenticationRoleIds
 	 */
-	public User(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> roleIds) {
+	public User(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
 		super();
 		this.userId = userId;
 		this.organizationId = organizationId;
 		this.personId = personId;
 		this.username = username;		
 		this.status = status;
-		this.roleIds = new ArrayList<>(roleIds);
+		this.authenticationRoleIds = authenticationRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(authenticationRoleIds);
 	}
 	
 	/**
@@ -105,8 +106,8 @@ public class User implements Serializable {
 	 * returns the authentication role identifiers associated to the user
 	 * @return
 	 */
-	public List<AuthenticationRoleIdentifier> getRoleIds() {
-		return roleIds;
+	public List<AuthenticationRoleIdentifier> getAuthenticationRoleIds() {
+		return Collections.unmodifiableList(authenticationRoleIds);
 	}
 	
 	/**
@@ -115,7 +116,7 @@ public class User implements Serializable {
 	 * @return
 	 */
 	public User withStatus(Status status) {
-		return new User(userId, organizationId, personId, username, status, roleIds);
+		return new User(userId, organizationId, personId, username, status, authenticationRoleIds);
 	}	
 	
 	/**
@@ -123,8 +124,8 @@ public class User implements Serializable {
 	 * @param roles
 	 * @return
 	 */
-	public User withRoleIds(List<AuthenticationRoleIdentifier> roleIds) {
-		return new User(userId, organizationId, personId, username, status, roleIds);
+	public User withAuthenticationRoleIds(List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		return new User(userId, organizationId, personId, username, status, authenticationRoleIds);
 	}
 	
 	/**
@@ -133,7 +134,7 @@ public class User implements Serializable {
 	 * @return
 	 */
 	public boolean isInRole(AuthenticationRoleIdentifier roleId) {
-		return roleIds.contains(roleId);
+		return authenticationRoleIds.contains(roleId);
 	}
 	
 	@Override

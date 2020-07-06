@@ -84,14 +84,6 @@ input RoleFilter {
 }
 
 type Query {
-	# Group Queries	
-	findGroup(groupId: String!): Group
-	findGroups(filter: GroupFilter!, paging: PagingInput!): GroupPage
-	
-	# Role Queries	
-	findRole(roleId: String!): Role
-	findRoles(filter: RoleFilter!, paging: PagingInput!): RolePage
-		
 	# Organization Queries 
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
@@ -117,29 +109,21 @@ type Query {
 }
 
 type Mutation {
-	# Group Maintenance
-	createGroup(code: String!, englishName: String!, frenchName: String!): Group
-	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
-	
-	# Role Maintenance	
-	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
-	updateRole(roleId: String!, englishName: String, frenchName: String, status: String): Role
-	
 	# Organization Maintenance 
-	createOrganization(displayName: String!, groups: [String]!): Organization
-	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, groups: [String]): Organization
+	createOrganization(displayName: String!, authenticationGroups: [String]!): Organization
+	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, authenticationGroups: [String]): Organization
 	
 	# Location Maintenance
 	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
 	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput, status: String): Location
 	
 	# Person Maintenance
-	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
-	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput, status: String): Person
+	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, businessRoles: [String]!): Person
+	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoles: [String], status: String): Person
 		
 	# User Maintenance
-	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(userId: String!, status: String, roles: [String]): User
+	createUser(personId: String!, username: String!, authenticationRoles: [String]): User
+	updateUser(userId: String!, status: String, authenticationRoles: [String]): User
 	resetUserPassword(userId: String!): String
 	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean	
 }
@@ -168,7 +152,7 @@ type Organization {
 	displayName: String!
 	mainLocation: Location
 	mainContact: Person
-	groups: [Group]
+	groupIds: [String]
 }
 
 type Location {

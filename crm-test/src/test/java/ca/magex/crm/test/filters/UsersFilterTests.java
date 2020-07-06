@@ -60,7 +60,7 @@ public class UsersFilterTests {
 		Assert.assertNull(filter.getOrganizationId());
 		Assert.assertNull(filter.getPersonId());
 		Assert.assertNull(filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());		
 		assertFilterEquals(new UsersFilter(null, null, null, null, null), filter);		
 				
@@ -68,7 +68,7 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertNull(filter.getPersonId());
 		Assert.assertNull(filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), null, null, null, null), filter);
 		
@@ -76,7 +76,7 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertNull(filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, null, null), filter);
 		
@@ -84,15 +84,15 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, "Admin", null), filter);		
 		
-		filter = filter.withRoleId(new AuthenticationRoleIdentifier("USR"));
+		filter = filter.withAuthenticationRoleId(new AuthenticationRoleIdentifier("USR"));
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
+		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")), filter);		
 				
@@ -100,7 +100,7 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
+		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getAuthenticationRoleId());
 		Assert.assertEquals(Status.ACTIVE, filter.getStatus());		
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), Status.ACTIVE, "Admin", new AuthenticationRoleIdentifier("USR")), filter);		
 	}
@@ -111,7 +111,7 @@ public class UsersFilterTests {
 		Assert.assertNull(filter.getOrganizationId());
 		Assert.assertNull(filter.getPersonId());
 		Assert.assertNull(filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());		
 		assertFilterEquals(new UsersFilter(null, null, null, null, null), filter);		
 		
@@ -119,7 +119,7 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertNull(filter.getPersonId());
 		Assert.assertNull(filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), null, null, null, null), filter);
 		
@@ -127,7 +127,7 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertNull(filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, null, null), filter);		
 		
@@ -135,31 +135,31 @@ public class UsersFilterTests {
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertNull(filter.getRoleId());
+		Assert.assertNull(filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, "Admin", null), filter);
 				
-		filter = new UsersFilter(Map.of("organizationId", "O1", "personId", "P1", "username", "Admin", "roleId", "USR"));
+		filter = new UsersFilter(Map.of("organizationId", "O1", "personId", "P1", "username", "Admin", "authenticationRoleId", "USR"));
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
+		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")), filter);		
 		
-		filter = new UsersFilter(Map.of("organizationId", "O1", "personId", "P1", "username", "Admin", "roleId", "USR", "status", ""));
+		filter = new UsersFilter(Map.of("organizationId", "O1", "personId", "P1", "username", "Admin", "authenticationRoleId", "USR", "status", ""));
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
+		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getAuthenticationRoleId());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), null, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 				
-		filter = new UsersFilter(Map.of("organizationId", "O1", "personId", "P1", "username", "Admin", "roleId", "USR", "status", "active"));
+		filter = new UsersFilter(Map.of("organizationId", "O1", "personId", "P1", "username", "Admin", "authenticationRoleId", "USR", "status", "active"));
 		Assert.assertEquals(new OrganizationIdentifier("O1"), filter.getOrganizationId());
 		Assert.assertEquals(new PersonIdentifier("P1"), filter.getPersonId());
 		Assert.assertEquals("Admin", filter.getUsername());
-		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getRoleId());
+		Assert.assertEquals(new AuthenticationRoleIdentifier("USR"), filter.getAuthenticationRoleId());
 		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
 		assertFilterEquals(new UsersFilter(new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), Status.ACTIVE, "Admin", new AuthenticationRoleIdentifier("USR")), filter);
 		
@@ -223,12 +223,11 @@ public class UsersFilterTests {
 		Assert.assertFalse(new UsersFilter().withUsername("User").apply(user));
 		
 		/* test role match */
-		Assert.assertTrue(new UsersFilter().withRoleId(new AuthenticationRoleIdentifier("ADM")).apply(user));
-		Assert.assertFalse(new UsersFilter().withRoleId(new AuthenticationRoleIdentifier("BDG")).apply(user));
+		Assert.assertTrue(new UsersFilter().withAuthenticationRoleId(new AuthenticationRoleIdentifier("ADM")).apply(user));
+		Assert.assertFalse(new UsersFilter().withAuthenticationRoleId(new AuthenticationRoleIdentifier("BDG")).apply(user));
 		
 		/* test status match */
 		Assert.assertTrue(new UsersFilter().withStatus(Status.ACTIVE).apply(user));
 		Assert.assertFalse(new UsersFilter().withStatus(Status.INACTIVE).apply(user));
-		
 	}
 }

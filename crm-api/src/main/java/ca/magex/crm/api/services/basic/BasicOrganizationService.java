@@ -67,12 +67,12 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withMainContactId(personId));
 	}
 
-	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
+	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> withAuthenticationGroupIds) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
 		}
-		return repos.saveOrganizationDetails(details.withGroupIds(groupIds));
+		return repos.saveOrganizationDetails(details.withAuthenticationGroupIds(withAuthenticationGroupIds));
 	}
 
 	@Override

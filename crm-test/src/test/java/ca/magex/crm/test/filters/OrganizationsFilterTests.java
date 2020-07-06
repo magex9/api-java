@@ -27,7 +27,7 @@ public class OrganizationsFilterTests {
 			if ((field.getModifiers() & Modifier.STATIC) > 0) {
 				continue;
 			}
-			if (field.getName().equals("groupId")) {
+			if (field.getName().equals("authenticationGroupId")) {
 				continue;
 			}
 			Assert.assertTrue(OrganizationsFilter.getSortOptions().contains(Sort.by(Order.asc(field.getName()))));

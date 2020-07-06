@@ -43,7 +43,7 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		formatText(pairs, "displayName", organization);
 		formatIdentifier(pairs, "mainLocationId", organization, LocationIdentifier.class, locale);
 		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
-		formatOptions(pairs, "groupIds", organization, Type.AUTHENTICATION_GROUP, locale);
+		formatOptions(pairs, "authenticationGroupIds", organization, Type.AUTHENTICATION_GROUP, locale);
 		return new JsonObject(pairs);
 	}
 
@@ -54,7 +54,7 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		String displayName = parseText("displayName", json);
 		LocationIdentifier mainLocationId = parseIdentifier("mainLocationId", json, LocationIdentifier.class, locale);
 		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
-		List<AuthenticationGroupIdentifier> groups = parseOptions("groupIds", json, AuthenticationGroupIdentifier.class, locale);
+		List<AuthenticationGroupIdentifier> groups = parseOptions("authenticationGroupIds", json, AuthenticationGroupIdentifier.class, locale);
 		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
 	}
 	

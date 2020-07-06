@@ -72,7 +72,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(leroy, p1.getLegalName());
 		Assert.assertEquals(eiffel, p1.getAddress());
 		Assert.assertEquals(comms, p1.getCommunication());
-		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getBusinessRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		
@@ -97,7 +97,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(eiffel, p1.getAddress());
 		Assert.assertEquals(comms, p1.getCommunication());
-		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getBusinessRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, crm.updatePersonName(p1.getPersonId(), tommy));
@@ -108,7 +108,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
 		Assert.assertEquals(comms, p1.getCommunication());
-		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getBusinessRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, crm.updatePersonAddress(p1.getPersonId(), louvre));
@@ -119,7 +119,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
 		Assert.assertEquals(comms2, p1.getCommunication());
-		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getRoleIds());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getBusinessRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, crm.updatePersonCommunication(p1.getPersonId(), comms2));
@@ -129,7 +129,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
 		Assert.assertEquals(comms2, p1.getCommunication());
-		Assert.assertEquals(List.of(CrmAsserts.DEV_TEAMLEAD), p1.getRoleIds());
+		Assert.assertEquals(List.of(CrmAsserts.DEV_TEAMLEAD), p1.getBusinessRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, crm.findPersonDetails(p1.getPersonId()));
 		

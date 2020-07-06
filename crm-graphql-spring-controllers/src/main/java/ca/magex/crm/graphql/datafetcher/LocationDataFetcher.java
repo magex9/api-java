@@ -11,8 +11,9 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import graphql.schema.DataFetcher;
 
 @Component
@@ -24,7 +25,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findLocation@" + LocationDataFetcher.class.getSimpleName());
 			String locationId = environment.getArgument("locationId");
-			return crm.findLocationDetails(new Identifier(locationId));
+			return crm.findLocationDetails(new LocationIdentifier(locationId));
 		};
 	}
 
@@ -58,7 +59,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
 			return crm.createLocation(
-					new Identifier((String) environment.getArgument("organizationId")),
+					new OrganizationIdentifier((String) environment.getArgument("organizationId")),
 					environment.getArgument("locationReference"),
 					environment.getArgument("locationName"),
 					extractMailingAddress(environment, "locationAddress"));
@@ -68,7 +69,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<LocationDetails> updateLocation() {
 		return (environment) -> {
 			logger.info("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
-			Identifier locationId = new Identifier((String) environment.getArgument("locationId"));
+			LocationIdentifier locationId = new LocationIdentifier((String) environment.getArgument("locationId"));
 			LocationDetails loc = crm.findLocationDetails(locationId);
 			/* update status first because other elements depend on the status for validation */
 			if (environment.getArgument("status") != null) {

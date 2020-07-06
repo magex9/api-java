@@ -73,7 +73,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 		if (!isAuthenticated())
 			return false;
 		Option authenticationOption = options.findOptionByCode(Type.AUTHENTICATION_ROLE, role);
-		return currentUser.peek().getRoleIds().contains(authenticationOption.getOptionId());
+		return currentUser.peek().getAuthenticationRoleIds().contains(authenticationOption.getOptionId());
 	}
 
 	@Override

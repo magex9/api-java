@@ -19,21 +19,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.services.CrmInitializationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.graphql.GraphQLTestConfig;
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
-import ca.magex.crm.test.config.TestConfig;
+import ca.magex.crm.test.config.BasicTestConfig;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class, GraphQLTestConfig.class})
+@ContextConfiguration(classes = {BasicTestConfig.class, GraphQLTestConfig.class})
 @ActiveProfiles(value = {
-		CrmProfiles.CRM_DATASTORE_CENTRALIZED,
 		CrmProfiles.CRM_NO_AUTH
 })
 public abstract class AbstractDataFetcherTests {
@@ -42,12 +41,12 @@ public abstract class AbstractDataFetcherTests {
 	protected ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Autowired private GraphQLCrmServices graphQl;	
-	@Autowired private CrmInitializationService initializationService;
+	@Autowired private Crm crm;
 	
 	@Before
 	public void before() {
-		initializationService.reset();
-		initializationService.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
+		crm.reset();
+		crm.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
 	}
 
 	@SuppressWarnings("unchecked")

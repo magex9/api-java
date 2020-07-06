@@ -1,22 +1,25 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
@@ -34,7 +37,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findPerson@" + PersonDataFetcher.class.getSimpleName());
 			String personId = environment.getArgument("personId");
-			return crm.findPersonDetails(new Identifier(personId));
+			return crm.findPersonDetails(new PersonIdentifier(personId));
 		};
 	}
 
@@ -56,7 +59,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering ByUser@" + PersonDataFetcher.class.getSimpleName());
 			User user = environment.getSource();
-			return crm.findPersonDetails(user.getPerson().getPersonId());
+			return crm.findPersonDetails(user.getPersonId());
 		};
 	}
 
@@ -77,18 +80,18 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering createPerson@" + PersonDataFetcher.class.getSimpleName());
 
 			return crm.createPerson(
-					new Identifier((String) environment.getArgument("organizationId")),
+					new OrganizationIdentifier((String) environment.getArgument("organizationId")),
 					extractPersonName(environment, "name"),
 					extractMailingAddress(environment, "address"),
 					extractCommunication(environment, "communication"),
-					extractBusinessPosition(environment, "position"));
+					extractBusinessRoles(environment, "businessRoles"));
 		};
 	}
 
 	public DataFetcher<PersonDetails> updatePerson() {
 		return (environment) -> {
 			logger.info("Entering updatePerson@" + PersonDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));
+			PersonIdentifier personId = new PersonIdentifier((String) environment.getArgument("personId"));
 			PersonDetails person = crm.findPersonDetails(personId);
 			/* always do status first because the others depend on status for validation */
 			if (environment.getArgument("status") != null) {
@@ -128,10 +131,10 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 					person = crm.updatePersonCommunication(personId, newCommunication);
 				}
 			}
-			if (environment.getArgument("position") != null) {
-				BusinessPosition newPosition = extractBusinessPosition(environment, "position");
-				if (!person.getPosition().equals(newPosition)) {
-					person = crm.updatePersonBusinessPosition(personId, newPosition);
+			if (environment.getArgument("businessRoles") != null) {
+				List<BusinessRoleIdentifier> businessRoles = extractBusinessRoles(environment, "businessRoles");
+				if (!person.getRoleIds().containsAll(businessRoles) || !businessRoles.containsAll(person.getRoleIds())) {
+					person = crm.updatePersonRoles(personId, businessRoles);
 				}
 			}
 			return person;

@@ -60,12 +60,12 @@ public class BasicUserService implements CrmUserService {
 	}	
 
 	@Override
-	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roleIds) {
+	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
 		User user = repos.findUser(userId);
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUser(user.withRoleIds(roleIds));
+		return repos.saveUser(user.withAuthenticationRoleIds(authenticationRoleIds));
 	}
 
 	@Override

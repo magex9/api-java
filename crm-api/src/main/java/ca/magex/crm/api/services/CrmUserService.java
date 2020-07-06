@@ -23,15 +23,15 @@ import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmUserService {
 
-	default User prototypeUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
-		return new User(null, organizationId, personId, username, Status.PENDING, roles);
+	default User prototypeUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		return new User(null, organizationId, personId, username, Status.PENDING, authenticationRoleIds);
 	};
 
 	default User createUser(User prototype) {
-		return createUser(prototype.getOrganizationId(), prototype.getPersonId(), prototype.getUsername(), prototype.getRoleIds());
+		return createUser(prototype.getOrganizationId(), prototype.getPersonId(), prototype.getUsername(), prototype.getAuthenticationRoleIds());
 	}
 
-	User createUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles);
+	User createUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds);
 
 	User enableUser(UserIdentifier userId);
 
@@ -107,11 +107,11 @@ public interface CrmUserService {
 		}
 
 		// Roles
-		if (user.getRoleIds().isEmpty()) {
+		if (user.getAuthenticationRoleIds().isEmpty()) {
 			messages.add(new Message(user.getUserId(), error, "roleIds", crm.findMessageId("validation.field.required")));
 		} else {
-			for (int i = 0; i < user.getRoleIds().size(); i++) {
-				AuthenticationRoleIdentifier roleId = user.getRoleIds().get(i);
+			for (int i = 0; i < user.getAuthenticationRoleIds().size(); i++) {
+				AuthenticationRoleIdentifier roleId = user.getAuthenticationRoleIds().get(i);
 				try {
 					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
 						messages.add(new Message(user.getUserId(), error, "roleIds[" + i + "]", crm.findMessageId("validation.field.inactive")));

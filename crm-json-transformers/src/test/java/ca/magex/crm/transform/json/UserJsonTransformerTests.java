@@ -69,7 +69,7 @@ public class UserJsonTransformerTests {
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(user, null);
 		//JsonAsserts.print(linked, "linked");
-		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "roleIds"), linked.keys());
+		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/User", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/users/" + userId.getId(), linked.getString("userId"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
@@ -81,19 +81,19 @@ public class UserJsonTransformerTests {
 		assertEquals("ACTIVE", linked.getObject("status").getString("@value"));
 		assertEquals("Active", linked.getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));
-		assertEquals(2, linked.getArray("roleIds").size());
-		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("roleIds").getObject(0).keys());
-		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", linked.getArray("roleIds").getObject(0).getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin", linked.getArray("roleIds").getObject(0).getString("@id"));
-		assertEquals("CRM/ADMIN", linked.getArray("roleIds").getObject(0).getString("@value"));
-		assertEquals("CRM Admin", linked.getArray("roleIds").getObject(0).getString("@en"));
-		assertEquals("Administrateur GRC", linked.getArray("roleIds").getObject(0).getString("@fr"));
-		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("roleIds").getObject(1).keys());
-		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", linked.getArray("roleIds").getObject(1).getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/org/admin", linked.getArray("roleIds").getObject(1).getString("@id"));
-		assertEquals("ORG/ADMIN", linked.getArray("roleIds").getObject(1).getString("@value"));
-		assertEquals("Organization Admin", linked.getArray("roleIds").getObject(1).getString("@en"));
-		assertEquals("Administrateur de l'organisation", linked.getArray("roleIds").getObject(1).getString("@fr"));
+		assertEquals(2, linked.getArray("authenticationRoleIds").size());
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("authenticationRoleIds").getObject(0).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", linked.getArray("authenticationRoleIds").getObject(0).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin", linked.getArray("authenticationRoleIds").getObject(0).getString("@id"));
+		assertEquals("CRM/ADMIN", linked.getArray("authenticationRoleIds").getObject(0).getString("@value"));
+		assertEquals("CRM Admin", linked.getArray("authenticationRoleIds").getObject(0).getString("@en"));
+		assertEquals("Administrateur GRC", linked.getArray("authenticationRoleIds").getObject(0).getString("@fr"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("authenticationRoleIds").getObject(1).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", linked.getArray("authenticationRoleIds").getObject(1).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/org/admin", linked.getArray("authenticationRoleIds").getObject(1).getString("@id"));
+		assertEquals("ORG/ADMIN", linked.getArray("authenticationRoleIds").getObject(1).getString("@value"));
+		assertEquals("Organization Admin", linked.getArray("authenticationRoleIds").getObject(1).getString("@en"));
+		assertEquals("Administrateur de l'organisation", linked.getArray("authenticationRoleIds").getObject(1).getString("@fr"));
 		assertEquals(user, transformer.parse(linked, null));
 	}
 	
@@ -101,15 +101,15 @@ public class UserJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(user, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "roleIds"), root.keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), root.keys());
 		assertEquals(userId.getId(), root.getString("userId"));
 		assertEquals(organizationId.getId(), root.getString("organizationId"));
 		assertEquals(personId.getId(), root.getString("personId"));
 		assertEquals("admin", root.getString("username"));
 		assertEquals("ACTIVE", root.getString("status"));
-		assertEquals(2, root.getArray("roleIds").size());
-		assertEquals("CRM/ADMIN", root.getArray("roleIds").getString(0));
-		assertEquals("ORG/ADMIN", root.getArray("roleIds").getString(1));
+		assertEquals(2, root.getArray("authenticationRoleIds").size());
+		assertEquals("CRM/ADMIN", root.getArray("authenticationRoleIds").getString(0));
+		assertEquals("ORG/ADMIN", root.getArray("authenticationRoleIds").getString(1));
 		assertEquals(user, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -117,15 +117,15 @@ public class UserJsonTransformerTests {
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(user, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "roleIds"), english.keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), english.keys());
 		assertEquals(userId.getId(), english.getString("userId"));
 		assertEquals(organizationId.getId(), english.getString("organizationId"));
 		assertEquals(personId.getId(), english.getString("personId"));
 		assertEquals("admin", english.getString("username"));
 		assertEquals("Active", english.getString("status"));
-		assertEquals(2, english.getArray("roleIds").size());
-		assertEquals("CRM Admin", english.getArray("roleIds").getString(0));
-		assertEquals("Organization Admin", english.getArray("roleIds").getString(1));
+		assertEquals(2, english.getArray("authenticationRoleIds").size());
+		assertEquals("CRM Admin", english.getArray("authenticationRoleIds").getString(0));
+		assertEquals("Organization Admin", english.getArray("authenticationRoleIds").getString(1));
 		assertEquals(user, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -133,15 +133,15 @@ public class UserJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(user, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "roleIds"), french.keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), french.keys());
 		assertEquals(userId.getId(), french.getString("userId"));
 		assertEquals(organizationId.getId(), french.getString("organizationId"));
 		assertEquals(personId.getId(), french.getString("personId"));
 		assertEquals("admin", french.getString("username"));
 		assertEquals("Actif", french.getString("status"));
-		assertEquals(2, french.getArray("roleIds").size());
-		assertEquals("Administrateur GRC", french.getArray("roleIds").getString(0));
-		assertEquals("Administrateur de l'organisation", french.getArray("roleIds").getString(1));
+		assertEquals(2, french.getArray("authenticationRoleIds").size());
+		assertEquals("Administrateur GRC", french.getArray("authenticationRoleIds").getString(0));
+		assertEquals("Administrateur de l'organisation", french.getArray("authenticationRoleIds").getString(1));
 		assertEquals(user, transformer.parse(french, Lang.FRENCH));
 	}
 	

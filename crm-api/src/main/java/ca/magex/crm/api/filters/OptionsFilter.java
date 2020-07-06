@@ -70,7 +70,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 			} else {
 				this.name = null;
 			}
-			this.parentId = filterCriteria.containsKey("parentId") ? IdentifierFactory.forId((CharSequence) filterCriteria.get("parentId"), OptionIdentifier.class) : null;
+			this.parentId = filterCriteria.containsKey("parentId") ? IdentifierFactory.forId((CharSequence) filterCriteria.get("parentId")) : null;
 			this.type = null;
 			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
 				try {

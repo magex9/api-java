@@ -86,7 +86,7 @@ public abstract class AbstractUserServiceTests {
 	public void testUsers() {
 		User u1 = crm.createUser(tAndA.getOrganizationId(), adam.getPersonId(), "adam21", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
-		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN), u1.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));
@@ -94,7 +94,7 @@ public abstract class AbstractUserServiceTests {
 
 		User u2 = crm.createUser(tAndA.getOrganizationId(), adam.getPersonId(), "adam-admin", List.of(CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u2.getPersonId());
-		Assert.assertEquals(List.of(CrmAsserts.SYS_ADMIN), u2.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.SYS_ADMIN), u2.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u2.getStatus());
 		Assert.assertEquals("adam-admin", u2.getUsername());
 		Assert.assertEquals(u2, crm.findUserByUsername(u2.getUsername()));
@@ -102,7 +102,7 @@ public abstract class AbstractUserServiceTests {
 
 		User u3 = crm.createUser(tAndA.getOrganizationId(), bob.getPersonId(), "bob-uber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(bob.getPersonId(), u3.getPersonId());
-		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u3.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u3.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u3.getStatus());
 		Assert.assertEquals("bob-uber", u3.getUsername());
 		Assert.assertEquals(u3, crm.findUserByUsername(u3.getUsername()));
@@ -111,21 +111,21 @@ public abstract class AbstractUserServiceTests {
 		/* update user */
 		u1 = crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
-		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN), u1.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
 		Assert.assertEquals(u1, crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN)));
 
 		u1 = crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
-		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
 		Assert.assertEquals(u1, crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN)));
 
 		/* disable user */
 		u1 = crm.disableUser(u1.getUserId());
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
-		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.INACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));
@@ -135,7 +135,7 @@ public abstract class AbstractUserServiceTests {
 		/* enable user */
 		u1 = crm.enableUser(u1.getUserId());
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
-		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getRoles());
+		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));

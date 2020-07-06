@@ -70,7 +70,7 @@ public class PersonDetailsJsonTransformerTests {
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(person, null);
 		//JsonAsserts.print(linked, "linked");
-		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "roleIds"), linked.keys());
+		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonDetails", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getId(), linked.getString("personId"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
@@ -124,13 +124,13 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("5551234567", linked.getObject("communication").getObject("homePhone").getString("number"));
 		assertEquals("42", linked.getObject("communication").getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", linked.getObject("communication").getString("faxNumber"));
-		assertEquals(1, linked.getArray("roleIds").size());
-		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("roleIds").getObject(0).keys());
-		assertEquals("http://api.magex.ca/crm/schema/options/BusinessRoles", linked.getArray("roleIds").getObject(0).getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/options/business-roles/imit/dev/apps/dev", linked.getArray("roleIds").getObject(0).getString("@id"));
-		assertEquals("IMIT/DEV/APPS/DEV", linked.getArray("roleIds").getObject(0).getString("@value"));
-		assertEquals("Developer", linked.getArray("roleIds").getObject(0).getString("@en"));
-		assertEquals("Développeur", linked.getArray("roleIds").getObject(0).getString("@fr"));
+		assertEquals(1, linked.getArray("businessRoleIds").size());
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("businessRoleIds").getObject(0).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/BusinessRoles", linked.getArray("businessRoleIds").getObject(0).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/business-roles/imit/dev/apps/dev", linked.getArray("businessRoleIds").getObject(0).getString("@id"));
+		assertEquals("IMIT/DEV/APPS/DEV", linked.getArray("businessRoleIds").getObject(0).getString("@value"));
+		assertEquals("Developer", linked.getArray("businessRoleIds").getObject(0).getString("@en"));
+		assertEquals("Développeur", linked.getArray("businessRoleIds").getObject(0).getString("@fr"));
 		assertEquals(person, transformer.parse(linked, null));
 	}
 	
@@ -138,7 +138,7 @@ public class PersonDetailsJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(person, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "roleIds"), root.keys());
+		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), root.keys());
 		assertEquals(personId.getId(), root.getString("personId"));
 		assertEquals(organizationId.getId(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
@@ -162,8 +162,8 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("5551234567", root.getObject("communication").getObject("homePhone").getString("number"));
 		assertEquals("42", root.getObject("communication").getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", root.getObject("communication").getString("faxNumber"));
-		assertEquals(1, root.getArray("roleIds").size());
-		assertEquals("IMIT/DEV/APPS/DEV", root.getArray("roleIds").getString(0));
+		assertEquals(1, root.getArray("businessRoleIds").size());
+		assertEquals("IMIT/DEV/APPS/DEV", root.getArray("businessRoleIds").getString(0));
 		assertEquals(person, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -171,7 +171,7 @@ public class PersonDetailsJsonTransformerTests {
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(person, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "roleIds"), english.keys());
+		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), english.keys());
 		assertEquals(personId.getId(), english.getString("personId"));
 		assertEquals(organizationId.getId(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
@@ -195,8 +195,8 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("5551234567", english.getObject("communication").getObject("homePhone").getString("number"));
 		assertEquals("42", english.getObject("communication").getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", english.getObject("communication").getString("faxNumber"));
-		assertEquals(1, english.getArray("roleIds").size());
-		assertEquals("Developer", english.getArray("roleIds").getString(0));
+		assertEquals(1, english.getArray("businessRoleIds").size());
+		assertEquals("Developer", english.getArray("businessRoleIds").getString(0));
 		assertEquals(person, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -204,7 +204,7 @@ public class PersonDetailsJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(person, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "roleIds"), french.keys());
+		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), french.keys());
 		assertEquals(personId.getId(), french.getString("personId"));
 		assertEquals(organizationId.getId(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
@@ -228,8 +228,8 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("5551234567", french.getObject("communication").getObject("homePhone").getString("number"));
 		assertEquals("42", french.getObject("communication").getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", french.getObject("communication").getString("faxNumber"));
-		assertEquals(1, french.getArray("roleIds").size());
-		assertEquals("Développeur", french.getArray("roleIds").getString(0));
+		assertEquals(1, french.getArray("businessRoleIds").size());
+		assertEquals("Développeur", french.getArray("businessRoleIds").getString(0));
 		assertEquals(person, transformer.parse(french, Lang.FRENCH));
 	}
 	

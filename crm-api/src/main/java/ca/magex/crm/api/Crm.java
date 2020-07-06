@@ -184,7 +184,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groupIds);
 		return organizationService.updateOrganizationGroups(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withGroupIds(groupIds)).getGroupIds());
+			validate(organizationService.findOrganizationDetails(organizationId).withAuthenticationGroupIds(groupIds)).getAuthenticationGroupIds());
 	}
 
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
@@ -324,7 +324,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
-		return personService.updatePersonRoles(personId, validate(findPersonDetails(personId).withRoleIds(roleIds)).getRoleIds());
+		return personService.updatePersonRoles(personId, validate(findPersonDetails(personId).withBusinessRoleIds(roleIds)).getBusinessRoleIds());
 	}
 
 	public PersonSummary enablePerson(PersonIdentifier personId) {
@@ -413,7 +413,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, validate(findUser(userId).withRoleIds(roles)).getRoleIds());
+		return userService.updateUserRoles(userId, validate(findUser(userId).withAuthenticationRoleIds(roles)).getAuthenticationRoleIds());
 	}
 
 	@Override

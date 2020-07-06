@@ -8,11 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
@@ -29,41 +32,45 @@ public class UserDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<User> createUser() {
 		return (environment) -> {
 			logger.info("Entering createUser@" + UserDataFetcher.class.getSimpleName());
-			Identifier personId = new Identifier((String) environment.getArgument("personId"));
-			String username = environment.getArgument("username");
+			/* find the person summary for this person id */
+			PersonSummary person = crm.findPersonSummary(new PersonIdentifier((String) environment.getArgument("personId")));
+			/* create the new user */
 			return crm.createUser(
-					personId,
-					username,
-					environment.getArgument("roles"));
+					person.getOrganizationId(),
+					person.getPersonId(),
+					environment.getArgument("username"),
+					extractAuthenticationRoles(environment, "authenticationRoles"));
 		};
 	}
 
 	public DataFetcher<User> findUser() {
 		return (environment) -> {
 			logger.info("Entering findUser@" + UserDataFetcher.class.getSimpleName());
-			String userId = environment.getArgument("userId");
-			return crm.findUser(new Identifier(userId));
+			return crm.findUser(
+					new UserIdentifier(environment.getArgument("userId")));
 		};
 	}
 
 	public DataFetcher<Integer> countUsers() {
 		return (environment) -> {
 			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
-			return (int) crm.countUsers(new UsersFilter(extractFilter(environment)));
+			return (int) crm.countUsers(
+					new UsersFilter(extractFilter(environment)));
 		};
 	}
 
 	public DataFetcher<Page<User>> findUsers() {
 		return (environment) -> {
 			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
-			return crm.findUsers(new UsersFilter(extractFilter(environment)), extractPaging(environment));
+			return crm.findUsers(
+					new UsersFilter(extractFilter(environment)), extractPaging(environment));
 		};
 	}
 
 	public DataFetcher<User> updateUser() {
 		return (environment) -> {
 			logger.info("Entering updateUser@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("userId"));
+			UserIdentifier userId = new UserIdentifier((String) environment.getArgument("userId"));
 			User user = crm.findUser(userId);
 			/* update status first since other validation requires status */
 			if (environment.getArgument("status") != null) {
@@ -83,10 +90,10 @@ public class UserDataFetcher extends AbstractDataFetcher {
 					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
-			if (environment.getArgument("roles") != null) {
-				List<String> newRoles = environment.getArgument("roles");
-				if (!user.getRoles().containsAll(newRoles) || !newRoles.containsAll(user.getRoles())) {
-					user = crm.updateUserRoles(userId, newRoles);
+			if (environment.getArgument("authenticationRoles") != null) {
+				List<AuthenticationRoleIdentifier> authenticationRoles = extractAuthenticationRoles(environment, "authenticationRoles");
+				if (!user.getRoles().containsAll(authenticationRoles) || !authenticationRoles.containsAll(user.getRoles())) {
+					user = crm.updateUserRoles(userId, authenticationRoles);
 				}
 			}
 			return user;
@@ -96,18 +103,18 @@ public class UserDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<String> resetUserPassword() {
 		return (environment) -> {
 			logger.info("Entering resetPassword@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("userId"));
-			return crm.resetPassword(userId);			
+			return crm.resetPassword(
+					new UserIdentifier((String) environment.getArgument("userId")));			
 		};
 	}
 	
 	public DataFetcher<Boolean> changeUserPassword() {
 		return (environment) -> {
 			logger.info("Entering changePassword@" + UserDataFetcher.class.getSimpleName());
-			Identifier userId = new Identifier((String) environment.getArgument("userId"));
-			String currentPassword = environment.getArgument("currentPassword");
-			String newPassword = environment.getArgument("newPassword");
-			return crm.changePassword(userId, currentPassword, newPassword);			
+			return crm.changePassword(
+					new UserIdentifier((String) environment.getArgument("userId")), 
+					environment.getArgument("currentPassword"), 
+					environment.getArgument("newPassword"));			
 		};
 	}
 }

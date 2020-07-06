@@ -43,7 +43,7 @@ public class UserJsonTransformer extends AbstractJsonTransformer<User> {
 		formatIdentifier(pairs, "personId", user, PersonIdentifier.class, locale);
 		formatText(pairs, "username", user);
 		formatStatus(pairs, "status", user, locale);
-		formatOptions(pairs, "roleIds", user, Type.AUTHENTICATION_ROLE, locale);
+		formatOptions(pairs, "authenticationRoleIds", user, Type.AUTHENTICATION_ROLE, locale);
 		return new JsonObject(pairs);
 	}
 
@@ -54,7 +54,7 @@ public class UserJsonTransformer extends AbstractJsonTransformer<User> {
 		PersonIdentifier personId = parseIdentifier("personId", json, PersonIdentifier.class, locale);
 		String username = parseText("username", json);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
-		List<AuthenticationRoleIdentifier> roleIds = parseOptions("roleIds", json, AuthenticationRoleIdentifier.class, locale);
+		List<AuthenticationRoleIdentifier> roleIds = parseOptions("authenticationRoleIds", json, AuthenticationRoleIdentifier.class, locale);
 		return new User(userId, organizationId, personId, username, status, roleIds);
 	}
 

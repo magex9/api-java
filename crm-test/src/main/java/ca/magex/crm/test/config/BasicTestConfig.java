@@ -74,5 +74,4 @@ public class BasicTestConfig implements CrmConfigurer {
 	public Crm crm() {
 		return new Crm(services(), policies());
 	}
-	
 }

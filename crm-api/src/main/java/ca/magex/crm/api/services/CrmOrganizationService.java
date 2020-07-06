@@ -50,12 +50,12 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
  */
 public interface CrmOrganizationService {
 
-	default OrganizationDetails prototypeOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
-		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groupIds);
+	default OrganizationDetails prototypeOrganization(String displayName, List<AuthenticationGroupIdentifier> getAuthenticationGroupIds) {
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, getAuthenticationGroupIds);
 	}
 	
 	default OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return createOrganization(prototype.getDisplayName(), prototype.getGroupIds());
+		return createOrganization(prototype.getDisplayName(), prototype.getAuthenticationGroupIds());
 	}
 	
 	/**
@@ -67,10 +67,10 @@ public interface CrmOrganizationService {
 	 * The "ORG" group should be assigned for customer users.
 	 * 
 	 * @param organizationDisplayName The name the organization should be displayed in.
-	 * @param groups The list of permission groups the users can be assigned to. 
+	 * @param getAuthenticationGroupIds The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds);
+	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> getAuthenticationGroupIds);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -169,11 +169,11 @@ public interface CrmOrganizationService {
 		}
 
 		// Group
-		if (organization.getGroupIds().isEmpty()) {
+		if (organization.getAuthenticationGroupIds().isEmpty()) {
 			messages.add(new Message(organization.getOrganizationId(), error, "groupIds", crm.findMessageId("validation.field.required")));
 		} else {
-			for (int i = 0; i < organization.getGroupIds().size(); i++) {
-				AuthenticationGroupIdentifier groupId = organization.getGroupIds().get(i);
+			for (int i = 0; i < organization.getAuthenticationGroupIds().size(); i++) {
+				AuthenticationGroupIdentifier groupId = organization.getAuthenticationGroupIds().get(i);
 				try {
 					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
 						messages.add(new Message(organization.getOrganizationId(), error, "groupIds[" + i + "]", crm.findMessageId("validation.field.inactive")));
