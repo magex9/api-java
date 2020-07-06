@@ -13,28 +13,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.graphql.GraphQLTestConfig;
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
-import ca.magex.crm.test.config.BasicTestConfig;
+import ca.magex.crm.test.config.UnauthenticatedTestConfig;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {BasicTestConfig.class, GraphQLTestConfig.class})
-@ActiveProfiles(value = {
-		CrmProfiles.CRM_NO_AUTH
-})
+@ContextConfiguration(classes = {UnauthenticatedTestConfig.class, GraphQLTestConfig.class})
 public abstract class AbstractDataFetcherTests {
 	
 	protected Logger log = LoggerFactory.getLogger(getClass());

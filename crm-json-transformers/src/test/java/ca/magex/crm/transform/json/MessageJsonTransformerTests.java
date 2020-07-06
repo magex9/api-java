@@ -45,7 +45,7 @@ public class MessageJsonTransformerTests {
 		transformer = new MessageJsonTransformer(crm);
 		error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 		reason = crm.findMessageId("validation.field.required");
-		message = new Message(organizationId, error, "prop", reason);
+		message = new Message(organizationId, error, "prop", "", reason);
 	}
 	
 	@Test

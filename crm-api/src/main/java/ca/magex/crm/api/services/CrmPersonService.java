@@ -82,32 +82,32 @@ public interface CrmPersonService {
 
 		// Organization
 		if (person.getOrganizationId() == null) {
-			messages.add(new Message(person.getPersonId(), error, "organizationId", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(person.getPersonId(), error, "organizationId", null, crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				crm.findOrganizationDetails(person.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(person.getPersonId(), error, "organizationId", crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(person.getPersonId(), error, "organizationId", person.getOrganizationId().getId(), crm.findMessageId("validation.field.invalid")));
 			}
 		}
 
 		// Status
 		if (person.getStatus() == null) {
-			messages.add(new Message(person.getPersonId(), error, "status", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(person.getPersonId(), error, "status", null, crm.findMessageId("validation.field.required")));
 		} else if (person.getStatus() == Status.PENDING && person.getPersonId() != null) {
-			messages.add(new Message(person.getPersonId(), error, "status", crm.findMessageId("validation.status.pending")));
+			messages.add(new Message(person.getPersonId(), error, "status", person.getStatus().name(), crm.findMessageId("validation.status.pending")));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(person.getDisplayName())) {
-			messages.add(new Message(person.getPersonId(), error, "displayName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(person.getPersonId(), error, "displayName", person.getDisplayName(), crm.findMessageId("validation.field.required")));
 		} else if (person.getDisplayName().length() > 60) {
-			messages.add(new Message(person.getPersonId(), error, "displayName", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(person.getPersonId(), error, "displayName", person.getDisplayName(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Legal Name
 		if (person.getLegalName() == null) {
-			messages.add(new Message(person.getPersonId(), error, "legalName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(person.getPersonId(), error, "legalName", null, crm.findMessageId("validation.field.required")));
 		} else {
 			messages.addAll(validatePersonName(crm, person.getLegalName(), person.getPersonId(), "legalName"));
 		}
@@ -131,30 +131,30 @@ public interface CrmPersonService {
 				try {
 					crm.findOption(name.getSalutation().getIdentifier());
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.field.invalid")));
+					messages.add(new Message(identifier, error, path + ".salutation", name.getSalutation().getValue(), crm.findMessageId("validation.field.invalid")));
 				}
 			} else {
-				messages.add(new Message(identifier, error, path + ".salutation", crm.findMessageId("validation.field.forbidden")));
+				messages.add(new Message(identifier, error, path + ".salutation", name.getSalutation().getValue(), crm.findMessageId("validation.field.forbidden")));
 			}
 		}
 
 		// First Name
 		if (StringUtils.isBlank(name.getFirstName())) {
-			messages.add(new Message(identifier, error, path + ".firstName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, error, path + ".firstName", name.getFirstName(), crm.findMessageId("validation.field.required")));
 		} else if (name.getFirstName().length() > 60) {
-			messages.add(new Message(identifier, error, path + ".firstName", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(identifier, error, path + ".firstName", name.getFirstName(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Middle Name
-		if (name.getFirstName().length() > 30) {
-			messages.add(new Message(identifier, error, path + ".middleName", crm.findMessageId("validation.field.maxlength")));
+		if (name.getMiddleName() != null && name.getMiddleName().length() > 30) {
+			messages.add(new Message(identifier, error, path + ".middleName", name.getMiddleName(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Last Name
-		if (StringUtils.isBlank(name.getFirstName())) {
-			messages.add(new Message(identifier, error, path + ".lastName", crm.findMessageId("validation.field.required")));
-		} else if (name.getFirstName().length() > 60) {
-			messages.add(new Message(identifier, error, path + ".lastName", crm.findMessageId("validation.field.maxlength")));
+		if (StringUtils.isBlank(name.getLastName())) {
+			messages.add(new Message(identifier, error, path + ".lastName", name.getLastName(), crm.findMessageId("validation.field.required")));
+		} else if (name.getLastName().length() > 60) {
+			messages.add(new Message(identifier, error, path + ".lastName", name.getLastName(), crm.findMessageId("validation.field.maxlength")));
 		}
 		
 		return messages;

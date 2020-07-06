@@ -102,7 +102,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			}
 			if (environment.getArgument("groups") != null) {
 				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroups");
-				if (!org.getGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getGroupIds())) {
+				if (!org.getAuthenticationGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getAuthenticationGroupIds())) {
 					org = crm.updateOrganizationGroups(organizationId, newGroups);
 				}
 			}

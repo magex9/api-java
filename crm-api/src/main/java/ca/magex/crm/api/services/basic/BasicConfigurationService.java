@@ -25,6 +25,7 @@ import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -59,7 +60,14 @@ public class BasicConfigurationService implements CrmConfigurationService {
 
 			MailingAddress address = new MailingAddress("221b Baker Street", "London", new Choice<>("England"), new Choice<>(new CountryIdentifier("GB")), "NW1 6XE");
 			Communication communication = new Communication("System Admin", new Choice<>(new LanguageIdentifier("EN")), email, null, null);
-			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, groups("SYS", "CRM")));
+			repos.saveOrganizationDetails(new OrganizationDetails(
+					organizationId, 
+					Status.ACTIVE, 
+					organization, 
+					mainLocationId, 
+					mainContactId, 
+					authenticationGroups("SYS", "CRM"),
+					businessGroups("SYS", "APP", "CRM")));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
 			repos.saveUser(new User(systemId, organizationId, mainContactId, username, Status.ACTIVE, roles("SYS/ADMIN", "SYS/ACTUATOR", "SYS/ACCESS", "CRM/ADMIN")));
@@ -70,9 +78,15 @@ public class BasicConfigurationService implements CrmConfigurationService {
 		return repos.findUsers(new UsersFilter().withAuthenticationRoleId(roles("SYS/ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
 	}
 	
-	private List<AuthenticationGroupIdentifier> groups(String... codes) {
+	private List<AuthenticationGroupIdentifier> authenticationGroups(String... codes) {
 		return Arrays.asList(codes).stream()
 				.map(c -> new AuthenticationGroupIdentifier(c))
+				.collect(Collectors.toList());
+	}
+	
+	private List<BusinessGroupIdentifier> businessGroups(String... codes) {
+		return Arrays.asList(codes).stream()
+				.map(c -> new BusinessGroupIdentifier(c))
 				.collect(Collectors.toList());
 	}
 

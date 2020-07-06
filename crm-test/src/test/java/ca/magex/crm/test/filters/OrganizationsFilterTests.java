@@ -15,6 +15,7 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class OrganizationsFilterTests {
@@ -109,7 +110,7 @@ public class OrganizationsFilterTests {
 
 	@Test
 	public void testApplyFilter() {
-		OrganizationDetails organization = new OrganizationDetails(new OrganizationIdentifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new AuthenticationGroupIdentifier("ORG")));
+		OrganizationDetails organization = new OrganizationDetails(new OrganizationIdentifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG")));
 		/* default filter should match */
 		Assert.assertTrue(new OrganizationsFilter().apply(organization));
 

@@ -21,21 +21,24 @@ public class Message implements Serializable {
 	
 	private String path;
 	
+	private String value;
+	
 	private Choice<PhraseIdentifier> reason;
 
-	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String reason) {
-		this(identifier, type, path, new Choice<>(reason));
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String value, String reason) {
+		this(identifier, type, path, value, new Choice<>(reason));
 	}
 
-	public Message(Identifier identifier, MessageTypeIdentifier type, String path, PhraseIdentifier reason) {
-		this(identifier, type, path, new Choice<>(reason));
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String value, PhraseIdentifier reason) {
+		this(identifier, type, path, value, new Choice<>(reason));
 	}
 	
-	public Message(Identifier identifier, MessageTypeIdentifier type, String path, Choice<PhraseIdentifier> reason) {
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String value, Choice<PhraseIdentifier> reason) {
 		super();
 		this.identifier = identifier;
 		this.type = type;
 		this.path = path;
+		this.value = value;
 		this.reason = reason;
 	}
 
@@ -50,6 +53,10 @@ public class Message implements Serializable {
 	public String getPath() {
 		return path;
 	}
+	
+	public String getValue() {
+		return value;
+	}	
 
 	public Choice<PhraseIdentifier> getReason() {
 		return reason;

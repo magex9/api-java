@@ -186,39 +186,39 @@ public interface CrmLocationService {
 		
 		// Organization
 		if (location.getOrganizationId() == null) {
-			messages.add(new Message(location.getLocationId(), error, "organizationId", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(location.getLocationId(), error, "organizationId", null, crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				crm.findOrganizationDetails(location.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(location.getLocationId(), error, "organizationId", crm.findMessageId("validation.entity.invalid")));
+				messages.add(new Message(location.getLocationId(), error, "organizationId", location.getOrganizationId().getId(), crm.findMessageId("validation.entity.invalid")));
 			}
 		}
 
 		// Status
 		if (location.getStatus() == null) {
-			messages.add(new Message(location.getLocationId(), error, "status", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(location.getLocationId(), error, "status", null, crm.findMessageId("validation.field.required")));
 		} else if (location.getStatus() == Status.PENDING && location.getLocationId() != null) {
-			messages.add(new Message(location.getLocationId(), error, "status", crm.findMessageId("validation.status.pending")));
+			messages.add(new Message(location.getLocationId(), error, "status", location.getStatus().name(), crm.findMessageId("validation.status.pending")));
 		}
 
 		// Reference
 		if (StringUtils.isBlank(location.getReference())) {
-			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(location.getLocationId(), error, "reference", location.getReference(), crm.findMessageId("validation.field.required")));
 		} else if (!location.getReference().matches("[A-Z0-9-]{1,60}")) {
-			messages.add(new Message(location.getLocationId(), error, "reference", crm.findMessageId("validation.field.format")));
+			messages.add(new Message(location.getLocationId(), error, "reference", location.getReference(), crm.findMessageId("validation.field.format")));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(location.getDisplayName())) {
-			messages.add(new Message(location.getLocationId(), error, "displayName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(location.getLocationId(), error, "displayName", location.getDisplayName(), crm.findMessageId("validation.field.required")));
 		} else if (location.getDisplayName().length() > 60) {
-			messages.add(new Message(location.getLocationId(), error, "displayName", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(location.getLocationId(), error, "displayName", location.getDisplayName(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Address
 		if (location.getAddress() == null) {
-			messages.add(new Message(location.getLocationId(), error, "address", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(location.getLocationId(), error, "address", null, crm.findMessageId("validation.field.required")));
 		} else {
 			messages.addAll(validateMailingAddress(crm, location.getAddress(), location.getLocationId(), "address"));
 		}
@@ -241,37 +241,37 @@ public interface CrmLocationService {
 
 		// Street
 		if (StringUtils.isBlank(address.getStreet())) {
-			messages.add(new Message(identifier, error, path + ".street", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, error, path + ".street", address.getStreet(), crm.findMessageId("validation.field.required")));
 		} else if (address.getStreet().length() > 60) {
-			messages.add(new Message(identifier, error, path + ".street", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(identifier, error, path + ".street", address.getStreet(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// City
 		if (StringUtils.isBlank(address.getCity())) {
-			messages.add(new Message(identifier, error, path + ".city", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, error, path + ".city", address.getCity(), crm.findMessageId("validation.field.required")));
 		} else if (address.getCity().length() > 60) {
-			messages.add(new Message(identifier, error, path + ".city", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(identifier, error, path + ".city", address.getCity(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Province
 		if (address.getProvince().isEmpty()) {
-			messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, error, path + ".province", null, crm.findMessageId("validation.field.required")));
 		} else if (address.getProvince().isIdentifer()) {
 			try {
 				crm.findOption(address.getProvince().getIdentifier());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(identifier, error, path + ".province", crm.findMessageId("validation.option.missing")));
+				messages.add(new Message(identifier, error, path + ".province", address.getProvince().getValue(), crm.findMessageId("validation.option.missing")));
 			}
 		}
 
 		// Country
 		if (address.getCountry().isEmpty()) {
-			messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, error, path + ".country", null, crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				crm.findOption(address.getCountry().getIdentifier());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(identifier, error, path + ".country", crm.findMessageId("validation.option.missing")));
+				messages.add(new Message(identifier, error, path + ".country", address.getCountry().getValue(), crm.findMessageId("validation.option.missing")));
 			}
 		}
 
@@ -279,7 +279,7 @@ public interface CrmLocationService {
 		if (StringUtils.isNotBlank(address.getPostalCode())) {
 			if (address.getCountry() != null && address.getCountry().isIdentifer() && address.getCountry().getIdentifier().equals(crm.findOptionByCode(Type.COUNTRY, "CA").getOptionId())) {
 				if (!address.getPostalCode().matches("[A-Z][0-9][A-Z] ?[0-9][A-Z][0-9]")) {
-					messages.add(new Message(identifier, error, path + ".provinceCode", crm.findMessageId("validation.field.format")));
+					messages.add(new Message(identifier, error, path + ".provinceCode", address.getPostalCode(), crm.findMessageId("validation.field.format")));
 				}
 			}
 		}

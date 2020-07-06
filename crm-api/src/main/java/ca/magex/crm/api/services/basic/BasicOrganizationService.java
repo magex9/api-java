@@ -11,6 +11,7 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -23,8 +24,8 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		this.repos = repos;
 	}
 	
-	public OrganizationDetails createOrganization(String organizationDisplayName, List<AuthenticationGroupIdentifier> groupIds) {
-		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, groupIds));
+	public OrganizationDetails createOrganization(String organizationDisplayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
+		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, authenticationGroupIds, businessGroupIds));
 	}
 
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
@@ -67,12 +68,21 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		return repos.saveOrganizationDetails(details.withMainContactId(personId));
 	}
 
-	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> withAuthenticationGroupIds) {
+	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
 		}
-		return repos.saveOrganizationDetails(details.withAuthenticationGroupIds(withAuthenticationGroupIds));
+		return repos.saveOrganizationDetails(details.withAuthenticationGroupIds(authenticationGroupIds));
+	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds) {
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		if (details == null) {
+			return null;
+		}
+		return repos.saveOrganizationDetails(details.withBusinessGroupIds(businessGroupIds));
 	}
 
 	@Override

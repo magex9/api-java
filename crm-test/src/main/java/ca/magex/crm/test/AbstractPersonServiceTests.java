@@ -34,6 +34,7 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 
@@ -60,7 +61,7 @@ public abstract class AbstractPersonServiceTests {
 
 	@Test
 	public void testPersons() {
-		OrganizationIdentifier blizzardId = crm.createOrganization("Blizzard", List.of(new AuthenticationGroupIdentifier("ORG"))).getOrganizationId();
+		OrganizationIdentifier blizzardId = crm.createOrganization("Blizzard", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		
 		PersonName leroy = new PersonName(CrmAsserts.MR, "Leroy", "MF", "Jenkins");
 		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007");

@@ -11,6 +11,7 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -44,6 +45,7 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		formatIdentifier(pairs, "mainLocationId", organization, LocationIdentifier.class, locale);
 		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
 		formatOptions(pairs, "authenticationGroupIds", organization, Type.AUTHENTICATION_GROUP, locale);
+		formatOptions(pairs, "businessGroupIds", organization, Type.BUSINESS_GROUP, locale);
 		return new JsonObject(pairs);
 	}
 
@@ -54,8 +56,9 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		String displayName = parseText("displayName", json);
 		LocationIdentifier mainLocationId = parseIdentifier("mainLocationId", json, LocationIdentifier.class, locale);
 		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
-		List<AuthenticationGroupIdentifier> groups = parseOptions("authenticationGroupIds", json, AuthenticationGroupIdentifier.class, locale);
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+		List<AuthenticationGroupIdentifier> authenticationGroups = parseOptions("authenticationGroupIds", json, AuthenticationGroupIdentifier.class, locale);
+		List<BusinessGroupIdentifier> businessGroups = parseOptions("businessGroupIds", json, BusinessGroupIdentifier.class, locale);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroups, businessGroups);
 	}
 	
 }

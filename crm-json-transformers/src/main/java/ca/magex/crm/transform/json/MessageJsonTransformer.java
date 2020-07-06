@@ -55,8 +55,9 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 		Identifier identifier = parseIdentifier(json, locale);
 		MessageTypeIdentifier type = parseOption("type", json, Type.MESSAGE_TYPE, locale);
 		String path = parseText("path", json);
-		Choice<PhraseIdentifier> reason = parseChoice("reason", json, Type.PHRASE, locale);
-		return new Message(identifier, type, path, reason);
+		String value = parseText("value", json);
+		Choice<PhraseIdentifier> reason = parseChoice("reason", json, Type.PHRASE, locale);		
+		return new Message(identifier, type, path, value, reason);
 	}
 	
 	public Identifier parseIdentifier(JsonObject json, Locale locale) {

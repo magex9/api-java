@@ -34,6 +34,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
@@ -60,7 +61,7 @@ public abstract class AbstractUserServiceTests {
 		auth.login("admin", "admin");
 		
 		
-		tAndA = crm.createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS));
+		tAndA = crm.createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS), List.of(new BusinessGroupIdentifier("ORG")));
 
 		adam = crm.createPerson(
 				tAndA.getOrganizationId(),
@@ -299,7 +300,7 @@ public abstract class AbstractUserServiceTests {
 
 	@Test
 	public void testResetPassword() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization("Org Name", List.of(ORG)).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
 		UserIdentifier userId = crm.createUser(organizationId, personId, "user", List.of(ORG_ADMIN)).getUserId();
 
@@ -315,7 +316,7 @@ public abstract class AbstractUserServiceTests {
 
 	@Test
 	public void testChangePassword() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization("Org Name", List.of(ORG)).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
 		UserIdentifier userId = crm.createUser(organizationId, personId, "user", List.of(ORG_ADMIN)).getUserId();
 

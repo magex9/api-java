@@ -152,7 +152,7 @@ type Organization {
 	displayName: String!
 	mainLocation: Location
 	mainContact: Person
-	groupIds: [String]
+	authenticationGroups: [Option]!
 }
 
 type Location {
@@ -181,6 +181,15 @@ type User {
 	status: String!
 	person: Person!
 	roles: [Role]!
+}
+
+type Option {
+	optionId: String!
+	parentId: String
+	type: String!
+	status: String!
+	mutable: String!
+	name: Localized!
 }
 
 # Complex Subtypes
@@ -276,6 +285,12 @@ type Telephone {
 
 type CodeLookup {
 	parent: CodeLookup
+	code: String
+	englishName: String
+	frenchName: String
+}
+
+type Localized {
 	code: String
 	englishName: String
 	frenchName: String

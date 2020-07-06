@@ -30,6 +30,7 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
@@ -56,7 +57,7 @@ public abstract class AbstractLocationServiceTests {
 	
 	@Test
 	public void testLocations() {		
-		OrganizationIdentifier mlbId = crm.createOrganization("MLB", List.of(new AuthenticationGroupIdentifier("ORG"))).getOrganizationId();
+		OrganizationIdentifier mlbId = crm.createOrganization("MLB", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		
 		/* create */
 		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", NEW_YORK, UNITED_STATES, "10451");

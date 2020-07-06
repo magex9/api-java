@@ -46,6 +46,13 @@ public class Choice<I extends OptionIdentifier> implements Serializable {
 		return !isIdentifer() && !isOther();
 	}
 	
+	public String getValue() {
+		if (isIdentifer()) {
+			return identifier.getId();
+		}
+		return other;
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);

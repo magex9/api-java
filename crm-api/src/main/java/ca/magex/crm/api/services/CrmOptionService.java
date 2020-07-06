@@ -81,23 +81,23 @@ public interface CrmOptionService {
 
 		// Status
 		if (option.getStatus() == null) {
-			messages.add(new Message(option.getOptionId(), error, "status", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(option.getOptionId(), error, "status", null, crm.findMessageId("validation.field.required")));
 		} else if (option.getStatus() == Status.PENDING && option.getOptionId() != null) {
-			messages.add(new Message(option.getOptionId(), error, "status", crm.findMessageId("validation.status.pending")));
+			messages.add(new Message(option.getOptionId(), error, "status", option.getStatus().name(), crm.findMessageId("validation.status.pending")));
 		}
 
 		// Must be a valid option code
 		if (StringUtils.isBlank(option.getCode())) {
-			messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(option.getOptionId(), error, "code", option.getCode(), crm.findMessageId("validation.field.required")));
 		} else if (!option.getCode().matches("([A-Z0-9/]{1,20})(/[A-Z0-9/]{1,20})*")) {
-			messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.field.format")));
+			messages.add(new Message(option.getOptionId(), error, "code", option.getCode(), crm.findMessageId("validation.field.format")));
 		}
 		
 		// if we have a parent, the parent code MUST be a prefix of our code */
 		if (option.getParentId() != null) {
 			Option parentOption = crm.findOption(option.getParentId());
 			if (!option.getCode().startsWith(parentOption.getCode())) {
-				messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(option.getOptionId(), error, "code", option.getParentId().getId(), crm.findMessageId("validation.field.invalid")));
 			}
 		}
 
@@ -105,7 +105,7 @@ public interface CrmOptionService {
 		if (option.getOptionId() != null) {
 			try {
 				if (!crm.findOption(option.getOptionId()).getCode().equals(option.getCode()))
-					messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.option.immutable")));
+					messages.add(new Message(option.getOptionId(), error, "code", option.getOptionId().getId(), crm.findMessageId("validation.option.immutable")));
 			} catch (ItemNotFoundException e) {
 				/* no existing option, so don't care */
 			}
@@ -114,36 +114,36 @@ public interface CrmOptionService {
 		// Make sure the code is unique within a particular parent
 		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
-				messages.add(new Message(option.getOptionId(), error, "code", crm.findMessageId("validation.option.duplicate")));
+				messages.add(new Message(option.getOptionId(), error, "code", option.getName(Lang.ROOT), crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure the english name is unique within a particular parent
 		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(Lang.ENGLISH, option.getName(Lang.ENGLISH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
-				messages.add(new Message(option.getOptionId(), error, "englishName", crm.findMessageId("validation.option.duplicate")));
+				messages.add(new Message(option.getOptionId(), error, "englishName", option.getName(Lang.ENGLISH), crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure the french name is unique
 		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(Lang.FRENCH, option.getName(Lang.FRENCH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
-				messages.add(new Message(option.getOptionId(), error, "frenchName", crm.findMessageId("validation.option.duplicate")));
+				messages.add(new Message(option.getOptionId(), error, "frenchName", option.getName(Lang.FRENCH), crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure there is an English description
 		if (StringUtils.isBlank(option.getName(Lang.ENGLISH))) {
-			messages.add(new Message(option.getOptionId(), error, "englishName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(option.getOptionId(), error, "englishName", option.getName(Lang.ENGLISH), crm.findMessageId("validation.field.required")));
 		} else if (option.getName(Lang.ENGLISH).length() > 50) {
-			messages.add(new Message(option.getOptionId(), error, "englishName", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(option.getOptionId(), error, "englishName", option.getName(Lang.ENGLISH), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Make sure there is a French description
 		if (StringUtils.isBlank(option.getName(Lang.FRENCH))) {
-			messages.add(new Message(option.getOptionId(), error, "frenchName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(option.getOptionId(), error, "frenchName", option.getName(Lang.FRENCH), crm.findMessageId("validation.field.required")));
 		} else if (option.getName(Lang.FRENCH).length() > 50) {
-			messages.add(new Message(option.getOptionId(), error, "frenchName", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(option.getOptionId(), error, "frenchName", option.getName(Lang.FRENCH), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		return messages;

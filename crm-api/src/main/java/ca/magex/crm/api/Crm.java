@@ -51,6 +51,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
@@ -151,11 +152,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return organization;
 	}
 	
-	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
+	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
 		return organizationService.createOrganization(
-			validate(prototypeOrganization(displayName, groupIds)));
+			validate(prototypeOrganization(displayName, authenticationGroupIds, businessGroupIds)));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
@@ -172,7 +173,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(locationId)).getMainLocationId());
 	}
 	
-	@Override
 	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
@@ -180,11 +180,18 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());
 	}
 	
-	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
+	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groupIds);
-		return organizationService.updateOrganizationGroups(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withAuthenticationGroupIds(groupIds)).getAuthenticationGroupIds());
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + authenticationGroupIds);
+		return organizationService.updateOrganizationAuthenticationGroups(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withAuthenticationGroupIds(authenticationGroupIds)).getAuthenticationGroupIds());
+	}
+	
+	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds) {
+		if (!canUpdateOrganization(organizationId))
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + businessGroupIds);
+		return organizationService.updateOrganizationBusinessGroups(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withBusinessGroupIds(businessGroupIds)).getBusinessGroupIds());
 	}
 
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {

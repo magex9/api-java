@@ -80,43 +80,43 @@ public interface CrmUserService {
 
 		// Status
 		if (user.getStatus() == null) {
-			messages.add(new Message(user.getUserId(), error, "status", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(user.getUserId(), error, "status", null, crm.findMessageId("validation.field.required")));
 		} else if (user.getStatus() == Status.PENDING && user.getUserId() != null) {
-			messages.add(new Message(user.getUserId(), error, "status", crm.findMessageId("validation.status.pending")));
+			messages.add(new Message(user.getUserId(), error, "status", user.getStatus().name(), crm.findMessageId("validation.status.pending")));
 		}
 
 		// Organization
 		if (user.getPersonId() == null) {
-			messages.add(new Message(null, error, "personId", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(null, error, "personId", null, crm.findMessageId("validation.field.required")));
 		} else {
 			try {
 				PersonSummary personSummary = crm.findPersonSummary(user.getPersonId());
 				if (!personSummary.getOrganizationId().equals(user.getOrganizationId())) {
-					messages.add(new Message(user.getPersonId(), error, "organizationId", crm.findMessageId("validation.field.invalid")));
+					messages.add(new Message(user.getPersonId(), error, "organizationId", user.getOrganizationId().getId(), crm.findMessageId("validation.field.invalid")));
 				}
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(user.getPersonId(), error, "personId", crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(user.getPersonId(), error, "personId", user.getPersonId().getId(), crm.findMessageId("validation.field.invalid")));
 			}
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(user.getUsername())) {
-			messages.add(new Message(user.getUserId(), error, "username", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(user.getUserId(), error, "username", user.getUsername(), crm.findMessageId("validation.field.required")));
 		} else if (user.getUsername().length() > 20) {
-			messages.add(new Message(user.getUserId(), error, "username", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(user.getUserId(), error, "username", user.getUsername(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Roles
 		if (user.getAuthenticationRoleIds().isEmpty()) {
-			messages.add(new Message(user.getUserId(), error, "roleIds", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(user.getUserId(), error, "roleIds", null, crm.findMessageId("validation.field.required")));
 		} else {
 			for (int i = 0; i < user.getAuthenticationRoleIds().size(); i++) {
 				AuthenticationRoleIdentifier roleId = user.getAuthenticationRoleIds().get(i);
 				try {
 					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(user.getUserId(), error, "roleIds[" + i + "]", crm.findMessageId("validation.field.inactive")));
+						messages.add(new Message(user.getUserId(), error, "authenticationRoleIds[" + i + "]", roleId.getId(), crm.findMessageId("validation.field.inactive")));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(user.getUserId(), error, "roleIds[" + i + "]", crm.findMessageId("validation.field.invalid")));
+					messages.add(new Message(user.getUserId(), error, "authenticationRoleIds[" + i + "]", roleId.getId(), crm.findMessageId("validation.field.invalid")));
 				}
 			}
 		}

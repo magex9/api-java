@@ -25,8 +25,8 @@ public class BadRequestException extends ApiException {
 		this.messages = messages;
 	}
 	
-	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, Choice<PhraseIdentifier> reason) {
-		this(message, Arrays.asList(new Message(base, type, path, reason)));
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, Choice<PhraseIdentifier> reason) {
+		this(message, Arrays.asList(new Message(base, type, path, value, reason)));
 	}
 
 	@Override

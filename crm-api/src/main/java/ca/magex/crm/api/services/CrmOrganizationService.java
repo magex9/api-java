@@ -18,6 +18,7 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -50,12 +51,15 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
  */
 public interface CrmOrganizationService {
 
-	default OrganizationDetails prototypeOrganization(String displayName, List<AuthenticationGroupIdentifier> getAuthenticationGroupIds) {
-		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, getAuthenticationGroupIds);
+	default OrganizationDetails prototypeOrganization(
+			String displayName, 
+			List<AuthenticationGroupIdentifier> authenticationGroupIds, 
+			List<BusinessGroupIdentifier> businessGroupIds) {
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, authenticationGroupIds, businessGroupIds);
 	}
 	
 	default OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return createOrganization(prototype.getDisplayName(), prototype.getAuthenticationGroupIds());
+		return createOrganization(prototype.getDisplayName(), prototype.getAuthenticationGroupIds(), prototype.getBusinessGroupIds());
 	}
 	
 	/**
@@ -67,10 +71,10 @@ public interface CrmOrganizationService {
 	 * The "ORG" group should be assigned for customer users.
 	 * 
 	 * @param organizationDisplayName The name the organization should be displayed in.
-	 * @param getAuthenticationGroupIds The list of permission groups the users can be assigned to. 
+1	 * @param getAuthenticationGroupIds The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> getAuthenticationGroupIds);
+	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> getAuthenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -99,7 +103,9 @@ public interface CrmOrganizationService {
 
 	OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId);
 
-	OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds);
+	OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds);
+	
+	OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> groupIds);
 
 	OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId);
 
@@ -130,16 +136,16 @@ public interface CrmOrganizationService {
 
 		// Status
 		if (organization.getStatus() == null) {
-			messages.add(new Message(organization.getOrganizationId(), error, "status", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(organization.getOrganizationId(), error, "status", null, crm.findMessageId("validation.field.required")));
 		} else if (organization.getStatus() == Status.PENDING && organization.getOrganizationId() != null) {
-			messages.add(new Message(organization.getOrganizationId(), error, "status", crm.findMessageId("validation.status.pending")));
+			messages.add(new Message(organization.getOrganizationId(), error, "status", organization.getStatus().name(), crm.findMessageId("validation.status.pending")));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(organization.getDisplayName())) {
-			messages.add(new Message(organization.getOrganizationId(), error, "displayName", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), crm.findMessageId("validation.field.required")));
 		} else if (organization.getDisplayName().length() > 60) {
-			messages.add(new Message(organization.getOrganizationId(), error, "displayName", crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), crm.findMessageId("validation.field.maxlength")));
 		}
 
 		// Main contact reference
@@ -147,11 +153,11 @@ public interface CrmOrganizationService {
 			PersonSummary person = crm.findPersonSummary(organization.getMainContactId());
 			// Make sure main contact belongs to current org
 			if (!person.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getId(), crm.findMessageId("validation.field.invalid")));
 			}
 			// Make sure main contact is active
 			if (!person.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", crm.findMessageId("validation.field.inactive")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getId(), crm.findMessageId("validation.field.inactive")));
 			}
 		}
 
@@ -160,25 +166,25 @@ public interface CrmOrganizationService {
 			LocationSummary location = crm.findLocationSummary(organization.getMainLocationId());
 			// Make sure main location belongs to current org
 			if (!location.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getId(), crm.findMessageId("validation.field.invalid")));
 			}
 			// Make sure main location is active
 			if (!location.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", crm.findMessageId("validation.field.inactive")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getId(), crm.findMessageId("validation.field.inactive")));
 			}
 		}
 
 		// Group
 		if (organization.getAuthenticationGroupIds().isEmpty()) {
-			messages.add(new Message(organization.getOrganizationId(), error, "groupIds", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds", null, crm.findMessageId("validation.field.required")));
 		} else {
 			for (int i = 0; i < organization.getAuthenticationGroupIds().size(); i++) {
 				AuthenticationGroupIdentifier groupId = organization.getAuthenticationGroupIds().get(i);
 				try {
 					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(organization.getOrganizationId(), error, "groupIds[" + i + "]", crm.findMessageId("validation.field.inactive")));
+						messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getId(), crm.findMessageId("validation.field.inactive")));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(organization.getOrganizationId(), error, "groupIds[" + i + "]", crm.findMessageId("validation.field.invalid")));
+					messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getId(), crm.findMessageId("validation.field.invalid")));
 				}
 			}
 		}

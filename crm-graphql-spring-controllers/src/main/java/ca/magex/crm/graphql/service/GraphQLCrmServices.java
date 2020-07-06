@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
+import ca.magex.crm.graphql.datafetcher.OptionDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.datafetcher.UserDataFetcher;
@@ -41,6 +42,7 @@ public class GraphQLCrmServices {
 	private OrganizationDataFetcher organizationDataFetcher;
 	private PersonDataFetcher personDataFetcher;
 	private UserDataFetcher userDataFetcher;
+	private OptionDataFetcher optionDataFetcher;
 	
 	/* graphql instance used to parse and execute the query */
 	private GraphQL graphQL;	
@@ -49,11 +51,13 @@ public class GraphQLCrmServices {
 			OrganizationDataFetcher organizationDataFetcher,
 			LocationDataFetcher locationDataFetcher,
 			PersonDataFetcher personDataFetcher,
-			UserDataFetcher userDataFetcher) {
+			UserDataFetcher userDataFetcher,
+			OptionDataFetcher optionDataFetcher) {
 		this.organizationDataFetcher = organizationDataFetcher;
 		this.locationDataFetcher = locationDataFetcher;
 		this.personDataFetcher = personDataFetcher;
 		this.userDataFetcher = userDataFetcher;
+		this.optionDataFetcher = optionDataFetcher;
 	}
 
 	/**
@@ -103,7 +107,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganization", organizationDataFetcher.updateOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainContact", personDataFetcher.byOrganization()))
-//				.type("Organization", typeWiring -> typeWiring.dataFetcher("groups", permissionDataFetcher.groupsByOrganization()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("authenticationGroups", optionDataFetcher.findAuthenticationGroupsForOrg()))
 
 				// location data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))
