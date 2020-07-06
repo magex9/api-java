@@ -123,7 +123,7 @@ public class UsersFilter implements CrmFilter<User> {
 		return List.of(instance)
 			.stream()
 			.filter(u -> this.getUsername() == null || StringUtils.containsIgnoreCase(u.getUsername(), this.getUsername()))
-			.filter(u -> this.getRoleId() == null || u.getRoles().contains(this.getRoleId()))
+			.filter(u -> this.getRoleId() == null || u.getRoleIds().contains(this.getRoleId()))
 			.filter(u -> this.getStatus() == null || this.getStatus().equals(u.getStatus()))
 			.filter(u -> this.getPersonId() == null || this.getPersonId().equals(u.getPersonId()))
 			.findAny()

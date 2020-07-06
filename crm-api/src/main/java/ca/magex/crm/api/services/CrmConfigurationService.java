@@ -109,8 +109,8 @@ public interface CrmConfigurationService {
 	 */
 	default void createOrgGroup(CrmRepositories repos) {
 		OptionIdentifier orgGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.MUTABLE, new Localized("ORG", "Organization", "Organisation"));
-		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("ADMIN", "Organization Admin", "Administrateur GRC"));
-		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("USER", "Organization Viewer", "Visionneuse GRC"));
+		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("ADMIN", "Organization Admin", "Administrateur de l'organisation"));
+		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("USER", "Organization Viewer", "Visionneuse d'organisation"));
 	}
 
 	/**

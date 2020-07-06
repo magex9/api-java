@@ -64,7 +64,7 @@ public class BasicUserService implements CrmUserService {
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUser(user.withRoles(roleIds));
+		return repos.saveUser(user.withRoleIds(roleIds));
 	}
 
 	@Override

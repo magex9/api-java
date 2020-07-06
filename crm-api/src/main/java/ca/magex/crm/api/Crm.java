@@ -413,7 +413,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, validate(findUser(userId).withRoles(roles)).getRoles());
+		return userService.updateUserRoles(userId, validate(findUser(userId).withRoleIds(roles)).getRoleIds());
 	}
 
 	@Override

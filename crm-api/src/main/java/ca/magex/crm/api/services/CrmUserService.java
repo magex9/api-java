@@ -26,7 +26,7 @@ public interface CrmUserService {
 	};
 
 	default User createUser(User prototype) {
-		return createUser(prototype.getPersonId(), prototype.getUsername(), prototype.getRoles());
+		return createUser(prototype.getPersonId(), prototype.getUsername(), prototype.getRoleIds());
 	}
 
 	User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles);
@@ -102,11 +102,11 @@ public interface CrmUserService {
 		}
 
 		// Roles
-		if (user.getRoles().isEmpty()) {
+		if (user.getRoleIds().isEmpty()) {
 			messages.add(new Message(user.getUserId(), error, "roleIds", crm.findMessageId("validation.field.required")));
 		} else {
-			for (int i = 0; i < user.getRoles().size(); i++) {
-				AuthenticationRoleIdentifier roleId = user.getRoles().get(i);
+			for (int i = 0; i < user.getRoleIds().size(); i++) {
+				AuthenticationRoleIdentifier roleId = user.getRoleIds().get(i);
 				try {
 					if (!crm.findOption(roleId).getStatus().equals(Status.ACTIVE))
 						messages.add(new Message(user.getUserId(), error, "roleIds[" + i + "]", crm.findMessageId("validation.field.inactive")));

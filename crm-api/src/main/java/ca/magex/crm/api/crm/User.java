@@ -92,7 +92,7 @@ public class User implements Serializable {
 	 * returns the authentication role identifiers associated to the user
 	 * @return
 	 */
-	public List<AuthenticationRoleIdentifier> getRoles() {
+	public List<AuthenticationRoleIdentifier> getRoleIds() {
 		return roleIds;
 	}
 	
@@ -110,7 +110,7 @@ public class User implements Serializable {
 	 * @param roles
 	 * @return
 	 */
-	public User withRoles(List<AuthenticationRoleIdentifier> roleIds) {
+	public User withRoleIds(List<AuthenticationRoleIdentifier> roleIds) {
 		return new User(userId, personId, username, status, roleIds);
 	}
 	
