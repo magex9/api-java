@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Authentication Role Option Identification
@@ -21,4 +22,10 @@ public class AuthenticationRoleIdentifier extends OptionIdentifier {
 	public String getContext() {
 		return AuthenticationRoleIdentifier.CONTEXT;
 	}
+	
+	@Override
+	public Type getType() {
+		return Type.AUTHENTICATION_ROLE;
+	}
+	
 }

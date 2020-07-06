@@ -1,12 +1,13 @@
 package ca.magex.crm.api.system.id;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Option Identification
@@ -15,50 +16,72 @@ import ca.magex.crm.api.system.Identifier;
  */
 public class IdentifierFactory {
 
-	public static final Map<String, Class<?>> IDENTIFIERS;
+	public static final List<Class<? extends Identifier>> IDENTIFIERS = List.of(
+		AuthenticationGroupIdentifier.class,
+		AuthenticationRoleIdentifier.class,
+		BusinessGroupIdentifier.class,
+		BusinessRoleIdentifier.class,
+		ConfigurationIdentifier.class,
+		CountryIdentifier.class,
+		DictionaryIdentifier.class,
+		LanguageIdentifier.class,
+		LocaleIdentifier.class,
+		LocationIdentifier.class,
+		MessageTypeIdentifier.class,
+		OrganizationIdentifier.class,
+		PersonIdentifier.class,
+		PhraseIdentifier.class,
+		ProvinceIdentifier.class,
+		SalutationIdentifier.class,
+		StatusIdentifier.class,
+		UserIdentifier.class
+	);
 	
+	public static final Map<Class<? extends Identifier>, Identifier> CLASS_IDENTIFIER = IDENTIFIERS
+		.stream().collect(Collectors.toMap(cls -> cls, cls -> {
+			try {
+				return ((Identifier)cls.getConstructor(CharSequence.class).newInstance("INVALID"));
+			} catch (ReflectiveOperationException e) {
+				throw new IllegalArgumentException("Unable to create identifier: " + cls.getName(), e);
+			}
+		}));
+	
+	public static final Map<String, Class<? extends Identifier>> CONTEXT_CLASS = CLASS_IDENTIFIER.values()
+		.stream().collect(Collectors.toMap(i -> i.getContext(), i -> i.getClass()));
+	
+	public static final Map<Class<? extends Identifier>, String> CLASS_CONTEXT = CLASS_IDENTIFIER.values()
+		.stream().collect(Collectors.toMap(i -> i.getClass(), i -> i.getContext()));
+		
+	public static final Map<Class<? extends OptionIdentifier>, Type> OPTION_TYPE = CLASS_IDENTIFIER.values()
+		.stream().filter(i -> i instanceof OptionIdentifier)
+		.map(i -> (OptionIdentifier)i)
+		.collect(Collectors.toMap(i -> i.getClass(), i -> i.getType()));
+			
+	public static final Map<Type, Class<? extends OptionIdentifier>> TYPE_OPTION = CLASS_IDENTIFIER.values()
+		.stream().filter(i -> i instanceof OptionIdentifier)
+		.map(i -> (OptionIdentifier)i)
+		.collect(Collectors.toMap(i -> i.getType(), i -> i.getClass()));
+			
 	private IdentifierFactory() { }
 	
-	static {
-		Map<String, Class<?>> tmp = new HashMap<String, Class<?>>();
-		tmp.put(AuthenticationGroupIdentifier.CONTEXT, AuthenticationGroupIdentifier.class);
-		tmp.put(AuthenticationRoleIdentifier.CONTEXT, AuthenticationRoleIdentifier.class);
-		tmp.put(ConfigurationIdentifier.CONTEXT, ConfigurationIdentifier.class);
-		tmp.put(CountryIdentifier.CONTEXT, CountryIdentifier.class);
-		tmp.put(SalutationIdentifier.CONTEXT, SalutationIdentifier.class);
-		tmp.put(OptionIdentifier.CONTEXT, OptionIdentifier.class);
-		tmp.put(BusinessGroupIdentifier.CONTEXT, BusinessGroupIdentifier.class);
-		tmp.put(BusinessRoleIdentifier.CONTEXT, BusinessRoleIdentifier.class);
-		tmp.put(CountryIdentifier.CONTEXT, CountryIdentifier.class);
-		tmp.put(DictionaryIdentifier.CONTEXT, DictionaryIdentifier.class);
-		tmp.put(LanguageIdentifier.CONTEXT, LanguageIdentifier.class);
-		tmp.put(LocaleIdentifier.CONTEXT, LocaleIdentifier.class);
-		tmp.put(LocationIdentifier.CONTEXT, LocationIdentifier.class);
-		tmp.put(MessageTypeIdentifier.CONTEXT, MessageTypeIdentifier.class);
-		tmp.put(OrganizationIdentifier.CONTEXT, OrganizationIdentifier.class);
-		tmp.put(PersonIdentifier.CONTEXT, PersonIdentifier.class);
-		tmp.put(PhraseIdentifier.CONTEXT, PhraseIdentifier.class);
-		tmp.put(ProvinceIdentifier.CONTEXT, ProvinceIdentifier.class);
-		tmp.put(SalutationIdentifier.CONTEXT, SalutationIdentifier.class);
-		tmp.put(StatusIdentifier.CONTEXT, StatusIdentifier.class);
-		tmp.put(UserIdentifier.CONTEXT, UserIdentifier.class);
-		IDENTIFIERS = Collections.unmodifiableMap(tmp);
+	public static <I extends Identifier> String getContext(Class<I> cls) {
+		return CLASS_CONTEXT.get(cls);
 	}
-		
-	public static <I extends Identifier> I forId(CharSequence id) {
-		return forId(id, null);
+	
+	public static <I extends OptionIdentifier> Type getType(Class<I> cls) {
+		return OPTION_TYPE.get(cls);
+	}
+	
+	public static Class<? extends OptionIdentifier> forType(Type type) {
+		return TYPE_OPTION.get(type);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <I extends Identifier> I forId(CharSequence id, Class<I> cls) {
-		for (String context : IDENTIFIERS.keySet()) {
+	public static <I extends Identifier> I forId(CharSequence id) {
+		for (String context : CONTEXT_CLASS.keySet()) {
 			if (StringUtils.startsWith(id, context)) {		
 				try {
-					Identifier identifier = (Identifier) IDENTIFIERS.get(context).getConstructor(CharSequence.class).newInstance(id);
-					if (cls != null && !(cls.isAssignableFrom(identifier.getClass()))) {
-						throw new IllegalArgumentException("Identifier is not of type '" + cls + "': " + id);
-					}
-					return (I) identifier;
+					return (I) CONTEXT_CLASS.get(context).getConstructor(CharSequence.class).newInstance(id);
 				} catch (ReflectiveOperationException e) {
 					throw new IllegalArgumentException("Unable to create identifier: " + context + " with " + id, e);
 				}
@@ -67,11 +90,12 @@ public class IdentifierFactory {
 		throw new IllegalArgumentException("Unidentifiable id: " + id);
 	}
 	
-//	public static OptionIdentifier forOptionId(CharSequence id) {
-//		Identifier identifier = IdentifierFactory.forId(id);
-//		if (identifier instanceof OptionIdentifier)
-//			return (OptionIdentifier)identifier;
-//		throw new IllegalArgumentException("Identifier is not an option id: " + identifier.getClass() + " with " + id);
-//	}
+	public static <I extends Identifier> I forId(CharSequence id, Class<I> cls) {
+		try {
+			return (I)cls.getConstructor(CharSequence.class).newInstance(id);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalArgumentException("Unable to create identifier: " + cls.getName() + " with " + id, e);
+		}
+	}
 		
 }

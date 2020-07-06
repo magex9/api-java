@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Phrase Identification
@@ -21,4 +22,10 @@ public class PhraseIdentifier extends OptionIdentifier {
 	public String getContext() {
 		return PhraseIdentifier.CONTEXT;
 	}
+	
+	@Override
+	public Type getType() {
+		return Type.PHRASE;
+	}
+	
 }

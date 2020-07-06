@@ -2,13 +2,14 @@ package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Option Identification
  * 
  * @author Jonny
  */
-public class OptionIdentifier extends Identifier {
+public abstract class OptionIdentifier extends Identifier {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -22,5 +23,7 @@ public class OptionIdentifier extends Identifier {
 	public String getContext() {		
 		return CONTEXT;
 	}
+	
+	public abstract Type getType();
 	
 }

@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Business Group Option Identification
@@ -21,4 +22,10 @@ public class BusinessGroupIdentifier extends OptionIdentifier {
 	public String getContext() {
 		return BusinessGroupIdentifier.CONTEXT;
 	}
+	
+	@Override
+	public Type getType() {
+		return Type.BUSINESS_GROUP;
+	}
+	
 }

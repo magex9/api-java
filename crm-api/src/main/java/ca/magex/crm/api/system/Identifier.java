@@ -10,13 +10,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.utils.StringEscapeUtils;
 
-public class Identifier implements CharSequence, Serializable {
+public abstract class Identifier implements CharSequence, Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	public static final String CONTEXT = "/";
 	
-	public static final String COMPONENT_REGEX = "[A-Za-z0-9/]+";
+	public static final String COMPONENT_REGEX = "[A-Za-z0-9-/]+";
 	
 	private CharSequence id;
 	
