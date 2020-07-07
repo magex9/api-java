@@ -90,13 +90,14 @@ public abstract class AbstractDataFetcher {
 	 * @param addressKey
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected MailingAddress extractMailingAddress(DataFetchingEnvironment environment, String addressKey) {
 		Map<String, Object> addressMap = environment.getArgument(addressKey);		
 		return new MailingAddress(
 				(String) addressMap.get("street"),
 				(String) addressMap.get("city"),
-				extractProvince((String) addressMap.get("province")),
-				extractCountry((String) addressMap.get("countryCode")),
+				extractProvince((Map<String,Object>) addressMap.get("province")),
+				extractCountry((Map<String,Object>) addressMap.get("country")),
 				(String) addressMap.get("postalCode"));
 	}
 
@@ -107,10 +108,11 @@ public abstract class AbstractDataFetcher {
 	 * @param nameKey
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected PersonName extractPersonName(DataFetchingEnvironment environment, String nameKey) {
 		Map<String, Object> nameMap = environment.getArgument(nameKey);
 		return new PersonName(
-				extractSalutation((String) nameMap.get("salutation")),
+				extractSalutation((Map<String,Object>) nameMap.get("salutation")),
 				(String) nameMap.get("firstName"),
 				(String) nameMap.get("middleName"),
 				(String) nameMap.get("lastName"));
@@ -123,11 +125,12 @@ public abstract class AbstractDataFetcher {
 	 * @param commsKey
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected Communication extractCommunication(DataFetchingEnvironment environment, String commsKey) {
 		Map<String, Object> commsMap = environment.getArgument(commsKey);
 		return new Communication(
 				(String) commsMap.get("jobTitle"),
-				extractLanguage((String) commsMap.get("language")),
+				extractLanguage((Map<String,Object>) commsMap.get("language")),
 				(String) commsMap.get("email"),
 				new Telephone(
 						(String) commsMap.get("phoneNumber"),
@@ -184,12 +187,12 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<ProvinceIdentifier> extractProvince(String input) {
-		if (input.matches("[A-Z]{2}/[A-Z]{2,}")) {
-			return new Choice<>(crm.findOptionByCode(Type.PROVINCE, input).getOptionId());			
+	private Choice<ProvinceIdentifier> extractProvince(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.PROVINCE, (String) input.get("code")).getOptionId());			
 		}
 		else {
-			return new Choice<>(input);
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 	
@@ -198,26 +201,12 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<CountryIdentifier> extractCountry(String input) {
-		try {
-			return new Choice<>(crm.findOptionByCode(Type.COUNTRY, input).getOptionId());			
+	private Choice<CountryIdentifier> extractCountry(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.COUNTRY, (String) input.get("code")).getOptionId());
 		}
-		catch(ItemNotFoundException e) {
-			return new Choice<>(input);
-		}
-	}
-	
-	/**
-	 * Builds the choice based on the input provided
-	 * @param input
-	 * @return
-	 */
-	private Choice<SalutationIdentifier> extractSalutation(String input) {
-		try {
-			return new Choice<>(crm.findOptionByCode(Type.SALUTATION, input).getOptionId());			
-		}
-		catch(ItemNotFoundException e) {
-			return new Choice<>(input);
+		else {
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 	
@@ -226,12 +215,26 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<LanguageIdentifier> extractLanguage(String input) {
-		try {
-			return new Choice<>(crm.findOptionByCode(Type.LANGUAGE, input).getOptionId());			
+	private Choice<SalutationIdentifier> extractSalutation(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.SALUTATION, (String) input.get("code")).getOptionId());
 		}
-		catch(ItemNotFoundException e) {
-			return new Choice<>(input);
+		else {
+			return new Choice<>((String) input.getOrDefault("other", ""));
+		}
+	}
+	
+	/**
+	 * Builds the choice based on the input provided
+	 * @param input
+	 * @return
+	 */
+	private Choice<LanguageIdentifier> extractLanguage(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.LANGUAGE, (String) input.get("code")).getOptionId());
+		}
+		else {
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 }

@@ -64,8 +64,8 @@ public class PersonSummaryJsonTransformerTests {
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonSummary", linked.getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getId(), linked.getString("personId"));
-		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
+		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getCode(), linked.getString("personId"));
+		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getCode(), linked.getString("organizationId"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
@@ -81,8 +81,8 @@ public class PersonSummaryJsonTransformerTests {
 		JsonObject root = (JsonObject)transformer.format(person, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName"), root.keys());
-		assertEquals(personId.getId(), root.getString("personId"));
-		assertEquals(organizationId.getId(), root.getString("organizationId"));
+		assertEquals(personId.getCode(), root.getString("personId"));
+		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Bacon, Chris P", root.getString("displayName"));
 		assertEquals(person, transformer.parse(root, Lang.ROOT));
@@ -93,8 +93,8 @@ public class PersonSummaryJsonTransformerTests {
 		JsonObject english = (JsonObject)transformer.format(person, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName"), english.keys());
-		assertEquals(personId.getId(), english.getString("personId"));
-		assertEquals(organizationId.getId(), english.getString("organizationId"));
+		assertEquals(personId.getCode(), english.getString("personId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Bacon, Chris P", english.getString("displayName"));
 		assertEquals(person, transformer.parse(english, Lang.ENGLISH));
@@ -105,8 +105,8 @@ public class PersonSummaryJsonTransformerTests {
 		JsonObject french = (JsonObject)transformer.format(person, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName"), french.keys());
-		assertEquals(personId.getId(), french.getString("personId"));
-		assertEquals(organizationId.getId(), french.getString("organizationId"));
+		assertEquals(personId.getCode(), french.getString("personId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Bacon, Chris P", french.getString("displayName"));
 		assertEquals(person, transformer.parse(french, Lang.FRENCH));

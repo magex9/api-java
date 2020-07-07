@@ -4,6 +4,11 @@ schema {
 }
 
 # Complex Input
+input Choice {
+	code: String
+	other: String
+}
+
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
@@ -14,8 +19,8 @@ input PagingInput {
 input MailingAddressInput {
 	street: String!
 	city: String!
-	province: String!
-	countryCode: String!
+	province: Choice!
+	country: Choice!
 	postalCode: String!
 }
 
@@ -23,22 +28,16 @@ input NameInput {
 	firstName: String
 	middleName: String
 	lastName: String
-	salutation: String
+	salutation: Choice
 }
 
 input CommunicationInput {
 	jobTitle: String
-	language: String
+	language: Choice
 	email: String
 	phoneNumber: String
 	phoneExtension: String
 	faxNumber: String
-}
-
-input BusinessPositionInput {
-	sector: String
-	unit: String
-	classification: String
 }
 
 # Filtering Criteria Input
@@ -68,21 +67,6 @@ input UserFilter {
 	role: String	
 }
 
-input GroupFilter {
-	code: String
-	englishName: String
-	frenchName: String
-	status: String
-}
-
-input RoleFilter {
-	groupId: String
-	code: String
-	englishName: String
-	frenchName: String
-	status: String
-}
-
 type Query {
 	# Organization Queries 
 	findOrganization(organizationId: String!): Organization	
@@ -105,7 +89,6 @@ type Query {
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
 	# Lookup Queries
-	findCodeLookups(category: String!, qualifier: String, code: String): [CodeLookup]
 }
 
 type Mutation {
@@ -129,23 +112,6 @@ type Mutation {
 }
 
 # Main Types
-type Group {
-	groupId: String!
-	code: String!
-	status: String!
-	englishName: String!
-	frenchName: String!
-}
-
-type Role {
-	roleId: String!
-	groupId: String!
-	code: String!
-	status: String!
-	englishName: String!
-	frenchName: String!
-}
-
 type Organization {
 	organizationId: String!
 	status: String!
@@ -173,7 +139,7 @@ type Person {
 	legalName: PersonName
 	address: MailingAddress
 	communication: Communication
-	position: BusinessPosition
+	businessRoles: [Option]!
 }
 
 type User {
@@ -181,7 +147,6 @@ type User {
 	username: String!
 	status: String!
 	person: Person!
-	roles: [Role]!
 }
 
 type Option {
@@ -209,11 +174,6 @@ type PersonName {
 	salutation: String
 }
 
-type BusinessPosition {
-	sector: String
-	unit: String
-	classification: String
-}
 
 type MailingAddress {
 	street: String
@@ -224,24 +184,6 @@ type MailingAddress {
 }
 
 # Pagination Types
-type GroupPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [Group]
-}
-
-type RolePage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [Role]
-}
-
 type OrganizationPage {
 	number: Int!
 	numberOfElements: Int!
@@ -284,15 +226,8 @@ type Telephone {
 	extension: String
 }
 
-type CodeLookup {
-	parent: CodeLookup
-	code: String
-	englishName: String
-	frenchName: String
-}
-
 type Localized {
 	code: String
-	englishName: String
-	frenchName: String
+	english: String
+	french: String
 }

@@ -191,7 +191,7 @@ public interface CrmLocationService {
 			try {
 				crm.findOrganizationDetails(location.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(location.getLocationId(), error, "organizationId", location.getOrganizationId().getId(), crm.findMessageId("validation.entity.invalid")));
+				messages.add(new Message(location.getLocationId(), error, "organizationId", location.getOrganizationId().getCode(), crm.findMessageId("validation.entity.invalid")));
 			}
 		}
 

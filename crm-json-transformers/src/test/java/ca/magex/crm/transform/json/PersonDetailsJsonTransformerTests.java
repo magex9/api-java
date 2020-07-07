@@ -72,8 +72,8 @@ public class PersonDetailsJsonTransformerTests {
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonDetails", linked.getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getId(), linked.getString("personId"));
-		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
+		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getCode(), linked.getString("personId"));
+		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getCode(), linked.getString("organizationId"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
@@ -139,8 +139,8 @@ public class PersonDetailsJsonTransformerTests {
 		JsonObject root = (JsonObject)transformer.format(person, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), root.keys());
-		assertEquals(personId.getId(), root.getString("personId"));
-		assertEquals(organizationId.getId(), root.getString("organizationId"));
+		assertEquals(personId.getCode(), root.getString("personId"));
+		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Bacon, Chris P", root.getString("displayName"));
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), root.getObject("legalName").keys());
@@ -172,8 +172,8 @@ public class PersonDetailsJsonTransformerTests {
 		JsonObject english = (JsonObject)transformer.format(person, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), english.keys());
-		assertEquals(personId.getId(), english.getString("personId"));
-		assertEquals(organizationId.getId(), english.getString("organizationId"));
+		assertEquals(personId.getCode(), english.getString("personId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Bacon, Chris P", english.getString("displayName"));
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), english.getObject("legalName").keys());
@@ -205,8 +205,8 @@ public class PersonDetailsJsonTransformerTests {
 		JsonObject french = (JsonObject)transformer.format(person, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), french.keys());
-		assertEquals(personId.getId(), french.getString("personId"));
-		assertEquals(organizationId.getId(), french.getString("organizationId"));
+		assertEquals(personId.getCode(), french.getString("personId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Bacon, Chris P", french.getString("displayName"));
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), french.getObject("legalName").keys());

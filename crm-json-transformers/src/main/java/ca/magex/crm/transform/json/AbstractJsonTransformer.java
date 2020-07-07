@@ -222,7 +222,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			sb.append(identifier.toString());
 			parent.add(new JsonPair(key, sb.toString()));
 		} else {
-			parent.add(new JsonPair(key, identifier.getId()));
+			parent.add(new JsonPair(key, identifier.getCode()));
 		}
 	}
 	

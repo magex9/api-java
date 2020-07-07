@@ -55,7 +55,7 @@ public class Choice<I extends OptionIdentifier> implements Serializable {
 	
 	public String getValue() {
 		if (isIdentifer()) {
-			return identifier.getId();
+			return identifier.getCode();
 		}
 		return other;
 	}

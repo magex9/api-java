@@ -153,11 +153,11 @@ public interface CrmOrganizationService {
 			PersonSummary person = crm.findPersonSummary(organization.getMainContactId());
 			// Make sure main contact belongs to current org
 			if (!person.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getId(), crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), crm.findMessageId("validation.field.invalid")));
 			}
 			// Make sure main contact is active
 			if (!person.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getId(), crm.findMessageId("validation.field.inactive")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), crm.findMessageId("validation.field.inactive")));
 			}
 		}
 
@@ -166,11 +166,11 @@ public interface CrmOrganizationService {
 			LocationSummary location = crm.findLocationSummary(organization.getMainLocationId());
 			// Make sure main location belongs to current org
 			if (!location.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getId(), crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), crm.findMessageId("validation.field.invalid")));
 			}
 			// Make sure main location is active
 			if (!location.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getId(), crm.findMessageId("validation.field.inactive")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), crm.findMessageId("validation.field.inactive")));
 			}
 		}
 
@@ -182,9 +182,9 @@ public interface CrmOrganizationService {
 				AuthenticationGroupIdentifier groupId = organization.getAuthenticationGroupIds().get(i);
 				try {
 					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getId(), crm.findMessageId("validation.field.inactive")));
+						messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), crm.findMessageId("validation.field.inactive")));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getId(), crm.findMessageId("validation.field.invalid")));
+					messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), crm.findMessageId("validation.field.invalid")));
 				}
 			}
 		}
