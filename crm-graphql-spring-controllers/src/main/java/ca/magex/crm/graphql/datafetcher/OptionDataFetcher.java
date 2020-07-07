@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
@@ -33,6 +34,17 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findBusinessGroupsForOrg@" + OptionDataFetcher.class.getSimpleName());
 			OrganizationDetails source = environment.getSource();
 			return source.getBusinessGroupIds()
+				.stream()
+				.map((id) -> crm.findOption(id))
+				.collect(Collectors.toList());			
+		};
+	}
+	
+	public DataFetcher<List<Option>> findBusinessRolesForPerson() {
+		return (environment) -> {
+			logger.info("Entering findBusinessGroupsForOrg@" + OptionDataFetcher.class.getSimpleName());
+			PersonDetails source = environment.getSource();
+			return source.getBusinessRoleIds()
 				.stream()
 				.map((id) -> crm.findOption(id))
 				.collect(Collectors.toList());			

@@ -139,6 +139,7 @@ type Person {
 	legalName: PersonName
 	address: MailingAddress
 	communication: Communication
+	businessRoles: [Option]!
 }
 
 type User {

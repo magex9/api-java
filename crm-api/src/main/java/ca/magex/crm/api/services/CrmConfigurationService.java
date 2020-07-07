@@ -151,6 +151,7 @@ public interface CrmConfigurationService {
 	default void createLanguageLookup(CrmRepositories repos) {
 		createRootOption(repos, Type.LANGUAGE, Option.MUTABLE, Lang.NAMES.get(Lang.ROOT));
 		createRootOption(repos, Type.LANGUAGE, Option.MUTABLE, Lang.NAMES.get(Lang.ENGLISH));
+		createRootOption(repos, Type.LANGUAGE, Option.MUTABLE, Lang.NAMES.get(Lang.FRENCH));
 	}
 	
 	/**

@@ -117,7 +117,7 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countLocations", locationDataFetcher.countLocations()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))				
 
 				// person data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
@@ -125,6 +125,7 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPersons", personDataFetcher.findPersons()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createPerson", personDataFetcher.createPerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
+				.type("Person", typeWiring -> typeWiring.dataFetcher("businessRoles", optionDataFetcher.findBusinessRolesForPerson()))
 
 				// user data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUser()))
@@ -141,6 +142,8 @@ public class GraphQLCrmServices {
 				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("province", commonDataFetcher.getProvinceValue()))
 				
 				.type("PersonName", typeWiring -> typeWiring.dataFetcher("salutation", commonDataFetcher.getSalutationValue()))
+				
+				.type("Communication", typeWiring -> typeWiring.dataFetcher("language", commonDataFetcher.getLanguageValue()))
 				
 				.type("Localized", typeWiring -> typeWiring.dataFetcher("english", commonDataFetcher.getEnglishValue()))
 				.type("Localized", typeWiring -> typeWiring.dataFetcher("french", commonDataFetcher.getFrenchValue()))
