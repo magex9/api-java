@@ -17,12 +17,19 @@ public class Choice<I extends OptionIdentifier> implements Serializable {
 	private I identifier;
 	
 	private String other;
+	
+	public Choice() {
+		this.identifier = null;
+		this.other = null;
+	}
 
 	public Choice(I identifier) {
 		this.identifier = identifier;
+		this.other = null;
 	}
 
 	public Choice(String other) {
+		this.identifier = null;
 		this.other = other;
 	}
 
