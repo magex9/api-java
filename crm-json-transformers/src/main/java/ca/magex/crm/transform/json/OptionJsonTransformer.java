@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -45,9 +46,9 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	public String buildContext(Option option, boolean identifier, Locale locale) {
 		StringBuilder sb = new StringBuilder();
 		if (identifier) {
-			sb.append(REST_BASE);
+			sb.append(Crm.REST_BASE);
 		} else {
-			sb.append(SCHEMA_BASE);
+			sb.append(Crm.SCHEMA_BASE);
 		}
 		sb.append("/options/");
 		sb.append(formatType(option.getType(), identifier));

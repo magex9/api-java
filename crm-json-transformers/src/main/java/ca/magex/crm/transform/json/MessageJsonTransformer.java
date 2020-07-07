@@ -62,7 +62,7 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 	
 	public Identifier parseIdentifier(JsonObject json, Locale locale) {
 		if (locale == null) {
-			return IdentifierFactory.forId(json.getString("identifier").substring(REST_BASE.length()));
+			return IdentifierFactory.forId(json.getString("identifier").substring(Crm.REST_BASE.length()));
 		} else {
 			return IdentifierFactory.forId("/" + json.getString("context") + "/" + json.getString("identifier"));
 		}
