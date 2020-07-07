@@ -27,8 +27,10 @@ import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.IdentifierFactory;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.transform.RequestHandler;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
@@ -80,14 +82,31 @@ public abstract class AbstractCrmController {
 			throw new BadRequestException("User input validation errors", messages);
 	}
 	
-	protected Identifier getIdentifier(JsonObject json, String key, Identifier defaultValue, Identifier identifier, List<Message> messages) {
+	protected MessageTypeIdentifier error() {
+		return crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
+	}
+	
+	protected <I extends Identifier> I getIdentifier(JsonObject json, String key, I defaultValue, Identifier identifier, List<Message> messages) {
 		try {
-			return new Identifier(json.getString(key));
+			return IdentifierFactory.forId(json.getString(key));
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			return defaultValue;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected <I extends Identifier> List<I> getIdentifiers(JsonObject json, String key, List<I> defaultValue, Identifier identifier, List<Message> messages) {
+		try {
+			return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forId(((JsonText)e).value())).collect(Collectors.toList());
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -96,10 +115,10 @@ public abstract class AbstractCrmController {
 		try {
 			return json.getString(key);
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -108,10 +127,10 @@ public abstract class AbstractCrmController {
 		try {
 			return json.getArray(key).stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -120,10 +139,10 @@ public abstract class AbstractCrmController {
 		try {
 			return jsonTransformerFactory.findByClass(cls).parse(body.getObject(key), locale);
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Invalid format")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, "error", key, new Localized(Lang.ENGLISH, "Field is mandatory")));
+			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -163,7 +182,7 @@ public abstract class AbstractCrmController {
 				.with("identifier", message.getIdentifier() == null ? null : message.getIdentifier().toString())
 				.with("type", message.getType())
 				.with("path", message.getPath())
-				.with("reason", message.getReason().get(locale)));
+				.with("reason", message.getReason()));
 		}
 		return new JsonArray(elements);
 	}
@@ -181,15 +200,15 @@ public abstract class AbstractCrmController {
 		}
 	}
 
-	protected void confirm(JsonObject body, Identifier identifier, List<Message> messages) {
-		try {
-			if (!body.contains("confirm") || !body.getBoolean("confirm"))
-				messages.add(new Message(identifier, "error", "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message")));
-		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, "error", "confirm", new Localized(Lang.ENGLISH, "Confirmation message must be a boolean")));
-		}
-		validate(messages);
-	}
+//	protected void confirm(JsonObject body, Identifier identifier, List<Message> messages) {
+//		try {
+//			if (!body.contains("confirm") || !body.getBoolean("confirm"))
+//				messages.add(new Message(identifier, error(), "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message")));
+//		} catch (ClassCastException e) {
+//			messages.add(new Message(identifier, error(), "confirm", new Localized(Lang.ENGLISH, "Confirmation message must be a boolean")));
+//		}
+//		validate(messages);
+//	}
 	
 	public Locale extractLocale(HttpServletRequest req) {
 		if (getContentType(req).contentEquals("application/json+ld"))
