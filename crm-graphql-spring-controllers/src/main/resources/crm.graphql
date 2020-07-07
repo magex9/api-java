@@ -4,6 +4,11 @@ schema {
 }
 
 # Complex Input
+input Choice {
+	code: String
+	other: String
+}
+
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
@@ -14,8 +19,8 @@ input PagingInput {
 input MailingAddressInput {
 	street: String!
 	city: String!
-	province: String!
-	countryCode: String!
+	province: Choice!
+	country: Choice!
 	postalCode: String!
 }
 

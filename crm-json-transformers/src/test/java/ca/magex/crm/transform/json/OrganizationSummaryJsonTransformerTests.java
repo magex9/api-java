@@ -59,7 +59,7 @@ public class OrganizationSummaryJsonTransformerTests {
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "organizationId", "status", "displayName"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/OrganizationSummary", linked.getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getId(), linked.getString("organizationId"));
+		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getCode(), linked.getString("organizationId"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
 		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
@@ -74,7 +74,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(organization, Lang.ROOT);
 		assertEquals(List.of("organizationId", "status", "displayName"), root.keys());
-		assertEquals(organizationId.getId(), root.getString("organizationId"));
+		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Org Name", root.getString("displayName"));
 	}
@@ -83,7 +83,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(organization, Lang.ENGLISH);
 		assertEquals(List.of("organizationId", "status", "displayName"), english.keys());
-		assertEquals(organizationId.getId(), english.getString("organizationId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Org Name", english.getString("displayName"));
 	}
@@ -92,7 +92,7 @@ public class OrganizationSummaryJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(organization, Lang.FRENCH);
 		assertEquals(List.of("organizationId", "status", "displayName"), french.keys());
-		assertEquals(organizationId.getId(), french.getString("organizationId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Org Name", french.getString("displayName"));
 	}

@@ -226,14 +226,13 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject hq = execute(
 				"createLocation",
 				"mutation { createLocation(organizationId: %s, locationName: %s, locationReference: %s, locationAddress: {" + 
-						"street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s}) { " + 
-							"locationId organizationId status reference displayName address { street city province country postalCode } } }",
+						"street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { locationId } }",
 				johnnuyId,
 				"Head Quarters",
 				"HQ",
 				"123 Frank St",
 				"Ottawa",
-				"Ontario",
+				"CA/ON",
 				"CA",
 				"K5J9F4");
 		LocationIdentifier headQuartersId = new LocationIdentifier(hq.getString("locationId"));
@@ -295,14 +294,13 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject hq2 = execute(
 				"createLocation",
 				"mutation { createLocation(organizationId: %s, locationName: %s, locationReference: %s, locationAddress: {" + 
-						"street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s}) { " + 
-							"locationId organizationId status reference displayName address { street city province country postalCode } } }",
+						"street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { locationId } }",
 				johnnuyId,
 				"Head Quarters 2",
 				"HQ2",
 				"123 Frank St",
 				"Ottawa",
-				"Ontario",
+				"CA/ON",
 				"CA",
 				"K5J9F4");
 		LocationIdentifier headQuartersId2 = new LocationIdentifier(hq2.getString("locationId"));
@@ -338,12 +336,12 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, " + 
 						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: %s }, " + 
-						"address: {street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s}, " + 
+						"address: {street: %s, city: %s, province: {code: %s}, country: {code : %s}, postalCode: %s}, " + 
 						"communication: { jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " + 
 						"businessRoles: %s ) { personId } }",
 				johnnuyId,
 				"Henry", "Peter", "Jones", "MR",
-				"123 Frank St", "Ottawa", "Ontario", "CA", "K5J9F4",
+				"123 Frank St", "Ottawa", "CA/ON", "CA", "K5J9F4",
 				"CIO", "EN", "cio@johnnuy.org", "613-555-5556", "97", "613-555-5557",
 				List.of("IMIT/DEV/MANAGER"));
 		PersonIdentifier cioId = new PersonIdentifier(cio.getString("personId"));
@@ -408,12 +406,12 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, " + 
 						"name: {" + "firstName: %s, middleName: %s, lastName: %s, salutation: %s }, " + 
-						"address: {street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s}, " + 
+						"address: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}, " + 
 						"communication: { jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " + 
 						"businessRoles: %s ) { personId } }",
 				johnnuyId,
 				"Tommy", "Falls", "Narrow", "MRS",
-				"123 Frank St", "Ottawa", "Ontario", "CA", "K5J9F4",
+				"123 Frank St", "Ottawa", "CA/ON", "CA", "K5J9F4",
 				"CIO", "EN", "cio@johnnuy.org", "613-555-5556", "97", "613-555-5557",
 				List.of("IMIT/DEV/MANAGER"));
 		PersonIdentifier ceoId = new PersonIdentifier(ceo.getString("personId"));
@@ -551,8 +549,6 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("englishName"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("frenchName"));
 		
-		// TODO Business Groups Updates
-		
 		/* update authentication groups - no change */
 		johnnuy = execute(
 				"updateOrganization",
@@ -658,8 +654,6 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("englishName"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("frenchName"));
-		
-		// TODO
 		
 		/* find organization by id */
 		johnnuy = execute(

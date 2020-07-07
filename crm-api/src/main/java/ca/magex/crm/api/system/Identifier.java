@@ -46,7 +46,7 @@ public abstract class Identifier implements CharSequence, Serializable {
 		return CONTEXT;
 	}
 	
-	public String getId() {
+	public String getCode() {
 		return id.subSequence(getContext().length(), length()).toString();
 	}
 

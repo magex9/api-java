@@ -97,7 +97,7 @@ public interface CrmOptionService {
 		if (option.getParentId() != null) {
 			Option parentOption = crm.findOption(option.getParentId());
 			if (!option.getCode().startsWith(parentOption.getCode())) {
-				messages.add(new Message(option.getOptionId(), error, "code", option.getParentId().getId(), crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(option.getOptionId(), error, "code", option.getParentId().getCode(), crm.findMessageId("validation.field.invalid")));
 			}
 		}
 
@@ -105,7 +105,7 @@ public interface CrmOptionService {
 		if (option.getOptionId() != null) {
 			try {
 				if (!crm.findOption(option.getOptionId()).getCode().equals(option.getCode()))
-					messages.add(new Message(option.getOptionId(), error, "code", option.getOptionId().getId(), crm.findMessageId("validation.option.immutable")));
+					messages.add(new Message(option.getOptionId(), error, "code", option.getOptionId().getCode(), crm.findMessageId("validation.option.immutable")));
 			} catch (ItemNotFoundException e) {
 				/* no existing option, so don't care */
 			}

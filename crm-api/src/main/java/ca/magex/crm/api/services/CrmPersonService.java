@@ -87,7 +87,7 @@ public interface CrmPersonService {
 			try {
 				crm.findOrganizationDetails(person.getOrganizationId());
 			} catch (ItemNotFoundException e) {
-				messages.add(new Message(person.getPersonId(), error, "organizationId", person.getOrganizationId().getId(), crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(person.getPersonId(), error, "organizationId", person.getOrganizationId().getCode(), crm.findMessageId("validation.field.invalid")));
 			}
 		}
 

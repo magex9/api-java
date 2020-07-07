@@ -90,13 +90,14 @@ public abstract class AbstractDataFetcher {
 	 * @param addressKey
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected MailingAddress extractMailingAddress(DataFetchingEnvironment environment, String addressKey) {
 		Map<String, Object> addressMap = environment.getArgument(addressKey);		
 		return new MailingAddress(
 				(String) addressMap.get("street"),
 				(String) addressMap.get("city"),
-				extractProvince((String) addressMap.get("province")),
-				extractCountry((String) addressMap.get("countryCode")),
+				extractProvince((Map<String,Object>) addressMap.get("province")),
+				extractCountry((Map<String,Object>) addressMap.get("country")),
 				(String) addressMap.get("postalCode"));
 	}
 
@@ -184,12 +185,12 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<ProvinceIdentifier> extractProvince(String input) {
-		if (input.matches("[A-Z]{2}/[A-Z]{2,}")) {
-			return new Choice<>(crm.findOptionByCode(Type.PROVINCE, input).getOptionId());			
+	private Choice<ProvinceIdentifier> extractProvince(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.PROVINCE, (String) input.get("code")).getOptionId());			
 		}
 		else {
-			return new Choice<>(input);
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 	
@@ -198,12 +199,12 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<CountryIdentifier> extractCountry(String input) {
-		try {
-			return new Choice<>(crm.findOptionByCode(Type.COUNTRY, input).getOptionId());			
+	private Choice<CountryIdentifier> extractCountry(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.COUNTRY, (String) input.get("code")).getOptionId());
 		}
-		catch(ItemNotFoundException e) {
-			return new Choice<>(input);
+		else {
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 	
