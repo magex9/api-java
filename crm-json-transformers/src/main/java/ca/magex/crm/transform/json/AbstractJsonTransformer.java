@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Choice;
@@ -28,10 +29,6 @@ import ca.magex.json.util.StringConverter;
 
 public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonElement> {
 	
-	public static final String SCHEMA_BASE = "http://api.magex.ca/crm/schema";
-	
-	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
-	
 	protected final CrmServices crm;
 	
 	public AbstractJsonTransformer(CrmServices crm) {
@@ -51,7 +48,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	
 	public void formatType(List<JsonPair> parent, Locale locale) {
 		if (locale == null)
-			parent.add(new JsonPair("@context", "http://api.magex.ca/crm/rest/schema/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/").replaceAll("^crm", "organization")));
+			parent.add(new JsonPair("@context", Crm.REST_BASE + "/schema/" + getSourceType().getName().replaceAll("ca.magex.crm.api.", "").replaceAll("\\.", "/").replaceAll("^crm", "organization")));
 	}
 	
 	public final JsonElement format(T obj, Locale locale) {
@@ -95,7 +92,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 
 	public <O extends OptionIdentifier> O parseOption(JsonElement e, Class<O> cls, Locale locale) {
 		String value = locale == null ?
-			((JsonObject)e).getString("@id").substring(REST_BASE.length()) :
+			((JsonObject)e).getString("@id").substring(Crm.REST_BASE.length()) :
 			((JsonText)e).value();
 		String code = value;
 		if (locale == null) {
@@ -114,7 +111,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		try {
 			if (locale == null) {
 				String identifier = json.getString(key);
-				String prefix = REST_BASE + cls.getField("CONTEXT").get(null);
+				String prefix = Crm.REST_BASE + cls.getField("CONTEXT").get(null);
 				if (!identifier.startsWith(prefix))
 					throw new IllegalArgumentException("Identifier should start with: " + prefix + " -> " + identifier);
 				return IdentifierFactory.forId(identifier.substring(prefix.length()), cls);
@@ -217,9 +214,11 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		if (obj == null)
 			return;
 		O identifier = getProperty(obj, key, cls);
+		if (identifier == null)
+			return;
 		if (locale == null) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(REST_BASE);
+			sb.append(Crm.REST_BASE);
 			sb.append(identifier.toString());
 			parent.add(new JsonPair(key, sb.toString()));
 		} else {
@@ -239,7 +238,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			List<JsonElement> elements = new ArrayList<JsonElement>();
 			if (list != null) {
 				for (O identifier : list) {
-					elements.add(new JsonText(REST_BASE + identifier));
+					elements.add(new JsonText(Crm.REST_BASE + identifier));
 				}
 			}
 			parent.add(new JsonPair(key, new JsonArray(elements)));
