@@ -18,12 +18,12 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 	private OrganizationIdentifier orgId;
 	
 	@Before
-	public void createGroup() throws Exception {
+	public void setup() throws Exception {
 		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
 				"mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " + 
 						"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " + 
-							"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code englishName frenchName } } businessGroups { name { code englishName frenchName } } } }",
+							"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				new MapBuilder()
 					.withEntry("displayName", "Johnnuy")
 					.withEntry("authenticationGroups", List.of("SYS", "ORG"))

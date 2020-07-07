@@ -108,10 +108,11 @@ public abstract class AbstractDataFetcher {
 	 * @param nameKey
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected PersonName extractPersonName(DataFetchingEnvironment environment, String nameKey) {
 		Map<String, Object> nameMap = environment.getArgument(nameKey);
 		return new PersonName(
-				extractSalutation((String) nameMap.get("salutation")),
+				extractSalutation((Map<String,Object>) nameMap.get("salutation")),
 				(String) nameMap.get("firstName"),
 				(String) nameMap.get("middleName"),
 				(String) nameMap.get("lastName"));
@@ -124,11 +125,12 @@ public abstract class AbstractDataFetcher {
 	 * @param commsKey
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected Communication extractCommunication(DataFetchingEnvironment environment, String commsKey) {
 		Map<String, Object> commsMap = environment.getArgument(commsKey);
 		return new Communication(
 				(String) commsMap.get("jobTitle"),
-				extractLanguage((String) commsMap.get("language")),
+				extractLanguage((Map<String,Object>) commsMap.get("language")),
 				(String) commsMap.get("email"),
 				new Telephone(
 						(String) commsMap.get("phoneNumber"),
@@ -213,12 +215,12 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<SalutationIdentifier> extractSalutation(String input) {
-		try {
-			return new Choice<>(crm.findOptionByCode(Type.SALUTATION, input).getOptionId());			
+	private Choice<SalutationIdentifier> extractSalutation(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.SALUTATION, (String) input.get("code")).getOptionId());
 		}
-		catch(ItemNotFoundException e) {
-			return new Choice<>(input);
+		else {
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 	
@@ -227,12 +229,12 @@ public abstract class AbstractDataFetcher {
 	 * @param input
 	 * @return
 	 */
-	private Choice<LanguageIdentifier> extractLanguage(String input) {
-		try {
-			return new Choice<>(crm.findOptionByCode(Type.LANGUAGE, input).getOptionId());			
+	private Choice<LanguageIdentifier> extractLanguage(Map<String,Object> input) {
+		if (input.containsKey("code")) {
+			return new Choice<>(crm.findOptionByCode(Type.LANGUAGE, (String) input.get("code")).getOptionId());
 		}
-		catch(ItemNotFoundException e) {
-			return new Choice<>(input);
+		else {
+			return new Choice<>((String) input.getOrDefault("other", ""));
 		}
 	}
 }

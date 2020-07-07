@@ -139,6 +139,11 @@ public class GraphQLCrmServices {
 				
 				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("country", commonDataFetcher.getCountryValue()))
 				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("province", commonDataFetcher.getProvinceValue()))
+				
+				.type("PersonName", typeWiring -> typeWiring.dataFetcher("salutation", commonDataFetcher.getSalutationValue()))
+				
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("english", commonDataFetcher.getEnglishValue()))
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("french", commonDataFetcher.getFrenchValue()))
 
 				// group data fetching
 //				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroup", permissionDataFetcher.findGroup()))

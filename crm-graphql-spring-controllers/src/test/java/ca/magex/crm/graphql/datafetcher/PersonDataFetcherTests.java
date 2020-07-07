@@ -9,34 +9,27 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.graphql.util.MapBuilder;
 
 public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 
-	private String orgId;
+	private OrganizationIdentifier orgId;
 	
 	@Before
-	public void createGroup() throws Exception {
-		execute(
-				"createGroup",
-				"mutation { createGroup(code: %s, englishName: %s, frenchName: %s) { groupId } }",
-				"DEV",
-				"developers",
-				"developeurs");
-
-		execute(
-				"createGroup",
-				"mutation { createGroup(code: %s, englishName: %s, frenchName: %s) { groupId } }",
-				"OPS",
-				"operations",
-				"opèrations");
-		
-		JSONObject org = execute(
+	public void setup() throws Exception {		
+		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation { createOrganization(displayName: %s, groups: %s) { organizationId } }",
-				"Johnnuy",
-				List.of("DEV", "OPS"));
-		orgId = org.getString("organizationId");
+				"mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " + 
+						"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " + 
+							"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code englishName frenchName } } businessGroups { name { code englishName frenchName } } } }",
+				new MapBuilder()
+					.withEntry("displayName", "Johnnuy")
+					.withEntry("authenticationGroups", List.of("SYS", "ORG"))
+					.withEntry("businessGroups", List.of("IMIT", "IMIT/DEV")).build()
+				);
+		orgId = new OrganizationIdentifier(johnnuy.getString("organizationId"));
 	}
 	
 	@Test
@@ -44,16 +37,16 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject person = execute(
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, name: { "
-				+ "firstName: %s, middleName: %s, lastName: %s, salutation: %s}, address: { "
-				+ "street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s }, communication: {"
+				+ "firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }, address: { "
+				+ "street: %s, city: %s, province: {code: %s}, countryCode: {code: %s}, postalCode: %s }, communication: {"
 				+ "jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, position: {"
 				+ "sector: %s, unit: %s, classification: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
 				orgId,
 				"Jonny", "Michael", "Bigford", "3",
-				"99 Blue Jays Way", "Toronto", "Ontario", "CA", "L9K5I9",
+				"99 Blue Jays Way", "Toronto", "CA/ON", "CA", "L9K5I9",
 				"Developer", "English", "jonny.bigford@johnnuy.org", "6135551212", "97", "6135551213",
 				"IT", "Solutions", "Senior Developer");
-		Identifier personId = new Identifier(person.getString("personId"));
+		PersonIdentifier personId = new PersonIdentifier(person.getString("personId"));
 		Assert.assertEquals("ACTIVE", person.getString("status"));
 		Assert.assertEquals("Bigford, Jonny Michael", person.getString("displayName"));
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
@@ -62,7 +55,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -89,7 +82,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -116,7 +109,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -143,7 +136,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -170,7 +163,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("3", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -212,7 +205,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -242,7 +235,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("2", person.getJSONObject("legalName").getString("salutation"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("Ontario", person.getJSONObject("address").getString("province"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getString("province"));
 		Assert.assertEquals("CA", person.getJSONObject("address").getString("country"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
@@ -258,7 +251,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update address with change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
+				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: {code: %s}, countryCode: {code: %s}, postalCode: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
 				personId,
 				"911 Sky Lane",
 				"Peterborough",
@@ -289,7 +282,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update address without change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
+				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: {code: %s}, countryCode: {code: %s}, postalCode: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
 				personId,
 				"911 Sky Lane",
 				"Peterborough",
