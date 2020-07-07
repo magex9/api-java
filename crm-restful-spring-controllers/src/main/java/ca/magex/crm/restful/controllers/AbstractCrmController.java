@@ -31,8 +31,11 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.RequestHandler;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.transform.json.ChoiceJsonTransformer;
+import ca.magex.crm.transform.json.IdentifierJsonTransformer;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
@@ -180,9 +183,9 @@ public abstract class AbstractCrmController {
 		for (Message message : e.getMessages()) {
 			elements.add(new JsonObject()
 				.with("identifier", message.getIdentifier() == null ? null : message.getIdentifier().toString())
-				.with("type", message.getType())
+				.with("type", new IdentifierJsonTransformer(crm).format(message.getType(), locale))
 				.with("path", message.getPath())
-				.with("reason", message.getReason()));
+				.with("reason", new ChoiceJsonTransformer<PhraseIdentifier>(crm).format(message.getReason(), locale)));
 		}
 		return new JsonArray(elements);
 	}
@@ -200,15 +203,15 @@ public abstract class AbstractCrmController {
 		}
 	}
 
-//	protected void confirm(JsonObject body, Identifier identifier, List<Message> messages) {
-//		try {
-//			if (!body.contains("confirm") || !body.getBoolean("confirm"))
-//				messages.add(new Message(identifier, error(), "confirm", new Localized(Lang.ENGLISH, "You must send in the confirmation message")));
-//		} catch (ClassCastException e) {
-//			messages.add(new Message(identifier, error(), "confirm", new Localized(Lang.ENGLISH, "Confirmation message must be a boolean")));
-//		}
-//		validate(messages);
-//	}
+	protected void confirm(JsonObject body, Identifier identifier, List<Message> messages) {
+		try {
+			if (!body.contains("confirm") || !body.getBoolean("confirm"))
+				messages.add(new Message(identifier, error(), "confirm", null, crm.findMessageId("validation.field.required")));
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, error(), "confirm", body.get("confirm").toString(), crm.findMessageId("validation.field.format")));
+		}
+		validate(messages);
+	}
 	
 	public Locale extractLocale(HttpServletRequest req) {
 		if (getContentType(req).contentEquals("application/json+ld"))

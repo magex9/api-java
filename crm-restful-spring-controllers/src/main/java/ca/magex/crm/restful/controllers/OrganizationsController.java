@@ -9,11 +9,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
+import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Status;
@@ -59,7 +63,7 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/rest/" + OrganizationIdentifier.CONTEXT + "/{organizationId}")
+	@GetMapping("/rest/organizations/{organizationId}")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
@@ -67,65 +71,65 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 
-//	@PatchMapping("/rest/organizations/{organizationId}")
-//	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("organizationId") Identifier organizationId) throws IOException {
-//		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
-//			JsonObject body = extractBody(req);
-//			if (body.contains("displayName")) {
-//				crm.updateOrganizationDisplayName(organizationId, getString(body, "displayName", null, null, messages));
-//			}
-//			if (body.contains("mainLocationId")) {
-//				crm.updateOrganizationMainLocation(organizationId, getIdentifier(body, "mainLocationId", null, null, messages));
-//			}
-//			if (body.contains("mainContactId")) {
-//				crm.updateOrganizationMainContact(organizationId, getIdentifier(body, "mainContactId", null, null, messages));
-//			}
-//			validate(messages);
-//			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
-//		});
-//	}
-//
-//	@GetMapping("/rest/organizations/{organizationId}/summary")
-//	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("organizationId") Identifier organizationId) throws IOException {
-//		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
-//			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
-//		});
-//	}
-//
-//	@GetMapping("/rest/organizations/{organizationId}/mainLocation")
-//	public void getOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("organizationId") Identifier organizationId) throws IOException {
-//		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
-//			return transformer.format(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()), locale);
-//		});
-//	}
-//
-//	@GetMapping("/rest/organizations/{organizationId}/mainContact")
-//	public void getOrganizationMainContact(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("organizationId") Identifier organizationId) throws IOException {
-//		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
-//			return transformer.format(crm.findPersonDetails(crm.findOrganizationDetails(organizationId).getMainContactId()), locale);
-//		});
-//	}
-//
-//	@PutMapping("/rest/organizations/{organizationId}/enable")
-//	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("organizationId") Identifier organizationId) throws IOException {
-//		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
-//			confirm(extractBody(req), organizationId, messages);
-//			return transformer.format(crm.enableOrganization(organizationId), locale);
-//		});
-//	}
-//
-//	@PutMapping("/rest/organizations/{organizationId}/disable")
-//	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
-//			@PathVariable("organizationId") Identifier organizationId) throws IOException {
-//		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
-//			confirm(extractBody(req), organizationId, messages);
-//			return transformer.format(crm.disableOrganization(organizationId), locale);
-//		});
-//	}
+	@PatchMapping("/rest/organizations/{organizationId}")
+	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
+			JsonObject body = extractBody(req);
+			if (body.contains("displayName")) {
+				crm.updateOrganizationDisplayName(organizationId, getString(body, "displayName", null, null, messages));
+			}
+			if (body.contains("mainLocationId")) {
+				crm.updateOrganizationMainLocation(organizationId, getIdentifier(body, "mainLocationId", null, null, messages));
+			}
+			if (body.contains("mainContactId")) {
+				crm.updateOrganizationMainContact(organizationId, getIdentifier(body, "mainContactId", null, null, messages));
+			}
+			validate(messages);
+			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/summary")
+	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/mainLocation")
+	public void getOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findLocationDetails(crm.findOrganizationDetails(organizationId).getMainLocationId()), locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/mainContact")
+	public void getOrganizationMainContact(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findPersonDetails(crm.findOrganizationDetails(organizationId).getMainContactId()), locale);
+		});
+	}
+
+	@PutMapping("/rest/organizations/{organizationId}/enable")
+	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+			confirm(extractBody(req), organizationId, messages);
+			return transformer.format(crm.enableOrganization(organizationId), locale);
+		});
+	}
+
+	@PutMapping("/rest/organizations/{organizationId}/disable")
+	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+			confirm(extractBody(req), organizationId, messages);
+			return transformer.format(crm.disableOrganization(organizationId), locale);
+		});
+	}
 
 }

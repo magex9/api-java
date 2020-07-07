@@ -31,11 +31,13 @@ import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
 public class CrmAsserts {
@@ -396,18 +398,18 @@ public class CrmAsserts {
 		System.out.println("====================================================");
 	}
 
-	//	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
-	//			String reason) {
-	//		assertEquals(1, json.size());
-	//		if (identifier == null) {
-	//			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
-	//		} else {
-	//			assertEquals(List.of("identifier", "type", "path", "reason"), json.getObject(0).keys());
-	//			assertEquals(identifier, new Identifier(json.getObject(0).getString("identifier")));
-	//		}
-	//		assertEquals(type, json.getObject(0).getString("type"));
-	//		assertEquals(path, json.getObject(0).getString("path"));
-	//		assertEquals(reason, json.getObject(0).getString("reason"));
-	//	}
+	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
+			String reason) {
+		assertEquals(1, json.size());
+		if (identifier == null) {
+			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
+		} else {
+			assertEquals(List.of("identifier", "type", "path", "reason"), json.getObject(0).keys());
+			assertEquals(identifier, IdentifierFactory.forId(json.getObject(0).getString("identifier")));
+		}
+		assertEquals(new MessageTypeIdentifier(type.toUpperCase()).toString(), json.getObject(0).getString("type"));
+		assertEquals(path, json.getObject(0).getString("path"));
+		assertEquals(reason, json.getObject(0).getString("reason"));
+	}
 
 }
