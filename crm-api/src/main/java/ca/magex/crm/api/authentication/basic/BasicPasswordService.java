@@ -38,6 +38,14 @@ public class BasicPasswordService implements CrmPasswordService {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
+	public CrmPasswordRepository getPasswordRepository() {
+		return passwordRepository;
+	}
+	
+	public PasswordEncoder getPasswordEncoder() {
+		return passwordEncoder;
+	}
+	
 	@Override
 	public String getEncodedPassword(String username) {
 		CrmPasswordDetails passwordDetails = passwordRepository.findPasswordDetails(username);
