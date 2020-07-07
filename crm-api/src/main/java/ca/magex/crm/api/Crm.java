@@ -63,6 +63,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	
 	public static final long SERIAL_UID_VERSION = 1l;
 
+	public static final String SCHEMA_BASE = "http://api.magex.ca/crm/schema";
+	
+	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
+	
 	private final CrmConfigurationService configurationService;
 
 	private final CrmOptionService optionService;
