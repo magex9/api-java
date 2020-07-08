@@ -28,7 +28,6 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Message;
-import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
@@ -85,18 +84,14 @@ public abstract class AbstractCrmController {
 			throw new BadRequestException("User input validation errors", messages);
 	}
 	
-	protected MessageTypeIdentifier error() {
-		return crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
-	}
-	
 	protected <I extends Identifier> I getIdentifier(JsonObject json, String key, I defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return IdentifierFactory.forId(json.getString(key));
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -106,10 +101,10 @@ public abstract class AbstractCrmController {
 		try {
 			return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forId(((JsonText)e).value())).collect(Collectors.toList());
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -118,10 +113,10 @@ public abstract class AbstractCrmController {
 		try {
 			return json.getString(key);
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -130,10 +125,10 @@ public abstract class AbstractCrmController {
 		try {
 			return json.getArray(key).stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -142,10 +137,10 @@ public abstract class AbstractCrmController {
 		try {
 			return jsonTransformerFactory.findByClass(cls).parse(body.getObject(key), locale);
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.format")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, error(), key, "", crm.findMessageId("validation.field.required")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -206,9 +201,9 @@ public abstract class AbstractCrmController {
 	protected void confirm(JsonObject body, Identifier identifier, List<Message> messages) {
 		try {
 			if (!body.contains("confirm") || !body.getBoolean("confirm"))
-				messages.add(new Message(identifier, error(), "confirm", null, crm.findMessageId("validation.field.required")));
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, "confirm", null, crm.findMessageId("validation.field.required")));
 		} catch (ClassCastException e) {
-			messages.add(new Message(identifier, error(), "confirm", body.get("confirm").toString(), crm.findMessageId("validation.field.format")));
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, "confirm", body.get("confirm").toString(), crm.findMessageId("validation.field.format")));
 		}
 		validate(messages);
 	}

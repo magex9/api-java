@@ -44,7 +44,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testCreateOrganization() throws Exception {
 		// Get the initial list of groups to make sure they are blank
-		JsonObject orig = get("/organizations", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject orig = get("/organizations");
 		assertEquals(1, orig.getInt("page"));
 		assertEquals(1, orig.getInt("total"));
 		assertEquals(false, orig.getBoolean("hasNext"));
@@ -509,7 +509,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 
-		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+		JsonObject json = patch(organizationId, new JsonObject()
 			.with("mainContactId", null));
 
 		//JsonAsserts.print(json, "json");
@@ -529,21 +529,21 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
-		JsonArray error1 = puts(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error1 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error1.getObject(0).getString("identifier"));
 		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
-		JsonArray error2 = puts(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error2 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error2.getObject(0).getString("identifier"));
 		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
-		JsonArray error3 = puts(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error3 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error3.getObject(0).getString("identifier"));
 		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
@@ -556,21 +556,21 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
-		JsonArray error4 = puts(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error4 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error4.getObject(0).getString("identifier"));
 		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
-		JsonArray error5 = puts(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error5 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error5.getObject(0).getString("identifier"));
 		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
-		JsonArray error6 = puts(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error6 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error6.getObject(0).getString("identifier"));
 		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
@@ -586,19 +586,19 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testOrganizationWithLongName() throws Exception {
-		JsonArray json = posts("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
+		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("displayName", LoremIpsumGenerator.buildWords(20))
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
-		assertSingleJsonMessage(json, null, "error", "displayName", "Field too long");
+		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field too long");
 	}
 
 	@Test
 	public void testOrganizationWithNoName() throws Exception {
-		JsonArray json = posts("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
+		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
-		assertSingleJsonMessage(json, null, "error", "displayName", "Field is required");
+		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field is required");
 	}
 	
 }
