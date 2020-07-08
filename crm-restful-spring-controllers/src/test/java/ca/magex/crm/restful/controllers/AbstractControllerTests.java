@@ -3,7 +3,7 @@ package ca.magex.crm.restful.controllers;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Locale;
 
@@ -11,17 +11,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonParser;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -44,82 +47,70 @@ public abstract class AbstractControllerTests {
 		auth.login("admin", "admin");
 	}
 	
-	public JsonObject get(Object path, Locale locale, HttpStatus status) throws Exception {
-		return new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest" + path)
+	public String request(HttpMethod method, Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+			.request(method, "/rest" + path)
 			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale))
+			.header("Locale", locale == null ? "" : locale);
+		
+		if (content != null) {
+			if (method == HttpMethod.GET) {
+				for (String key : content.keys()) {
+					builder = builder.queryParam(key, JsonElement.unwrap(content.get(key)).toString());
+				}
+			} else {
+				builder = builder.content(content.toString());
+			}
+		}
+		
+		return mockMvc.perform(builder)
 			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+			.andReturn().getResponse().getContentAsString();
 	}
 	
-	public JsonArray gets(Object path, Locale locale, HttpStatus status) throws Exception {
-		return new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E get(Object path) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.GET, path, null, HttpStatus.OK, null));
 	}
 
-	public JsonObject post(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content.toString()))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E get(Object path, Locale locale, HttpStatus status) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.GET, path, locale, status, null));
+	}
+
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E get(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.GET, path, locale, status, content));
+	}
+
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E post(Object path, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.POST, path, null, HttpStatus.OK, content));
 	}
 	
-	public JsonArray posts(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.post("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content.toString()))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E post(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.POST, path, locale, status, content));
 	}
 	
-	public JsonObject patch(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content.toString()))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E patch(Object path, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.PATCH, path, null, HttpStatus.OK, content));
 	}
 	
-	public JsonArray patches(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content.toString()))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E patch(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.PATCH, path, locale, status, content));
 	}
 	
-	public JsonObject put(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content.toString()))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E put(Object path, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.PUT, path, null, HttpStatus.OK, content));
 	}
 	
-	public JsonArray puts(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/rest" + path)
-			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content == null ? "" : content.toString()))
-			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
-			.andReturn().getResponse().getContentAsString());
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E put(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.PUT, path, locale, status, content));
 	}
 	
 }

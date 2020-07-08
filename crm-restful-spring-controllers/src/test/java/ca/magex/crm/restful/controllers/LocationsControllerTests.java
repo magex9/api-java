@@ -1,564 +1,439 @@
 package ca.magex.crm.restful.controllers;
 
-import org.junit.Ignore;
+import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.MX_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.NL_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
+import static ca.magex.crm.test.CrmAsserts.US_ADDRESS;
+import static org.junit.Assert.assertEquals;
 
-@Ignore
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.http.HttpStatus;
+
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.transform.json.MailingAddressJsonTransformer;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonObject;
+
 public class LocationsControllerTests extends AbstractControllerTests {
 
-//	private Identifier systemOrgId;
-//	
-//	private Identifier systemLocationId;
-//	
-//	private Identifier organizationId;
-//	
-//	@Before
-//	public void setup() {
-//		initialize();
-//		systemOrgId = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withGroup("SYS")).getSingleItem().getOrganizationId();
-//		systemLocationId = crm.findLocationDetails(crm.defaultLocationsFilter()).getSingleItem().getLocationId();
-//		organizationId = crm.createOrganization("Test Org", List.of("ORG")).getOrganizationId();
-//	}
-//	
-//	@Test
-//	public void testCreateLocation() throws Exception {
-//		// Get the initial list of groups to make sure they are blank
-//		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.get("/rest/locations")
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
-//		assertEquals(1, json.getNumber("page"));
-//		assertEquals(10, json.getNumber("limit"));
-//		assertEquals(1, json.getNumber("total"));
-//		assertEquals(false, json.getBoolean("hasNext"));
-//		assertEquals(false, json.getBoolean("hasPrevious"));
-//		assertEquals(1, json.getArray("content").size());
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
-//		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals(systemLocationId.toString(), json.getArray("content").getObject(0).getString("locationId"));
-//		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
-//		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals("SYSTEM", json.getArray("content").getObject(0).getString("reference").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals("System Administrator", json.getArray("content").getObject(0).getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//
-//		
-//		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/rest/locations")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("organizationId", organizationId.toString())
-//				.with("displayName", ORG_NAME.getEnglishName())
-//				.with("reference", "LOC")
-//				.with("address", new MailingAddressJsonTransformer(crm).format(MAILING_ADDRESS, Lang.ENGLISH))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
-//		assertEquals("LocationDetails", json.getString("@type"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("LOC", json.getString("reference"));
-//		assertEquals("Organization", json.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("123 Main St", json.getObject("address").getString("street"));
-//		assertEquals("Ottawa", json.getObject("address").getString("city"));
-//		assertEquals("Quebec", json.getObject("address").getString("province"));
-//		assertEquals("Canada", json.getObject("address").getString("country"));
-//		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
-//		Identifier locationId = new Identifier(json.getString("locationId"));
-//		
-//		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.get("/rest/locations/" + locationId)
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
-//		assertEquals("LocationDetails", json.getString("@type"));
-//		assertEquals(locationId.toString(), json.getString("locationId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("LOC", json.getString("reference"));
-//		assertEquals("Organization", json.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("123 Main St", json.getObject("address").getString("street"));
-//		assertEquals("Ottawa", json.getObject("address").getString("city"));
-//		assertEquals("Quebec", json.getObject("address").getString("province"));
-//		assertEquals("Canada", json.getObject("address").getString("country"));
-//		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
-//
-//		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.get("/rest/locations/" + locationId)
-//			.header("Locale", Lang.FRENCH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
-//		assertEquals("LocationDetails", json.getString("@type"));
-//		assertEquals(locationId.toString(), json.getString("locationId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Actif", json.getString("status"));
-//		assertEquals("LOC", json.getString("reference"));
-//		assertEquals("Organization", json.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("123 Main St", json.getObject("address").getString("street"));
-//		assertEquals("Ottawa", json.getObject("address").getString("city"));
-//		assertEquals("Québec", json.getObject("address").getString("province"));
-//		assertEquals("Canada", json.getObject("address").getString("country"));
-//		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
-//		
-//		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.get("/rest/locations/" + locationId))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
-//		assertEquals("LocationDetails", json.getString("@type"));
-//		assertEquals(locationId.toString(), json.getString("locationId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("active", json.getString("status"));
-//		assertEquals("LOC", json.getString("reference"));
-//		assertEquals("Organization", json.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("123 Main St", json.getObject("address").getString("street"));
-//		assertEquals("Ottawa", json.getObject("address").getString("city"));
-//		assertEquals("QC", json.getObject("address").getString("province"));
-//		assertEquals("CA", json.getObject("address").getString("country"));
-//		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
-//
-//		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.get("/rest/locations")
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
-//		assertEquals(1, json.getNumber("page"));
-//		assertEquals(10, json.getNumber("limit"));
-//		assertEquals(2, json.getNumber("total"));
-//		assertEquals(false, json.getBoolean("hasNext"));
-//		assertEquals(false, json.getBoolean("hasPrevious"));
-//		assertEquals(2, json.getArray("content").size());
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(0).keys());
-//		assertEquals("LocationSummary", json.getArray("content").getObject(0).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals(locationId.toString(), json.getArray("content").getObject(0).getString("locationId"));
-//		assertEquals(organizationId.toString(), json.getArray("content").getObject(0).getString("organizationId"));
-//		assertEquals("Active", json.getArray("content").getObject(0).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals("LOC", json.getArray("content").getObject(0).getString("reference").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals("Organization", json.getArray("content").getObject(0).getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), json.getArray("content").getObject(1).keys());
-//		assertEquals("LocationSummary", json.getArray("content").getObject(1).getString("@type").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals(systemLocationId.toString(), json.getArray("content").getObject(1).getString("locationId"));
-//		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getString("organizationId"));
-//		assertEquals("Active", json.getArray("content").getObject(1).getString("status").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals("SYSTEM", json.getArray("content").getObject(1).getString("reference").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//		assertEquals("System Administrator", json.getArray("content").getObject(1).getString("displayName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
-//
-//	}
-//	
-//	@Test
-//	public void testGetLocationDetails() throws Exception {
-//		Identifier locationId = crm.createLocation(organizationId, "NUEVOLEON", "Nuevo Leon", MX_ADDRESS).getLocationId();
-//		
-//		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId)
-//				.header("Locale", Lang.ROOT))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(data, "data");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), data.keys());
-//		assertEquals("LocationDetails", data.getString("@type"));
-//		assertEquals(locationId.toString(), data.getString("locationId"));
-//		assertEquals(organizationId.toString(), data.getString("organizationId"));
-//		assertEquals("active", data.getString("status"));
-//		assertEquals("NUEVOLEON", data.getString("reference"));
-//		assertEquals("Nuevo Leon", data.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), data.getObject("address").keys());
-//		assertEquals("MailingAddress", data.getObject("address").getString("@type"));
-//		assertEquals("120 Col. Hipodromo Condesa", data.getObject("address").getString("street"));
-//		assertEquals("Monterrey", data.getObject("address").getString("city"));
-//		assertEquals("NL", data.getObject("address").getString("province"));
-//		assertEquals("MX", data.getObject("address").getString("country"));
-//		assertEquals("06100", data.getObject("address").getString("postalCode"));
-//		
-//		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId)
-//				.header("Locale", Lang.ENGLISH))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(english, "english");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
-//		assertEquals("LocationDetails", english.getString("@type"));
-//		assertEquals(locationId.toString(), english.getString("locationId"));
-//		assertEquals(organizationId.toString(), english.getString("organizationId"));
-//		assertEquals("Active", english.getString("status"));
-//		assertEquals("NUEVOLEON", english.getString("reference"));
-//		assertEquals("Nuevo Leon", english.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
-//		assertEquals("MailingAddress", english.getObject("address").getString("@type"));
-//		assertEquals("120 Col. Hipodromo Condesa", english.getObject("address").getString("street"));
-//		assertEquals("Monterrey", english.getObject("address").getString("city"));
-//		assertEquals("Nuevo Leon", english.getObject("address").getString("province"));
-//		assertEquals("Mexico", english.getObject("address").getString("country"));
-//		assertEquals("06100", english.getObject("address").getString("postalCode"));
-//		
-//		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId)
-//				.header("Locale", Lang.FRENCH))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(french, "french");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
-//		assertEquals("LocationDetails", french.getString("@type"));
-//		assertEquals(locationId.toString(), french.getString("locationId"));
-//		assertEquals(organizationId.toString(), french.getString("organizationId"));
-//		assertEquals("Actif", french.getString("status"));
-//		assertEquals("NUEVOLEON", french.getString("reference"));
-//		assertEquals("Nuevo Leon", french.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
-//		assertEquals("MailingAddress", french.getObject("address").getString("@type"));
-//		assertEquals("120 Col. Hipodromo Condesa", french.getObject("address").getString("street"));
-//		assertEquals("Monterrey", french.getObject("address").getString("city"));
-//		assertEquals("Nuevo Leon", french.getObject("address").getString("province"));
-//		assertEquals("Mexique", french.getObject("address").getString("country"));
-//		assertEquals("06100", french.getObject("address").getString("postalCode"));
-//	}
-//	
-//	@Test
-//	public void testGetLocationSummary() throws Exception {
-//		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
-//		
-//		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId + "/summary")
-//				.header("Locale", Lang.ROOT))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(data, "data");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), data.keys());
-//		assertEquals("LocationSummary", data.getString("@type"));
-//		assertEquals(locationId.toString(), data.getString("locationId"));
-//		assertEquals(organizationId.toString(), data.getString("organizationId"));
-//		assertEquals("active", data.getString("status"));
-//		assertEquals("MAIN", data.getString("reference"));
-//		assertEquals("Main Location", data.getString("displayName"));
-//		
-//		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId + "/summary")
-//				.header("Locale", Lang.ENGLISH))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(english, "english");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), english.keys());
-//		assertEquals("LocationSummary", english.getString("@type"));
-//		assertEquals(locationId.toString(), english.getString("locationId"));
-//		assertEquals(organizationId.toString(), english.getString("organizationId"));
-//		assertEquals("Active", english.getString("status"));
-//		assertEquals("MAIN", english.getString("reference"));
-//		assertEquals("Main Location", english.getString("displayName"));
-//		
-//		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId + "/summary")
-//				.header("Locale", Lang.FRENCH))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(french, "french");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), french.keys());
-//		assertEquals("LocationSummary", french.getString("@type"));
-//		assertEquals(locationId.toString(), french.getString("locationId"));
-//		assertEquals(organizationId.toString(), french.getString("organizationId"));
-//		assertEquals("Actif", french.getString("status"));
-//		assertEquals("MAIN", french.getString("reference"));
-//		assertEquals("Main Location", french.getString("displayName"));
-//	}
-//	
-//	@Test
-//	public void testGetLocationAddress() throws Exception {
-//		Identifier locationId = crm.createLocation(organizationId, "NEWFOUNDLAND", "Labrador City", NL_ADDRESS).getLocationId();
-//		
-//		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId + "/address")
-//				.header("Locale", Lang.ROOT))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(data, "data");
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), data.keys());
-//		assertEquals("MailingAddress", data.getString("@type"));
-//		assertEquals("90 Avalon Drive", data.getString("street"));
-//		assertEquals("Labrador City", data.getString("city"));
-//		assertEquals("NL", data.getString("province"));
-//		assertEquals("CA", data.getString("country"));
-//		assertEquals("A2V 2Y2", data.getString("postalCode"));
-//
-//		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId + "/address")
-//				.header("Locale", Lang.ENGLISH))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(english, "english");
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), english.keys());
-//		assertEquals("MailingAddress", english.getString("@type"));
-//		assertEquals("90 Avalon Drive", english.getString("street"));
-//		assertEquals("Labrador City", english.getString("city"));
-//		assertEquals("Newfoundland and Labrador", english.getString("province"));
-//		assertEquals("Canada", english.getString("country"));
-//		assertEquals("A2V 2Y2", english.getString("postalCode"));
-//		
-//		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//				.get("/rest/locations/" + locationId + "/address")
-//				.header("Locale", Lang.FRENCH))
-//				//.andDo(MockMvcResultHandlers.print())
-//				.andExpect(MockMvcResultMatchers.status().isOk())
-//				.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(french, "french");
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), french.keys());
-//		assertEquals("MailingAddress", french.getString("@type"));
-//		assertEquals("90 Avalon Drive", french.getString("street"));
-//		assertEquals("Labrador City", french.getString("city"));
-//		assertEquals("Terre-Neuve et Labrador", french.getString("province"));
-//		assertEquals("Canada", french.getString("country"));
-//		assertEquals("A2V 2Y2", french.getString("postalCode"));
-//	}
-//	
-//	@Test
-//	public void testUpdatingDisplayName() throws Exception {
-//		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
-//		
-//		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.patch("/rest/locations/" + locationId)
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("displayName", "Updated name")
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		System.out.println(crm.findLocationDetails(locationId));
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
-//		assertEquals("LocationDetails", json.getString("@type"));
-//		assertEquals(locationId.toString(), json.getString("locationId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("MAIN", json.getString("reference"));
-//		assertEquals("Updated name", json.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("123 Main St", json.getObject("address").getString("street"));
-//		assertEquals("Ottawa", json.getObject("address").getString("city"));
-//		assertEquals("Quebec", json.getObject("address").getString("province"));
-//		assertEquals("Canada", json.getObject("address").getString("country"));
-//		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
-//	}
-//	
-//	@Test
-//	public void testUpdatingAddress() throws Exception {
-//		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
-//		
-//		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.patch("/rest/locations/" + locationId)
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		
-//		//JsonAsserts.print(json, "json");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
-//		assertEquals("LocationDetails", json.getString("@type"));
-//		assertEquals(locationId.toString(), json.getString("locationId"));
-//		assertEquals(organizationId.toString(), json.getString("organizationId"));
-//		assertEquals("Active", json.getString("status"));
-//		assertEquals("MAIN", json.getString("reference"));
-//		assertEquals("Main Location", json.getString("displayName"));
-//		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
-//		assertEquals("MailingAddress", json.getObject("address").getString("@type"));
-//		assertEquals("465 Huntington Ave", json.getObject("address").getString("street"));
-//		assertEquals("Boston", json.getObject("address").getString("city"));
-//		assertEquals("Massachusetts", json.getObject("address").getString("province"));
-//		assertEquals("United States", json.getObject("address").getString("country"));
-//		assertEquals("02115", json.getObject("address").getString("postalCode"));
-//	}
-//
-//	@Test
-//	public void testEnableDisableLocation() throws Exception {
-//		Identifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
-//		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
-//
-//		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/disable")
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(locationId.toString(), error1.getObject(0).getString("identifier"));
-//		assertEquals("error", error1.getObject(0).getString("type"));
-//		assertEquals("confirm", error1.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
-//		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
-//
-//		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/disable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", false)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(locationId.toString(), error2.getObject(0).getString("identifier"));
-//		assertEquals("error", error2.getObject(0).getString("type"));
-//		assertEquals("confirm", error2.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
-//		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
-//
-//		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/disable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", "Test")
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(locationId.toString(), error3.getObject(0).getString("identifier"));
-//		assertEquals("error", error3.getObject(0).getString("type"));
-//		assertEquals("confirm", error3.getObject(0).getString("path"));
-//		assertEquals("Confirmation message must be a boolean", error3.getObject(0).getString("reason"));
-//		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
-//
-//		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/disable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", true)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(disable, "disable");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), disable.keys());
-//		assertEquals("LocationSummary", disable.getString("@type"));
-//		assertEquals(locationId.toString(), disable.getString("locationId"));
-//		assertEquals(organizationId.toString(), disable.getString("organizationId"));
-//		assertEquals("Inactive", disable.getString("status"));
-//		assertEquals("MAIN", disable.getString("reference"));
-//		assertEquals("Main Location", disable.getString("displayName"));
-//		
-//		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/enable")
-//			.header("Locale", Lang.ENGLISH))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(locationId.toString(), error4.getObject(0).getString("identifier"));
-//		assertEquals("error", error4.getObject(0).getString("type"));
-//		assertEquals("confirm", error4.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error4.getObject(0).getString("reason"));
-//		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
-//		
-//		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/enable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", false)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(locationId.toString(), error5.getObject(0).getString("identifier"));
-//		assertEquals("error", error5.getObject(0).getString("type"));
-//		assertEquals("confirm", error5.getObject(0).getString("path"));
-//		assertEquals("You must send in the confirmation message", error5.getObject(0).getString("reason"));
-//		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
-//		
-//		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/enable")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("confirm", "test")
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-//			.andReturn().getResponse().getContentAsString());
-//		assertEquals(locationId.toString(), error6.getObject(0).getString("identifier"));
-//		assertEquals("error", error6.getObject(0).getString("type"));
-//		assertEquals("confirm", error6.getObject(0).getString("path"));
-//		assertEquals("Confirmation message must be a boolean", error6.getObject(0).getString("reason"));
-//		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
-//	
-//		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-//			.put("/rest/locations/" + locationId + "/enable")
-//			.header("Locale", Lang.FRENCH)
-//			.content(new JsonObject()
-//				.with("confirm", true)
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isOk())
-//			.andReturn().getResponse().getContentAsString());
-//		//JsonAsserts.print(enable, "enable");
-//		assertEquals(List.of("@type", "locationId", "organizationId", "status", "reference", "displayName"), enable.keys());
-//		assertEquals("LocationSummary", enable.getString("@type"));
-//		assertEquals(locationId.toString(), enable.getString("locationId"));
-//		assertEquals(organizationId.toString(), enable.getString("organizationId"));
-//		assertEquals("Actif", enable.getString("status"));
-//		assertEquals("MAIN", enable.getString("reference"));
-//		assertEquals("Main Location", enable.getString("displayName"));
-//	}
-//	
-//	@Test
-//	public void testLocationWithLongName() throws Exception {
-//		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/rest/locations")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("displayName", LoremIpsumGenerator.buildWords(20))
-//				.with("groups", List.of("ORG"))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isBadRequest())
-//			.andReturn().getResponse().getContentAsString());
-//		assertSingleJsonMessage(json, null, "error", "displayName", "Display name must be 60 characters or less");
-//	}
-//
-//	@Test
-//	public void testLocationWithNoName() throws Exception {
-//		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/rest/locations")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("groups", List.of("ORG"))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isBadRequest())
-//			.andReturn().getResponse().getContentAsString());
-//		assertSingleJsonMessage(json, null, "error", "displayName", "Field is mandatory");
-//	}
+	private OrganizationIdentifier systemOrgId;
+	
+	private LocationIdentifier systemLocationId;
+	
+	private OrganizationIdentifier organizationId;
+	
+	@Before
+	public void setup() {
+		initialize();
+		systemOrgId = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withAuthenticationGroup(AuthenticationGroupIdentifier.SYS)).getSingleItem().getOrganizationId();
+		systemLocationId = crm.findLocationDetails(crm.defaultLocationsFilter()).getSingleItem().getLocationId();
+		organizationId = crm.createOrganization("Test Org", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("EXECS"))).getOrganizationId();
+	}
+	
+	@Test
+	public void testCreateLocation() throws Exception {
+		// Get the initial list of groups to make sure they are blank
+		JsonObject orig = get("/locations", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(orig, "orig");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), orig.keys());
+		assertEquals(1, orig.getNumber("page"));
+		assertEquals(10, orig.getNumber("limit"));
+		assertEquals(1, orig.getNumber("total"));
+		assertEquals(false, orig.getBoolean("hasNext"));
+		assertEquals(false, orig.getBoolean("hasPrevious"));
+		assertEquals(1, orig.getArray("content").size());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), orig.getArray("content").getObject(0).keys());
+		assertEquals(systemLocationId.getCode(), orig.getArray("content").getObject(0).getString("locationId"));
+		assertEquals(systemOrgId.getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals("Active", orig.getArray("content").getObject(0).getString("status"));
+		assertEquals("SYSTEM", orig.getArray("content").getObject(0).getString("reference"));
+		assertEquals("System Administrator", orig.getArray("content").getObject(0).getString("displayName"));
+
+		JsonObject created = post("/locations", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+				.with("organizationId", organizationId.toString())
+				.with("displayName", ORG_NAME.getEnglishName())
+				.with("reference", "LOC")
+				.with("address", new MailingAddressJsonTransformer(crm).format(MAILING_ADDRESS, Lang.ENGLISH)));
+		//JsonAsserts.print(created, "created");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), created.keys());
+		assertEquals(organizationId.getCode(), created.getString("organizationId"));
+		assertEquals("Active", created.getString("status"));
+		assertEquals("LOC", created.getString("reference"));
+		assertEquals("Organization", created.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), created.getObject("address").keys());
+		assertEquals("123 Main St", created.getObject("address").getString("street"));
+		assertEquals("Ottawa", created.getObject("address").getString("city"));
+		assertEquals("Quebec", created.getObject("address").getString("province"));
+		assertEquals("Canada", created.getObject("address").getString("country"));
+		assertEquals("K1K1K1", created.getObject("address").getString("postalCode"));
+		LocationIdentifier locationId =  new LocationIdentifier(created.getString("locationId"));
+		
+		JsonObject fetch = get(locationId, Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(fetch, "fetch");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), fetch.keys());
+		assertEquals(locationId.getCode(), fetch.getString("locationId"));
+		assertEquals(organizationId.getCode(), fetch.getString("organizationId"));
+		assertEquals("ACTIVE", fetch.getString("status"));
+		assertEquals("LOC", fetch.getString("reference"));
+		assertEquals("Organization", fetch.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), fetch.getObject("address").keys());
+		assertEquals("123 Main St", fetch.getObject("address").getString("street"));
+		assertEquals("Ottawa", fetch.getObject("address").getString("city"));
+		assertEquals("CA/QC", fetch.getObject("address").getString("province"));
+		assertEquals("CA", fetch.getObject("address").getString("country"));
+		assertEquals("K1K1K1", fetch.getObject("address").getString("postalCode"));
+		
+		JsonObject english = get(locationId, Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(locationId.getCode(), english.getString("locationId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
+		assertEquals("Active", english.getString("status"));
+		assertEquals("LOC", english.getString("reference"));
+		assertEquals("Organization", english.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
+		assertEquals("123 Main St", english.getObject("address").getString("street"));
+		assertEquals("Ottawa", english.getObject("address").getString("city"));
+		assertEquals("Quebec", english.getObject("address").getString("province"));
+		assertEquals("Canada", english.getObject("address").getString("country"));
+		assertEquals("K1K1K1", english.getObject("address").getString("postalCode"));
+
+		JsonObject french = get(locationId, Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(locationId.getCode(), french.getString("locationId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
+		assertEquals("Actif", french.getString("status"));
+		assertEquals("LOC", french.getString("reference"));
+		assertEquals("Organization", french.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
+		assertEquals("123 Main St", french.getObject("address").getString("street"));
+		assertEquals("Ottawa", french.getObject("address").getString("city"));
+		assertEquals("Québec", french.getObject("address").getString("province"));
+		assertEquals("Canada", french.getObject("address").getString("country"));
+		assertEquals("K1K1K1", french.getObject("address").getString("postalCode"));
+		
+		JsonObject jsonld = get(locationId, null, HttpStatus.OK);
+		//JsonAsserts.print(jsonld, "jsonld");
+		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), jsonld.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", jsonld.getString("@context"));
+		assertEquals(Crm.REST_BASE + locationId.toString(), jsonld.getString("locationId"));
+		assertEquals(Crm.REST_BASE + organizationId.toString(), jsonld.getString("organizationId"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), jsonld.getObject("status").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", jsonld.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", jsonld.getObject("status").getString("@id"));
+		assertEquals("ACTIVE", jsonld.getObject("status").getString("@value"));
+		assertEquals("Active", jsonld.getObject("status").getString("@en"));
+		assertEquals("Actif", jsonld.getObject("status").getString("@fr"));
+		assertEquals("LOC", jsonld.getString("reference"));
+		assertEquals("Organization", jsonld.getString("displayName"));
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), jsonld.getObject("address").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", jsonld.getObject("address").getString("@context"));
+		assertEquals("123 Main St", jsonld.getObject("address").getString("street"));
+		assertEquals("Ottawa", jsonld.getObject("address").getString("city"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), jsonld.getObject("address").getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Provinces", jsonld.getObject("address").getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/provinces/ca/qc", jsonld.getObject("address").getObject("province").getString("@id"));
+		assertEquals("CA/QC", jsonld.getObject("address").getObject("province").getString("@value"));
+		assertEquals("Quebec", jsonld.getObject("address").getObject("province").getString("@en"));
+		assertEquals("Québec", jsonld.getObject("address").getObject("province").getString("@fr"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), jsonld.getObject("address").getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Countries", jsonld.getObject("address").getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/countries/ca", jsonld.getObject("address").getObject("country").getString("@id"));
+		assertEquals("CA", jsonld.getObject("address").getObject("country").getString("@value"));
+		assertEquals("Canada", jsonld.getObject("address").getObject("country").getString("@en"));
+		assertEquals("Canada", jsonld.getObject("address").getObject("country").getString("@fr"));
+		assertEquals("K1K1K1", jsonld.getObject("address").getString("postalCode"));
+		
+		JsonObject paging = get("/locations", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(paging, "paging");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), paging.keys());
+		assertEquals(1, paging.getNumber("page"));
+		assertEquals(10, paging.getNumber("limit"));
+		assertEquals(2, paging.getNumber("total"));
+		assertEquals(false, paging.getBoolean("hasNext"));
+		assertEquals(false, paging.getBoolean("hasPrevious"));
+		assertEquals(2, paging.getArray("content").size());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), paging.getArray("content").getObject(0).keys());
+		assertEquals(locationId.getCode(), paging.getArray("content").getObject(0).getString("locationId"));
+		assertEquals(organizationId.getCode(), paging.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals("Active", paging.getArray("content").getObject(0).getString("status"));
+		assertEquals("LOC", paging.getArray("content").getObject(0).getString("reference"));
+		assertEquals("Organization", paging.getArray("content").getObject(0).getString("displayName"));
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), paging.getArray("content").getObject(1).keys());
+		assertEquals(systemLocationId.getCode(), paging.getArray("content").getObject(1).getString("locationId"));
+		assertEquals(systemOrgId.getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals("Active", paging.getArray("content").getObject(1).getString("status"));
+		assertEquals("SYSTEM", paging.getArray("content").getObject(1).getString("reference"));
+		assertEquals("System Administrator", paging.getArray("content").getObject(1).getString("displayName"));
+	}
+	
+	@Test
+	public void testGetLocationDetails() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "NUEVOLEON", "Nuevo Leon", MX_ADDRESS).getLocationId();
+		
+		JsonObject root = get(locationId, Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), root.keys());
+		assertEquals(locationId.getCode(), root.getString("locationId"));
+		assertEquals(organizationId.getCode(), root.getString("organizationId"));
+		assertEquals("ACTIVE", root.getString("status"));
+		assertEquals("NUEVOLEON", root.getString("reference"));
+		assertEquals("Nuevo Leon", root.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), root.getObject("address").keys());
+		assertEquals("120 Col. Hipodromo Condesa", root.getObject("address").getString("street"));
+		assertEquals("Monterrey", root.getObject("address").getString("city"));
+		assertEquals("MX/NL", root.getObject("address").getString("province"));
+		assertEquals("MX", root.getObject("address").getString("country"));
+		assertEquals("06100", root.getObject("address").getString("postalCode"));
+		
+		JsonObject english = get(locationId, Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(locationId.getCode(), english.getString("locationId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
+		assertEquals("Active", english.getString("status"));
+		assertEquals("NUEVOLEON", english.getString("reference"));
+		assertEquals("Nuevo Leon", english.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
+		assertEquals("120 Col. Hipodromo Condesa", english.getObject("address").getString("street"));
+		assertEquals("Monterrey", english.getObject("address").getString("city"));
+		assertEquals("Nuevo Leon", english.getObject("address").getString("province"));
+		assertEquals("Mexico", english.getObject("address").getString("country"));
+		assertEquals("06100", english.getObject("address").getString("postalCode"));
+		
+		JsonObject french = get(locationId, Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(locationId.getCode(), french.getString("locationId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
+		assertEquals("Actif", french.getString("status"));
+		assertEquals("NUEVOLEON", french.getString("reference"));
+		assertEquals("Nuevo Leon", french.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
+		assertEquals("120 Col. Hipodromo Condesa", french.getObject("address").getString("street"));
+		assertEquals("Monterrey", french.getObject("address").getString("city"));
+		assertEquals("Nuevo Leon", french.getObject("address").getString("province"));
+		assertEquals("Mexique", french.getObject("address").getString("country"));
+		assertEquals("06100", french.getObject("address").getString("postalCode"));
+	}
+	
+	@Test
+	public void testGetLocationSummary() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
+
+		JsonObject linked = get(locationId + "/summary", null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationSummary", linked.getString("@context"));
+		assertEquals(Crm.REST_BASE + locationId.toString(), linked.getString("locationId"));
+		assertEquals(Crm.REST_BASE + organizationId.toString(), linked.getString("organizationId"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
+		assertEquals("ACTIVE", linked.getObject("status").getString("@value"));
+		assertEquals("Active", linked.getObject("status").getString("@en"));
+		assertEquals("Actif", linked.getObject("status").getString("@fr"));
+		assertEquals("MAIN", linked.getString("reference"));
+		assertEquals("Main Location", linked.getString("displayName"));
+
+		JsonObject root = get(locationId + "/summary", Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), root.keys());
+		assertEquals(locationId.getCode(), root.getString("locationId"));
+		assertEquals(organizationId.getCode(), root.getString("organizationId"));
+		assertEquals("ACTIVE", root.getString("status"));
+		assertEquals("MAIN", root.getString("reference"));
+		assertEquals("Main Location", root.getString("displayName"));
+
+		JsonObject english = get(locationId + "/summary", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), english.keys());
+		assertEquals(locationId.getCode(), english.getString("locationId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
+		assertEquals("Active", english.getString("status"));
+		assertEquals("MAIN", english.getString("reference"));
+		assertEquals("Main Location", english.getString("displayName"));
+
+		JsonObject french = get(locationId + "/summary", Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), french.keys());
+		assertEquals(locationId.getCode(), french.getString("locationId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
+		assertEquals("Actif", french.getString("status"));
+		assertEquals("MAIN", french.getString("reference"));
+		assertEquals("Main Location", french.getString("displayName"));
+	}
+	
+	@Test
+	public void testGetLocationAddress() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "NEWFOUNDLAND", "Labrador City", NL_ADDRESS).getLocationId();
+
+		JsonObject linked = get(locationId + "/address", null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", linked.getString("@context"));
+		assertEquals("90 Avalon Drive", linked.getString("street"));
+		assertEquals("Labrador City", linked.getString("city"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Provinces", linked.getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/provinces/ca/nl", linked.getObject("province").getString("@id"));
+		assertEquals("CA/NL", linked.getObject("province").getString("@value"));
+		assertEquals("Newfoundland and Labrador", linked.getObject("province").getString("@en"));
+		assertEquals("Terre-Neuve et Labrador", linked.getObject("province").getString("@fr"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Countries", linked.getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/countries/ca", linked.getObject("country").getString("@id"));
+		assertEquals("CA", linked.getObject("country").getString("@value"));
+		assertEquals("Canada", linked.getObject("country").getString("@en"));
+		assertEquals("Canada", linked.getObject("country").getString("@fr"));
+		assertEquals("A2V 2Y2", linked.getString("postalCode"));
+
+		JsonObject root = get(locationId + "/address", Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), root.keys());
+		assertEquals("90 Avalon Drive", root.getString("street"));
+		assertEquals("Labrador City", root.getString("city"));
+		assertEquals("CA/NL", root.getString("province"));
+		assertEquals("CA", root.getString("country"));
+		assertEquals("A2V 2Y2", root.getString("postalCode"));
+
+		JsonObject english = get(locationId + "/address", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.keys());
+		assertEquals("90 Avalon Drive", english.getString("street"));
+		assertEquals("Labrador City", english.getString("city"));
+		assertEquals("Newfoundland and Labrador", english.getString("province"));
+		assertEquals("Canada", english.getString("country"));
+		assertEquals("A2V 2Y2", english.getString("postalCode"));
+
+		JsonObject french = get(locationId + "/address", Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.keys());
+		assertEquals("90 Avalon Drive", french.getString("street"));
+		assertEquals("Labrador City", french.getString("city"));
+		assertEquals("Terre-Neuve et Labrador", french.getString("province"));
+		assertEquals("Canada", french.getString("country"));
+		assertEquals("A2V 2Y2", french.getString("postalCode"));
+	}
+	
+	@Test
+	public void testUpdatingDisplayName() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
+		
+		JsonObject json = patch(locationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("displayName", "Updated name"));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
+		assertEquals(locationId.getCode(), json.getString("locationId"));
+		assertEquals(organizationId.getCode(), json.getString("organizationId"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals("MAIN", json.getString("reference"));
+		assertEquals("Updated name", json.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
+		assertEquals("123 Main St", json.getObject("address").getString("street"));
+		assertEquals("Ottawa", json.getObject("address").getString("city"));
+		assertEquals("Quebec", json.getObject("address").getString("province"));
+		assertEquals("Canada", json.getObject("address").getString("country"));
+		assertEquals("K1K1K1", json.getObject("address").getString("postalCode"));
+	}
+	
+	@Test
+	public void testUpdatingAddress() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
+		
+		JsonObject json = patch(locationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
+
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
+		assertEquals(locationId.getCode(), json.getString("locationId"));
+		assertEquals(organizationId.getCode(), json.getString("organizationId"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals("MAIN", json.getString("reference"));
+		assertEquals("Main Location", json.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
+		assertEquals("465 Huntington Ave", json.getObject("address").getString("street"));
+		assertEquals("Boston", json.getObject("address").getString("city"));
+		assertEquals("Massachusetts", json.getObject("address").getString("province"));
+		assertEquals("United States", json.getObject("address").getString("country"));
+		assertEquals("02115", json.getObject("address").getString("postalCode"));
+	}
+
+	@Test
+	public void testEnableDisableLocation() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
+		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
+
+		JsonArray error1 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		assertEquals(locationId.toString(), error1.getObject(0).getString("identifier"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error1.getObject(0).getString("type"));
+		assertEquals("confirm", error1.getObject(0).getString("path"));
+		assertEquals("Field is required", error1.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
+
+		JsonArray error2 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		assertEquals(locationId.toString(), error2.getObject(0).getString("identifier"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error2.getObject(0).getString("type"));
+		assertEquals("confirm", error2.getObject(0).getString("path"));
+		assertEquals("Field is required", error2.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
+
+		JsonArray error3 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		assertEquals(locationId.toString(), error3.getObject(0).getString("identifier"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error3.getObject(0).getString("type"));
+		assertEquals("confirm", error3.getObject(0).getString("path"));
+		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
+
+		JsonObject disable = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		//JsonAsserts.print(disable, "disable");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), disable.keys());
+		assertEquals(locationId.getCode(), disable.getString("locationId"));
+		assertEquals(organizationId.getCode(), disable.getString("organizationId"));
+		assertEquals("Inactive", disable.getString("status"));
+		assertEquals("MAIN", disable.getString("reference"));
+		assertEquals("Main Location", disable.getString("displayName"));
+		
+		JsonArray error4 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		assertEquals(locationId.toString(), error4.getObject(0).getString("identifier"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error4.getObject(0).getString("type"));
+		assertEquals("confirm", error4.getObject(0).getString("path"));
+		assertEquals("Field is required", error4.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
+		
+		JsonArray error5 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		assertEquals(locationId.toString(), error5.getObject(0).getString("identifier"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error5.getObject(0).getString("type"));
+		assertEquals("confirm", error5.getObject(0).getString("path"));
+		assertEquals("Field is required", error5.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
+		
+		JsonArray error6 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		assertEquals(locationId.toString(), error6.getObject(0).getString("identifier"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error6.getObject(0).getString("type"));
+		assertEquals("confirm", error6.getObject(0).getString("path"));
+		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
+	
+		JsonObject enable = put(locationId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		//JsonAsserts.print(enable, "enable");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), enable.keys());
+		assertEquals(locationId.getCode(), enable.getString("locationId"));
+		assertEquals(organizationId.getCode(), enable.getString("organizationId"));
+		assertEquals("Actif", enable.getString("status"));
+		assertEquals("MAIN", enable.getString("reference"));
+		assertEquals("Main Location", enable.getString("displayName"));
+	}
 	
 }

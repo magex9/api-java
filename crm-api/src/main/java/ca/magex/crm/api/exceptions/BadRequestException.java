@@ -24,6 +24,14 @@ public class BadRequestException extends ApiException {
 		super("Bad Request: " + message);
 		this.messages = messages;
 	}
+
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, String reason) {
+		this(message, base, type, path, value, new Choice<PhraseIdentifier>(reason));
+	}
+	
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, PhraseIdentifier reason) {
+		this(message, base, type, path, value, new Choice<PhraseIdentifier>(reason));
+	}
 	
 	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, Choice<PhraseIdentifier> reason) {
 		this(message, Arrays.asList(new Message(base, type, path, value, reason)));

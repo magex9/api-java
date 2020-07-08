@@ -53,7 +53,6 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(personName, null);
-		System.out.println(linked);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "salutation", "firstName", "middleName", "lastName"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/common/PersonName", linked.getString("@context").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));

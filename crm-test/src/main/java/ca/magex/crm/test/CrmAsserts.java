@@ -1,6 +1,7 @@
 package ca.magex.crm.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
 
 public class CrmAsserts {
 
@@ -398,8 +400,7 @@ public class CrmAsserts {
 		System.out.println("====================================================");
 	}
 
-	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path,
-			String reason) {
+	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, MessageTypeIdentifier type, String path, String reason) {
 		assertEquals(1, json.size());
 		if (identifier == null) {
 			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
@@ -407,9 +408,21 @@ public class CrmAsserts {
 			assertEquals(List.of("identifier", "type", "path", "reason"), json.getObject(0).keys());
 			assertEquals(identifier, IdentifierFactory.forId(json.getObject(0).getString("identifier")));
 		}
-		assertEquals(new MessageTypeIdentifier(type.toUpperCase()).toString(), json.getObject(0).getString("type"));
+		if (json.getObject(0).contains("type", JsonText.class)) {
+			assertEquals(type.toString(), json.getObject(0).getString("type"));
+		} else if (json.getObject(0).contains("type", JsonObject.class)) {
+			assertEquals(type.toString(), json.getObject(0).getObject("type").getString("@id"));
+		} else {
+			assertNull(type);
+		}
 		assertEquals(path, json.getObject(0).getString("path"));
-		assertEquals(reason, json.getObject(0).getString("reason"));
+		if (json.getObject(0).contains("reason", JsonText.class)) {
+			assertEquals(reason, json.getObject(0).getString("reason"));
+		} else if (json.getObject(0).contains("reason", JsonObject.class)) {
+			assertEquals(reason, json.getObject(0).getObject("reason").getString("@id"));
+		} else {
+			assertNull(reason);
+		}
 	}
 
 }

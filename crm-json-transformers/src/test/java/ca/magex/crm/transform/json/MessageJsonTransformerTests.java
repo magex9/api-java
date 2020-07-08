@@ -20,6 +20,7 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -65,7 +66,7 @@ public class MessageJsonTransformerTests {
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(message, null);
 		//JsonAsserts.print(linked, "linked");
-		assertEquals(List.of("@context", "identifier", "type", "path", "reason"), linked.keys());
+		assertEquals(List.of("@context", "identifier", "type", "value", "path", "reason"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/system/Message", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/KJj15ntU2G", linked.getString("identifier"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("type").keys());
@@ -74,6 +75,7 @@ public class MessageJsonTransformerTests {
 		assertEquals("ERROR", linked.getObject("type").getString("@value"));
 		assertEquals("Error", linked.getObject("type").getString("@en"));
 		assertEquals("Erreur", linked.getObject("type").getString("@fr"));
+		assertEquals("", linked.getString("value"));
 		assertEquals("prop", linked.getString("path"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("reason").keys());
 		assertEquals("http://api.magex.ca/crm/schema/options/Phrases", linked.getObject("reason").getString("@context"));
@@ -88,10 +90,11 @@ public class MessageJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(message, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("context", "identifier", "type", "path", "reason"), root.keys());
+		assertEquals(List.of("context", "identifier", "type", "value", "path", "reason"), root.keys());
 		assertEquals("organizations", root.getString("context"));
 		assertEquals("KJj15ntU2G", root.getString("identifier"));
 		assertEquals("ERROR", root.getString("type"));
+		assertEquals("", root.getString("value"));
 		assertEquals("prop", root.getString("path"));
 		assertEquals("VALIDATION/FIELD/REQUIRED", root.getString("reason"));
 		assertEquals(message, transformer.parse(root, Lang.ROOT));
@@ -101,10 +104,11 @@ public class MessageJsonTransformerTests {
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(message, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("context", "identifier", "type", "path", "reason"), english.keys());
+		assertEquals(List.of("context", "identifier", "type", "value", "path", "reason"), english.keys());
 		assertEquals("organizations", english.getString("context"));
 		assertEquals("KJj15ntU2G", english.getString("identifier"));
 		assertEquals("Error", english.getString("type"));
+		assertEquals("", english.getString("value"));
 		assertEquals("prop", english.getString("path"));
 		assertEquals("Field is required", english.getString("reason"));
 		assertEquals(message, transformer.parse(english, Lang.ENGLISH));
@@ -114,10 +118,11 @@ public class MessageJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(message, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("context", "identifier", "type", "path", "reason"), french.keys());
+		assertEquals(List.of("context", "identifier", "type", "value", "path", "reason"), french.keys());
 		assertEquals("organizations", french.getString("context"));
 		assertEquals("KJj15ntU2G", french.getString("identifier"));
 		assertEquals("Erreur", french.getString("type"));
+		assertEquals("", french.getString("value"));
 		assertEquals("prop", french.getString("path"));
 		assertEquals("Champ requis", french.getString("reason"));
 		assertEquals(message, transformer.parse(french, Lang.FRENCH));

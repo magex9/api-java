@@ -45,7 +45,7 @@ public class JsonAsserts {
 						sb.append("\t\tassertEquals(" + array.getBoolean(i) + ", " + prefix + ".getArray(\"" + key + "\").getBoolean(" + i + "));");
 					} else if (child instanceof JsonText) {
 						if (key.endsWith("Id")) {
-							sb.append("\t\tassertEquals(" + key + ".getId(), " + prefix + ".getArray(\"" + key + "\").getString(" + i + "));");
+							sb.append("\t\tassertEquals(" + key + ".getCode(), " + prefix + ".getArray(\"" + key + "\").getString(" + i + "));");
 						} else {
 							sb.append("\t\tassertEquals(\"" + array.getString(i).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r") + "\", " + prefix + ".getArray(\"" + key + "\").getString(" + i + ")" + escape + ");");
 						}
@@ -59,7 +59,7 @@ public class JsonAsserts {
 				sb.append("\t\tassertEquals(" + json.getBoolean(key) + ", " + prefix + ".getBoolean(\"" + key + "\"));");
 			} else if (el instanceof JsonText) {
 				if (key.endsWith("Id")) {
-					sb.append("\t\tassertEquals(" + key + ".getId(), " + prefix + ".getString(\"" + key + "\"));");
+					sb.append("\t\tassertEquals(" + key + ".getCode(), " + prefix + ".getString(\"" + key + "\"));");
 				} else {
 					sb.append("\t\tassertEquals(\"" + json.getString(key).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r") + "\", " + prefix + ".getString(\"" + key + "\")" + escape + ");");
 				}

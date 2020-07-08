@@ -44,7 +44,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testCreateOrganization() throws Exception {
 		// Get the initial list of groups to make sure they are blank
-		JsonObject orig = get("/organizations", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject orig = get("/organizations");
 		assertEquals(1, orig.getInt("page"));
 		assertEquals(1, orig.getInt("total"));
 		assertEquals(false, orig.getBoolean("hasNext"));
@@ -67,7 +67,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject fetch = get(organizationId, Lang.ROOT, HttpStatus.OK);
 		assertEquals(List.of("organizationId", "status", "displayName", "authenticationGroupIds", "businessGroupIds"), fetch.keys());
-		assertEquals(organizationId.getId(), fetch.getString("organizationId"));
+		assertEquals(organizationId.getCode(), fetch.getString("organizationId"));
 		assertEquals("ACTIVE", fetch.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), fetch.getString("displayName"));
 		assertEquals(new JsonArray().with("ORG"), fetch.getArray("authenticationGroupIds"));
@@ -75,7 +75,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 
 		JsonObject french = get(organizationId, Lang.FRENCH, HttpStatus.OK);
 		assertEquals(List.of("organizationId", "status", "displayName", "authenticationGroupIds", "businessGroupIds"), french.keys());
-		assertEquals(organizationId.getId(), french.getString("organizationId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), french.getString("displayName"));
 		assertEquals(new JsonArray().with("Organisation"), french.getArray("authenticationGroupIds"));
@@ -104,7 +104,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			assertEquals(List.of("organizationId", "status", "displayName"), ((JsonObject)el).keys());
 		});
 		
-		assertEquals(organizationId.getId(), paging.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(organizationId.getCode(), paging.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", paging.getArray("content").getObject(0).getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), paging.getArray("content").getObject(0).getString("displayName"));
 
@@ -192,8 +192,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject data = get(organizationId + "/mainLocation", Lang.ROOT, HttpStatus.OK);
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), data.keys());
-		assertEquals(locationId.getId(), data.getString("locationId"));
-		assertEquals(organizationId.getId(), data.getString("organizationId"));
+		assertEquals(locationId.getCode(), data.getString("locationId"));
+		assertEquals(organizationId.getCode(), data.getString("organizationId"));
 		assertEquals("ACTIVE", data.getString("status"));
 		assertEquals("Main Location", data.getString("displayName"));
 		assertEquals("MAIN", data.getString("reference"));
@@ -206,8 +206,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 
 		JsonObject english = get(organizationId + "/mainLocation", Lang.ENGLISH, HttpStatus.OK);
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
-		assertEquals(locationId.getId(), english.getString("locationId"));
-		assertEquals(organizationId.getId(), english.getString("organizationId"));
+		assertEquals(locationId.getCode(), english.getString("locationId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Main Location", english.getString("displayName"));
 		assertEquals("MAIN", english.getString("reference"));
@@ -220,8 +220,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject french = get(organizationId + "/mainLocation", Lang.FRENCH, HttpStatus.OK);
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
-		assertEquals(locationId.getId(), french.getString("locationId"));
-		assertEquals(organizationId.getId(), french.getString("organizationId"));
+		assertEquals(locationId.getCode(), french.getString("locationId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Main Location", french.getString("displayName"));
 		assertEquals("MAIN", french.getString("reference"));
@@ -306,8 +306,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		JsonObject root = get(organizationId + "/mainContact", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), root.keys());
-		assertEquals(personId.getId(), root.getString("personId"));
-		assertEquals(organizationId.getId(), root.getString("organizationId"));
+		assertEquals(personId.getCode(), root.getString("personId"));
+		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Bacon, Chris P", root.getString("displayName"));
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), root.getObject("legalName").keys());
@@ -335,8 +335,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		JsonObject english = get(organizationId + "/mainContact", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), english.keys());
-		assertEquals(personId.getId(), english.getString("personId"));
-		assertEquals(organizationId.getId(), english.getString("organizationId"));
+		assertEquals(personId.getCode(), english.getString("personId"));
+		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Bacon, Chris P", english.getString("displayName"));
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), english.getObject("legalName").keys());
@@ -364,8 +364,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		JsonObject french = get(organizationId + "/mainContact", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), french.keys());
-		assertEquals(personId.getId(), french.getString("personId"));
-		assertEquals(organizationId.getId(), french.getString("organizationId"));
+		assertEquals(personId.getCode(), french.getString("personId"));
+		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Bacon, Chris P", french.getString("displayName"));
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), french.getObject("legalName").keys());
@@ -413,8 +413,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals("Updated name", json.getString("displayName"));
-		assertEquals(locationId.getId(), json.getString("mainLocationId"));
-		assertEquals(personId.getId(), json.getString("mainContactId"));
+		assertEquals(locationId.getCode(), json.getString("mainLocationId"));
+		assertEquals(personId.getCode(), json.getString("mainContactId"));
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
@@ -456,7 +456,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
-		assertEquals(locationId.getId(), json.getString("mainLocationId"));
+		assertEquals(locationId.getCode(), json.getString("mainLocationId"));
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
@@ -474,10 +474,10 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "authenticationGroupIds", "businessGroupIds"), json.keys());
-		assertEquals(organizationId.getId(), json.getString("organizationId"));
+		assertEquals(organizationId.getCode(), json.getString("organizationId"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals("Organization", json.getString("displayName"));
-		assertEquals(locationId.getId(), json.getString("mainLocationId"));
+		assertEquals(locationId.getCode(), json.getString("mainLocationId"));
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
@@ -496,7 +496,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertTrue(json.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), json.getString("displayName"));
-		assertEquals(personId.getId(), json.getString("mainContactId"));
+		assertEquals(personId.getCode(), json.getString("mainContactId"));
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
@@ -509,15 +509,15 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 
-		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+		JsonObject json = patch(organizationId, new JsonObject()
 			.with("mainContactId", null));
 
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("organizationId", "status", "displayName", "mainContactId", "authenticationGroupIds", "businessGroupIds"), json.keys());
-		assertEquals(organizationId.getId(), json.getString("organizationId"));
+		assertEquals(organizationId.getCode(), json.getString("organizationId"));
 		assertEquals("Active", json.getString("status"));
 		assertEquals("Organization", json.getString("displayName"));
-		assertEquals(personId.getId(), json.getString("mainContactId"));
+		assertEquals(personId.getCode(), json.getString("mainContactId"));
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
@@ -529,56 +529,56 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
-		JsonArray error1 = puts(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error1 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error1.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error1.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
-		JsonArray error2 = puts(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error2 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error2.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error2.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
-		JsonArray error3 = puts(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error3 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error3.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error3.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonObject disable = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
-		assertEquals(organizationId.getId(), disable.getString("organizationId"));
+		assertEquals(organizationId.getCode(), disable.getString("organizationId"));
 		assertEquals("Inactive", disable.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
-		JsonArray error4 = puts(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error4 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error4.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error4.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
-		JsonArray error5 = puts(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error5 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error5.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error5.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
-		JsonArray error6 = puts(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error6 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error6.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error6.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 	
 		JsonObject enable = put(organizationId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
-		assertEquals(organizationId.getId(), enable.getString("organizationId"));
+		assertEquals(organizationId.getCode(), enable.getString("organizationId"));
 		assertEquals("Actif", enable.getString("status"));
 		assertEquals(ORG_NAME.getEnglishName(), disable.getString("displayName"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
@@ -586,19 +586,19 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testOrganizationWithLongName() throws Exception {
-		JsonArray json = posts("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
+		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("displayName", LoremIpsumGenerator.buildWords(20))
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
-		assertSingleJsonMessage(json, null, "error", "displayName", "Field too long");
+		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field too long");
 	}
 
 	@Test
 	public void testOrganizationWithNoName() throws Exception {
-		JsonArray json = posts("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
+		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
-		assertSingleJsonMessage(json, null, "error", "displayName", "Field is required");
+		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field is required");
 	}
 	
 }
