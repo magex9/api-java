@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.graphql.GraphQLTestConfig;
 import ca.magex.crm.test.config.UnauthenticatedTestConfig;
@@ -41,13 +42,14 @@ public class GraphQLControllerTests {
 	@Autowired private Crm crm;
 
 	@Before
-	public void reset() {
+	public void before() {
 		crm.reset();
+		crm.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
 	}
 
 	@Test
 	public void doGraphQlPostQuery() throws Exception {		
-		String query = "mutation { createOption (type: \"COUNTRIES\", english: \"Petoria\", french: \"Pètorie\") { optionId } }";
+		String query = "mutation { createOption (type: \"COUNTRIES\", name: {code: \"PT\", english: \"Petoria\", french: \"Pètorie\"} ) { optionId } }";
 		RequestBuilder postQueryRequest = MockMvcRequestBuilders
 				.post("/graphql")
 				.header(HttpHeaders.CONTENT_TYPE, "application/graphql")

@@ -22,6 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +33,7 @@ import ca.magex.crm.graphql.util.MapBuilder;
 import graphql.ExecutionInput;
 
 @RestController
-public class GraphQLController implements CrmGraphQLController {
+public class GraphQLController {
 	
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
@@ -48,8 +51,11 @@ public class GraphQLController implements CrmGraphQLController {
 		}
 	}
 
-	@Override
-	public ResponseEntity<Object> doQuery(String content, HttpServletRequest req, HttpServletResponse res) throws JSONException {
+	@PostMapping("/graphql")
+	public ResponseEntity<Object> doQuery(
+			@RequestBody(required = false) String content, 
+			HttpServletRequest req, 
+			HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
 		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
 		
@@ -92,8 +98,12 @@ public class GraphQLController implements CrmGraphQLController {
 		}
 	}
 	
-	@Override
-	public ResponseEntity<Object> doQueryAsGet(String query, String variables, HttpServletRequest req, HttpServletResponse res) throws JSONException {
+	@GetMapping("/graphql")
+	public ResponseEntity<Object> doQueryAsGet(
+			@RequestParam String query, 
+			@RequestParam(required = false) String variables, 
+			HttpServletRequest req,
+			HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
 		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));		
 				
