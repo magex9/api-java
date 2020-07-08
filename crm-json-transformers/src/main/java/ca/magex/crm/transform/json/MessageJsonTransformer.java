@@ -45,6 +45,7 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 			formatIdentifier(pairs, "identifier", message, Identifier.class, locale);
 		}
 		formatOption(pairs, "type", message, MessageTypeIdentifier.class, locale);
+		formatText(pairs, "value", message);
 		formatText(pairs, "path", message);
 		formatChoice(pairs, "reason", message, PhraseIdentifier.class, locale);
 		return new JsonObject(pairs);
