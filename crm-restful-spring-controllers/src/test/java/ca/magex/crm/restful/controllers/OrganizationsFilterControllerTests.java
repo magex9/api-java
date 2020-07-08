@@ -32,8 +32,8 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	public void setup() {
 		initialize();
 		org0 = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter()).getSingleItem().getOrganizationId();
-		org1 = crm.createOrganization("A new org 1", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
-		org2 = crm.createOrganization("A néw org 2", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		org1 = crm.createOrganization("A new org 1", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		org2 = crm.createOrganization("A néw org 2", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
 		org3 = crm.disableOrganization(crm.createOrganization("An inactive org 3", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId()).getOrganizationId();
 	}
 	

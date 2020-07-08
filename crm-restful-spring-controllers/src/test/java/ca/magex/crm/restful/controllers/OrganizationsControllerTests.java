@@ -531,21 +531,21 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 
 		JsonArray error1 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error1.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error1.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error2 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error2.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error2.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error3 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error3.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error3.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
@@ -558,21 +558,21 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		JsonArray error4 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error4.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error4.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error5 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error5.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error5.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error6 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error6.getObject(0).getString("identifier"));
-		assertEquals(new MessageTypeIdentifier("ERROR").toString(), error6.getObject(0).getString("type"));
+		assertEquals(MessageTypeIdentifier.ERROR.toString(), error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());

@@ -10,7 +10,9 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmConfigurationService {
@@ -67,7 +69,7 @@ public interface CrmConfigurationService {
 	 * </ul>
 	 */
 	default void createSysGroup(CrmRepositories repos) {
-		OptionIdentifier sysGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized("SYS", "System", "Système"));
+		OptionIdentifier sysGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized(AuthenticationGroupIdentifier.SYS.getCode(), "System", "Système"));
 		createNestedOption(repos, sysGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ADMIN", "System Administrator", "Adminstrator du système"));
 		createNestedOption(repos, sysGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ACTUATOR", "System Actuator", "Actuator du système"));
 		createNestedOption(repos, sysGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ACCESS", "System Access", "Access du système"));
@@ -81,7 +83,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createAppGroup(CrmRepositories repos) {
-		OptionIdentifier appGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized("APP", "Application", "Application"));
+		OptionIdentifier appGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized(AuthenticationGroupIdentifier.APP.getCode(), "Application", "Application"));
 		createNestedOption(repos, appGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("AUTHENTICATOR", "Authorization Requestor", "Demandeur d'Autorisation"));
 	}
 	
@@ -94,7 +96,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCrmGroup(CrmRepositories repos) {
-		OptionIdentifier crmGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized("CRM", "Customer Relationship Management", "Gestion de la relation client"));
+		OptionIdentifier crmGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized(AuthenticationGroupIdentifier.CRM.getCode(), "Customer Relationship Management", "Gestion de la relation client"));
 		createNestedOption(repos, crmGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ADMIN", "CRM Admin", "Administrateur GRC"));
 		createNestedOption(repos, crmGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("USER", "CRM Viewer", "Visionneuse GRC"));
 	}
@@ -108,7 +110,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createOrgGroup(CrmRepositories repos) {
-		OptionIdentifier orgGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.MUTABLE, new Localized("ORG", "Organization", "Organisation"));
+		OptionIdentifier orgGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.MUTABLE, new Localized(AuthenticationGroupIdentifier.ORG.getCode(), "Organization", "Organisation"));
 		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("ADMIN", "Organization Admin", "Administrateur de l'organisation"));
 		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("USER", "Organization Viewer", "Visionneuse d'organisation"));
 	}
@@ -138,10 +140,10 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createMessageTypeLookup(CrmRepositories repos) {
-		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("ERROR", "Error", "Erreur"));
-		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("WARNING", "Warning", "Avertissement"));
-		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("INFO", "Notification", "Notification"));
-		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized("SUCCESS", "Success", "Succès"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.ERROR.getCode(), "Error", "Erreur"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.WARN.getCode(), "Warning", "Avertissement"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.INFO.getCode(), "Notification", "Notification"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.SUCCESS.getCode(), "Success", "Succès"));
 	}
 	
 	/**
