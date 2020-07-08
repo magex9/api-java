@@ -3,7 +3,7 @@ package ca.magex.crm.restful.controllers;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Locale;
 
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import ca.magex.crm.api.Crm;
@@ -47,11 +48,22 @@ public abstract class AbstractControllerTests {
 	}
 	
 	public String request(HttpMethod method, Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
-		return mockMvc.perform(MockMvcRequestBuilders
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 			.request(method, "/rest" + path)
 			.header("Content-Type", locale == null ? "application/json+ld" : "application/json")
-			.header("Locale", locale == null ? "" : locale)
-			.content(content == null ? "{}" : content.toString()))
+			.header("Locale", locale == null ? "" : locale);
+		
+		if (content != null) {
+			if (method == HttpMethod.GET) {
+				for (String key : content.keys()) {
+					builder = builder.queryParam(key, JsonElement.unwrap(content.get(key)).toString());
+				}
+			} else {
+				builder = builder.content(content.toString());
+			}
+		}
+		
+		return mockMvc.perform(builder)
 			.andExpect(result -> assertEquals("Status", status.value(), result.getResponse().getStatus()))
 			.andReturn().getResponse().getContentAsString();
 	}
@@ -64,6 +76,11 @@ public abstract class AbstractControllerTests {
 	@SuppressWarnings("unchecked")
 	public <E extends JsonElement> E get(Object path, Locale locale, HttpStatus status) throws Exception {
 		return (E)JsonParser.parse(request(HttpMethod.GET, path, locale, status, null));
+	}
+
+	@SuppressWarnings("unchecked")
+	public <E extends JsonElement> E get(Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {
+		return (E)JsonParser.parse(request(HttpMethod.GET, path, locale, status, content));
 	}
 
 	@SuppressWarnings("unchecked")

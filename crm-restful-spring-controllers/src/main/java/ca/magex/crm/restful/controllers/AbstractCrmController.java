@@ -153,6 +153,7 @@ public abstract class AbstractCrmController {
 
 	protected <T> JsonObject createPage(Page<T> page, Transformer<T, JsonElement> transfomer, Locale locale) {
 		return new JsonObject()
+			.with("@context", locale == null ? Crm.SCHEMA_BASE + "/system/Page" : null)
 			.with("page", page.getNumber())
 			.with("limit", page.getPageable().getPageSize())
 			.with("total", page.getTotalElements())
