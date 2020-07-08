@@ -70,6 +70,11 @@ public class BasicOptionService implements CrmOptionService {
 		}
 		return repos.saveOption(option.withStatus(Status.INACTIVE));
 	}
+	
+	@Override
+	public long countOptions(OptionsFilter filter) {
+		return repos.countOptions(filter);
+	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {

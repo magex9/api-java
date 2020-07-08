@@ -8,6 +8,7 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Option;
 import graphql.schema.DataFetcher;
 
 @Component
@@ -72,6 +73,14 @@ public class CommonDataFetcher extends AbstractDataFetcher {
 			logger.debug("Entering getFrenchValue@" + CommonDataFetcher.class.getSimpleName());
 			Localized source = environment.getSource();
 			return source.getFrenchName();
+		};
+	}
+	
+	public DataFetcher<String> getOptionTypeValue() {
+		return (environment) -> {
+			logger.debug("Entering getOptionTypeValue@" + CommonDataFetcher.class.getSimpleName());
+			Option source = environment.getSource();
+			return source.getType().getCode();
 		};
 	}
 }

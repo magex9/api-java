@@ -501,6 +501,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return optionService.disableOption(
 				validate(optionService.findOption(optionId).withStatus(Status.INACTIVE)).getOptionId());
 	}
+	
+	@Override
+	public long countOptions(OptionsFilter filter) {
+		return optionService.countOptions(filter);
+	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {

@@ -199,7 +199,7 @@ public abstract class AbstractOptionServiceTests {
 		
 		/* find all of our ADM coded roles */
 		optionsPage = crm.findOptions(
-				new OptionsFilter().withType(Type.AUTHENTICATION_ROLE).withOptionCode("ADM"), 
+				new OptionsFilter().withType(Type.AUTHENTICATION_ROLE).withName(new Localized(Lang.ROOT, "ADM")), 
 				OptionsFilter.getDefaultPaging());
 		Assert.assertEquals(1, optionsPage.getNumber());
 		Assert.assertEquals(10, optionsPage.getSize());
@@ -210,7 +210,7 @@ public abstract class AbstractOptionServiceTests {
 		
 		/* find all of our Admin named roles */
 		optionsPage = crm.findOptions(
-				new OptionsFilter().withType(Type.AUTHENTICATION_ROLE).withName(Lang.ENGLISH, "Admin"), 
+				new OptionsFilter().withType(Type.AUTHENTICATION_ROLE).withName(new Localized(Lang.ENGLISH, "Admin")), 
 				OptionsFilter.getDefaultPaging());
 		Assert.assertEquals(1, optionsPage.getNumber());
 		Assert.assertEquals(10, optionsPage.getSize());

@@ -50,10 +50,18 @@ public class Localized implements Serializable {
 
 	public String get(Locale locale) {
 		return text.get(locale);
-	}
+	}	
 	
 	public Localized withCode(String code) {		
 		return new Localized(code, getEnglishName(), getFrenchName());
+	}
+	
+	public Localized withEnglishName(String englishName) {
+		return new Localized(getCode(), englishName, getFrenchName());
+	}
+	
+	public Localized withFrenchName(String frenchName) {
+		return new Localized(getCode(), getEnglishName(), frenchName);
 	}
 	
 	@Override

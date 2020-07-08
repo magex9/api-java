@@ -9,6 +9,12 @@ input Choice {
 	other: String
 }
 
+input LocalizedInput {
+	code: String!
+	english: String!
+	french: String!
+}
+
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
@@ -67,6 +73,15 @@ input UserFilter {
 	role: String	
 }
 
+input OptionFilter {
+	parentId: String
+	type: String
+	status: String
+	code: String
+	english: String
+	french: String
+}
+
 type Query {
 	# Organization Queries 
 	findOrganization(organizationId: String!): Organization	
@@ -88,7 +103,10 @@ type Query {
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
 	
-	# Lookup Queries
+	# Option Queries
+	findOption(optionId: String!): Option
+	countOptions(filter: OptionFilter!): Int!
+	findOptions(filter: OptionFilter!, paging: PagingInput!): OptionPage!
 }
 
 type Mutation {
@@ -105,10 +123,14 @@ type Mutation {
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoles: [String], status: String): Person
 		
 	# User Maintenance
-	createUser(personId: String!, username: String!, authenticationRoles: [String]): User
+	createUser(personId: String!, username: String!, authenticationRoles: [String]!): User
 	updateUser(userId: String!, status: String, authenticationRoles: [String]): User
 	resetUserPassword(userId: String!): String
-	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean	
+	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean
+	
+	# Option Maintenance
+	createOption(type: String!, parentId: String, name: LocalizedInput!): Option
+	updateOption(optionId: String!, status: String, english: String, french: String): Option
 }
 
 # Main Types
@@ -124,7 +146,7 @@ type Organization {
 
 type Location {
 	locationId: String!
-	organizationId: String!
+	organization: Organization!
 	status: String!
 	reference: String
 	displayName: String
@@ -133,7 +155,7 @@ type Location {
 
 type Person {
 	personId: String!
-	organizationId: String!
+	organization: Organization!
 	status: String!
 	displayName: String
 	legalName: PersonName
@@ -144,14 +166,16 @@ type Person {
 
 type User {
 	userId: String!
-	username: String!
-	status: String!
+	organization: Organization!
 	person: Person!
+	username: String!
+	status: String!	
+	authenticationRoles: [Option]!
 }
 
 type Option {
 	optionId: String!
-	parentId: String
+	parent: Option
 	type: String!
 	status: String!
 	mutable: String!
@@ -173,7 +197,6 @@ type PersonName {
 	lastName: String
 	salutation: String
 }
-
 
 type MailingAddress {
 	street: String
@@ -218,6 +241,15 @@ type UserPage {
 	totalPages: Int!
 	totalElements: Int!	
 	content: [User]
+}
+
+type OptionPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Option]
 }
 
 # Simple Types

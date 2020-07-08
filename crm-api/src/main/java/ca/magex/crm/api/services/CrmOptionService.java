@@ -48,6 +48,8 @@ public interface CrmOptionService {
 	Option enableOption(OptionIdentifier optionId);
 
 	Option disableOption(OptionIdentifier optionId);
+	
+	long countOptions(OptionsFilter filter);
 
 	FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
 	
@@ -112,21 +114,21 @@ public interface CrmOptionService {
 		}
 
 		// Make sure the code is unique within a particular parent
-		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withOptionCode(option.getCode()), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
+		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(new Localized(Lang.ROOT, option.getCode())), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), error, "code", option.getName(Lang.ROOT), crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure the english name is unique within a particular parent
-		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(Lang.ENGLISH, option.getName(Lang.ENGLISH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
+		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(new Localized(Lang.ENGLISH, option.getName(Lang.ENGLISH))), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), error, "englishName", option.getName(Lang.ENGLISH), crm.findMessageId("validation.option.duplicate")));
 			}
 		}
 
 		// Make sure the french name is unique
-		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(Lang.FRENCH, option.getName(Lang.FRENCH)), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
+		for (Option existing : crm.findOptions(crm.defaultOptionsFilter().withParentId(option.getParentId()).withType(option.getType()).withName(new Localized(Lang.FRENCH, option.getName(Lang.FRENCH))), OptionsFilter.getDefaultPaging().allItems()).getContent()) {
 			if (!existing.getOptionId().equals(option.getOptionId())) {
 				messages.add(new Message(option.getOptionId(), error, "frenchName", option.getName(Lang.FRENCH), crm.findMessageId("validation.option.duplicate")));
 			}

@@ -1,35 +1,34 @@
 package ca.magex.crm.graphql.datafetcher;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ReflectionUtils;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.common.Telephone;
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.graphql.util.PagingBuilder;
-import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
@@ -40,18 +39,16 @@ import graphql.schema.DataFetchingEnvironment;
  */
 public abstract class AbstractDataFetcher {
 
-	private static Logger logger = LoggerFactory.getLogger(AbstractDataFetcher.class);
-
 	@Autowired protected Crm crm;
 
-	public DataFetcher<String> getNameByLocale(Locale locale) {
-		return (environment) -> {
-			logger.debug("Entering getNameByLocale@" + AbstractDataFetcher.class.getSimpleName());
-			Object source = environment.getSource();
-			Method getName = ReflectionUtils.findMethod(source.getClass(), "getName", Locale.class);
-			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
-		};
-	}
+//	public DataFetcher<String> getNameByLocale(Locale locale) {
+//		return (environment) -> {
+//			logger.debug("Entering getNameByLocale@" + AbstractDataFetcher.class.getSimpleName());
+//			Object source = environment.getSource();
+//			Method getName = ReflectionUtils.findMethod(source.getClass(), "getName", Locale.class);
+//			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
+//		};
+//	}
 
 	/**
 	 * extracts the filter from the environment
@@ -81,6 +78,52 @@ public abstract class AbstractDataFetcher {
 				.withSortFields(sortFields)
 				.withSortDirections(sortOrders)
 				.build();
+	}
+	
+	/**
+	 * Extracts the Type from the environment at the given key
+	 * @param environment
+	 * @param typeKey
+	 * @return
+	 */
+	protected Type extractType(DataFetchingEnvironment environment, String typeKey) {
+		try {
+			return Type.of(environment.getArgument(typeKey));
+		}
+		catch(ItemNotFoundException e) {
+			throw new ApiException("Invalid type '" + environment.getArgument("type") + "'," + 
+					" one of {" + Stream.of(Type.values()).map(Type::getCode).collect(Collectors.joining(", ")) + "} expected");
+		}
+	}
+	
+	protected OptionIdentifier extractOptionIdentifier(DataFetchingEnvironment environment, String key) {
+		/* extract parentId if provided */
+		if (environment.containsArgument(key)) {
+			try {
+				return IdentifierFactory.forId(environment.getArgument(key));
+			}
+			catch(IllegalArgumentException e) {
+				throw new ApiException("Invalid parentId '" + environment.getArgument(key));
+			}
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/**
+	 * extracts the localized from the environment
+	 * 
+	 * @param environment
+	 * @param localizedKey
+	 * @return
+	 */
+	protected Localized extractLocalized(DataFetchingEnvironment environment, String localizedKey) {
+		Map<String, Object> localizedMap = environment.getArgument(localizedKey);
+		return new Localized(
+				(String) localizedMap.get("code"),
+				(String) localizedMap.get("english"),
+				(String) localizedMap.get("french"));
 	}
 
 	/**
@@ -144,7 +187,7 @@ public abstract class AbstractDataFetcher {
 	 * @param groupsId
 	 * @return
 	 */
-	public List<AuthenticationGroupIdentifier> extractAuthenticationGroups(DataFetchingEnvironment environment, String groupsId) {
+	protected List<AuthenticationGroupIdentifier> extractAuthenticationGroups(DataFetchingEnvironment environment, String groupsId) {
 		List<String> groups = environment.getArgument(groupsId);
 		return groups.stream().map((group) -> new AuthenticationGroupIdentifier(group)).collect(Collectors.toList());
 	}
@@ -155,7 +198,7 @@ public abstract class AbstractDataFetcher {
 	 * @param groupsId
 	 * @return
 	 */
-	public List<BusinessGroupIdentifier> extractBusinessGroups(DataFetchingEnvironment environment, String groupsId) {
+	protected List<BusinessGroupIdentifier> extractBusinessGroups(DataFetchingEnvironment environment, String groupsId) {
 		List<String> groups = environment.getArgument(groupsId);
 		return groups.stream().map((group) -> new BusinessGroupIdentifier(group)).collect(Collectors.toList());
 	}
@@ -166,7 +209,7 @@ public abstract class AbstractDataFetcher {
 	 * @param rolesId
 	 * @return
 	 */
-	public List<AuthenticationRoleIdentifier> extractAuthenticationRoles(DataFetchingEnvironment environment, String rolesId) {
+	protected List<AuthenticationRoleIdentifier> extractAuthenticationRoles(DataFetchingEnvironment environment, String rolesId) {
 		List<String> roles = environment.getArgument(rolesId);
 		return roles.stream().map((role) -> new AuthenticationRoleIdentifier(role)).collect(Collectors.toList());
 	}
@@ -177,7 +220,7 @@ public abstract class AbstractDataFetcher {
 	 * @param rolesId
 	 * @return
 	 */
-	public List<BusinessRoleIdentifier> extractBusinessRoles(DataFetchingEnvironment environment, String rolesId) {
+	protected List<BusinessRoleIdentifier> extractBusinessRoles(DataFetchingEnvironment environment, String rolesId) {
 		List<String> roles = environment.getArgument(rolesId);
 		return roles.stream().map((role) -> new BusinessRoleIdentifier(role)).collect(Collectors.toList());
 	}

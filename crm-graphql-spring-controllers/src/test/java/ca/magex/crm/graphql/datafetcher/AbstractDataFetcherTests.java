@@ -29,15 +29,15 @@ import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {UnauthenticatedTestConfig.class, GraphQLTestConfig.class})
+@ContextConfiguration(classes = { UnauthenticatedTestConfig.class, GraphQLTestConfig.class })
 public abstract class AbstractDataFetcherTests {
-	
+
 	protected Logger log = LoggerFactory.getLogger(getClass());
 	protected ObjectMapper objectMapper = new ObjectMapper();
-	
-	@Autowired private GraphQLCrmServices graphQl;	
+
+	@Autowired private GraphQLCrmServices graphQl;
 	@Autowired private Crm crm;
-	
+
 	@Before
 	public void before() {
 		crm.reset();
@@ -46,10 +46,9 @@ public abstract class AbstractDataFetcherTests {
 
 	@SuppressWarnings("unchecked")
 	protected <T> T execute(String queryName, String query, Object... args) throws Exception {
-		String formattedQuery = String.format(query, Arrays.asList(args).stream()				
+		String formattedQuery = String.format(query, Arrays.asList(args).stream()
 				.map((arg) -> (arg instanceof String || arg instanceof Identifier) ? ("\"" + arg + "\"") : arg)
-				.map((arg) -> (arg instanceof List) ? 
-						"[" + ((List<Object>) arg).stream().map((obj) -> (obj instanceof Number ? obj.toString() : "\"" + obj.toString() + "\"")).collect(Collectors.joining(",")) + "]" 
+				.map((arg) -> (arg instanceof List) ? "[" + ((List<Object>) arg).stream().map((obj) -> (obj instanceof Number ? obj.toString() : "\"" + obj.toString() + "\"")).collect(Collectors.joining(",")) + "]"
 						: arg)
 				.map((arg) -> arg == null ? "" : arg)
 				.collect(Collectors.toList()).toArray());
@@ -68,13 +67,13 @@ public abstract class AbstractDataFetcherTests {
 		}
 		return (T) o;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	protected <T> T executeWithVariables(String queryName, String query, Map<String,Object> variables) throws Exception {		
+	protected <T> T executeWithVariables(String queryName, String query, Map<String, Object> variables) throws Exception {
 		ExecutionInput executionInput = ExecutionInput.newExecutionInput()
 				.query(query)
 				.variables(variables)
-				.build();		
+				.build();
 		ExecutionResult result = graphQl.getGraphQL().execute(executionInput);
 		if (result.getErrors().size() > 0) {
 			String messages = result.getErrors().stream().map((e) -> e.getMessage()).collect(Collectors.joining());

@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Status;
@@ -25,6 +28,30 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
+	public DataFetcher<OrganizationDetails> byUser() {
+		return (environment) -> {
+			logger.info("Entering ByUser@" + OrganizationDataFetcher.class.getSimpleName());
+			User user = environment.getSource();
+			return crm.findOrganizationDetails(user.getOrganizationId());
+		};
+	}
+	
+	public DataFetcher<OrganizationDetails> byLocation() {
+		return (environment) -> {
+			logger.info("Entering ByUser@" + OrganizationDataFetcher.class.getSimpleName());
+			LocationDetails locationDetails = environment.getSource();
+			return crm.findOrganizationDetails(locationDetails.getOrganizationId());
+		};
+	}
+	
+	public DataFetcher<OrganizationDetails> byPerson() {
+		return (environment) -> {
+			logger.info("Entering byPerson@" + OrganizationDataFetcher.class.getSimpleName());
+			PersonDetails personDetails = environment.getSource();
+			return crm.findOrganizationDetails(personDetails.getOrganizationId());
+		};
+	}
+	
 	public DataFetcher<OrganizationDetails> createOrganization() {
 		return (environment) -> {
 			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());			

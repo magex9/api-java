@@ -117,7 +117,8 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countLocations", locationDataFetcher.countLocations()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))				
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
+				.type("Location", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byLocation()))
 
 				// person data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
@@ -126,6 +127,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createPerson", personDataFetcher.createPerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
 				.type("Person", typeWiring -> typeWiring.dataFetcher("businessRoles", optionDataFetcher.findBusinessRolesForPerson()))
+				.type("Person", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byPerson()))
 
 				// user data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUser()))
@@ -136,39 +138,29 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("resetUserPassword", userDataFetcher.resetUserPassword()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("changeUserPassword", userDataFetcher.changeUserPassword()))
 				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
-//				.type("User", typeWiring -> typeWiring.dataFetcher("roles", permissionDataFetcher.rolesByUser()))
+				.type("User", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byUser()))
+				.type("User", typeWiring -> typeWiring.dataFetcher("authenticationRoles", optionDataFetcher.findAuthenticationRolesForUser()))
 				
+				// option data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOption", optionDataFetcher.findOption()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("countOptions", optionDataFetcher.countOptions()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOptions", optionDataFetcher.findOptions()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOption", optionDataFetcher.createOption()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOption", optionDataFetcher.updateOption()))
+				.type("Option", typeWiring -> typeWiring.dataFetcher("parent", optionDataFetcher.findParentOption()))
+				
+				// common data fetching
+				.type("Option", typeWiring -> typeWiring.dataFetcher("type", commonDataFetcher.getOptionTypeValue()))
 				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("country", commonDataFetcher.getCountryValue()))
-				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("province", commonDataFetcher.getProvinceValue()))
-				
-				.type("PersonName", typeWiring -> typeWiring.dataFetcher("salutation", commonDataFetcher.getSalutationValue()))
-				
-				.type("Communication", typeWiring -> typeWiring.dataFetcher("language", commonDataFetcher.getLanguageValue()))
-				
+				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("province", commonDataFetcher.getProvinceValue()))				
+				.type("PersonName", typeWiring -> typeWiring.dataFetcher("salutation", commonDataFetcher.getSalutationValue()))				
+				.type("Communication", typeWiring -> typeWiring.dataFetcher("language", commonDataFetcher.getLanguageValue()))				
 				.type("Localized", typeWiring -> typeWiring.dataFetcher("english", commonDataFetcher.getEnglishValue()))
 				.type("Localized", typeWiring -> typeWiring.dataFetcher("french", commonDataFetcher.getFrenchValue()))
-
-				// group data fetching
-//				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroup", permissionDataFetcher.findGroup()))
-//				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroups", permissionDataFetcher.findGroups()))
-//				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createGroup", permissionDataFetcher.createGroup()))
-//				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateGroup", permissionDataFetcher.updateGroup()))
-//				.type("Group", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
-//				.type("Group", typeWiring -> typeWiring.dataFetcher("frenchName", permissionDataFetcher.getNameByLocale(Lang.FRENCH)))
-
-				// role data fetching
-//				.type("Query", typeWiring -> typeWiring.dataFetcher("findRole", permissionDataFetcher.findRole()))
-//				.type("Query", typeWiring -> typeWiring.dataFetcher("findRoles", permissionDataFetcher.findRoles()))
-//				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createRole", permissionDataFetcher.createRole()))
-//				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateRole", permissionDataFetcher.updateRole()))
-//				.type("Role", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
-//				.type("Role", typeWiring -> typeWiring.dataFetcher("frenchName", permissionDataFetcher.getNameByLocale(Lang.FRENCH)))
-
-				// lookup data fetching
-//				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
-//				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Lang.ENGLISH)))
-//				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Lang.FRENCH)))
-//				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("parent", lookupDataFetcher.findParent()))
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("english", commonDataFetcher.getEnglishValue()))
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("french", commonDataFetcher.getFrenchValue()))
+				
+			
 
 				.build();
 	}
