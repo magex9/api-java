@@ -102,7 +102,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			code = Arrays.asList(value.substring(context.length()).split("/")).stream().map(s -> StringConverter.lowerToUpperCase(s)).collect(Collectors.joining("/"));
 		} else {
 			Type type = IdentifierFactory.getType(cls);
-			code = crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, value)).getSingleItem().getCode();
+			code = crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(new Localized(locale, value))).getSingleItem().getCode();
 		}
 		return IdentifierFactory.forId(code, cls);
 	}
@@ -288,7 +288,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		} else if (json.contains(key, JsonObject.class)) {
 			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).getOptionId();
 		} else if (json.contains(key, JsonText.class)) {
-			return crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, json.getString(key))).getSingleItem().getOptionId();
+			return crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(new Localized(locale, json.getString(key)))).getSingleItem().getOptionId();
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}
@@ -302,7 +302,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		} else if (json.contains(key, JsonText.class)) {
 			if (locale != null) {
 				try {
-					return new Choice<I>(crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(locale, json.getString(key))).getSingleItem().getOptionId());
+					return new Choice<I>(crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(new Localized(locale, json.getString(key)))).getSingleItem().getOptionId());
 				} catch (ItemNotFoundException e) { }
 			}
 			return new Choice<I>(json.getString(key));

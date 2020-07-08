@@ -152,11 +152,11 @@ public class OptionsFilter implements CrmFilter<Option> {
 				.filter(o ->
 						(this.getName() == null) ||
 						(StringUtils.isBlank(this.getName().get(Lang.ENGLISH))) ||
-						(StringUtils.containsIgnoreCase(o.getName(Lang.ENGLISH), this.getName().get(Lang.ENGLISH))))
+						(StringUtils.equalsIgnoreCase(o.getName(Lang.ENGLISH), this.getName().get(Lang.ENGLISH))))
 				.filter(o ->
 					(this.getName() == null) ||
 					(StringUtils.isBlank(this.getName().get(Lang.FRENCH))) ||
-					(StringUtils.containsIgnoreCase(o.getName(Lang.FRENCH), this.getName().get(Lang.FRENCH))))
+					(StringUtils.equalsIgnoreCase(o.getName(Lang.FRENCH), this.getName().get(Lang.FRENCH))))
 				.filter(o -> this.getParentId() == null || this.getParentId().equals(o.getParentId()))
 				.filter(o -> this.getType() == null || this.getType().equals(o.getType()))
 				.filter(o -> this.getStatus() == null || this.getStatus().equals(o.getStatus()))

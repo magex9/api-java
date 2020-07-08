@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -46,7 +47,7 @@ public class StatusJsonTransformer extends AbstractJsonTransformer<Status> {
 
 	@Override
 	public Status parseJsonText(JsonText json, Locale locale) {
-		Option option = crm.findOptions(new OptionsFilter().withType(Type.STATUS).withName(locale, json.value())).getSingleItem();
+		Option option = crm.findOptions(new OptionsFilter().withType(Type.STATUS).withName(new Localized(locale, json.value()))).getSingleItem();
 		return Status.valueOf(option.getCode().toUpperCase());
 	}
 
