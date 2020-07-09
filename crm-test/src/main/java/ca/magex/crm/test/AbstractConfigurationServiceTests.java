@@ -56,7 +56,7 @@ public abstract class AbstractConfigurationServiceTests {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		crm.dump(baos);
 		String[] lines = baos.toString().split("\n");
-		assertEquals(180, lines.length);
+		assertEquals(184, lines.length);
 		for (String line : lines) {
 			Matcher m = Pattern.compile("([/\\-A-Za-z0-9]+) => (\\{.*\\}|true|false)").matcher(line);
 			if (!m.matches())
