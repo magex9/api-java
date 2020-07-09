@@ -50,7 +50,7 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 		} else {
 			return List.of(
 					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), option),
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(option.getCode()), option));
+					Pair.of(CrmCacheKeyGenerator.generateCodeKey(option.getType() + "::" + option.getCode()), option));
 		}
 	}
 
@@ -71,8 +71,8 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	}
 
 	@Override
-	public Option createOption(OptionIdentifier lookupId, Type type, Localized name) {
-		Option option = delegate.createOption(lookupId, type, name);
+	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
+		Option option = delegate.createOption(parentId, type, name);
 		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
 		return option;
 	}
@@ -109,7 +109,7 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	public Option findOptionByCode(Type type, String optionCode) {
 		return cacheTemplate.get(
 				() -> delegate.findOptionByCode(type, optionCode),
-				optionCode,
+				type + "::" + optionCode,
 				CrmCacheKeyGenerator::generateCodeKey,
 				this::optionCacheSupplier);
 	}

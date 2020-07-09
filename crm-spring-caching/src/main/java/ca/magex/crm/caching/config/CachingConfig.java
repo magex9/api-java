@@ -14,8 +14,7 @@ public class CachingConfig {
 		public static final String Locations 		= "locations";
 		public static final String Persons 			= "persons";
 		public static final String Users			= "users";
-		public static final String Groups 			= "groups";
-		public static final String Roles 			= "roles";
+		public static final String Options 			= "options";
 	}
 
 	@Bean
@@ -27,7 +26,6 @@ public class CachingConfig {
 						Caches.Locations,
 						Caches.Persons,
 						Caches.Users,
-						Caches.Groups,
-						Caches.Roles));
+						Caches.Options));
     }	
 }
