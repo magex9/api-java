@@ -13,6 +13,10 @@ public class LanguageIdentifier extends OptionIdentifier {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	public static final String CONTEXT = OptionIdentifier.CONTEXT + "languages/";
+	
+	public static final LanguageIdentifier ENGLISH = new LanguageIdentifier("EN");
+
+	public static final LanguageIdentifier FRENCH = new LanguageIdentifier("FR");
 
 	public LanguageIdentifier(CharSequence id) {
 		super(id);

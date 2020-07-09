@@ -1,5 +1,9 @@
 package ca.magex.crm.restful.controllers;
 
+import static ca.magex.crm.test.CrmAsserts.ORG_AUTH_GROUPS;
+import static ca.magex.crm.test.CrmAsserts.ORG_BIZ_GROUPS;
+import static ca.magex.crm.test.CrmAsserts.SYS_AUTH_GROUPS;
+import static ca.magex.crm.test.CrmAsserts.SYS_BIZ_GROUPS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -14,8 +18,6 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.json.model.JsonObject;
 
 public class OrganizationsFilterControllerTests extends AbstractControllerTests {
@@ -31,10 +33,10 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 	@Before
 	public void setup() {
 		initialize();
-		org0 = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter()).getSingleItem().getOrganizationId();
-		org1 = crm.createOrganization("A new org 1", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
-		org2 = crm.createOrganization("A néw org 2", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
-		org3 = crm.disableOrganization(crm.createOrganization("An inactive org 3", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId()).getOrganizationId();
+		org0 = getSystemOrganizationIdentifier();
+		org1 = crm.createOrganization("A new org 1", SYS_AUTH_GROUPS, SYS_BIZ_GROUPS).getOrganizationId();
+		org2 = crm.createOrganization("A néw org 2", ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
+		org3 = crm.disableOrganization(crm.createOrganization("An inactive org 3", ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId()).getOrganizationId();
 	}
 	
 	@Test

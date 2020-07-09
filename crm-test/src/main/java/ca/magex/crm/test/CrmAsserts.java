@@ -30,6 +30,7 @@ import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.IdentifierFactory;
@@ -44,23 +45,45 @@ import ca.magex.json.model.JsonText;
 
 public class CrmAsserts {
 
-	public static final String BASE_URL = "http://api.magex.ca/crm/rest";
-
 	public static final Localized GROUP = new Localized("GRP", "Group", "Groupe");
 
 	public static final Localized ADMIN = new Localized("ADM", "Admin", "Admin");
+	
+	public static final AuthenticationGroupIdentifier SYS_AUTH_GROUP = AuthenticationGroupIdentifier.SYS;
+	
+	public static final List<AuthenticationGroupIdentifier> SYS_AUTH_GROUPS = List.of(SYS_AUTH_GROUP);
+	
+	public static final BusinessGroupIdentifier SYS_BIZ_GROUP = BusinessGroupIdentifier.IMIT;
 
-//	public static final Localized SYS = new Localized("SYS", "System", "Système");
+	public static final List<BusinessGroupIdentifier> SYS_BIZ_GROUPS = List.of(SYS_BIZ_GROUP);
 
-//	public static final Localized SYS_ADMIN = new Localized("SYS_ADMIN", "System Administrator", "Adminstrator du système");
+	public static final AuthenticationGroupIdentifier ORG_AUTH_GROUP = AuthenticationGroupIdentifier.ORG;
+	
+	public static final List<AuthenticationGroupIdentifier> ORG_AUTH_GROUPS = List.of(ORG_AUTH_GROUP);
+	
+	public static final BusinessGroupIdentifier ORG_BIZ_GROUP = BusinessGroupIdentifier.EXTERNAL;
 
-	//	public static final Localized ORG = new Localized("ORG", "Organization", "Organisation");
+	public static final List<BusinessGroupIdentifier> ORG_BIZ_GROUPS = List.of(ORG_BIZ_GROUP);
+
+	public static final AuthenticationGroupIdentifier ORG = AuthenticationGroupIdentifier.ORG;
+
+	public static final AuthenticationGroupIdentifier CRM = AuthenticationGroupIdentifier.CRM;
+	
+	public static final AuthenticationGroupIdentifier SYS = AuthenticationGroupIdentifier.SYS;
+
+	public static final AuthenticationRoleIdentifier ORG_ADMIN = AuthenticationRoleIdentifier.ORG_ADMIN;
+
+	public static final AuthenticationRoleIdentifier CRM_ADMIN = AuthenticationRoleIdentifier.CRM_ADMIN;
+	
+	public static final AuthenticationRoleIdentifier SYS_ADMIN = AuthenticationRoleIdentifier.SYS_ADMIN;
+
+	public static final BusinessRoleIdentifier CEO = new BusinessRoleIdentifier("EXECS/CEO");
+
+	public static final BusinessRoleIdentifier QA_TEAMLEAD = new BusinessRoleIdentifier("EXECS/CEO");
+
+	public static final BusinessRoleIdentifier DEV_TEAMLEAD = new BusinessRoleIdentifier("IMIT/DEV/APPS/TEAMLEAD");
 
 	public static final Localized ORG_NAME = new Localized("ORG", "Organization", "Organisation");
-
-	//	public static final Localized ORG_ADMIN = new Localized("ORG_ADMIN", "Organization Administrator", "Adminstrator du l'organization");
-
-	public static final Localized ORG_ASSISTANT = new Localized("ORG_ASSISTANT", "Organization Assistant", "Assistant du l'organization");
 
 	public static final Choice<LanguageIdentifier> ENGLISH = new Choice<LanguageIdentifier>(new LanguageIdentifier("EN"));
 
@@ -159,24 +182,6 @@ public class CrmAsserts {
 	public static final PersonName ELAINE = new PersonName(MRS, "Elaine", "M", "McKay");
 
 	public static final PersonName FRANCOIS = new PersonName(MR, "François", null, "Mátyás");
-
-	public static final AuthenticationGroupIdentifier ORG = new AuthenticationGroupIdentifier("ORG");
-
-	public static final AuthenticationGroupIdentifier CRM = new AuthenticationGroupIdentifier("CRM");
-	
-	public static final AuthenticationGroupIdentifier SYS = new AuthenticationGroupIdentifier("SYS");
-
-	public static final AuthenticationRoleIdentifier ORG_ADMIN = new AuthenticationRoleIdentifier("ORG/ADMIN");
-
-	public static final AuthenticationRoleIdentifier CRM_ADMIN = new AuthenticationRoleIdentifier("CRM/ADMIN");
-	
-	public static final AuthenticationRoleIdentifier SYS_ADMIN = new AuthenticationRoleIdentifier("SYS/ADMIN");
-
-	public static final BusinessRoleIdentifier CEO = new BusinessRoleIdentifier("EXECS/CEO");
-
-	public static final BusinessRoleIdentifier QA_TEAMLEAD = new BusinessRoleIdentifier("EXECS/CEO");
-
-	public static final BusinessRoleIdentifier DEV_TEAMLEAD = new BusinessRoleIdentifier("IMIT/DEV/APPS/TEAMLEAD");
 
 	public static final List<Localized> LOCALIZED_SORTING_OPTIONS = List.of(
 			new Localized("A", "A", "A"),

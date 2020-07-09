@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonElement;
 
@@ -32,6 +33,8 @@ public class JsonTransformerFactory {
 	}
 	
 	public <S> Transformer<S, JsonElement> findByClass(Class<S> cls) {
+		if (Identifier.class.isAssignableFrom(cls))
+			return (Transformer<S, JsonElement>) transformers.get(Identifier.class);
 		return (Transformer<S, JsonElement>) transformers.get(cls);
 	}
 	

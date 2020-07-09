@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -27,18 +25,12 @@ import ca.magex.json.model.JsonObject;
 
 public class LocationsControllerTests extends AbstractControllerTests {
 
-	private OrganizationIdentifier systemOrgId;
-	
-	private LocationIdentifier systemLocationId;
-	
 	private OrganizationIdentifier organizationId;
 	
 	@Before
 	public void setup() {
 		initialize();
-		systemOrgId = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withAuthenticationGroup(AuthenticationGroupIdentifier.SYS)).getSingleItem().getOrganizationId();
-		systemLocationId = crm.findLocationDetails(crm.defaultLocationsFilter()).getSingleItem().getLocationId();
-		organizationId = crm.createOrganization("Test Org", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("EXECS"))).getOrganizationId();
+		organizationId = createTestOrganization();
 	}
 	
 	@Test
@@ -54,8 +46,8 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(false, orig.getBoolean("hasPrevious"));
 		assertEquals(1, orig.getArray("content").size());
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), orig.getArray("content").getObject(0).keys());
-		assertEquals(systemLocationId.getCode(), orig.getArray("content").getObject(0).getString("locationId"));
-		assertEquals(systemOrgId.getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(getSystemLocationIdentifier().getCode(), orig.getArray("content").getObject(0).getString("locationId"));
+		assertEquals(getSystemOrganizationIdentifier().getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", orig.getArray("content").getObject(0).getString("status"));
 		assertEquals("SYSTEM", orig.getArray("content").getObject(0).getString("reference"));
 		assertEquals("System Administrator", orig.getArray("content").getObject(0).getString("displayName"));
@@ -172,8 +164,8 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("LOC", paging.getArray("content").getObject(0).getString("reference"));
 		assertEquals("Organization", paging.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), paging.getArray("content").getObject(1).keys());
-		assertEquals(systemLocationId.getCode(), paging.getArray("content").getObject(1).getString("locationId"));
-		assertEquals(systemOrgId.getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(getSystemLocationIdentifier().getCode(), paging.getArray("content").getObject(1).getString("locationId"));
+		assertEquals(getSystemOrganizationIdentifier().getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("Active", paging.getArray("content").getObject(1).getString("status"));
 		assertEquals("SYSTEM", paging.getArray("content").getObject(1).getString("reference"));
 		assertEquals("System Administrator", paging.getArray("content").getObject(1).getString("displayName"));

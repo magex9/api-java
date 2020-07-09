@@ -115,7 +115,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		crm.dump(baos);
 		String[] lines = baos.toString().split("\n");
-		assertEquals(180, lines.length);
+		assertEquals(184, lines.length);
 	}
 	
 }
