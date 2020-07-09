@@ -2,6 +2,8 @@ package ca.magex.crm.restful.controllers;
 
 import static ca.magex.crm.test.CrmAsserts.CEO;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.ORG_AUTH_GROUPS;
+import static ca.magex.crm.test.CrmAsserts.ORG_BIZ_GROUPS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
 import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
@@ -55,8 +57,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject create = post("/organizations", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 			.with("displayName", ORG_NAME.getEnglishName())
-			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
-			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
+			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.ORG, Lang.ENGLISH)))
+			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.IMIT, Lang.ENGLISH))));
 		assertEquals(List.of("organizationId", "status", "displayName", "authenticationGroupIds", "businessGroupIds"), create.keys());
 		assertTrue(create.getString("organizationId").matches("[A-Za-z0-9]+"));
 		assertEquals("Active", create.getString("status"));
@@ -114,7 +116,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetOrganizationSummary() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
@@ -153,7 +155,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetMainLocation() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS.withProvince(new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/NL")))).getLocationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
@@ -235,7 +237,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testGetMainContact() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 		
@@ -393,7 +395,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingFullOrganization() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 
@@ -418,7 +420,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("IM/IT", json.getArray("businessGroupIds").getString(0));
+		assertEquals("External", json.getArray("businessGroupIds").getString(0));
 		
 		org = crm.findOrganizationDetails(organizationId);
 		assertEquals(organizationId, org.getOrganizationId());
@@ -429,7 +431,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testUpdatingDisplayName() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		
 		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 				.with("displayName", "Updated name"));
@@ -441,12 +443,12 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("IM/IT", json.getArray("businessGroupIds").getString(0));
+		assertEquals("External", json.getArray("businessGroupIds").getString(0));
 	}
 	
 	@Test
 	public void testUpdatingMainLocation() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 
 		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
@@ -460,12 +462,12 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("IM/IT", json.getArray("businessGroupIds").getString(0));
+		assertEquals("External", json.getArray("businessGroupIds").getString(0));
 	}
 	
 	@Test
 	public void testUpdatingMainLocationAsNull() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 
@@ -481,12 +483,12 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("IM/IT", json.getArray("businessGroupIds").getString(0));
+		assertEquals("External", json.getArray("businessGroupIds").getString(0));
 	}
 	
 	@Test
 	public void testUpdatingMainContact() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		
 		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
@@ -500,18 +502,16 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("IM/IT", json.getArray("businessGroupIds").getString(0));
+		assertEquals("External", json.getArray("businessGroupIds").getString(0));
 	}
 	
 	@Test
 	public void testUpdatingMainContactAsNull() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 
-		JsonObject json = patch(organizationId, new JsonObject()
-			.with("mainContactId", null));
-
+		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("mainContactId", null));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("organizationId", "status", "displayName", "mainContactId", "authenticationGroupIds", "businessGroupIds"), json.keys());
 		assertEquals(organizationId.getCode(), json.getString("organizationId"));
@@ -521,31 +521,31 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
 		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("IM/IT", json.getArray("businessGroupIds").getString(0));
+		assertEquals("External", json.getArray("businessGroupIds").getString(0));
 	}
 	
 	@Test
 	public void testEnableDisableOrganization() throws Exception {
-		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error1 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error1.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error1.getObject(0).getString("type"));
+		assertEquals("Error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error2 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error2.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error2.getObject(0).getString("type"));
+		assertEquals("Error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 
 		JsonArray error3 = put(organizationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error3.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error3.getObject(0).getString("type"));
+		assertEquals("Error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
@@ -558,21 +558,21 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		
 		JsonArray error4 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(organizationId.toString(), error4.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error4.getObject(0).getString("type"));
+		assertEquals("Error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error5 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(organizationId.toString(), error5.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error5.getObject(0).getString("type"));
+		assertEquals("Error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
 		
 		JsonArray error6 = put(organizationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(organizationId.toString(), error6.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error6.getObject(0).getString("type"));
+		assertEquals("Error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
@@ -588,16 +588,16 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testOrganizationWithLongName() throws Exception {
 		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("displayName", LoremIpsumGenerator.buildWords(20))
-			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
-			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
+			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.ORG, Lang.ENGLISH)))
+			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.IMIT, Lang.ENGLISH))));
 		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field too long");
 	}
 
 	@Test
 	public void testOrganizationWithNoName() throws Exception {
 		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
-			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new AuthenticationGroupIdentifier("ORG"), Lang.ENGLISH)))
-			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(new BusinessGroupIdentifier("IMIT"), Lang.ENGLISH))));
+			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.ORG, Lang.ENGLISH)))
+			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.IMIT, Lang.ENGLISH))));
 		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field is required");
 	}
 	

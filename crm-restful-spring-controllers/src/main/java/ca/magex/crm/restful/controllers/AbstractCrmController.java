@@ -3,6 +3,7 @@ package ca.magex.crm.restful.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -27,9 +28,11 @@ import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.RequestHandler;
 import ca.magex.crm.api.transform.Transformer;
@@ -109,6 +112,41 @@ public abstract class AbstractCrmController {
 		}
 	}
 	
+	protected <I extends OptionIdentifier> I getOptionIdentifier(JsonObject json, String key, I defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
+		try {
+			if (locale == null) {
+				return IdentifierFactory.forId(json.getString(key));
+			} else {
+				return crm.findOptions(crm.defaultOptionsFilter().withType(IdentifierFactory.getType(cls)).withName(new Localized(locale, json.getString(key)))).getSingleItem().getOptionId();
+			}
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			return defaultValue;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected <I extends OptionIdentifier> List<I> getOptionIdentifiers(JsonObject json, String key, List<I> defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
+		try {
+			if (locale == null) {
+				return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forId(((JsonText)e).value())).collect(Collectors.toList());
+			} else {
+				return json.getArray(key).stream()
+					.map(e -> (I)crm.findOptions(crm.defaultOptionsFilter().withType(IdentifierFactory.getType(cls)).withName(new Localized(locale, ((JsonText)e).value()))).getSingleItem().getOptionId())
+					.collect(Collectors.toList());
+			}
+		} catch (ClassCastException e) {
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
+			return defaultValue;
+		} catch (NoSuchElementException e) {
+			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			return defaultValue;
+		}
+	}
+	
 	protected String getString(JsonObject json, String key, String defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getString(key);
@@ -162,17 +200,17 @@ public abstract class AbstractCrmController {
 			.with("content", new JsonArray(page.getContent().stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
 	}
 	
-//	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale) {
-//		return new JsonObject()
-//			.with("total", list.size())
-//			.with("content", new JsonArray(list.stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
-//	}
-//	
-//	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transfomer, Locale locale, Comparator<T> comparator) {
-//		return new JsonObject()
-//			.with("total", list.size())
-//			.with("content", new JsonArray(list.stream().sorted(comparator).map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
-//	}
+	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transformer, Locale locale) {
+		return new JsonObject()
+			.with("total", list.size())
+			.with("content", new JsonArray(list.stream().map(i -> transformer.format(i, locale)).collect(Collectors.toList())));
+	}
+	
+	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transformer, Locale locale, Comparator<T> comparator) {
+		return new JsonObject()
+			.with("total", list.size())
+			.with("content", new JsonArray(list.stream().sorted(comparator).map(i -> transformer.format(i, locale)).collect(Collectors.toList())));
+	}
 	
 	protected JsonArray createErrorMessages(Locale locale, BadRequestException e) {
 		List<JsonElement> elements = new ArrayList<JsonElement>();

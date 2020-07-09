@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Type;
 
@@ -78,6 +79,8 @@ public class IdentifierFactory {
 	
 	@SuppressWarnings("unchecked")
 	public static <I extends Identifier> I forId(CharSequence id) {
+		if (StringUtils.startsWith(id, Crm.REST_BASE))
+			id = id.subSequence(Crm.REST_BASE.length(), id.length());
 		for (String context : CONTEXT_CLASS.keySet()) {
 			if (StringUtils.startsWith(id, context)) {		
 				try {

@@ -7,6 +7,8 @@ import static ca.magex.crm.test.CrmAsserts.FR_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.MX_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.NL_ADDRESS;
+import static ca.magex.crm.test.CrmAsserts.ORG_AUTH_GROUPS;
+import static ca.magex.crm.test.CrmAsserts.ORG_BIZ_GROUPS;
 import static ca.magex.crm.test.CrmAsserts.US_ADDRESS;
 import static org.junit.Assert.assertEquals;
 
@@ -18,8 +20,6 @@ import org.springframework.http.HttpStatus;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
@@ -50,8 +50,8 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	public void setup() {
 		initialize();
 
-		org1 = crm.createOrganization("Org 1", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
-		org2 = crm.createOrganization("Org 2", List.of(AuthenticationGroupIdentifier.ORG), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		org1 = crm.createOrganization("Org 1", ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
+		org2 = crm.createOrganization("Org 2", ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		
 		locId = crm.createLocation(org1, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		caId = crm.createLocation(org1, "CANADIAN", "Canadian Location", CA_ADDRESS).getLocationId();

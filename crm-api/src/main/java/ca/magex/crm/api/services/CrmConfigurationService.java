@@ -11,6 +11,7 @@ import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
@@ -161,7 +162,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createBusinessPositions(CrmRepositories repos) {
-		OptionIdentifier execsId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("EXECS", "Executives", "Cadres"));
+		OptionIdentifier execsId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.EXECS.getCode(), "Executives", "Cadres"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CEO", "Chief Executive Officer", "Directeur général"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CFO", "Chief Financial Officer", "Directeur financier"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("COO", "Chief Operations Officer", "Directeur des opérations"));
@@ -170,7 +171,7 @@ public interface CrmConfigurationService {
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CTO", "Chief Technology Officer", "Directeur de la technologie"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CSO", "Chief Security Officer", "Directeur de sécurité"));
 
-		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("IMIT", "IM/IT", "GI/TI"));
+		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.IMIT.getCode(), "IM/IT", "GI/TI"));
 		createNestedOption(repos, imitId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("DIRECTOR", "Director", "Réalisateur"));
 
 		OptionIdentifier opsId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("OPS", "Operations", "Operations"));
@@ -198,6 +199,11 @@ public interface CrmConfigurationService {
 		OptionIdentifier qaId = createNestedOption(repos, devId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("QA", "Quality Assurance", "Assurance qualité"));
 		createNestedOption(repos, qaId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe"));
 		createNestedOption(repos, qaId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TESTER", "Quality Tester", "Testeur de qualité"));
+
+		OptionIdentifier externalId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.EXTERNAL.getCode(), "External", "Externe"));
+		createNestedOption(repos, externalId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("OWNER", "Owner", "Propriétaire"));
+		createNestedOption(repos, externalId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("EMPLOYEE", "Employee", "Employé"));
+		createNestedOption(repos, externalId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CONTACT", "Contact", "Contact"));
 	}
 	
 	/**

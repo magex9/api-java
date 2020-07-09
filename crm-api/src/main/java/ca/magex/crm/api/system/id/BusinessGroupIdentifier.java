@@ -13,6 +13,12 @@ public class BusinessGroupIdentifier extends OptionIdentifier {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	public static final String CONTEXT = OptionIdentifier.CONTEXT + "business-groups/";
+	
+	public static final BusinessGroupIdentifier EXECS = new BusinessGroupIdentifier("EXECS");
+
+	public static final BusinessGroupIdentifier IMIT = new BusinessGroupIdentifier("IMIT");
+
+	public static final BusinessGroupIdentifier EXTERNAL = new BusinessGroupIdentifier("EXTERNAL");
 
 	public BusinessGroupIdentifier(CharSequence id) {
 		super(id);
