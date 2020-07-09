@@ -106,23 +106,34 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	}
 
 	@Override
+	public Option findOptionByCode(Type type, String optionCode) {
+		return cacheTemplate.get(
+				() -> delegate.findOptionByCode(type, optionCode),
+				optionCode,
+				CrmCacheKeyGenerator::generateCodeKey,
+				this::optionCacheSupplier);
+	}
+	
+	@Override
 	public Option findOption(OptionIdentifier optionId) {
-		// TODO Auto-generated method stub
-		return null;
+		return cacheTemplate.get(
+				() -> delegate.findOption(optionId),
+				optionId,
+				CrmCacheKeyGenerator::generateDetailsKey,
+				this::optionCacheSupplier);
+	}
+	
+	@Override
+	public long countOptions(OptionsFilter filter) {
+		return delegate.countOptions(filter);
 	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		FilteredPage<Option> page = delegate.findOptions(filter, paging);
+		page.forEach((option) -> {
+			cacheTemplate.putIfAbsent(optionCacheSupplier(option, option.getOptionId()));
+		});
+		return page;
 	}
-	
-	@Override
-	public Option findOptionByCode(Type type, String optionCode) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
-
 }

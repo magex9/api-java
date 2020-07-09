@@ -12,6 +12,7 @@ import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -69,8 +70,8 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	}
 
 	@Override
-	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
-		OrganizationDetails details = delegate.createOrganization(displayName, groupIds);
+	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
+		OrganizationDetails details = delegate.createOrganization(displayName, authenticationGroupIds, businessGroupIds);
 		cacheTemplate.put(detailsCacheSupplier(details, details.getOrganizationId()));
 		return details;
 	}
@@ -113,8 +114,15 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
-		OrganizationDetails details = delegate.updateOrganizationGroups(organizationId, groupIds);
+	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
+		OrganizationDetails details = delegate.updateOrganizationAuthenticationGroups(organizationId, authenticationGroupIds);
+		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
+		return details;
+	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds) {
+		OrganizationDetails details = delegate.updateOrganizationBusinessGroups(organizationId, businessGroupIds);
 		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
 		return details;
 	}

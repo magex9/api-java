@@ -16,15 +16,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.caching.config.CachingConfig;
 import ca.magex.crm.caching.config.CachingTestConfig;
 import ca.magex.crm.caching.util.CacheTemplate;
@@ -55,14 +57,14 @@ public class CrmUserServiceCachingDelegateTests {
 	public void testCacheNewUser() {
 		final AtomicInteger userIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
-			return new User(new Identifier(Integer.toString(userIndex.getAndIncrement())), invocation.getArgument(1), Mockito.mock(PersonSummary.class), Status.ACTIVE, invocation.getArgument(2));
-		}).given(delegate).createUser(Mockito.any(Identifier.class), Mockito.anyString(), Mockito.anyList());
-		User user = userService.createUser(new Identifier("ABC"), "userA", List.of("DEV"));
-		BDDMockito.verify(delegate, Mockito.times(1)).createUser(Mockito.any(Identifier.class), Mockito.anyString(), Mockito.anyList());
+			return new User(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), Status.ACTIVE, invocation.getArgument(3));
+		}).given(delegate).createUser(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.anyList());
+		User user = userService.createUser(new OrganizationIdentifier("ABC"), new PersonIdentifier("PP"), "userA", List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+		BDDMockito.verify(delegate, Mockito.times(1)).createUser(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.anyList());
 
 		/* should have added the details to the cache */
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 
 		/* should have added the details to the cache by name */
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
@@ -74,14 +76,13 @@ public class CrmUserServiceCachingDelegateTests {
 		final AtomicInteger userIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
 			User arg = invocation.getArgument(0);
-			return new User(new Identifier(Integer.toString(userIndex.getAndIncrement())), arg.getUsername(), arg.getPerson(), arg.getStatus(), arg.getRoles());
-		}).given(delegate).createUser(Mockito.any(User.class));
-		User user = userService.createUser(new User(null, "user", Mockito.mock(PersonSummary.class), Status.ACTIVE, List.of("DEV")));
+			return new User(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), arg.getOrganizationId(), arg.getPersonId(), arg.getUsername(), arg.getStatus(), arg.getAuthenticationRoleIds());
+		}).given(delegate).createUser(Mockito.any(User.class));		User user = userService.createUser(new User(null, new OrganizationIdentifier("ABC"), new PersonIdentifier("PP"), "userA", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN"))));
 		BDDMockito.verify(delegate, Mockito.times(1)).createUser(Mockito.any(User.class));
 
 		/* should have added the details to the cache */
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 
 		/* should have added the details to the cache by name */
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
@@ -90,20 +91,20 @@ public class CrmUserServiceCachingDelegateTests {
 
 	@Test
 	public void testCacheExistingUserById() {
-		User user = new User(new Identifier("A"), "user", Mockito.mock(PersonSummary.class), Status.ACTIVE, List.of("DEV"));
+		User user = new User(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
 		BDDMockito.willAnswer((invocation) -> {
 			return user;
-		}).given(delegate).findUser(Mockito.any(Identifier.class));
+		}).given(delegate).findUser(Mockito.any(UserIdentifier.class));
 
 		BDDMockito.willAnswer((invocation) -> {
 			return user;
 		}).given(delegate).findUserByUsername(Mockito.anyString());
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
-		Assert.assertEquals(user, userService.findUser(new Identifier("A")));
+		Assert.assertEquals(user, userService.findUser(new UserIdentifier("A")));
 
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(1)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(1)).findUser(Mockito.any(UserIdentifier.class));
 
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
@@ -111,10 +112,10 @@ public class CrmUserServiceCachingDelegateTests {
 
 	@Test
 	public void testCacheExistingUserByUsername() {
-		User user = new User(new Identifier("A"), "user", Mockito.mock(PersonSummary.class), Status.ACTIVE, List.of("DEV"));
+		User user = new User(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
 		BDDMockito.willAnswer((invocation) -> {
 			return user;
-		}).given(delegate).findUser(Mockito.any(Identifier.class));
+		}).given(delegate).findUser(Mockito.any(UserIdentifier.class));
 
 		BDDMockito.willAnswer((invocation) -> {
 			return user;
@@ -127,19 +128,19 @@ public class CrmUserServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(1)).findUserByUsername(Mockito.anyString());
 
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 	}
 	
 	@Test
 	public void testCacheNonExistantUserById() {
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
-		}).given(delegate).findUser(Mockito.any(Identifier.class));
+		}).given(delegate).findUser(Mockito.any(UserIdentifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
-		Assert.assertNull(userService.findUser(new Identifier("1")));
-		Assert.assertNull(userService.findUser(new Identifier("1")));
-		BDDMockito.verify(delegate, Mockito.times(1)).findUser(Mockito.any(Identifier.class));
+		Assert.assertNull(userService.findUser(new UserIdentifier("1")));
+		Assert.assertNull(userService.findUser(new UserIdentifier("1")));
+		BDDMockito.verify(delegate, Mockito.times(1)).findUser(Mockito.any(UserIdentifier.class));
 	}
 	
 	@Test
@@ -159,40 +160,40 @@ public class CrmUserServiceCachingDelegateTests {
 		final AtomicInteger userIndex = new AtomicInteger();
 		final AtomicReference<User> reference = new AtomicReference<User>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new User(new Identifier(Integer.toString(userIndex.getAndIncrement())), invocation.getArgument(1), Mockito.mock(PersonSummary.class), Status.ACTIVE, invocation.getArgument(2)));
+			reference.set(new User(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), Status.ACTIVE, invocation.getArgument(3)));
 			return reference.get();
-		}).given(delegate).createUser(Mockito.any(Identifier.class), Mockito.anyString(), Mockito.anyList());
+		}).given(delegate).createUser(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.anyList());
 		
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(reference.get().withRoles(invocation.getArgument(1)));
+			reference.set(reference.get().withAuthenticationRoleIds(invocation.getArgument(1)));
 			return reference.get();
-		}).given(delegate).updateUserRoles(Mockito.any(Identifier.class), Mockito.anyList());
+		}).given(delegate).updateUserRoles(Mockito.any(UserIdentifier.class), Mockito.anyList());
 		
 		BDDMockito.willAnswer((invocation) -> {
 			reference.set(reference.get().withStatus(Status.INACTIVE));
 			return reference.get();
-		}).given(delegate).disableUser(Mockito.any(Identifier.class));
+		}).given(delegate).disableUser(Mockito.any(UserIdentifier.class));
 		
 		BDDMockito.willAnswer((invocation) -> {
 			reference.set(reference.get().withStatus(Status.ACTIVE));
 			return reference.get();
-		}).given(delegate).enableUser(Mockito.any(Identifier.class));
+		}).given(delegate).enableUser(Mockito.any(UserIdentifier.class));
 				
 		
 		/* create and ensure cached */
-		User user = userService.createUser(new Identifier("ABC"), "userABC", List.of("A", "B"));
+		User user = userService.createUser(new OrganizationIdentifier("O"), new PersonIdentifier("P"), "userABC", List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
 		Assert.assertEquals(reference.get(), user);
 		/* ensure the details and summary are cached */
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 
 		/* clear cache, update roles, and ensure cached */
 		cacheManager.getCache("users").clear();
-		user = userService.updateUserRoles(user.getUserId(), List.of("C", "D", "E"));
+		user = userService.updateUserRoles(user.getUserId(), List.of(new AuthenticationRoleIdentifier("SYS/ADMIN")));
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 		
@@ -200,7 +201,7 @@ public class CrmUserServiceCachingDelegateTests {
 		cacheManager.getCache("users").clear();
 		user = userService.disableUser(user.getUserId());
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 		
@@ -208,40 +209,40 @@ public class CrmUserServiceCachingDelegateTests {
 		cacheManager.getCache("users").clear();
 		user = userService.enableUser(user.getUserId());
 		Assert.assertEquals(user, userService.findUser(user.getUserId()));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		Assert.assertEquals(user, userService.findUserByUsername(user.getUsername()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 		
 		/* update non existent user (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
-		}).given(delegate).updateUserRoles(Mockito.eq(new Identifier("JJ")), Mockito.any());
-		Assert.assertNull(userService.updateUserRoles(new Identifier("JJ"), List.of("C", "D", "E")));
-		Assert.assertNull(userService.findUser(new Identifier("JJ")));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new Identifier("JJ"));
+		}).given(delegate).updateUserRoles(Mockito.eq(new UserIdentifier("JJ")), Mockito.any());
+		Assert.assertNull(userService.updateUserRoles(new UserIdentifier("JJ"), List.of(new AuthenticationRoleIdentifier("SYS/ADMIN"))));
+		Assert.assertNull(userService.findUser(new UserIdentifier("JJ")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new UserIdentifier("JJ"));
 		
 		/* update non existent user (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
-		}).given(delegate).disableUser(Mockito.eq(new Identifier("KK")));
-		Assert.assertNull(userService.disableUser(new Identifier("KK")));
-		Assert.assertNull(userService.findUser(new Identifier("KK")));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new Identifier("KK"));
+		}).given(delegate).disableUser(Mockito.eq(new UserIdentifier("KK")));
+		Assert.assertNull(userService.disableUser(new UserIdentifier("KK")));
+		Assert.assertNull(userService.findUser(new UserIdentifier("KK")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new UserIdentifier("KK"));
 		
 		/* update non existent user (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
-		}).given(delegate).enableUser(Mockito.eq(new Identifier("LL")));
-		Assert.assertNull(userService.enableUser(new Identifier("LL")));
-		Assert.assertNull(userService.findUser(new Identifier("LL")));
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new Identifier("LL"));
+		}).given(delegate).enableUser(Mockito.eq(new UserIdentifier("LL")));
+		Assert.assertNull(userService.enableUser(new UserIdentifier("LL")));
+		Assert.assertNull(userService.findUser(new UserIdentifier("LL")));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(new UserIdentifier("LL"));
 	}
 	
 	@Test
 	public void testCachingFindResults() {
-		User user1 = new User(new Identifier("A"), "user1", Mockito.mock(PersonSummary.class), Status.ACTIVE, List.of("A"));
-		User user2 = new User(new Identifier("B"), "user2", Mockito.mock(PersonSummary.class), Status.ACTIVE, List.of("A"));
-		User user3 = new User(new Identifier("C"), "user3", Mockito.mock(PersonSummary.class), Status.ACTIVE, List.of("A"));
+		User user1 = new User(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user1", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+		User user2 = new User(new UserIdentifier("B"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user2", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+		User user3 = new User(new UserIdentifier("C"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user3", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
 		
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(user1, user2, user3), 3);
@@ -251,10 +252,6 @@ public class CrmUserServiceCachingDelegateTests {
 			return new FilteredPage<>(invocation.getArgument(0), PersonsFilter.getDefaultPaging(), List.of(user1, user2, user3), 3);
 		}).given(delegate).findUsers(Mockito.any(UsersFilter.class));
 		
-		BDDMockito.willAnswer((invocation) -> {
-			return new FilteredPage<>(invocation.getArgument(0), PersonsFilter.getDefaultPaging(), List.of(user1, user2, user3), 3);
-		}).given(delegate).findActiveUserForOrg(Mockito.any(Identifier.class));
-
 		BDDMockito.willAnswer((invocation) -> {
 			return 3l;
 		}).given(delegate).countUsers(Mockito.any(UsersFilter.class));
@@ -274,7 +271,7 @@ public class CrmUserServiceCachingDelegateTests {
 		Assert.assertEquals(user3, userService.findUser(user3.getUserId()));
 		Assert.assertEquals(user3, userService.findUserByUsername(user3.getUsername()));
 
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 
 		/* find users with default paging and ensure cached results */
@@ -290,12 +287,12 @@ public class CrmUserServiceCachingDelegateTests {
 		Assert.assertEquals(user3, userService.findUser(user3.getUserId()));
 		Assert.assertEquals(user3, userService.findUserByUsername(user3.getUsername()));
 
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 		
 		/* find users with default paging and ensure cached results */
 		cacheManager.getCache("users").clear();
-		Assert.assertEquals(3, userService.findActiveUserForOrg(new Identifier("O")).getNumberOfElements());
+		Assert.assertEquals(3, userService.findUsers(new UsersFilter(), UsersFilter.getDefaultPaging()).getNumberOfElements());
 
 		Assert.assertEquals(user1, userService.findUser(user1.getUserId()));
 		Assert.assertEquals(user1, userService.findUserByUsername(user1.getUsername()));
@@ -306,7 +303,7 @@ public class CrmUserServiceCachingDelegateTests {
 		Assert.assertEquals(user3, userService.findUser(user3.getUserId()));
 		Assert.assertEquals(user3, userService.findUserByUsername(user3.getUsername()));
 
-		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(Identifier.class));
+		BDDMockito.verify(delegate, Mockito.times(0)).findUser(Mockito.any(UserIdentifier.class));
 		BDDMockito.verify(delegate, Mockito.times(0)).findUserByUsername(Mockito.anyString());
 	}
 	
@@ -316,11 +313,11 @@ public class CrmUserServiceCachingDelegateTests {
 		BDDMockito.willReturn("hello").given(delegate).resetPassword(Mockito.any());
 		
 		/* change password, ensure the delegate got called */
-		Assert.assertTrue(userService.changePassword(new Identifier("A"), "aa", "bb"));
+		Assert.assertTrue(userService.changePassword(new UserIdentifier("A"), "aa", "bb"));
 		BDDMockito.verify(delegate, Mockito.times(1)).changePassword(Mockito.any(), Mockito.anyString(), Mockito.anyString());
 		
 		/* reset password, ensure the delegate got called */
-		Assert.assertEquals("hello", userService.resetPassword(new Identifier("B")));
+		Assert.assertEquals("hello", userService.resetPassword(new UserIdentifier("B")));
 		BDDMockito.verify(delegate, Mockito.times(1)).resetPassword(Mockito.any());
 	}
 }
