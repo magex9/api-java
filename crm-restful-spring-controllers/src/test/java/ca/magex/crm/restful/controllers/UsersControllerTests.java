@@ -1,5 +1,8 @@
 package ca.magex.crm.restful.controllers;
 
+import org.junit.Ignore;
+
+@Ignore
 public class UsersControllerTests extends AbstractControllerTests {
 
 //	private Identifier systemOrgId;

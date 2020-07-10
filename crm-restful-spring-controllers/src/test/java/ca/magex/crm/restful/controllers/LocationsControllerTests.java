@@ -369,21 +369,21 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonArray error1 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(locationId.toString(), error1.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error1.getObject(0).getString("type"));
+		assertEquals("Error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonArray error2 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(locationId.toString(), error2.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error2.getObject(0).getString("type"));
+		assertEquals("Error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
 		JsonArray error3 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(locationId.toString(), error3.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error3.getObject(0).getString("type"));
+		assertEquals("Error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
@@ -399,21 +399,21 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonArray error4 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(locationId.toString(), error4.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error4.getObject(0).getString("type"));
+		assertEquals("Error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 		
 		JsonArray error5 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(locationId.toString(), error5.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error5.getObject(0).getString("type"));
+		assertEquals("Error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 		
 		JsonArray error6 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(locationId.toString(), error6.getObject(0).getString("identifier"));
-		assertEquals(MessageTypeIdentifier.ERROR.toString(), error6.getObject(0).getString("type"));
+		assertEquals("Error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());

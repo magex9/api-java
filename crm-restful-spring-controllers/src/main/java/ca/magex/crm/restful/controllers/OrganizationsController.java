@@ -56,8 +56,8 @@ public class OrganizationsController extends AbstractCrmController {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
 			String displayName = getString(body, "displayName", "", null, messages);
-			List<AuthenticationGroupIdentifier> authenticationGroupIds = getIdentifiers(body, "authenticationGroupIds", List.of(), null, messages);
-			List<BusinessGroupIdentifier> businessGroupIds = getIdentifiers(body, "businessGroupIds", List.of(), null, messages);
+			List<AuthenticationGroupIdentifier> authenticationGroupIds = getOptionIdentifiers(body, "authenticationGroupIds", List.of(), null, messages, AuthenticationGroupIdentifier.class, locale);
+			List<BusinessGroupIdentifier> businessGroupIds = getOptionIdentifiers(body, "businessGroupIds", List.of(), null, messages, BusinessGroupIdentifier.class, locale);
 			validate(messages);
 			return transformer.format(crm.createOrganization(displayName, authenticationGroupIds, businessGroupIds), locale);
 		});

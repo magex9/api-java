@@ -405,7 +405,7 @@ public class CrmAsserts {
 		System.out.println("====================================================");
 	}
 
-	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, MessageTypeIdentifier type, String path, String reason) {
+	public static void assertSingleJsonMessage(JsonArray json, Identifier identifier, String type, String path, String reason) {
 		assertEquals(1, json.size());
 		if (identifier == null) {
 			assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());

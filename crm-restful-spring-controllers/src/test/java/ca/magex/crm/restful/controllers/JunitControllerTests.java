@@ -35,19 +35,19 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testBadRequestExceptionRootLocale() throws Exception {
 		JsonArray json = post("/junit/400", null, HttpStatus.BAD_REQUEST, new JsonObject());
-		assertSingleJsonMessage(json, new AuthenticationGroupIdentifier("junit"), MessageTypeIdentifier.ERROR, "path", "http://api.magex.ca/crm/rest/options/phrases/validation/field/required");
+		assertSingleJsonMessage(json, new AuthenticationGroupIdentifier("junit"), "http://api.magex.ca/crm/rest/options/message-types/ERROR", "path", "http://api.magex.ca/crm/rest/options/phrases/validation/field/required");
 	}
 	
 	@Test
 	public void testBadRequestExceptionEnglishLocale() throws Exception {
 		JsonArray json = post("/junit/400", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
-		assertSingleJsonMessage(json, new AuthenticationGroupIdentifier("junit"), MessageTypeIdentifier.ERROR, "path", "Field is required");
+		assertSingleJsonMessage(json, new AuthenticationGroupIdentifier("junit"), "Error", "path", "Field is required");
 	}
 	
 	@Test
 	public void testBadRequestExceptionFrenchLocale() throws Exception {
 		JsonArray json = post("/junit/400", Lang.FRENCH, HttpStatus.BAD_REQUEST, new JsonObject());
-		assertSingleJsonMessage(json, new AuthenticationGroupIdentifier("junit"), MessageTypeIdentifier.ERROR, "path", "Champ requis");
+		assertSingleJsonMessage(json, new AuthenticationGroupIdentifier("junit"), "Erreur", "path", "Champ requis");
 	}
 	
 	@Test
@@ -148,31 +148,31 @@ public class JunitControllerTests extends AbstractControllerTests {
 	@Test
 	public void testIdentifierClassCastException() throws Exception {
 		JsonArray json = post("/junit/identifier/status", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "status", "Field is required");
+		assertSingleJsonMessage(json, null, "Error", "status", "Field is required");
 	}
 	
 	@Test
 	public void testIdentifierNoSuchElementException() throws Exception {
 		JsonArray json = post("/junit/identifier/groupId", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("groupId", false));
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "groupId", "Format is invalid");
+		assertSingleJsonMessage(json, null, "Error", "groupId", "Format is invalid");
 	}
 	
 	@Test
 	public void testStringsClassCastException() throws Exception {
 		JsonArray json = post("/junit/strings/status", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "status", "Field is required");
+		assertSingleJsonMessage(json, null, "Error", "status", "Field is required");
 	}
 	
 	@Test
 	public void testStringsNoSuchElementException() throws Exception {
 		JsonArray json = post("/junit/strings/groupId", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("groupId", false));
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "groupId", "Format is invalid");
+		assertSingleJsonMessage(json, null, "Error", "groupId", "Format is invalid");
 	}
 	
 	@Test
 	public void testObjectClassCastException() throws Exception {
 		JsonArray json = post("/junit/object/status", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "status", "Field is required");
+		assertSingleJsonMessage(json, null, "Error", "status", "Field is required");
 	}
 	
 	@Test

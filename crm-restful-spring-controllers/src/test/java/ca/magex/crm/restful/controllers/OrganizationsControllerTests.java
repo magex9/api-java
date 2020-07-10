@@ -590,7 +590,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 			.with("displayName", LoremIpsumGenerator.buildWords(20))
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.ORG, Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.IMIT, Lang.ENGLISH))));
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field too long");
+		assertSingleJsonMessage(json, null, "Error", "displayName", "Field too long");
 	}
 
 	@Test
@@ -598,7 +598,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.ORG, Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.IMIT, Lang.ENGLISH))));
-		assertSingleJsonMessage(json, null, MessageTypeIdentifier.ERROR, "displayName", "Field is required");
+		assertSingleJsonMessage(json, null, "Error", "displayName", "Field is required");
 	}
 	
 }
