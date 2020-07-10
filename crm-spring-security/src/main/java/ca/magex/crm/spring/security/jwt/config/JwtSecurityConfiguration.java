@@ -58,7 +58,7 @@ public class JwtSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.and()
 			.authorizeRequests()
 				.antMatchers("/authenticate", "/auth").permitAll()
-				.antMatchers("/validate").hasAnyRole("APP_AUTH_REQUEST", "SYS_ADMIN")
+				.antMatchers("/validate").hasAnyRole("APP_AUTHENTICATOR", "SYS_ADMIN")
 				.and()
 			.exceptionHandling()
 				.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

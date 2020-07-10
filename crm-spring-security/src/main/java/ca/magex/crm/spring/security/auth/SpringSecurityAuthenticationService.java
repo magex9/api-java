@@ -29,7 +29,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 	@Override
 	public User getAuthenticatedUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
+		if (auth == null || auth instanceof AnonymousAuthenticationToken) {
 			return null;
 		}
 		return userService.findUserByUsername(auth.getName());
@@ -37,22 +37,38 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public boolean isUserInRole(String role) {
-		return getAuthenticatedUser().isInRole(new AuthenticationRoleIdentifier(role));
+		User authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return false;
+		}
+		return authUser.isInRole(new AuthenticationRoleIdentifier(role));
 	}
 
 	@Override
 	public UserIdentifier getAuthenticatedUserId() {
-		return getAuthenticatedUser().getUserId();
+		User authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getUserId();
 	}
 
 	@Override
 	public PersonIdentifier getAuthenticatedPersonId() {
-		return getAuthenticatedUser().getPersonId();
+		User authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getPersonId();
 	}
 
 	@Override
 	public OrganizationIdentifier getAuthenticatedOrganizationId() {
-		return getAuthenticatedUser().getOrganizationId();
+		User authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getOrganizationId();
 	}
 
 	@Override

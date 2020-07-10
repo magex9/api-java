@@ -12,6 +12,7 @@ import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.system.Status;
 
 /**
+ * Wraps a CRM User with the Spring UserDetails interface
  */
 public class CrmUserDetails implements UserDetails {
 
@@ -30,7 +31,7 @@ public class CrmUserDetails implements UserDetails {
 	}
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return delegate.getAuthenticationRoleIds().stream().map(r -> "ROLE_" + r.getCode()).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+		return delegate.getAuthenticationRoleIds().stream().map(r -> "ROLE_" + r.getCode().replace('/', '_')).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	}
 
 	public String getUsername() {

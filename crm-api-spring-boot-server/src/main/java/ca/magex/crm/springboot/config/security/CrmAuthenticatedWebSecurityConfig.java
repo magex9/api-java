@@ -15,8 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
-
-
 @Configuration
 @Order(2)
 @Description("Defines the access for an authenticated CRM Server")
@@ -27,7 +25,7 @@ public class CrmAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdap
 			"/graphql",
 			"/rest/group**",
 			"/rest/init**",
-			"/rest/location**",			
+			"/rest/location**",
 			"/rest/lookup**",
 			"/rest/organization**",
 			"/rest/person**",

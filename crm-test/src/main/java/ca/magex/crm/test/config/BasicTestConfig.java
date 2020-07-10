@@ -67,7 +67,7 @@ public class BasicTestConfig implements CrmConfigurer {
 	
 	@Bean
 	public BasicPasswordService passwords() {
-		return new BasicPasswordService(passwordRepo());
+		return new BasicPasswordService(repos(), passwordRepo());
 	}
 	
 	@Bean

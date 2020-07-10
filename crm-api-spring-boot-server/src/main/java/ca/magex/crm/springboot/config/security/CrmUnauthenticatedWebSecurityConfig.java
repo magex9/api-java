@@ -16,7 +16,6 @@ import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
-
 @Order(2)
 @Description("Defines the access for an unauthenticated CRM Server")
 @Profile(CrmProfiles.CRM_NO_AUTH)

@@ -7,12 +7,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.authentication.CrmPasswordService;
+import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
+import ca.magex.crm.api.repositories.CrmUserRepository;
 
 public class BasicPasswordService implements CrmPasswordService {
 
 	private long expiration = TimeUnit.DAYS.toMillis(365);
+	
+	private CrmUserRepository userRepository;
 	
 	private CrmPasswordRepository passwordRepository;
 	
@@ -21,10 +27,11 @@ public class BasicPasswordService implements CrmPasswordService {
 	/**
 	 * Creates a new Basic Password Service using the Basic Password Encoder
 	 * 
+	 * @param userRepository;
 	 * @param passwordRepository
 	 */
-	public BasicPasswordService(CrmPasswordRepository passwordRepository) {
-		this(passwordRepository, new BasicPasswordEncoder());
+	public BasicPasswordService(CrmUserRepository userRepository, CrmPasswordRepository passwordRepository) {
+		this(userRepository, passwordRepository, new BasicPasswordEncoder());
 	}
 	
 	/**
@@ -33,9 +40,15 @@ public class BasicPasswordService implements CrmPasswordService {
 	 * @param passwordRepository
 	 * @param passwordEncoder
 	 */
-	public BasicPasswordService(CrmPasswordRepository passwordRepository, PasswordEncoder passwordEncoder) {
+	public BasicPasswordService(CrmUserRepository userRepository, CrmPasswordRepository passwordRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
 		this.passwordRepository = passwordRepository;
 		this.passwordEncoder = passwordEncoder;
+	}
+	
+	@Override
+	public User findUser(String username) {
+		return userRepository.findUsers(new UsersFilter().withUsername(username), Paging.singleInstance()).getSingleItem();
 	}
 	
 	public CrmPasswordRepository getPasswordRepository() {
