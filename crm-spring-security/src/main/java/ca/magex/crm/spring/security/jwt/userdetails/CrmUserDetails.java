@@ -30,7 +30,7 @@ public class CrmUserDetails implements UserDetails {
 	}
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return delegate.getRoles().stream().map(r -> "ROLE_" + r).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+		return delegate.getAuthenticationRoleIds().stream().map(r -> "ROLE_" + r.getCode()).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	}
 
 	public String getUsername() {

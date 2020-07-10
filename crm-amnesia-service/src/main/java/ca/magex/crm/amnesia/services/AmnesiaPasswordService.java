@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import ca.magex.crm.api.authentication.PasswordDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
 @Service("PrincipalPasswordService")
-//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPasswordService implements CrmPasswordService {
 

@@ -3,7 +3,6 @@ package ca.magex.crm.amnesia.services;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,6 @@ import ca.magex.crm.api.services.CrmLookupService;
 import ca.magex.crm.api.system.Status;
 
 @Service("PrincipalLookupService")
-//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaLookupService implements CrmLookupService {
 	

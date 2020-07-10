@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,6 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 
 @Service("PrincipalPersonService")
-//@Primary
 @Profile(MagexCrmProfiles.CRM_DATASTORE_CENTRALIZED)
 public class AmnesiaPersonService implements CrmPersonService {
 

@@ -13,13 +13,6 @@
 	<description>Spring Boot Server for the CRM APIs</description>
 
 	<dependencies>
-		<!-- Basic Service Implementation -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-amnesia-service</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<!-- Caching Support -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>

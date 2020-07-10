@@ -8,15 +8,13 @@ import org.springframework.context.annotation.Profile;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
-import ca.magex.crm.api.policies.CrmPolicies;
-import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
-import ca.magex.crm.api.services.CrmAuthenticationService;
-import ca.magex.crm.caching.config.CrmCachingConfigurerAdapter;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.config.CrmConfigurer;
 
 @Configuration
 @Profile(CrmProfiles.CRM_AUTH)
 @Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
-public class CrmAuthConfig extends CrmCachingConfigurerAdapter {	
+public class CrmAuthConfig implements CrmConfigurer {	
 	
 	private CrmAuthenticationService authenticationService;
 	
@@ -28,27 +26,15 @@ public class CrmAuthConfig extends CrmCachingConfigurerAdapter {
 	@Bean
 	@Override
 	public Crm crm() {
-		return new Crm(
-				getInitializationService(), 
-				getLookupService(), 
-				getPermissionService(), 
-				getOrganizationService(), 
-				getLocationService(), 
-				getPersonService(),
-				getUserService(), 
-				crmPolicies());
-	}
-	
-	@Bean
-	@Override
-	public CrmPolicies crmPolicies() {		
-		return new AuthenticatedPolicies(
-				authenticationService,
-				getLookupService(), 
-				getPermissionService(), 
-				getOrganizationService(), 
-				getLocationService(), 
-				getPersonService(), 
-				getUserService());
+		return null;
+//		return new Crm(
+//				getInitializationService(), 
+//				getLookupService(), 
+//				getPermissionService(), 
+//				getOrganizationService(), 
+//				getLocationService(), 
+//				getPersonService(),
+//				getUserService(), 
+//				crmPolicies());
 	}
 }

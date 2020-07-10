@@ -8,10 +8,5 @@ public class CrmProfiles {
 	
 	// CRM Authentication Profile
 	public static final String CRM_AUTH                 = "CrmAuth";
-	public static final String CRM_NO_AUTH              = "CrmNoAuth";
-	
-	// CRM Datastore Profile
-	public static final String CRM_DATASTORE_DECENTRALIZED		= "CrmDecentralizedDatastore";
-	public static final String CRM_DATASTORE_CENTRALIZED		= "CrmCentralizedDatastore";
-	
+	public static final String CRM_NO_AUTH              = "CrmNoAuth";	
 }

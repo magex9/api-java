@@ -1,6 +1,7 @@
 package ca.magex.crm.spring.security.jwt.userdetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,7 +12,6 @@ import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
 
 /**
  * User Details Manager backed by the Crm Services
@@ -21,7 +21,7 @@ import ca.magex.crm.api.system.Identifier;
 @Component
 public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPasswordService {
 
-	@Autowired private CrmUserService userService;
+	@Autowired @Qualifier("PrincipalUserService") private CrmUserService userService;
 	@Autowired private CrmPasswordService passwordService;
 
 	@Override
@@ -39,7 +39,7 @@ public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPas
 
 	@Override
 	public UserDetails updatePassword(UserDetails userDetails, String newPassword) {
-		User user = userService.findUser(new Identifier(userDetails.getUsername()));
+		User user = userService.findUserByUsername(userDetails.getUsername());
 		passwordService.updatePassword(user.getUsername(), newPassword);
 		return new CrmUserDetails(user, newPassword);
 	}
@@ -67,7 +67,7 @@ public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPas
 	@Override
 	public boolean userExists(String username) {
 		try {
-			userService.findUser(new Identifier(username));
+			userService.findUserByUsername(username);
 			return true;
 		}
 		catch(ItemNotFoundException notFound) {
