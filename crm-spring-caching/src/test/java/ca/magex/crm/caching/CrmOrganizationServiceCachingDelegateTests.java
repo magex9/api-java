@@ -220,7 +220,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 	}
 
 	@Test
-	public void testUpdateExistingOrg() {
+	public void testUpdateCachedOrg() {
 		final AtomicInteger orgIndex = new AtomicInteger();
 		final AtomicReference<OrganizationDetails> reference = new AtomicReference<OrganizationDetails>();
 		BDDMockito.willAnswer((invocation) -> {

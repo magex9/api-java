@@ -8,7 +8,6 @@ import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
@@ -43,31 +42,8 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	 * @param key
 	 * @return
 	 */
-	private List<Pair<String, Object>> optionCacheSupplier(Option option, Identifier key) {
-		if (option == null) {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), option));
-		} else {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), option),
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(option.getType() + "::" + option.getCode()), option));
-		}
-	}
-
-	/**
-	 * Provides the list of pairs for caching group details
-	 * @param details
-	 * @return
-	 */
-	private List<Pair<String, Object>> optionCacheSupplier(Option option, String code) {
-		if (option == null) {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(code), option));
-		} else {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(option.getOptionId()), option),
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(code), option));
-		}
+	private List<Pair<String, Object>> optionCacheSupplier(Option option, OptionIdentifier key) {
+		return List.of(Pair.of(CrmCacheKeyGenerator.getInstance().generateOptionKey(key), option));
 	}
 
 	@Override
@@ -87,30 +63,31 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	@Override
 	public Option enableOption(OptionIdentifier optionId) {
 		Option option = delegate.enableOption(optionId);
-		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
+		cacheTemplate.put(optionCacheSupplier(option, optionId));
 		return option;
 	}
 
 	@Override
 	public Option disableOption(OptionIdentifier optionId) {
-		Option option = delegate.disableOption(optionId);
-		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
+		Option option = delegate.disableOption(optionId);	
+		cacheTemplate.put(optionCacheSupplier(option, optionId));
 		return option;
 	}
 	
 	@Override
 	public Option updateOptionName(OptionIdentifier optionId, Localized name) {
 		Option option = delegate.updateOptionName(optionId, name);
-		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
+		cacheTemplate.put(optionCacheSupplier(option, optionId));
 		return option;
 	}
 
 	@Override
 	public Option findOptionByCode(Type type, String optionCode) {
+		OptionIdentifier optionId = type.generateId(optionCode);
 		return cacheTemplate.get(
 				() -> delegate.findOptionByCode(type, optionCode),
-				type + "::" + optionCode,
-				CrmCacheKeyGenerator::generateCodeKey,
+				optionId,
+				CrmCacheKeyGenerator.getInstance()::generateOptionKey,				
 				this::optionCacheSupplier);
 	}
 	
@@ -119,7 +96,7 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 		return cacheTemplate.get(
 				() -> delegate.findOption(optionId),
 				optionId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateOptionKey,
 				this::optionCacheSupplier);
 	}
 	

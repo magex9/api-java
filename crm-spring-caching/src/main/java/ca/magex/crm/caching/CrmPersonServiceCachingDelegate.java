@@ -48,8 +48,8 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	 */
 	private List<Pair<String, Object>> detailsCacheSupplier(PersonDetails details, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), details == null ? null : details.asSummary()));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	 */
 	private List<Pair<String, Object>> summaryCacheSupplier(PersonSummary summary, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public PersonSummary enablePerson(PersonIdentifier personId) {
 		PersonSummary summary = delegate.enablePerson(personId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(personId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(personId));
 		cacheTemplate.put(summaryCacheSupplier(summary, personId));
 		return summary;
 	}
@@ -88,7 +88,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	@Override
 	public PersonSummary disablePerson(PersonIdentifier personId) {
 		PersonSummary summary = delegate.disablePerson(personId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(personId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(personId));
 		cacheTemplate.put(summaryCacheSupplier(summary, personId));
 		return summary;
 	}
@@ -126,7 +126,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 		return cacheTemplate.get(
 				() -> delegate.findPersonSummary(personId),
 				personId,
-				CrmCacheKeyGenerator::generateSummaryKey,
+				CrmCacheKeyGenerator.getInstance()::generateSummaryKey,
 				this::summaryCacheSupplier);
 	}
 
@@ -135,7 +135,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 		return cacheTemplate.get(
 				() -> delegate.findPersonDetails(personId),
 				personId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateDetailsKey,
 				this::detailsCacheSupplier);
 	}
 

@@ -22,7 +22,7 @@ public abstract class OptionIdentifier extends Identifier {
 	@Override
 	public String getContext() {		
 		return CONTEXT;
-	}
+	}	
 	
 	public abstract Type getType();
 	

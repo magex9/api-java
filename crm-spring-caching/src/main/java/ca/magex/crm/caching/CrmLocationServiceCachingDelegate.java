@@ -47,8 +47,8 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	 */
 	private List<Pair<String, Object>> detailsCacheSupplier(LocationDetails details, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), details == null ? null : details.asSummary()));
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	 */
 	private List<Pair<String, Object>> summaryCacheSupplier(LocationSummary summary, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public LocationSummary enableLocation(LocationIdentifier locationId) {
 		LocationSummary summary = delegate.enableLocation(locationId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(locationId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(locationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, locationId));
 		return summary;
 	}
@@ -87,7 +87,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 	@Override
 	public LocationSummary disableLocation(LocationIdentifier locationId) {
 		LocationSummary summary = delegate.disableLocation(locationId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(locationId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(locationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, locationId));
 		return summary;
 	}
@@ -111,7 +111,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 		return cacheTemplate.get(
 				() -> delegate.findLocationSummary(locationId),
 				locationId,
-				CrmCacheKeyGenerator::generateSummaryKey,
+				CrmCacheKeyGenerator.getInstance()::generateSummaryKey,
 				this::summaryCacheSupplier);
 	}
 
@@ -120,7 +120,7 @@ public class CrmLocationServiceCachingDelegate implements CrmLocationService {
 		return cacheTemplate.get(
 				() -> delegate.findLocationDetails(locationId),
 				locationId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateDetailsKey,
 				this::detailsCacheSupplier);
 	}
 

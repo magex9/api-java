@@ -47,8 +47,8 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	 */
 	private List<Pair<String, Object>> detailsCacheSupplier(OrganizationDetails details, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), details == null ? null : details.asSummary()));
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	 */
 	private List<Pair<String, Object>> summaryCacheSupplier(OrganizationSummary summary, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	@Override
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationSummary summary = delegate.enableOrganization(organizationId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(organizationId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(organizationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, organizationId));
 		return summary;
 	}
@@ -87,7 +87,7 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	@Override
 	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationSummary summary = delegate.disableOrganization(organizationId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(organizationId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(organizationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, organizationId));
 		return summary;
 	}
@@ -132,7 +132,7 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 		return cacheTemplate.get(
 				() -> delegate.findOrganizationSummary(organizationId),
 				organizationId,
-				CrmCacheKeyGenerator::generateSummaryKey,
+				CrmCacheKeyGenerator.getInstance()::generateSummaryKey,
 				this::summaryCacheSupplier);
 	}
 
@@ -141,7 +141,7 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 		return cacheTemplate.get(
 				() -> delegate.findOrganizationDetails(organizationId),
 				organizationId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateDetailsKey,
 				this::detailsCacheSupplier);
 	}
 

@@ -24,22 +24,6 @@ public class CacheTemplate {
 		this.cacheManager = cacheManager;
 		this.cacheName = cacheName;
 	}
-	
-	/**
-	 * returns the backing cache manager
-	 * @return
-	 */
-	public CacheManager getCacheManager() {
-		return cacheManager;
-	}
-	
-	/**
-	 * returns the cache name being interacted with
-	 * @return
-	 */
-	public String getCacheName() {
-		return cacheName;
-	}
 
 	/**
 	 * puts the pairs into the cache regardless of whether they already exists in the cache

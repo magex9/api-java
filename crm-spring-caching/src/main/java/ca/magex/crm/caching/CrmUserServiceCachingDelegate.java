@@ -46,11 +46,11 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	private List<Pair<String, Object>> userCacheSupplier(User user, Identifier key) {
 		if (user == null) {
 			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), user));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), user));
 		} else {
 			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), user),
-					Pair.of(CrmCacheKeyGenerator.generateUsernameKey(user.getUsername()), user));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), user),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameKey(user.getUsername()), user));
 		}
 	}
 	
@@ -62,11 +62,11 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	private List<Pair<String, Object>> userCacheSupplier(User user, String username) {
 		if (user == null) {
 			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateUsernameKey(username), user));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameKey(username), user));
 		} else {
 			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateUsernameKey(username), user),
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(user.getUserId()), user));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameKey(username), user),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(user.getUserId()), user));
 		}
 	}
 
@@ -120,7 +120,7 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 		return cacheTemplate.get(
 				() -> delegate.findUser(userId),
 				userId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateDetailsKey,
 				this::userCacheSupplier);
 	}
 
@@ -129,7 +129,7 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 		return cacheTemplate.get(
 				() -> delegate.findUserByUsername(username),
 				username,
-				CrmCacheKeyGenerator::generateUsernameKey,
+				CrmCacheKeyGenerator.getInstance()::generateUsernameKey,
 				this::userCacheSupplier);
 	}
 
