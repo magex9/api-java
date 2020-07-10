@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
