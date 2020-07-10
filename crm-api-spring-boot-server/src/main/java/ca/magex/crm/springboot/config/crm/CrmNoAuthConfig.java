@@ -7,25 +7,63 @@ import org.springframework.context.annotation.Profile;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
+import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
+import ca.magex.crm.api.policies.basic.BasicPolicies;
+import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
+import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.basic.BasicServices;
+import ca.magex.crm.api.store.basic.BasicPasswordStore;
+import ca.magex.crm.api.store.basic.BasicStore;
 
 @Configuration
 @Profile(CrmProfiles.CRM_NO_AUTH)
 @Description("Configures the CRM by adding caching support, and using the Basic Policies for CRM Processing")
 public class CrmNoAuthConfig implements CrmConfigurer {	
 		
+	@Bean 
+	public BasicStore store() {
+		return new BasicStore();
+	}
+	
 	@Bean
-	@Override
-	public Crm crm() {		
-		return null;
-//		return new Crm(
-//				getInitializationService(), 
-//				getLookupService(), 
-//				getPermissionService(), 
-//				getOrganizationService(), 
-//				getLocationService(), 
-//				getPersonService(),
-//				getUserService(), 
-//				crmPolicies());
+	public BasicPasswordStore passwordStore() {
+		return new BasicPasswordStore();
+	}
+	
+	@Bean 
+	public BasicUpdateObserver observer() {
+		return new BasicUpdateObserver();
+	}
+	
+	@Bean
+	public BasicRepositories repos() {
+		return new BasicRepositories(store(), observer());
+	}
+	
+	@Bean
+	public BasicPasswordRepository passwordRepo() {
+		return new BasicPasswordRepository(passwordStore());
+	}
+	
+	@Bean 
+	public BasicServices services() {
+		return new BasicServices(repos(), passwords());
+	}
+	
+	@Bean
+	public BasicPolicies policies() {
+		return new BasicPolicies(services());
+	}	
+	
+	@Bean
+	public BasicPasswordService passwords() {
+		return new BasicPasswordService(passwordRepo());
+	}
+	
+	@Bean
+	public Crm crm() {
+		return new Crm(services(), policies());
 	}
 }
