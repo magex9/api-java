@@ -1,44 +1,146 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>CRM Initialization Page</title>
+<title>CRM Initialization Page</title>
 
-    <link rel="icon" type="image/ico" href="/crm/favicon.ico"/>
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" th:href="@{/css/crm.css}"/>
+<link rel="icon" type="image/ico" href="/crm/favicon.ico" />
+<link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/crm.css}" />
 
 </head>
 
 <body>
-
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="#">Magex.ca</a>
-</nav>
+  </nav>
 
-<main role="main" class="container">
+  <main role="main" class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1>CRM Initialization Form</h1>
+        </div>
+      </div>
+      <form 
+        th:action="@{/initialize}" 
+        th:object="${crmInitializationRequestVO}" 
+        method="post">
 
-    <div class="starter-template">
-        <h1>CRM Initialization Form</h1>
-        <form action="#" th:action="@{/initialize}" th:object="${initializationRequest}" method="post">
-          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-          <p>Organization Name: <input type="text" th:field="*{organizationName}" /></p>
-          <p>Owner Given Name: <input type="text" th:field="*{ownerGivenName}" /></p>
-          <p>Owner Middle Name: <input type="text" th:field="*{ownerMiddleName}" /></p>
-          <p>Owner Surname: <input type="text" th:field="*{ownerSurname}" /></p>
-          <p>Owner Email: <input type="text" th:field="*{ownerEmail}" /></p>
-          <p>Admin Username: <input type="text" th:field="*{username}" /></p>
-          <p>Admin Password: <input type="password" th:field="*{password}" /></p>
-          <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-        </form>
-    </div>    
-</main>
-<!-- /.container -->
+        <div class="row">
+          <div class="col-12">
+            <label><img
+              class="error-indicator"
+              th:src="@{/images/exclamation.png}"
+              th:if="${#fields.hasErrors('organizationName')}" />Organization Details:</label>
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Name" th:field="*{organizationName}" />
+              <small class="field-label text-muted">Name</small>
+              <span class="field-required">*</span>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('organizationName')}"
+              th:errors="*{organizationName}"></small>
+            </div>
+          </div> 
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <label>Owner Name:</label>
+            
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Given Name(s)" th:field="*{ownerGivenName}" />
+              <small class="field-label text-muted">Given Name(s)</small>
+              <span class="field-required">*</span>&nbsp;<small
+                class="field-label error-text"
+                th:if="${#fields.hasErrors('ownerGivenName')}"
+                th:errors="*{ownerGivenName}"></small>
+            </div>
+            
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Middle Name" th:field="*{ownerMiddleName}" />
+              <small class="field-label text-muted">Middle Name</small>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('ownerMiddleName')}"
+              th:errors="*{ownerMiddleName}"></small>
+            </div>
+            
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Surname" th:field="*{ownerSurname}" />
+              <small class="field-label text-muted">Surname</small>
+              <span class="field-required">*</span>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('ownerSurname')}"
+              th:errors="*{ownerSurname}"></small>
+            </div>
+          </div>
+          <div class="col-6">
+            <label>Contact Details:</label>
+            
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Email" th:field="*{ownerEmail}" />
+              <small class="field-label text-muted">Email</small>
+              <span class="field-required">*</span>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('ownerEmail')}"
+              th:errors="*{ownerEmail}"></small>
+            </div>
+            
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Phone Number" th:field="*{ownerTelephone}" />
+              <small class="field-label text-muted">Phone Number</small>
+              <span class="field-required">*</span>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('ownerTelephone')}"
+              th:errors="*{ownerTelephone}"></small>
+            </div>
+            
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Fax Number" th:field="*{ownerFax}" />
+              <small class="field-label text-muted">Fax Number</small>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('ownerFax')}"
+              th:errors="*{ownerFax}"></small>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <label>System User</label>
+          </div>          
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <input class="form-control" type="text" placeholder="Username" th:field="*{username}" />
+              <small class="field-label text-muted">Username</small>
+              <span class="field-required">*</span>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('username')}"
+              th:errors="*{username}"></small>
+            </div>
+          </div>
+          
+          <div class="col-6">
+            <div class="form-group">
+              <input class="form-control" type="password" placeholder="Password" th:field="*{password}" />
+              <small class="field-label text-muted">Password</small>
+              <span class="field-required">*</span>&nbsp;<small
+              class="field-label error-text"
+              th:if="${#fields.hasErrors('password')}"
+              th:errors="*{password}"></small>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="reset" class="btn btn-primary">Reset</button>
+      </form>
+  </main>
+  <!-- /.container -->
 
-<!-- must load JQuery before loading Bootstrap or else bad things happen -->
-<script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-<script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+  <!-- must load JQuery before loading Bootstrap or else bad things happen -->
+  <script type="text/javascript" th:src="@{webjars/jquery/3.4.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
 </body>
 </html>
