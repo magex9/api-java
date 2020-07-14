@@ -51,19 +51,19 @@
 		<module>crm-helloworld</module>	
 		
 		<!-- Service Implementations -->
- 		<module>crm-hazelcast-service</module>
+ 		<!-- <module>crm-hazelcast-service</module> -->
 		
 		<!-- Caching Implementations -->
 		<module>crm-spring-caching</module>
 
 		<!-- Security Implementations -->
 		<module>crm-spring-security</module>
-		<module>crm-auth-spring-boot-server</module>
+		<!-- <module>crm-auth-spring-boot-server</module> -->
 		
 		<!-- GraphQL Endpoint Implementation -->
 		<module>crm-graphql-spring-controllers</module>
-		<module>crm-graphql-spring-boot-server</module>		
-		<module>crm-graphql-client</module>
+		<!-- <module>crm-graphql-spring-boot-server</module> -->		
+		<!-- <module>crm-graphql-client</module> -->
 		
 		<!-- Eureka Service Registry -->
 <!-- 		<module>crm-eureka-spring-boot-server</module> -->
@@ -72,7 +72,6 @@
 		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-spring-controllers</module>
-		<module>crm-restful-spring-boot-server</module>
 <!-- 		<module>crm-restful-client</module> -->
 
 		<!-- Unified Server -->
