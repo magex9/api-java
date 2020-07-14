@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.User;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -32,12 +31,9 @@ public class UserDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<User> createUser() {
 		return (environment) -> {
 			logger.info("Entering createUser@" + UserDataFetcher.class.getSimpleName());
-			/* find the person summary for this person id */
-			PersonSummary person = crm.findPersonSummary(new PersonIdentifier((String) environment.getArgument("personId")));
 			/* create the new user */
 			return crm.createUser(
-					person.getOrganizationId(),
-					person.getPersonId(),
+					new PersonIdentifier((String) environment.getArgument("personId")),
 					environment.getArgument("username"),
 					extractAuthenticationRoles(environment, "authenticationRoles"));
 		};

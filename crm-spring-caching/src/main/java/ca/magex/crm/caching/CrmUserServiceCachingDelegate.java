@@ -11,7 +11,6 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
-import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.caching.util.CacheTemplate;
@@ -71,8 +70,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	public User createUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		User user = delegate.createUser(organizationId, personId, username, authenticationRoleIds);
+	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		User user = delegate.createUser(personId, username, authenticationRoleIds);
 		cacheTemplate.put(userCacheSupplier(user, user.getUserId()));
 		return user;
 	}

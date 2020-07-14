@@ -50,6 +50,8 @@ input CommunicationInput {
 input OrganizationFilter {
 	displayName: String
 	status: String
+	authenticationGroupId: String
+	businessGroupId: String
 }
 
 input LocationFilter {

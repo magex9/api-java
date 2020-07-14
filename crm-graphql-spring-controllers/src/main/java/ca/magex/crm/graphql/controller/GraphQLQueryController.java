@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class GraphQLQueryController {
 
 	@Value("${server.external.address:localhost}") String serverAddress;
-	@Value("${server.port}") String serverPort;
-	@Value("${server.servlet.context-path}") String contextPath;
+	@Value("${server.port:8080}") String serverPort;
+	@Value("${server.servlet.context-path:/crm}") String contextPath;
 	
 	@GetMapping("/graphql/query")
 	public String getQueryUI(Model model, HttpServletRequest req) {
