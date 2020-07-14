@@ -1,5 +1,8 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,25 +19,39 @@ public class CommonDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LocationDataFetcher.class);
 	
-	public DataFetcher<String> getCountryValue() {
+	public DataFetcher<Map<String,String>> getCountryChoice() {
 		return (environment) -> {
 			logger.debug("Entering getCountryValue@" + CommonDataFetcher.class.getSimpleName());
 			MailingAddress source = environment.getSource();
 			if (source.getCountry() == null) {
 				return null;
 			}
-			return source.getCountry().getValue();
+			Map<String,String> mapped = new HashMap<>();
+			if (source.getCountry().getIdentifier() != null) {
+				mapped.put("code", source.getCountry().getIdentifier().getCode());
+			}			
+			if (source.getCountry().getOther() != null) {
+				mapped.put("other", source.getCountry().getOther());
+			}
+			return mapped;
 		};
 	}
 	
-	public DataFetcher<String> getProvinceValue() {
+	public DataFetcher<Map<String,String>> getProvinceChoice() {
 		return (environment) -> {
 			logger.debug("Entering getProvinceValue@" + CommonDataFetcher.class.getSimpleName());
 			MailingAddress source = environment.getSource();
 			if (source.getProvince() == null) {
 				return null;
 			}
-			return source.getProvince().getValue();
+			Map<String,String> mapped = new HashMap<>();
+			if (source.getProvince().getIdentifier() != null) {
+				mapped.put("code", source.getProvince().getIdentifier().getCode());
+			}			
+			if (source.getProvince().getOther() != null) {
+				mapped.put("other", source.getProvince().getOther());
+			}
+			return mapped;
 		};
 	}
 	
