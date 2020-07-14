@@ -21,8 +21,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
 
 public class JunitControllerTests extends AbstractControllerTests {
 	
@@ -134,21 +137,47 @@ public class JunitControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testIdentifierValidLinked() throws Exception {
-		JsonObject json = post("/junit/identifier/testId", null, HttpStatus.OK, new JsonObject()
+		JsonText json = post("/junit/identifier/testId", null, HttpStatus.OK, new JsonObject()
 			.with("testId", new AuthenticationGroupIdentifier("ORG").toString()));
-		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), json.keys());
-		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationGroups", json.getString("@context"));
-		assertEquals("http://api.magex.ca/crm/rest/options/authentication-groups/grp", json.getString("@id"));
-		assertEquals("GRP", json.getString("@value"));
-		assertEquals("Group", json.getString("@en"));
-		assertEquals("Groupe", json.getString("@fr"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-groups/org", json.value());
 	}
 	
-//	@Test
-//	public void testIdentifierClassCastException() throws Exception {
-//		JsonArray json = post("/junit/identifier/status", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
-//		assertSingleJsonMessage(json, null, "Error", "status", "Field is required");
-//	}
+	@Test
+	public void testGetIdentifierFound() throws Exception {
+		JsonText json = post("/junit/identifier/groupId", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("groupId", new OrganizationIdentifier("abc").toString()));
+		assertEquals("abc", json.value());
+	}
+	
+	@Test
+	public void testGetIdentifierNotFoundMandatory() throws Exception {
+		JsonArray json = post("/junit/identifier/requiredGroup", Lang.FRENCH, HttpStatus.BAD_REQUEST, new JsonObject());
+		assertEquals(1, json.size());
+		assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
+		assertEquals("Erreur", json.getObject(0).getString("type"));
+		assertEquals("requiredGroup", json.getObject(0).getString("path"));
+		assertEquals("Champ requis", json.getObject(0).getString("reason"));	
+	}
+	
+	@Test
+	public void testGetIdentifierNotFoundOptional() throws Exception {
+		JsonElement json = post("/junit/identifier/optionalGroup", Lang.FRENCH, HttpStatus.OK, new JsonObject());
+		assertEquals(JsonElement.UNDEFINED, json);
+		System.out.println(json);
+	}
+	
+	@Test
+	public void testGetIdentifierInvalidFormat() throws Exception {
+		JsonArray json = post("/junit/identifier/groupId", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("groupId", false));
+		assertEquals(1, json.size());
+		assertEquals(List.of("type", "path", "reason"), json.getObject(0).keys());
+		assertEquals("Error", json.getObject(0).getString("type"));
+		assertEquals("groupId", json.getObject(0).getString("path"));
+		assertEquals("Format is invalid", json.getObject(0).getString("reason"));
+	}
+
+	
+	//Option option = crm.findOptionByCode(Type.BUSINESS_GROUP, BusinessGroupIdentifier.EXTERNAL.getCode());
+	//JsonObject json = post("/junit/identifier/groupId", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("groupId", option.getName(Lang.ENGLISH)));
 	
 	@Test
 	public void testIdentifierNoSuchElementException() throws Exception {

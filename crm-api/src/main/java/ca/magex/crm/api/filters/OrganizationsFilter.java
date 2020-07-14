@@ -112,8 +112,6 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	
 	@Override
 	public boolean apply(OrganizationDetails instance) {
-		System.out.println(instance.getDisplayName() + " contains " + this.getBusinessGroupId());
-		instance.getBusinessGroupIds().forEach(i -> System.out.println("\t" + i));
 		return List.of(instance)
 			.stream()
 			.filter(g -> this.getAuthenticationGroupId() == null || g.getAuthenticationGroupIds().contains(this.getAuthenticationGroupId()))

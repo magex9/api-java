@@ -63,7 +63,7 @@ public abstract class AbstractCrmController {
 			JsonElement json = func.apply(messages, jsonTransformerFactory.findByClass(type), extractLocale(req));
 			res.setStatus(200);
 			res.setContentType(getContentType(req));
-			res.getWriter().write(JsonFormatter.formatted(json));
+			res.getWriter().write(json == null ? "null" : JsonFormatter.formatted(json));
 		} catch (BadRequestException e) {
 			logger.info("Bad request information: " + e.getMessages());
 			JsonArray errors = createErrorMessages(extractLocale(req), e);
@@ -94,7 +94,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -107,7 +108,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -123,7 +125,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -142,7 +145,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -154,7 +158,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -166,7 +171,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -178,7 +184,8 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			if (required)
+				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}

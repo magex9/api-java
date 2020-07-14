@@ -15,6 +15,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -30,9 +31,20 @@ public class JunitController extends AbstractCrmController {
 	@PostMapping("/rest/junit/identifier/{key}")
 	public void getIdentifier(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("key") String key) throws IOException {
+		handle(req, res, Identifier.class, (messages, transformer, locale) -> {
+			JsonObject body = extractBody(req);
+			Identifier identifier = getIdentifier(body, key, key.contains("required"), null, null, messages);
+			validate(messages);
+			return transformer.format(identifier, locale);
+		});
+	}
+
+	@PostMapping("/rest/junit/option/{key}")
+	public void getOption(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			OptionIdentifier identifier = getIdentifier(body, key, true, null, null, messages);
+			OptionIdentifier identifier = getIdentifier(body, key, key.contains("required"), null, null, messages);
 			validate(messages);
 			return transformer.format(new Option(identifier, null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
 		});
@@ -43,7 +55,7 @@ public class JunitController extends AbstractCrmController {
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			getStrings(body, key, true, null, null, messages);
+			getStrings(body, key, key.contains("required"), null, null, messages);
 			validate(messages);
 			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
 		});
@@ -54,7 +66,7 @@ public class JunitController extends AbstractCrmController {
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			getObject(MailingAddress.class, body, key, true, null, null, messages, locale);
+			getObject(MailingAddress.class, body, key, key.contains("required"), null, null, messages, locale);
 			validate(messages);
 			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
 		});
