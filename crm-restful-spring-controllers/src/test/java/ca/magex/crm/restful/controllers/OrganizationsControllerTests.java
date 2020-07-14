@@ -9,9 +9,9 @@ import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.assertSingleJsonMessage;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
@@ -46,8 +46,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testCreateOrganization() throws Exception {
 		// Get the initial list of groups to make sure they are blank
 		JsonObject orig = get("/organizations");
-		assertEquals(1, orig.getInt("page"));
-		assertEquals(1, orig.getInt("total"));
+		assertEquals(1, orig.getInt("page").intValue());
+		assertEquals(1, orig.getInt("total").intValue());
 		assertEquals(false, orig.getBoolean("hasNext"));
 		assertEquals(false, orig.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, orig.get("content").getClass());
@@ -94,8 +94,8 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals("http://api.magex.ca/crm/rest/options/business-groups/imit", jsonld.getArray("businessGroupIds").getObject(0).getString("@id"));
 
 		JsonObject paging = get("/organizations", Lang.ENGLISH, HttpStatus.OK);
-		assertEquals(1, paging.getInt("page"));
-		assertEquals(2, paging.getInt("total"));
+		assertEquals(1, paging.getInt("page").intValue());
+		assertEquals(2, paging.getInt("total").intValue());
 		assertEquals(false, paging.getBoolean("hasNext"));
 		assertEquals(false, paging.getBoolean("hasPrevious"));
 		assertEquals(JsonArray.class, paging.get("content").getClass());
@@ -407,7 +407,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 			.with("displayName", "Updated name")
 			.with("mainLocationId", locationId.toString())
-			.with("mainContactId", personId.toString()));
+			.with("mainContactId", personId.toString())
+			.with("authenticationGroupIds", new JsonArray(List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.SYS, Lang.ENGLISH))))
+			.with("businessGroupIds", new JsonArray(List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.EXECS, Lang.ENGLISH)))));
 		
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds"), json.keys());
@@ -417,9 +419,9 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		assertEquals(locationId.getCode(), json.getString("mainLocationId"));
 		assertEquals(personId.getCode(), json.getString("mainContactId"));
 		assertEquals(1, json.getArray("authenticationGroupIds").size());
-		assertEquals("Organization", json.getArray("authenticationGroupIds").getString(0));
+		assertEquals("System", json.getArray("authenticationGroupIds").getString(0));
 		assertEquals(1, json.getArray("businessGroupIds").size());
-		assertEquals("External", json.getArray("businessGroupIds").getString(0));
+		assertEquals("Executives", json.getArray("businessGroupIds").getString(0));
 		
 		org = crm.findOrganizationDetails(organizationId);
 		assertEquals(organizationId, org.getOrganizationId());
@@ -524,6 +526,72 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	}
 	
 	@Test
+	public void testPutOrganizationAuthenticationGroupIds() throws Exception {
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
+		
+		JsonObject root = get(organizationId + "/authenticationGroupIds", Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("total", "content"), root.keys());
+		assertEquals(1, root.getNumber("total"));
+		assertEquals(1, root.getArray("content").size());
+		assertEquals("ORG", root.getArray("content").getString(0));
+		
+		JsonObject english = get(organizationId + "/authenticationGroupIds", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("total", "content"), english.keys());
+		assertEquals(1, english.getNumber("total"));
+		assertEquals(1, english.getArray("content").size());
+		assertEquals("Organization", english.getArray("content").getString(0));
+		
+		JsonObject french = get(organizationId + "/authenticationGroupIds", Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("total", "content"), french.keys());
+		assertEquals(1, french.getNumber("total"));
+		assertEquals(1, french.getArray("content").size());
+		assertEquals("Organisation", french.getArray("content").getString(0));
+		
+		JsonObject linked = get(organizationId + "/authenticationGroupIds", null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("total", "content"), linked.keys());
+		assertEquals(1, linked.getNumber("total"));
+		assertEquals(1, linked.getArray("content").size());
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-groups/org", linked.getArray("content").getString(0));
+	}
+	
+	@Test
+	public void testPutOrganizationBusinessGroupIds() throws Exception {
+		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
+		
+		JsonObject root = get(organizationId + "/businessGroupIds", Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("total", "content"), root.keys());
+		assertEquals(1, root.getNumber("total"));
+		assertEquals(1, root.getArray("content").size());
+		assertEquals("EXTERNAL", root.getArray("content").getString(0));
+		
+		JsonObject english = get(organizationId + "/businessGroupIds", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("total", "content"), english.keys());
+		assertEquals(1, english.getNumber("total"));
+		assertEquals(1, english.getArray("content").size());
+		assertEquals("External", english.getArray("content").getString(0));
+		
+		JsonObject french = get(organizationId + "/businessGroupIds", Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("total", "content"), french.keys());
+		assertEquals(1, french.getNumber("total"));
+		assertEquals(1, french.getArray("content").size());
+		assertEquals("Externe", french.getArray("content").getString(0));
+		
+		JsonObject linked = get(organizationId + "/businessGroupIds", null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("total", "content"), linked.keys());
+		assertEquals(1, linked.getNumber("total"));
+		assertEquals(1, linked.getArray("content").size());
+		assertEquals("http://api.magex.ca/crm/rest/options/business-groups/external", linked.getArray("content").getString(0));
+	}
+	
+	@Test
 	public void testEnableDisableOrganization() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		assertEquals(Status.ACTIVE, crm.findOrganizationSummary(organizationId).getStatus());
@@ -597,6 +665,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 		JsonArray json = post("/organizations", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject()
 			.with("authenticationGroupIds", List.of(new IdentifierJsonTransformer(crm).format(AuthenticationGroupIdentifier.ORG, Lang.ENGLISH)))
 			.with("businessGroupIds", List.of(new IdentifierJsonTransformer(crm).format(BusinessGroupIdentifier.IMIT, Lang.ENGLISH))));
+		System.out.println(json);
 		assertSingleJsonMessage(json, null, "Error", "displayName", "Field is required");
 	}
 	

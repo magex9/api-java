@@ -87,35 +87,35 @@ public abstract class AbstractCrmController {
 			throw new BadRequestException("User input validation errors", messages);
 	}
 	
-	protected <I extends Identifier> I getIdentifier(JsonObject json, String key, I defaultValue, Identifier identifier, List<Message> messages) {
+	protected <I extends Identifier> I getIdentifier(JsonObject json, String key, boolean required, I defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return IdentifierFactory.forId(json.getString(key));
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <I extends Identifier> List<I> getIdentifiers(JsonObject json, String key, List<I> defaultValue, Identifier identifier, List<Message> messages) {
+	protected <I extends Identifier> List<I> getIdentifiers(JsonObject json, String key, boolean required, List<I> defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forId(((JsonText)e).value())).collect(Collectors.toList());
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
 	
-	protected <I extends OptionIdentifier> I getOptionIdentifier(JsonObject json, String key, I defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
+	protected <I extends OptionIdentifier> I getOptionIdentifier(JsonObject json, String key, boolean required, I defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
 		try {
 			if (locale == null) {
-				return IdentifierFactory.forId(json.getString(key));
+				return IdentifierFactory.forOptionId(json.getString(key));
 			} else {
 				return crm.findOptions(crm.defaultOptionsFilter().withType(IdentifierFactory.getType(cls)).withName(new Localized(locale, json.getString(key)))).getSingleItem().getOptionId();
 			}
@@ -123,16 +123,16 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <I extends OptionIdentifier> List<I> getOptionIdentifiers(JsonObject json, String key, List<I> defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
+	protected <I extends OptionIdentifier> List<I> getOptionIdentifiers(JsonObject json, String key, boolean required, List<I> defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
 		try {
 			if (locale == null) {
-				return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forId(((JsonText)e).value())).collect(Collectors.toList());
+				return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forOptionId(((JsonText)e).value())).collect(Collectors.toList());
 			} else {
 				return json.getArray(key).stream()
 					.map(e -> (I)crm.findOptions(crm.defaultOptionsFilter().withType(IdentifierFactory.getType(cls)).withName(new Localized(locale, ((JsonText)e).value()))).getSingleItem().getOptionId())
@@ -142,43 +142,43 @@ public abstract class AbstractCrmController {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
 	
-	protected String getString(JsonObject json, String key, String defaultValue, Identifier identifier, List<Message> messages) {
+	protected String getString(JsonObject json, String key, boolean required, String defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getString(key);
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
 	
-	protected List<String> getStrings(JsonObject json, String key, List<String> defaultValue, Identifier identifier, List<Message> messages) {
+	protected List<String> getStrings(JsonObject json, String key, boolean required, List<String> defaultValue, Identifier identifier, List<Message> messages) {
 		try {
 			return json.getArray(key).stream().map(e -> ((JsonText)e).value()).collect(Collectors.toList());
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
 	
-	protected <T> T getObject(Class<T> cls, JsonObject body, String key, T defaultValue, Identifier identifier, List<Message> messages, Locale locale) {
+	protected <T> T getObject(Class<T> cls, JsonObject body, String key, boolean required, T defaultValue, Identifier identifier, List<Message> messages, Locale locale) {
 		try {
-			return jsonTransformerFactory.findByClass(cls).parse(body.getObject(key), locale);
+			return jsonTransformerFactory.findByClass(cls).parse(body.get(key), locale);
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
 		} catch (NoSuchElementException e) {
-			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
+			//messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
 		}
 	}
@@ -234,6 +234,18 @@ public abstract class AbstractCrmController {
 			return JsonParser.parseObject(json);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to extract body from request", e);
+		}
+	}
+	
+	protected JsonObject extractQuery(HttpServletRequest req) {
+		try {
+			List<JsonPair> pairs = new ArrayList<>();
+			for (String key : req.getParameterMap().keySet()) {
+				pairs.add(new JsonPair(key, new JsonText(req.getParameter(key))));
+			}
+			return new JsonObject(pairs);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to extract query from request", e);
 		}
 	}
 

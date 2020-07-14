@@ -55,13 +55,13 @@ public class PersonsController extends AbstractCrmController {
 	public void createPerson(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
-			OrganizationIdentifier organizationId = getIdentifier(body, "organizationId", null, null, messages);
-			PersonName name = getObject(PersonName.class, body, "name", null, null, messages, locale);
-			MailingAddress address = getObject(MailingAddress.class, body, "address", null, null, messages, locale);
-			Communication communication = getObject(Communication.class, body, "communication", null, null, messages, locale);
-			List<BusinessRoleIdentifier> businessRoleIds = getOptionIdentifiers(body, "businessRoleIds", List.of(), null, messages, BusinessRoleIdentifier.class, locale);
+			OrganizationIdentifier organizationId = getIdentifier(body, "organizationId", true, null, null, messages);
+			PersonName name = getObject(PersonName.class, body, "name", true, null, null, messages, locale);
+			MailingAddress address = getObject(MailingAddress.class, body, "address", true, null, null, messages, locale);
+			Communication communication = getObject(Communication.class, body, "communication", true, null, null, messages, locale);
+			List<BusinessRoleIdentifier> roles = getOptionIdentifiers(body, "businessRoleIds", true, List.of(), null, messages, BusinessRoleIdentifier.class, locale);
 			validate(messages);
-			return transformer.format(crm.createPerson(organizationId, name, address, communication, businessRoleIds), locale);
+			return transformer.format(crm.createPerson(organizationId, name, address, communication, roles), locale);
 		});
 	}
 
@@ -79,16 +79,16 @@ public class PersonsController extends AbstractCrmController {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			if (body.contains("name")) {
-				crm.updatePersonName(personId, getObject(PersonName.class, body, "name", null, personId, messages, locale));
+				crm.updatePersonName(personId, getObject(PersonName.class, body, "name", true, null, personId, messages, locale));
 			}
 			if (body.contains("address")) {
-				crm.updatePersonAddress(personId, getObject(MailingAddress.class, body, "address", null, personId, messages, locale));
+				crm.updatePersonAddress(personId, getObject(MailingAddress.class, body, "address", true, null, personId, messages, locale));
 			}
 			if (body.contains("communication")) {
-				crm.updatePersonCommunication(personId, getObject(Communication.class, body, "communication", null, personId, messages, locale));
+				crm.updatePersonCommunication(personId, getObject(Communication.class, body, "communication", true, null, personId, messages, locale));
 			}
 			if (body.contains("businessRoleIds")) {
-				crm.updatePersonRoles(personId, getOptionIdentifiers(body, "businessRoleIds", List.of(), personId, messages, BusinessRoleIdentifier.class, locale));
+				crm.updatePersonRoles(personId, getOptionIdentifiers(body, "businessRoleIds", true, List.of(), personId, messages, BusinessRoleIdentifier.class, locale));
 			}
 			validate(messages);
 			return transformer.format(crm.findPersonDetails(personId), locale);
@@ -127,7 +127,7 @@ public class PersonsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/rest/persons/{personId}/roles")
+	@GetMapping("/rest/persons/{personId}/businessRoles")
 	public void getPersonPosition(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, BusinessRoleIdentifier.class, (messages, transformer, locale) -> {

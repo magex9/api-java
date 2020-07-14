@@ -93,6 +93,23 @@ public class IdentifierFactory {
 		throw new IllegalArgumentException("Unidentifiable id: " + id);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <I extends Identifier> I forOptionId(CharSequence id) {
+		if (StringUtils.startsWith(id, Crm.REST_BASE))
+			id = id.subSequence(Crm.REST_BASE.length(), id.length());
+		for (String context : CONTEXT_CLASS.keySet()) {
+			if (StringUtils.startsWith(id, context)) {		
+				try {
+					return (I) CONTEXT_CLASS.get(context).getConstructor(CharSequence.class)
+						.newInstance(id.subSequence(context.length(), id.length()).toString().toUpperCase());
+				} catch (ReflectiveOperationException e) {
+					throw new IllegalArgumentException("Unable to create identifier: " + context + " with " + id, e);
+				}
+			}
+		}
+		throw new IllegalArgumentException("Unidentifiable id: " + id);
+	}
+	
 	public static <I extends Identifier> I forId(CharSequence id, Class<I> cls) {
 		try {
 			return (I)cls.getConstructor(CharSequence.class).newInstance(id);

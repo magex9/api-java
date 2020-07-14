@@ -384,10 +384,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public User createUser(OrganizationIdentifier organizationIdentifier, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
+	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
-		return userService.createUser(validate(prototypeUser(organizationIdentifier, personId, username, roles)));
+		return userService.createUser(validate(prototypeUser(personId, username, roles)));
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	@Before
 	public void setup() {
 		initialize();
-		organizationId = createTestOrganization();
+		organizationId = createTestOrganization("Test Org");
 	}
 	
 	@Test
@@ -344,6 +344,28 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
 		JsonObject json = patch(locationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
+
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
+		assertEquals(locationId.getCode(), json.getString("locationId"));
+		assertEquals(organizationId.getCode(), json.getString("organizationId"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals("MAIN", json.getString("reference"));
+		assertEquals("Main Location", json.getString("displayName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), json.getObject("address").keys());
+		assertEquals("465 Huntington Ave", json.getObject("address").getString("street"));
+		assertEquals("Boston", json.getObject("address").getString("city"));
+		assertEquals("Massachusetts", json.getObject("address").getString("province"));
+		assertEquals("United States", json.getObject("address").getString("country"));
+		assertEquals("02115", json.getObject("address").getString("postalCode"));
+	}
+	
+	@Test
+	public void testUpdatingAddressEndpoint() throws Exception {
+		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
+		
+		JsonObject json = put(locationId + "/address", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
 
 		//JsonAsserts.print(json, "json");

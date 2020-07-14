@@ -76,10 +76,10 @@ public class LocationsController extends AbstractCrmController {
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
-			OrganizationIdentifier organizationId = getIdentifier(body, "organizationId", null, null, messages);
-			String displayName = getString(body, "displayName", "", null, messages);
-			String reference = getString(body, "reference", "", null, messages);
-			MailingAddress address = getObject(MailingAddress.class, body, "address", null, null, messages, locale);
+			OrganizationIdentifier organizationId = getIdentifier(body, "organizationId", false, null, null, messages);
+			String displayName = getString(body, "displayName", false, "", null, messages);
+			String reference = getString(body, "reference", false, "", null, messages);
+			MailingAddress address = getObject(MailingAddress.class, body, "address", false, null, null, messages, locale);
 			validate(messages);
 			return transformer.format(crm.createLocation(organizationId, reference, displayName, address), locale);
 		});
@@ -99,10 +99,10 @@ public class LocationsController extends AbstractCrmController {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			if (body.contains("displayName")) {
-				crm.updateLocationName(locationId, getString(body, "displayName", null, locationId, messages));
+				crm.updateLocationName(locationId, getString(body, "displayName", true, null, locationId, messages));
 			}
 			if (body.contains("address")) {
-				crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", null, locationId, messages, locale));
+				crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", true, null, locationId, messages, locale));
 			}
 			validate(messages);
 			return transformer.format(crm.findLocationDetails(locationId), locale);
@@ -130,7 +130,7 @@ public class LocationsController extends AbstractCrmController {
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", null, locationId, messages, locale));
+			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", true, null, locationId, messages, locale));
 			validate(messages);
 			return transformer.format(crm.findLocationDetails(locationId), locale);
 		});

@@ -31,7 +31,7 @@ public class IdentifierJsonTransformer extends AbstractJsonTransformer<Identifie
 	@Override
 	public JsonElement formatLocalized(Identifier identifier, Locale locale) {
 		if (locale == null) {
-			return new JsonText(Crm.REST_BASE + identifier);
+			return new JsonText(Crm.REST_BASE + identifier.toString().toLowerCase());
 		} else {
 			if (identifier instanceof OptionIdentifier) {
 				return new JsonText(crm.findOption((OptionIdentifier)identifier).getName(locale));

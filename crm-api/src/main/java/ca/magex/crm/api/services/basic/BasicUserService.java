@@ -11,7 +11,6 @@ import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
-import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
@@ -27,8 +26,8 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public User createUser(OrganizationIdentifier organizationIdentifier, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
-		return repos.saveUser(new User(repos.generateUserId(), organizationIdentifier, personId, username, Status.ACTIVE, roleIds));
+	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
+		return repos.saveUser(new User(repos.generateUserId(), repos.findPersonSummary(personId).getOrganizationId(), personId, username, Status.ACTIVE, roleIds));
 	}
 
 	@Override

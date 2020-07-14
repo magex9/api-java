@@ -32,7 +32,7 @@ public class JunitController extends AbstractCrmController {
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			OptionIdentifier identifier = getIdentifier(body, key, null, null, messages);
+			OptionIdentifier identifier = getIdentifier(body, key, true, null, null, messages);
 			validate(messages);
 			return transformer.format(new Option(identifier, null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
 		});
@@ -43,7 +43,7 @@ public class JunitController extends AbstractCrmController {
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			getStrings(body, key, null, null, messages);
+			getStrings(body, key, true, null, null, messages);
 			validate(messages);
 			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
 		});
@@ -54,7 +54,7 @@ public class JunitController extends AbstractCrmController {
 			@PathVariable("key") String key) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
-			getObject(MailingAddress.class, body, key, null, null, messages, locale);
+			getObject(MailingAddress.class, body, key, true, null, null, messages, locale);
 			validate(messages);
 			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
 		});

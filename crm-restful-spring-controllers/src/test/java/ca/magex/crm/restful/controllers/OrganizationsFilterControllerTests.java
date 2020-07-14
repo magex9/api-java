@@ -18,6 +18,10 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.json.model.JsonObject;
 
 public class OrganizationsFilterControllerTests extends AbstractControllerTests {
@@ -212,6 +216,50 @@ public class OrganizationsFilterControllerTests extends AbstractControllerTests 
 		assertEquals(org3.getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Inactif", json.getArray("content").getObject(0).getString("status"));
 		assertEquals("An inactive org 3", json.getArray("content").getObject(0).getString("displayName"));
+	}
+	
+	@Test
+	public void testFilterByAuthenticationGroup() throws Exception {
+		Option option = crm.findOptionByCode(Type.AUTHENTICATION_GROUP, AuthenticationGroupIdentifier.SYS.getCode());
+		JsonObject json = get("/organizations", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationGroupId", option.getName(Lang.ENGLISH)));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
+		assertEquals(1, json.getNumber("page"));
+		assertEquals(10, json.getNumber("limit"));
+		assertEquals(2, json.getNumber("total"));
+		assertEquals(false, json.getBoolean("hasNext"));
+		assertEquals(false, json.getBoolean("hasPrevious"));
+		assertEquals(2, json.getArray("content").size());
+		assertEquals(List.of("organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
+		assertEquals(org1.getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
+		assertEquals("A new org 1", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals(List.of("organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
+		assertEquals(getSystemOrganizationIdentifier().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
+		assertEquals("System", json.getArray("content").getObject(1).getString("displayName"));
+	}
+	
+	@Test
+	public void testFilterByBusinessGroup() throws Exception {
+		Option option = crm.findOptionByCode(Type.BUSINESS_GROUP, BusinessGroupIdentifier.EXTERNAL.getCode());
+		JsonObject json = get("/organizations", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("businessGroupId", option.getName(Lang.FRENCH)));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
+		assertEquals(1, json.getNumber("page"));
+		assertEquals(10, json.getNumber("limit"));
+		assertEquals(2, json.getNumber("total"));
+		assertEquals(false, json.getBoolean("hasNext"));
+		assertEquals(false, json.getBoolean("hasPrevious"));
+		assertEquals(2, json.getArray("content").size());
+		assertEquals(List.of("organizationId", "status", "displayName"), json.getArray("content").getObject(0).keys());
+		assertEquals(org2.getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals("Actif", json.getArray("content").getObject(0).getString("status"));
+		assertEquals("A néw org 2", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals(List.of("organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
+		assertEquals(org3.getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals("Inactif", json.getArray("content").getObject(1).getString("status"));
+		assertEquals("An inactive org 3", json.getArray("content").getObject(1).getString("displayName"));
 	}
 	
 }

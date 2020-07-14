@@ -1,6 +1,7 @@
 package ca.magex.crm.restful.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,14 +21,12 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
-import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
-import ca.magex.crm.transform.json.StatusJsonTransformer;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.model.JsonText;
 
 @Controller
 public class OrganizationsController extends AbstractCrmController {
@@ -45,19 +44,23 @@ public class OrganizationsController extends AbstractCrmController {
 	}
 	
 	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
-		Status status = req.getParameter("status") == null ? null : new StatusJsonTransformer(crm).parseJsonText(new JsonText(req.getParameter("status")), locale);
-		String displayName = req.getParameter("displayName");
-		AuthenticationGroupIdentifier groupId = req.getParameter("group") == null ? null : IdentifierFactory.forId(req.getParameter("group"), AuthenticationGroupIdentifier.class);
-		return new OrganizationsFilter(displayName, status, groupId);
+		List<Message> messages = new ArrayList<>();
+		JsonObject query = extractQuery(req);
+		String displayName = getString(query, "displayName", false, null, null, messages);
+		Status status = getObject(Status.class, query, "status", false, null, null, messages, locale);
+		AuthenticationGroupIdentifier authenticationGroupId = getOptionIdentifier(query, "authenticationGroupId", false, null, null, messages, AuthenticationGroupIdentifier.class, locale);
+		BusinessGroupIdentifier businessGroupIdentifier = getOptionIdentifier(query, "businessGroupId", false, null, null, messages, BusinessGroupIdentifier.class, locale);
+		validate(messages);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupIdentifier);
 	}
 
 	@PostMapping("/rest/organizations")
 	public void createOrganization(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
-			String displayName = getString(body, "displayName", "", null, messages);
-			List<AuthenticationGroupIdentifier> authenticationGroupIds = getOptionIdentifiers(body, "authenticationGroupIds", List.of(), null, messages, AuthenticationGroupIdentifier.class, locale);
-			List<BusinessGroupIdentifier> businessGroupIds = getOptionIdentifiers(body, "businessGroupIds", List.of(), null, messages, BusinessGroupIdentifier.class, locale);
+			String displayName = getString(body, "displayName", true, "", null, messages);
+			List<AuthenticationGroupIdentifier> authenticationGroupIds = getOptionIdentifiers(body, "authenticationGroupIds", true, List.of(), null, messages, AuthenticationGroupIdentifier.class, locale);
+			List<BusinessGroupIdentifier> businessGroupIds = getOptionIdentifiers(body, "businessGroupIds", true, List.of(), null, messages, BusinessGroupIdentifier.class, locale);
 			validate(messages);
 			return transformer.format(crm.createOrganization(displayName, authenticationGroupIds, businessGroupIds), locale);
 		});
@@ -77,13 +80,19 @@ public class OrganizationsController extends AbstractCrmController {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			if (body.contains("displayName")) {
-				crm.updateOrganizationDisplayName(organizationId, getString(body, "displayName", null, null, messages));
+				crm.updateOrganizationDisplayName(organizationId, getString(body, "displayName", true, null, organizationId, messages));
 			}
 			if (body.contains("mainLocationId")) {
-				crm.updateOrganizationMainLocation(organizationId, getIdentifier(body, "mainLocationId", null, null, messages));
+				crm.updateOrganizationMainLocation(organizationId, getIdentifier(body, "mainLocationId", true, null, organizationId, messages));
 			}
 			if (body.contains("mainContactId")) {
-				crm.updateOrganizationMainContact(organizationId, getIdentifier(body, "mainContactId", null, null, messages));
+				crm.updateOrganizationMainContact(organizationId, getIdentifier(body, "mainContactId", true, null, organizationId, messages));
+			}
+			if (body.contains("authenticationGroupIds")) {
+				crm.updateOrganizationAuthenticationGroups(organizationId, getOptionIdentifiers(body, "authenticationGroupIds", true, List.of(), organizationId, messages, AuthenticationGroupIdentifier.class, locale));
+			}
+			if (body.contains("businessGroupIds")) {
+				crm.updateOrganizationBusinessGroups(organizationId, getOptionIdentifiers(body, "businessGroupIds", true, List.of(), organizationId, messages, BusinessGroupIdentifier.class, locale));
 			}
 			validate(messages);
 			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
@@ -111,6 +120,22 @@ public class OrganizationsController extends AbstractCrmController {
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(crm.findOrganizationDetails(organizationId).getMainContactId()), locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/authenticationGroupIds")
+	public void getAuthenticationGroupIds(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, AuthenticationGroupIdentifier.class, (messages, transformer, locale) -> {
+			return createList(crm.findOrganizationDetails(organizationId).getAuthenticationGroupIds(), transformer, locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/businessGroupIds")
+	public void getBusinessGroupIds(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, BusinessGroupIdentifier.class, (messages, transformer, locale) -> {
+			return createList(crm.findOrganizationDetails(organizationId).getBusinessGroupIds(), transformer, locale);
 		});
 	}
 

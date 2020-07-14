@@ -28,6 +28,7 @@ import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonParser;
@@ -53,7 +54,7 @@ public abstract class AbstractControllerTests {
 	}
 	
 	public OrganizationIdentifier getSystemOrganizationIdentifier() {
-		return crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withAuthenticationGroup(AuthenticationGroupIdentifier.SYS)).getSingleItem().getOrganizationId();
+		return crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withAuthenticationGroup(AuthenticationGroupIdentifier.SYS).withDisplayName(SYSTEM_ORG)).getSingleItem().getOrganizationId();
 	}
 	
 	public LocationIdentifier getSystemLocationIdentifier() {
@@ -64,8 +65,12 @@ public abstract class AbstractControllerTests {
 		return crm.findOrganizationDetails(getSystemOrganizationIdentifier()).getMainContactId();
 	}
 	
-	public OrganizationIdentifier createTestOrganization() {
-		return crm.createOrganization("Test Org", ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
+	public UserIdentifier getSystemUserIdentifier() {
+		return crm.findUsers(crm.defaultUsersFilter().withPersonId(getSystemAdminIdentifier())).getSingleItem().getUserId();
+	}
+	
+	public OrganizationIdentifier createTestOrganization(String name) {
+		return crm.createOrganization(name, ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 	}
 	
 	public String request(HttpMethod method, Object path, Locale locale, HttpStatus status, JsonObject content) throws Exception {

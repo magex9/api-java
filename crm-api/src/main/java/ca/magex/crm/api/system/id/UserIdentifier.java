@@ -14,6 +14,10 @@ public class UserIdentifier extends Identifier {
 	
 	public static final String CONTEXT = Identifier.CONTEXT + "users/";	
 	
+	public UserIdentifier(String id) {		
+		super(id);
+	}
+	
 	public UserIdentifier(CharSequence id) {		
 		super(id);
 	}

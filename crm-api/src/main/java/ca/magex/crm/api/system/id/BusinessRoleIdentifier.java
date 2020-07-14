@@ -20,7 +20,7 @@ public class BusinessRoleIdentifier extends OptionIdentifier {
 
 	public static final BusinessRoleIdentifier IMIT_DIRECTOR = new BusinessRoleIdentifier("IMIT/DIRECTOR");
 
-	public static final BusinessRoleIdentifier SYS_ADMIN = new BusinessRoleIdentifier("IMIT/OPS/INFRA/ADMIN");
+	public static final BusinessRoleIdentifier SYS_ADMINISTRATOR = new BusinessRoleIdentifier("IMIT/OPS/INFRA/ADMIN");
 
 	public static final BusinessRoleIdentifier DEVELOPER = new BusinessRoleIdentifier("IMIT/DEV/APPS/DEV");
 

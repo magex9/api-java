@@ -26,7 +26,7 @@ public class TestCrm {
 		CrmUpdateObserver observer = new BasicUpdateObserver();
 		CrmRepositories repos = new BasicRepositories(store, observer);
 		CrmPasswordRepository passwordRepo = new BasicPasswordRepository(passwordStore);
-		CrmPasswordService passwords = new BasicPasswordService(passwordRepo);
+		CrmPasswordService passwords = new BasicPasswordService(repos, passwordRepo);
 		CrmServices services = new BasicServices(repos, passwords);
 		CrmPolicies policies = new BasicPolicies(services);
 		return new Crm(services, policies);

@@ -17,21 +17,20 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
-import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmUserService {
 
-	default User prototypeUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		return new User(null, organizationId, personId, username, Status.PENDING, authenticationRoleIds);
+	default User prototypeUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		return new User(null, null, personId, username, Status.PENDING, authenticationRoleIds);
 	};
 
 	default User createUser(User prototype) {
-		return createUser(prototype.getOrganizationId(), prototype.getPersonId(), prototype.getUsername(), prototype.getAuthenticationRoleIds());
+		return createUser(prototype.getPersonId(), prototype.getUsername(), prototype.getAuthenticationRoleIds());
 	}
 
-	User createUser(OrganizationIdentifier organizationId, PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds);
+	User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds);
 
 	User enableUser(UserIdentifier userId);
 
@@ -91,7 +90,7 @@ public interface CrmUserService {
 		} else {
 			try {
 				PersonSummary personSummary = crm.findPersonSummary(user.getPersonId());
-				if (!personSummary.getOrganizationId().equals(user.getOrganizationId())) {
+				if (user.getUserId() != null && !personSummary.getOrganizationId().equals(user.getOrganizationId())) {
 					messages.add(new Message(user.getPersonId(), error, "organizationId", user.getOrganizationId().getCode(), crm.findMessageId("validation.field.invalid")));
 				}
 			} catch (ItemNotFoundException e) {
@@ -108,7 +107,7 @@ public interface CrmUserService {
 
 		// Roles
 		if (user.getAuthenticationRoleIds().isEmpty()) {
-			messages.add(new Message(user.getUserId(), error, "roleIds", null, crm.findMessageId("validation.field.required")));
+			messages.add(new Message(user.getUserId(), error, "authenticationRoleIds", null, crm.findMessageId("validation.field.required")));
 		} else {
 			for (int i = 0; i < user.getAuthenticationRoleIds().size(); i++) {
 				AuthenticationRoleIdentifier roleId = user.getAuthenticationRoleIds().get(i);

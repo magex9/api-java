@@ -16,6 +16,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 
 public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 
@@ -34,14 +35,17 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	
 	private AuthenticationGroupIdentifier authenticationGroupId;
 
+	private BusinessGroupIdentifier businessGroupId;
+
 	public OrganizationsFilter() {
-		this(null, null, null);
+		this(null, null, null, null);
 	}
 	
-	public OrganizationsFilter(String displayName, Status status, AuthenticationGroupIdentifier authenticationGroupId) {
+	public OrganizationsFilter(String displayName, Status status, AuthenticationGroupIdentifier authenticationGroupId, BusinessGroupIdentifier businessGroupId) {
 		this.displayName = displayName;
 		this.status = status;
 		this.authenticationGroupId = authenticationGroupId;
+		this.businessGroupId = businessGroupId;
 	}
 	
 	public OrganizationsFilter(Map<String, Object> filterCriteria) {
@@ -67,7 +71,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	}
 	
 	public OrganizationsFilter withStatus(Status status) {
-		return new OrganizationsFilter(displayName, status, authenticationGroupId);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
 	}
 
 	public String getDisplayName() {
@@ -75,7 +79,7 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	}
 	
 	public OrganizationsFilter withDisplayName(String displayName) {
-		return new OrganizationsFilter(displayName, status, authenticationGroupId);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
 	}
 	
 	public AuthenticationGroupIdentifier getAuthenticationGroupId() {
@@ -83,7 +87,15 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	}
 	
 	public OrganizationsFilter withAuthenticationGroup(AuthenticationGroupIdentifier authenticationGroupId) {
-		return new OrganizationsFilter(displayName, status, authenticationGroupId);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
+	}
+
+	public BusinessGroupIdentifier getBusinessGroupId() {
+		return businessGroupId;
+	}
+	
+	public OrganizationsFilter withBusinessGroup(BusinessGroupIdentifier businessGroupId) {
+		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
 	}
 
 	public static List<Sort> getSortOptions() {
@@ -100,9 +112,12 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 	
 	@Override
 	public boolean apply(OrganizationDetails instance) {
+		System.out.println(instance.getDisplayName() + " contains " + this.getBusinessGroupId());
+		instance.getBusinessGroupIds().forEach(i -> System.out.println("\t" + i));
 		return List.of(instance)
 			.stream()
 			.filter(g -> this.getAuthenticationGroupId() == null || g.getAuthenticationGroupIds().contains(this.getAuthenticationGroupId()))
+			.filter(g -> this.getBusinessGroupId() == null || g.getBusinessGroupIds().contains(this.getBusinessGroupId()))
 			.filter(g -> this.getDisplayName() == null || containsIgnoreCaseAndAccent(g.getDisplayName(), this.getDisplayName()))				
 			.filter(g -> this.getStatus() == null || this.getStatus().equals(g.getStatus()))
 			.findAny()

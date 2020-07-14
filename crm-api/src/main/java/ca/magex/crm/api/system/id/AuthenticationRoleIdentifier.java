@@ -24,11 +24,11 @@ public class AuthenticationRoleIdentifier extends OptionIdentifier {
 
 	public static final AuthenticationRoleIdentifier CRM_ADMIN = new AuthenticationRoleIdentifier("CRM/ADMIN");
 
-	public static final AuthenticationRoleIdentifier CRM_VIEWER = new AuthenticationRoleIdentifier("CRM/VIEWER");
+	public static final AuthenticationRoleIdentifier CRM_USER = new AuthenticationRoleIdentifier("CRM/USER");
 
 	public static final AuthenticationRoleIdentifier ORG_ADMIN = new AuthenticationRoleIdentifier("ORG/ADMIN");
 
-	public static final AuthenticationRoleIdentifier ORG_VIEWER = new AuthenticationRoleIdentifier("ORG/VIEWER");
+	public static final AuthenticationRoleIdentifier ORG_USER = new AuthenticationRoleIdentifier("ORG/USER");
 
 	public AuthenticationRoleIdentifier(CharSequence id) {
 		super(id);
