@@ -85,7 +85,7 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testUsers() {
-		User u1 = crm.createUser(tAndA.getOrganizationId(), adam.getPersonId(), "adam21", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN));
+		User u1 = crm.createUser(adam.getPersonId(), "adam21", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
@@ -93,7 +93,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));
 		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
 
-		User u2 = crm.createUser(tAndA.getOrganizationId(), adam.getPersonId(), "adam-admin", List.of(CrmAsserts.SYS_ADMIN));
+		User u2 = crm.createUser(adam.getPersonId(), "adam-admin", List.of(CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u2.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.SYS_ADMIN), u2.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u2.getStatus());
@@ -101,7 +101,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u2, crm.findUserByUsername(u2.getUsername()));
 		Assert.assertEquals(u2, crm.findUser(u2.getUserId()));
 
-		User u3 = crm.createUser(tAndA.getOrganizationId(), bob.getPersonId(), "bob-uber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
+		User u3 = crm.createUser(bob.getPersonId(), "bob-uber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(bob.getPersonId(), u3.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u3.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u3.getStatus());
@@ -251,9 +251,9 @@ public abstract class AbstractUserServiceTests {
 
 	@Test
 	public void testDuplicateUsername() {
-		crm.createUser(tAndA.getOrganizationId(), adam.getPersonId(), "adam21", List.of(CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
+		crm.createUser(adam.getPersonId(), "adam21", List.of(CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		try {
-			crm.createUser(tAndA.getOrganizationId(), adam.getPersonId(), "adam21", List.of(CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
+			crm.createUser(adam.getPersonId(), "adam21", List.of(CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		} catch (DuplicateItemFoundException e) {
 			Assert.assertEquals("Duplicate item found found: Username 'adam21'", e.getMessage());
 		}
@@ -302,7 +302,7 @@ public abstract class AbstractUserServiceTests {
 	public void testResetPassword() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
-		UserIdentifier userId = crm.createUser(organizationId, personId, "user", List.of(ORG_ADMIN)).getUserId();
+		UserIdentifier userId = crm.createUser(personId, "user", List.of(ORG_ADMIN)).getUserId();
 
 		try {
 			crm.resetPassword(new UserIdentifier("55"));
@@ -318,7 +318,7 @@ public abstract class AbstractUserServiceTests {
 	public void testChangePassword() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		PersonIdentifier personId = crm.createPerson(organizationId, CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
-		UserIdentifier userId = crm.createUser(organizationId, personId, "user", List.of(ORG_ADMIN)).getUserId();
+		UserIdentifier userId = crm.createUser(personId, "user", List.of(ORG_ADMIN)).getUserId();
 
 		assertTrue(crm.changePassword(userId, crm.resetPassword(userId), "pass1"));
 		assertTrue(crm.changePassword(userId, "pass1", "pass2"));

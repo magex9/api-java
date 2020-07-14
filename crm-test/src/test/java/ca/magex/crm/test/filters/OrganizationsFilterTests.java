@@ -31,6 +31,9 @@ public class OrganizationsFilterTests {
 			if (field.getName().equals("authenticationGroupId")) {
 				continue;
 			}
+			if (field.getName().equals("businessGroupId")) {
+				continue;
+			}
 			Assert.assertTrue(OrganizationsFilter.getSortOptions().contains(Sort.by(Order.asc(field.getName()))));
 			Assert.assertTrue(OrganizationsFilter.getSortOptions().contains(Sort.by(Order.desc(field.getName()))));
 		}
@@ -52,17 +55,17 @@ public class OrganizationsFilterTests {
 		OrganizationsFilter filter = new OrganizationsFilter();
 		Assert.assertNull(filter.getDisplayName());
 		Assert.assertNull(filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter(null, null, null), filter);
+		assertFilterEquals(new OrganizationsFilter(null, null, null, null), filter);
 
 		filter = filter.withDisplayName("display");
 		Assert.assertEquals("display", filter.getDisplayName());
 		Assert.assertNull(filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter("display", null, null), filter);
+		assertFilterEquals(new OrganizationsFilter("display", null, null, null), filter);
 
 		filter = filter.withStatus(Status.ACTIVE);
 		Assert.assertEquals("display", filter.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter("display", Status.ACTIVE, null), filter);
+		assertFilterEquals(new OrganizationsFilter("display", Status.ACTIVE, null, null), filter);
 	}
 
 	@Test
@@ -70,22 +73,22 @@ public class OrganizationsFilterTests {
 		OrganizationsFilter filter = new OrganizationsFilter(Map.of());
 		Assert.assertNull(filter.getDisplayName());
 		Assert.assertNull(filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter(null, null, null), filter);
+		assertFilterEquals(new OrganizationsFilter(null, null, null, null), filter);
 
 		filter = new OrganizationsFilter(Map.of("displayName", "display"));
 		Assert.assertEquals("display", filter.getDisplayName());
 		Assert.assertNull(filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter("display", null, null), filter);
+		assertFilterEquals(new OrganizationsFilter("display", null, null, null), filter);
 
 		filter = new OrganizationsFilter(Map.of("displayName", "display", "status", ""));
 		Assert.assertEquals("display", filter.getDisplayName());
 		Assert.assertNull(filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter("display", null, null), filter);
+		assertFilterEquals(new OrganizationsFilter("display", null, null, null), filter);
 
 		filter = new OrganizationsFilter(Map.of("displayName", "display", "status", "active"));
 		Assert.assertEquals("display", filter.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, filter.getStatus());
-		assertFilterEquals(new OrganizationsFilter("display", Status.ACTIVE, null), filter);
+		assertFilterEquals(new OrganizationsFilter("display", Status.ACTIVE, null, null), filter);
 
 		try {
 			new OrganizationsFilter(Map.of("displayName", 1));

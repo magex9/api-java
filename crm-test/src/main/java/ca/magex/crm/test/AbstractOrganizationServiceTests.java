@@ -253,15 +253,15 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(os1, crm.findOrganizationSummary(os1.getOrganizationId()));
 
 		/* count organizations */
-		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, NHL)));
-		Assert.assertEquals(4, crm.countOrganizations(new OrganizationsFilter(null, Status.ACTIVE, null)));
-		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter(null, Status.INACTIVE, null)));
-		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter("Edmonton Oilers", null, null)));
-		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Ottawa Senators", null, null)));
+		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, NHL, null)));
+		Assert.assertEquals(4, crm.countOrganizations(new OrganizationsFilter(null, Status.ACTIVE, null, null)));
+		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter(null, Status.INACTIVE, null, null)));
+		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter("Edmonton Oilers", null, null, null)));
+		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Ottawa Senators", null, null, null)));
 
 		/* find pages of organization details */
 		Page<OrganizationDetails> detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null),
+				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null, null),
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5, detailsPage.getSize());
@@ -270,7 +270,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter(null, Status.ACTIVE, null),
+				new OrganizationsFilter(null, Status.ACTIVE, null, null),
 				new Paging(1, 2, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(2, detailsPage.getSize());
@@ -279,7 +279,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(4, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter(null, Status.INACTIVE, null),
+				new OrganizationsFilter(null, Status.INACTIVE, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -288,7 +288,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Edmonton Oilers", null, null),
+				new OrganizationsFilter("Edmonton Oilers", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -297,7 +297,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 
 		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Ottawa Senators", null, null),
+				new OrganizationsFilter("Ottawa Senators", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -306,7 +306,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 
 		Page<OrganizationSummary> summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null),
+				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null, null),
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5, summariesPage.getSize());
@@ -315,7 +315,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter(null, Status.ACTIVE, null),
+				new OrganizationsFilter(null, Status.ACTIVE, null, null),
 				new Paging(1, 2, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(2, summariesPage.getSize());
@@ -324,7 +324,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(4, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter(null, Status.INACTIVE, null),
+				new OrganizationsFilter(null, Status.INACTIVE, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -333,7 +333,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Edmonton Oilers", null, null),
+				new OrganizationsFilter("Edmonton Oilers", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -342,7 +342,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 
 		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Ottawa Senators", null, null),
+				new OrganizationsFilter("Ottawa Senators", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
