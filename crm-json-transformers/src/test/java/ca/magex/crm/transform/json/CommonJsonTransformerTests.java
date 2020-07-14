@@ -64,13 +64,13 @@ public class CommonJsonTransformerTests {
 			transformer.getProperty(option, "code", Option.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unable to get code from {\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"type\":{\"name\":{\"code\":\"AUTHENTICATION_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true,\"extendable\":true,\"choice\":false,\"identifierClass\":\"class ca.magex.crm.api.system.id.AuthenticationGroupIdentifier\"},\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+			assertEquals("Unable to get code from {\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"},\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"status\":\"ACTIVE\",\"type\":{\"choice\":false,\"extendable\":true,\"identifierClass\":\"class ca.magex.crm.api.system.id.AuthenticationGroupIdentifier\",\"name\":{\"code\":\"AUTHENTICATION_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true}}", e.getMessage());
 		}
 		try {
 			transformer.getProperty(option, "invalid", String.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unable to get invalid from {\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"type\":{\"name\":{\"code\":\"AUTHENTICATION_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true,\"extendable\":true,\"choice\":false,\"identifierClass\":\"class ca.magex.crm.api.system.id.AuthenticationGroupIdentifier\"},\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+			assertEquals("Unable to get invalid from {\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"},\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"status\":\"ACTIVE\",\"type\":{\"choice\":false,\"extendable\":true,\"identifierClass\":\"class ca.magex.crm.api.system.id.AuthenticationGroupIdentifier\",\"name\":{\"code\":\"AUTHENTICATION_GROUPS\",\"en\":\"Authentication Groups\",\"fr\":\"Groupes d'authentification\"},\"parent\":null,\"recrussive\":true}}", e.getMessage());
 		}
 	}
 	
