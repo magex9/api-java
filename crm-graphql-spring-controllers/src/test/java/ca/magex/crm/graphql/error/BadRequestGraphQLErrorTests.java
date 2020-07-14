@@ -18,7 +18,7 @@ public class BadRequestGraphQLErrorTests {
 				new MessageTypeIdentifier("error"), "path", "ABC", new Choice<>("custom message"));
 		
 		BadRequestGraphQLError error = new BadRequestGraphQLError(message);
-		Assert.assertEquals("{\"identifier\":\"\\/organizations\\/A\",\"type\":\"\\/options\\/message-types\\/error\",\"path\":\"path\",\"value\":\"ABC\",\"reason\":{\"identifier\":null,\"other\":\"custom message\"}}", error.getMessage());
+		Assert.assertEquals("{\"identifier\":\"\\/organizations\\/A\",\"path\":\"path\",\"reason\":{\"identifier\":null,\"other\":\"custom message\"},\"type\":\"\\/options\\/message-types\\/error\",\"value\":\"ABC\"}", error.getMessage());
 		Assert.assertEquals(0, error.getLocations().size());
 		Assert.assertEquals(ErrorType.ValidationError, error.getErrorType());
 		
