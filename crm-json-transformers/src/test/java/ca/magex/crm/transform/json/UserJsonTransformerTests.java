@@ -70,7 +70,7 @@ public class UserJsonTransformerTests {
 		JsonObject linked = (JsonObject)transformer.format(user, null);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), linked.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/organization/User", linked.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/UserDetails", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/users/" + userId.getCode(), linked.getString("userId"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getCode(), linked.getString("organizationId"));
 		assertEquals("http://api.magex.ca/crm/rest/persons/" + personId.getCode(), linked.getString("personId"));
