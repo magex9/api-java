@@ -93,7 +93,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
@@ -107,7 +107,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
@@ -124,7 +124,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
@@ -144,7 +144,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
@@ -157,7 +157,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
@@ -170,7 +170,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
@@ -183,7 +183,7 @@ public abstract class AbstractCrmController {
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
-		} catch (NoSuchElementException e) {
+		} catch (ItemNotFoundException | NoSuchElementException e) {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
