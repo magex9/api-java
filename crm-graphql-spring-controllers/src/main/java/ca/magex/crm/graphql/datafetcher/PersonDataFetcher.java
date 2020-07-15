@@ -13,7 +13,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.system.Status;
@@ -58,7 +58,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<PersonDetails> byUser() {
 		return (environment) -> {
 			logger.info("Entering ByUser@" + PersonDataFetcher.class.getSimpleName());
-			User user = environment.getSource();
+			UserDetails user = environment.getSource();
 			return crm.findPersonDetails(user.getPersonId());
 		};
 	}

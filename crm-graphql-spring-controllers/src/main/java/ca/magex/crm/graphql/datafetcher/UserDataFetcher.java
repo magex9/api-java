@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.system.Status;
@@ -28,7 +28,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
-	public DataFetcher<User> createUser() {
+	public DataFetcher<UserDetails> createUser() {
 		return (environment) -> {
 			logger.info("Entering createUser@" + UserDataFetcher.class.getSimpleName());
 			/* create the new user */
@@ -39,10 +39,10 @@ public class UserDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<User> findUser() {
+	public DataFetcher<UserDetails> findUser() {
 		return (environment) -> {
 			logger.info("Entering findUser@" + UserDataFetcher.class.getSimpleName());
-			return crm.findUser(
+			return crm.findUserDetails(
 					new UserIdentifier(environment.getArgument("userId")));
 		};
 	}
@@ -55,31 +55,31 @@ public class UserDataFetcher extends AbstractDataFetcher {
 		};
 	}
 
-	public DataFetcher<Page<User>> findUsers() {
+	public DataFetcher<Page<UserDetails>> findUsers() {
 		return (environment) -> {
 			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
-			return crm.findUsers(
+			return crm.findUserDetails(
 					new UsersFilter(extractFilter(environment)), extractPaging(environment));
 		};
 	}
 
-	public DataFetcher<User> updateUser() {
+	public DataFetcher<UserDetails> updateUser() {
 		return (environment) -> {
 			logger.info("Entering updateUser@" + UserDataFetcher.class.getSimpleName());
 			UserIdentifier userId = new UserIdentifier((String) environment.getArgument("userId"));
-			User user = crm.findUser(userId);
+			UserDetails user = crm.findUserDetails(userId);
 			/* update status first since other validation requires status */
 			if (environment.getArgument("status") != null) {
 				String status = StringUtils.upperCase(environment.getArgument("status"));
 				switch (status) {
 				case "ACTIVE":
 					if (user.getStatus() != Status.ACTIVE) {
-						user = crm.enableUser(userId);
+						user = crm.findUserDetails(crm.enableUser(userId).getUserId());
 					}
 					break;
 				case "INACTIVE":
 					if (user.getStatus() != Status.INACTIVE) {
-						user = crm.disableUser(userId);
+						user = crm.findUserDetails(crm.disableUser(userId).getUserId());
 					}
 					break;
 				default:

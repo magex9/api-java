@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.system.Status;
@@ -31,7 +31,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<OrganizationDetails> byUser() {
 		return (environment) -> {
 			logger.info("Entering ByUser@" + OrganizationDataFetcher.class.getSimpleName());
-			User user = environment.getSource();
+			UserDetails user = environment.getSource();
 			return crm.findOrganizationDetails(user.getOrganizationId());
 		};
 	}

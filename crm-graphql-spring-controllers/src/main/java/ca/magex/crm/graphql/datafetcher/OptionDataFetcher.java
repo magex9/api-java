@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.system.Localized;
@@ -40,7 +40,7 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<List<Option>> findAuthenticationRolesForUser() {
 		return (environment) -> {
 			logger.info("Entering findAuthenticationGroupsForOrg@" + OptionDataFetcher.class.getSimpleName());
-			User source = environment.getSource();
+			UserDetails source = environment.getSource();
 			return source.getAuthenticationRoleIds()
 				.stream()
 				.map((id) -> crm.findOption(id))

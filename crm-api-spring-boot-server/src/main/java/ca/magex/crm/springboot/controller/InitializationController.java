@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.springboot.model.CrmInitializationRequestVO;
 
@@ -51,16 +51,16 @@ public class InitializationController {
 				return "initialize";
 			}
 			else {
-				User initialUser = crm.initializeSystem(
-						crmInitializationRequestVO.getOrganizationName(),
-						new PersonName(
-								null,
-								crmInitializationRequestVO.getOwnerGivenName(),
-								crmInitializationRequestVO.getOwnerMiddleName(),
-								crmInitializationRequestVO.getOwnerSurname()),
-						crmInitializationRequestVO.getOwnerEmail(),
-						crmInitializationRequestVO.getUsername(),
-						crmInitializationRequestVO.getPassword());
+				UserDetails initialUser = crm.initializeSystem(
+					crmInitializationRequestVO.getOrganizationName(),
+					new PersonName(
+						null,
+						crmInitializationRequestVO.getOwnerGivenName(),
+						crmInitializationRequestVO.getOwnerMiddleName(),
+						crmInitializationRequestVO.getOwnerSurname()),
+					crmInitializationRequestVO.getOwnerEmail(),
+					crmInitializationRequestVO.getUsername(),
+					crmInitializationRequestVO.getPassword());
 				LoggerFactory.getLogger(getClass()).info("CRM System Initialized with initial user: " + initialUser);
 			}
 		}
