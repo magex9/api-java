@@ -3,6 +3,9 @@ package ca.magex.crm.restful.controllers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,9 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.system.Status;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
+import ca.magex.json.model.JsonText;
 
 @Controller
 public class SwaggerRestfulController {
@@ -100,24 +105,138 @@ public class SwaggerRestfulController {
 		
 	public JsonPair buildApiSchemas() throws Exception {
 		return new JsonPair("schemas", new JsonObject()
-			//.with(buildApiSchema(OrganizationSummary.class))
-			.with(buildApiSchema(OrganizationDetails.class))
+//			.with(buildApiSchema(OrganizationSummary.class))
+//			.with(buildApiSchema(OrganizationDetails.class))
+			.with(buildApiSchema(Status.class))
 		);
 	}
 
+//	"Status": {
+//        "description": "The status of an entity",
+//        "type": "string",
+//        "enum": [
+//          "active",
+//          "inactive",
+//          "pending"
+//        ]
+//      },
+	
 	private JsonPair buildApiSchema(Class<?> cls) throws Exception {
-		JsonObject json = readJsondoc(cls);
+		JsonObject jsondoc = readJsondoc(cls);
 		return new JsonPair(cls.getSimpleName(), new JsonObject()
-			.with("description", json.getString("description"))
-			.with("type", "object"));
+			.with("description", jsondoc.contains("description") ? jsondoc.getString("description") : "N/A")
+			.with("type", "object")
+			.with("required", findRequiredFields(jsondoc))
+			.with("properties", findFieldDefinitions(jsondoc)));
 	}
 	
+	public JsonObject findFieldDefinitions(JsonObject jsondoc) throws Exception {
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		if (jsondoc.contains("extends")) {
+			String parentName = jsondoc.getArray("extends", String.class).get(0);
+			String parentPackage = jsondoc.getObject("imports").contains(parentName) ?
+				jsondoc.getObject("imports").getString(parentName) :
+				jsondoc.getString("package");
+			pairs.addAll(findFieldDefinitions(readJsondoc(parentPackage + "." + parentName)).pairs());
+		}
+		if (jsondoc.contains("fields")) {
+			pairs.addAll(jsondoc.getArray("fields", JsonObject.class)
+				.stream()
+				.map(o -> new JsonPair(o.getString("name"), buildFieldDefinition(jsondoc, o, o.getString("name"))))
+				.collect(Collectors.toList()));
+		}
+		return new JsonObject(pairs);
+	}
+
+	private JsonObject buildFieldDefinition(JsonObject jsondoc, JsonObject fielddoc, String fieldName) {
+		if (fieldName.endsWith("Id")) {
+			return new JsonObject()
+				.with("description", fielddoc.getString("description"))
+				.with("type", "string")
+				.with("format", "identifier");
+		} else if (fielddoc.contains("type", JsonObject.class) && fielddoc.getObject("type").getString("class").equals("IdentifierList")) {
+			return new JsonObject()
+				.with("description", fielddoc.getString("description"))
+				.with("type", "array")
+				.with("items", new JsonObject()
+					.with("type", "string")
+					.with("format", "identifier")
+				);
+		} else if (fielddoc.contains("type", JsonText.class) && fielddoc.getString("type").equals("String")) {
+			return new JsonObject()
+				.with("description", fielddoc.getString("description"))
+				.with("type", "string");
+		} else {
+			return new JsonObject()
+				.with("$ref", "#/components/schemas/" + fielddoc.getString("type"));
+		}
+	}
+
+//	"fields": [
+//	           {
+//	             "name": "mainLocationId",
+//	             "description": "identifier for the main location of the organization",
+//	             "modifiers": ["private"],
+//	             "type": "LocationIdentifier",
+//	             "annotations": [{"name": "NotNull"}]
+//	           },
+//	           {
+//	             "name": "mainContactId",
+//	             "description": "identifier for the main contact of the organization",
+//	             "modifiers": ["private"],
+//	             "type": "PersonIdentifier",
+//	             "annotations": [{"name": "NotNull"}]
+//	           },
+	
+	public List<String> findRequiredFields(JsonObject jsondoc) throws Exception {
+		List<String> fields = new ArrayList<String>();
+		if (jsondoc.contains("extends")) {
+			String parentName = jsondoc.getArray("extends", String.class).get(0);
+			String parentPackage = jsondoc.getObject("imports").contains(parentName) ?
+				jsondoc.getObject("imports").getString(parentName) :
+				jsondoc.getString("package");
+			fields.addAll(findRequiredFields(readJsondoc(parentPackage + "." + parentName)));
+		}
+		if (jsondoc.contains("fields")) {
+			fields.addAll(jsondoc.getArray("fields", JsonObject.class)
+				.stream()
+				.filter(o -> isFieldRequired(jsondoc, o.getString("name")))
+				.map(o -> o.getString("name"))
+				.collect(Collectors.toList()));
+		}
+		return fields;
+	}
+	
+	public boolean isFieldRequired(JsonObject jsondoc, String fieldName) {
+		JsonObject field = jsondoc.getArray("fields", JsonObject.class)
+			.stream()
+			.filter(o -> fieldName.equals(o.getString("name")))
+			.findFirst().get();
+		if (!field.contains("annotations"))
+			return false;
+		List<String> annotations = field.getArray("annotations", JsonObject.class)
+			.stream()
+			.map(o -> o.getString("name"))
+			.collect(Collectors.toList());
+		return annotations.contains("NotNull") || annotations.contains("NotEmpty");
+	}
+	
+	public List<String> findFields(JsonObject jsondoc) {
+		return jsondoc.getArray("fields", JsonObject.class)
+			.stream().map(o -> o.getString("name")).collect(Collectors.toList());
+	}
+
 	public JsonObject readJsondoc(Class<?> cls) throws Exception {
-		String jsondoc = cls.getName().replaceAll("\\.", "/") + ".json";
+		return readJsondoc(cls.getName());
+	}
+	
+	public JsonObject readJsondoc(String cls) throws Exception {
+		String jsondoc = cls.replaceAll("\\.", "/") + ".json";
 		try (InputStream is = getClass().getClassLoader().getResourceAsStream(jsondoc)) {
 			return new JsonObject(StreamUtils.copyToString(is, Charset.forName("UTF-8")));
 		}
 	}
+	
 		
 		
 //			  "paths": {

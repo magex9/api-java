@@ -19,6 +19,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -26,8 +27,10 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
@@ -128,14 +131,26 @@ public class JsondocBuilder {
     }
 
     public static JsonObject processEnum(CompilationUnit cu, EnumDeclaration declaration) throws FileNotFoundException {
-        JsonObject json = new JsonObject()
+        return new JsonObject()
         	.with("name", declaration.getNameAsString())
-        	.with("description", buildComment(declaration.getComment()));
-
-        return json;
+        	.with("description", buildComment(declaration.getComment()))
+        	.with("constants", declaration.getEntries().stream().map(e -> processEnumConstant(cu, e)).collect(Collectors.toList()));
     }
     
-    /**
+    public static JsonObject processEnumConstant(CompilationUnit cu, EnumConstantDeclaration declaration) {
+    	return new JsonObject()
+    		.with("name", declaration.getNameAsString())
+    		.with("arguments", new JsonArray(declaration.getArguments().stream().map(a -> buildExpression(a)).collect(Collectors.toList())));
+    }
+    
+    private static JsonText buildExpression(Expression expr) {
+    	if (expr.isStringLiteralExpr()) {
+    		return new JsonText(((StringLiteralExpr)expr).getValue());
+    	}
+		return new JsonText(expr.toString());
+	}
+
+	/**
      * Get the json representation of the javadocs for the given source file
      */
     public static JsonObject processClass(CompilationUnit cu, ClassOrInterfaceDeclaration cls) throws FileNotFoundException {
