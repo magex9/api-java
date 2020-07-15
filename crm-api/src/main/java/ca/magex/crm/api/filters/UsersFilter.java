@@ -13,7 +13,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
@@ -21,7 +21,7 @@ import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 
-public class UsersFilter implements CrmFilter<User> {
+public class UsersFilter implements CrmFilter<UserDetails> {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
@@ -132,7 +132,7 @@ public class UsersFilter implements CrmFilter<User> {
 	}
 
 	@Override
-	public boolean apply(User instance) {
+	public boolean apply(UserDetails instance) {
 		return List.of(instance)
 			.stream()
 			.filter(u -> this.getOrganizationId() == null || this.getOrganizationId().equals(u.getOrganizationId()))

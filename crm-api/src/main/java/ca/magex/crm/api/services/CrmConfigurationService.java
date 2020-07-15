@@ -3,7 +3,7 @@ package ca.magex.crm.api.services;
 import java.io.OutputStream;
 
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -20,7 +20,7 @@ public interface CrmConfigurationService {
 
 	boolean isInitialized();
 
-	User initializeSystem(String organization, PersonName name, String email, String username, String password);
+	UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password);
 	
 	boolean reset();
 	

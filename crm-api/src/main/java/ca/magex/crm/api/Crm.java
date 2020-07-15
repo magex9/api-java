@@ -19,7 +19,8 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
@@ -133,7 +134,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 
 	@Override
-	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
+	public UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (isInitialized())
 			throw new DuplicateItemFoundException("The system is already initialized");
 		return configurationService.initializeSystem(organization, name, email, username, password); 
@@ -376,7 +377,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return personService.findPersonSummaries(filter, paging);
 	}
 
-	public User validate(User user) {
+	public UserDetails validate(UserDetails user) {
 		List<Message> messages = validateUser(this, user);
 		if (!messages.isEmpty())
 			throw new BadRequestException("User has validation errors", messages);
@@ -384,47 +385,64 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
+	public UserDetails createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
 		return userService.createUser(validate(prototypeUser(personId, username, roles)));
 	}
 
 	@Override
-	public User enableUser(UserIdentifier userId) {
+	public UserSummary enableUser(UserIdentifier userId) {
 		if (!canEnableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
 		return userService.enableUser(
-			validate(userService.findUser(userId).withStatus(Status.ACTIVE)).getUserId());
+			validate(userService.findUserDetails(userId).withStatus(Status.ACTIVE)).getUserId());
 	}
 
 	@Override
-	public User disableUser(UserIdentifier userId) {
+	public UserSummary disableUser(UserIdentifier userId) {
 		if (!canDisableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
 		return userService.disableUser(
-			validate(userService.findUser(userId).withStatus(Status.INACTIVE)).getUserId());
-	}
-
-	@Override
-	public User findUser(UserIdentifier userId) {
-		if (!canViewUser(userId))
-			throw new PermissionDeniedException("findUser: " + userId);
-		return userService.findUser(userId);
+			validate(userService.findUserDetails(userId).withStatus(Status.INACTIVE)).getUserId());
 	}
 	
 	@Override
-	public User findUserByUsername(String username) {
+	public FilteredPage<UserSummary> findUserSummaries(UsersFilter filter, Paging paging) {
+		return userService.findUserSummaries(filter, paging);
+	}
+	
+	@Override
+	public FilteredPage<UserDetails> findUserDetails(UsersFilter filter, Paging paging) {
+		return userService.findUserDetails(filter, paging);
+	}
+	
+	@Override
+	public UserSummary findUserSummary(UserIdentifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("findUser: " + userId);
+		return userService.findUserSummary(userId);
+	}
+	
+	@Override
+	public UserDetails findUserDetails(UserIdentifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("findUser: " + userId);
+		return userService.findUserDetails(userId);
+	}
+	
+	@Override
+	public UserDetails findUserByUsername(String username) {
 		if (!canViewUser(username))
 			throw new PermissionDeniedException("findUserByUsername: " + username);
 		return userService.findUserByUsername(username);
 	}
 
 	@Override
-	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
+	public UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, validate(findUser(userId).withAuthenticationRoleIds(roles)).getAuthenticationRoleIds());
+		return userService.updateUserRoles(userId, validate(findUserDetails(userId).withAuthenticationRoleIds(roles)).getAuthenticationRoleIds());
 	}
 
 	@Override
@@ -443,11 +461,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	@Override
 	public long countUsers(UsersFilter filter) {
 		return userService.countUsers(filter);
-	}
-
-	@Override
-	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
-		return userService.findUsers(filter, paging);
 	}
 
 	public Option validate(Option option) {

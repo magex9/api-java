@@ -1,8 +1,10 @@
 package ca.magex.crm.api.crm;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -22,26 +24,16 @@ import ca.magex.crm.api.system.id.UserIdentifier;
  * 
  * @author Jonny
  */
-public class User implements Serializable {
+public class UserDetails extends UserSummary {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	/** a unique identifier for the user within the system */
-	private UserIdentifier userId;
-	
-	/** the unique username within the system for this user */
-	private String username;
-
 	/** the person summary this user is associated with */
+	@NotNull
 	private PersonIdentifier personId;
 	
-	/** the organization this user is associated with */
-	private OrganizationIdentifier organizationId;
-	
-	/** the current status of the user */
-	private Status status;
-	
 	/** the authentication roles associated with this user */
+	@NotEmpty
 	private IdentifierList<AuthenticationRoleIdentifier> authenticationRoleIds;
 	
 	/**
@@ -52,31 +44,11 @@ public class User implements Serializable {
 	 * @param status
 	 * @param authenticationRoleIds
 	 */
-	public User(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		super();
-		this.userId = userId;
-		this.organizationId = organizationId;
+	public UserDetails(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		super(userId, organizationId, username, status);
 		this.personId = personId;
-		this.username = username;		
-		this.status = status;
 		this.authenticationRoleIds = authenticationRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(authenticationRoleIds);
 	}
-	
-	/**
-	 * returns the unique identifier for the user
-	 * @return
-	 */
-	public UserIdentifier getUserId() {
-		return userId;
-	}
-	
-	/**
-	 * returns the unique identifier for the organization
-	 * @return
-	 */
-	public OrganizationIdentifier getOrganizationId() {
-		return organizationId;
-	}	
 	
 	/** 
 	 * returns the unique identifier of the person associated with the user
@@ -84,22 +56,6 @@ public class User implements Serializable {
 	 */
 	public PersonIdentifier getPersonId() {
 		return personId;
-	}
-	
-	/**
-	 * returns the unique username for the user
-	 * @return
-	 */
-	public String getUsername() {
-		return username;
-	}
-	
-	/**
-	 * returns the current status of the user
-	 * @return
-	 */
-	public Status getStatus() {
-		return status;
 	}
 	
 	/**
@@ -115,8 +71,8 @@ public class User implements Serializable {
 	 * @param status
 	 * @return
 	 */
-	public User withStatus(Status status) {
-		return new User(userId, organizationId, personId, username, status, authenticationRoleIds);
+	public UserDetails withStatus(Status status) {
+		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds);
 	}	
 	
 	/**
@@ -124,8 +80,8 @@ public class User implements Serializable {
 	 * @param roles
 	 * @return
 	 */
-	public User withAuthenticationRoleIds(List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		return new User(userId, organizationId, personId, username, status, authenticationRoleIds);
+	public UserDetails withAuthenticationRoleIds(List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds);
 	}
 	
 	/**
@@ -135,6 +91,14 @@ public class User implements Serializable {
 	 */
 	public boolean isInRole(AuthenticationRoleIdentifier roleId) {
 		return authenticationRoleIds.contains(roleId);
+	}
+	
+	/**
+	 * Get the summary information of the user
+	 * @return
+	 */
+	public UserSummary asSummary() {
+		return new UserSummary(userId, organizationId, username, status);
 	}
 	
 	@Override

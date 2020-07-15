@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.IdentifierList;
 import ca.magex.crm.api.common.MailingAddress;
@@ -27,7 +28,7 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
  */
 public class PersonDetails extends PersonSummary {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	/** the full name of the person */
 	@NotNull

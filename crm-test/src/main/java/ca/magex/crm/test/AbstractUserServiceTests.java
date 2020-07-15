@@ -28,7 +28,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
@@ -85,29 +85,29 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testUsers() {
-		User u1 = crm.createUser(adam.getPersonId(), "adam21", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN));
+		UserDetails u1 = crm.createUser(adam.getPersonId(), "adam21", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));
-		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
+		Assert.assertEquals(u1, crm.findUserDetails(u1.getUserId()));
 
-		User u2 = crm.createUser(adam.getPersonId(), "adam-admin", List.of(CrmAsserts.SYS_ADMIN));
+		UserDetails u2 = crm.createUser(adam.getPersonId(), "adam-admin", List.of(CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u2.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.SYS_ADMIN), u2.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u2.getStatus());
 		Assert.assertEquals("adam-admin", u2.getUsername());
 		Assert.assertEquals(u2, crm.findUserByUsername(u2.getUsername()));
-		Assert.assertEquals(u2, crm.findUser(u2.getUserId()));
+		Assert.assertEquals(u2, crm.findUserDetails(u2.getUserId()));
 
-		User u3 = crm.createUser(bob.getPersonId(), "bob-uber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
+		UserDetails u3 = crm.createUser(bob.getPersonId(), "bob-uber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(bob.getPersonId(), u3.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u3.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u3.getStatus());
 		Assert.assertEquals("bob-uber", u3.getUsername());
 		Assert.assertEquals(u3, crm.findUserByUsername(u3.getUsername()));
-		Assert.assertEquals(u3, crm.findUser(u3.getUserId()));
+		Assert.assertEquals(u3, crm.findUserDetails(u3.getUserId()));
 
 		/* update user */
 		u1 = crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN));
@@ -115,32 +115,32 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
-		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
+		Assert.assertEquals(u1, crm.findUserDetails(u1.getUserId()));
 		Assert.assertEquals(u1, crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN)));
 
 		u1 = crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getAuthenticationRoleIds());
-		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
+		Assert.assertEquals(u1, crm.findUserDetails(u1.getUserId()));
 		Assert.assertEquals(u1, crm.updateUserRoles(u1.getUserId(), List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN)));
 
 		/* disable user */
-		u1 = crm.disableUser(u1.getUserId());
+		u1 = crm.findUserDetails(crm.disableUser(u1.getUserId()).getUserId());
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.INACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));
-		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
+		Assert.assertEquals(u1, crm.findUserDetails(u1.getUserId()));
 		Assert.assertEquals(u1, crm.disableUser(u1.getUserId()));
 
 		/* enable user */
-		u1 = crm.enableUser(u1.getUserId());
+		u1 = crm.findUserDetails(crm.enableUser(u1.getUserId()).getUserId());
 		Assert.assertEquals(adam.getPersonId(), u1.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u1.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u1.getStatus());
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, crm.findUserByUsername(u1.getUsername()));
-		Assert.assertEquals(u1, crm.findUser(u1.getUserId()));
+		Assert.assertEquals(u1, crm.findUserDetails(u1.getUserId()));
 		Assert.assertEquals(u1, crm.enableUser(u1.getUserId()));
 
 		/* count users */
@@ -154,7 +154,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(0, crm.countUsers(new UsersFilter(tAndA.getOrganizationId(), null, Status.INACTIVE, null, null)));
 
 		/* find users */
-		Page<User> usersPage = crm.findUsers(
+		Page<UserDetails> usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), null, null, null, null),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -167,7 +167,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
 
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), null, null, "adam21", null),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -178,7 +178,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getContent().size());
 		Assert.assertEquals(u1, usersPage.getContent().get(0));
 
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), null, null, null, CrmAsserts.ORG_ADMIN),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -190,7 +190,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u1, usersPage.getContent().get(0));
 		Assert.assertEquals(u3, usersPage.getContent().get(1));
 
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), null, null, null, CrmAsserts.CRM_ADMIN),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -202,7 +202,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u1, usersPage.getContent().get(0));
 		Assert.assertEquals(u3, usersPage.getContent().get(1));
 
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), adam.getPersonId(), null, null, null),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -214,7 +214,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u1, usersPage.getContent().get(0));
 		Assert.assertEquals(u2, usersPage.getContent().get(1));
 
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), bob.getPersonId(), null, null, null),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -225,7 +225,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getContent().size());
 		Assert.assertEquals(u3, usersPage.getContent().get(0));
 		
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), null, Status.ACTIVE, null, null),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -238,7 +238,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
 
-		usersPage = crm.findUsers(
+		usersPage = crm.findUserDetails(
 				new UsersFilter(tAndA.getOrganizationId(), null, Status.INACTIVE, null, null),
 				new Paging(1, 5, Sort.by("username")));
 		Assert.assertEquals(1, usersPage.getNumber());
@@ -262,7 +262,7 @@ public abstract class AbstractUserServiceTests {
 	@Test
 	public void testInvalidUserId() {
 		try {
-			crm.findUser(new UserIdentifier("abc"));
+			crm.findUserDetails(new UserIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: User ID '/users/abc'", e.getMessage());

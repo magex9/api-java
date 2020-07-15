@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.authentication.CrmPasswordService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -47,8 +47,8 @@ public class BasicPasswordService implements CrmPasswordService {
 	}
 	
 	@Override
-	public User findUser(String username) {
-		return userRepository.findUsers(new UsersFilter().withUsername(username), Paging.singleInstance()).getSingleItem();
+	public UserDetails findUser(String username) {
+		return userRepository.findUserDetails(new UsersFilter().withUsername(username), Paging.singleInstance()).getSingleItem();
 	}
 	
 	public CrmPasswordRepository getPasswordRepository() {

@@ -7,7 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
@@ -17,38 +18,43 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
 public interface CrmUserService {
 
-	default User prototypeUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		return new User(null, null, personId, username, Status.PENDING, authenticationRoleIds);
+	default UserDetails prototypeUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		return new UserDetails(null, null, personId, username, Status.PENDING, authenticationRoleIds);
 	};
 
-	default User createUser(User prototype) {
+	default UserDetails createUser(UserDetails prototype) {
 		return createUser(prototype.getPersonId(), prototype.getUsername(), prototype.getAuthenticationRoleIds());
 	}
 
-	User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds);
+	UserDetails createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds);
 
-	User enableUser(UserIdentifier userId);
+	UserSummary enableUser(UserIdentifier userId);
 
-	User disableUser(UserIdentifier userId);
+	UserSummary disableUser(UserIdentifier userId);
 
-	User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles);
+	UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles);
 
 	boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword);
 
 	String resetPassword(UserIdentifier userId);
 
-	User findUser(UserIdentifier userId);
+	UserSummary findUserSummary(UserIdentifier userId);
 
-	User findUserByUsername(String username);
+	UserDetails findUserDetails(UserIdentifier userId);
+
+	UserDetails findUserByUsername(String username);
 
 	long countUsers(UsersFilter filter);
 
-	FilteredPage<User> findUsers(UsersFilter filter, Paging paging);
+	FilteredPage<UserSummary> findUserSummaries(UsersFilter filter, Paging paging);
+
+	FilteredPage<UserDetails> findUserDetails(UsersFilter filter, Paging paging);
 
 	default boolean isValidPasswordFormat(String password) {
 		if (StringUtils.isBlank(password))
@@ -60,8 +66,16 @@ public interface CrmUserService {
 		return true;
 	}
 
-	default FilteredPage<User> findUsers(UsersFilter filter) {
-		return findUsers(filter, defaultUsersPaging());
+	default FilteredPage<UserSummary> findUserSummaries(UsersFilter filter) {
+		return findUserSummaries(filter, defaultUsersPaging());
+	}
+
+	default FilteredPage<UserDetails> findUserDetails(UsersFilter filter) {
+		return findUserDetails(filter, defaultUsersPaging());
+	}
+
+	default FilteredPage<UserSummary> findActiveUserSummariesForOrg(OrganizationIdentifier organizationId) {
+		return findUserSummaries(new UsersFilter(organizationId, null, Status.ACTIVE, null, null), UsersFilter.getDefaultPaging());
 	}
 
 	default UsersFilter defaultUsersFilter() {
@@ -72,7 +86,7 @@ public interface CrmUserService {
 		return new Paging(UsersFilter.getSortOptions().get(0));
 	}
 
-	static List<Message> validateUser(Crm crm, User user) {
+	static List<Message> validateUser(Crm crm, UserDetails user) {
 		List<Message> messages = new ArrayList<Message>();
 		
 		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();

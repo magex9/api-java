@@ -1,10 +1,10 @@
 package ca.magex.crm.api.authentication;
 
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 
 public interface CrmPasswordService {
 	
-	User findUser(String username);
+	UserDetails findUser(String username);
 
 	String getEncodedPassword(String username);
 

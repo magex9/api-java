@@ -22,7 +22,7 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmConfigurationService;
@@ -53,7 +53,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	}
 
 	@Override
-	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
+	public UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password) {
 		if (!isInitialized()) {
 			initialize(repos);
 			OrganizationIdentifier organizationId = repos.generateOrganizationId();
@@ -73,12 +73,12 @@ public class BasicConfigurationService implements CrmConfigurationService {
 				List.of(BusinessGroupIdentifier.IMIT)));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
 			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
-			repos.saveUser(new User(systemId, organizationId, mainContactId, username, Status.ACTIVE, List.of(SYS_ADMIN, SYS_ACTUATOR, SYS_ACCESS, CRM_ADMIN)));
+			repos.saveUserDetails(new UserDetails(systemId, organizationId, mainContactId, username, Status.ACTIVE, List.of(SYS_ADMIN, SYS_ACTUATOR, SYS_ACCESS, CRM_ADMIN)));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
 			repos.setInitialized();
 		}
-		return repos.findUsers(new UsersFilter().withAuthenticationRoleId(SYS_ADMIN).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+		return repos.findUserDetails(new UsersFilter().withAuthenticationRoleId(SYS_ADMIN).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
 	}
 	
 	@Override

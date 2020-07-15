@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -18,24 +18,24 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
 @Component
-public class UserJsonTransformer extends AbstractJsonTransformer<User> {
+public class UserDetailsJsonTransformer extends AbstractJsonTransformer<UserDetails> {
 
-	public UserJsonTransformer(CrmServices crm) {
+	public UserDetailsJsonTransformer(CrmServices crm) {
 		super(crm);
 	}
 
 	@Override
-	public Class<User> getSourceType() {
-		return User.class;
+	public Class<UserDetails> getSourceType() {
+		return UserDetails.class;
 	}
 	
 	@Override
-	public JsonObject formatRoot(User user) {
+	public JsonObject formatRoot(UserDetails user) {
 		return formatLocalized(user, null);
 	}
 	
 	@Override
-	public JsonObject formatLocalized(User user, Locale locale) {
+	public JsonObject formatLocalized(UserDetails user, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs, locale);
 		formatIdentifier(pairs, "userId", user, UserIdentifier.class, locale);
@@ -48,14 +48,14 @@ public class UserJsonTransformer extends AbstractJsonTransformer<User> {
 	}
 
 	@Override
-	public User parseJsonObject(JsonObject json, Locale locale) {
+	public UserDetails parseJsonObject(JsonObject json, Locale locale) {
 		UserIdentifier userId = parseIdentifier("userId", json, UserIdentifier.class, locale);
 		OrganizationIdentifier organizationId = parseIdentifier("organizationId", json, OrganizationIdentifier.class, locale);
 		PersonIdentifier personId = parseIdentifier("personId", json, PersonIdentifier.class, locale);
 		String username = parseText("username", json);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		List<AuthenticationRoleIdentifier> roleIds = parseOptions("authenticationRoleIds", json, AuthenticationRoleIdentifier.class, locale);
-		return new User(userId, organizationId, personId, username, status, roleIds);
+		return new UserDetails(userId, organizationId, personId, username, status, roleIds);
 	}
 
 }

@@ -74,7 +74,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		assertEquals(0L, crm.findOrganizationSummaries(crm.defaultOrganizationsFilter()).getTotalElements());
 		assertEquals(0L, crm.findLocationSummaries(crm.defaultLocationsFilter()).getTotalElements());
 		assertEquals(0L, crm.findPersonSummaries(crm.defaultPersonsFilter()).getTotalElements());
-		assertEquals(0L, crm.findUsers(crm.defaultUsersFilter()).getTotalElements());
+		assertEquals(0L, crm.findUserSummaries(crm.defaultUsersFilter()).getTotalElements());
 		
 		assertEquals("true", mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/initialize")
@@ -97,7 +97,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		assertEquals(List.of("System Orgainzation"), crm.findOrganizationSummaries(crm.defaultOrganizationsFilter()).stream().map(o -> o.getDisplayName()).collect(Collectors.toList()));
 		assertEquals(List.of("System Administrator"), crm.findLocationSummaries(crm.defaultLocationsFilter()).stream().map(l -> l.getDisplayName()).collect(Collectors.toList()));
 		assertEquals(List.of("Last, First"), crm.findPersonSummaries(crm.defaultPersonsFilter()).stream().map(p -> p.getDisplayName()).collect(Collectors.toList()));
-		assertEquals(List.of("system"), crm.findUsers(crm.defaultUsersFilter()).stream().map(u -> u.getUsername()).collect(Collectors.toList()));
+		assertEquals(List.of("system"), crm.findUserSummaries(crm.defaultUsersFilter()).stream().map(u -> u.getUsername()).collect(Collectors.toList()));
 
 		assertEquals("true", mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/initialize")

@@ -66,7 +66,7 @@ public abstract class AbstractControllerTests {
 	}
 	
 	public UserIdentifier getSystemUserIdentifier() {
-		return crm.findUsers(crm.defaultUsersFilter().withPersonId(getSystemAdminIdentifier())).getSingleItem().getUserId();
+		return crm.findUserDetails(crm.defaultUsersFilter().withPersonId(getSystemAdminIdentifier())).getSingleItem().getUserId();
 	}
 	
 	public OrganizationIdentifier createTestOrganization(String name) {

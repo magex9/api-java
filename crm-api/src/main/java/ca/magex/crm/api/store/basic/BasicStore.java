@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.store.CrmStore;
@@ -44,7 +44,7 @@ public class BasicStore implements CrmStore {
 	
 	private Map<PersonIdentifier, PersonDetails> persons;
 	
-	private Map<UserIdentifier, User> users;
+	private Map<UserIdentifier, UserDetails> users;
 	
 	/**
 	 * Creates a new Basic Store with no data associated to it
@@ -108,7 +108,7 @@ public class BasicStore implements CrmStore {
 	}
 
 	@Override
-	public Map<UserIdentifier, User> getUsers() {
+	public Map<UserIdentifier, UserDetails> getUsers() {
 		return users;
 	}
 }

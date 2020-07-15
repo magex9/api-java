@@ -126,7 +126,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		JsonObject jsonld = get(userId, null, HttpStatus.OK);
 		//JsonAsserts.print(jsonld, "jsonld");
 		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), jsonld.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/organization/User", jsonld.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/UserDetails", jsonld.getString("@context"));
 		assertEquals(Crm.REST_BASE + userId, jsonld.getString("userId"));
 		assertEquals(Crm.REST_BASE + testOrgId, jsonld.getString("organizationId"));
 		assertEquals(Crm.REST_BASE + testPersonId, jsonld.getString("personId"));
@@ -231,7 +231,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		JsonObject linked = get(userId, null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), linked.keys());
-		assertEquals("http://api.magex.ca/crm/rest/schema/organization/User", linked.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/UserDetails", linked.getString("@context"));
 		assertEquals(Crm.REST_BASE + userId.toString(), linked.getString("userId"));
 		assertEquals(Crm.REST_BASE + testOrgId.toString(), linked.getString("organizationId"));
 		assertEquals(Crm.REST_BASE + testPersonId.toString(), linked.getString("personId"));
@@ -506,81 +506,73 @@ public class UsersControllerTests extends AbstractControllerTests {
 	public void testEnableDisablePerson() throws Exception {
 		UserIdentifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
 		JsonArray error1 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(userId.toString(), error1.getObject(0).getString("identifier"));
 		assertEquals("Error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
 		JsonArray error2 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(userId.toString(), error2.getObject(0).getString("identifier"));
 		assertEquals("Error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
 		JsonArray error3 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(userId.toString(), error3.getObject(0).getString("identifier"));
 		assertEquals("Error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
 		JsonObject disable = put(userId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(disable, "disable");
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), disable.keys());
+		assertEquals(List.of("userId", "organizationId", "username", "status"), disable.keys());
 		assertEquals(userId.getCode(), disable.getString("userId"));
 		assertEquals(testOrgId.getCode(), disable.getString("organizationId"));
-		assertEquals(testPersonId.getCode(), disable.getString("personId"));
 		assertEquals("chloe", disable.getString("username"));
 		assertEquals("Inactive", disable.getString("status"));
-		assertEquals(2, disable.getArray("authenticationRoleIds").size());
-		assertEquals("Organization Admin", disable.getArray("authenticationRoleIds").getString(0));
-		assertEquals("CRM Admin", disable.getArray("authenticationRoleIds").getString(1));
 		
 		JsonArray error4 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(userId.toString(), error4.getObject(0).getString("identifier"));
 		assertEquals("Error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 		
 		JsonArray error5 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(userId.toString(), error5.getObject(0).getString("identifier"));
 		assertEquals("Error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 		
 		JsonArray error6 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(userId.toString(), error6.getObject(0).getString("identifier"));
 		assertEquals("Error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 	
 		JsonObject enable = put(userId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(enable, "enable");
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), enable.keys());
+		assertEquals(List.of("userId", "organizationId", "username", "status"), disable.keys());
 		assertEquals(userId.getCode(), enable.getString("userId"));
 		assertEquals(testOrgId.getCode(), enable.getString("organizationId"));
-		assertEquals(testPersonId.getCode(), enable.getString("personId"));
 		assertEquals("chloe", enable.getString("username"));
 		assertEquals("Actif", enable.getString("status"));
-		assertEquals(2, enable.getArray("authenticationRoleIds").size());
-		assertEquals("Administrateur de l'organisation", enable.getArray("authenticationRoleIds").getString(0));
-		assertEquals("Administrateur GRC", enable.getArray("authenticationRoleIds").getString(1));
 		
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 		
 		put("/user/chloe/disable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 
 		put("/user/chloe/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 	}
 	
 }

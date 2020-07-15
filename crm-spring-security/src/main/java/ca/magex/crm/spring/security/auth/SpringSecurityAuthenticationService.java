@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -27,7 +27,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 	}
 
 	@Override
-	public User getAuthenticatedUser() {
+	public UserDetails getAuthenticatedUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null || auth instanceof AnonymousAuthenticationToken) {
 			return null;
@@ -37,7 +37,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public boolean isUserInRole(String role) {
-		User authUser = getAuthenticatedUser();
+		UserDetails authUser = getAuthenticatedUser();
 		if (authUser == null) {
 			return false;
 		}
@@ -46,7 +46,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public UserIdentifier getAuthenticatedUserId() {
-		User authUser = getAuthenticatedUser();
+		UserDetails authUser = getAuthenticatedUser();
 		if (authUser == null) {
 			return null;
 		}
@@ -55,7 +55,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public PersonIdentifier getAuthenticatedPersonId() {
-		User authUser = getAuthenticatedUser();
+		UserDetails authUser = getAuthenticatedUser();
 		if (authUser == null) {
 			return null;
 		}
@@ -64,7 +64,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public OrganizationIdentifier getAuthenticatedOrganizationId() {
-		User authUser = getAuthenticatedUser();
+		UserDetails authUser = getAuthenticatedUser();
 		if (authUser == null) {
 			return null;
 		}

@@ -5,7 +5,7 @@ import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN
 
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.policies.basic.BasicUserPolicy;
 import ca.magex.crm.api.services.CrmPersonService;
@@ -67,7 +67,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		User user = users.findUserByUsername(username);
+		UserDetails user = users.findUserByUsername(username);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		return auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId());
 	}
@@ -81,7 +81,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 		if (auth.isUserInRole(CRM_ADMIN)) {
 			return true;
 		}
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		return auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId());
 	}
@@ -96,7 +96,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
@@ -119,7 +119,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
@@ -138,7 +138,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
@@ -157,7 +157,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		if (auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);

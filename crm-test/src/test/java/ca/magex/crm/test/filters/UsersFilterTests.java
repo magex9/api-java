@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.system.Identifier;
@@ -205,7 +205,7 @@ public class UsersFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		User user = new User(new UserIdentifier("DEF"), new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), "Admin", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("USR"), new AuthenticationRoleIdentifier("ADM")));
+		UserDetails user = new UserDetails(new UserIdentifier("DEF"), new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), "Admin", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("USR"), new AuthenticationRoleIdentifier("ADM")));
 		/* default filter should match */
 		Assert.assertTrue(new UsersFilter().apply(user));
 		

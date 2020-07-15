@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -28,7 +28,7 @@ public class UserJsonTransformerTests {
 	
 	private Crm crm;
 	
-	private Transformer<User, JsonElement> transformer;
+	private Transformer<UserDetails, JsonElement> transformer;
 	
 	private UserIdentifier userId;
 	
@@ -36,17 +36,17 @@ public class UserJsonTransformerTests {
 	
 	private OrganizationIdentifier organizationId;
 	
-	private User user;
+	private UserDetails user;
 	
 	@Before
 	public void setup() {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
-		transformer = new UserJsonTransformer(crm);
+		transformer = new UserDetailsJsonTransformer(crm);
 		userId = new UserIdentifier("R61MD142WM");
 		personId = new PersonIdentifier("Q69WVGMAce");
 		organizationId = new OrganizationIdentifier("gGe79u4rWg");
-		user = new User(userId, organizationId, personId, "admin", Status.ACTIVE, List.of(
+		user = new UserDetails(userId, organizationId, personId, "admin", Status.ACTIVE, List.of(
 			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "CRM/ADMIN").getOptionId(),
 			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "ORG/ADMIN").getOptionId()
 		));
@@ -54,7 +54,7 @@ public class UserJsonTransformerTests {
 	
 	@Test
 	public void testTransformerType() throws Exception {
-		assertEquals(User.class, transformer.getSourceType());
+		assertEquals(UserDetails.class, transformer.getSourceType());
 	}
 
 	@Test

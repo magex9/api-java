@@ -10,7 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Configuration;
@@ -53,7 +53,7 @@ public interface CrmStore {
 
 	public Map<PersonIdentifier, PersonDetails> getPersons();
 
-	public Map<UserIdentifier, User> getUsers();
+	public Map<UserIdentifier, UserDetails> getUsers();
 	
 	default public void reset() {
 		getNotifier().clear();

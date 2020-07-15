@@ -1,14 +1,13 @@
 package ca.magex.crm.spring.security.jwt.userdetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.authentication.CrmPasswordService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 
 /**
@@ -19,15 +18,13 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 @Component
 public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPasswordService {
 
-//	@Autowired private CrmUserService userService;
 	@Autowired private CrmPasswordService passwordService;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
-			User user = passwordService.findUser(username);
+			UserDetails user = passwordService.findUser(username);
 			String encodedPassword = passwordService.getEncodedPassword(username);
-			
 			return new CrmUserDetails(user, encodedPassword);
 		}
 		catch(ItemNotFoundException e) {
@@ -36,19 +33,19 @@ public class CrmUserDetailsManager implements UserDetailsManager, UserDetailsPas
 	}
 
 	@Override
-	public UserDetails updatePassword(UserDetails userDetails, String newPassword) {
-		User user = passwordService.findUser(userDetails.getUsername());
+	public org.springframework.security.core.userdetails.UserDetails updatePassword(org.springframework.security.core.userdetails.UserDetails userDetails, String newPassword) {
+		UserDetails user = passwordService.findUser(userDetails.getUsername());
 		passwordService.updatePassword(user.getUsername(), newPassword);
 		return new CrmUserDetails(user, newPassword);
 	}
 
 	@Override
-	public void createUser(UserDetails user) {
+	public void createUser(org.springframework.security.core.userdetails.UserDetails user) {
 		throw new UnsupportedOperationException("Must be done through CRM User Service");		
 	}
 
 	@Override
-	public void updateUser(UserDetails user) {
+	public void updateUser(org.springframework.security.core.userdetails.UserDetails user) {
 		throw new UnsupportedOperationException("Must be done through CRM User Service");
 	}
 

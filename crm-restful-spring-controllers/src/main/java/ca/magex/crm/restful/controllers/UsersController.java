@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.system.Message;
@@ -32,9 +33,9 @@ public class UsersController extends AbstractCrmController {
 
 	@GetMapping("/rest/users")
 	public void findUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, User.class, (messages, transformer, locale) -> { 
+		handle(req, res, UserDetails.class, (messages, transformer, locale) -> { 
 			return createPage(
-				crm.findUsers(
+				crm.findUserDetails(
 					extractUserFilter(req, locale), 
 					extractPaging(UsersFilter.getDefaultPaging(), req)
 				), transformer, locale
@@ -56,7 +57,7 @@ public class UsersController extends AbstractCrmController {
 	
 	@PostMapping("/rest/users")
 	public void createUser(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, User.class, (messages, transformer, locale) -> { 
+		handle(req, res, UserDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
 			PersonIdentifier personId = getIdentifier(body, "personId", true, null, null, messages);
 			String username = getString(body, "username", true, null, null, messages);
@@ -69,8 +70,8 @@ public class UsersController extends AbstractCrmController {
 	@GetMapping("/rest/users/{userId}")
 	public void getUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
-		handle(req, res, User.class, (messages, transformer, locale) -> {
-			return transformer.format(crm.findUser(userId), locale);
+		handle(req, res, UserDetails.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findUserDetails(userId), locale);
 		});
 	}
 
@@ -83,13 +84,13 @@ public class UsersController extends AbstractCrmController {
 	@PatchMapping("/rest/users/{userId}")
 	public void updateUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
-		handle(req, res, User.class, (messages, transformer, locale) -> {
+		handle(req, res, UserDetails.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			if (body.contains("authenticationRoleIds")) {
 				crm.updateUserRoles(userId, getOptionIdentifiers(body, "authenticationRoleIds", true, List.of(), userId, messages, AuthenticationRoleIdentifier.class, locale));
 			}
 			validate(messages);
-			return transformer.format(crm.findUser(userId), locale);
+			return transformer.format(crm.findUserDetails(userId), locale);
 		});
 	}
 
@@ -103,7 +104,7 @@ public class UsersController extends AbstractCrmController {
 	public void getUserPerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
-			return transformer.format(crm.findPersonDetails(crm.findUser(userId).getPersonId()), locale);
+			return transformer.format(crm.findPersonDetails(crm.findUserDetails(userId).getPersonId()), locale);
 		});
 	}
 
@@ -117,7 +118,7 @@ public class UsersController extends AbstractCrmController {
 	public void getUserRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
 		handle(req, res, AuthenticationRoleIdentifier.class, (messages, transformer, locale) -> {
-			return createList(crm.findUser(userId).getAuthenticationRoleIds(), transformer, locale);
+			return createList(crm.findUserDetails(userId).getAuthenticationRoleIds(), transformer, locale);
 		});
 	}
 
@@ -130,7 +131,7 @@ public class UsersController extends AbstractCrmController {
 	@PutMapping("/rest/users/{userId}/enable")
 	public void enableUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
-		handle(req, res, User.class, (messages, transformer, locale) -> {
+		handle(req, res, UserSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), userId, messages);
 			return transformer.format(crm.enableUser(userId), locale);
 		});
@@ -145,7 +146,7 @@ public class UsersController extends AbstractCrmController {
 	@PutMapping("/rest/users/{userId}/disable")
 	public void disableUser(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
-		handle(req, res, User.class, (messages, transformer, locale) -> {
+		handle(req, res, UserSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), userId, messages);
 			return transformer.format(crm.disableUser(userId), locale);
 		});

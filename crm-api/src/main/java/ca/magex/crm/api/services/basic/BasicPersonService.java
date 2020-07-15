@@ -101,7 +101,7 @@ public class BasicPersonService implements CrmPersonService {
 
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		return repos.findPersonSummary(filter, paging);
+		return repos.findPersonSummaries(filter, paging);
 	}
 
 	@Override

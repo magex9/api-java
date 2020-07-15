@@ -4,7 +4,7 @@ import java.util.Stack;
 
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.CrmPasswordService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.services.CrmOptionService;
@@ -27,7 +27,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	
 	private CrmPersonService persons;
 	
-	private Stack<User> currentUser;
+	private Stack<UserDetails> currentUser;
 
 	public BasicAuthenticationService(CrmServices crm, CrmUserRepository userRepo, CrmPasswordRepository passwordRepo) {
 		this(crm, crm, crm, new BasicPasswordService(userRepo, passwordRepo));
@@ -65,7 +65,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	}
 
 	@Override
-	public User getAuthenticatedUser() {
+	public UserDetails getAuthenticatedUser() {
 		return currentUser.peek();
 	}
 
