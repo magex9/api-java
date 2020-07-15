@@ -3,21 +3,20 @@ package ca.magex.crm.api.system;
 import java.util.Locale;
 
 /**
- * The status of on an entity in the system that holds the state in the lifecycle.
- * 
- * <dl>
- * 		<dt>active</dt><dd>The entity is currently available</dd>
- * 		<dt>inactive</dt><dd>The entity is logically deleted and unavailable</dd>
- * 		<dt>pending</dt><dd>The entity has been created but not available yet</dd>
- * </dl>
+ * The status of on an entity in the system that holds the state in the life cycle.
  *  
  * @author magex
  *
  */
 public enum Status {
 
+	// The entity is currently available
 	ACTIVE("Active", "Actif"), 
+	
+	// The entity has been logically deleted and is currently unavailable
 	INACTIVE("Inactive", "Inactif"), 
+	
+	// The entity has been created but not persisted yet
 	PENDING("Pending", "En attente");
 	
 	private Localized name;

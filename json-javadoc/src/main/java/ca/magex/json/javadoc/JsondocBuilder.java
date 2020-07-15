@@ -133,6 +133,7 @@ public class JsondocBuilder {
     public static JsonObject processEnum(CompilationUnit cu, EnumDeclaration declaration) throws FileNotFoundException {
         return new JsonObject()
         	.with("name", declaration.getNameAsString())
+        	.with("type", "enum")
         	.with("description", buildComment(declaration.getComment()))
         	.with("constants", declaration.getEntries().stream().map(e -> processEnumConstant(cu, e)).collect(Collectors.toList()));
     }
@@ -140,6 +141,7 @@ public class JsondocBuilder {
     public static JsonObject processEnumConstant(CompilationUnit cu, EnumConstantDeclaration declaration) {
     	return new JsonObject()
     		.with("name", declaration.getNameAsString())
+        	.with("description", buildComment(declaration.getComment()))
     		.with("arguments", new JsonArray(declaration.getArguments().stream().map(a -> buildExpression(a)).collect(Collectors.toList())));
     }
     
