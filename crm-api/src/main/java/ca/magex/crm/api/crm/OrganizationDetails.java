@@ -30,11 +30,9 @@ public class OrganizationDetails extends OrganizationSummary {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	/** identifier for the main location of the organization */
-	@NotNull
 	private LocationIdentifier mainLocationId;
 
 	/** identifier for the main contact of the organization */
-	@NotNull
 	private PersonIdentifier mainContactId;
 
 	/** the list of authentication groups associated to the organization */
