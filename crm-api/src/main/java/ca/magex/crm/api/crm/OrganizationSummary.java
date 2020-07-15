@@ -44,8 +44,7 @@ public class OrganizationSummary implements Serializable {
 	 * @param status
 	 * @param displayName
 	 */
-	public OrganizationSummary(OrganizationIdentifier organizationId, Status status, String displayName) {
-		super();
+	public OrganizationSummary(OrganizationIdentifier organizationId, Status status, String displayName) {		
 		this.organizationId = organizationId;
 		this.status = status;
 		this.displayName = displayName;

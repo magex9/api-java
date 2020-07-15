@@ -71,10 +71,10 @@ public interface CrmOrganizationService {
 	 * The "ORG" group should be assigned for customer users.
 	 * 
 	 * @param organizationDisplayName The name the organization should be displayed in.
-1	 * @param getAuthenticationGroupIds The list of permission groups the users can be assigned to. 
+	 * @param authenticationGroupIds The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> getAuthenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds);
+	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is

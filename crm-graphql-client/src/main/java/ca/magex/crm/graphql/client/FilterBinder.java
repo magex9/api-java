@@ -5,11 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ca.magex.crm.api.filters.GroupsFilter;
 import ca.magex.crm.api.filters.LocationsFilter;
+import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.filters.RolesFilter;
 import ca.magex.crm.api.filters.UsersFilter;
 
 /**
@@ -26,6 +25,12 @@ public class FilterBinder {
 		}
 		if (filter.getStatus() != null) {
 			filterComponents.add("status:\"" + filter.getStatus() + "\"");
+		}
+		if (filter.getAuthenticationGroupId() != null) {
+			filterComponents.add("authenticationGroupId:\"" + filter.getAuthenticationGroupId() + "\"");
+		}
+		if (filter.getBusinessGroupId() != null) {
+			filterComponents.add("businessGroupId:\"" + filter.getBusinessGroupId() + "\"");
 		}
 		return StringUtils.join(filterComponents, ", ");
 	}
@@ -75,43 +80,33 @@ public class FilterBinder {
 		if (filter.getStatus() != null) {
 			filterComponents.add("status:\"" + filter.getStatus() + "\"");
 		}
-		if (filter.getRole() != null) {
-			filterComponents.add("role:\"" + filter.getRole() + "\"");
+		if (filter.getAuthenticationRoleId() != null) {
+			filterComponents.add("authenticationRoleId:\"" + filter.getAuthenticationRoleId() + "\"");
 		}
 		return StringUtils.join(filterComponents, ", ");
 	}
 	
-	public static String toFilterString(GroupsFilter filter) {
+	public static String toFilterString(OptionsFilter filter) {
 		List<String> filterComponents = new ArrayList<String>();
-		if (filter.getCode() != null) {
-			filterComponents.add("code:\"" + filter.getCode() + "\"");
+		if (filter.getParentId() != null) {
+			filterComponents.add("parentId:\"" + filter.getParentId() + "\"");
 		}
-		if (filter.getEnglishName() != null) {
-			filterComponents.add("englishName:\"" + filter.getEnglishName() + "\"");
-		}
-		if (filter.getFrenchName() != null) {
-			filterComponents.add("frenchName:\"" + filter.getFrenchName() + "\"");
+		if (filter.getType() != null) {
+			filterComponents.add("type:\"" + filter.getType() + "\"");
 		}
 		if (filter.getStatus() != null) {
 			filterComponents.add("status:\"" + filter.getStatus() + "\"");
 		}
-		return StringUtils.join(filterComponents, ", ");
-	}
-	
-	public static String toFilterString(RolesFilter filter) {
-		List<String> filterComponents = new ArrayList<String>();
-		if (filter.getCode() != null) {
-			filterComponents.add("code:\"" + filter.getCode() + "\"");
+		if (filter.getName() != null && filter.getName().getCode() != null) {
+			filterComponents.add("code:\"" + filter.getName().getCode() + "\"");
 		}
-		if (filter.getEnglishName() != null) {
-			filterComponents.add("englishName:\"" + filter.getEnglishName() + "\"");
+		if (filter.getName() != null && filter.getName().getEnglishName() != null) {
+			filterComponents.add("english:\"" + filter.getName().getEnglishName() + "\"");
 		}
-		if (filter.getFrenchName() != null) {
-			filterComponents.add("frenchName:\"" + filter.getFrenchName() + "\"");
-		}
-		if (filter.getStatus() != null) {
-			filterComponents.add("status:\"" + filter.getStatus() + "\"");
+		if (filter.getName() != null && filter.getName().getFrenchName() != null) {
+			filterComponents.add("french:\"" + filter.getName().getFrenchName() + "\"");
 		}
 		return StringUtils.join(filterComponents, ", ");
 	}
+		
 }
