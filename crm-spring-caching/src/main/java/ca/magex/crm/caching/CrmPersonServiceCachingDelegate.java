@@ -59,8 +59,14 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	 * @return
 	 */
 	private List<Pair<String, Object>> summaryCacheSupplier(PersonSummary summary, Identifier key) {
-		return List.of(
-				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
+		if (summary == null) {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), null),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), null));
+		} else {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
+		}
 	}
 
 	@Override

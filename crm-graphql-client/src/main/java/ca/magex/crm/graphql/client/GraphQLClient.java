@@ -9,9 +9,6 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +18,8 @@ import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 import ca.magex.crm.graphql.model.GraphQLRequest;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonObject;
 
 /**
  * HTTP client that handles executing GraphQL queries and returning the response
@@ -28,7 +27,7 @@ import ca.magex.crm.spring.security.jwt.JwtToken;
  * @author Jonny
  *
  */
-public abstract class GraphQLClient {
+public class GraphQLClient {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GraphQLClient.class);
 
@@ -85,7 +84,7 @@ public abstract class GraphQLClient {
 	 * @param variables
 	 * @return
 	 */
-	protected <T> T performGraphQLQueryWithVariables(String queryId, String queryName, Map<String, Object> variables) {
+	public <T> T performGraphQLQueryWithVariables(String queryId, String queryName, Map<String, Object> variables) {
 		return performGraphQLQuery(queryName, constructRequestWithVariables(queryId, variables));
 	}
 
@@ -98,7 +97,7 @@ public abstract class GraphQLClient {
 	 * @param params
 	 * @return
 	 */
-	protected <T> T performGraphQLQueryWithSubstitution(String queryId, String queryName, Object... params) {
+	public <T> T performGraphQLQueryWithSubstitution(String queryId, String queryName, Object... params) {
 		return performGraphQLQuery(queryName, constructRequestWithSubstitution(queryId, params));
 	}
 
@@ -119,24 +118,24 @@ public abstract class GraphQLClient {
 							.body(request),
 						String.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
-				JSONObject json = new JSONObject(response.getBody());				
-				JSONArray errors = json.getJSONArray("errors");
-				if (errors.length() == 0) {
-					JSONObject data = json.getJSONObject("data");
-					if (data.get(queryName) == JSONObject.NULL) {
+				JsonObject json = new JsonObject(response.getBody());				
+				JsonArray errors = json.getArray("errors");
+				if (errors.size() == 0) {
+					JsonObject data = json.getObject("data");
+					if (!data.contains(queryName)) {
 						throw new GraphQLClientException("Null data returned without Error");
 					}
 					return (T) data.get(queryName);
 				} else {
-					throw new GraphQLClientException(errors.toString(3));
+					throw new GraphQLClientException(errors.toString());
 				}
 			}
 			else {
 				throw new GraphQLClientException("Error performing graphql query " + queryName + ", " + response.getStatusCode().getReasonPhrase());
 			}
 		}
-		catch(JSONException jsone) {
-			throw new GraphQLClientException("Unable to parse response", jsone);
+		catch(Exception e) {
+			throw new GraphQLClientException("Unable to parse response", e);
 		} finally {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("execution of " + request + " took " + (System.currentTimeMillis() - t1) + "ms.");

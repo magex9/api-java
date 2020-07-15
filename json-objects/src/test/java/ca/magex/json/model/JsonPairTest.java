@@ -1,12 +1,11 @@
 package ca.magex.json.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
 
 import org.junit.Test;
-
-import ca.magex.json.model.JsonPair;
 
 public class JsonPairTest {
 

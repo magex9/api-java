@@ -2,6 +2,8 @@ package ca.magex.crm.api.system;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * The status of on an entity in the system that holds the state in the life cycle.
  *  
@@ -50,4 +52,10 @@ public enum Status {
 		return name.get(locale);
 	}
 	
+	public static Status of(String value) {
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+		return valueOf(StringUtils.upperCase(value));
+	}
 }

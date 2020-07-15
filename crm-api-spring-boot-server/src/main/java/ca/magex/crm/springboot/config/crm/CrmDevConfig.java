@@ -2,6 +2,7 @@ package ca.magex.crm.springboot.config.crm;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
@@ -20,6 +21,7 @@ public class CrmDevConfig {
 
 	@PostConstruct
 	public void initialize() {
+		LoggerFactory.getLogger(CrmDevConfig.class).info("Initializing CRM System for Dev");
 		crm.initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
 	}
 	

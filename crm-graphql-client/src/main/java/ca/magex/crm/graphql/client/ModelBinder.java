@@ -1,20 +1,14 @@
 package ca.magex.crm.graphql.client;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.util.Pair;
 
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -25,34 +19,253 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.lookup.BusinessClassification;
-import ca.magex.crm.api.lookup.BusinessSector;
-import ca.magex.crm.api.lookup.BusinessUnit;
-import ca.magex.crm.api.lookup.Country;
-import ca.magex.crm.api.lookup.Language;
-import ca.magex.crm.api.lookup.Province;
-import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.roles.Role;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.system.FilteredPage;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.IdentifierFactory;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonObject;
 
 /**
- * Binds the JSON Resonses back to the CRM Model Objects
+ * Binds the JSON Responses back to the CRM Model Objects
  * 
  * @author Jonny
  *
  */
 public class ModelBinder {
 
+	/**
+	 * Binds a generic number element to a long value
+	 * 
+	 * @param number
+	 * @return
+	 */
 	public static long toLong(Number number) {
 		return number.longValue();
 	}
 
+	/**
+	 * Binds the given jsonArray to an Identifier List using the provided constructor and id field
+	 * @param <I>
+	 * @param constructor
+	 * @param jsonArray
+	 * @param idField
+	 * @return
+	 */
+	public static <I extends Identifier> List<I> toIdentifierList(Function<String, I> constructor, JsonArray jsonArray, String idField) {
+		List<I> list = new ArrayList<>();
+		for (int i = 0; i < jsonArray.size(); i++) {
+			JsonObject object = (JsonObject) jsonArray.get(i);
+			list.add(constructor.apply(object.getString(idField)));
+		}
+		return list;
+	}
+
+	/**
+	 * Binds the given json object to a Choice model
+	 * @param <I>
+	 * @param json
+	 * @return
+	 */
+	public static <I extends OptionIdentifier> Choice<I> toChoice(JsonObject json) {
+		if (json.contains("identifier")) {
+			return new Choice<>(IdentifierFactory.forOptionId(json.getString("identifier")));
+		} else if (json.contains("other")) {
+			return new Choice<>(json.getString("other"));
+		} else {
+			return new Choice<>((String) null);
+		}
+	}
+
+	/**
+	 * Binds the given json object to a MailingAddress model
+	 * @param json
+	 * @return
+	 */
+	public static MailingAddress toMailingAddress(JsonObject json) {
+		return new MailingAddress(
+				json.getString("street"),
+				json.getString("city"),
+				toChoice(json.getObject("province")),
+				toChoice(json.getObject("country")),
+				json.getString("postalCode"));
+	}
+
+	/**
+	 * Binds the given json object to a PersonName model
+	 * @param json
+	 * @return
+	 */
+	public static PersonName toPersonName(JsonObject json) {
+		return new PersonName(
+				toChoice(json.getObject("salutation")),
+				json.getString("firstName"),
+				json.getString("middleName"),
+				json.getString("lastName"));
+	}
+
+	/**
+	 * Binds the given json object to a Telephone model
+	 * @param json
+	 * @return
+	 */
+	public static Telephone toTelephone(JsonObject json) {
+		return new Telephone(
+				json.getString("number"),
+				json.getString("extension"));
+	}
+
+	/**
+	 * Binds the given json object to a Communication model
+	 * @param json
+	 * @return
+	 */
+	public static Communication toCommunication(JsonObject json) {
+		return new Communication(
+				json.getString("jobTitle"),
+				toChoice(json.getObject("language")),
+				json.getString("email"),
+				toTelephone(json.getObject("homePhone")),
+				json.getString("faxNumber"));
+	}
+
+	/**
+	 * Binds the given json object to an OrganizationSummary model
+	 * @param json
+	 * @return
+	 */
+	public static OrganizationSummary toOrganizationSummary(JsonObject json) {
+		return new OrganizationSummary(
+				new OrganizationIdentifier(json.getString("organizationId")),
+				Status.of(json.getString("status")),
+				json.getString("displayName"));
+	}
+
+	/**
+	 * Binds the given json object to an OrganizationDetails model
+	 * @param json
+	 * @return
+	 */
+	public static OrganizationDetails toOrganizationDetails(JsonObject json) {
+		LocationIdentifier locationId = null;
+		PersonIdentifier contactId = null;
+		if (json.contains("mainLocation")) {
+			locationId = new LocationIdentifier(json.getObject("mainLocation").getString("locationId"));
+		}
+		if (json.contains("mainContact")) {
+			contactId = new PersonIdentifier(json.getObject("mainContact").getString("personId"));
+		}
+		return new OrganizationDetails(
+				new OrganizationIdentifier(json.getString("organizationId")),
+				Status.of(json.getString("status")),
+				json.getString("displayName"),
+				locationId,
+				contactId,
+				toIdentifierList(AuthenticationGroupIdentifier::new, json.getArray("authenticationGroups"), "optionId"),
+				toIdentifierList(BusinessGroupIdentifier::new, json.getArray("businessGroups"), "optionId"));
+	}
+
+	/**
+	 * Binds the given json object to a LocationSummary model
+	 * @param json
+	 * @return
+	 */
+	public static LocationSummary toLocationSummary(JsonObject json) {
+		return new LocationSummary(
+				new LocationIdentifier(json.getString("locationId")),
+				new OrganizationIdentifier(json.getString("organizationId")),
+				Status.of(json.getString("status")),
+				json.getString("reference"),
+				json.getString("displayName"));
+	}
+
+	/**
+	 * Binds the given json object to a LocationDetails model
+	 * @param json
+	 * @return
+	 */
+	public static LocationDetails toLocationDetails(JsonObject json) {
+		return new LocationDetails(
+				new LocationIdentifier(json.getString("locationId")),
+				new OrganizationIdentifier(json.getString("organizationId")),
+				Status.of(json.getString("status")),
+				json.getString("reference"),
+				json.getString("displayName"),
+				toMailingAddress(json.getObject("address")));
+	}
+
+	/**
+	 * Binds the given json object to a PersonSummary model
+	 * @param json
+	 * @return
+	 */
+	public static PersonSummary toPersonSummary(JsonObject json) {
+		return new PersonSummary(
+				new PersonIdentifier(json.getString("personId")),
+				new OrganizationIdentifier(json.getString("organizationId")),
+				Status.of(json.getString("status")),
+				json.getString("displayName"));
+	}
+
+	/**
+	 * Binds the given json object to a PersonDetails model
+	 * @param json
+	 * @return
+	 */
+	public static PersonDetails toPersonDetails(JsonObject json) {
+		return new PersonDetails(
+				new PersonIdentifier(json.getString("personId")),
+				new OrganizationIdentifier(json.getString("organizationId")),
+				Status.of(json.getString("status")),
+				json.getString("displayName"),
+				toPersonName(json.getObject("legalName")),
+				toMailingAddress(json.getObject("address")),
+				toCommunication(json.getObject("communication")),
+				toIdentifierList(BusinessRoleIdentifier::new, json.getArray("businessRoles"), "optionId"));
+	}
+
+	/**
+	 * Binds the given json object to a UserSummary model
+	 * @param json
+	 * @return
+	 */
+	public static UserSummary toUserSummary(JsonObject json) {
+		return new UserSummary(
+				new UserIdentifier(json.getString("userId")),
+				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
+				json.getString("username"),
+				Status.of(json.getString("status")));
+	}
+	
+	/**
+	 * Binds the given json object to a UserDetails model
+	 * @param json
+	 * @return
+	 */
+	public static UserDetails toUserDetails(JsonObject json) {
+		return new UserDetails(
+				new UserIdentifier(json.getString("userId")),
+				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
+				new PersonIdentifier(json.getObject("person").getString("personId")),				
+				json.getString("username"),
+				Status.of(json.getString("status")),
+				toIdentifierList(AuthenticationRoleIdentifier::new, json.getArray("authenticationRoles"), "optionId"));
+	}
+
+	
+	
 	public static Pair<List<String>, List<String>> getSortInfo(Paging paging) {
 		List<String> sortFields = new ArrayList<String>();
 		List<String> sortDirections = new ArrayList<String>();
@@ -69,307 +282,57 @@ public class ModelBinder {
 		}
 		return Pair.of(sortFields, sortDirections);
 	}
-	
-	public static Group toGroup(JSONObject json) {
-		try {
-			return new Group(
-					new Identifier(json.getString("groupId")),
-					Status.valueOf(json.getString("status")),
-					new Localized(json.getString("code"), json.getString("englishName"), json.getString("frenchName")));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Group from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Role toRole(JSONObject json) {
-		try {
-			return new Role(
-					new Identifier(json.getString("roleId")),
-					new Identifier(json.getString("groupId")),
-					Status.valueOf(json.getString("status")),
-					new Localized(json.getString("code"), json.getString("englishName"), json.getString("frenchName")));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Role from: " + json.toString(), jsone);
-		}
-	}
 
-	public static OrganizationSummary toOrganizationSummary(JSONObject json) {
-		try {
-			return new OrganizationSummary(
-					new Identifier(json.getString("organizationId")),
-					Status.valueOf(json.getString("status")),
-					json.getString("displayName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing OrganizationSummary from: " + json.toString(), jsone);
-		}
-	}
+	//	public static <T> List<T> toList(Function<JSONObject, T> constructor, JSONArray jsonArray) {
+	//		try {
+	//			List<T> list = new ArrayList<>();
+	//			for (int i = 0; i < jsonArray.length(); i++) {
+	//				list.add(constructor.apply(jsonArray.getJSONObject(i)));
+	//			}
+	//			return list;
+	//		} catch (Exception jsone) {
+	//			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
+	//		}
+	//	}
+	//
+	//	public static List<String> toStringList(JSONArray jsonArray, String fieldId) {
+	//		try {
+	//			List<String> list = new ArrayList<>();
+	//			for (int i = 0; i < jsonArray.length(); i++) {
+	//				if (fieldId == null) {
+	//					list.add(jsonArray.getString(i));
+	//				} else {
+	//					list.add(jsonArray.getJSONObject(i).getString(fieldId));
+	//				}
+	//			}
+	//			return list;
+	//		} catch (Exception jsone) {
+	//			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
+	//		}
+	//	}
 
-	public static OrganizationDetails toOrganizationDetails(JSONObject json) {
-		try {
-			Identifier locationId = null;
-			Identifier contactId = null;
-			if (json.has("mainLocation") && json.get("mainLocation") != JSONObject.NULL) {
-				locationId = new Identifier(json.getJSONObject("mainLocation").getString("locationId"));
-			}
-			if (json.has("mainContact") && json.get("mainContact") != JSONObject.NULL) {
-				contactId = new Identifier(json.getJSONObject("mainContact").getString("personId"));
-			}
-			return new OrganizationDetails(
-					new Identifier(json.getString("organizationId")),
-					Status.valueOf(json.getString("status")),
-					json.getString("displayName"),
-					locationId,
-					contactId,
-					toStringList(json.getJSONArray("groups"), "code"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing OrganizationDetails from: " + json.toString(), jsone);
-		}
-	}
+	//	public static List<String> toIdentifierList(JSONArray jsonArray) {
+	//		try {
+	//			List<String> list = new ArrayList<>();
+	//			for (int i = 0; i < jsonArray.length(); i++) {
+	//				list.add(jsonArray.getString(i));
+	//			}
+	//			return list;
+	//		} catch (Exception jsone) {
+	//			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
+	//		}
+	//	}
 
-	public static LocationSummary toLocationSummary(JSONObject json) {
-		try {
-			return new LocationSummary(
-					new Identifier(json.getString("locationId")),
-					new Identifier(json.getString("organizationId")),
-					Status.valueOf(json.getString("status")),
-					json.getString("reference"),
-					json.getString("displayName"));
-
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing LocationSummary from: " + json.toString(), jsone);
-		}
-	}
-
-	public static LocationDetails toLocationDetails(JSONObject json) {
-		try {
-			return new LocationDetails(
-					new Identifier(json.getString("locationId")),
-					new Identifier(json.getString("organizationId")),
-					Status.valueOf(json.getString("status")),
-					json.getString("reference"),
-					json.getString("displayName"),
-					toMailingAddress(json.getJSONObject("address")));
-
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing LocationDetails from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static PersonSummary toPersonSummary(JSONObject json) {
-		try {
-			return new PersonSummary(
-					new Identifier(json.getString("personId")),
-					new Identifier(json.getString("organizationId")),
-					Status.valueOf(json.getString("status")),
-					json.getString("displayName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing PersonDetails from: " + json.toString(), jsone);
-		}
-	}
-
-	public static PersonDetails toPersonDetails(JSONObject json) {
-		try {
-			return new PersonDetails(
-					new Identifier(json.getString("personId")),
-					new Identifier(json.getString("organizationId")),
-					Status.valueOf(json.getString("status")),
-					json.getString("displayName"),
-					toPersonName(json.getJSONObject("legalName")),
-					toMailingAddress(json.getJSONObject("address")),
-					toCommunication(json.getJSONObject("communication")),
-					toBusinessPosition(json.getJSONObject("position")));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing PersonDetails from: " + json.toString(), jsone);
-		}
-	}
-
-	public static MailingAddress toMailingAddress(JSONObject json) {
-		try {
-			return new MailingAddress(
-					json.getString("street"),
-					json.getString("city"),
-					json.getString("province"),
-					json.getString("country"),
-					json.getString("postalCode"));
-
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing MailingAddress from: " + json.toString(), jsone);
-		}
-	}
-
-	public static PersonName toPersonName(JSONObject json) {
-		try {
-			return new PersonName(
-					json.getString("salutation"),
-					json.getString("firstName"),
-					json.getString("middleName"),
-					json.getString("lastName"));
-
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing PersonName from: " + json.toString(), jsone);
-		}
-	}
-
-	public static Communication toCommunication(JSONObject json) {
-		try {
-			return new Communication(
-					json.getString("jobTitle"),
-					json.getString("language"),
-					json.getString("email"),
-					toTelephone(json.getJSONObject("homePhone")), 
-					json.getString("faxNumber"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Communication from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static BusinessPosition toBusinessPosition(JSONObject json) {
-		try {
-			return new BusinessPosition(
-					json.getString("sector"),
-					json.getString("unit"),
-					json.getString("classification"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing BusinessPosition from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static User toUser(JSONObject json) {
-		try {
-			return new User(
-					new Identifier(json.getString("userId")),
-					json.getString("username"),
-					toPersonSummary(json.getJSONObject("person")),
-					Status.valueOf(json.getString("status")),
-					toStringList(json.getJSONArray("roles"), "code"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing User from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Telephone toTelephone(JSONObject json) {
-		try {
-			return new Telephone(json.getString("number"), json.getString("extension"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Telephone from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Status toStatus(JSONObject json) {
-		try {
-			return Status.valueOf(StringUtils.upperCase(json.getString("code")));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Role from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Country toCountry(JSONObject json) {
-		try {
-			return new Country(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Country from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Province toProvince(JSONObject json) {
-		try {
-			return new Province(toCountry(json.getJSONObject("parent")), json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Province from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Salutation toSalutation(JSONObject json) {
-		try {
-			return new Salutation(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Salutation from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static Language toLanguage(JSONObject json) {
-		try {
-			return new Language(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing Language from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static BusinessSector toBusinessSector(JSONObject json) {
-		try {
-			return new BusinessSector(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing BusinessSector from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static BusinessUnit toBusinessUnit(JSONObject json) {
-		try {
-			return new BusinessUnit(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing BusinessUnit from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static BusinessClassification toBusinessClassification(JSONObject json) {
-		try {
-			return new BusinessClassification(json.getString("code"), json.getString("englishName"), json.getString("frenchName"));
-		} catch (JSONException jsone) {
-			throw new RuntimeException("Error constructing BusinessClassification from: " + json.toString(), jsone);
-		}
-	}
-	
-	public static <T> List<T> toList(Function<JSONObject, T> constructor, JSONArray jsonArray) {
-		try {
-			List<T> list = new ArrayList<>();
-			for (int i=0; i<jsonArray.length(); i++) {
-				list.add(constructor.apply(jsonArray.getJSONObject(i)));
-			}
-			return list;
-		} catch (Exception jsone) {
-			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
-		}
-	}
-	
-	public static List<String> toStringList(JSONArray jsonArray, String fieldId) {
-		try {
-			List<String> list = new ArrayList<>();
-			for (int i=0; i<jsonArray.length(); i++) {
-				if (fieldId == null) {
-					list.add(jsonArray.getString(i));
-				}
-				else {
-					list.add(jsonArray.getJSONObject(i).getString(fieldId));
-				}
-			}
-			return list;
-		} catch (Exception jsone) {
-			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
-		}
-	}
-	
-	public static List<String> toIdentifierList(JSONArray jsonArray) {
-		try {
-			List<String> list = new ArrayList<>();
-			for (int i=0; i<jsonArray.length(); i++) {
-				list.add(jsonArray.getString(i));
-			}
-			return list;
-		} catch (Exception jsone) {
-			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
-		}
-	}
-
-	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
-		try {
-			List<T> contents = new ArrayList<>();
-			JSONArray content = json.getJSONArray("content");
-			for (int i = 0; i < content.length(); i++) {
-				contents.add(constructor.apply(content.getJSONObject(i)));
-			}
-			return new FilteredPage<T>(filter, paging, contents, json.getInt("totalElements"));
-		} catch (Exception jsone) {
-			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
-		}
-	}
+	//	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
+	//		try {
+	//			List<T> contents = new ArrayList<>();
+	//			JSONArray content = json.getJSONArray("content");
+	//			for (int i = 0; i < content.length(); i++) {
+	//				contents.add(constructor.apply(content.getJSONObject(i)));
+	//			}
+	//			return new FilteredPage<T>(filter, paging, contents, json.getInt("totalElements"));
+	//		} catch (Exception jsone) {
+	//			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
+	//		}
+	//	}
 }
