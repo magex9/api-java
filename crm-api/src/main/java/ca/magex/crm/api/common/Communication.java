@@ -2,10 +2,14 @@ package ca.magex.crm.api.common;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Choice;
@@ -15,14 +19,19 @@ public class Communication implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
+	@Nullable
 	private String jobTitle;
 	
+	@NotEmpty
 	private Choice<LanguageIdentifier> language;
 	
+	@NotNull
 	private String email;
 	
+	@Nullable
 	private Telephone homePhone;
 	
+	@Nullable
 	private String faxNumber;
 
 	public Communication(String jobTitle, Choice<LanguageIdentifier> language, String email, Telephone homePhone, String faxNumber) {

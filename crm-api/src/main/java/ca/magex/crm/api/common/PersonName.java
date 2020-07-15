@@ -2,11 +2,15 @@ package ca.magex.crm.api.common;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.data.annotation.Transient;
+import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Choice;
@@ -16,14 +20,19 @@ public class PersonName implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	@Nullable
 	private Choice<SalutationIdentifier> salutation;
 
+	@NotNull
 	private String firstName;
 
+	@Nullable
 	private String middleName;
 
+	@NotNull
 	private String lastName;
 
+	@Transient
 	private String displayName;
 
 	public PersonName(Choice<SalutationIdentifier> salutation, String firstName, String middleName, String lastName) {

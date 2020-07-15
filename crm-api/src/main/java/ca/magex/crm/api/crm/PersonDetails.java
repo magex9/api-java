@@ -3,6 +3,9 @@ package ca.magex.crm.api.crm;
 import java.util.Collections;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,15 +30,19 @@ public class PersonDetails extends PersonSummary {
 	private static final long serialVersionUID = 1L;
 	
 	/** the full name of the person */
+	@NotNull
 	private PersonName legalName;
 
 	/** the full mailing address of the person */
+	@NotNull
 	private MailingAddress address;
 
 	/** the full communication details for the person */
+	@NotNull
 	private Communication communication;
 
 	/** the business role within the organization associated with this person */
+	@NotEmpty
 	private IdentifierList<BusinessRoleIdentifier> businessRoleIds;
 
 	/**

@@ -3,6 +3,9 @@ package ca.magex.crm.api.crm;
 import java.util.Collections;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,15 +30,19 @@ public class OrganizationDetails extends OrganizationSummary {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	/** identifier for the main location of the organization */
+	@NotNull
 	private LocationIdentifier mainLocationId;
 
 	/** identifier for the main contact of the organization */
+	@NotNull
 	private PersonIdentifier mainContactId;
 
 	/** the list of authentication groups associated to the organization */
+	@NotEmpty
 	private IdentifierList<AuthenticationGroupIdentifier> authenticationGroupIds;
 	
 	/** the list of business groups associated to the organization */
+	@NotEmpty
 	private IdentifierList<BusinessGroupIdentifier> businessGroupIds;
 
 	/**

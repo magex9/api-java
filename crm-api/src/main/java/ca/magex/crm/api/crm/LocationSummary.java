@@ -2,6 +2,11 @@ package ca.magex.crm.api.crm;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -22,18 +27,26 @@ public class LocationSummary implements Serializable {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	/** a unique identifier for the location within the system */
+	@NotNull
 	protected LocationIdentifier locationId;
 	
 	/** the unique organization this location belongs to */
+	@NotNull
 	protected OrganizationIdentifier organizationId;
 	
 	/** current status of the organization */
+	@NotNull
 	protected Status status;
 	
 	/** a unique reference for the location within the organization */
+	@NotBlank
+	@Pattern(regexp = "[A-Z0-9]+")
+	@Size(max = 60)
 	protected String reference;
 	
 	/** name of the location for display purposes */
+	@NotBlank
+	@Size(max = 60)
 	protected String displayName;
 	
 	/**

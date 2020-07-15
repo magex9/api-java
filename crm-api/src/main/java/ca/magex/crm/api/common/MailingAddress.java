@@ -2,10 +2,14 @@ package ca.magex.crm.api.common;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Choice;
@@ -16,14 +20,19 @@ public class MailingAddress implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	@NotNull
 	private String street;
 
+	@NotNull
 	private String city;
 
+	@NotEmpty
 	private Choice<ProvinceIdentifier> province;
 
+	@NotEmpty
 	private Choice<CountryIdentifier> country;
 
+	@Nullable
 	private String postalCode;
 
 	public MailingAddress(String street, String city, Choice<ProvinceIdentifier> province, Choice<CountryIdentifier> country, String postalCode) {
