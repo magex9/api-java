@@ -276,11 +276,11 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* find users paging */
 		JSONObject users = execute(
 				"findUsers",
-				"{ findUsers(filter: {organizationId: %s, personId: %s, status: %s, role: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { userId status username } } }",
+				"{ findUsers(filter: {organizationId: %s, personId: %s, status: %s, authenticationRoleId: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { userId status username } } }",
 				orgId,
 				managerId,				
 				"active",
-				"USR",
+				"SYS/ADMIN",
 				1,
 				5,
 				"englishName",
