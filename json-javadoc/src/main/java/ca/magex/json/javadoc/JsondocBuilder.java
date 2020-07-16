@@ -347,6 +347,9 @@ public class JsondocBuilder {
     	if (!properties.isEmpty()) {
     		json = json.with("properties", properties.stream().map(p -> buildPair(p)).collect(Collectors.toList()));
     	}
+    	if (!annotation.findAll(StringLiteralExpr.class).isEmpty()) {
+    		json = json.with("value", annotation.findAll(StringLiteralExpr.class).get(0));
+    	}
 		return json;
 	}
 	

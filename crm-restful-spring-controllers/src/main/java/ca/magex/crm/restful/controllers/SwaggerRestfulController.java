@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,9 +104,134 @@ public class SwaggerRestfulController {
 		;
 	}
 	
-	public JsonPair buildApiPaths() throws Exception {
-		return new JsonPair("paths", "...");
+	public JsonObject buildApiPaths() throws Exception {
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		pairs.addAll(buildPaths(OrganizationsController.class).pairs());
+		return new JsonObject(pairs);
 	}
+	
+	public JsonObject buildPaths(Class<?> cls) throws Exception {
+		JsonObject paths = new JsonObject();
+		
+		JsonObject jsondoc = readJsondoc(cls);
+		
+		for (JsonObject methoddoc : jsondoc.getArray("methods", JsonObject.class)) {
+			JsonObject annotation = findAnnotation(methoddoc, "GetMapping");
+			//String path = 
+		}
+		
+		System.out.println(jsondoc);
+		
+		return paths;
+	}
+	
+//	  "paths": {
+//	    "/rest/organizations": {
+//	      "get": {
+//	        "summary": "List all organizations",
+//	        "operationId": "findOrganizations",
+//	        "tags": ["Organizations"],
+//	        "parameters": [
+//	          {
+//	            "in": "query",
+//	            "name": "displayName",
+//	            "description": "Find an organization by its name",
+//	            "required": false,
+//	            "schema": {"type": "string"}
+//	          },
+//	          {
+//	            "in": "query",
+//	            "name": "status",
+//	            "description": "Find organizations in a certian status",
+//	            "required": false,
+//	            "default": "active",
+//	            "schema": {"$ref": "#/components/schemas/Status"}
+//	          },
+//	          {
+//	            "in": "query",
+//	            "name": "page",
+//	            "description": "Page number",
+//	            "required": false,
+//	            "default": 1,
+//	            "schema": {"type": "integer"}
+//	          },
+//	          {
+//	            "in": "query",
+//	            "name": "limit",
+//	            "description": "The number of items on the page",
+//	            "required": false,
+//	            "default": 10,
+//	            "schema": {"type": "integer"}
+//	          },
+//	          {
+//	            "in": "query",
+//	            "name": "order",
+//	            "description": "The proper to order the results by",
+//	            "required": false,
+//	            "default": "displayName",
+//	            "schema": {
+//	              "type": "string",
+//	              "enum": [
+//	                "displayName",
+//	                "status"
+//	              ]
+//	            }
+//	          },
+//	          {
+//	            "in": "query",
+//	            "name": "direction",
+//	            "description": "The order to sort the propert by",
+//	            "default": "asc",
+//	            "required": false,
+//	            "schema": {
+//	              "type": "string",
+//	              "enum": [
+//	                "asc",
+//	                "desc"
+//	              ]
+//	            }
+//	          }
+//	        ],
+//	        "responses": {
+//	          "200": {
+//	            "description": "A paged array of organizations",
+//	            "headers": {
+//	              "X-Rate-Limit-Limit": {
+//	                "description": "The number of allowed requests in the current period",
+//	                "schema": {"type": "integer"}
+//	              },
+//	              "X-Rate-Limit-Remaining": {
+//	                "description": "The number of remaining requests in the current period",
+//	                "schema": {"type": "integer"}
+//	              },
+//	              "X-Rate-Limit-Reset": {
+//	                "description": "The number of seconds left in the current period",
+//	                "schema": {"type": "integer"}
+//	              },
+//	              "x-next": {
+//	                "description": "A link to the next page of responses",
+//	                "schema": {"type": "string"}
+//	              }
+//	            },
+//	            "content": {
+//	              "application/json": {
+//	                "schema": {
+//	                  "type": "array",
+//	                  "items": {"$ref": "#/components/schemas/OrganizationSummary"}
+//	                }
+//	              }
+//	            }
+//	          },
+//	          "default": {
+//	            "description": "System error",
+//	            "content": {
+//	              "application/json": {
+//	                "schema": {"$ref": "#/components/schemas/SystemException"}
+//	              }
+//	            }
+//	          }
+//	        }
+//	      },
 		
 	public JsonPair buildApiComponents() throws Exception {
 		return new JsonPair("components", new JsonObject()
@@ -296,7 +422,10 @@ public class SwaggerRestfulController {
 		} else if (fielddoc.contains("type", JsonText.class) && fielddoc.getString("type").equals("String")) {
 			return new JsonObject()
 				.with("description", fielddoc.contains("description") ? fielddoc.getString("description") : "N/A")
-				.with("type", "string");
+				.with("type", "string")
+				.with("regexp", findFieldFieldRegex(fielddoc))
+				.with("min", findFieldMinValue(fielddoc))
+				.with("max", findFieldMaxValue(fielddoc));
 		} else if (fielddoc.contains("type", JsonObject.class) && fielddoc.getObject("type").getString("class").equals("Choice")) {
 			return new JsonObject()
 				.with("description", fielddoc.contains("description") ? fielddoc.getString("description") : "N/A")
@@ -313,6 +442,52 @@ public class SwaggerRestfulController {
 			return new JsonObject()
 				.with("$ref", "#/components/schemas/" + fielddoc.getString("type"));
 		}
+	}
+	
+	private JsonObject findAnnotation(JsonObject jsondoc, String name) {
+		if (jsondoc.contains("annotations")) {
+			Optional<JsonObject> annotation = jsondoc.getArray("annotations", JsonObject.class).stream().filter(a -> a.getString("name").equals(name)).findAny();
+			if (annotation.isPresent()) {
+				return annotation.get();
+			}
+		}
+		return null;
+	}
+	
+	private String findFieldFieldRegex(JsonObject fielddoc) {
+		if (fielddoc.contains("annotations")) {
+			Optional<JsonObject> annotation = fielddoc.getArray("annotations", JsonObject.class).stream().filter(a -> a.getString("name").equals("Pattern")).findAny();
+			if (annotation.isPresent()) {
+				Optional<String> value = annotation.get().getArray("properties", JsonObject.class).stream().filter(p -> p.getString("key").equals("regexp")).map(p -> p.getString("value")).findAny();
+				if (value.isPresent())
+					return value.get();
+			}
+		}
+		return null;
+	}
+	
+	private Integer findFieldMinValue(JsonObject fielddoc) {
+		if (fielddoc.contains("annotations")) {
+			Optional<JsonObject> size = fielddoc.getArray("annotations", JsonObject.class).stream().filter(a -> a.getString("name").equals("Size")).findAny();
+			if (size.isPresent()) {
+				Optional<String> minValue = size.get().getArray("properties", JsonObject.class).stream().filter(p -> p.getString("key").equals("min")).map(p -> p.getString("value")).findAny();
+				if (minValue.isPresent())
+					return Integer.parseInt(minValue.get());
+			}
+		}
+		return null;
+	}
+	
+	private Integer findFieldMaxValue(JsonObject fielddoc) {
+		if (fielddoc.contains("annotations")) {
+			Optional<JsonObject> size = fielddoc.getArray("annotations", JsonObject.class).stream().filter(a -> a.getString("name").equals("Size")).findAny();
+			if (size.isPresent()) {
+				Optional<String> maxValue = size.get().getArray("properties", JsonObject.class).stream().filter(p -> p.getString("key").equals("max")).map(p -> p.getString("value")).findAny();
+				if (maxValue.isPresent())
+					return Integer.parseInt(maxValue.get());
+			}
+		}
+		return null;
 	}
 	
 	public List<String> findRequiredFields(JsonObject jsondoc) throws Exception {
@@ -365,115 +540,5 @@ public class SwaggerRestfulController {
 			throw new NoSuchElementException("Unable to find: " + jsondoc);
 		}
 	}
-	
-		
-		
-//			  "paths": {
-//			    "/rest/organizations": {
-//			      "get": {
-//			        "summary": "List all organizations",
-//			        "operationId": "findOrganizations",
-//			        "tags": ["Organizations"],
-//			        "parameters": [
-//			          {
-//			            "in": "query",
-//			            "name": "displayName",
-//			            "description": "Find an organization by its name",
-//			            "required": false,
-//			            "schema": {"type": "string"}
-//			          },
-//			          {
-//			            "in": "query",
-//			            "name": "status",
-//			            "description": "Find organizations in a certian status",
-//			            "required": false,
-//			            "default": "active",
-//			            "schema": {"$ref": "#/components/schemas/Status"}
-//			          },
-//			          {
-//			            "in": "query",
-//			            "name": "page",
-//			            "description": "Page number",
-//			            "required": false,
-//			            "default": 1,
-//			            "schema": {"type": "integer"}
-//			          },
-//			          {
-//			            "in": "query",
-//			            "name": "limit",
-//			            "description": "The number of items on the page",
-//			            "required": false,
-//			            "default": 10,
-//			            "schema": {"type": "integer"}
-//			          },
-//			          {
-//			            "in": "query",
-//			            "name": "order",
-//			            "description": "The proper to order the results by",
-//			            "required": false,
-//			            "default": "displayName",
-//			            "schema": {
-//			              "type": "string",
-//			              "enum": [
-//			                "displayName",
-//			                "status"
-//			              ]
-//			            }
-//			          },
-//			          {
-//			            "in": "query",
-//			            "name": "direction",
-//			            "description": "The order to sort the propert by",
-//			            "default": "asc",
-//			            "required": false,
-//			            "schema": {
-//			              "type": "string",
-//			              "enum": [
-//			                "asc",
-//			                "desc"
-//			              ]
-//			            }
-//			          }
-//			        ],
-//			        "responses": {
-//			          "200": {
-//			            "description": "A paged array of organizations",
-//			            "headers": {
-//			              "X-Rate-Limit-Limit": {
-//			                "description": "The number of allowed requests in the current period",
-//			                "schema": {"type": "integer"}
-//			              },
-//			              "X-Rate-Limit-Remaining": {
-//			                "description": "The number of remaining requests in the current period",
-//			                "schema": {"type": "integer"}
-//			              },
-//			              "X-Rate-Limit-Reset": {
-//			                "description": "The number of seconds left in the current period",
-//			                "schema": {"type": "integer"}
-//			              },
-//			              "x-next": {
-//			                "description": "A link to the next page of responses",
-//			                "schema": {"type": "string"}
-//			              }
-//			            },
-//			            "content": {
-//			              "application/json": {
-//			                "schema": {
-//			                  "type": "array",
-//			                  "items": {"$ref": "#/components/schemas/OrganizationSummary"}
-//			                }
-//			              }
-//			            }
-//			          },
-//			          "default": {
-//			            "description": "System error",
-//			            "content": {
-//			              "application/json": {
-//			                "schema": {"$ref": "#/components/schemas/SystemException"}
-//			              }
-//			            }
-//			          }
-//			        }
-//			      },
 	
 }
