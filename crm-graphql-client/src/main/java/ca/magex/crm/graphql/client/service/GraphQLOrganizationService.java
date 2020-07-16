@@ -1,4 +1,4 @@
-package ca.magex.crm.graphql.client;
+package ca.magex.crm.graphql.client.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +14,9 @@ import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.graphql.client.GraphQLClient;
+import ca.magex.crm.graphql.client.MapBuilder;
+import ca.magex.crm.graphql.client.ModelBinder;
 
 /**
  * Implementation of the CRM Organization Service which is backed by a GraphQL Server

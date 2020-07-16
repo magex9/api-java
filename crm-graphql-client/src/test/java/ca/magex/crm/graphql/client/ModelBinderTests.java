@@ -19,9 +19,12 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -383,5 +386,30 @@ public class ModelBinderTests {
 		Assert.assertEquals("A", details.getAuthenticationRoleIds().get(0).getCode());
 		Assert.assertEquals("B", details.getAuthenticationRoleIds().get(1).getCode());
 		Assert.assertEquals("C", details.getAuthenticationRoleIds().get(2).getCode());
+	}
+	
+	@Test
+	public void testBindOption() {
+		JsonObject json = new JsonObject(
+				new JsonPair("optionId", "/options/provinces/CA/ON"),
+				new JsonPair("parent", new JsonObject(
+						new JsonPair("optionId", "/options/countries/CA"))),
+				new JsonPair("type", Type.PROVINCE.getCode()),
+				new JsonPair("status", Status.ACTIVE.name()),
+				new JsonPair("mutable", Boolean.toString(Option.IMMUTABLE)),
+				new JsonPair("name", new JsonObject(
+						new JsonPair("code", "CA/ON"),
+						new JsonPair("english", "Ontario"),
+						new JsonPair("french",  "'ntario"))));
+		
+		Option option = ModelBinder.toOption(json);
+		Assert.assertEquals(new ProvinceIdentifier("CA/ON"), option.getOptionId());
+		Assert.assertEquals(new CountryIdentifier("CA"), option.getParentId());
+		Assert.assertEquals(Type.PROVINCE, option.getType());
+		Assert.assertEquals(Status.ACTIVE, option.getStatus());
+		Assert.assertEquals(Option.IMMUTABLE, option.getMutable());
+		Assert.assertEquals("CA/ON", option.getName().getCode());
+		Assert.assertEquals("Ontario", option.getName().getEnglishName());
+		Assert.assertEquals("'ntario", option.getName().getFrenchName());
 	}
 }

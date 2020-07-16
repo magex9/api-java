@@ -12,11 +12,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.graphql.client.GraphQLClient;
-import ca.magex.crm.graphql.client.GraphQLOrganizationService;
+import ca.magex.crm.graphql.client.service.GraphQLOptionService;
+import ca.magex.crm.graphql.client.service.GraphQLOrganizationService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
 
 @RunWith(SpringRunner.class)
@@ -37,6 +41,9 @@ public class CrmGraphQLNoauthClientTest {
 				"http://localhost:" + randomPort + "/crm/graphql",
 				"/organization-service-queries.properties");
 
+		GraphQLOptionService optionService = new GraphQLOptionService(client);
+		optionService.createOption(null, Type.PROVINCE, new Localized("AU/NSW", "New South Wales", "New South Wales FR"));
+		
 		GraphQLOrganizationService organizationService = new GraphQLOrganizationService(client);
 		
 		OrganizationDetails o1 = organizationService.createOrganization(

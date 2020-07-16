@@ -24,7 +24,10 @@ import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
@@ -264,6 +267,27 @@ public class ModelBinder {
 				toIdentifierList(AuthenticationRoleIdentifier::new, json.getArray("authenticationRoles"), "optionId"));
 	}
 
+	/**
+	 * Binds the given json object to an Option model
+	 * @param json
+	 * @return
+	 */
+	public static Option toOption(JsonObject json) {
+		OptionIdentifier parentId = null;
+		if (json.contains("parent")) {
+			parentId = IdentifierFactory.forOptionId(json.getObject("parent").getString("optionId"));
+		}
+		return new Option(
+				IdentifierFactory.forOptionId(json.getString("optionId")), 
+				parentId, 
+				Type.of(json.getString("type")), 
+				Status.of(json.getString("status")), 
+				Boolean.valueOf(json.getString("mutable")),
+				new Localized(
+						json.getObject("name").getString("code"), 
+						json.getObject("name").getString("english"), 
+						json.getObject("name").getString("french")));
+	}
 	
 	
 	public static Pair<List<String>, List<String>> getSortInfo(Paging paging) {

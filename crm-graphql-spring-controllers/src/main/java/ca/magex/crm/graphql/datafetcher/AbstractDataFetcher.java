@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.magex.crm.api.Crm;
@@ -98,7 +99,7 @@ public abstract class AbstractDataFetcher {
 	
 	protected OptionIdentifier extractOptionIdentifier(DataFetchingEnvironment environment, String key) {
 		/* extract parentId if provided */
-		if (environment.containsArgument(key)) {
+		if (environment.containsArgument(key) && StringUtils.isNotBlank(environment.getArgument(key))) {			
 			try {
 				return IdentifierFactory.forId(environment.getArgument(key));
 			}
