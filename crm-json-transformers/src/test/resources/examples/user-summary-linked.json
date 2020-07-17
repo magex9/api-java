@@ -1,0 +1,44 @@
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/UserDetails",
+  "userId": "http://api.magex.ca/crm/rest/users/R61MD142WM",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/gGe79u4rWg",
+  "personId": "http://api.magex.ca/crm/rest/persons/Q69WVGMAce",
+  "username": "admin",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@en": "Active",
+    "@fr": "Actif",
+    "code": "ACTIVE"
+  },
+  "authenticationRoleIds": [
+    {
+      "@context": "http://api.magex.ca/crm/schema/options/AuthenticationRoles",
+      "@id": "http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin",
+      "@en": "CRM Admin",
+      "@fr": "Administrateur GRC",
+      "code": "CRM/ADMIN",
+      "parent": {
+        "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
+        "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/crm",
+        "@en": "Customer Relationship Management",
+        "@fr": "Gestion de la relation client",
+        "code": "CRM"
+      }
+    },
+    {
+      "@context": "http://api.magex.ca/crm/schema/options/AuthenticationRoles",
+      "@id": "http://api.magex.ca/crm/rest/options/authentication-roles/org/admin",
+      "@en": "Organization Admin",
+      "@fr": "Administrateur de l'organisation",
+      "code": "ORG/ADMIN",
+      "parent": {
+        "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
+        "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/org",
+        "@en": "Organization",
+        "@fr": "Organisation",
+        "code": "ORG"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/PersonSummary",
+  "personId": "http://api.magex.ca/crm/rest/persons/TkNj8jzNGC",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/DSbVnvGGyf",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@en": "Active",
+    "@fr": "Actif",
+    "code": "ACTIVE"
+  },
+  "displayName": "Bacon, Chris P"
+}

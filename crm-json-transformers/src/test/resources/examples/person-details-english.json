@@ -1,0 +1,30 @@
+{
+  "personId": "bN2ifcbtzA",
+  "organizationId": "Q2Tf7v7tzJ",
+  "status": "Active",
+  "displayName": "Bacon, Chris P",
+  "legalName": {
+    "salutation": "Mr.",
+    "firstName": "Chris",
+    "middleName": "P",
+    "lastName": "Bacon"
+  },
+  "address": {
+    "street": "123 Main St",
+    "city": "Ottawa",
+    "province": "Quebec",
+    "country": "Canada",
+    "postalCode": "K1K1K1"
+  },
+  "communication": {
+    "jobTitle": "Developer",
+    "language": "English",
+    "email": "user@work.ca",
+    "homePhone": {
+      "number": "5551234567",
+      "extension": "42"
+    },
+    "faxNumber": "8881234567"
+  },
+  "businessRoleIds": ["Developer"]
+}

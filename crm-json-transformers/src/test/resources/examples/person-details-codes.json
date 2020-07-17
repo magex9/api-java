@@ -1,0 +1,30 @@
+{
+  "personId": "bN2ifcbtzA",
+  "organizationId": "Q2Tf7v7tzJ",
+  "status": "ACTIVE",
+  "displayName": "Bacon, Chris P",
+  "legalName": {
+    "salutation": "http://api.magex.ca/crm/rest/options/salutations/mr",
+    "firstName": "Chris",
+    "middleName": "P",
+    "lastName": "Bacon"
+  },
+  "address": {
+    "street": "123 Main St",
+    "city": "Ottawa",
+    "province": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
+    "country": "http://api.magex.ca/crm/rest/options/countries/ca",
+    "postalCode": "K1K1K1"
+  },
+  "communication": {
+    "jobTitle": "Developer",
+    "language": "http://api.magex.ca/crm/rest/options/languages/en",
+    "email": "user@work.ca",
+    "homePhone": {
+      "number": "5551234567",
+      "extension": "42"
+    },
+    "faxNumber": "8881234567"
+  },
+  "businessRoleIds": ["IMIT/DEV/APPS/DEV"]
+}
