@@ -7,7 +7,7 @@
     "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
     "@en": "Active",
     "@fr": "Actif",
-    "code": "ACTIVE"
+    "value": "ACTIVE"
   },
   "displayName": "Bacon, Chris P"
 }

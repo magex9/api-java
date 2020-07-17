@@ -7,7 +7,7 @@
     "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
     "@en": "Active",
     "@fr": "Actif",
-    "code": "ACTIVE"
+    "value": "ACTIVE"
   },
   "reference": "REF",
   "displayName": "Location Name",
@@ -20,13 +20,14 @@
       "@id": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
       "@en": "Quebec",
       "@fr": "Québec",
-      "code": "CA/QC",
+      "value": "CA/QC",
+      "code": "QC",
       "parent": {
         "@context": "http://api.magex.ca/crm/schema/options/Countries",
         "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
         "@en": "Canada",
         "@fr": "Canada",
-        "code": "CA"
+        "value": "CA"
       }
     },
     "country": {
@@ -34,7 +35,7 @@
       "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
       "@en": "Canada",
       "@fr": "Canada",
-      "code": "CA"
+      "value": "CA"
     },
     "postalCode": "K1K1K1"
   }

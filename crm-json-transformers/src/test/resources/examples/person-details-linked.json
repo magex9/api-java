@@ -7,7 +7,7 @@
     "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
     "@en": "Active",
     "@fr": "Actif",
-    "code": "ACTIVE"
+    "value": "ACTIVE"
   },
   "displayName": "Bacon, Chris P",
   "legalName": {
@@ -17,7 +17,7 @@
       "@id": "http://api.magex.ca/crm/rest/options/salutations/mr",
       "@en": "Mr.",
       "@fr": "M.",
-      "code": "MR"
+      "value": "MR"
     },
     "firstName": "Chris",
     "middleName": "P",
@@ -32,13 +32,14 @@
       "@id": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
       "@en": "Quebec",
       "@fr": "Québec",
-      "code": "CA/QC",
+      "value": "CA/QC",
+      "code": "QC",
       "parent": {
         "@context": "http://api.magex.ca/crm/schema/options/Countries",
         "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
         "@en": "Canada",
         "@fr": "Canada",
-        "code": "CA"
+        "value": "CA"
       }
     },
     "country": {
@@ -46,7 +47,7 @@
       "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
       "@en": "Canada",
       "@fr": "Canada",
-      "code": "CA"
+      "value": "CA"
     },
     "postalCode": "K1K1K1"
   },
@@ -58,7 +59,7 @@
       "@id": "http://api.magex.ca/crm/rest/options/languages/en",
       "@en": "English",
       "@fr": "Anglais",
-      "code": "EN"
+      "value": "EN"
     },
     "email": "user@work.ca",
     "homePhone": {
@@ -71,25 +72,46 @@
   "businessRoleIds": [{
     "@context": "http://api.magex.ca/crm/schema/options/BusinessRoles",
     "@id": "http://api.magex.ca/crm/rest/options/business-roles/imit/dev/apps/dev",
-    "@en": "Developer",
-    "@fr": "Développeur",
-    "code": "IMIT/DEV/APPS/DEV",
+    "@en": "Developer (Applications / Application Development / IM/IT)",
+    "@fr": "Développeur (Applications / Développement d'applications / GI/TI)",
+    "value": "IMIT/DEV/APPS/DEV",
+    "code": {
+      "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+      "@id": "http://api.magex.ca/crm/rest/dictionary/IMIT/DEV/APPS/DEV",
+      "@en": "Developer",
+      "@fr": "Développeur",
+      "value": "DEV"
+    },
     "parent": {
       "@context": "http://api.magex.ca/crm/schema/options/BusinessGroups",
       "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit/dev/apps",
-      "@en": "Applications",
-      "@fr": "Applications",
-      "code": "IMIT/DEV/APPS",
+      "@en": "Applications (Application Development / IM/IT)",
+      "@fr": "Applications (Développement d'applications / GI/TI)",
+      "value": "IMIT/DEV/APPS",
+      "code": {
+        "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+        "@id": "http://api.magex.ca/crm/rest/dictionary/IMIT/DEV/APPS",
+        "@en": "Applications",
+        "@fr": "Applications",
+        "value": "APPS"
+      },
       "parent": {
         "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit/dev",
-        "@en": "Application Development",
-        "@fr": "Développement d'applications",
-        "code": "IMIT/DEV",
+        "@en": "Application Development (IM/IT)",
+        "@fr": "Développement d'applications (GI/TI)",
+        "value": "IMIT/DEV",
+        "code": {
+          "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+          "@id": "http://api.magex.ca/crm/rest/dictionary/IMIT/DEV",
+          "@en": "Application Development",
+          "@fr": "Développement d'applications",
+          "value": "DEV"
+        },
         "parent": {
           "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit",
           "@en": "IM/IT",
           "@fr": "GI/TI",
-          "code": "IMIT"
+          "value": "IMIT"
         }
       }
     }

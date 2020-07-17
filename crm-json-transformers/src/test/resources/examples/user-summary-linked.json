@@ -9,35 +9,49 @@
     "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
     "@en": "Active",
     "@fr": "Actif",
-    "code": "ACTIVE"
+    "value": "ACTIVE"
   },
   "authenticationRoleIds": [
     {
       "@context": "http://api.magex.ca/crm/schema/options/AuthenticationRoles",
       "@id": "http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin",
-      "@en": "CRM Admin",
-      "@fr": "Administrateur GRC",
-      "code": "CRM/ADMIN",
+      "@en": "CRM Admin (Customer Relationship Management)",
+      "@fr": "Administrateur GRC (Gestion de la relation client)",
+      "value": "CRM/ADMIN",
+      "code": {
+        "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+        "@id": "http://api.magex.ca/crm/rest/dictionary/CRM/ADMIN",
+        "@en": "CRM Admin",
+        "@fr": "Administrateur GRC",
+        "value": "ADMIN"
+      },
       "parent": {
         "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
         "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/crm",
         "@en": "Customer Relationship Management",
         "@fr": "Gestion de la relation client",
-        "code": "CRM"
+        "value": "CRM"
       }
     },
     {
       "@context": "http://api.magex.ca/crm/schema/options/AuthenticationRoles",
       "@id": "http://api.magex.ca/crm/rest/options/authentication-roles/org/admin",
-      "@en": "Organization Admin",
-      "@fr": "Administrateur de l'organisation",
-      "code": "ORG/ADMIN",
+      "@en": "Organization Admin (Organization)",
+      "@fr": "Administrateur de l'organisation (Organisation)",
+      "value": "ORG/ADMIN",
+      "code": {
+        "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+        "@id": "http://api.magex.ca/crm/rest/dictionary/ORG/ADMIN",
+        "@en": "Organization Admin",
+        "@fr": "Administrateur de l'organisation",
+        "value": "ADMIN"
+      },
       "parent": {
         "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
         "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/org",
         "@en": "Organization",
         "@fr": "Organisation",
-        "code": "ORG"
+        "value": "ORG"
       }
     }
   ]

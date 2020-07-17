@@ -4,7 +4,7 @@
   "status": "ACTIVE",
   "displayName": "Bacon, Chris P",
   "legalName": {
-    "salutation": "http://api.magex.ca/crm/rest/options/salutations/mr",
+    "salutation": "MR",
     "firstName": "Chris",
     "middleName": "P",
     "lastName": "Bacon"
@@ -12,13 +12,13 @@
   "address": {
     "street": "123 Main St",
     "city": "Ottawa",
-    "province": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
-    "country": "http://api.magex.ca/crm/rest/options/countries/ca",
+    "province": "CA/QC",
+    "country": "CA",
     "postalCode": "K1K1K1"
   },
   "communication": {
     "jobTitle": "Developer",
-    "language": "http://api.magex.ca/crm/rest/options/languages/en",
+    "language": "EN",
     "email": "user@work.ca",
     "homePhone": {
       "number": "5551234567",

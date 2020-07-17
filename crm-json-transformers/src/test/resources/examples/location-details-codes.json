@@ -7,8 +7,8 @@
   "address": {
     "street": "123 Main St",
     "city": "Ottawa",
-    "province": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
-    "country": "http://api.magex.ca/crm/rest/options/countries/ca",
+    "province": "CA/QC",
+    "country": "CA",
     "postalCode": "K1K1K1"
   }
 }
