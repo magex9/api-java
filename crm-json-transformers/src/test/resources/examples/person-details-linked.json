@@ -1,0 +1,119 @@
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/PersonDetails",
+  "personId": "http://api.magex.ca/crm/rest/persons/bN2ifcbtzA",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/Q2Tf7v7tzJ",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@en": "Active",
+    "@fr": "Actif",
+    "value": "ACTIVE"
+  },
+  "displayName": "Bacon, Chris P",
+  "legalName": {
+    "@context": "http://api.magex.ca/crm/rest/schema/common/PersonName",
+    "salutation": {
+      "@context": "http://api.magex.ca/crm/schema/options/Salutations",
+      "@id": "http://api.magex.ca/crm/rest/options/salutations/mr",
+      "@en": "Mr.",
+      "@fr": "M.",
+      "value": "MR"
+    },
+    "firstName": "Chris",
+    "middleName": "P",
+    "lastName": "Bacon"
+  },
+  "address": {
+    "@context": "http://api.magex.ca/crm/rest/schema/common/MailingAddress",
+    "street": "123 Main St",
+    "city": "Ottawa",
+    "province": {
+      "@context": "http://api.magex.ca/crm/schema/options/Provinces",
+      "@id": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
+      "@en": "Quebec",
+      "@fr": "Québec",
+      "value": "CA/QC",
+      "code": "QC",
+      "parent": {
+        "@context": "http://api.magex.ca/crm/schema/options/Countries",
+        "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
+        "@en": "Canada",
+        "@fr": "Canada",
+        "value": "CA"
+      }
+    },
+    "country": {
+      "@context": "http://api.magex.ca/crm/schema/options/Countries",
+      "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
+      "@en": "Canada",
+      "@fr": "Canada",
+      "value": "CA"
+    },
+    "postalCode": "K1K1K1"
+  },
+  "communication": {
+    "@context": "http://api.magex.ca/crm/rest/schema/common/Communication",
+    "jobTitle": "Developer",
+    "language": {
+      "@context": "http://api.magex.ca/crm/schema/options/Languages",
+      "@id": "http://api.magex.ca/crm/rest/options/languages/en",
+      "@en": "English",
+      "@fr": "Anglais",
+      "value": "EN"
+    },
+    "email": "user@work.ca",
+    "homePhone": {
+      "@context": "http://api.magex.ca/crm/rest/schema/common/Telephone",
+      "number": "5551234567",
+      "extension": "42"
+    },
+    "faxNumber": "8881234567"
+  },
+  "businessRoleIds": [{
+    "@context": "http://api.magex.ca/crm/schema/options/BusinessRoles",
+    "@id": "http://api.magex.ca/crm/rest/options/business-roles/imit/dev/apps/dev",
+    "@en": "Developer (Applications / Application Development / IM/IT)",
+    "@fr": "Développeur (Applications / Développement d'applications / GI/TI)",
+    "value": "IMIT/DEV/APPS/DEV",
+    "code": {
+      "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+      "@id": "http://api.magex.ca/crm/rest/dictionary/IMIT/DEV/APPS/DEV",
+      "@en": "Developer",
+      "@fr": "Développeur",
+      "value": "DEV"
+    },
+    "parent": {
+      "@context": "http://api.magex.ca/crm/schema/options/BusinessGroups",
+      "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit/dev/apps",
+      "@en": "Applications (Application Development / IM/IT)",
+      "@fr": "Applications (Développement d'applications / GI/TI)",
+      "value": "IMIT/DEV/APPS",
+      "code": {
+        "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+        "@id": "http://api.magex.ca/crm/rest/dictionary/IMIT/DEV/APPS",
+        "@en": "Applications",
+        "@fr": "Applications",
+        "value": "APPS"
+      },
+      "parent": {
+        "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit/dev",
+        "@en": "Application Development (IM/IT)",
+        "@fr": "Développement d'applications (GI/TI)",
+        "value": "IMIT/DEV",
+        "code": {
+          "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+          "@id": "http://api.magex.ca/crm/rest/dictionary/IMIT/DEV",
+          "@en": "Application Development",
+          "@fr": "Développement d'applications",
+          "value": "DEV"
+        },
+        "parent": {
+          "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit",
+          "@en": "IM/IT",
+          "@fr": "GI/TI",
+          "value": "IMIT"
+        }
+      }
+    }
+  }]
+}

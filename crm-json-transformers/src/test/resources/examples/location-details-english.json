@@ -1,0 +1,14 @@
+{
+  "locationId": "bN2ifcbtzA",
+  "organizationId": "EEtP6HwXMo",
+  "status": "Active",
+  "reference": "REF",
+  "displayName": "Location Name",
+  "address": {
+    "street": "123 Main St",
+    "city": "Ottawa",
+    "province": "Quebec",
+    "country": "Canada",
+    "postalCode": "K1K1K1"
+  }
+}

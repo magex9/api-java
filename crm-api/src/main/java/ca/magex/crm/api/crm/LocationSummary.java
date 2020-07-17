@@ -41,7 +41,7 @@ public class LocationSummary implements Serializable {
 	/** a unique reference for the location within the organization */
 	@NotBlank
 	@Pattern(regexp = "[A-Z0-9]+")
-	@Size(max = 60)
+	@Size(min = 5, max = 60)
 	protected String reference;
 	
 	/** name of the location for display purposes */
