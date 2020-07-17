@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
+
 /**
  * The status of on an entity in the system that holds the state in the life cycle.
  *  
@@ -56,6 +58,11 @@ public enum Status {
 		if (StringUtils.isBlank(value)) {
 			return null;
 		}
-		return valueOf(StringUtils.upperCase(value));
+		try {
+			return valueOf(StringUtils.upperCase(value));
+		}
+		catch(IllegalArgumentException ia) {
+			throw new ItemNotFoundException("Status Code '" + value + "'");
+		}
 	}
 }

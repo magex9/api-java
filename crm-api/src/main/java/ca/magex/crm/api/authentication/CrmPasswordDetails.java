@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import ca.magex.crm.api.Crm;
 
@@ -97,5 +98,10 @@ public class CrmPasswordDetails implements Serializable {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
+	
+	public static void main(String[] args) {
+		;
+		System.out.println(new CrmPasswordDetails("admin", new BCryptPasswordEncoder().encode("admin"), true, new Date()));
 	}
 }

@@ -106,7 +106,15 @@ public class Option implements Serializable {
 	
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+		ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+				.append("type", type.getCode())
+				.append("optionId", optionId)
+				.append("parentId", parentId)
+				.append("status", status)
+				.append("mutabel", mutable)
+				.append("name", name);
+		
+		return builder.build();
 	}	
 	
 }

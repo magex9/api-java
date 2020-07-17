@@ -47,7 +47,7 @@ public class OptionsFilterTests {
 			Assert.assertTrue(OptionsFilter.getSortOptions().contains(Sort.by(Order.desc(field.getName()))));
 		}
 		/* default sort should be username ascending */
-		Assert.assertEquals(Sort.by(Order.asc("code")), OptionsFilter.getDefaultSort());
+		Assert.assertEquals(Sort.by(Order.asc("type"), Order.asc("code")), OptionsFilter.getDefaultSort());
 
 		/* default paging, should use default sort */
 		Assert.assertEquals(OptionsFilter.getDefaultSort(), OptionsFilter.getDefaultPaging().getSort());
@@ -141,14 +141,14 @@ public class OptionsFilterTests {
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new OptionsFilter(new Localized("", "", "Admin"), new AuthenticationGroupIdentifier("DEV"), null, null), filter);
 
-		filter = new OptionsFilter(Map.of("french", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString(), "type", Type.AUTHENTICATION_ROLE.name()));
+		filter = new OptionsFilter(Map.of("french", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString(), "type", Type.AUTHENTICATION_ROLE.getCode()));
 		Assert.assertEquals("Admin", filter.getName().get(Lang.FRENCH));
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertEquals(Type.AUTHENTICATION_ROLE, filter.getType());
 		Assert.assertNull(filter.getStatus());
 		assertFilterEquals(new OptionsFilter(new Localized("", "", "Admin"), new AuthenticationGroupIdentifier("DEV"), Type.AUTHENTICATION_ROLE, null), filter);
 
-		filter = new OptionsFilter(Map.of("french", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString(), "type", Type.AUTHENTICATION_ROLE.name(), "status", Status.ACTIVE.name()));
+		filter = new OptionsFilter(Map.of("french", "Admin", "parentId", new AuthenticationGroupIdentifier("DEV").toString(), "type", Type.AUTHENTICATION_ROLE.getCode(), "status", Status.ACTIVE.name()));
 		Assert.assertEquals("Admin", filter.getName().get(Lang.FRENCH));
 		Assert.assertEquals(new AuthenticationGroupIdentifier("DEV"), filter.getParentId());
 		Assert.assertEquals(Type.AUTHENTICATION_ROLE, filter.getType());

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort.Order;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -78,16 +79,16 @@ public class OptionsFilter implements CrmFilter<Option> {
 			this.type = null;
 			if (filterCriteria.containsKey("type") && StringUtils.isNotBlank((String) filterCriteria.get("type"))) {
 				try {
-					this.type = Type.valueOf(StringUtils.upperCase((String) filterCriteria.get("type")));
-				} catch (IllegalArgumentException e) {					
+					this.type = Type.of(StringUtils.upperCase((String) filterCriteria.get("type")));
+				} catch (ItemNotFoundException e) {					
 					throw new ApiException("Invalid type value '" + filterCriteria.get("type") + "' expected one of {" + Stream.of(Type.values()).map(Type::name).collect(Collectors.joining(",")) + "}");
 				}
 			}
 			this.status = null;
 			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 				try {
-					this.status = Status.valueOf(StringUtils.upperCase((String) filterCriteria.get("status")));
-				} catch (IllegalArgumentException e) {
+					this.status = Status.of(StringUtils.upperCase((String) filterCriteria.get("status")));
+				} catch (ItemNotFoundException e) {
 					throw new ApiException("Invalid status value '" + filterCriteria.get("status") + "' expected one of {" + Stream.of(Status.values()).map(Status::name).collect(Collectors.joining(",")) + "}");
 				}
 			}
@@ -111,6 +112,18 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public String getEnglishName() {
+		return name == null ? null : name.getEnglishName();
+	}
+	
+	public String getFrenchName() {
+		return name == null ? null : name.getFrenchName();
+	}
+	
+	public String getCode() {
+		return name == null ? null : name.getCode();
+	}
 
 	public OptionsFilter withName(Localized name) {
 		return new OptionsFilter(name, parentId, type, status);
@@ -133,7 +146,7 @@ public class OptionsFilter implements CrmFilter<Option> {
 	}
 
 	public static Sort getDefaultSort() {
-		return Sort.by(Order.asc("code"));
+		return Sort.by(Order.asc("type"), Order.asc("code"));
 	}
 
 	public static Paging getDefaultPaging() {
