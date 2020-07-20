@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,10 +63,10 @@ public class JavadocInterfaceAdapterBuilder {
 		return name.substring(0, 1).toLowerCase() + name.substring(1);
 	}
 	
-	private static void buildMethods(FormattedStringBuilder sb, JsonObject docs, String iface) {		
+	private static void buildMethods(FormattedStringBuilder sb, JsonObject docs, String iface) {
 		for (JsonObject method : docs.getObject(iface).getArray("methods", JsonObject.class)) {
 			buildMethod(sb, docs.getObject(iface), method);
-		}
+		}		
 	}
 	
 	private static void buildMethod(FormattedStringBuilder sb, JsonObject cls, JsonObject method) {

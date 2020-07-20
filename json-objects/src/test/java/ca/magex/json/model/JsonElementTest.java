@@ -10,7 +10,6 @@ import static org.junit.Assert.fail;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.magex.json.util.FormattedStringBuilder;
@@ -142,7 +141,6 @@ public class JsonElementTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testCastInvalid() throws Exception {
 		try {
 			JsonElement.cast(new Object());

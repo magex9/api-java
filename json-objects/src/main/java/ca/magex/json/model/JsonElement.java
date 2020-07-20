@@ -10,65 +10,61 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.slf4j.LoggerFactory;
 
 public class JsonElement {
-	
+
 	public static final JsonElement UNDEFINED = new JsonElement();
-	
+
 	private final String mid;
 
 	public JsonElement() {
 		this.mid = digest(null);
 	}
-	
+
 	protected JsonElement(String mid) {
 		this.mid = mid;
 	}
-	
+
 	public final String mid() {
 		return mid;
 	}
-	
+
 	protected static final String validateKey(String key) {
 		if (StringUtils.isBlank(key))
 			throw new IllegalArgumentException("Key cannot be blank");
 		return key;
 	}
-	
+
 	public static JsonElement cast(Object el) {
 		if (el == null) {
 			return new JsonElement();
 		} else if (el instanceof JsonElement) {
-			return (JsonElement)el;
+			return (JsonElement) el;
 		} else if (el instanceof List) {
-			return new JsonArray(((List<?>)el).stream().map(e -> cast(e)).collect(Collectors.toList()));
+			return new JsonArray(((List<?>) el).stream().map(e -> cast(e)).collect(Collectors.toList()));
 		} else if (el instanceof String) {
-			return new JsonText((String)el);
+			return new JsonText((String) el);
 		} else if (el instanceof Number) {
-			return new JsonNumber((Number)el);
+			return new JsonNumber((Number) el);
 		} else if (el instanceof Boolean) {
-			return new JsonBoolean((Boolean)el);
+			return new JsonBoolean((Boolean) el);
 		} else if (el instanceof LocalDate) {
-			return new JsonText(((LocalDate)el).format(DateTimeFormatter.ISO_DATE));
+			return new JsonText(((LocalDate) el).format(DateTimeFormatter.ISO_DATE));
 		} else if (el instanceof LocalDateTime) {
-			return new JsonText(((LocalDateTime)el).format(DateTimeFormatter.ISO_DATE_TIME));
-		} else {
-			LoggerFactory.getLogger(JsonElement.class).warn("Found unknown type '" + el.getClass() + "' relying on toString method");
-			return new JsonText(el.toString());
+			return new JsonText(((LocalDateTime) el).format(DateTimeFormatter.ISO_DATE_TIME));
 		}
-//		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
+		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
 	}
-	
+
 	public static Object unwrap(Object el) {
 		if (el == null) {
 			return null;
 		} else if (el instanceof JsonText) {
-			return ((JsonText)el).value();
+			return ((JsonText) el).value();
 		} else if (el instanceof JsonNumber) {
-			return ((JsonNumber)el).value();
+			return ((JsonNumber) el).value();
 		} else if (el instanceof JsonBoolean) {
-			return ((JsonBoolean)el).value();
+			return ((JsonBoolean) el).value();
 		}
 		throw new IllegalArgumentException("Unsupported type of element to unwrap: " + el.getClass());
 	}
@@ -78,12 +74,12 @@ public class JsonElement {
 			return "";
 		return DigestUtils.md5Hex(obj.toString());
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
