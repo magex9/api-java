@@ -24,15 +24,14 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 	public void organizationDataFetching() throws Exception {
 		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " + 
-						"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " + 
-							"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
+				"mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " +
+						"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " +
+						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				new MapBuilder()
-					.withEntry("displayName", "Johnnuy")
-					.withEntry("authenticationGroups", List.of("SYS", "ORG"))
-					.withEntry("businessGroups", List.of("IMIT", "IMIT/DEV")).build()
-				);
-	
+						.withEntry("displayName", "Johnnuy")
+						.withEntry("authenticationGroupIds", List.of("SYS", "ORG"))
+						.withEntry("businessGroupIds", List.of("IMIT", "IMIT/DEV")).build());
+
 		OrganizationIdentifier johnnuyId = new OrganizationIdentifier(johnnuy.getString("organizationId"));
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
@@ -56,7 +55,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* activate already active organization */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				"active");
@@ -82,7 +81,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* inactivate active organization */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				"inactive");
@@ -108,7 +107,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* inactivate already inactive organization */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				"inactive");
@@ -134,7 +133,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* activate inactive organization */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				"active");
@@ -161,7 +160,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		try {
 			execute(
 					"updateOrganization",
-					"mutation { updateOrganization(organizationId: %s, status: %s) { " + 
+					"mutation { updateOrganization(organizationId: %s, status: %s) { " +
 							"organizationId status displayName mainLocation { locationId } mainContact { personId } } }",
 					johnnuyId,
 					"suspended");
@@ -173,7 +172,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update display name */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, displayName: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, displayName: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				"Johnnuy.org");
@@ -199,7 +198,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update display name - no change */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, displayName: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, displayName: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				"Johnnuy.org");
@@ -225,11 +224,11 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* set main location */
 		JSONObject hq = execute(
 				"createLocation",
-				"mutation { createLocation(organizationId: %s, locationName: %s, locationReference: %s, locationAddress: {" + 
-						"street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { locationId } }",
+				"mutation { createLocation(organizationId: %s, reference: %s, displayName: %s, address: {" +
+						"street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}) { locationId } }",
 				johnnuyId,
-				"Head Quarters",
 				"HQ",
+				"Head Quarters",
 				"123 Frank St",
 				"Ottawa",
 				"CA/ON",
@@ -239,7 +238,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, mainLocationId: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, mainLocationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				headQuartersId);
@@ -266,7 +265,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update location - no change */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, mainLocationId: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, mainLocationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				headQuartersId);
@@ -293,11 +292,11 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update location - with change */
 		JSONObject hq2 = execute(
 				"createLocation",
-				"mutation { createLocation(organizationId: %s, locationName: %s, locationReference: %s, locationAddress: {" + 
-						"street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { locationId } }",
+				"mutation { createLocation(organizationId: %s, reference: %s, displayName: %s, address: {" +
+						"street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}) { locationId } }",
 				johnnuyId,
-				"Head Quarters 2",
 				"HQ2",
+				"Head Quarters 2",
 				"123 Frank St",
 				"Ottawa",
 				"CA/ON",
@@ -307,7 +306,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, mainLocationId: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, mainLocationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				headQuartersId2);
@@ -334,10 +333,10 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* set main contact */
 		JSONObject cio = execute(
 				"createPerson",
-				"mutation { createPerson(organizationId: %s, " + 
-						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }, " + 
-						"address: {street: %s, city: %s, province: {code: %s}, country: {code : %s}, postalCode: %s}, " + 
-						"communication: { jobTitle: %s, language: {code: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " + 
+				"mutation { createPerson(organizationId: %s, " +
+						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
+						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}, " +
+						"communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " +
 						"businessRoles: %s ) { personId } }",
 				johnnuyId,
 				"Henry", "Peter", "Jones", "MR",
@@ -348,7 +347,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, mainContactId: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, mainContactId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				cioId);
@@ -376,7 +375,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update contact - no change */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, mainContactId: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, mainContactId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				cioId);
@@ -404,10 +403,10 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update contact - with change */
 		JSONObject ceo = execute(
 				"createPerson",
-				"mutation { createPerson(organizationId: %s, " + 
-						"name: {" + "firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }, " + 
-						"address: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}, " + 
-						"communication: { jobTitle: %s, language: {code: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " + 
+				"mutation { createPerson(organizationId: %s, " +
+						"name: {" + "firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
+						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}, " +
+						"communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " +
 						"businessRoles: %s ) { personId } }",
 				johnnuyId,
 				"Tommy", "Falls", "Narrow", "MRS",
@@ -418,7 +417,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, mainContactId: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, mainContactId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				ceoId);
@@ -446,7 +445,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update authentication groups - no change */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, authenticationGroups: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, authenticationGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("SYS", "ORG"));
@@ -474,7 +473,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update groups - remove group */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, authenticationGroups: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, authenticationGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("SYS"));
@@ -487,7 +486,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(1, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Système", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("french"));		
+		Assert.assertEquals("Système", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -499,7 +498,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update groups - change group */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, authenticationGroups: %s) { " +
+				"mutation { updateOrganization(organizationId: %s, authenticationGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("ORG"));
@@ -509,7 +508,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
 		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
-		Assert.assertEquals(1, johnnuy.getJSONArray("authenticationGroups").length());		
+		Assert.assertEquals(1, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("ORG", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Organization", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Organisation", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("french"));
@@ -524,7 +523,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update groups - add groups */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, authenticationGroups: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, authenticationGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("SYS", "ORG"));
@@ -548,11 +547,11 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
-		
+
 		/* update authentication groups - no change */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, businessGroups: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, businessGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("IMIT", "IMIT/DEV"));
@@ -580,7 +579,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update groups - remove group */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, businessGroups: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, businessGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("IMIT"));
@@ -600,12 +599,12 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(1, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));		
+		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 
 		/* update groups - change group */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, businessGroups: %s) { " +
+				"mutation { updateOrganization(organizationId: %s, businessGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("IMIT/DEV"));
@@ -622,7 +621,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("ORG", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Organization", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Organisation", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("french"));
-		Assert.assertEquals(1, johnnuy.getJSONArray("businessGroups").length());		
+		Assert.assertEquals(1, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
@@ -630,7 +629,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update groups - add groups */
 		johnnuy = execute(
 				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, businessGroups: %s) { " + 
+				"mutation { updateOrganization(organizationId: %s, businessGroupIds: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId,
 				List.of("IMIT", "IMIT/DEV"));
@@ -654,11 +653,11 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
-		
+
 		/* find organization by id */
 		johnnuy = execute(
 				"findOrganization",
-				"{ findOrganization(organizationId: %s) { " + 
+				"{ findOrganization(organizationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId reference } mainContact { personId displayName } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
 				johnnuyId);
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
@@ -681,20 +680,20 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
-		
+
 		/* count orgs */
 		int orgCount = execute(
 				"countOrganizations",
 				"{ countOrganizations(filter: { status: %s } ) }",
 				"active");
 		Assert.assertEquals(2, orgCount);
-		
+
 		orgCount = execute(
 				"countOrganizations",
 				"{ countOrganizations(filter: { status: %s } ) }",
 				"inactive");
 		Assert.assertEquals(0, orgCount);
-		
+
 		/* find organization paging */
 		JSONObject organizations = execute(
 				"findOrganizations",

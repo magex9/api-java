@@ -1,5 +1,7 @@
 package ca.magex.crm.graphql;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,14 +10,20 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.graphql.client.GraphQLClient;
+import ca.magex.crm.graphql.client.service.GraphQLLocationService;
 import ca.magex.crm.graphql.client.service.GraphQLOptionService;
+import ca.magex.crm.graphql.client.service.GraphQLOrganizationService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
+import ca.magex.crm.test.CrmAsserts;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { GraphQLClientTestConfig.class })
@@ -49,18 +57,24 @@ public class CrmGraphQLNoauthClientTest {
 		
 		long v = optionService.countOptions(new OptionsFilter(null, new CountryIdentifier("AU"), Type.PROVINCE, null));
 		
-		int k = optionService.findOptions(new OptionsFilter(null, new CountryIdentifier("AU"), Type.PROVINCE, null)).getSize();
-		System.out.println(v + "," + k);
+		int k = optionService.findOptions(new OptionsFilter(null, new CountryIdentifier("AU"), Type.PROVINCE, null)).getSize();		
 		
 		
+		GraphQLOrganizationService organizationService = new GraphQLOrganizationService(client);
+		GraphQLLocationService locationService = new GraphQLLocationService(client);
 		
-//		GraphQLOrganizationService organizationService = new GraphQLOrganizationService(client);
-//		
-//		OrganizationDetails o1 = organizationService.createOrganization(
-//				"Maple Leafs", 
-//				List.of(new AuthenticationGroupIdentifier("CRM")),
-//				List.of(new BusinessGroupIdentifier("EXECS")));
+		OrganizationDetails o1 = organizationService.createOrganization(
+				"Maple Leafs", 
+				List.of(new AuthenticationGroupIdentifier("CRM")),
+				List.of(new BusinessGroupIdentifier("EXECS")));
 		
+		organizationService.disableOrganization(o1.getOrganizationId());
+		
+		organizationService.enableOrganization(o1.getOrganizationId());
+		
+		organizationService.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
+		
+		locationService.createLocation(o1.getOrganizationId(), "HQ", "Head Quarters", CrmAsserts.CA_ADDRESS);
 		
 		
 

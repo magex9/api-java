@@ -21,13 +21,14 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 	public void setup() throws Exception {
 		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " +
-						"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " +
-						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
+				"mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " + 
+						"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " + 
+							"organizationId } }",
 				new MapBuilder()
-						.withEntry("displayName", "Johnnuy")
-						.withEntry("authenticationGroups", List.of("SYS", "ORG"))
-						.withEntry("businessGroups", List.of("IMIT", "IMIT/DEV")).build());
+					.withEntry("displayName", "Johnnuy")
+					.withEntry("authenticationGroupIds", List.of("SYS", "CRM"))
+					.withEntry("businessGroupIds", List.of("IMIT", "IMIT/DEV")).build()
+				);
 		orgId = new OrganizationIdentifier(johnnuy.getString("organizationId"));
 	}
 
@@ -35,11 +36,11 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 	public void locationDataFetching() throws Exception {
 		JSONObject hq = execute(
 				"createLocation",
-				"mutation { createLocation(organizationId: %s, locationName: %s, locationReference: %s, locationAddress: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+				"mutation { createLocation(organizationId: %s, reference: %s, displayName: %s, address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}) { " +
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				orgId,
-				"Head Quarters",
 				"HQ",
+				"Head Quarters",
 				"123 Frank St",
 				"Ottawa",
 				"CA/ON",
@@ -52,15 +53,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* activate already active location */
 		hq = execute(
 				"updateLocation",
 				"mutation { updateLocation(locationId: %s, status: %s) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"active");
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
@@ -69,15 +70,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* inactivate active location */
 		hq = execute(
 				"updateLocation",
 				"mutation { updateLocation(locationId: %s, status: %s) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"inactive");
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
@@ -86,15 +87,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* inactivate inactive location */
 		hq = execute(
 				"updateLocation",
 				"mutation { updateLocation(locationId: %s, status: %s) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"inactive");
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
@@ -103,15 +104,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* activate inactive location */
 		hq = execute(
 				"updateLocation",
 				"mutation { updateLocation(locationId: %s, status: %s) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"active");
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
@@ -120,8 +121,8 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* pass invalid status */
@@ -139,8 +140,8 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		/* update location name with change */
 		hq = execute(
 				"updateLocation",
-				"mutation { updateLocation(locationId: %s, locationName: %s) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+				"mutation { updateLocation(locationId: %s, displayName: %s) { " +
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"The Mansion");
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
@@ -149,15 +150,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("The Mansion", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* update location name with no change */
 		hq = execute(
 				"updateLocation",
-				"mutation { updateLocation(locationId: %s, locationName: %s) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+				"mutation { updateLocation(locationId: %s, displayName: %s) { " +
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"The Mansion");
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
@@ -166,15 +167,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("The Mansion", hq.getString("displayName"));
 		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* update location address with change */
 		hq = execute(
 				"updateLocation",
-				"mutation { updateLocation(locationId: %s, locationAddress: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+				"mutation { updateLocation(locationId: %s, address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}) { " +
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"299 Bobby Rd",
 				"Gatineau",
@@ -187,15 +188,15 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("The Mansion", hq.getString("displayName"));
 		Assert.assertEquals("299 Bobby Rd", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Gatineau", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/QC", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/QC", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L5K0F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* update location address with no change */
 		hq = execute(
 				"updateLocation",
-				"mutation { updateLocation(locationId: %s, locationAddress: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s}) { " +
-						"locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+				"mutation { updateLocation(locationId: %s, address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}) { " +
+						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"299 Bobby Rd",
 				"Gatineau",
@@ -208,14 +209,14 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("The Mansion", hq.getString("displayName"));
 		Assert.assertEquals("299 Bobby Rd", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Gatineau", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/QC", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/QC", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L5K0F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* find by id */
 		hq = execute(
 				"findLocation",
-				"{ findLocation(locationId: %s) { locationId organization { organizationId } status reference displayName address { street city province { code } country { code } postalCode } } }",
+				"{ findLocation(locationId: %s) { locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
 				headQuartersId,
 				"299 Bobby Rd",
 				"Gatineau",
@@ -228,8 +229,8 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("The Mansion", hq.getString("displayName"));
 		Assert.assertEquals("299 Bobby Rd", hq.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Gatineau", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/QC", hq.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/QC", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L5K0F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* count locations */

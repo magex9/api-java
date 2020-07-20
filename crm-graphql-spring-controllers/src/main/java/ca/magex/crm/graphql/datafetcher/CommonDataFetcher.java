@@ -28,7 +28,7 @@ public class CommonDataFetcher extends AbstractDataFetcher {
 			}
 			Map<String,String> mapped = new HashMap<>();
 			if (source.getCountry().getIdentifier() != null) {
-				mapped.put("code", source.getCountry().getIdentifier().getCode());
+				mapped.put("identifier", source.getCountry().getIdentifier().getCode());
 			}			
 			if (source.getCountry().getOther() != null) {
 				mapped.put("other", source.getCountry().getOther());
@@ -46,7 +46,7 @@ public class CommonDataFetcher extends AbstractDataFetcher {
 			}
 			Map<String,String> mapped = new HashMap<>();
 			if (source.getProvince().getIdentifier() != null) {
-				mapped.put("code", source.getProvince().getIdentifier().getCode());
+				mapped.put("identifier", source.getProvince().getIdentifier().getCode());
 			}			
 			if (source.getProvince().getOther() != null) {
 				mapped.put("other", source.getProvince().getOther());
@@ -64,7 +64,7 @@ public class CommonDataFetcher extends AbstractDataFetcher {
 			}
 			Map<String,String> mapped = new HashMap<>();
 			if (source.getSalutation().getIdentifier() != null) {
-				mapped.put("code", source.getSalutation().getIdentifier().getCode());
+				mapped.put("identifier", source.getSalutation().getIdentifier().getCode());
 			}			
 			if (source.getSalutation().getOther() != null) {
 				mapped.put("other", source.getSalutation().getOther());
@@ -82,7 +82,7 @@ public class CommonDataFetcher extends AbstractDataFetcher {
 			}
 			Map<String,String> mapped = new HashMap<>();
 			if (source.getLanguage().getIdentifier() != null) {
-				mapped.put("code", source.getLanguage().getIdentifier().getCode());
+				mapped.put("identifier", source.getLanguage().getIdentifier().getCode());
 			}			
 			if (source.getLanguage().getOther() != null) {
 				mapped.put("other", source.getLanguage().getOther());

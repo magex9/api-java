@@ -205,7 +205,7 @@ public class ModelBinder {
 	public static LocationDetails toLocationDetails(JsonObject json) {
 		return new LocationDetails(
 				new LocationIdentifier(json.getString("locationId")),
-				new OrganizationIdentifier(json.getString("organizationId")),
+				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
 				json.getString("reference"),
 				json.getString("displayName"),

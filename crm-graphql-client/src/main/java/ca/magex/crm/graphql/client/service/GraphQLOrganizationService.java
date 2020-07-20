@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.client.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -9,6 +10,7 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -45,51 +47,93 @@ public class GraphQLOrganizationService implements CrmOrganizationService {
 						"createOrganization",
 						new MapBuilder()
 							.withEntry("displayName", displayName)
-							.withEntry("authenticationGroups", authenticationGroupIds.stream().map((id) -> id.getCode()).collect(Collectors.toList()))
-							.withEntry("businessGroups", businessGroupIds.stream().map((id) -> id.getCode()).collect(Collectors.toList()))
+							.withEntry("authenticationGroupIds", authenticationGroupIds.stream().map((id) -> id.getCode()).collect(Collectors.toList()))
+							.withEntry("businessGroupIds", businessGroupIds.stream().map((id) -> id.getCode()).collect(Collectors.toList()))
 							.build()));
 	}
 
 	@Override
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withEntry("status", Status.ACTIVE)
+							.build()));
 	}
 
 	@Override
 	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withEntry("status", Status.INACTIVE)
+							.build()));
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withEntry("displayName", name)
+							.build()));
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withOptionalEntry("mainLocationId", Optional.ofNullable(locationId))
+							.build()));
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withOptionalEntry("mainContactId", Optional.ofNullable(personId))
+							.build()));
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
-		// TODO Auto-generated method stub
-		return null;
+	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withEntry("authenticationGroupIds", authenticationGroupIds.stream().map((id) -> id.getCode()).collect(Collectors.toList()))
+							.build()));
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> groupIds) {
-		// TODO Auto-generated method stub
-		return null;
+	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds) {
+		return ModelBinder.toOrganizationDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOrganization",
+						"updateOrganization",
+						new MapBuilder()
+							.withEntry("organizationId", organizationId.toString())
+							.withEntry("businessGroupIds", businessGroupIds.stream().map((id) -> id.getCode()).collect(Collectors.toList()))
+							.build()));
 	}
 
 	@Override

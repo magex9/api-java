@@ -60,9 +60,9 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering createLocation@" + LocationDataFetcher.class.getSimpleName());
 			return crm.createLocation(
 					new OrganizationIdentifier((String) environment.getArgument("organizationId")),
-					environment.getArgument("locationReference"),
-					environment.getArgument("locationName"),
-					extractMailingAddress(environment, "locationAddress"));
+					environment.getArgument("reference"),
+					environment.getArgument("displayName"),
+					extractMailingAddress(environment, "address"));
 		};
 	}
 
@@ -91,14 +91,14 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
-			if (environment.getArgument("locationName") != null) {
-				String newLocationName = environment.getArgument("locationName");
+			if (environment.getArgument("displayName") != null) {
+				String newLocationName = environment.getArgument("displayName");
 				if (!StringUtils.equals(loc.getDisplayName(), newLocationName)) {
 					loc = crm.updateLocationName(locationId, newLocationName);
 				}
 			}
-			if (environment.getArgument("locationAddress") != null) {
-				MailingAddress newLocationAddress = extractMailingAddress(environment, "locationAddress");
+			if (environment.getArgument("address") != null) {
+				MailingAddress newLocationAddress = extractMailingAddress(environment, "address");
 				if (!loc.getAddress().equals(newLocationAddress)) {
 					loc = crm.updateLocationAddress(locationId, newLocationAddress);
 				}

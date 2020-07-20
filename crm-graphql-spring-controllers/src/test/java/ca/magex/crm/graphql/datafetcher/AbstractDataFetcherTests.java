@@ -54,6 +54,7 @@ public abstract class AbstractDataFetcherTests {
 				.collect(Collectors.toList()).toArray());
 		ExecutionResult result = graphQl.getGraphQL().execute(formattedQuery);
 		if (result.getErrors().size() > 0) {
+			log.error(result.toString());
 			String messages = result.getErrors().stream().map((e) -> e.getMessage()).collect(Collectors.joining());
 			throw new ApiException("Errors encountered during " + queryName + " - " + messages);
 		}

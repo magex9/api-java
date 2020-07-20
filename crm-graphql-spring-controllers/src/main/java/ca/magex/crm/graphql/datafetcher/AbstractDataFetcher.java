@@ -223,8 +223,8 @@ public abstract class AbstractDataFetcher {
 	 * @return
 	 */
 	private Choice<ProvinceIdentifier> extractProvince(Map<String,Object> input) {
-		if (input.containsKey("code")) {
-			return new Choice<>(crm.findOptionByCode(Type.PROVINCE, (String) input.get("code")).getOptionId());			
+		if (input.containsKey("identifier")) {
+			return new Choice<>(crm.findOptionByCode(Type.PROVINCE, (String) input.get("identifier")).getOptionId());			
 		}
 		else {
 			return new Choice<>((String) input.getOrDefault("other", ""));
@@ -237,8 +237,8 @@ public abstract class AbstractDataFetcher {
 	 * @return
 	 */
 	private Choice<CountryIdentifier> extractCountry(Map<String,Object> input) {
-		if (input.containsKey("code")) {
-			return new Choice<>(crm.findOptionByCode(Type.COUNTRY, (String) input.get("code")).getOptionId());
+		if (input.containsKey("identifier")) {
+			return new Choice<>(crm.findOptionByCode(Type.COUNTRY, (String) input.get("identifier")).getOptionId());
 		}
 		else {
 			return new Choice<>((String) input.getOrDefault("other", ""));
@@ -251,8 +251,8 @@ public abstract class AbstractDataFetcher {
 	 * @return
 	 */
 	private Choice<SalutationIdentifier> extractSalutation(Map<String,Object> input) {
-		if (input.containsKey("code")) {
-			return new Choice<>(crm.findOptionByCode(Type.SALUTATION, (String) input.get("code")).getOptionId());
+		if (input.containsKey("identifier")) {
+			return new Choice<>(crm.findOptionByCode(Type.SALUTATION, (String) input.get("identifier")).getOptionId());
 		}
 		else {
 			return new Choice<>((String) input.getOrDefault("other", ""));
@@ -265,8 +265,8 @@ public abstract class AbstractDataFetcher {
 	 * @return
 	 */
 	private Choice<LanguageIdentifier> extractLanguage(Map<String,Object> input) {
-		if (input.containsKey("code")) {
-			return new Choice<>(crm.findOptionByCode(Type.LANGUAGE, (String) input.get("code")).getOptionId());
+		if (input.containsKey("identifier")) {
+			return new Choice<>(crm.findOptionByCode(Type.LANGUAGE, (String) input.get("identifier")).getOptionId());
 		}
 		else {
 			return new Choice<>((String) input.getOrDefault("other", ""));

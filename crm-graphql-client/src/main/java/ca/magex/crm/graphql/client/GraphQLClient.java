@@ -127,6 +127,7 @@ public class GraphQLClient {
 					}
 					return (T) data.get(queryName);
 				} else {
+					LoggerFactory.getLogger(getClass()).error(errors.toString());
 					throw new GraphQLClientException(errors.toString());
 				}
 			}

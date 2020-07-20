@@ -24,22 +24,22 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 	public void setup() throws Exception {
 		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " + 
-						"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " + 
+				"mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " + 
+						"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " + 
 							"organizationId } }",
 				new MapBuilder()
 					.withEntry("displayName", "Johnnuy")
-					.withEntry("authenticationGroups", List.of("SYS", "CRM"))
-					.withEntry("businessGroups", List.of("IMIT", "IMIT/DEV")).build()
+					.withEntry("authenticationGroupIds", List.of("SYS", "CRM"))
+					.withEntry("businessGroupIds", List.of("IMIT", "IMIT/DEV")).build()
 				);
 		orgId = new OrganizationIdentifier(johnnuy.getString("organizationId"));
 		
 		JSONObject manager = execute(
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, " + 
-						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }, " + 
-						"address: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s }, " + 
-						"communication: {jobTitle: %s, language: {code: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
+						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " + 
+						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }, " + 
+						"communication: {jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
 						"businessRoles: %s ) " + 
 						"{ personId } }",
 				orgId,

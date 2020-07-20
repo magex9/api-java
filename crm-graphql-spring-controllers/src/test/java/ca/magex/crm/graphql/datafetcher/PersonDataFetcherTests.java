@@ -21,13 +21,13 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 	public void setup() throws Exception {		
 		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " + 
-						"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " + 
-							"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
+				"mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " + 
+						"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " + 
+							"organizationId } }",
 				new MapBuilder()
 					.withEntry("displayName", "Johnnuy")
-					.withEntry("authenticationGroups", List.of("SYS", "ORG"))
-					.withEntry("businessGroups", List.of("IMIT", "IMIT/DEV")).build()
+					.withEntry("authenticationGroupIds", List.of("SYS", "CRM"))
+					.withEntry("businessGroupIds", List.of("IMIT", "IMIT/DEV")).build()
 				);
 		orgId = new OrganizationIdentifier(johnnuy.getString("organizationId"));
 	}
@@ -37,11 +37,11 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject person = execute(
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, " + 
-						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }, " + 
-						"address: {street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s }, " + 
-						"communication: {jobTitle: %s, language: {code: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
+						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " + 
+						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }, " + 
+						"communication: {jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
 						"businessRoles: %s ) " + 
-						"{ personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"{ personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				orgId,
 				"Jonny", "Michael", "Bigford", "MR",
 				"99 Blue Jays Way", "Toronto", "CA/ON", "CA", "L9K5I9",
@@ -54,14 +54,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -75,7 +75,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"updatePerson",
 				"mutation { updatePerson(personId: %s, status: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"active");
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
@@ -84,14 +84,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -105,7 +105,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"updatePerson",
 				"mutation { updatePerson(personId: %s, status: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"inactive");
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
@@ -114,14 +114,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -135,7 +135,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"updatePerson",
 				"mutation { updatePerson(personId: %s, status: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"inactive");
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
@@ -144,14 +144,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -165,7 +165,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"updatePerson",
 				"mutation { updatePerson(personId: %s, status: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"active");
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
@@ -174,14 +174,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -206,8 +206,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update name with change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, name: { firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }) { " + 
-							"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+				"mutation { updatePerson(personId: %s, name: { firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }) { " + 
+							"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"Timothy",
 				"Baller",
@@ -219,14 +219,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -239,8 +239,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update name without change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, name: { firstName: %s, middleName: %s, lastName: %s, salutation: {code: %s} }) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+				"mutation { updatePerson(personId: %s, name: { firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }) { " + 
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"Timothy",
 				"Baller",
@@ -252,14 +252,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -272,8 +272,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update address with change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s }) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }) { " + 
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"911 Sky Lane",
 				"Peterborough",
@@ -286,14 +286,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -306,8 +306,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update address without change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: {code: %s}, country: {code: %s}, postalCode: %s }) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+				"mutation { updatePerson(personId: %s, address: { street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }) { " + 
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"911 Sky Lane",
 				"Peterborough",
@@ -320,14 +320,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -340,8 +340,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update communication with change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, communication: { jobTitle: %s, language: {code: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+				"mutation { updatePerson(personId: %s, communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }) { " + 
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"minion",
 				"FR",
@@ -355,14 +355,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("minion", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("minion@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6139995555", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -375,8 +375,8 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update communication without change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, communication: { jobTitle: %s, language: {code: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+				"mutation { updatePerson(personId: %s, communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }) { " + 
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				"minion",
 				"FR",
@@ -390,14 +390,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("minion", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("minion@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6139995555", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -411,7 +411,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"updatePerson",
 				"mutation { updatePerson(personId: %s, businessRoles: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				List.of("IMIT/DEV/QA/TEAMLEAD"));
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
@@ -420,14 +420,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("minion", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("minion@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6139995555", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -441,7 +441,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"updatePerson",
 				"mutation { updatePerson(personId: %s, businessRoles: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				List.of("IMIT/DEV/QA/TEAMLEAD"));
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
@@ -450,14 +450,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("minion", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("minion@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6139995555", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
@@ -471,7 +471,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		person = execute(
 				"findPerson",
 				"{ findPerson(personId: %s) { " + 
-						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { code } } address { street city province { code } country { code } postalCode } communication { jobTitle language { code } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
+						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId);
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("ACTIVE", person.getString("status"));
@@ -479,14 +479,14 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Timothy", person.getJSONObject("legalName").getString("firstName"));
 		Assert.assertEquals("Baller", person.getJSONObject("legalName").getString("middleName"));
 		Assert.assertEquals("McNugget", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("code"));
+		Assert.assertEquals("MRS", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
 		Assert.assertEquals("911 Sky Lane", person.getJSONObject("address").getString("street"));
 		Assert.assertEquals("Peterborough", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("code"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("code"));
+		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
+		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
 		Assert.assertEquals("G5K9R4", person.getJSONObject("address").getString("postalCode"));
 		Assert.assertEquals("minion", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("code"));
+		Assert.assertEquals("FR", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
 		Assert.assertEquals("minion@johnnuy.org", person.getJSONObject("communication").getString("email"));
 		Assert.assertEquals("6139995555", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
 		Assert.assertEquals("", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));

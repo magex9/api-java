@@ -57,8 +57,8 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());			
 			return crm.createOrganization(
 					environment.getArgument("displayName"), 
-					extractAuthenticationGroups(environment, "authenticationGroups"),
-					extractBusinessGroups(environment, "businessGroups"));
+					extractAuthenticationGroups(environment, "authenticationGroupIds"),
+					extractBusinessGroups(environment, "businessGroupIds"));
 		};
 	}
 
@@ -128,23 +128,15 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 				if (org.getMainContactId() == null || !org.getMainContactId().equals(newMainContactId)) {
 					org = crm.updateOrganizationMainContact(organizationId, newMainContactId);
 				}
-			}
-			if (environment.getArgument("groups") != null) {
-				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroups");
+			}			
+			if (environment.getArgument("authenticationGroupIds") != null) {
+				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroupIds");
 				if (!org.getAuthenticationGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getAuthenticationGroupIds())) {
 					org = crm.updateOrganizationAuthenticationGroups(organizationId, newGroups);
 				}
 			}
-			
-			if (environment.getArgument("authenticationGroups") != null) {
-				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroups");
-				if (!org.getAuthenticationGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getAuthenticationGroupIds())) {
-					org = crm.updateOrganizationAuthenticationGroups(organizationId, newGroups);
-				}
-			}
-			
-			if (environment.getArgument("businessGroups") != null) {
-				List<BusinessGroupIdentifier> newGroups = extractBusinessGroups(environment, "businessGroups");
+			if (environment.getArgument("businessGroupIds") != null) {
+				List<BusinessGroupIdentifier> newGroups = extractBusinessGroups(environment, "businessGroupIds");
 				if (!org.getBusinessGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getBusinessGroupIds())) {
 					org = crm.updateOrganizationBusinessGroups(organizationId, newGroups);
 				}

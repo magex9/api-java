@@ -168,17 +168,17 @@ public class GraphQLControllerTests {
 		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOption"));
 		
 		/* add an array variable */
-		query = "mutation ($displayName: String!, $authenticationGroups: [String]!, $businessGroups: [String]!) { " + 
-				"createOrganization(displayName: $displayName, authenticationGroups: $authenticationGroups, businessGroups: $businessGroups) { " +
+		query = "mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " + 
+				"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " +
 				"organizationId } }";
 		variables = new JSONObject();
 		variables.put("displayName", "MyOrg");
 		JSONArray authenticationGroupsArray = new JSONArray();
 		authenticationGroupsArray.put("CRM");
-		variables.put("authenticationGroups", authenticationGroupsArray);
+		variables.put("authenticationGroupIds", authenticationGroupsArray);
 		JSONArray businessGroupsArray = new JSONArray();
 		businessGroupsArray.put("IMIT");
-		variables.put("businessGroups", businessGroupsArray);
+		variables.put("businessGroupIds", businessGroupsArray);
 		
 		request = new JSONObject();
 		request.put("query", query);
