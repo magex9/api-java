@@ -42,15 +42,6 @@ public abstract class AbstractDataFetcher {
 
 	@Autowired protected Crm crm;
 
-//	public DataFetcher<String> getNameByLocale(Locale locale) {
-//		return (environment) -> {
-//			logger.debug("Entering getNameByLocale@" + AbstractDataFetcher.class.getSimpleName());
-//			Object source = environment.getSource();
-//			Method getName = ReflectionUtils.findMethod(source.getClass(), "getName", Locale.class);
-//			return (String) ReflectionUtils.invokeMethod(getName, source, locale);
-//		};
-//	}
-
 	/**
 	 * extracts the filter from the environment
 	 * 
@@ -104,7 +95,7 @@ public abstract class AbstractDataFetcher {
 				return IdentifierFactory.forId(environment.getArgument(key));
 			}
 			catch(IllegalArgumentException e) {
-				throw new ApiException("Invalid parentId '" + environment.getArgument(key));
+				throw new ApiException("Invalid optionId '" + environment.getArgument(key));
 			}
 		}
 		else {

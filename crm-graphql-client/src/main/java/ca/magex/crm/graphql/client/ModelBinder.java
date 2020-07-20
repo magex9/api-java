@@ -1,13 +1,14 @@
 package ca.magex.crm.graphql.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
-import org.springframework.data.util.Pair;
 
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -23,6 +24,7 @@ import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
@@ -39,6 +41,7 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonNumber;
 import ca.magex.json.model.JsonObject;
 
 /**
@@ -55,8 +58,8 @@ public class ModelBinder {
 	 * @param number
 	 * @return
 	 */
-	public static long toLong(Number number) {
-		return number.longValue();
+	public static long toLong(JsonNumber number) {
+		return number.value().longValue();
 	}
 
 	/**
@@ -289,7 +292,11 @@ public class ModelBinder {
 						json.getObject("name").getString("french")));
 	}
 	
-	
+	/**
+	 * Returns the SortFields and SortInfo from the paging object
+	 * @param paging
+	 * @return
+	 */
 	public static Pair<List<String>, List<String>> getSortInfo(Paging paging) {
 		List<String> sortFields = new ArrayList<String>();
 		List<String> sortDirections = new ArrayList<String>();
@@ -306,6 +313,20 @@ public class ModelBinder {
 		}
 		return Pair.of(sortFields, sortDirections);
 	}
+	
+	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JsonObject, T> constructor, JsonObject json) {
+		try {
+			List<T> contents = new ArrayList<>();
+			JsonArray content = json.getArray("content");
+			for (int i = 0; i < content.size(); i++) {
+				contents.add(constructor.apply(content.getObject(i)));
+			}
+			return new FilteredPage<T>(filter, paging, contents, json.getInt("totalElements"));
+		} catch (Exception jsone) {
+			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
+		}
+	}
+	
 
 	//	public static <T> List<T> toList(Function<JSONObject, T> constructor, JSONArray jsonArray) {
 	//		try {
@@ -347,16 +368,5 @@ public class ModelBinder {
 	//		}
 	//	}
 
-	//	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JSONObject, T> constructor, JSONObject json) {
-	//		try {
-	//			List<T> contents = new ArrayList<>();
-	//			JSONArray content = json.getJSONArray("content");
-	//			for (int i = 0; i < content.length(); i++) {
-	//				contents.add(constructor.apply(content.getJSONObject(i)));
-	//			}
-	//			return new FilteredPage<T>(filter, paging, contents, json.getInt("totalElements"));
-	//		} catch (Exception jsone) {
-	//			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
-	//		}
-	//	}
+		
 }

@@ -1,6 +1,9 @@
 package ca.magex.crm.graphql.client.service;
 
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
@@ -8,6 +11,7 @@ import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.graphql.client.GraphQLClient;
@@ -40,55 +44,113 @@ public class GraphQLOptionService implements CrmOptionService {
 						"createOption", 
 						"createOption", 
 						new MapBuilder()
-						.withEntry("type", type.getCode())
-						.withEntry("parentId", parentId == null ? "" : parentId.toString())
-						.withEntry("code", name.getCode())
-						.withEntry("english", name.getEnglishName())
-						.withEntry("french", name.getFrenchName())
-						.build()));
+								.withEntry("type", type.getCode())
+								.withEntry("parentId", parentId == null ? "" : parentId.toString())
+								.withEntry("code", name.getCode())
+								.withEntry("english", name.getEnglishName())
+								.withEntry("french", name.getFrenchName())
+								.build()));
 	}
 
 	@Override
 	public Option findOption(OptionIdentifier optionId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOption(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"findOption",
+						"findOption",
+						new MapBuilder()
+								.withEntry("optionId", optionId.toString())
+								.build()));
 	}
 
 	@Override
 	public Option findOptionByCode(Type type, String optionCode) {
-		// TODO Auto-generated method stub
-		return null;
+		return findOption(type.generateId(optionCode));
 	}
 
 	@Override
 	public Option updateOptionName(OptionIdentifier optionId, Localized name) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOption(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOption", 
+						"updateOption", 
+						new MapBuilder()								
+								.withEntry("optionId", optionId.toString())
+								.withOptionalEntry("english", Optional.ofNullable(name.getEnglishName()))
+								.withOptionalEntry("french", Optional.ofNullable(name.getFrenchName()))
+								.build()));
 	}
 
 	@Override
 	public Option enableOption(OptionIdentifier optionId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOption(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOption", 
+						"updateOption", 
+						new MapBuilder()								
+								.withEntry("optionId", optionId.toString())
+								.withEntry("status", Status.ACTIVE)
+								.build()));
 	}
 
 	@Override
 	public Option disableOption(OptionIdentifier optionId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ModelBinder.toOption(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updateOption", 
+						"updateOption", 
+						new MapBuilder()								
+								.withEntry("optionId", optionId.toString())		
+								.withEntry("status", Status.INACTIVE)
+								.build()));
 	}
 
 	@Override
 	public long countOptions(OptionsFilter filter) {
-		// TODO Auto-generated method stub
-		return 0;
+		return ModelBinder.toLong(graphQLClient
+				.performGraphQLQueryWithVariables(
+					"countOptions",
+					"countOptions",
+					new MapBuilder()								
+						.withOptionalEntry("parentId", Optional.ofNullable(filter.getParentId()))
+						.withOptionalEntry("type", Optional.ofNullable(filter.getTypeCode()))
+						.withOptionalEntry("status", Optional.ofNullable(filter.getStatusCode()))
+						.withOptionalEntry("code", Optional.ofNullable(filter.getCode()))
+						.withOptionalEntry("english", Optional.ofNullable(filter.getEnglishName()))
+						.withOptionalEntry("french", Optional.ofNullable(filter.getFrenchName()))
+						.build()));
 	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
+		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
+		
+		return ModelBinder.toPage(filter, paging, ModelBinder::toOption, graphQLClient
+				.performGraphQLQueryWithVariables(
+						"findOptions", 
+						"findOptions", 
+						new MapBuilder()								
+							.withOptionalEntry("parentId", Optional.ofNullable(filter.getParentId()))
+							.withOptionalEntry("type", Optional.ofNullable(filter.getTypeCode()))
+							.withOptionalEntry("status", Optional.ofNullable(filter.getStatusCode()))
+							.withOptionalEntry("code", Optional.ofNullable(filter.getCode()))
+							.withOptionalEntry("english", Optional.ofNullable(filter.getEnglishName()))
+							.withOptionalEntry("french", Optional.ofNullable(filter.getFrenchName()))
+							.withEntry("pageNumber", paging.getPageNumber())
+							.withEntry("pageSize", paging.getPageSize())
+							.withEntry("sortField", sortInfo.getLeft())
+							.withEntry("sortOrder", sortInfo.getRight())
+							.build()));	
+		
+//		
+		
+//		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationDetails, performGraphQLQueryWithSubstitution(
+//				"findOrganizationDetails",
+//				"findOrganizations",
+//				FilterBinder.toFilterString(filter),
+//				paging.getPageNumber(),
+//				paging.getPageSize(),
+//				sortInfo.getFirst(),
+//				sortInfo.getSecond()));
+	}	
 }

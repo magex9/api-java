@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -129,7 +128,7 @@ public interface CrmOrganizationService {
 		return new OrganizationsFilter();
 	};
 
-	static List<Message> validateOrganizationDetails(Crm crm, OrganizationDetails organization) {
+	static List<Message> validateOrganizationDetails(CrmServices crm, OrganizationDetails organization) {
 		List<Message> messages = new ArrayList<Message>();
 		
 		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();

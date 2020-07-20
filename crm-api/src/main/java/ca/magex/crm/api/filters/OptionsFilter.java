@@ -124,6 +124,14 @@ public class OptionsFilter implements CrmFilter<Option> {
 	public String getCode() {
 		return name == null ? null : name.getCode();
 	}
+	
+	public String getTypeCode() {
+		return type == null ? null : type.getCode();
+	}
+	
+	public String getStatusCode() {
+		return status == null ? null : status.getCode();
+	}
 
 	public OptionsFilter withName(Localized name) {
 		return new OptionsFilter(name, parentId, type, status);

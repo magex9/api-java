@@ -31,6 +31,7 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonNumber;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
@@ -38,10 +39,10 @@ public class ModelBinderTests {
 
 	@Test
 	public void testBindLong() {
-		Assert.assertEquals(5l, ModelBinder.toLong(5.0f));
-		Assert.assertEquals(5l, ModelBinder.toLong(5.0));
-		Assert.assertEquals(5l, ModelBinder.toLong(5));
-		Assert.assertEquals(5l, ModelBinder.toLong(5l));
+		Assert.assertEquals(5l, ModelBinder.toLong(new JsonNumber(5.0f)));
+		Assert.assertEquals(5l, ModelBinder.toLong(new JsonNumber(5.0)));
+		Assert.assertEquals(5l, ModelBinder.toLong(new JsonNumber(5)));
+		Assert.assertEquals(5l, ModelBinder.toLong(new JsonNumber(5l)));
 	}
 	
 	@Test
