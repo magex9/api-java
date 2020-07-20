@@ -84,7 +84,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 					extractPersonName(environment, "name"),
 					extractMailingAddress(environment, "address"),
 					extractCommunication(environment, "communication"),
-					extractBusinessRoles(environment, "businessRoles"));
+					extractBusinessRoles(environment, "businessRoleIds"));
 		};
 	}
 
@@ -131,8 +131,8 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 					person = crm.updatePersonCommunication(personId, newCommunication);
 				}
 			}
-			if (environment.getArgument("businessRoles") != null) {
-				List<BusinessRoleIdentifier> businessRoles = extractBusinessRoles(environment, "businessRoles");
+			if (environment.getArgument("businessRoleIds") != null) {
+				List<BusinessRoleIdentifier> businessRoles = extractBusinessRoles(environment, "businessRoleIds");
 				if (!person.getBusinessRoleIds().containsAll(businessRoles) || !businessRoles.containsAll(person.getBusinessRoleIds())) {
 					person = crm.updatePersonRoles(personId, businessRoles);
 				}

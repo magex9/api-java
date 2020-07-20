@@ -337,7 +337,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
 						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}, " +
 						"communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " +
-						"businessRoles: %s ) { personId } }",
+						"businessRoleIds: %s ) { personId } }",
 				johnnuyId,
 				"Henry", "Peter", "Jones", "MR",
 				"123 Frank St", "Ottawa", "CA/ON", "CA", "K5J9F4",
@@ -407,7 +407,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 						"name: {" + "firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
 						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}, " +
 						"communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " +
-						"businessRoles: %s ) { personId } }",
+						"businessRoleIds: %s ) { personId } }",
 				johnnuyId,
 				"Tommy", "Falls", "Narrow", "MRS",
 				"123 Frank St", "Ottawa", "CA/ON", "CA", "K5J9F4",

@@ -7,7 +7,7 @@ public class DuplicateItemFoundException extends ApiException {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	public DuplicateItemFoundException(String uri) {
-		super("Duplicate item found found: " + uri);
+		super("Duplicate item found: " + uri);
 	}
 
 	@Override

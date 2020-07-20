@@ -40,7 +40,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " + 
 						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }, " + 
 						"communication: {jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
-						"businessRoles: %s ) " + 
+						"businessRoleIds: %s ) " + 
 						"{ personId } }",
 				orgId,
 				"Jonny", "Michael", "Bigford", "MR",

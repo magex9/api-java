@@ -155,11 +155,11 @@ public class ModelBinder {
 	 */
 	public static MailingAddress toMailingAddress(JsonObject json) {
 		return new MailingAddress(
-				json.getString("street"),
-				json.getString("city"),
-				toProvinceChoice(json.getObject("province")),
-				toCountryChoice(json.getObject("country")),
-				json.getString("postalCode"));
+				json.getString("street", ""),
+				json.getString("city", ""),
+				toProvinceChoice(json.getObject("province", new JsonObject())),
+				toCountryChoice(json.getObject("country", new JsonObject())),
+				json.getString("postalCode", ""));
 	}
 
 	/**
@@ -169,10 +169,10 @@ public class ModelBinder {
 	 */
 	public static PersonName toPersonName(JsonObject json) {
 		return new PersonName(
-				toSalutationChoice(json.getObject("salutation")),
-				json.getString("firstName"),
-				json.getString("middleName"),
-				json.getString("lastName"));
+				toSalutationChoice(json.getObject("salutation", new JsonObject())),
+				json.getString("firstName", ""),
+				json.getString("middleName", ""),
+				json.getString("lastName", ""));
 	}
 
 	/**
@@ -182,8 +182,8 @@ public class ModelBinder {
 	 */
 	public static Telephone toTelephone(JsonObject json) {
 		return new Telephone(
-				json.getString("number"),
-				json.getString("extension"));
+				json.getString("number", ""),
+				json.getString("extension", ""));
 	}
 
 	/**
@@ -193,11 +193,11 @@ public class ModelBinder {
 	 */
 	public static Communication toCommunication(JsonObject json) {
 		return new Communication(
-				json.getString("jobTitle"),
-				toLanguageChoice(json.getObject("language")),
-				json.getString("email"),
-				toTelephone(json.getObject("homePhone")),
-				json.getString("faxNumber"));
+				json.getString("jobTitle", ""),
+				toLanguageChoice(json.getObject("language", new JsonObject())),
+				json.getString("email", ""),
+				toTelephone(json.getObject("homePhone", new JsonObject())),
+				json.getString("faxNumber", ""));
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class ModelBinder {
 		return new OrganizationSummary(
 				new OrganizationIdentifier(json.getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName"));
+				json.getString("displayName", ""));
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class ModelBinder {
 		return new OrganizationDetails(
 				new OrganizationIdentifier(json.getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName"),
+				json.getString("displayName", ""),
 				locationId,
 				contactId,
 				toIdentifierList(AuthenticationGroupIdentifier::new, json.getArray("authenticationGroups"), "optionId"),
@@ -246,8 +246,8 @@ public class ModelBinder {
 				new LocationIdentifier(json.getString("locationId")),
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("reference"),
-				json.getString("displayName"));
+				json.getString("reference", ""),
+				json.getString("displayName", ""));
 	}
 
 	/**
@@ -260,9 +260,9 @@ public class ModelBinder {
 				new LocationIdentifier(json.getString("locationId")),
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("reference"),
-				json.getString("displayName"),
-				toMailingAddress(json.getObject("address")));
+				json.getString("reference", ""),
+				json.getString("displayName", ""),
+				toMailingAddress(json.getObject("address", new JsonObject())));
 	}
 
 	/**
@@ -273,9 +273,9 @@ public class ModelBinder {
 	public static PersonSummary toPersonSummary(JsonObject json) {
 		return new PersonSummary(
 				new PersonIdentifier(json.getString("personId")),
-				new OrganizationIdentifier(json.getString("organizationId")),
+				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName"));
+				json.getString("displayName", ""));
 	}
 
 	/**
@@ -286,13 +286,13 @@ public class ModelBinder {
 	public static PersonDetails toPersonDetails(JsonObject json) {
 		return new PersonDetails(
 				new PersonIdentifier(json.getString("personId")),
-				new OrganizationIdentifier(json.getString("organizationId")),
+				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName"),
-				toPersonName(json.getObject("legalName")),
-				toMailingAddress(json.getObject("address")),
-				toCommunication(json.getObject("communication")),
-				toIdentifierList(BusinessRoleIdentifier::new, json.getArray("businessRoles"), "optionId"));
+				json.getString("displayName", ""),
+				toPersonName(json.getObject("legalName", new JsonObject())),
+				toMailingAddress(json.getObject("address", new JsonObject())),
+				toCommunication(json.getObject("communication", new JsonObject())),
+				toIdentifierList(BusinessRoleIdentifier::new, json.getArray("businessRoles", new JsonArray()), "optionId"));
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class ModelBinder {
 		return new UserSummary(
 				new UserIdentifier(json.getString("userId")),
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
-				json.getString("username"),
+				json.getString("username", ""),
 				Status.of(json.getString("status")));
 	}
 	
@@ -318,9 +318,9 @@ public class ModelBinder {
 				new UserIdentifier(json.getString("userId")),
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				new PersonIdentifier(json.getObject("person").getString("personId")),				
-				json.getString("username"),
+				json.getString("username", ""),
 				Status.of(json.getString("status")),
-				toIdentifierList(AuthenticationRoleIdentifier::new, json.getArray("authenticationRoles"), "optionId"));
+				toIdentifierList(AuthenticationRoleIdentifier::new, json.getArray("authenticationRoles", new JsonArray()), "optionId"));
 	}
 
 	/**
@@ -340,9 +340,9 @@ public class ModelBinder {
 				Status.of(json.getString("status")), 
 				Boolean.valueOf(json.getString("mutable")),
 				new Localized(
-						json.getObject("name").getString("code"), 
-						json.getObject("name").getString("english"), 
-						json.getObject("name").getString("french")));
+						json.getObject("name").getString("code", ""), 
+						json.getObject("name").getString("english", ""), 
+						json.getObject("name").getString("french", "")));
 	}
 	
 	/**
@@ -378,48 +378,5 @@ public class ModelBinder {
 		} catch (Exception jsone) {
 			throw new RuntimeException("Error constructing Page from: " + json.toString(), jsone);
 		}
-	}
-	
-
-	//	public static <T> List<T> toList(Function<JSONObject, T> constructor, JSONArray jsonArray) {
-	//		try {
-	//			List<T> list = new ArrayList<>();
-	//			for (int i = 0; i < jsonArray.length(); i++) {
-	//				list.add(constructor.apply(jsonArray.getJSONObject(i)));
-	//			}
-	//			return list;
-	//		} catch (Exception jsone) {
-	//			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
-	//		}
-	//	}
-	//
-	//	public static List<String> toStringList(JSONArray jsonArray, String fieldId) {
-	//		try {
-	//			List<String> list = new ArrayList<>();
-	//			for (int i = 0; i < jsonArray.length(); i++) {
-	//				if (fieldId == null) {
-	//					list.add(jsonArray.getString(i));
-	//				} else {
-	//					list.add(jsonArray.getJSONObject(i).getString(fieldId));
-	//				}
-	//			}
-	//			return list;
-	//		} catch (Exception jsone) {
-	//			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
-	//		}
-	//	}
-
-	//	public static List<String> toIdentifierList(JSONArray jsonArray) {
-	//		try {
-	//			List<String> list = new ArrayList<>();
-	//			for (int i = 0; i < jsonArray.length(); i++) {
-	//				list.add(jsonArray.getString(i));
-	//			}
-	//			return list;
-	//		} catch (Exception jsone) {
-	//			throw new RuntimeException("Error constructing List from: " + jsonArray.toString(), jsone);
-	//		}
-	//	}
-
-		
+	}		
 }

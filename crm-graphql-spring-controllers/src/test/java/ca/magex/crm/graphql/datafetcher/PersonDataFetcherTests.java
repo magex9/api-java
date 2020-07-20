@@ -40,7 +40,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " + 
 						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }, " + 
 						"communication: {jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
-						"businessRoles: %s ) " + 
+						"businessRoleIds: %s ) " + 
 						"{ personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				orgId,
 				"Jonny", "Michael", "Bigford", "MR",
@@ -410,7 +410,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update position with change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, businessRoles: %s) { " + 
+				"mutation { updatePerson(personId: %s, businessRoleIds: %s) { " + 
 						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				List.of("IMIT/DEV/QA/TEAMLEAD"));
@@ -440,7 +440,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		/* update position without change */
 		person = execute(
 				"updatePerson",
-				"mutation { updatePerson(personId: %s, businessRoles: %s) { " + 
+				"mutation { updatePerson(personId: %s, businessRoleIds: %s) { " + 
 						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
 				personId,
 				List.of("IMIT/DEV/QA/TEAMLEAD"));

@@ -121,8 +121,8 @@ type Mutation {
 	updateLocation(locationId: String!, displayName: String, address: MailingAddressInput, status: String): Location
 	
 	# Person Maintenance
-	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, businessRoles: [String]!): Person
-	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoles: [String], status: String): Person
+	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, businessRoleIds: [String]!): Person
+	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoleIds: [String], status: String): Person
 		
 	# User Maintenance
 	createUser(personId: String!, username: String!, authenticationRoles: [String]!): User

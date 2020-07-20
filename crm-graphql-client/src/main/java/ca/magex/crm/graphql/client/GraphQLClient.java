@@ -14,7 +14,9 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 import ca.magex.crm.graphql.model.GraphQLRequest;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
@@ -34,7 +36,7 @@ public class GraphQLClient {
 
 	protected String endpoint;
 	protected Properties queries;
-	
+
 	private String authToken;
 	private RestTemplate restTemplate;
 
@@ -46,7 +48,7 @@ public class GraphQLClient {
 	public GraphQLClient(String endpoint, String queryResource) {
 		this.endpoint = endpoint;
 		this.queries = new Properties();
-		this.restTemplate = new RestTemplate();		
+		this.restTemplate = new RestTemplate();
 		try {
 			try (InputStream in = CrmServicesGraphQLClientImpl.class.getResource(queryResource).openStream()) {
 				this.queries.load(in);
@@ -66,14 +68,14 @@ public class GraphQLClient {
 	public void authenticateJwt(String authEndpoint, String username, String password) {
 		ResponseEntity<JwtToken> response = restTemplate.exchange(
 				RequestEntity
-					.post(URI.create(authEndpoint))
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(new JwtRequest(username, password)), 
+						.post(URI.create(authEndpoint))
+						.contentType(MediaType.APPLICATION_JSON)
+						.body(new JwtRequest(username, password)),
 				JwtToken.class);
 		if (!response.getStatusCode().is2xxSuccessful()) {
 			throw new GraphQLClientException(response.getStatusCode().getReasonPhrase());
 		}
-		this.authToken = response.getBody().getToken();		
+		this.authToken = response.getBody().getToken();
 	}
 
 	/**
@@ -105,21 +107,20 @@ public class GraphQLClient {
 	@SuppressWarnings("unchecked")
 	private <T> T performGraphQLQuery(String queryName, GraphQLRequest request) {
 		long t1 = System.currentTimeMillis();
-		try {			
+		try {
 			ResponseEntity<String> response = restTemplate.exchange(
-					authToken == null ?
-						RequestEntity
+					authToken == null ? RequestEntity
 							.post(URI.create(endpoint))
 							.contentType(MediaType.APPLICATION_JSON)
-							.body(request) :
-						RequestEntity
-							.post(URI.create(endpoint))
-							.contentType(MediaType.APPLICATION_JSON)
-							.header("Authorization", "Bearer " + authToken)
-							.body(request),
-						String.class);
+							.body(request)
+							: RequestEntity
+									.post(URI.create(endpoint))
+									.contentType(MediaType.APPLICATION_JSON)
+									.header("Authorization", "Bearer " + authToken)
+									.body(request),
+					String.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
-				JsonObject json = new JsonObject(response.getBody());				
+				JsonObject json = new JsonObject(response.getBody());
 				JsonArray errors = json.getArray("errors");
 				if (errors.size() == 0) {
 					JsonObject data = json.getObject("data");
@@ -134,19 +135,24 @@ public class GraphQLClient {
 					if (StringUtils.startsWith(message, "Item not found: ")) {
 						throw new ItemNotFoundException(message.substring(16));
 					}
+					/* look for a duplicate item found exception */
+					if (StringUtils.startsWith(message, "Duplicate item found: ")) {
+						throw new DuplicateItemFoundException(message.substring(22));
+					}
+					/* look for a permission denied exception */
+					if (StringUtils.startsWith(message, "Permission denied: ")) {
+						throw new PermissionDeniedException(message.substring(19));
+					}				
 				}
-				
+
 				LoggerFactory.getLogger(getClass()).error(errors.toString());
-				throw new GraphQLClientException(errors.toString());				
-			}
-			else {
+				throw new GraphQLClientException(errors.toString());
+			} else {
 				throw new GraphQLClientException("Error performing graphql query " + queryName + ", " + response.getStatusCode().getReasonPhrase());
 			}
-		}
-		catch(ItemNotFoundException e) {
+		} catch (ItemNotFoundException | DuplicateItemFoundException | PermissionDeniedException | GraphQLClientException e) {
 			throw e;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new GraphQLClientException("Unable to parse response", e);
 		} finally {
 			if (LOG.isDebugEnabled()) {
@@ -163,7 +169,7 @@ public class GraphQLClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private GraphQLRequest constructRequestWithVariables(String queryName, Map<String, Object> variables) {		
+	private GraphQLRequest constructRequestWithVariables(String queryName, Map<String, Object> variables) {
 		GraphQLRequest request = new GraphQLRequest();
 		request.setQuery(queries.getProperty(queryName));
 		request.getVariables().putAll(variables);
@@ -187,7 +193,7 @@ public class GraphQLClient {
 			query = query.replace("${" + param + "}", toVariableReplacementValue(params[param]));
 		}
 		request.setQuery(query);
-		return request;		
+		return request;
 	}
 
 	/**
@@ -204,8 +210,7 @@ public class GraphQLClient {
 			List<?> l = (List<?>) value;
 			if (l.isEmpty()) {
 				return "";
-			}
-			else {
+			} else {
 				return "\"" + StringUtils.join(l, "\",\"") + "\"";
 			}
 		} else {

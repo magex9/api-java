@@ -27,15 +27,15 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public interface CrmPersonService {
 	
-	default PersonDetails prototypePerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> getBusinessRoleIds) {
-		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, getBusinessRoleIds);
+	default PersonDetails prototypePerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
+		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, businessRoleIds);
 	};
 
 	default PersonDetails createPerson(PersonDetails prototype) {
 		return createPerson(prototype.getOrganizationId(), prototype.getLegalName(), prototype.getAddress(), prototype.getCommunication(), prototype.getBusinessRoleIds());
 	}
 
-	PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> getBusinessRoleIds);
+	PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds);
 
 	PersonSummary enablePerson(PersonIdentifier personId);
 
@@ -47,7 +47,7 @@ public interface CrmPersonService {
 
 	PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication);
 
-	PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds);
+	PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds);
 	
 	PersonSummary findPersonSummary(PersonIdentifier personId);
 
