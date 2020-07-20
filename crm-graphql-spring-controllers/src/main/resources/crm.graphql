@@ -23,11 +23,11 @@ input PagingInput {
 }
 
 input MailingAddressInput {
-	street: String!
-	city: String!
-	province: ChoiceInput!
-	country: ChoiceInput!
-	postalCode: String!
+	street: String
+	city: String
+	province: ChoiceInput
+	country: ChoiceInput
+	postalCode: String
 }
 
 input NameInput {

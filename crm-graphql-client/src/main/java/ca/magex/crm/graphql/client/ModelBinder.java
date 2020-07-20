@@ -34,11 +34,15 @@ import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.IdentifierFactory;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.ProvinceIdentifier;
+import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonNumber;
@@ -85,9 +89,58 @@ public class ModelBinder {
 	 * @param json
 	 * @return
 	 */
-	public static <I extends OptionIdentifier> Choice<I> toChoice(JsonObject json) {
+	public static Choice<ProvinceIdentifier> toProvinceChoice(JsonObject json) {
 		if (json.contains("identifier")) {
-			return new Choice<>(IdentifierFactory.forOptionId(json.getString("identifier")));
+			return new Choice<>(new ProvinceIdentifier(json.getString("identifier")));
+		} else if (json.contains("other")) {
+			return new Choice<>(json.getString("other"));
+		} else {
+			return new Choice<>((String) null);
+		}
+	}
+	
+
+	/**
+	 * Binds the given json object to a Choice model
+	 * @param <I>
+	 * @param json
+	 * @return
+	 */
+	public static Choice<CountryIdentifier> toCountryChoice(JsonObject json) {
+		if (json.contains("identifier")) {
+			return new Choice<>(new CountryIdentifier(json.getString("identifier")));
+		} else if (json.contains("other")) {
+			return new Choice<>(json.getString("other"));
+		} else {
+			return new Choice<>((String) null);
+		}
+	}
+	
+	/**
+	 * Binds the given json object to a Choice model
+	 * @param <I>
+	 * @param json
+	 * @return
+	 */
+	public static Choice<SalutationIdentifier> toSalutationChoice(JsonObject json) {
+		if (json.contains("identifier")) {
+			return new Choice<>(new SalutationIdentifier(json.getString("identifier")));
+		} else if (json.contains("other")) {
+			return new Choice<>(json.getString("other"));
+		} else {
+			return new Choice<>((String) null);
+		}
+	}
+	
+	/**
+	 * Binds the given json object to a Choice model
+	 * @param <I>
+	 * @param json
+	 * @return
+	 */
+	public static Choice<LanguageIdentifier> toLanguageChoice(JsonObject json) {
+		if (json.contains("identifier")) {
+			return new Choice<>(new LanguageIdentifier(json.getString("identifier")));
 		} else if (json.contains("other")) {
 			return new Choice<>(json.getString("other"));
 		} else {
@@ -104,8 +157,8 @@ public class ModelBinder {
 		return new MailingAddress(
 				json.getString("street"),
 				json.getString("city"),
-				toChoice(json.getObject("province")),
-				toChoice(json.getObject("country")),
+				toProvinceChoice(json.getObject("province")),
+				toCountryChoice(json.getObject("country")),
 				json.getString("postalCode"));
 	}
 
@@ -116,7 +169,7 @@ public class ModelBinder {
 	 */
 	public static PersonName toPersonName(JsonObject json) {
 		return new PersonName(
-				toChoice(json.getObject("salutation")),
+				toSalutationChoice(json.getObject("salutation")),
 				json.getString("firstName"),
 				json.getString("middleName"),
 				json.getString("lastName"));
@@ -141,7 +194,7 @@ public class ModelBinder {
 	public static Communication toCommunication(JsonObject json) {
 		return new Communication(
 				json.getString("jobTitle"),
-				toChoice(json.getObject("language")),
+				toLanguageChoice(json.getObject("language")),
 				json.getString("email"),
 				toTelephone(json.getObject("homePhone")),
 				json.getString("faxNumber"));
@@ -191,7 +244,7 @@ public class ModelBinder {
 	public static LocationSummary toLocationSummary(JsonObject json) {
 		return new LocationSummary(
 				new LocationIdentifier(json.getString("locationId")),
-				new OrganizationIdentifier(json.getString("organizationId")),
+				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
 				json.getString("reference"),
 				json.getString("displayName"));

@@ -24,10 +24,10 @@ import ca.magex.crm.graphql.client.ModelBinder;
  * @author Jonny
  */
 public class GraphQLOptionService implements CrmOptionService {
-	
+
 	/** client used for making the GraphQL calls */
 	private GraphQLClient graphQLClient;
-	
+
 	/**
 	 * Constructs our new Organization Service requiring the given graphQL client for remoting
 	 * 
@@ -35,14 +35,14 @@ public class GraphQLOptionService implements CrmOptionService {
 	 */
 	public GraphQLOptionService(GraphQLClient graphQLClient) {
 		this.graphQLClient = graphQLClient;
-	}	
-	
+	}
+
 	@Override
 	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
 		return ModelBinder.toOption(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"createOption", 
-						"createOption", 
+						"createOption",
+						"createOption",
 						new MapBuilder()
 								.withEntry("type", type.getCode())
 								.withEntry("parentId", parentId == null ? "" : parentId.toString())
@@ -72,9 +72,9 @@ public class GraphQLOptionService implements CrmOptionService {
 	public Option updateOptionName(OptionIdentifier optionId, Localized name) {
 		return ModelBinder.toOption(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOption", 
-						"updateOption", 
-						new MapBuilder()								
+						"updateOption",
+						"updateOption",
+						new MapBuilder()
 								.withEntry("optionId", optionId.toString())
 								.withOptionalEntry("english", Optional.ofNullable(name.getEnglishName()))
 								.withOptionalEntry("french", Optional.ofNullable(name.getFrenchName()))
@@ -85,9 +85,9 @@ public class GraphQLOptionService implements CrmOptionService {
 	public Option enableOption(OptionIdentifier optionId) {
 		return ModelBinder.toOption(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOption", 
-						"updateOption", 
-						new MapBuilder()								
+						"updateOption",
+						"updateOption",
+						new MapBuilder()
 								.withEntry("optionId", optionId.toString())
 								.withEntry("status", Status.ACTIVE)
 								.build()));
@@ -97,10 +97,10 @@ public class GraphQLOptionService implements CrmOptionService {
 	public Option disableOption(OptionIdentifier optionId) {
 		return ModelBinder.toOption(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOption", 
-						"updateOption", 
-						new MapBuilder()								
-								.withEntry("optionId", optionId.toString())		
+						"updateOption",
+						"updateOption",
+						new MapBuilder()
+								.withEntry("optionId", optionId.toString())
 								.withEntry("status", Status.INACTIVE)
 								.build()));
 	}
@@ -109,48 +109,36 @@ public class GraphQLOptionService implements CrmOptionService {
 	public long countOptions(OptionsFilter filter) {
 		return ModelBinder.toLong(graphQLClient
 				.performGraphQLQueryWithVariables(
-					"countOptions",
-					"countOptions",
-					new MapBuilder()								
-						.withOptionalEntry("parentId", Optional.ofNullable(filter.getParentId()))
-						.withOptionalEntry("type", Optional.ofNullable(filter.getTypeCode()))
-						.withOptionalEntry("status", Optional.ofNullable(filter.getStatusCode()))
-						.withOptionalEntry("code", Optional.ofNullable(filter.getCode()))
-						.withOptionalEntry("english", Optional.ofNullable(filter.getEnglishName()))
-						.withOptionalEntry("french", Optional.ofNullable(filter.getFrenchName()))
-						.build()));
+						"countOptions",
+						"countOptions",
+						new MapBuilder()
+								.withOptionalEntry("parentId", Optional.ofNullable(filter.getParentId()))
+								.withOptionalEntry("type", Optional.ofNullable(filter.getTypeCode()))
+								.withOptionalEntry("status", Optional.ofNullable(filter.getStatusCode()))
+								.withOptionalEntry("code", Optional.ofNullable(filter.getCode()))
+								.withOptionalEntry("english", Optional.ofNullable(filter.getEnglishName()))
+								.withOptionalEntry("french", Optional.ofNullable(filter.getFrenchName()))
+								.build()));
 	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
 		Pair<List<String>, List<String>> sortInfo = ModelBinder.getSortInfo(paging);
-		
 		return ModelBinder.toPage(filter, paging, ModelBinder::toOption, graphQLClient
 				.performGraphQLQueryWithVariables(
-						"findOptions", 
-						"findOptions", 
-						new MapBuilder()								
-							.withOptionalEntry("parentId", Optional.ofNullable(filter.getParentId()))
-							.withOptionalEntry("type", Optional.ofNullable(filter.getTypeCode()))
-							.withOptionalEntry("status", Optional.ofNullable(filter.getStatusCode()))
-							.withOptionalEntry("code", Optional.ofNullable(filter.getCode()))
-							.withOptionalEntry("english", Optional.ofNullable(filter.getEnglishName()))
-							.withOptionalEntry("french", Optional.ofNullable(filter.getFrenchName()))
-							.withEntry("pageNumber", paging.getPageNumber())
-							.withEntry("pageSize", paging.getPageSize())
-							.withEntry("sortField", sortInfo.getLeft())
-							.withEntry("sortOrder", sortInfo.getRight())
-							.build()));	
-		
-//		
-		
-//		return ModelBinder.toPage(filter, paging, ModelBinder::toOrganizationDetails, performGraphQLQueryWithSubstitution(
-//				"findOrganizationDetails",
-//				"findOrganizations",
-//				FilterBinder.toFilterString(filter),
-//				paging.getPageNumber(),
-//				paging.getPageSize(),
-//				sortInfo.getFirst(),
-//				sortInfo.getSecond()));
-	}	
+						"findOptions",
+						"findOptions",
+						new MapBuilder()
+								.withOptionalEntry("parentId", Optional.ofNullable(filter.getParentId()))
+								.withOptionalEntry("type", Optional.ofNullable(filter.getTypeCode()))
+								.withOptionalEntry("status", Optional.ofNullable(filter.getStatusCode()))
+								.withOptionalEntry("code", Optional.ofNullable(filter.getCode()))
+								.withOptionalEntry("english", Optional.ofNullable(filter.getEnglishName()))
+								.withOptionalEntry("french", Optional.ofNullable(filter.getFrenchName()))
+								.withEntry("pageNumber", paging.getPageNumber())
+								.withEntry("pageSize", paging.getPageSize())
+								.withEntry("sortField", sortInfo.getLeft())
+								.withEntry("sortOrder", sortInfo.getRight())
+								.build()));
+	}
 }

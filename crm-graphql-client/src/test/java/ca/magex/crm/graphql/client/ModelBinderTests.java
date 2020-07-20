@@ -63,18 +63,18 @@ public class ModelBinderTests {
 	}
 
 	@Test
-	public void testBindChoice() {
-		Choice<ProvinceIdentifier> province = ModelBinder.toChoice(
+	public void testBindProvinceChoice() {
+		Choice<ProvinceIdentifier> province = ModelBinder.toProvinceChoice(
 				new JsonObject(
 						new JsonPair("identifier", "/options/provinces/CA/ON")));
 		Assert.assertEquals("CA/ON", province.getValue());
 
-		province = ModelBinder.toChoice(
+		province = ModelBinder.toProvinceChoice(
 				new JsonObject(
 						new JsonPair("other", "johnnuyland")));
 		Assert.assertEquals("johnnuyland", province.getValue());
 
-		province = ModelBinder.toChoice(
+		province = ModelBinder.toProvinceChoice(
 				new JsonObject());
 		Assert.assertNull(province.getValue());
 	}
@@ -241,7 +241,8 @@ public class ModelBinderTests {
 	public void testBindLocationDetails() throws JSONException {
 		JsonObject json = new JsonObject(
 				new JsonPair("locationId", "/locations/Loc1"),
-				new JsonPair("organizationId", "/organizations/Org1"),
+				new JsonPair("organization", new JsonObject(
+						new JsonPair("organizationId", "/organizations/Org1"))),
 				new JsonPair("reference", "L1"),
 				new JsonPair("status", "active"),
 				new JsonPair("displayName", "My New Loc"),

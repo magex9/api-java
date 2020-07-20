@@ -14,6 +14,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 import ca.magex.crm.graphql.model.GraphQLRequest;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
@@ -126,14 +127,24 @@ public class GraphQLClient {
 						throw new GraphQLClientException("Null data returned without Error");
 					}
 					return (T) data.get(queryName);
-				} else {
-					LoggerFactory.getLogger(getClass()).error(errors.toString());
-					throw new GraphQLClientException(errors.toString());
+				} else if (errors.size() == 1) {
+					/* check for specific exceptions handled on the server */
+					String message = errors.getObject(0).getString("message");
+					/* look for an ItemNotFoundException */
+					if (StringUtils.startsWith(message, "Item not found: ")) {
+						throw new ItemNotFoundException(message.substring(16));
+					}
 				}
+				
+				LoggerFactory.getLogger(getClass()).error(errors.toString());
+				throw new GraphQLClientException(errors.toString());				
 			}
 			else {
 				throw new GraphQLClientException("Error performing graphql query " + queryName + ", " + response.getStatusCode().getReasonPhrase());
 			}
+		}
+		catch(ItemNotFoundException e) {
+			throw e;
 		}
 		catch(Exception e) {
 			throw new GraphQLClientException("Unable to parse response", e);
