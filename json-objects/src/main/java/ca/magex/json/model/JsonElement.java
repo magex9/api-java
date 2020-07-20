@@ -10,6 +10,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.LoggerFactory;
 
 public class JsonElement {
 	
@@ -52,8 +53,11 @@ public class JsonElement {
 			return new JsonText(((LocalDate)el).format(DateTimeFormatter.ISO_DATE));
 		} else if (el instanceof LocalDateTime) {
 			return new JsonText(((LocalDateTime)el).format(DateTimeFormatter.ISO_DATE_TIME));
+		} else {
+			LoggerFactory.getLogger(JsonElement.class).warn("Found unknown type '" + el.getClass() + "' relying on toString method");
+			return new JsonText(el.toString());
 		}
-		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
+//		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
 	}
 	
 	public static Object unwrap(Object el) {

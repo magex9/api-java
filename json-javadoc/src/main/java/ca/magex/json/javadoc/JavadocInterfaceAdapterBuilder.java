@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -22,11 +24,11 @@ public class JavadocInterfaceAdapterBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(JavadocSlf4jDecoratorBuilder.class);
 
-	public static void build(String description, File sourceDir, List<String> interfaces, File adapterFile, String adapterPackage, String adapterClass) throws IOException {
+	public static void build(String description, File sourceDir, List<String> interfaces, List<String> passiveInterfaces, File adapterFile, String adapterPackage, String adapterClass) throws IOException {
 		logger.info("Building adapters for \"" + interfaces.stream().collect(Collectors.joining(", ")) + "\" from " + sourceDir.getAbsolutePath());
 		if (!sourceDir.isDirectory())
 			throw new FileNotFoundException("Could not find source directory: " + sourceDir.getAbsolutePath());
-		JsonObject docs = JsondocBuilder.processDirectory(sourceDir);
+		JsonObject docs = JsondocBuilder.processDirectory(sourceDir); 
 		
 		FormattedStringBuilder sb = new FormattedStringBuilder();
 		sb.append("package " + adapterPackage + ";");
@@ -36,7 +38,7 @@ public class JavadocInterfaceAdapterBuilder {
 		sb.append(" * ");
 		sb.append(" * " + description);
 		sb.append(" */");
-		sb.indent("public class " + adapterClass + " implements " + interfaces.stream().collect(Collectors.joining(", ")) + " {");
+		sb.indent("public class " + adapterClass + " implements " + Stream.concat(interfaces.stream(), passiveInterfaces.stream()).collect(Collectors.joining(", ")) + " {");
 		sb.append("");
 		for (String iface : interfaces) {
 			sb.append("protected " + iface + " " + variable(iface) + ";");
@@ -62,7 +64,7 @@ public class JavadocInterfaceAdapterBuilder {
 		return name.substring(0, 1).toLowerCase() + name.substring(1);
 	}
 	
-	private static void buildMethods(FormattedStringBuilder sb, JsonObject docs, String iface) {
+	private static void buildMethods(FormattedStringBuilder sb, JsonObject docs, String iface) {		
 		for (JsonObject method : docs.getObject(iface).getArray("methods", JsonObject.class)) {
 			buildMethod(sb, docs.getObject(iface), method);
 		}

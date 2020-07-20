@@ -1,10 +1,16 @@
 package ca.magex.json.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ca.magex.json.util.FormattedStringBuilder;
@@ -136,6 +142,7 @@ public class JsonElementTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testCastInvalid() throws Exception {
 		try {
 			JsonElement.cast(new Object());
