@@ -12,10 +12,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
-import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmConfigurationService;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.graphql.client.GraphQLClient;
 import ca.magex.crm.graphql.client.service.GraphQLLocationService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
@@ -38,10 +36,10 @@ public class GraphQLLocationServiceTests extends AbstractLocationServiceTests {
 	
 	@Autowired Crm crm;
 	
-	private CrmServicesAdapter remoteServicesAdapter = null;
+	private CrmLocationService remoteServicesAdapter = null;
 	
 	@Override
-	protected CrmConfigurationService config() {
+	protected Crm config() {
 		return crm;
 	}
 	
@@ -51,7 +49,7 @@ public class GraphQLLocationServiceTests extends AbstractLocationServiceTests {
 	}
 	
 	@Override
-	protected CrmServices crmServices() {
+	protected CrmLocationService locations() {
 		return remoteServicesAdapter;
 	}
 		
@@ -63,6 +61,6 @@ public class GraphQLLocationServiceTests extends AbstractLocationServiceTests {
 		GraphQLClient client = new GraphQLClient(
 				"http://localhost:" + randomPort + "/crm/graphql",
 				"/organization-service-queries.properties");		
-		remoteServicesAdapter = new CrmServicesAdapter(crm, crm, crm, new GraphQLLocationService(client), crm, crm);
+		remoteServicesAdapter = new GraphQLLocationService(client);
 	}
 }

@@ -7,7 +7,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.test.AbstractPersonServiceTests;
 import ca.magex.crm.test.config.BasicTestConfig;
@@ -20,12 +19,12 @@ public class BasicPersonServiceTests extends AbstractPersonServiceTests {
 	@Autowired private CrmAuthenticationService auth;
 	
 	@Override
-	protected CrmConfigurationService config() {
+	protected Crm config() {
 		return crm; // use our default crm to configure the system for tests
 	}
 	
 	@Override
-	protected CrmServices crmServices() {
+	protected CrmServices persons() {
 		return crm;
 	}
 	

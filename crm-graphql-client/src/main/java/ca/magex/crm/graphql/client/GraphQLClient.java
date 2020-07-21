@@ -2,6 +2,7 @@ package ca.magex.crm.graphql.client;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -14,14 +15,21 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.id.IdentifierFactory;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.utils.StringEscapeUtils;
 import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 import ca.magex.crm.graphql.model.GraphQLRequest;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
 /**
@@ -128,21 +136,46 @@ public class GraphQLClient {
 						throw new GraphQLClientException("Null data returned without Error");
 					}
 					return (T) data.get(queryName);
-				} else if (errors.size() == 1) {
-					/* check for specific exceptions handled on the server */
-					String message = errors.getObject(0).getString("message");
-					/* look for an ItemNotFoundException */
-					if (StringUtils.startsWith(message, "Item not found: ")) {
-						throw new ItemNotFoundException(message.substring(16));
+				}
+				/* parse the errors and see what came back */
+				List<Message> validationMessages = new ArrayList<>();
+				String validationMessageText = null;
+				for (JsonElement value : errors.values()) {
+					JsonObject error = (JsonObject) value;
+					if (StringUtils.equals(error.getString("errorType"), "ValidationError")) {
+						JsonObject jsonError = new JsonObject(StringEscapeUtils.unescapeJson(error.getString("message")));
+						validationMessageText = jsonError.getString("originalMessage", "");
+						JsonObject validationMessage = new JsonObject(jsonError.getString("validationMessage"));
+						JsonObject reason = validationMessage.getObject("reason", new JsonObject());
+						Message m = new Message(
+								IdentifierFactory.forId(validationMessage.getString("identifier", "")),
+								new MessageTypeIdentifier(validationMessage.getString("type")), 
+								validationMessage.getString("path", ""), 
+								validationMessage.getString("value", ""), 
+								StringUtils.isNotBlank(reason.getString("identifier", "")) ? 
+										new Choice<>(IdentifierFactory.forId(reason.getString("identifier"))) : 
+										new Choice<>(reason.getString("other", "")));
+						validationMessages.add(m);
 					}
-					/* look for a duplicate item found exception */
-					if (StringUtils.startsWith(message, "Duplicate item found: ")) {
-						throw new DuplicateItemFoundException(message.substring(22));
+					else {
+						/* check for specific exceptions handled on the server */
+						String message = errors.getObject(0).getString("message");
+						/* look for an ItemNotFoundException */
+						if (StringUtils.startsWith(message, "Item not found: ")) {
+							throw new ItemNotFoundException(message.substring(16));
+						}
+						/* look for a duplicate item found exception */
+						if (StringUtils.startsWith(message, "Duplicate item found: ")) {
+							throw new DuplicateItemFoundException(message.substring(22));
+						}
+						/* look for a permission denied exception */
+						if (StringUtils.startsWith(message, "Permission denied: ")) {
+							throw new PermissionDeniedException(message.substring(19));
+						}
 					}
-					/* look for a permission denied exception */
-					if (StringUtils.startsWith(message, "Permission denied: ")) {
-						throw new PermissionDeniedException(message.substring(19));
-					}				
+				}
+				if (validationMessages.size() > 0) {
+					throw new BadRequestException(validationMessageText.replace("Bad Request: ", ""), validationMessages);
 				}
 
 				LoggerFactory.getLogger(getClass()).error(errors.toString());
@@ -150,7 +183,7 @@ public class GraphQLClient {
 			} else {
 				throw new GraphQLClientException("Error performing graphql query " + queryName + ", " + response.getStatusCode().getReasonPhrase());
 			}
-		} catch (ItemNotFoundException | DuplicateItemFoundException | PermissionDeniedException | GraphQLClientException e) {
+		} catch (ItemNotFoundException | DuplicateItemFoundException | PermissionDeniedException | GraphQLClientException | BadRequestException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new GraphQLClientException("Unable to parse response", e);

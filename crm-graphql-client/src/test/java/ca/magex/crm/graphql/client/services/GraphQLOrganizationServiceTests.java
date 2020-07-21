@@ -12,11 +12,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
-import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmConfigurationService;
-import ca.magex.crm.api.services.CrmOptionService;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.graphql.client.GraphQLClient;
 import ca.magex.crm.graphql.client.service.GraphQLOrganizationService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
@@ -39,15 +36,10 @@ public class GraphQLOrganizationServiceTests extends AbstractOrganizationService
 	
 	@Autowired Crm crm;
 	
-	private CrmServicesAdapter remoteServicesAdapter = null;	
+	private CrmOrganizationService remoteServicesAdapter = null;	
 	
 	@Override
-	protected CrmConfigurationService config() {
-		return crm;
-	}
-	
-	@Override
-	protected CrmOptionService options() {
+	protected Crm config() {
 		return crm;
 	}
 	
@@ -57,7 +49,7 @@ public class GraphQLOrganizationServiceTests extends AbstractOrganizationService
 	}
 	
 	@Override
-	protected CrmServices crmServices() {
+	protected CrmOrganizationService organizations() {
 		return remoteServicesAdapter;
 	}
 		
@@ -69,6 +61,6 @@ public class GraphQLOrganizationServiceTests extends AbstractOrganizationService
 		GraphQLClient client = new GraphQLClient(
 				"http://localhost:" + randomPort + "/crm/graphql",
 				"/organization-service-queries.properties");		
-		remoteServicesAdapter = new CrmServicesAdapter(crm, crm, new GraphQLOrganizationService(client), crm, crm, crm);
+		remoteServicesAdapter = new GraphQLOrganizationService(client);
 	}
 }

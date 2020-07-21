@@ -12,12 +12,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.graphql.client.GraphQLClient;
 import ca.magex.crm.graphql.client.service.GraphQLPersonService;
+import ca.magex.crm.graphql.client.service.GraphQLUserService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
-import ca.magex.crm.test.AbstractPersonServiceTests;
+import ca.magex.crm.test.AbstractUserServiceTests;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { GraphQLClientTestConfig.class })
@@ -26,7 +28,8 @@ import ca.magex.crm.test.AbstractPersonServiceTests;
 		CrmProfiles.CRM_NO_AUTH,
 		CrmProfiles.DEV
 })
-public class GraphQLPersonServiceTests extends AbstractPersonServiceTests {
+public class GraphQLUserServiceTests extends AbstractUserServiceTests {
+
 
 	@LocalServerPort private int randomPort;
 
@@ -36,7 +39,7 @@ public class GraphQLPersonServiceTests extends AbstractPersonServiceTests {
 
 	@Autowired Crm crm;
 
-	private CrmPersonService remoteServicesAdapter = null;
+	private CrmServicesAdapter remoteServicesAdapter = null;
 
 	@Override
 	protected Crm config() {
@@ -49,7 +52,7 @@ public class GraphQLPersonServiceTests extends AbstractPersonServiceTests {
 	}
 
 	@Override
-	protected CrmPersonService persons() {
+	protected CrmUserService users() {
 		return remoteServicesAdapter;
 	}
 
@@ -61,6 +64,6 @@ public class GraphQLPersonServiceTests extends AbstractPersonServiceTests {
 		GraphQLClient client = new GraphQLClient(
 				"http://localhost:" + randomPort + "/crm/graphql",
 				"/organization-service-queries.properties");
-		remoteServicesAdapter = new GraphQLPersonService(client);
+		remoteServicesAdapter = new CrmServicesAdapter(crm, crm, crm, crm, new GraphQLPersonService(client), new GraphQLUserService(client));
 	}
 }

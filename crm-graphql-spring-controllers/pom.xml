@@ -33,10 +33,15 @@
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ca.magex.json</groupId>
+			<artifactId>json-objects</artifactId>
 		</dependency>
 
 		<!-- TODO remove this starter and bring in just graphql libraries directly (this will break our logging though) -->
@@ -53,7 +58,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

@@ -85,6 +85,11 @@ input OptionFilter {
 }
 
 type Query {
+	# Option Queries
+	findOption(optionId: String!): Option
+	countOptions(filter: OptionFilter!): Int!
+	findOptions(filter: OptionFilter!, paging: PagingInput!): OptionPage!
+	
 	# Organization Queries 
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
@@ -104,14 +109,13 @@ type Query {
 	findUser(userId: String!): User
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
-	
-	# Option Queries
-	findOption(optionId: String!): Option
-	countOptions(filter: OptionFilter!): Int!
-	findOptions(filter: OptionFilter!, paging: PagingInput!): OptionPage!
 }
 
 type Mutation {
+	# Option Maintenance
+	createOption(type: String!, parentId: String, name: LocalizedInput!): Option
+	updateOption(optionId: String!, status: String, english: String, french: String): Option
+	
 	# Organization Maintenance 
 	createOrganization(displayName: String!, authenticationGroupIds: [String]!, businessGroupIds: [String]!): Organization
 	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, authenticationGroupIds: [String], businessGroupIds: [String]): Organization
@@ -129,10 +133,6 @@ type Mutation {
 	updateUser(userId: String!, status: String, authenticationRoles: [String]): User
 	resetUserPassword(userId: String!): String
 	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean
-	
-	# Option Maintenance
-	createOption(type: String!, parentId: String, name: LocalizedInput!): Option
-	updateOption(optionId: String!, status: String, english: String, french: String): Option
 }
 
 # Main Types
