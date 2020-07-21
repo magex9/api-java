@@ -33,7 +33,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		if (details == null) {
 			return null;
 		}
-		return repos.saveOrganizationDetails(details.withStatus(Status.ACTIVE));
+		return repos.saveOrganizationDetails(details.withStatus(Status.ACTIVE)).asSummary();
 	}
 
 	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
@@ -41,7 +41,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		if (details == null) {
 			return null;
 		}
-		return repos.saveOrganizationDetails(details.withStatus(Status.INACTIVE));
+		return repos.saveOrganizationDetails(details.withStatus(Status.INACTIVE)).asSummary();
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {

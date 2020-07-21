@@ -72,7 +72,7 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withStatus(Status.ACTIVE));
+		return repos.savePersonDetails(person.withStatus(Status.ACTIVE)).asSummary();
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withStatus(Status.INACTIVE));
+		return repos.savePersonDetails(person.withStatus(Status.INACTIVE)).asSummary();
 	}
 
 	@Override

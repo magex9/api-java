@@ -70,6 +70,10 @@ public class OrganizationsFilter implements CrmFilter<OrganizationDetails> {
 		return status;
 	}
 	
+	public String getStatusCode() {
+		return status == null ? null : status.getCode();
+	}
+	
 	public OrganizationsFilter withStatus(Status status) {
 		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
 	}

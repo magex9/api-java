@@ -98,24 +98,27 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testOrganizations() {
 		/* create */
-		OrganizationDetails o1 = crmServices().createOrganization("Maple Leafs", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("ORG")));
+		OrganizationDetails o1 = crmServices().createOrganization("Maple Leafs", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("IMIT")));
 		Assert.assertEquals("Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
 		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, crmServices().findOrganizationDetails(o1.getOrganizationId()));
-		OrganizationDetails o2 = crmServices().createOrganization("Senators", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("ORG")));
+		Assert.assertEquals(o1.asSummary(), crmServices().findOrganizationSummary(o1.getOrganizationId()));
+		OrganizationDetails o2 = crmServices().createOrganization("Senators", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("IMIT")));
 		Assert.assertEquals("Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
 		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, crmServices().findOrganizationDetails(o2.getOrganizationId()));
-		OrganizationDetails o3 = crmServices().createOrganization("Canadiens", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("ORG")));
+		Assert.assertEquals(o2.asSummary(), crmServices().findOrganizationSummary(o2.getOrganizationId()));
+		OrganizationDetails o3 = crmServices().createOrganization("Canadiens", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("IMIT")));
 		Assert.assertEquals("Canadiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
 		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertNull(o3.getMainLocationId());
 		Assert.assertEquals(o3, crmServices().findOrganizationDetails(o3.getOrganizationId()));
+		Assert.assertEquals(o3.asSummary(), crmServices().findOrganizationSummary(o3.getOrganizationId()));
 
 		/* update display name */
 		o1 = crmServices().updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");

@@ -30,39 +30,39 @@ import ca.magex.crm.test.AbstractPersonServiceTests;
 })
 public class GraphQLPersonServiceTests extends AbstractPersonServiceTests {
 
-@LocalServerPort private int randomPort;
-	
+	@LocalServerPort private int randomPort;
+
 	@MockBean PlatformTransactionManager txManager;
-	
+
 	@MockBean CrmAuthenticationService auth;
-	
+
 	@Autowired Crm crm;
-	
+
 	private CrmServicesAdapter remoteServicesAdapter = null;
-	
+
 	@Override
 	protected CrmConfigurationService config() {
 		return crm;
 	}
-	
+
 	@Override
 	protected CrmAuthenticationService auth() {
 		return auth;
 	}
-	
+
 	@Override
 	protected CrmServices crmServices() {
 		return remoteServicesAdapter;
 	}
-		
+
 	@Before
 	@Override
-	public void setup() {	
-		super.setup();		
+	public void setup() {
+		super.setup();
 		/* setup our remote graphql service that is to be tested */
 		GraphQLClient client = new GraphQLClient(
 				"http://localhost:" + randomPort + "/crm/graphql",
-				"/organization-service-queries.properties");		
+				"/organization-service-queries.properties");
 		remoteServicesAdapter = new CrmServicesAdapter(crm, crm, crm, crm, new GraphQLPersonService(client), crm);
 	}
 }

@@ -55,7 +55,8 @@ public class BasicPersonRepository implements CrmPersonRepository {
 
 	@Override
 	public PersonSummary findPersonSummary(PersonIdentifier personId) {
-		return findPersonDetails(personId);
+		PersonDetails personDetails = findPersonDetails(personId);
+		return personDetails == null ? null : personDetails.asSummary();
 	}
 
 	@Override
