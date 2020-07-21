@@ -99,6 +99,10 @@ public class UsersFilter implements CrmFilter<UserDetails> {
 		return status;
 	}
 	
+	public String getStatusCode() {
+		return status == null ? null : status.getCode();
+	}
+	
 	public UsersFilter withStatus(Status status) {
 		return new UsersFilter(organizationId, personId, status, username, authenticationRoleId);
 	}

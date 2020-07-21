@@ -37,7 +37,7 @@ public class BasicUserService implements CrmUserService {
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUserDetails(user.withStatus(Status.ACTIVE));
+		return repos.saveUserDetails(user.withStatus(Status.ACTIVE)).asSummary();
 	}
 
 	@Override
@@ -46,12 +46,16 @@ public class BasicUserService implements CrmUserService {
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUserDetails(user.withStatus(Status.INACTIVE));
+		return repos.saveUserDetails(user.withStatus(Status.INACTIVE)).asSummary();
 	}
 
 	@Override
 	public UserSummary findUserSummary(UserIdentifier userId) {
-		return repos.findUserDetails(userId).asSummary();
+		UserDetails user = repos.findUserDetails(userId);
+		if (user == null) {
+			return null;
+		}
+		return user.asSummary();
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import ca.magex.crm.graphql.exceptions.GraphQLClientException;
 import ca.magex.crm.graphql.model.GraphQLRequest;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
+import ca.magex.json.ParserException;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -128,7 +129,8 @@ public class GraphQLClient {
 									.body(request),
 					String.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
-				JsonObject json = new JsonObject(response.getBody());
+				String responseBody = response.getBody();
+				JsonObject json = new JsonObject(responseBody);
 				JsonArray errors = json.getArray("errors");
 				if (errors.size() == 0) {
 					JsonObject data = json.getObject("data");
@@ -143,19 +145,25 @@ public class GraphQLClient {
 				for (JsonElement value : errors.values()) {
 					JsonObject error = (JsonObject) value;
 					if (StringUtils.equals(error.getString("errorType"), "ValidationError")) {
-						JsonObject jsonError = new JsonObject(StringEscapeUtils.unescapeJson(error.getString("message")));
-						validationMessageText = jsonError.getString("originalMessage", "");
-						JsonObject validationMessage = new JsonObject(jsonError.getString("validationMessage"));
-						JsonObject reason = validationMessage.getObject("reason", new JsonObject());
-						Message m = new Message(
-								IdentifierFactory.forId(validationMessage.getString("identifier", "")),
-								new MessageTypeIdentifier(validationMessage.getString("type")), 
-								validationMessage.getString("path", ""), 
-								validationMessage.getString("value", ""), 
-								StringUtils.isNotBlank(reason.getString("identifier", "")) ? 
-										new Choice<>(IdentifierFactory.forId(reason.getString("identifier"))) : 
-										new Choice<>(reason.getString("other", "")));
-						validationMessages.add(m);
+						/* try to parse this into a validation message */
+						try {
+							JsonObject jsonError = new JsonObject(StringEscapeUtils.unescapeJson(error.getString("message")));
+							validationMessageText = jsonError.getString("originalMessage", "");
+							JsonObject validationMessage = new JsonObject(jsonError.getString("validationMessage"));
+							JsonObject reason = validationMessage.getObject("reason", new JsonObject());
+							Message m = new Message(
+									IdentifierFactory.forId(validationMessage.getString("identifier", "")),
+									new MessageTypeIdentifier(validationMessage.getString("type")), 
+									validationMessage.getString("path", ""), 
+									validationMessage.getString("value", ""), 
+									StringUtils.isNotBlank(reason.getString("identifier", "")) ? 
+											new Choice<>(IdentifierFactory.forId(reason.getString("identifier"))) : 
+											new Choice<>(reason.getString("other", "")));
+							validationMessages.add(m);
+						}
+						catch(ParserException pe) {
+							throw new GraphQLClientException(error.getString("message"));
+						}
 					}
 					else {
 						/* check for specific exceptions handled on the server */

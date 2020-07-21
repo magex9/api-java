@@ -136,7 +136,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, users().findUserByUsername(u1.getUsername()));
 		Assert.assertEquals(u1, users().findUserDetails(u1.getUserId()));
-		Assert.assertEquals(u1, users().disableUser(u1.getUserId()));
+		Assert.assertEquals(u1.asSummary(), users().disableUser(u1.getUserId()));
 
 		/* enable user */
 		u1 = users().findUserDetails(users().enableUser(u1.getUserId()).getUserId());
@@ -146,7 +146,7 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, users().findUserByUsername(u1.getUsername()));
 		Assert.assertEquals(u1, users().findUserDetails(u1.getUserId()));
-		Assert.assertEquals(u1, users().enableUser(u1.getUserId()));
+		Assert.assertEquals(u1.asSummary(), users().enableUser(u1.getUserId()));
 
 		/* count users */
 		Assert.assertEquals(4, users().countUsers(new UsersFilter(null, null, null, null, null)));

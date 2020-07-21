@@ -129,8 +129,8 @@ type Mutation {
 	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoleIds: [String], status: String): Person
 		
 	# User Maintenance
-	createUser(personId: String!, username: String!, authenticationRoles: [String]!): User
-	updateUser(userId: String!, status: String, authenticationRoles: [String]): User
+	createUser(personId: String!, username: String!, authenticationRoleIds: [String]!): User
+	updateUser(userId: String!, status: String, authenticationRoleIds: [String]): User
 	resetUserPassword(userId: String!): String
 	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean
 }

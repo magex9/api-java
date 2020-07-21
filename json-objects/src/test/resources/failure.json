@@ -1,0 +1,1075 @@
+{
+	"errors": [
+		{
+			"cause": null,
+			"stackTrace": [
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "coerceVariableValues",
+					"fileName": "ValuesResolver.java",
+					"lineNumber": 66,
+					"className": "graphql.execution.ValuesResolver",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "execute",
+					"fileName": "Execution.java",
+					"lineNumber": 73,
+					"className": "graphql.execution.Execution",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "execute",
+					"fileName": "GraphQL.java",
+					"lineNumber": 623,
+					"className": "graphql.GraphQL",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "parseValidateAndExecute",
+					"fileName": "GraphQL.java",
+					"lineNumber": 556,
+					"className": "graphql.GraphQL",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "executeAsync",
+					"fileName": "GraphQL.java",
+					"lineNumber": 520,
+					"className": "graphql.GraphQL",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "execute",
+					"fileName": "GraphQL.java",
+					"lineNumber": 450,
+					"className": "graphql.GraphQL",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doQuery",
+					"fileName": "GraphQLController.java",
+					"lineNumber": 95,
+					"className": "ca.magex.crm.graphql.controller.GraphQLController",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": null,
+					"moduleName": "java.base",
+					"moduleVersion": "11",
+					"methodName": "invoke0",
+					"fileName": "NativeMethodAccessorImpl.java",
+					"lineNumber": -2,
+					"className": "jdk.internal.reflect.NativeMethodAccessorImpl",
+					"nativeMethod": true
+				},
+				{
+					"classLoaderName": null,
+					"moduleName": "java.base",
+					"moduleVersion": "11",
+					"methodName": "invoke",
+					"fileName": "NativeMethodAccessorImpl.java",
+					"lineNumber": 62,
+					"className": "jdk.internal.reflect.NativeMethodAccessorImpl",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": null,
+					"moduleName": "java.base",
+					"moduleVersion": "11",
+					"methodName": "invoke",
+					"fileName": "DelegatingMethodAccessorImpl.java",
+					"lineNumber": 43,
+					"className": "jdk.internal.reflect.DelegatingMethodAccessorImpl",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": null,
+					"moduleName": "java.base",
+					"moduleVersion": "11",
+					"methodName": "invoke",
+					"fileName": "Method.java",
+					"lineNumber": 566,
+					"className": "java.lang.reflect.Method",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doInvoke",
+					"fileName": "InvocableHandlerMethod.java",
+					"lineNumber": 190,
+					"className": "org.springframework.web.method.support.InvocableHandlerMethod",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "invokeForRequest",
+					"fileName": "InvocableHandlerMethod.java",
+					"lineNumber": 138,
+					"className": "org.springframework.web.method.support.InvocableHandlerMethod",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "invokeAndHandle",
+					"fileName": "ServletInvocableHandlerMethod.java",
+					"lineNumber": 105,
+					"className": "org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "invokeHandlerMethod",
+					"fileName": "RequestMappingHandlerAdapter.java",
+					"lineNumber": 879,
+					"className": "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handleInternal",
+					"fileName": "RequestMappingHandlerAdapter.java",
+					"lineNumber": 793,
+					"className": "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "AbstractHandlerMethodAdapter.java",
+					"lineNumber": 87,
+					"className": "org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doDispatch",
+					"fileName": "DispatcherServlet.java",
+					"lineNumber": 1040,
+					"className": "org.springframework.web.servlet.DispatcherServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doService",
+					"fileName": "DispatcherServlet.java",
+					"lineNumber": 943,
+					"className": "org.springframework.web.servlet.DispatcherServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "processRequest",
+					"fileName": "FrameworkServlet.java",
+					"lineNumber": 1006,
+					"className": "org.springframework.web.servlet.FrameworkServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doPost",
+					"fileName": "FrameworkServlet.java",
+					"lineNumber": 909,
+					"className": "org.springframework.web.servlet.FrameworkServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "service",
+					"fileName": "HttpServlet.java",
+					"lineNumber": 665,
+					"className": "javax.servlet.http.HttpServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "service",
+					"fileName": "FrameworkServlet.java",
+					"lineNumber": 883,
+					"className": "org.springframework.web.servlet.FrameworkServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "service",
+					"fileName": "HttpServlet.java",
+					"lineNumber": 750,
+					"className": "javax.servlet.http.HttpServlet",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "ServletHolder.java",
+					"lineNumber": 763,
+					"className": "org.eclipse.jetty.servlet.ServletHolder",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1631,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "WebSocketUpgradeFilter.java",
+					"lineNumber": 226,
+					"className": "org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 113,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 320,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "invoke",
+					"fileName": "FilterSecurityInterceptor.java",
+					"lineNumber": 126,
+					"className": "org.springframework.security.web.access.intercept.FilterSecurityInterceptor",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterSecurityInterceptor.java",
+					"lineNumber": 90,
+					"className": "org.springframework.security.web.access.intercept.FilterSecurityInterceptor",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ExceptionTranslationFilter.java",
+					"lineNumber": 118,
+					"className": "org.springframework.security.web.access.ExceptionTranslationFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "SessionManagementFilter.java",
+					"lineNumber": 137,
+					"className": "org.springframework.security.web.session.SessionManagementFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "AnonymousAuthenticationFilter.java",
+					"lineNumber": 111,
+					"className": "org.springframework.security.web.authentication.AnonymousAuthenticationFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "SecurityContextHolderAwareRequestFilter.java",
+					"lineNumber": 158,
+					"className": "org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "RequestCacheAwareFilter.java",
+					"lineNumber": 63,
+					"className": "org.springframework.security.web.savedrequest.RequestCacheAwareFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "JwtRequestFilter.java",
+					"lineNumber": 63,
+					"className": "ca.magex.crm.spring.security.jwt.JwtRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "LogoutFilter.java",
+					"lineNumber": 116,
+					"className": "org.springframework.security.web.authentication.logout.LogoutFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doHeadersAfter",
+					"fileName": "HeaderWriterFilter.java",
+					"lineNumber": 92,
+					"className": "org.springframework.security.web.header.HeaderWriterFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "HeaderWriterFilter.java",
+					"lineNumber": 77,
+					"className": "org.springframework.security.web.header.HeaderWriterFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "SecurityContextPersistenceFilter.java",
+					"lineNumber": 105,
+					"className": "org.springframework.security.web.context.SecurityContextPersistenceFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "WebAsyncManagerIntegrationFilter.java",
+					"lineNumber": 56,
+					"className": "org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 334,
+					"className": "org.springframework.security.web.FilterChainProxy$VirtualFilterChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 215,
+					"className": "org.springframework.security.web.FilterChainProxy",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "FilterChainProxy.java",
+					"lineNumber": 178,
+					"className": "org.springframework.security.web.FilterChainProxy",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "invokeDelegate",
+					"fileName": "DelegatingFilterProxy.java",
+					"lineNumber": 358,
+					"className": "org.springframework.web.filter.DelegatingFilterProxy",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "DelegatingFilterProxy.java",
+					"lineNumber": 271,
+					"className": "org.springframework.web.filter.DelegatingFilterProxy",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "RequestContextFilter.java",
+					"lineNumber": 100,
+					"className": "org.springframework.web.filter.RequestContextFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "FormContentFilter.java",
+					"lineNumber": 93,
+					"className": "org.springframework.web.filter.FormContentFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "WebMvcMetricsFilter.java",
+					"lineNumber": 93,
+					"className": "org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilterInternal",
+					"fileName": "CharacterEncodingFilter.java",
+					"lineNumber": 201,
+					"className": "org.springframework.web.filter.CharacterEncodingFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "OncePerRequestFilter.java",
+					"lineNumber": 119,
+					"className": "org.springframework.web.filter.OncePerRequestFilter",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doFilter",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 1618,
+					"className": "org.eclipse.jetty.servlet.ServletHandler$CachedChain",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doHandle",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 549,
+					"className": "org.eclipse.jetty.servlet.ServletHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "ScopedHandler.java",
+					"lineNumber": 143,
+					"className": "org.eclipse.jetty.server.handler.ScopedHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "SecurityHandler.java",
+					"lineNumber": 602,
+					"className": "org.eclipse.jetty.security.SecurityHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "HandlerWrapper.java",
+					"lineNumber": 127,
+					"className": "org.eclipse.jetty.server.handler.HandlerWrapper",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "nextHandle",
+					"fileName": "ScopedHandler.java",
+					"lineNumber": 235,
+					"className": "org.eclipse.jetty.server.handler.ScopedHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doHandle",
+					"fileName": "SessionHandler.java",
+					"lineNumber": 1610,
+					"className": "org.eclipse.jetty.server.session.SessionHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "nextHandle",
+					"fileName": "ScopedHandler.java",
+					"lineNumber": 233,
+					"className": "org.eclipse.jetty.server.handler.ScopedHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doHandle",
+					"fileName": "ContextHandler.java",
+					"lineNumber": 1369,
+					"className": "org.eclipse.jetty.server.handler.ContextHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "nextScope",
+					"fileName": "ScopedHandler.java",
+					"lineNumber": 188,
+					"className": "org.eclipse.jetty.server.handler.ScopedHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doScope",
+					"fileName": "ServletHandler.java",
+					"lineNumber": 489,
+					"className": "org.eclipse.jetty.servlet.ServletHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doScope",
+					"fileName": "SessionHandler.java",
+					"lineNumber": 1580,
+					"className": "org.eclipse.jetty.server.session.SessionHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "nextScope",
+					"fileName": "ScopedHandler.java",
+					"lineNumber": 186,
+					"className": "org.eclipse.jetty.server.handler.ScopedHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doScope",
+					"fileName": "ContextHandler.java",
+					"lineNumber": 1284,
+					"className": "org.eclipse.jetty.server.handler.ContextHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "ScopedHandler.java",
+					"lineNumber": 141,
+					"className": "org.eclipse.jetty.server.handler.ScopedHandler",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "HandlerWrapper.java",
+					"lineNumber": 127,
+					"className": "org.eclipse.jetty.server.handler.HandlerWrapper",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "Server.java",
+					"lineNumber": 501,
+					"className": "org.eclipse.jetty.server.Server",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "lambda$handle$1",
+					"fileName": "HttpChannel.java",
+					"lineNumber": 383,
+					"className": "org.eclipse.jetty.server.HttpChannel",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "dispatch",
+					"fileName": "HttpChannel.java",
+					"lineNumber": 556,
+					"className": "org.eclipse.jetty.server.HttpChannel",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "handle",
+					"fileName": "HttpChannel.java",
+					"lineNumber": 375,
+					"className": "org.eclipse.jetty.server.HttpChannel",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "onFillable",
+					"fileName": "HttpConnection.java",
+					"lineNumber": 273,
+					"className": "org.eclipse.jetty.server.HttpConnection",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "succeeded",
+					"fileName": "AbstractConnection.java",
+					"lineNumber": 311,
+					"className": "org.eclipse.jetty.io.AbstractConnection$ReadCallback",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "fillable",
+					"fileName": "FillInterest.java",
+					"lineNumber": 103,
+					"className": "org.eclipse.jetty.io.FillInterest",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "run",
+					"fileName": "ChannelEndPoint.java",
+					"lineNumber": 104,
+					"className": "org.eclipse.jetty.io.ChannelEndPoint$1",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "runTask",
+					"fileName": "EatWhatYouKill.java",
+					"lineNumber": 336,
+					"className": "org.eclipse.jetty.util.thread.strategy.EatWhatYouKill",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "doProduce",
+					"fileName": "EatWhatYouKill.java",
+					"lineNumber": 313,
+					"className": "org.eclipse.jetty.util.thread.strategy.EatWhatYouKill",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "tryProduce",
+					"fileName": "EatWhatYouKill.java",
+					"lineNumber": 171,
+					"className": "org.eclipse.jetty.util.thread.strategy.EatWhatYouKill",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "produce",
+					"fileName": "EatWhatYouKill.java",
+					"lineNumber": 135,
+					"className": "org.eclipse.jetty.util.thread.strategy.EatWhatYouKill",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "runJob",
+					"fileName": "QueuedThreadPool.java",
+					"lineNumber": 806,
+					"className": "org.eclipse.jetty.util.thread.QueuedThreadPool",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": "app",
+					"moduleName": null,
+					"moduleVersion": null,
+					"methodName": "run",
+					"fileName": "QueuedThreadPool.java",
+					"lineNumber": 938,
+					"className": "org.eclipse.jetty.util.thread.QueuedThreadPool$Runner",
+					"nativeMethod": false
+				},
+				{
+					"classLoaderName": null,
+					"moduleName": "java.base",
+					"moduleVersion": "11",
+					"methodName": "run",
+					"fileName": "Thread.java",
+					"lineNumber": 834,
+					"className": "java.lang.Thread",
+					"nativeMethod": false
+				}
+			],
+			"locations": [
+				{
+					"line": 1,
+					"column": 49,
+					"sourceName": null
+				}
+			],
+			"errorType": "ValidationError",
+			"message": "Variable 'authenticationRoles' has coerced Null value for NonNull type '[String]!'",
+			"path": null,
+			"extensions": null,
+			"suppressed": [],
+			"localizedMessage": "Variable 'authenticationRoles' has coerced Null value for NonNull type '[String]!'"
+		}
+	],
+	"data": null,
+	"extensions": null,
+	"dataPresent": false
+}

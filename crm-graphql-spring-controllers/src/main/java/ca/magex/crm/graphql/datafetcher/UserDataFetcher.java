@@ -35,7 +35,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			return crm.createUser(
 					new PersonIdentifier((String) environment.getArgument("personId")),
 					environment.getArgument("username"),
-					extractAuthenticationRoles(environment, "authenticationRoles"));
+					extractAuthenticationRoles(environment, "authenticationRoleIds"));
 		};
 	}
 
@@ -86,8 +86,8 @@ public class UserDataFetcher extends AbstractDataFetcher {
 					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
-			if (environment.getArgument("authenticationRoles") != null) {
-				List<AuthenticationRoleIdentifier> authenticationRoles = extractAuthenticationRoles(environment, "authenticationRoles");
+			if (environment.getArgument("authenticationRoleIds") != null) {
+				List<AuthenticationRoleIdentifier> authenticationRoles = extractAuthenticationRoles(environment, "authenticationRoleIds");
 				if (!user.getAuthenticationRoleIds().containsAll(authenticationRoles) || !authenticationRoles.containsAll(user.getAuthenticationRoleIds())) {
 					user = crm.updateUserRoles(userId, authenticationRoles);
 				}

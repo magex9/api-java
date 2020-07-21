@@ -45,8 +45,10 @@ import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonBoolean;
 import ca.magex.json.model.JsonNumber;
 import ca.magex.json.model.JsonObject;
+import ca.magex.json.model.JsonText;
 
 /**
  * Binds the JSON Responses back to the CRM Model Objects
@@ -64,6 +66,24 @@ public class ModelBinder {
 	 */
 	public static long toLong(JsonNumber number) {
 		return number.value().longValue();
+	}
+	
+	/**
+	 * Binds to a String value
+	 * @param text
+	 * @return
+	 */
+	public static String toString(JsonText text) {
+		return text.value();
+	}
+	
+	/**
+	 * Binds to a Boolean value
+	 * @param bool
+	 * @return
+	 */
+	public static Boolean toBoolean(JsonBoolean bool) {
+		return bool.value();
 	}
 
 	/**

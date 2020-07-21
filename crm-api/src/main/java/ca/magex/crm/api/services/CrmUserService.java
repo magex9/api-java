@@ -38,7 +38,7 @@ public interface CrmUserService {
 
 	UserSummary disableUser(UserIdentifier userId);
 
-	UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles);
+	UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds);
 
 	boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword);
 

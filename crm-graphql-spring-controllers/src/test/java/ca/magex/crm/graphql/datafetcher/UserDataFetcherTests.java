@@ -54,7 +54,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 	public void userDataFetching() throws Exception {
 		JSONObject user = execute(
 				"createUser",
-				"mutation { createUser(personId: %s, username: %s, authenticationRoles: %s) { " + 
+				"mutation { createUser(personId: %s, username: %s, authenticationRoleIds: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				managerId,
 				"jbigford",
@@ -170,7 +170,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* update roles - no change */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, authenticationRoles: %s) { " + 
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				Arrays.asList("SYS/ADMIN", "CRM/ADMIN"));
@@ -190,7 +190,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* update roles - remove role */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, authenticationRoles: %s) { " + 
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				Arrays.asList("SYS/ADMIN"));
@@ -207,7 +207,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* update roles - change role */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, authenticationRoles: %s) { " + 
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				Arrays.asList("CRM/ADMIN"));
@@ -224,7 +224,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* update roles - reset roles */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, authenticationRoles: %s) { " + 
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				Arrays.asList("SYS/ADMIN", "CRM/ADMIN"));

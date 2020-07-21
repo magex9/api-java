@@ -18,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.magex.json.ParserException;
+
 public class JsonParser {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JsonParser.class);
@@ -140,10 +142,10 @@ public class JsonParser {
 				index += 4;
 				return new JsonElement();
 			} else {
-				throw new RuntimeException("Unepxected base value at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Unepxected base value at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
-		throw new RuntimeException("Unable to parse empty text");
+		throw new ParserException("Unable to parse empty text");
 	}
 	
 	private JsonObject parseObject() {
@@ -158,10 +160,10 @@ public class JsonParser {
 			} else if (isQuote(c)) {
 				pairs.add(parsePair());
 			} else {
-				throw new RuntimeException("Expected a pair value at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Expected a pair value at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
-		throw new RuntimeException("Object not terminated");
+		throw new ParserException("Object not terminated");
 	}
 	
 	private JsonArray parseArray() {
@@ -201,10 +203,10 @@ public class JsonParser {
 				index += 4;
 				elements.add(new JsonElement());
 			} else {
-				throw new RuntimeException("Expected an element value at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Expected an element value at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
-		throw new RuntimeException("Object not terminated");
+		throw new ParserException("Object not terminated");
 	}
 	
 	private JsonPair parsePair() {
@@ -218,7 +220,7 @@ public class JsonParser {
 				key = parseKey();
 				break;
 			} else {
-				throw new RuntimeException("Expected a key at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Expected a key at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
 		while (index < length) {
@@ -229,7 +231,7 @@ public class JsonParser {
 				index++;
 				break;
 			} else {
-				throw new RuntimeException("Expected a key at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Expected a key at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
 		JsonElement value = parse();
@@ -247,10 +249,10 @@ public class JsonParser {
 				index++;
 				return sb.toString();
 			} else {
-				throw new RuntimeException("Expected a text at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Expected a text at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
-		throw new RuntimeException("String not terminated at: " + index + " (" + elipse(index) + ")");
+		throw new ParserException("String not terminated at: " + index + " (" + elipse(index) + ")");
 	}
 
 	private String parseString() {
@@ -267,10 +269,10 @@ public class JsonParser {
 				sb.append(c);
 				index++;
 			} else {
-				throw new RuntimeException("Expected a text at index: " + index + " (" + elipse(index) + ")");
+				throw new ParserException("Expected a text at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
-		throw new RuntimeException("String not terminated at: " + index + " (" + elipse(index) + ")");
+		throw new ParserException("String not terminated at: " + index + " (" + elipse(index) + ")");
 	}
 
 	private Number parseNumber() {
@@ -337,7 +339,7 @@ public class JsonParser {
 	}
 	
 	private boolean isDigit(char c) {
-		return (int)'0' <= c && c <= (int)'9';
+		return ((int)'0' <= c && c <= (int)'9') || c == '-';
 	}
 	
 	private boolean isLowercaseCharacter(char c) {
