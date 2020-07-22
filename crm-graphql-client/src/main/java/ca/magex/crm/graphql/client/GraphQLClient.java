@@ -59,7 +59,7 @@ public class GraphQLClient {
 		this.queries = new Properties();
 		this.restTemplate = new RestTemplate();
 		try {
-			try (InputStream in = CrmServicesGraphQLClientImpl.class.getResource(queryResource).openStream()) {
+			try (InputStream in = getClass().getResource(queryResource).openStream()) {
 				this.queries.load(in);
 			}
 		} catch (Exception e) {

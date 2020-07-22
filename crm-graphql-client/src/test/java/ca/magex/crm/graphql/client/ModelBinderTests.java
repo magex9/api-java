@@ -223,7 +223,8 @@ public class ModelBinderTests {
 	public void testBindLocationSummary() throws JSONException {
 		JsonObject json = new JsonObject(
 				new JsonPair("locationId", "/locations/Loc1"),
-				new JsonPair("organizationId", "/organizations/Org1"),
+				new JsonPair("organization", new JsonObject(
+						new JsonPair("organizationId", "/organizations/Org1"))),
 				new JsonPair("reference", "L1"),
 				new JsonPair("status", "active"),
 				new JsonPair("displayName", "My New Loc"));
@@ -271,7 +272,8 @@ public class ModelBinderTests {
 	public void testBindPersonSummary() {
 		JsonObject json = new JsonObject(
 				new JsonPair("personId", "/persons/Per1"),
-				new JsonPair("organizationId", "/organizations/Org1"),
+				new JsonPair("organization", new JsonObject(
+						new JsonPair("organizationId", "/organizations/Org1"))),
 				new JsonPair("status", "active"),
 				new JsonPair("displayName", "Michael"));
 		
@@ -286,7 +288,8 @@ public class ModelBinderTests {
 	public void testBindPersonDetails() {
 		JsonObject json = new JsonObject(
 				new JsonPair("personId", "/persons/Per1"),
-				new JsonPair("organizationId", "/organizations/Org1"),
+				new JsonPair("organization", new JsonObject(
+						new JsonPair("organizationId", "/organizations/Org1"))),
 				new JsonPair("status", "active"),
 				new JsonPair("displayName", "Michael"),
 				new JsonPair("legalName", new JsonObject(
