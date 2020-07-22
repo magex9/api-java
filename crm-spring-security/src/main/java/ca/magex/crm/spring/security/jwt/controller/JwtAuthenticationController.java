@@ -25,6 +25,7 @@ import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.spring.security.auth.AuthDetails;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.crm.spring.security.jwt.JwtTokenService;
+import ca.magex.json.ParserException;
 import ca.magex.json.model.JsonObject;
 import io.jsonwebtoken.JwtException;
 
@@ -69,7 +70,8 @@ public class JwtAuthenticationController {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 			return ResponseEntity.ok(new AuthDetails(username, expiration, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList())));
 		}		
-		catch(NoSuchElementException json) {
+		catch(NoSuchElementException | ParserException ex) {
+			LoggerFactory.getLogger(getClass()).warn("Error validating token: " + ex.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 		catch(JwtException jwt) {

@@ -8,7 +8,7 @@ public class CrmProfiles {
 	
 	// CRM Authentication Profile
 	public static final String CRM_AUTH                 = "CrmAuth";
-	public static final String CRM_NO_AUTH              = "CrmNoAuth";	
+	public static final String CRM_NO_AUTH              = "CrmNoAuth";
 	
 	// DEV Profile
 	public static final String DEV						= "Dev";

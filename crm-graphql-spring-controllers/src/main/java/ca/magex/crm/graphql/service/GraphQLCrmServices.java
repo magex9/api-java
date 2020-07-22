@@ -24,6 +24,7 @@ import graphql.execution.AsyncExecutionStrategy;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.SimpleDataFetcherExceptionHandler;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.PropertyDataFetcherHelper;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
@@ -91,6 +92,9 @@ public class GraphQLCrmServices {
 				.mutationExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
 				.subscriptionExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
 				.build();
+		
+		/* NOTE: this is required for spring development hot deploys or any other deployment where the classes are swapped at runtime (think jrebel, etc) */
+		PropertyDataFetcherHelper.clearReflectionCache();
 	}
 
 	/**
@@ -99,7 +103,7 @@ public class GraphQLCrmServices {
 	 * @return
 	 */
 	private RuntimeWiring buildRuntimeWiring() {
-		logger.info("Building GraphQL runtime wiring");
+		logger.info("Building GraphQL runtime wiring");		
 		return RuntimeWiring.newRuntimeWiring()
 				// organization data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
