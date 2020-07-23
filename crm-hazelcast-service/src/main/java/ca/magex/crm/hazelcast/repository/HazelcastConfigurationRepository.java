@@ -41,6 +41,12 @@ public class HazelcastConfigurationRepository implements CrmConfigurationReposit
 		}
 	}
 	
+
+	@Override
+	public void setInitialized() {
+		// TODO Auto-generated method stub
+	}
+	
 	/**
 	 * This method will ensure that this call will wait until the initialization is complete, if it has started
 	 * @param initMap

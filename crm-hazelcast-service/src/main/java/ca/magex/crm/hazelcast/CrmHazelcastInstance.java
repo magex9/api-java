@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -20,10 +19,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.transaction.HazelcastTransactionManager;
 
-import ca.magex.crm.api.CrmProfiles;
-
 @Configuration
-@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class CrmHazelcastInstance {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CrmHazelcastInstance.class);

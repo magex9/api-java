@@ -11,10 +11,7 @@ public class HazelcastRepositories extends CrmRepositoriesAdapter implements Crm
 	public HazelcastRepositories(XATransactionAwareHazelcastInstance hzInstance) {
 		super(
 				new HazelcastConfigurationRepository(hzInstance), 
-				null, //crmLookupRepository
-				null, //crmOptionRepository
-				null, //crmGroupRepository 
-				null, //crmRoleRepository
+				new HazelcastOptionRepository(hzInstance),
 				new HazelcastOrganizationRespository(hzInstance),
 				new HazelcastLocationRepository(hzInstance),
 				new HazelcastPersonRepository(hzInstance),

@@ -8,15 +8,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.hazelcast.config.HazelcastTestConfig;
-import ca.magex.crm.test.AbstractLocationServiceTests;
+import ca.magex.crm.test.AbstractOptionServiceTests;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { HazelcastTestConfig.class })
 @EnableTransactionManagement
-public class HazelcastLocationServiceTests extends AbstractLocationServiceTests {
-	
+public class HazelcastOptionServiceTests extends AbstractOptionServiceTests {
+
 	@Autowired private Crm crm;	
 	@Autowired private CrmAuthenticationService auth;
 	
@@ -26,12 +26,12 @@ public class HazelcastLocationServiceTests extends AbstractLocationServiceTests 
 	}
 	
 	@Override
-	protected CrmServices locations() {
-		return crm;
+	protected CrmAuthenticationService auth() {
+		return auth;
 	}
 	
 	@Override
-	protected CrmAuthenticationService auth() {
-		return auth;
+	protected CrmOptionService options() {
+		return crm;
 	}
 }

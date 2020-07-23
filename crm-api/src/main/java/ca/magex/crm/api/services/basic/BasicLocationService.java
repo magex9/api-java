@@ -45,7 +45,7 @@ public class BasicLocationService implements CrmLocationService {
 		if (loc == null) {
 			return null;
 		}
-		return repos.saveLocationDetails(loc.withStatus(Status.ACTIVE));
+		return repos.saveLocationDetails(loc.withStatus(Status.ACTIVE)).asSummary();
 	}
 
 	public LocationSummary disableLocation(LocationIdentifier locationId) {
@@ -53,7 +53,7 @@ public class BasicLocationService implements CrmLocationService {
 		if (loc == null) {
 			return null;
 		}
-		return repos.saveLocationDetails(loc.withStatus(Status.INACTIVE));
+		return repos.saveLocationDetails(loc.withStatus(Status.INACTIVE)).asSummary();
 	}
 	
 	public LocationSummary findLocationSummary(LocationIdentifier locationId) {

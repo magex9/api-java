@@ -13,9 +13,8 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
-import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
@@ -37,38 +36,38 @@ public class HazelcastLocationRepository implements CrmLocationRepository {
 	public HazelcastLocationRepository(XATransactionAwareHazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
 	}
-	
-	@Override
-	public Identifier generateLocationId() {
-		return CrmStore.generateId(LocationDetails.class);
-	}
 
 	@Override
 	public LocationDetails saveLocationDetails(LocationDetails location) {
-		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
+		TransactionalMap<LocationIdentifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		/* persist a clone of this location, and return the original */
 		locations.put(location.getLocationId(), SerializationUtils.clone(location));
 		return location;
 	}
 
 	@Override
-	public LocationDetails findLocationDetails(Identifier locationId) {
-		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
+	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
+		TransactionalMap<LocationIdentifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		LocationDetails locDetails = locations.get(locationId);
 		if (locDetails == null) {
 			return null;
 		}
 		return SerializationUtils.clone(locDetails);
 	}
-
+	
 	@Override
-	public LocationSummary findLocationSummary(Identifier locationId) {
-		return findLocationDetails(locationId).asSummary();
+	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
+		TransactionalMap<LocationIdentifier, LocationDetails> locations = hzInstance.getLocationsMap();
+		LocationDetails locDetails = locations.get(locationId);
+		if (locDetails == null) {
+			return null;
+		}
+		return SerializationUtils.clone(locDetails.asSummary());
 	}
 
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
+		TransactionalMap<LocationIdentifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		List<LocationDetails> allMatchingLocations = locations.values(new CrmFilterPredicate<LocationSummary>(filter))
 				.stream()				
 				.sorted(filter.getComparator(paging))
@@ -79,7 +78,7 @@ public class HazelcastLocationRepository implements CrmLocationRepository {
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummary(LocationsFilter filter, Paging paging) {
-		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
+		TransactionalMap<LocationIdentifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		List<LocationSummary> allMatchingLocations = locations.values(new CrmFilterPredicate<LocationSummary>(filter))
 				.stream()				
 				.sorted(filter.getComparator(paging))
@@ -90,7 +89,7 @@ public class HazelcastLocationRepository implements CrmLocationRepository {
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
-		TransactionalMap<Identifier, LocationDetails> locations = hzInstance.getLocationsMap();
+		TransactionalMap<LocationIdentifier, LocationDetails> locations = hzInstance.getLocationsMap();
 		return locations.values(new CrmFilterPredicate<LocationSummary>(filter)).size();
 	}
 }

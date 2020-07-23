@@ -55,7 +55,11 @@ public class BasicLocationRepository implements CrmLocationRepository {
 
 	@Override
 	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
-		return findLocationDetails(locationId);
+		LocationDetails details = findLocationDetails(locationId);
+		if (details == null) {
+			return null;
+		}
+		return details.asSummary();
 	}
 
 	@Override
