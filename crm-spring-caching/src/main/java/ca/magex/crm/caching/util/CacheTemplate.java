@@ -65,7 +65,24 @@ public class CacheTemplate {
 			logger.debug("evict[" + key + "]");
 			cache.evictIfPresent(key);
 		}
-		
+	}
+	
+	/**
+	 * returns the cached value for the given key if it's present in the cache
+	 * @param <R>
+	 * @param cacheKey
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <R> R getIfPresent(String cacheKey) {
+		Cache cache = cacheManager.getCache(cacheName);
+		Object cachedValue = cache.get(cacheKey);
+		if (cachedValue instanceof ValueWrapper) {
+			ValueWrapper valueWrapper = (ValueWrapper)cachedValue;
+			logger.debug("get[" + cacheKey + "]::cacheHit - " + valueWrapper.get());
+			return (R) valueWrapper.get();
+		}
+		return null;
 	}
 
 	/**
