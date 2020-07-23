@@ -54,7 +54,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 
 	@Override
 	public UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password) {
-		if (!isInitialized()) {
+		if (repos.prepareInitialize()) {			
 			initialize(repos);
 			OrganizationIdentifier organizationId = repos.generateOrganizationId();
 			LocationIdentifier mainLocationId = repos.generateLocationId();

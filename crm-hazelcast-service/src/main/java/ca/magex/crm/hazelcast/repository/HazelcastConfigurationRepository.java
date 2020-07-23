@@ -41,10 +41,21 @@ public class HazelcastConfigurationRepository implements CrmConfigurationReposit
 		}
 	}
 	
-
+	@Override
+	public boolean prepareInitialize() {
+		TransactionalMap<String, Object> configurations = hzInstance.getConfigurationMap();		
+		Object previous = configurations.put("initialized", 0L);
+		if (previous == null) {
+			return true;
+		}
+		waitForInitializationToComplete(configurations);
+		return false;
+	}
+	
 	@Override
 	public void setInitialized() {
-		// TODO Auto-generated method stub
+		TransactionalMap<String, Object> configurations = hzInstance.getConfigurationMap();
+		configurations.put("initialized", System.currentTimeMillis());
 	}
 	
 	/**

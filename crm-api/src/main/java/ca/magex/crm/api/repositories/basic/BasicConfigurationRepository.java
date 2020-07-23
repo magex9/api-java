@@ -28,6 +28,11 @@ public class BasicConfigurationRepository implements CrmConfigurationRepository 
 	}
 	
 	@Override
+	public boolean prepareInitialize() {	
+		return !isInitialized();
+	}
+	
+	@Override
 	public void setInitialized() {
 		if (latest == null) {
 			latest = new Configuration(new ConfigurationIdentifier(CrmStore.generateId()), Status.ACTIVE, LocalDateTime.now());
