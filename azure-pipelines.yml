@@ -79,12 +79,7 @@ stages:
 
     - publish: $(System.DefaultWorkingDirectory)/crm-restful-spring-boot-server/
       artifact: crm-restful-spring-boot-server
-
-  - job: Build_docker_containers
-    displayName: Build Docker Containers
-    steps:
-      
-
+  
 
 - stage: Continuous_Deployment
   displayName: Continuous Deployment to UT
