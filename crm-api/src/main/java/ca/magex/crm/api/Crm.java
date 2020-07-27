@@ -9,6 +9,8 @@ import static ca.magex.crm.api.services.CrmUserService.validateUser;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ca.magex.crm.api.adapters.CrmPoliciesAdapter;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -60,6 +62,7 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
+@Transactional
 public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies {
 	
 	public static final long SERIAL_UID_VERSION = 1l;

@@ -1,9 +1,11 @@
 package ca.magex.crm.springboot.config.crm;
 
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,8 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
@@ -25,7 +29,6 @@ import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
-import ca.magex.crm.caching.config.CachingConfig.Caches;
 import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 
 @Configuration
@@ -67,14 +70,14 @@ public class CrmAuthConfig implements CrmConfigurer {
 	
 	@Bean
 	public CacheManager cacheManager() {
-		return new TransactionAwareCacheManagerProxy(
-				// TOOD switch to Caffeine Cache Manager
-				new ConcurrentMapCacheManager(
-						Caches.Organizations, 
-						Caches.Locations,
-						Caches.Persons,
-						Caches.Users,
-						Caches.Options));
+		CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
+		caffeineCacheManager.setCaffeine(Caffeine
+				.newBuilder()
+				.expireAfterWrite(5, TimeUnit.MINUTES)
+				.expireAfterAccess(10, TimeUnit.MINUTES)
+				.maximumSize(1000L));
+
+		return new TransactionAwareCacheManagerProxy(caffeineCacheManager);
 	}
 
 	@Bean(autowireCandidate = false) // ensure this bean doesn't conflict with our CRM for autowiring
