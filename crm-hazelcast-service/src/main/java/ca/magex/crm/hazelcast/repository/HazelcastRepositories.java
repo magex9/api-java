@@ -6,6 +6,11 @@ import ca.magex.crm.api.adapters.CrmRepositoriesAdapter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
+/**
+ * Implementation of the CrmRepositories that uses the Hazelcast Repositories
+ * 
+ * @author Jonny
+ */
 public class HazelcastRepositories extends CrmRepositoriesAdapter implements CrmRepositories {
 
 	public HazelcastRepositories(XATransactionAwareHazelcastInstance hzInstance) {

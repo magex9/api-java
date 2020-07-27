@@ -111,7 +111,7 @@ public class Option implements Serializable {
 				.append("optionId", optionId)
 				.append("parentId", parentId)
 				.append("status", status)
-				.append("mutabel", mutable)
+				.append("mutable", mutable)
 				.append("name", name);
 		
 		return builder.build();

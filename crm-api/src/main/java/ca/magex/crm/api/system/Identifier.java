@@ -38,6 +38,14 @@ public abstract class Identifier implements CharSequence, Serializable {
 	}
 	
 	/**
+	 * Returns the identifier with full context associated
+	 * @return
+	 */
+	public String getFullIdentifier() {
+		return id.toString();
+	}
+	
+	/**
 	 * Returns the context associated with the given identifier
 	 * 
 	 * @return
