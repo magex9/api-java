@@ -23,14 +23,14 @@ public class CrmAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdap
 
 	private static final String[] AUTH_URLS = {
 			"/graphql",
-			"/rest/group**",
 			"/rest/init**",
-			"/rest/location**",
-			"/rest/lookup**",
-			"/rest/organization**",
-			"/rest/person**",
-			"/rest/role**",
-			"/rest/user**",
+			"/rest/locations**",
+			"/rest/lookups**",
+			"/rest/organizations**",
+			"/rest/types**",
+			"/rest/options**",
+			"/rest/persons**",
+			"/rest/users**",
 	};
 
 	private static final String[] NOAUTH_URLS = {
