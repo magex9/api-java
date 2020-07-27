@@ -6,9 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -17,8 +15,6 @@ import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
-import ca.magex.json.model.JsonText;
-import ca.magex.json.util.StringConverter;
 
 @Component
 public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
@@ -34,38 +30,22 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	@Override
 	public JsonElement formatRoot(Option option) {
-		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@context", buildContext(option, false, null)));
-		pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
-		pairs.add(new JsonPair("@value", option.getCode()));
-		pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
-		pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
-		return new JsonObject(pairs);
-	}
-	
-	public String buildContext(Option option, boolean identifier, Locale locale) {
-		StringBuilder sb = new StringBuilder();
-		if (identifier) {
-			sb.append(Crm.REST_BASE);
-		} else {
-			sb.append(Crm.SCHEMA_BASE);
-		}
-		sb.append("/options/");
-		sb.append(formatType(option.getType(), identifier));
-		return sb.toString();
-	}
-	
-	public String formatType(Type type, boolean identifier) {
-		if (identifier) {
-			return StringConverter.upperToLowerCase(type.getCode());
-		} else {
-			return StringConverter.upperToTitleCase(type.getCode());
-		}
+		return formatLocalized(option, null);
 	}
 	
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
-		return new JsonText(option.getName(locale));
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		formatType(pairs, locale);
+		if (locale == null)
+			pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+		formatIdentifier(pairs, "optionId", option, OptionIdentifier.class, locale);
+		formatIdentifier(pairs, "parentId", option, OptionIdentifier.class, locale);
+		formatTransformer(pairs, "type", option, new TypeJsonTransformer(crm), locale);
+		formatStatus(pairs, "status", option, locale);
+		formatBoolean(pairs, "mutable", option);
+		formatLocalized(pairs, "name", option, locale);
+		return new JsonObject(pairs);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -162,7 +163,17 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		if (choice != null) {
 			if (choice.isIdentifer()) {
 				Option option = crm.findOption(choice.getIdentifier());
-				parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+				if (locale == null) {
+					List<JsonPair> pairs = new ArrayList<JsonPair>();
+					pairs.add(new JsonPair("@context", buildContext(option, false, null)));
+					pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+					pairs.add(new JsonPair("@value", option.getCode()));
+					pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
+					pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
+					parent.add(new JsonPair(key, new JsonObject(pairs)));
+				} else {
+					parent.add(new JsonPair(key, new JsonText(option.getName(locale))));
+				}
 			} else if (choice.isOther()) {
 				parent.add(new JsonPair(key, choice.getOther()));
 			}
@@ -175,7 +186,17 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		O identifier = getProperty(obj, key, cls);
 		if (identifier != null) {
 			Option option = crm.findOption(identifier);
-			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+			if (locale == null) {
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
+				pairs.add(new JsonPair("@context", buildContext(option, false, null)));
+				pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+				pairs.add(new JsonPair("@value", option.getCode()));
+				pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
+				pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
+				parent.add(new JsonPair(key, new JsonObject(pairs)));
+			} else {
+				parent.add(new JsonPair(key, new JsonText(option.getName(locale))));
+			}
 		}
 	}
 	
@@ -201,7 +222,17 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			if (list != null) {
 				for (O optionId : list) {
 					Option option = crm.findOptionByCode(type, optionId.toString());
-					elements.add(new OptionJsonTransformer(crm).format(option, locale));
+					if (locale == null) {
+						List<JsonPair> pairs = new ArrayList<JsonPair>();
+						pairs.add(new JsonPair("@context", buildContext(option, false, null)));
+						pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+						pairs.add(new JsonPair("@value", option.getCode()));
+						pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
+						pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
+						elements.add(new JsonObject(pairs));
+					} else {
+						elements.add(new JsonText(option.getName(locale)));
+					}
 				}
 			}
 			parent.add(new JsonPair(key, new JsonArray(elements)));
@@ -253,7 +284,37 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		Status status = getProperty(obj, key, Status.class);
 		if (status != null) {
 			Option option = crm.findOptionByCode(Type.STATUS, status.toString());
-			parent.add(new JsonPair(key, new OptionJsonTransformer(crm).format(option, locale)));
+			if (locale == null) {
+				List<JsonPair> pairs = new ArrayList<JsonPair>();
+				pairs.add(new JsonPair("@context", buildContext(option, false, null)));
+				pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+				pairs.add(new JsonPair("@value", option.getCode()));
+				pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
+				pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
+				parent.add(new JsonPair(key, new JsonObject(pairs)));
+			} else {
+				parent.add(new JsonPair(key, new JsonText(option.getName(locale))));
+			}
+		}
+	}
+	
+	public String buildContext(Option option, boolean identifier, Locale locale) {
+		StringBuilder sb = new StringBuilder();
+		if (identifier) {
+			sb.append(Crm.REST_BASE);
+		} else {
+			sb.append(Crm.SCHEMA_BASE);
+		}
+		sb.append("/options/");
+		sb.append(formatType(option.getType(), identifier));
+		return sb.toString();
+	}
+	
+	public String formatType(Type type, boolean identifier) {
+		if (identifier) {
+			return StringConverter.upperToLowerCase(type.getCode());
+		} else {
+			return StringConverter.upperToTitleCase(type.getCode());
 		}
 	}
 	
