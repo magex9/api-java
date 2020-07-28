@@ -96,6 +96,22 @@ public class OptionsFilter implements CrmFilter<Option> {
 			throw new ApiException("Unable to instantiate roles filter", cce);
 		}
 	}
+	
+	public boolean isEmpty() {
+		if (parentId != null) {
+			return false;
+		}
+		if (type != null) {
+			return false;
+		}
+		if (status != null) {
+			return false;
+		}
+		if (name != null && !name.isEmpty()) {
+			return false;
+		}		
+		return true;
+	}
 
 	public Localized getName() {
 		return name;

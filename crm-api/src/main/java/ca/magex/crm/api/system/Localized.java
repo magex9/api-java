@@ -36,6 +36,16 @@ public class Localized implements Serializable {
 		this.text = text;
 	}
 	
+	public boolean isEmpty() {
+		/* return false as soon as one entry is not blank */
+		for (Map.Entry<Locale, String> entry : text.entrySet()) {
+			if (StringUtils.isNotBlank(entry.getValue())) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public String getCode() {
 		return text.get(Lang.ROOT);
 	}
