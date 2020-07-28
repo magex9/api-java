@@ -43,12 +43,12 @@ public class TypeJsonTransformer extends AbstractJsonTransformer<Type> {
 
 	@Override
 	public Type parseJsonText(JsonText json, Locale locale) {
-		return Type.valueOf(json.value().toUpperCase());
+		return Type.of(json.value().toUpperCase());
 	}
 
 	@Override
 	public Type parseJsonObject(JsonObject json, Locale locale) {
-		return Type.valueOf(json.getString("@value").toUpperCase());
+		return Type.of(json.getString("@value").toUpperCase());
 	}
 
 }

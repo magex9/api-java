@@ -349,7 +349,11 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		} else if (json.contains(key, JsonObject.class)) {
 			return crm.findOptionByCode(type, json.getObject(key).getString("@value")).getOptionId();
 		} else if (json.contains(key, JsonText.class)) {
-			return crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(new Localized(locale, json.getString(key)))).getSingleItem().getOptionId();
+			if (locale == null) {
+				return IdentifierFactory.forOptionId(json.getString(key));
+			} else {
+				return crm.findOptions(crm.defaultOptionsFilter().withType(type).withName(new Localized(locale, json.getString(key)))).getSingleItem().getOptionId();
+			}
 		} else {
 			throw new IllegalArgumentException("Unexpected type of option: " + key);
 		}
