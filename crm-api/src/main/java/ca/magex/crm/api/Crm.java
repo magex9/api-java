@@ -8,6 +8,7 @@ import static ca.magex.crm.api.services.CrmUserService.validateUser;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -233,11 +234,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		return organizationService.findOrganizationDetails(filter, paging);
+		return applyPolicy(organizationService.findOrganizationDetails(filter, paging), (o) -> canViewOrganization(o.getOrganizationId()));
 	}
 
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		return organizationService.findOrganizationSummaries(filter, paging);
+		return applyPolicy(organizationService.findOrganizationSummaries(filter, paging), (o) -> canViewOrganization(o.getOrganizationId()));
 	}
 
 	public LocationDetails validate(LocationDetails location) {
@@ -297,11 +298,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		return locationService.findLocationDetails(filter, paging);
+		return applyPolicy(locationService.findLocationDetails(filter, paging), (o) -> canViewLocation(o.getLocationId()));
 	}
 	
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
-		return locationService.findLocationSummaries(filter, paging);
+		return applyPolicy(locationService.findLocationSummaries(filter, paging), (o) -> canViewLocation(o.getLocationId()));
 	}
 
 	public PersonDetails validate(PersonDetails person) {
@@ -373,11 +374,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		return personService.findPersonDetails(filter, paging);
+		return applyPolicy(personService.findPersonDetails(filter, paging), (o) -> canViewPerson(o.getPersonId()));
 	}
 	
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		return personService.findPersonSummaries(filter, paging);
+		return applyPolicy(personService.findPersonSummaries(filter, paging), (o) -> canViewPerson(o.getPersonId()));
 	}
 
 	public UserDetails validate(UserDetails user) {
@@ -412,12 +413,12 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	
 	@Override
 	public FilteredPage<UserSummary> findUserSummaries(UsersFilter filter, Paging paging) {
-		return userService.findUserSummaries(filter, paging);
+		return applyPolicy(userService.findUserSummaries(filter, paging), (o) -> canViewUser(o.getUserId()));
 	}
 	
 	@Override
 	public FilteredPage<UserDetails> findUserDetails(UsersFilter filter, Paging paging) {
-		return userService.findUserDetails(filter, paging);
+		return applyPolicy(userService.findUserDetails(filter, paging), (o) -> canViewUser(o.getUserId()));
 	}
 	
 	@Override
@@ -525,7 +526,15 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		return optionService.findOptions(filter, paging);
+		return applyPolicy(optionService.findOptions(filter, paging), (o) -> canViewOption(o.getOptionId()));
+	}
+	
+	private <T> FilteredPage<T> applyPolicy(FilteredPage<T> results, Function<T, Boolean> policy) {
+		results.getContent().forEach(o -> {
+			if (!policy.apply(o))
+				throw new PermissionDeniedException("Cannot view results: " + results.getFilter());
+		});
+		return results;
 	}
 	
 }
