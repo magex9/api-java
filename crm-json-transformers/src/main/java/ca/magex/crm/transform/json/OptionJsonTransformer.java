@@ -50,10 +50,10 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 
 	@Override
 	public Option parseJsonObject(JsonObject json, Locale locale) {
-		OptionIdentifier optionId = parseIdentifier("optionId", json, OptionIdentifier.class, locale);
-		OptionIdentifier parentId = parseIdentifier("parentId", json, OptionIdentifier.class, locale);
-		Type type = null;
-		Boolean mutable = false;
+		Type type = Type.of(json.getObject("type").getString("@value"));
+		OptionIdentifier optionId = parseOption("optionId", json, type, locale);
+		OptionIdentifier parentId = parseOption("parentId", json, type.getParent(), locale);
+		Boolean mutable = parseBoolean("mutable", json);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		Localized name = parseObject("name", json, new LocalizedJsonTransformer(crm), locale);
 		return new Option(optionId, parentId, type, status, mutable, name);
