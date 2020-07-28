@@ -30,7 +30,7 @@ import ca.magex.json.model.JsonObject;
 
 @Controller
 public class OrganizationsController extends AbstractCrmController {
-		
+	
 	@GetMapping("/rest/organizations")
 	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
