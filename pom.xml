@@ -51,7 +51,7 @@
 		<module>crm-helloworld</module>	
 		
 		<!-- Service Implementations -->
- 		<module>crm-hazelcast-service</module>
+<!--  		<module>crm-hazelcast-service</module> -->
 		
 		<!-- Caching Implementations -->
 		<module>crm-spring-caching</module>

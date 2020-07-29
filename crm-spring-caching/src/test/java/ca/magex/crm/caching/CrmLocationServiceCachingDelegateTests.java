@@ -344,7 +344,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		}).given(delegate).findLocationSummaries(Mockito.any(LocationsFilter.class));
 
 		BDDMockito.willAnswer((invocation) -> {
-			return new FilteredPage<>(invocation.getArgument(0), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+			return new FilteredPage<>(new LocationsFilter().withOrganizationId(invocation.getArgument(0)).withStatus(Status.ACTIVE), LocationsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
 		}).given(delegate).findActiveLocationSummariesForOrg(Mockito.any());
 
 		BDDMockito.willAnswer((invocation) -> {

@@ -35,6 +35,6 @@ public class IdentifierList<I extends Identifier> extends ArrayList<I> {
 	
 	@Override
 	public String toString() {
-		return stream().map((identifier) -> "\"" + identifier.getCode() + "\"").collect(Collectors.joining(",", "[", "]"));
+		return stream().map((identifier) -> "\"" + identifier.getFullIdentifier() + "\"").collect(Collectors.joining(",", "[", "]"));
 	}
 }

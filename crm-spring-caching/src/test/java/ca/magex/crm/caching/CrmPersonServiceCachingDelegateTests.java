@@ -396,7 +396,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		}).given(delegate).findPersonSummaries(Mockito.any(PersonsFilter.class));
 		
 		BDDMockito.willAnswer((invocation) -> {
-			return new FilteredPage<>(invocation.getArgument(0), PersonsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
+			return new FilteredPage<>(new PersonsFilter().withOrganizationId(invocation.getArgument(0)).withStatus(Status.ACTIVE), PersonsFilter.getDefaultPaging(), List.of(details1, details2, details3), 3);
 		}).given(delegate).findActivePersonSummariesForOrg(Mockito.any(OrganizationIdentifier.class));
 
 		BDDMockito.willAnswer((invocation) -> {
@@ -406,7 +406,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		Assert.assertEquals(3l, personService.countPersons(new PersonsFilter()));
 
 		/* find locations summaries with paging and ensure cached results */
-		cacheManager.getCache("locations").clear();
+		cacheManager.getCache("persons").clear();
 		Assert.assertEquals(3, personService.findPersonSummaries(new PersonsFilter(), new Paging(1, 5, Sort.unsorted())).getNumberOfElements());
 
 		Assert.assertEquals(details1, personService.findPersonSummary(details1.getPersonId()));
@@ -418,7 +418,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(PersonIdentifier.class));
 
 		/* find locations summaries with default paging and ensure cached results */
-		cacheManager.getCache("locations").clear();
+		cacheManager.getCache("persons").clear();
 		Assert.assertEquals(3, personService.findPersonSummaries(new PersonsFilter()).getNumberOfElements());
 
 		Assert.assertEquals(details1, personService.findPersonSummary(details1.getPersonId()));
@@ -430,7 +430,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(PersonIdentifier.class));
 		
 		/* find locations summaries with default paging and ensure cached results */
-		cacheManager.getCache("locations").clear();
+		cacheManager.getCache("persons").clear();
 		Assert.assertEquals(3, personService.findPersonSummaries(new PersonsFilter()).getNumberOfElements());
 
 		Assert.assertEquals(details1, personService.findPersonSummary(details1.getPersonId()));
@@ -442,7 +442,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonSummary(Mockito.any(PersonIdentifier.class));
 		
 		/* find active locations summaries */
-		cacheManager.getCache("locations").clear();
+		cacheManager.getCache("persons").clear();
 		Assert.assertEquals(3, personService.findActivePersonSummariesForOrg(details1.getOrganizationId()).getNumberOfElements());
 
 		Assert.assertEquals(details1, personService.findPersonSummary(details1.getPersonId()));

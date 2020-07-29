@@ -1,6 +1,5 @@
 package ca.magex.crm.graphql.client;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +21,7 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
+import ca.magex.crm.api.filters.CrmFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.FilteredPage;
@@ -387,7 +387,7 @@ public class ModelBinder {
 		return Pair.of(sortFields, sortDirections);
 	}
 	
-	public static <T> FilteredPage<T> toPage(Serializable filter, Paging paging, Function<JsonObject, T> constructor, JsonObject json) {
+	public static <T> FilteredPage<T> toPage(CrmFilter<?> filter, Paging paging, Function<JsonObject, T> constructor, JsonObject json) {
 		try {
 			List<T> contents = new ArrayList<>();
 			JsonArray content = json.getArray("content");
