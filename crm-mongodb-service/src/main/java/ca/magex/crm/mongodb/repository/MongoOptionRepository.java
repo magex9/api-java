@@ -2,6 +2,7 @@ package ca.magex.crm.mongodb.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -11,6 +12,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Facet;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.InsertOneResult;
@@ -29,6 +31,7 @@ import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.mongodb.util.TextUtils;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
 /**
@@ -53,9 +56,9 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 		Document doc = collection
 				.find(Filters.eq("type", option.getType().getCode()))
 				.projection(Projections.fields(Projections.include("type")))
-				.first();
-		/* if we have no document for this type, then create one */
+				.first();		
 		if (doc == null) {
+			/* if we have no document for this type, then create one */
 			final InsertOneResult insertResult = collection.insertOne(new Document()
 					.append("type", option.getType().getCode())
 					.append("options", List.of(toBson(option))));
@@ -73,9 +76,9 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 									.append("options.$.name.english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
 									.append("options.$.name.french", option.getName().getFrenchName())
 									.append("options.$.name.french_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))));
-
-			/* if we had no matching option id, then we need to do a push to the existing array */
+			
 			if (setResult.getMatchedCount() == 0) {
+				/* if we had no matching option id, then we need to do a push to the existing array */
 				final UpdateResult pushResult = collection.updateOne(
 						new BasicDBObject()
 								.append("type", option.getType().getCode())
@@ -105,21 +108,31 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 			pipeline.add(Aggregates.match(Filters.eq("type", filter.getType().getCode())));
 		}
 		pipeline.add(Aggregates.unwind("$options"));
+		/* match on fields if required */
 		Bson fieldMatcher = toMatcher(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
-		pipeline.add(Aggregates.sort(sorting(paging, "options")));
-		pipeline.add(Aggregates.skip((int) paging.getOffset()));
-		pipeline.add(Aggregates.limit(paging.getPageSize()));
-
-		List<Option> options = new ArrayList<>();
-		collection.aggregate(pipeline).forEach((doc) -> {
-			JsonObject json = new JsonObject(doc.toJson());
-			JsonObject option = json.getObject("options");
-			options.add(toOption(option, Type.of(json.getString("type"))));
-		});
-		return new FilteredPage<>(filter, paging, options, options.size());
+		pipeline.add(Aggregates.facet(
+				new Facet("totalCount", 
+						Aggregates.count()), 
+				new Facet("results", List.of(
+						Aggregates.sort(sorting(paging, "options")),
+						Aggregates.skip((int) paging.getOffset()),
+						Aggregates.limit(paging.getPageSize())))));
+		
+		/* single document because we have facets */
+		Document doc = collection.aggregate(pipeline).first();
+		JsonObject json = new JsonObject(doc.toJson());
+		Long totalCount = json.getArray("totalCount").getObject(0).getLong("count");		
+		JsonArray results = json.getArray("results");
+		List<Option> content = results
+				.stream()
+				.map(o -> (JsonObject)o)
+				.map(o -> toOption(o.getObject("options"), Type.of(o.getString("type"))))
+				.collect(Collectors.toList());
+		
+		return new FilteredPage<>(filter, paging, content, totalCount);
 	}
 
 	@Override
@@ -137,7 +150,6 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
-		pipeline.add(Aggregates.project(Projections.include("options.optionId")));
 		pipeline.add(Aggregates.count("count"));
 		Document doc = collection.aggregate(pipeline).first();
 		if (doc == null) {

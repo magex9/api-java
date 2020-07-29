@@ -2,6 +2,8 @@ package ca.magex.crm.mongodb.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
@@ -23,12 +25,15 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
+import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.system.FilteredPage;
+import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -36,13 +41,16 @@ import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.LocaleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.StatusIdentifier;
 import ca.magex.crm.mongodb.config.MongoTestConfig;
 import ca.magex.crm.mongodb.util.TextUtils;
+import ca.magex.crm.test.CrmAsserts;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { MongoTestConfig.class })
@@ -53,23 +61,74 @@ public class MongoOptionRepositoryTests {
 	@MockBean CrmUpdateNotifier notifier;
 
 	@Test
+	public void testLocations() {
+		MongoLocationRepository repo = new MongoLocationRepository(mongoCrm, notifier);
+		repo.saveLocationDetails(new LocationDetails(
+				new LocationIdentifier("HQ"), 
+				new OrganizationIdentifier("A"), 
+				Status.ACTIVE, 
+				"HQ", 
+				"Head Quarters", 
+				CrmAsserts.DE_ADDRESS));
+		
+		System.out.println(repo.findLocationSummary(new LocationIdentifier("HQ")));
+		System.out.println(repo.findLocationDetails(new LocationIdentifier("HQ")));
+		
+		System.out.println(repo.countLocations(new LocationsFilter()));
+		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("A"))));
+		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("B"))));		
+		System.out.println(repo.countLocations(new LocationsFilter().withDisplayName("Head QUARTERS")));
+	}
+	
+	
+//	@Test
 	public void testFindOrganization() {
 		MongoOrganizationRepository repo = new MongoOrganizationRepository(mongoCrm, notifier);
 		System.out.println(repo.findOrganizationSummary(new OrganizationIdentifier("ABC")));
 		System.out.println(repo.findOrganizationDetails(new OrganizationIdentifier("ABC")));
 		System.out.println(repo.countOrganizations(new OrganizationsFilter().withAuthenticationGroup(new AuthenticationGroupIdentifier("CRM"))));
 		
-		System.out.println(repo.findOrganizationSummary(new OrganizationsFilter(), new Paging(2, 2, Sort.by("displayName"))));
+		System.out.println(repo.findOrganizationSummary(new OrganizationsFilter(), new Paging(1, 2, Sort.by("displayName"))));
+		System.out.println(repo.findOrganizationDetails(new OrganizationsFilter(), new Paging(1, 2, Sort.by("displayName"))));
+	}
+	
+//	@Test
+	public void testOrganizations() {
+		MongoOrganizationRepository repo = new MongoOrganizationRepository(mongoCrm, notifier);
+		OrganizationDetails orgDetails = repo.saveOrganizationDetails(new OrganizationDetails(
+				new OrganizationIdentifier("A"),
+				Status.ACTIVE,
+				"A",
+				null,
+				null,
+				List.of(new AuthenticationGroupIdentifier("ORG")),
+				List.of(new BusinessGroupIdentifier("IMIT"))));
+		Assert.assertEquals(Status.ACTIVE, repo.findOrganizationSummary(orgDetails.getOrganizationId()).getStatus());
+		
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withStatus(Status.INACTIVE));		
+		Assert.assertEquals(Status.INACTIVE, repo.findOrganizationSummary(orgDetails.getOrganizationId()).getStatus());
+		
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withDisplayName("AA"));		
+		Assert.assertEquals("AA", repo.findOrganizationSummary(orgDetails.getOrganizationId()).getDisplayName());
+		
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withMainLocationId(new LocationIdentifier("HQ2")));
+		
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withMainContactId(new PersonIdentifier("P2")));
+		
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withAuthenticationGroupIds(List.of(new AuthenticationGroupIdentifier("ORG1"), new AuthenticationGroupIdentifier("ORG2"))));
+		
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withBusinessGroupIds(List.of(new BusinessGroupIdentifier("B1"), new BusinessGroupIdentifier("B2"))));
+		
 	}
 	
 //	@Test
 	public void testOptions() {
 		MongoOptionRepository repo = new MongoOptionRepository(mongoCrm, notifier);
 
-		for (Status status : Status.values()) {
-			Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
-			Assert.assertEquals(option, repo.saveOption(option));
-		}
+//		for (Status status : Status.values()) {
+//			Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
+//			Assert.assertEquals(option, repo.saveOption(option));
+//		}
 
 		Assert.assertEquals(3, repo.countOptions(new OptionsFilter().withType(Type.STATUS)));
 
@@ -205,55 +264,55 @@ public class MongoOptionRepositoryTests {
 		System.out.println(result);
 	}
 
-	//	@Test
+//		@Test
 	public void insertOptionsRepository() {
 		MongoCollection<Document> collection = mongoCrm.getCollection("options");
 
-		//		{
-		//			List<BasicDBObject> statusList = new ArrayList<>();
-		//			for (Status status : Status.values()) {
-		//				Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
-		//				statusList.add(new BasicDBObject()					
-		//						.append("optionId",  option.getOptionId().getFullIdentifier())
-		//						.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-		//						.append("status", option.getStatus().getCode())
-		//						.append("mutable", option.getMutable())
-		//						.append("name", new BasicDBObject()
-		//								.append("code", option.getName().getCode())
-		//								.append("english", option.getName().getEnglishName())
-		//								.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-		//								.append("french", option.getName().getFrenchName())
-		//								.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
-		//						));
-		//			}
-		//			InsertOneResult result = collection.insertOne(new Document()
-		//					.append("type", Type.STATUS.getCode())
-		//					.append("options", statusList));
-		//			System.out.println(result);
-		//		}
-		//		
-		//		{
-		//			List<BasicDBObject> localeList = new ArrayList<>();
-		//			for (Map.Entry<Locale, Localized> entry : Lang.NAMES.entrySet()) {			
-		//				Option option = new Option(new LocaleIdentifier(entry.getValue().getCode()), null, Type.LOCALE, Status.ACTIVE, false, entry.getValue());
-		//				localeList.add(new BasicDBObject()					
-		//						.append("optionId",  option.getOptionId().getFullIdentifier())
-		//						.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-		//						.append("status", option.getStatus().getCode())
-		//						.append("mutable", option.getMutable())
-		//						.append("name", new BasicDBObject()
-		//								.append("code", option.getName().getCode())
-		//								.append("english", option.getName().getEnglishName())
-		//								.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-		//								.append("french", option.getName().getFrenchName())
-		//								.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
-		//						));
-		//			}
-		//			InsertOneResult result = collection.insertOne(new Document()
-		//					.append("type", Type.LOCALE.getCode())
-		//					.append("options", localeList));
-		//			System.out.println(result);
-		//		}
+				{
+					List<BasicDBObject> statusList = new ArrayList<>();
+					for (Status status : Status.values()) {
+						Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
+						statusList.add(new BasicDBObject()					
+								.append("optionId",  option.getOptionId().getFullIdentifier())
+								.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
+								.append("status", option.getStatus().getCode())
+								.append("mutable", option.getMutable())
+								.append("name", new BasicDBObject()
+										.append("code", option.getName().getCode())
+										.append("english", option.getName().getEnglishName())
+										.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
+										.append("french", option.getName().getFrenchName())
+										.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
+								));
+					}
+					InsertOneResult result = collection.insertOne(new Document()
+							.append("type", Type.STATUS.getCode())
+							.append("options", statusList));
+					System.out.println(result);
+				}
+				
+				{
+					List<BasicDBObject> localeList = new ArrayList<>();
+					for (Map.Entry<Locale, Localized> entry : Lang.NAMES.entrySet()) {			
+						Option option = new Option(new LocaleIdentifier(entry.getValue().getCode()), null, Type.LOCALE, Status.ACTIVE, false, entry.getValue());
+						localeList.add(new BasicDBObject()					
+								.append("optionId",  option.getOptionId().getFullIdentifier())
+								.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
+								.append("status", option.getStatus().getCode())
+								.append("mutable", option.getMutable())
+								.append("name", new BasicDBObject()
+										.append("code", option.getName().getCode())
+										.append("english", option.getName().getEnglishName())
+										.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
+										.append("french", option.getName().getFrenchName())
+										.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
+								));
+					}
+					InsertOneResult result = collection.insertOne(new Document()
+							.append("type", Type.LOCALE.getCode())
+							.append("options", localeList));
+					System.out.println(result);
+				}
 
 		{
 			List<BasicDBObject> countryList = new ArrayList<>();
@@ -277,28 +336,27 @@ public class MongoOptionRepositoryTests {
 			System.out.println(result);
 		}
 
-		//		{
-		//			List<BasicDBObject> provinceList = new ArrayList<>();
-		//			for (Localized province : List.of(new Localized("CA/ON", "Ontario", "Ontario"), new Localized("CA/QC", "Quebec", "Quèbec"), new Localized("US/NY", "New York", "New York"), new Localized("US/CA", "California", "Californie"))) {			
-		//				Option option = new Option(new ProvinceIdentifier(province.getCode()), new CountryIdentifier(province.getCode().subSequence(0, 2)), Type.PROVINCE, Status.ACTIVE, true, province);
-		//				provinceList.add(new BasicDBObject()					
-		//						.append("optionId",  option.getOptionId().getFullIdentifier())
-		//						.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-		//						.append("status", option.getStatus().getCode())
-		//						.append("mutable", option.getMutable())
-		//						.append("name", new BasicDBObject()
-		//								.append("code", option.getName().getCode())
-		//								.append("english", option.getName().getEnglishName())
-		//								.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-		//								.append("french", option.getName().getFrenchName())
-		//								.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
-		//						));
-		//			}
-		//			InsertOneResult result = collection.insertOne(new Document()
-		//					.append("type", Type.PROVINCE.getCode())
-		//					.append("options", provinceList));
-		//			System.out.println(result);
-		//		}
+		{
+			List<BasicDBObject> provinceList = new ArrayList<>();
+			for (Localized province : List.of(new Localized("CA/ON", "Ontario", "Ontario"), new Localized("CA/QC", "Quebec", "Quèbec"), new Localized("US/NY", "New York", "New York"), new Localized("US/CA", "California", "Californie"))) {
+				Option option = new Option(new ProvinceIdentifier(province.getCode()), new CountryIdentifier(province.getCode().subSequence(0, 2)), Type.PROVINCE, Status.ACTIVE, true, province);
+				provinceList.add(new BasicDBObject()
+						.append("optionId", option.getOptionId().getFullIdentifier())
+						.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
+						.append("status", option.getStatus().getCode())
+						.append("mutable", option.getMutable())
+						.append("name", new BasicDBObject()
+								.append("code", option.getName().getCode())
+								.append("english", option.getName().getEnglishName())
+								.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
+								.append("french", option.getName().getFrenchName())
+								.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))));
+			}
+			InsertOneResult result = collection.insertOne(new Document()
+					.append("type", Type.PROVINCE.getCode())
+					.append("options", provinceList));
+			System.out.println(result);
+			}
 	}
 
 	//	@Test
