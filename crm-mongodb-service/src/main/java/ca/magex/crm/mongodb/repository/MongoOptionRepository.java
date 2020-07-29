@@ -124,7 +124,7 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 		/* single document because we have facets */
 		Document doc = collection.aggregate(pipeline).first();
 		JsonObject json = new JsonObject(doc.toJson());
-		Long totalCount = json.getArray("totalCount").getObject(0).getLong("count");		
+		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);		
 		JsonArray results = json.getArray("results");
 		List<Option> content = results
 				.stream()

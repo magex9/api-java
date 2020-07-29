@@ -78,6 +78,10 @@ public class MongoOptionRepositoryTests {
 		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("A"))));
 		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("B"))));		
 		System.out.println(repo.countLocations(new LocationsFilter().withDisplayName("Head QUARTERS")));
+		
+		System.out.println(repo.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.by("reference"))));
+		System.out.println(repo.findLocationDetails(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("A")), new Paging(1, 5, Sort.by("reference"))));
+		System.out.println(repo.findLocationDetails(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("B")), new Paging(1, 5, Sort.by("reference"))));
 	}
 	
 	
@@ -121,7 +125,7 @@ public class MongoOptionRepositoryTests {
 		
 	}
 	
-//	@Test
+	@Test
 	public void testOptions() {
 		MongoOptionRepository repo = new MongoOptionRepository(mongoCrm, notifier);
 

@@ -2,6 +2,7 @@ package ca.magex.crm.mongodb.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -11,6 +12,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Facet;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.UpdateResult;
@@ -20,7 +22,6 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
@@ -32,6 +33,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.mongodb.util.TextUtils;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
 /**
@@ -92,6 +94,8 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
 		Document doc = collection
 				.find(Filters.eq("locations.locationId", locationId.getFullIdentifier()))
+				.projection(Projections.fields(
+						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier()))))
 				.projection(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address"))
 				.first();
 		if (doc == null) {
@@ -108,6 +112,8 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
 		Document doc = collection
 				.find(Filters.eq("locations.locationId", locationId.getFullIdentifier()))
+				.projection(Projections.fields(
+						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier()))))
 				.projection(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName"))				
 				.first();
 		if (doc == null) {
@@ -121,14 +127,76 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		// TODO implement this
-		return null;
+		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		ArrayList<Bson> pipeline = new ArrayList<>();
+		/* match an organization if required */
+		if (filter.getOrganizationId() != null) {
+			pipeline.add(Aggregates.match(Filters.eq("organizationId", filter.getOrganizationId().getFullIdentifier())));
+		}
+		pipeline.add(Aggregates.unwind("$locations"));
+		/* match on fields if required */
+		Bson fieldMatcher = toMatcher(filter);
+		if (fieldMatcher != null) {
+			pipeline.add(Aggregates.match(fieldMatcher));
+		}
+		pipeline.add(Aggregates.facet(
+				new Facet("totalCount", 
+						Aggregates.count()), 
+				new Facet("results", List.of(
+						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address")),
+						Aggregates.sort(sorting(paging, "locations")),
+						Aggregates.skip((int) paging.getOffset()),
+						Aggregates.limit(paging.getPageSize())))));
+		
+		/* single document because we have facets */
+		Document doc = collection.aggregate(pipeline).first();
+		JsonObject json = new JsonObject(doc.toJson());
+		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);		
+		JsonArray results = json.getArray("results");
+		List<LocationDetails> content = results
+				.stream()
+				.map(o -> (JsonObject)o)
+				.map(o -> toDetails(o.getObject("locations"), new OrganizationIdentifier(o.getString("organizationId"))))
+				.collect(Collectors.toList());
+		
+		return new FilteredPage<>(filter, paging, content, totalCount);
 	}
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummary(LocationsFilter filter, Paging paging) {
-		// TODO implement this
-		return null;
+		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		ArrayList<Bson> pipeline = new ArrayList<>();
+		/* match an organization if required */
+		if (filter.getOrganizationId() != null) {
+			pipeline.add(Aggregates.match(Filters.eq("organizationId", filter.getOrganizationId().getFullIdentifier())));
+		}
+		pipeline.add(Aggregates.unwind("$locations"));
+		/* match on fields if required */
+		Bson fieldMatcher = toMatcher(filter);
+		if (fieldMatcher != null) {
+			pipeline.add(Aggregates.match(fieldMatcher));
+		}
+		pipeline.add(Aggregates.facet(
+				new Facet("totalCount", 
+						Aggregates.count()), 
+				new Facet("results", List.of(
+						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName")),
+						Aggregates.sort(sorting(paging, "locations")),
+						Aggregates.skip((int) paging.getOffset()),
+						Aggregates.limit(paging.getPageSize())))));
+		
+		/* single document because we have facets */
+		Document doc = collection.aggregate(pipeline).first();
+		JsonObject json = new JsonObject(doc.toJson());
+		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);		
+		JsonArray results = json.getArray("results");
+		List<LocationSummary> content = results
+				.stream()
+				.map(o -> (JsonObject)o)
+				.map(o -> toSummary(o.getObject("locations"), new OrganizationIdentifier(o.getString("organizationId"))))
+				.collect(Collectors.toList());
+		
+		return new FilteredPage<>(filter, paging, content, totalCount);
 	}
 
 	@Override
@@ -139,7 +207,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		if (filter.getOrganizationId() != null) {
 			pipeline.add(Aggregates.match(Filters.eq("organizationId", filter.getOrganizationId().getFullIdentifier())));
 		}
-		/* unwind the options so we can search for a count of specific options */
+		/* unwind the options so we can search for a count of specific locations */
 		pipeline.add(Aggregates.unwind("$locations"));
 		/* create our matcher based on the filter */
 		Bson fieldMatcher = toMatcher(filter);
