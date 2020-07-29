@@ -215,4 +215,18 @@ public class OptionsFilterTests {
 		Assert.assertTrue(new OptionsFilter().withName(new Localized(Lang.ROOT, "ON")).apply(option));
 		Assert.assertFalse(new OptionsFilter().withName(new Localized(Lang.ROOT, "QC")).apply(option));
 	}
+	
+	@Test
+	public void testIsEmpty() {
+		Assert.assertTrue(new OptionsFilter().isEmpty());
+		Assert.assertTrue(new OptionsFilter().withName(new Localized("", "", "")).isEmpty());
+		Assert.assertTrue(new OptionsFilter().withName(new Localized("  ", "  ", "  ")).isEmpty());
+		
+		Assert.assertFalse(new OptionsFilter().withParentId(new CountryIdentifier("CA")).isEmpty());
+		Assert.assertFalse(new OptionsFilter().withStatus(Status.ACTIVE).isEmpty());
+		Assert.assertFalse(new OptionsFilter().withType(Type.LOCALE).isEmpty());
+		Assert.assertFalse(new OptionsFilter().withName(new Localized("CA", "", "")).isEmpty());
+		Assert.assertFalse(new OptionsFilter().withName(new Localized("", "Canada", "")).isEmpty());
+		Assert.assertFalse(new OptionsFilter().withName(new Localized("", "", "Canada")).isEmpty());
+	}
 }

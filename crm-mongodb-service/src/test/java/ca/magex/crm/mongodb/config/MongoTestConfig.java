@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 @ComponentScan(basePackages = {
 		"ca.magex.crm.mongodb"
@@ -25,7 +25,7 @@ public class MongoTestConfig {
 	}
 	
 	@Bean
-	public MongoTemplate mongoTemplate() {
-		return new MongoTemplate(mongoClient(), "crm");
+	public MongoDatabase mongoCrm() {
+		return mongoClient().getDatabase("crm");
 	}
 }
