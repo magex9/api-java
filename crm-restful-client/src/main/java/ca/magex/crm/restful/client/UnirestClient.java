@@ -1,4 +1,4 @@
-package ca.magex.crm.test.restful;
+package ca.magex.crm.restful.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -8,25 +8,25 @@ import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
 
-public class OrganizationsTestSuite {
+public class UnirestClient {
 
 	public static void main(String[] args) throws Exception {
 		Unirest.setTimeouts(0, 0);
 		listOrganizations();
-		String myBankId = createOrganization("My Bank").getString("@value");
-		listOrganizations();
-		getOrganization(myBankId);
-		String jokerMoneyId = findOrganization("Jokers Money").getJSONObject(0).getString("@value");
-		disableOrganization(jokerMoneyId);
-		getOrganization(jokerMoneyId);
-		enableOrganization(jokerMoneyId);
-		getOrganization(jokerMoneyId);
+//		String myBankId = createOrganization("My Bank").getString("@value");
+//		listOrganizations();
+//		getOrganization(myBankId);
+//		String jokerMoneyId = findOrganization("Jokers Money").getJSONObject(0).getString("@value");
+//		disableOrganization(jokerMoneyId);
+//		getOrganization(jokerMoneyId);
+//		enableOrganization(jokerMoneyId);
+//		getOrganization(jokerMoneyId);
 	}
 	
 	public static JSONArray listOrganizations() throws Exception {
-		String body = Unirest.get("http://localhost:8080/api/organizations").header("Accept", "application/json+ld").asString().getBody();
+		String body = Unirest.get("http://localhost:9002/crm/rest/organizations").header("Accept", "application/json+ld").asString().getBody();
 		System.out.println("=====================================");
-		System.out.println("== GET http://localhost:8080/api/organizations");
+		System.out.println("== GET http://localhost:9002/crm/rest/organizations");
 		System.out.println(body);
 		System.out.println("=====================================");
 		System.out.println();
@@ -34,10 +34,10 @@ public class OrganizationsTestSuite {
 	}
 	
 	public static JSONObject createOrganization(String displayName) throws Exception {
-		String body = Unirest.post("http://localhost:8080/api/organizations").header("Accept", "application/json+ld")
+		String body = Unirest.post("http://localhost:9002/crm/rest/organizations").header("Accept", "application/json+ld")
 				  .body("{ \"displayName\": \"" + displayName + "\" }").asString().getBody();
 		System.out.println("=====================================");
-		System.out.println("== POST http://localhost:8080/api/organizations (" + displayName + ")");
+		System.out.println("== POST http://localhost:9002/crm/rest/organizations (" + displayName + ")");
 		System.out.println(body);
 		System.out.println("=====================================");
 		System.out.println();
@@ -45,9 +45,9 @@ public class OrganizationsTestSuite {
 	}
 	
 	public static JSONObject getOrganization(String organizationId) throws Exception {
-		String body = Unirest.get("http://localhost:8080/api/organizations/" + organizationId).header("Accept", "application/json+ld").asString().getBody();
+		String body = Unirest.get("http://localhost:9002/crm/rest/organizations/" + organizationId).header("Accept", "application/json+ld").asString().getBody();
 		System.out.println("=====================================");
-		System.out.println("== GET http://localhost:8080/api/organizations/" + organizationId);
+		System.out.println("== GET http://localhost:9002/crm/rest/organizations/" + organizationId);
 		System.out.println(body);
 		System.out.println("=====================================");
 		System.out.println();
@@ -55,9 +55,9 @@ public class OrganizationsTestSuite {
 	}
 	
 	public static JSONArray findOrganization(String displayName) throws Exception {
-		String body = Unirest.get("http://localhost:8080/api/organizations?displayName=" + URLEncoder.encode(displayName, StandardCharsets.UTF_8)).header("Accept", "application/json+ld").asString().getBody();
+		String body = Unirest.get("http://localhost:9002/crm/rest/organizations?displayName=" + URLEncoder.encode(displayName, StandardCharsets.UTF_8)).header("Accept", "application/json+ld").asString().getBody();
 		System.out.println("=====================================");
-		System.out.println("== GET http://localhost:8080/api/organizations?displayName=" + URLEncoder.encode(displayName, StandardCharsets.UTF_8));
+		System.out.println("== GET http://localhost:9002/crm/rest/organizations?displayName=" + URLEncoder.encode(displayName, StandardCharsets.UTF_8));
 		System.out.println(body);
 		System.out.println("=====================================");
 		System.out.println();
@@ -65,9 +65,9 @@ public class OrganizationsTestSuite {
 	}
 	
 	public static JSONObject disableOrganization(String organizationId) throws Exception {
-		String body = Unirest.put("http://localhost:8080/api/organizations/" + organizationId + "/disable").header("Accept", "application/json+ld").asString().getBody();
+		String body = Unirest.put("http://localhost:9002/crm/rest/organizations/" + organizationId + "/disable").header("Accept", "application/json+ld").asString().getBody();
 		System.out.println("=====================================");
-		System.out.println("== PUT http://localhost:8080/api/organizations/" + organizationId + "/disable");
+		System.out.println("== PUT http://localhost:9002/crm/rest/organizations/" + organizationId + "/disable");
 		System.out.println(body);
 		System.out.println("=====================================");
 		System.out.println();
@@ -75,9 +75,9 @@ public class OrganizationsTestSuite {
 	}
 
 	public static JSONObject enableOrganization(String organizationId) throws Exception {
-		String body = Unirest.put("http://localhost:8080/api/organizations/" + organizationId + "/enable").header("Accept", "application/json+ld").asString().getBody();
+		String body = Unirest.put("http://localhost:9002/crm/rest/organizations/" + organizationId + "/enable").header("Accept", "application/json+ld").asString().getBody();
 		System.out.println("=====================================");
-		System.out.println("== PUT http://localhost:8080/api/organizations/" + organizationId + "/enable");
+		System.out.println("== PUT http://localhost:9002/crm/rest/organizations/" + organizationId + "/enable");
 		System.out.println(body);
 		System.out.println("=====================================");
 		System.out.println();

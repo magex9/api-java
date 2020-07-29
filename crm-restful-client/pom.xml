@@ -15,7 +15,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-restful-json</artifactId>
+			<artifactId>crm-json-transformers</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-spring-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -44,7 +50,7 @@
 						
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-restful-spring-boot-server</artifactId>
+			<artifactId>crm-api-spring-boot-server</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
