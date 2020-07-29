@@ -61,7 +61,7 @@ public class FilteredPage<T> extends PageImpl<T> {
 			contentType = content.get(0).getClass().getName();
 		}
 
-		return String.format("Page %s of %d containing %s instances", getNumber(), getTotalPages(), contentType);
+		return String.format("Page %s of %d containing %d instances of %s instances", getNumber(), getTotalPages(), getTotalElements(), contentType);
 	}
 
 }
