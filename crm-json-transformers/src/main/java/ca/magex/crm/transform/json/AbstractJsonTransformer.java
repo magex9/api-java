@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -30,9 +31,9 @@ import ca.magex.json.util.StringConverter;
 
 public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonElement> {
 	
-	protected final CrmServices crm;
+	protected final CrmOptionService crm;
 	
-	public AbstractJsonTransformer(CrmServices crm) {
+	public AbstractJsonTransformer(CrmOptionService crm) {
 		if (crm == null)
 			throw new IllegalArgumentException("Crm cannot be null");
 		this.crm = crm;
@@ -86,7 +87,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			throw new IllegalArgumentException("Unexpected type for " + getSourceType().getSimpleName() + ": " + json.getString("@type"));
 		throw new UnsupportedOperationException("Unsupported json element: " + json.getClass().getSimpleName());
 	}
-
+	
 	public <O extends OptionIdentifier> List<O> parseOptions(String key, JsonObject json, Class<O> cls, Locale locale) {
 		return json.getArray(key).stream().map(e -> parseOption(e, cls, locale)).collect(Collectors.toList());
 	}
@@ -119,6 +120,8 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			} else {
 				return IdentifierFactory.forId(json.getString(key), cls);
 			}
+		} catch (NoSuchElementException e) {
+			return null;
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Unable to build identifier for: " + cls.getName(), e);
 		}
@@ -162,18 +165,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		Choice<?> choice = getProperty(obj, key, Choice.class);
 		if (choice != null) {
 			if (choice.isIdentifer()) {
-				Option option = crm.findOption(choice.getIdentifier());
-				if (locale == null) {
-					List<JsonPair> pairs = new ArrayList<JsonPair>();
-					pairs.add(new JsonPair("@context", buildContext(option, false, null)));
-					pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
-					pairs.add(new JsonPair("@value", option.getCode()));
-					pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
-					pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
-					parent.add(new JsonPair(key, new JsonObject(pairs)));
-				} else {
-					parent.add(new JsonPair(key, new JsonText(option.getName(locale))));
-				}
+				parent.add(new JsonPair(key, formatOption(crm.findOption(choice.getIdentifier()), locale)));
 			} else if (choice.isOther()) {
 				parent.add(new JsonPair(key, choice.getOther()));
 			}
@@ -185,18 +177,21 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			return;
 		O identifier = getProperty(obj, key, cls);
 		if (identifier != null) {
-			Option option = crm.findOption(identifier);
-			if (locale == null) {
-				List<JsonPair> pairs = new ArrayList<JsonPair>();
-				pairs.add(new JsonPair("@context", buildContext(option, false, null)));
-				pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
-				pairs.add(new JsonPair("@value", option.getCode()));
-				pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
-				pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
-				parent.add(new JsonPair(key, new JsonObject(pairs)));
-			} else {
-				parent.add(new JsonPair(key, new JsonText(option.getName(locale))));
-			}
+			parent.add(new JsonPair(key, formatOption(crm.findOption(identifier), locale)));
+		}
+	}
+	
+	public JsonElement formatOption(Option option, Locale locale) {
+		if (locale == null) {
+			List<JsonPair> pairs = new ArrayList<JsonPair>();
+			pairs.add(new JsonPair("@context", buildContext(option, false, null)));
+			pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+			pairs.add(new JsonPair("@value", option.getCode()));
+			pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
+			pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
+			return new JsonObject(pairs);
+		} else {
+			return new JsonText(option.getName(locale));
 		}
 	}
 	
@@ -221,18 +216,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			List<JsonElement> elements = new ArrayList<JsonElement>();
 			if (list != null) {
 				for (O optionId : list) {
-					Option option = crm.findOptionByCode(type, optionId.toString());
-					if (locale == null) {
-						List<JsonPair> pairs = new ArrayList<JsonPair>();
-						pairs.add(new JsonPair("@context", buildContext(option, false, null)));
-						pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
-						pairs.add(new JsonPair("@value", option.getCode()));
-						pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
-						pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
-						elements.add(new JsonObject(pairs));
-					} else {
-						elements.add(new JsonText(option.getName(locale)));
-					}
+					elements.add(formatOption(crm.findOptionByCode(type, optionId.getCode()), locale));
 				}
 			}
 			parent.add(new JsonPair(key, new JsonArray(elements)));
@@ -283,18 +267,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			return;
 		Status status = getProperty(obj, key, Status.class);
 		if (status != null) {
-			Option option = crm.findOptionByCode(Type.STATUS, status.toString());
-			if (locale == null) {
-				List<JsonPair> pairs = new ArrayList<JsonPair>();
-				pairs.add(new JsonPair("@context", buildContext(option, false, null)));
-				pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
-				pairs.add(new JsonPair("@value", option.getCode()));
-				pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
-				pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
-				parent.add(new JsonPair(key, new JsonObject(pairs)));
-			} else {
-				parent.add(new JsonPair(key, new JsonText(option.getName(locale))));
-			}
+			parent.add(new JsonPair(key, formatOption(crm.findOptionByCode(Type.STATUS, status.toString()), locale)));
 		}
 	}
 	
@@ -341,6 +314,22 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	
 	public Boolean parseBoolean(String key, JsonObject json) {
 		return json.contains(key) ? json.getBoolean(key) : null;
+	}
+	
+	public Status parseStatus(String key, JsonObject json, Locale locale) {
+		if (!json.contains(key)) {
+			return null;
+		} else if (json.contains(key, JsonObject.class)) {
+			return Status.of(json.getObject(key).getString("@value"));
+		} else if (json.contains(key, JsonText.class)) {
+			if (locale == null) {
+				return Status.of(json.getString(key));
+			} else {
+				return Status.of(json.getString(key), locale);
+			}
+		} else {
+			throw new IllegalArgumentException("Unexpected type of option: " + key);
+		}
 	}
 	
 	public <I extends OptionIdentifier> I parseOption(String key, JsonObject json, Type type, Locale locale) {

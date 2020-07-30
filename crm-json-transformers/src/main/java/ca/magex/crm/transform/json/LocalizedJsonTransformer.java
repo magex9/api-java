@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.json.model.JsonElement;
@@ -17,7 +17,7 @@ import ca.magex.json.model.JsonText;
 @Component
 public class LocalizedJsonTransformer extends AbstractJsonTransformer<Localized> {
 
-	public LocalizedJsonTransformer(CrmServices crm) {
+	public LocalizedJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

@@ -10,7 +10,7 @@ import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
@@ -22,7 +22,7 @@ import ca.magex.json.model.JsonPair;
 @Component
 public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<PersonDetails> {
 
-	public PersonDetailsJsonTransformer(CrmServices crm) {
+	public PersonDetailsJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

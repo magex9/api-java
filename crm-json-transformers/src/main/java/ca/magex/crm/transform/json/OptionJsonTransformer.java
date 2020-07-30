@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -18,8 +18,8 @@ import ca.magex.json.model.JsonPair;
 
 @Component
 public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
-
-	public OptionJsonTransformer(CrmServices crm) {
+	
+	public OptionJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -50,11 +50,11 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 
 	@Override
 	public Option parseJsonObject(JsonObject json, Locale locale) {
-		Type type = Type.of(json.getObject("type").getString("@value"));
+		Type type = Type.of(json.get("type") instanceof JsonObject ? json.getObject("type").getString("@value") : json.getString("type"));
 		OptionIdentifier optionId = parseOption("optionId", json, type, locale);
 		OptionIdentifier parentId = parseOption("parentId", json, type.getParent(), locale);
 		Boolean mutable = parseBoolean("mutable", json);
-		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
+		Status status = parseStatus("status", json, locale);
 		Localized name = parseObject("name", json, new LocalizedJsonTransformer(crm), locale);
 		return new Option(optionId, parentId, type, status, mutable, name);
 	}

@@ -7,7 +7,7 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.MailingAddress;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.CountryIdentifier;
@@ -18,7 +18,7 @@ import ca.magex.json.model.JsonPair;
 @Component
 public class MailingAddressJsonTransformer extends AbstractJsonTransformer<MailingAddress> {
 	
-	public MailingAddressJsonTransformer(CrmServices crm) {
+	public MailingAddressJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

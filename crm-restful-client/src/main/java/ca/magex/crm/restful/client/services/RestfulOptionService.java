@@ -1,19 +1,17 @@
 package ca.magex.crm.restful.client.services;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
-import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOptionService;
-import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.restful.client.RestTemplateClient;
 import ca.magex.crm.transform.json.OptionJsonTransformer;
@@ -22,16 +20,27 @@ import ca.magex.json.model.JsonObject;
 
 public class RestfulOptionService implements CrmOptionService {
 	
-	private CrmServices crm;
+	public static void main(String[] args) {
+//		String code = "TMP" + Calendar.getInstance().getTimeInMillis();
+//		
+		RestTemplateClient rest = new RestTemplateClient("http://localhost:9002/crm", null, "admin", "admin");
+		
+		RestfulOptionService client = new RestfulOptionService(rest);
+//		
+//		System.out.println(client.findOptions(new OptionsFilter().withType(Type.STATUS)));
+//		
+		System.out.println(client.findOptionByCode(Type.PHRASE, PhraseIdentifier.VALIDATION_FIELD_FORMAT.getCode()));
+		
+		
+	}
 	
 	private RestTemplateClient client;
 	
 	private Transformer<Option, JsonElement> transformer;
 	
-	public RestfulOptionService(String server, Locale locale, String username, String password) {
-		this.crm = new CrmServicesAdapter(null, this, null, null, null, null);
-		this.client = new RestTemplateClient(server, locale, crm, username, password);
-		this.transformer = new OptionJsonTransformer(crm);
+	public RestfulOptionService(RestTemplateClient client) {
+		this.client = client;
+		this.transformer = new OptionJsonTransformer(this);
 	}
 	
 	@Override
@@ -49,7 +58,7 @@ public class RestfulOptionService implements CrmOptionService {
 
 	@Override
 	public Option findOptionByCode(Type type, String optionCode) {
-		JsonObject json = client.get("/options/" + type.getCode().toLowerCase() + "/" + optionCode.toLowerCase());
+		JsonObject json = client.get("/types/" + type.getCode().toLowerCase().replaceAll("_", "-") + "/" + optionCode.toLowerCase());
 		return transformer.parse(json, client.getLocale());
 	}
 

@@ -135,7 +135,8 @@ public abstract class AbstractCrmController {
 	protected <I extends OptionIdentifier> List<I> getOptionIdentifiers(JsonObject json, String key, boolean required, List<I> defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
 		try {
 			if (locale == null) {
-				return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forOptionId(((JsonText)e).value())).collect(Collectors.toList());
+				//return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forOptionId(((JsonText)e).value())).collect(Collectors.toList());
+				return json.getArray(key, JsonObject.class).stream().map(e -> (I)IdentifierFactory.forOptionId(e.getString("@id"))).collect(Collectors.toList());
 			} else {
 				return json.getArray(key).stream()
 					.map(e -> (I)crm.findOptions(crm.defaultOptionsFilter().withType(IdentifierFactory.getType(cls)).withName(new Localized(locale, ((JsonText)e).value()))).getSingleItem().getOptionId())

@@ -7,14 +7,14 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
 @Component
 public class TelephoneJsonTransformer extends AbstractJsonTransformer<Telephone> {
 
-	public TelephoneJsonTransformer(CrmServices crm) {
+	public TelephoneJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

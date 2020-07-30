@@ -96,7 +96,7 @@ public interface CrmOrganizationService {
 	 */
 	OrganizationSummary disableOrganization(OrganizationIdentifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name);
+	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String displaysName);
 
 	OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId);
 

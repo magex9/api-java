@@ -18,12 +18,15 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.restful.client.services.RestfulOptionService;
+import ca.magex.crm.restful.client.services.RestfulOrganizationService;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.crm.transform.json.MessageJsonTransformer;
@@ -39,19 +42,32 @@ public class RestTemplateClient {
 	
 	private Locale locale;
 	
-	private CrmServices crm;
-	
 	private String authToken;
 	
 	private RestTemplate restTemplate;
 	
-	public RestTemplateClient(String server, Locale locale, CrmServices crm, String username, String password) {
+	private RestfulOptionService options;
+	
+	private RestfulOrganizationService organizations;
+	
+	private CrmServices services;
+	
+	public RestTemplateClient(String server, Locale locale, String username, String password) {
 		this.server = server;
 		this.locale = locale;
-		this.crm = crm;
 		this.restTemplate = new RestTemplate();
 		this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
 		this.authToken = authenticateJwt(username, password);
+		this.options = new RestfulOptionService(this);
+		this.organizations = new RestfulOrganizationService(this);
+		this.services = new CrmServicesAdapter(
+			null, 
+			options, 
+			organizations, 
+			null, 
+			null, 
+			null
+		);
 	}
 	
 	private String authenticateJwt(String username, String password) {
@@ -101,7 +117,19 @@ public class RestTemplateClient {
 	public String getAuthToken() {
 		return authToken;
 	}
-
+	
+	public RestfulOptionService getOptions() {
+		return options;
+	}
+	
+	public RestfulOrganizationService getOrganizations() {
+		return organizations;
+	}
+	
+	public CrmServices getServices() {
+		return services;
+	}
+	
 	public <T extends JsonElement> T get(Object endpoint) {
 		return get(endpoint, new JsonObject());
 	}
@@ -123,7 +151,7 @@ public class RestTemplateClient {
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -145,7 +173,7 @@ public class RestTemplateClient {
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -167,7 +195,7 @@ public class RestTemplateClient {
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -189,7 +217,7 @@ public class RestTemplateClient {
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))

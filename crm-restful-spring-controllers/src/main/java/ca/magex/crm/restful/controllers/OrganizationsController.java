@@ -32,7 +32,19 @@ import ca.magex.json.model.JsonObject;
 public class OrganizationsController extends AbstractCrmController {
 	
 	@GetMapping("/rest/organizations")
-	public void findOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void findOrganizationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findOrganizationDetails(
+					extractOrganizationFilter(locale, req), 
+					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
+				), transformer, locale
+			);
+		});
+	}
+	
+	@GetMapping("/rest/organizations/summaries")
+	public void findOrganizationSumaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findOrganizationSummaries(
@@ -43,15 +55,22 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 	
+	@GetMapping("/rest/organizations/count")
+	public void countOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("total", crm.countOrganizations(extractOrganizationFilter(locale, req)));
+		});
+	}
+	
 	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
 		List<Message> messages = new ArrayList<>();
 		JsonObject query = extractQuery(req);
 		String displayName = getString(query, "displayName", false, null, null, messages);
 		Status status = getObject(Status.class, query, "status", false, null, null, messages, locale);
 		AuthenticationGroupIdentifier authenticationGroupId = getOptionIdentifier(query, "authenticationGroupId", false, null, null, messages, AuthenticationGroupIdentifier.class, locale);
-		BusinessGroupIdentifier businessGroupIdentifier = getOptionIdentifier(query, "businessGroupId", false, null, null, messages, BusinessGroupIdentifier.class, locale);
+		BusinessGroupIdentifier businessGroupId = getOptionIdentifier(query, "businessGroupId", false, null, null, messages, BusinessGroupIdentifier.class, locale);
 		validate(messages);
-		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupIdentifier);
+		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
 	}
 
 	@PostMapping("/rest/organizations")

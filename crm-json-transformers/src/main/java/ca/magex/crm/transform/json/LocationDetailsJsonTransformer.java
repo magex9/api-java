@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -18,7 +18,7 @@ import ca.magex.json.model.JsonPair;
 @Component
 public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<LocationDetails> {
 
-	public LocationDetailsJsonTransformer(CrmServices crm) {
+	public LocationDetailsJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

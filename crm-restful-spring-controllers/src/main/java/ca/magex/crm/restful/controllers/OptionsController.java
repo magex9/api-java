@@ -83,11 +83,13 @@ public class OptionsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/rest/options/{typeCode}/{optionCode}")
+	@GetMapping("/rest/types/{typeCode}/**")
 	public void getOptionByCode(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
+			@PathVariable("typeCode") String typeCode) throws IOException {
+		String optionCode = req.getRequestURI().split(req.getContextPath() + "/rest/types/" + typeCode + "/")[1];
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
-			return transformer.format(crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()), locale);
+			//return transformer.format(crm.findOptionByCode(Type.of(typeCode.toUpperCase().replaceAll("-", "_")), optionCode.toUpperCase().replaceAll("\\.", "/")), locale);
+			return transformer.format(crm.findOptionByCode(Type.of(typeCode.toUpperCase().replaceAll("-", "_")), optionCode.toUpperCase()), locale);
 		});
 	}
 
@@ -106,9 +108,10 @@ public class OptionsController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/rest/options/{typeCode}/{optionCode}")
+	@PatchMapping("/rest/types/{typeCode}/**")
 	public void updateOptionByCode(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
+			@PathVariable("typeCode") String typeCode) throws IOException {
+		String optionCode = req.getRequestURI().split(req.getContextPath() + "/rest/types/" + typeCode + "/")[1];
 		OptionIdentifier optionId = crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()).getOptionId();
 		updateOption(req, res, optionId);
 	}
@@ -122,7 +125,7 @@ public class OptionsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/rest/options/{typeCode}/{optionCode}/enable")
+	@PutMapping("/rest/types/{typeCode}/{optionCode}/enable")
 	public void enableOptionByCode(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
 		OptionIdentifier optionId = crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()).getOptionId();
@@ -138,7 +141,7 @@ public class OptionsController extends AbstractCrmController {
 		});
 	}
 
-	@PutMapping("/rest/options/{typeCode}/{optionCode}/disable")
+	@PutMapping("/rest/types/{typeCode}/{optionCode}/disable")
 	public void disableOptionByCode(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
 		OptionIdentifier optionId = crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()).getOptionId();
