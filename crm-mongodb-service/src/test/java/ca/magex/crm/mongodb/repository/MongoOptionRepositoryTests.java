@@ -1,6 +1,5 @@
 package ca.magex.crm.mongodb.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,12 +24,15 @@ import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
+import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Lang;
@@ -40,6 +42,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LocaleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -61,44 +64,75 @@ public class MongoOptionRepositoryTests {
 	@MockBean CrmUpdateNotifier notifier;
 
 	@Test
+	public void testConfigurations() {
+		MongoConfigurationRepository repo = new MongoConfigurationRepository(mongoCrm, notifier, "test");
+		Assert.assertFalse(repo.isInitialized());
+		Assert.assertTrue(repo.prepareInitialize());
+		Assert.assertFalse(repo.prepareInitialize());
+		repo.setInitialized();
+	}
+
+	//	@Test
+	public void testPersons() {
+		MongoPersonRepository repo = new MongoPersonRepository(mongoCrm, notifier, "test");
+
+		repo.savePersonDetails(new PersonDetails(
+				new PersonIdentifier("Charlie"),
+				new OrganizationIdentifier("A"),
+				Status.ACTIVE,
+				"charlie",
+				new PersonName(CrmAsserts.MR, "Charlie", "Thomas", "Lane"),
+				CrmAsserts.CA_ADDRESS,
+				CrmAsserts.HOME_COMMUNICATIONS,
+				List.of(new BusinessRoleIdentifier("TEAMLEAD"), new BusinessRoleIdentifier("DEV"))));
+
+		System.out.println(repo.findPersonSummary(new PersonIdentifier("Charlie")));
+		System.out.println(repo.findPersonDetails(new PersonIdentifier("Charlie")));
+
+		System.out.println(repo.countPersons(new PersonsFilter()));
+		System.out.println(repo.countPersons(new PersonsFilter().withOrganizationId(new OrganizationIdentifier("A"))));
+		System.out.println(repo.countPersons(new PersonsFilter().withOrganizationId(new OrganizationIdentifier("B"))));
+		System.out.println(repo.countPersons(new PersonsFilter().withDisplayName("charlie")));
+	}
+
+	//	@Test
 	public void testLocations() {
-		MongoLocationRepository repo = new MongoLocationRepository(mongoCrm, notifier);
+		MongoLocationRepository repo = new MongoLocationRepository(mongoCrm, notifier, "test");
 		repo.saveLocationDetails(new LocationDetails(
-				new LocationIdentifier("HQ"), 
-				new OrganizationIdentifier("A"), 
-				Status.ACTIVE, 
-				"HQ", 
-				"Head Quarters", 
+				new LocationIdentifier("HQ"),
+				new OrganizationIdentifier("A"),
+				Status.ACTIVE,
+				"HQ",
+				"Head Quarters",
 				CrmAsserts.DE_ADDRESS));
-		
+
 		System.out.println(repo.findLocationSummary(new LocationIdentifier("HQ")));
 		System.out.println(repo.findLocationDetails(new LocationIdentifier("HQ")));
-		
+
 		System.out.println(repo.countLocations(new LocationsFilter()));
 		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("A"))));
-		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("B"))));		
+		System.out.println(repo.countLocations(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("B"))));
 		System.out.println(repo.countLocations(new LocationsFilter().withDisplayName("Head QUARTERS")));
-		
+
 		System.out.println(repo.findLocationDetails(new LocationsFilter(), new Paging(1, 5, Sort.by("reference"))));
 		System.out.println(repo.findLocationDetails(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("A")), new Paging(1, 5, Sort.by("reference"))));
 		System.out.println(repo.findLocationDetails(new LocationsFilter().withOrganizationId(new OrganizationIdentifier("B")), new Paging(1, 5, Sort.by("reference"))));
 	}
-	
-	
-//	@Test
+
+	//	@Test
 	public void testFindOrganization() {
-		MongoOrganizationRepository repo = new MongoOrganizationRepository(mongoCrm, notifier);
+		MongoOrganizationRepository repo = new MongoOrganizationRepository(mongoCrm, notifier, "test");
 		System.out.println(repo.findOrganizationSummary(new OrganizationIdentifier("ABC")));
 		System.out.println(repo.findOrganizationDetails(new OrganizationIdentifier("ABC")));
 		System.out.println(repo.countOrganizations(new OrganizationsFilter().withAuthenticationGroup(new AuthenticationGroupIdentifier("CRM"))));
-		
+
 		System.out.println(repo.findOrganizationSummary(new OrganizationsFilter(), new Paging(1, 2, Sort.by("displayName"))));
 		System.out.println(repo.findOrganizationDetails(new OrganizationsFilter(), new Paging(1, 2, Sort.by("displayName"))));
 	}
-	
-//	@Test
+
+	//	@Test
 	public void testOrganizations() {
-		MongoOrganizationRepository repo = new MongoOrganizationRepository(mongoCrm, notifier);
+		MongoOrganizationRepository repo = new MongoOrganizationRepository(mongoCrm, notifier, "test");
 		OrganizationDetails orgDetails = repo.saveOrganizationDetails(new OrganizationDetails(
 				new OrganizationIdentifier("A"),
 				Status.ACTIVE,
@@ -108,31 +142,31 @@ public class MongoOptionRepositoryTests {
 				List.of(new AuthenticationGroupIdentifier("ORG")),
 				List.of(new BusinessGroupIdentifier("IMIT"))));
 		Assert.assertEquals(Status.ACTIVE, repo.findOrganizationSummary(orgDetails.getOrganizationId()).getStatus());
-		
-		orgDetails = repo.saveOrganizationDetails(orgDetails.withStatus(Status.INACTIVE));		
-		Assert.assertEquals(Status.INACTIVE, repo.findOrganizationSummary(orgDetails.getOrganizationId()).getStatus());
-		
-		orgDetails = repo.saveOrganizationDetails(orgDetails.withDisplayName("AA"));		
-		Assert.assertEquals("AA", repo.findOrganizationSummary(orgDetails.getOrganizationId()).getDisplayName());
-		
-		orgDetails = repo.saveOrganizationDetails(orgDetails.withMainLocationId(new LocationIdentifier("HQ2")));
-		
-		orgDetails = repo.saveOrganizationDetails(orgDetails.withMainContactId(new PersonIdentifier("P2")));
-		
-		orgDetails = repo.saveOrganizationDetails(orgDetails.withAuthenticationGroupIds(List.of(new AuthenticationGroupIdentifier("ORG1"), new AuthenticationGroupIdentifier("ORG2"))));
-		
-		orgDetails = repo.saveOrganizationDetails(orgDetails.withBusinessGroupIds(List.of(new BusinessGroupIdentifier("B1"), new BusinessGroupIdentifier("B2"))));
-		
-	}
-	
-	@Test
-	public void testOptions() {
-		MongoOptionRepository repo = new MongoOptionRepository(mongoCrm, notifier);
 
-//		for (Status status : Status.values()) {
-//			Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
-//			Assert.assertEquals(option, repo.saveOption(option));
-//		}
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withStatus(Status.INACTIVE));
+		Assert.assertEquals(Status.INACTIVE, repo.findOrganizationSummary(orgDetails.getOrganizationId()).getStatus());
+
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withDisplayName("AA"));
+		Assert.assertEquals("AA", repo.findOrganizationSummary(orgDetails.getOrganizationId()).getDisplayName());
+
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withMainLocationId(new LocationIdentifier("HQ2")));
+
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withMainContactId(new PersonIdentifier("P2")));
+
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withAuthenticationGroupIds(List.of(new AuthenticationGroupIdentifier("ORG1"), new AuthenticationGroupIdentifier("ORG2"))));
+
+		orgDetails = repo.saveOrganizationDetails(orgDetails.withBusinessGroupIds(List.of(new BusinessGroupIdentifier("B1"), new BusinessGroupIdentifier("B2"))));
+
+	}
+
+	//	@Test
+	public void testOptions() {
+		MongoOptionRepository repo = new MongoOptionRepository(mongoCrm, notifier, "test");
+
+		//		for (Status status : Status.values()) {
+		//			Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
+		//			Assert.assertEquals(option, repo.saveOption(option));
+		//		}
 
 		Assert.assertEquals(3, repo.countOptions(new OptionsFilter().withType(Type.STATUS)));
 
@@ -232,7 +266,7 @@ public class MongoOptionRepositoryTests {
 		}
 	}
 
-//	@Test
+	//	@Test
 	public void insertOrganization() {
 		MongoCollection<Document> collection = mongoCrm.getCollection("organizations");
 
@@ -246,7 +280,7 @@ public class MongoOptionRepositoryTests {
 				List.of(new BusinessGroupIdentifier("IMIT"), new BusinessGroupIdentifier("SECURITY")));
 
 		InsertOneResult result = collection.insertOne(new Document()
-				.append("organizationId", orgDetails.getOrganizationId().getFullIdentifier())					
+				.append("organizationId", orgDetails.getOrganizationId().getFullIdentifier())
 				.append("status", orgDetails.getStatus().getCode())
 				.append("displayName", orgDetails.getDisplayName())
 				.append("displayName_searchable", TextUtils.toSearchable(orgDetails.getDisplayName()))
@@ -268,99 +302,29 @@ public class MongoOptionRepositoryTests {
 		System.out.println(result);
 	}
 
-//		@Test
+	@Test
 	public void insertOptionsRepository() {
-		MongoCollection<Document> collection = mongoCrm.getCollection("options");
-
-				{
-					List<BasicDBObject> statusList = new ArrayList<>();
-					for (Status status : Status.values()) {
-						Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
-						statusList.add(new BasicDBObject()					
-								.append("optionId",  option.getOptionId().getFullIdentifier())
-								.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-								.append("status", option.getStatus().getCode())
-								.append("mutable", option.getMutable())
-								.append("name", new BasicDBObject()
-										.append("code", option.getName().getCode())
-										.append("english", option.getName().getEnglishName())
-										.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-										.append("french", option.getName().getFrenchName())
-										.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
-								));
-					}
-					InsertOneResult result = collection.insertOne(new Document()
-							.append("type", Type.STATUS.getCode())
-							.append("options", statusList));
-					System.out.println(result);
-				}
-				
-				{
-					List<BasicDBObject> localeList = new ArrayList<>();
-					for (Map.Entry<Locale, Localized> entry : Lang.NAMES.entrySet()) {			
-						Option option = new Option(new LocaleIdentifier(entry.getValue().getCode()), null, Type.LOCALE, Status.ACTIVE, false, entry.getValue());
-						localeList.add(new BasicDBObject()					
-								.append("optionId",  option.getOptionId().getFullIdentifier())
-								.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-								.append("status", option.getStatus().getCode())
-								.append("mutable", option.getMutable())
-								.append("name", new BasicDBObject()
-										.append("code", option.getName().getCode())
-										.append("english", option.getName().getEnglishName())
-										.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-										.append("french", option.getName().getFrenchName())
-										.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
-								));
-					}
-					InsertOneResult result = collection.insertOne(new Document()
-							.append("type", Type.LOCALE.getCode())
-							.append("options", localeList));
-					System.out.println(result);
-				}
-
-		{
-			List<BasicDBObject> countryList = new ArrayList<>();
-			for (Localized country : List.of(new Localized("CA", "Canada", "Canada"), new Localized("US", "United States", "États Unis"), new Localized("DE", "Germany", "Allemagne"), new Localized("FR", "France", "France"))) {
-				Option option = new Option(new CountryIdentifier(country.getCode()), null, Type.COUNTRY, Status.ACTIVE, true, country);
-				countryList.add(new BasicDBObject()
-						.append("optionId", option.getOptionId().getFullIdentifier())
-						.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-						.append("status", option.getStatus().getCode())
-						.append("mutable", option.getMutable())
-						.append("name", new BasicDBObject()
-								.append("code", option.getName().getCode())
-								.append("english", option.getName().getEnglishName())
-								.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-								.append("french", option.getName().getFrenchName())
-								.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))));
-			}
-			InsertOneResult result = collection.insertOne(new Document()
-					.append("type", Type.COUNTRY.getCode())
-					.append("options", countryList));
-			System.out.println(result);
+		MongoOptionRepository repo = new MongoOptionRepository(mongoCrm, notifier, "test");
+		for (Status status : Status.values()) {
+			Option option = new Option(new StatusIdentifier(status.getName().getCode()), null, Type.STATUS, Status.ACTIVE, false, status.getName());
+			repo.saveOption(option);				
+		}
+	
+		for (Map.Entry<Locale, Localized> entry : Lang.NAMES.entrySet()) {
+			Option option = new Option(new LocaleIdentifier(entry.getValue().getCode()), null, Type.LOCALE, Status.ACTIVE, false, entry.getValue());
+			repo.saveOption(option);
+		}		
+		
+		for (Localized country : List.of(new Localized("CA", "Canada", "Canada"), new Localized("US", "United States", "États Unis"), new Localized("DE", "Germany", "Allemagne"), new Localized("FR", "France", "France"))) {
+			Option option = new Option(new CountryIdentifier(country.getCode()), null, Type.COUNTRY, Status.ACTIVE, true, country);
+			repo.saveOption(option);
 		}
 
-		{
-			List<BasicDBObject> provinceList = new ArrayList<>();
-			for (Localized province : List.of(new Localized("CA/ON", "Ontario", "Ontario"), new Localized("CA/QC", "Quebec", "Quèbec"), new Localized("US/NY", "New York", "New York"), new Localized("US/CA", "California", "Californie"))) {
-				Option option = new Option(new ProvinceIdentifier(province.getCode()), new CountryIdentifier(province.getCode().subSequence(0, 2)), Type.PROVINCE, Status.ACTIVE, true, province);
-				provinceList.add(new BasicDBObject()
-						.append("optionId", option.getOptionId().getFullIdentifier())
-						.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-						.append("status", option.getStatus().getCode())
-						.append("mutable", option.getMutable())
-						.append("name", new BasicDBObject()
-								.append("code", option.getName().getCode())
-								.append("english", option.getName().getEnglishName())
-								.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-								.append("french", option.getName().getFrenchName())
-								.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))));
-			}
-			InsertOneResult result = collection.insertOne(new Document()
-					.append("type", Type.PROVINCE.getCode())
-					.append("options", provinceList));
-			System.out.println(result);
-			}
+		
+		for (Localized province : List.of(new Localized("CA/ON", "Ontario", "Ontario"), new Localized("CA/QC", "Quebec", "Quèbec"), new Localized("US/NY", "New York", "New York"), new Localized("US/CA", "California", "Californie"))) {
+			Option option = new Option(new ProvinceIdentifier(province.getCode()), new CountryIdentifier(province.getCode().subSequence(0, 2)), Type.PROVINCE, Status.ACTIVE, true, province);
+			repo.saveOption(option);
+		}
 	}
 
 	//	@Test

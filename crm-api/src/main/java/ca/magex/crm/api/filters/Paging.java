@@ -122,6 +122,25 @@ public class Paging implements Pageable, Serializable {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
+	public static class CrmStringComparator implements Comparator<String> {
+
+		private Collator collator = null;
+		
+		public CrmStringComparator() {
+			collator = Collator.getInstance();
+			collator.setStrength(Collator.TERTIARY);
+		}
+		
+		@Override
+		public int compare(String o1, String o2) {
+			int compare = collator.compare(o1, o2);
+			if (compare == 0) {
+				return compare = StringUtils.compare(o1, o2);
+			}			
+			return compare;
+		}		
+	}
+	
 	/**
 	 * Creates a new Comparator based on this Paging Instance
 	 * 
@@ -140,6 +159,7 @@ public class Paging implements Pageable, Serializable {
 		public int compare(T o1, T o2) {
 			PropertyUtilsBean pub = new PropertyUtilsBean();
 			Iterator<Order> iterator = Paging.this.getSort().iterator();
+			CrmStringComparator nameComparator = new CrmStringComparator();
 			while (iterator.hasNext()) {
 				Order order = iterator.next();
 				String propertyName = order.getProperty();
@@ -169,22 +189,12 @@ public class Paging implements Pageable, Serializable {
 						Localized lVal1 = (Localized) val1;
 						Localized lVal2 = (Localized) val2;
 						Locale locale = Lang.parse(propertyKey);
-						Collator collator = Collator.getInstance();
-						collator.setStrength(Collator.NO_DECOMPOSITION);
-						int compare = collator.compare(lVal1.get(locale), lVal2.get(locale));
-						if (compare == 0) {
-							compare = StringUtils.compare(lVal1.get(locale), lVal2.get(locale));
-						}
+						int compare = nameComparator.compare(lVal1.get(locale), lVal2.get(locale));
 						if (compare != 0) {
 							return order.isAscending() ? compare : -compare;
 						}
 					} else if (String.class.isAssignableFrom(val1.getClass())) {
-						Collator collator = Collator.getInstance();
-						collator.setStrength(Collator.NO_DECOMPOSITION);
-						int compare = collator.compare((String) val1, (String) val2);
-						if (compare == 0) {
-							compare = StringUtils.compare((String) val1, (String) val2);
-						}
+						int compare = nameComparator.compare((String) val1, (String) val2);
 						if (compare != 0) {
 							return order.isAscending() ? compare : -compare;
 						}
@@ -206,4 +216,6 @@ public class Paging implements Pageable, Serializable {
 			return 0;
 		}
 	}
+	
+	
 }

@@ -62,11 +62,8 @@ public abstract class AbstractOrganizationServiceTests {
 	@Before
 	public void setup() {
 		config().reset();
-		config().initializeSystem(CrmAsserts.SYSTEM_ORG, CrmAsserts.SYSTEM_PERSON, CrmAsserts.SYSTEM_EMAIL, "admin", "admin");
-		
+		config().initializeSystem(CrmAsserts.SYSTEM_ORG, CrmAsserts.SYSTEM_PERSON, CrmAsserts.SYSTEM_EMAIL, "admin", "admin");		
 		auth().login("admin", "admin");
-		
-		
 	}
 	
 	@After

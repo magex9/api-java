@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Choice;
@@ -43,6 +44,7 @@ public class MailingAddress implements Serializable {
 	private Choice<CountryIdentifier> country;
 
 	// The postal address of the mailing address if available
+	@Nullable
 	private String postalCode;
 
 	public MailingAddress(String street, String city, Choice<ProvinceIdentifier> province, Choice<CountryIdentifier> country, String postalCode) {

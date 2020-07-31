@@ -1,15 +1,15 @@
 package ca.magex.crm.test.filters;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Comparator;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.filters.Paging.CrmStringComparator;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
@@ -30,16 +30,22 @@ public class PagingTests {
 		MailingAddress ma2 = new MailingAddress("125 Stewart St", "Nepean", new Choice<>("Ontario"), new Choice<>("Canada"), "K1N 6J3");
 		
 		Comparator<MailingAddress> comparator = new Paging(Sort.by(Direction.ASC, "city")).new PagingComparator<MailingAddress>();
-		assertEquals(1, comparator.compare(ma1, ma2));
-		assertEquals(-1, comparator.compare(ma2, ma1));
+		Assert.assertEquals(1, comparator.compare(ma1, ma2));
+		Assert.assertEquals(-1, comparator.compare(ma2, ma1));
 		
 		comparator = new Paging(Sort.by(Direction.ASC, "postalCode")).new PagingComparator<MailingAddress>();
-		assertEquals(0, comparator.compare(ma1, ma2));
-		assertEquals(0, comparator.compare(ma2, ma1));
+		Assert.assertEquals(0, comparator.compare(ma1, ma2));
+		Assert.assertEquals(0, comparator.compare(ma2, ma1));
 		
 		comparator = new Paging(Sort.by(Direction.ASC, "postalCode", "city")).new PagingComparator<MailingAddress>();
-		assertEquals(1, comparator.compare(ma1, ma2));
-		assertEquals(-1, comparator.compare(ma2, ma1));
+		Assert.assertEquals(1, comparator.compare(ma1, ma2));
+		Assert.assertEquals(-1, comparator.compare(ma2, ma1));
+	}
+	
+	@Test
+	public void testCrmStringComparator() {
+		CrmStringComparator comparator = new Paging.CrmStringComparator();
 		
+		Assert.assertEquals(0, comparator.compare("e", "é"));
 	}
 }

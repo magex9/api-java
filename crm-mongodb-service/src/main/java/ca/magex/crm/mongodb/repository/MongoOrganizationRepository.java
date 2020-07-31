@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -31,6 +30,8 @@ import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.mongodb.util.BsonUtils;
+import ca.magex.crm.mongodb.util.JsonUtils;
 import ca.magex.crm.mongodb.util.TextUtils;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
@@ -46,21 +47,25 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 	 * Creates our new MongoDB Backed Organization Repository
 	 * @param mongoCrm
 	 * @param notifier
+	 * @param env
 	 */
-	public MongoOrganizationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier) {
-		super(mongoCrm, notifier);
+	public MongoOrganizationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
+		super(mongoCrm, notifier, env);
 	}
 
 	@Override
 	public OrganizationDetails saveOrganizationDetails(OrganizationDetails orgDetails) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		Document doc = collection
-				.find(Filters.eq("organizationId", orgDetails.getOrganizationId().getFullIdentifier()))
+				.find(Filters.and(
+						Filters.eq("organizationId", orgDetails.getOrganizationId().getFullIdentifier()),
+						Filters.eq("env", getEnv())))
 				.first();						
 		if (doc == null) {
 			/* if we have no document for this organization, then create one */
 			final InsertOneResult insertResult = collection.insertOne(new Document()
-					.append("organizationId", orgDetails.getOrganizationId().getFullIdentifier())					
+					.append("env", getEnv())
+					.append("organizationId", orgDetails.getOrganizationId().getFullIdentifier())
 					.append("status", orgDetails.getStatus().getCode())
 					.append("displayName", orgDetails.getDisplayName())
 					.append("displayName_searchable", TextUtils.toSearchable(orgDetails.getDisplayName()))
@@ -69,12 +74,12 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 					.append("authenticationGroupIds", orgDetails
 							.getAuthenticationGroupIds()
 							.stream()
-							.map((id) -> new AuthenticationGroupIdentifier(id).getFullIdentifier())
+							.map((id) -> id.getFullIdentifier())
 							.collect(Collectors.toList()))
 					.append("businessGroupIds", orgDetails
 							.getBusinessGroupIds()
 							.stream()
-							.map((id) -> new BusinessGroupIdentifier(id).getFullIdentifier())
+							.map((id) -> id.getFullIdentifier())
 							.collect(Collectors.toList()))
 					.append("locations", List.of())
 					.append("persons", List.of())
@@ -84,6 +89,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 			/* add all the fields that can be updated */
 			final UpdateResult setResult = collection.updateOne(
 					new BasicDBObject()
+						.append("env", getEnv())
 						.append("organizationId", orgDetails.getOrganizationId().getFullIdentifier()),
 					new BasicDBObject()
 						.append("$set", new BasicDBObject()
@@ -112,9 +118,11 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 
 	@Override
 	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
-		Document doc = getMongoCrm()
-				.getCollection("organizations")
-				.find(Filters.eq("organizationId", organizationId.getFullIdentifier()))
+		MongoCollection<Document> collection = getOrganizations();
+		Document doc = collection
+				.find(Filters.and(
+						Filters.eq("organizationId", organizationId.getFullIdentifier()),
+						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.include("status", "displayName")))
 				.first();
@@ -129,9 +137,11 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 
 	@Override
 	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		Document doc = collection
-				.find(Filters.eq("organizationId", organizationId.getFullIdentifier()))
+				.find(Filters.and(
+						Filters.eq("organizationId", organizationId.getFullIdentifier()),
+						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.include("status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds")))
 				.first();
@@ -150,10 +160,11 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		ArrayList<Bson> pipeline = new ArrayList<>();
+		pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		/* create our matcher based on the filter */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -168,10 +179,11 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummary(OrganizationsFilter filter, Paging paging) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
-		ArrayList<Bson> pipeline = new ArrayList<>();		
+		MongoCollection<Document> collection = getOrganizations();
+		ArrayList<Bson> pipeline = new ArrayList<>();
+		pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		/* match on fields if required */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -179,7 +191,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 				new Facet("totalCount", 
 						Aggregates.count()), 
 				new Facet("results", List.of(
-						Aggregates.sort(sorting(paging)),
+						Aggregates.sort(BsonUtils.toBson(paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
 						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName")))))));
@@ -191,7 +203,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 		JsonArray results = json.getArray("results");
 		List<OrganizationSummary> content = results
 				.stream()
-				.map(o -> toSummary((JsonObject)o))
+				.map(o -> JsonUtils.toOrganizationSummary((JsonObject)o))
 				.collect(Collectors.toList());
 		
 		return new FilteredPage<>(filter, paging, content, totalCount);
@@ -199,10 +211,11 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		ArrayList<Bson> pipeline = new ArrayList<>();		
+		pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		/* match on fields if required */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -210,7 +223,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 				new Facet("totalCount", 
 						Aggregates.count()), 
 				new Facet("results", List.of(
-						Aggregates.sort(sorting(paging)),
+						Aggregates.sort(BsonUtils.toBson(paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
 						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds")))))));
@@ -222,60 +235,10 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 		JsonArray results = json.getArray("results");
 		List<OrganizationDetails> content = results
 				.stream()
-				.map(o -> toDetails((JsonObject)o))
+				.map(o -> JsonUtils.toOrganizationDetails((JsonObject)o))
 				.collect(Collectors.toList());		
 		return new FilteredPage<>(filter, paging, content, totalCount);
 	}
-	
-	/**
-	 * converts to a summary
-	 * @param json
-	 * @return
-	 */
-	private OrganizationSummary toSummary(JsonObject json) {
-		return new OrganizationSummary(
-				new OrganizationIdentifier(json.getString("organizationId")),
-				Status.of(json.getString("status")),
-				json.getString("displayName"));
-	}
-	
-	/**
-	 * converts to a details
-	 * @param json
-	 * @return
-	 */
-	private OrganizationDetails toDetails(JsonObject json) {
-		return new OrganizationDetails(
-				new OrganizationIdentifier(json.getString("organizationId")),
-				Status.of(json.getString("status")),
-				json.getString("displayName"),
-				IdentifierFactory.forId(json.getString("mainLocationId")),
-				IdentifierFactory.forId(json.getString("mainContactId")),
-				json.getArray("authenticationGroupIds", String.class).stream().map(AuthenticationGroupIdentifier::new).collect(Collectors.toList()),
-				json.getArray("businessGroupIds", String.class).stream().map(BusinessGroupIdentifier::new).collect(Collectors.toList()));
-	}
 
-	/**
-	 * Constructs a Bson based on the given organizations filter or null if no filtering provided
-	 * 
-	 * @param filter
-	 * @return
-	 */
-	private Bson toMatcher(OrganizationsFilter filter) {
-		List<Bson> filters = new ArrayList<>();
-		if (filter.getStatus() != null) {
-			filters.add(Filters.eq("status", filter.getStatusCode()));
-		}
-		if (StringUtils.isNotBlank(filter.getDisplayName())) {
-			filters.add(Filters.eq("displayName_searchable", TextUtils.toSearchable(filter.getDisplayName())));
-		}
-		if (filter.getAuthenticationGroupId() != null) {
-			filters.add(Filters.eq("authenticationGroupIds", filter.getAuthenticationGroupId().getFullIdentifier()));
-		}
-		if (filter.getBusinessGroupId() != null) {
-			filters.add(Filters.eq("businessGroupIds", filter.getBusinessGroupId().getFullIdentifier()));
-		}
-
-		return conjunction(filters);
-	}
+	
 }

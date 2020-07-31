@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -24,12 +23,11 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.mongodb.util.BsonUtils;
+import ca.magex.crm.mongodb.util.JsonUtils;
 import ca.magex.crm.mongodb.util.TextUtils;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
@@ -45,28 +43,33 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 	 * Creates our new MongoDB Backed Option Repository
 	 * @param mongoCrm
 	 * @param notifier
+	 * @param env
 	 */
-	public MongoOptionRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier) {
-		super(mongoCrm, notifier);
+	public MongoOptionRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
+		super(mongoCrm, notifier, env);
 	}
 
 	@Override
 	public Option saveOption(Option option) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("options");
+		MongoCollection<Document> collection = getOptions();
 		Document doc = collection
-				.find(Filters.eq("type", option.getType().getCode()))
+				.find(Filters.and(
+						Filters.eq("env", getEnv()),
+						Filters.eq("type", option.getType().getCode())))
 				.projection(Projections.fields(Projections.include("type")))
-				.first();		
+				.first();
 		if (doc == null) {
 			/* if we have no document for this type, then create one */
 			final InsertOneResult insertResult = collection.insertOne(new Document()
 					.append("type", option.getType().getCode())
-					.append("options", List.of(toBson(option))));
+					.append("env", getEnv())
+					.append("options", List.of(BsonUtils.toBson(option))));
 			debug(() -> "saveOption(" + option + ") created a new document with result " + insertResult);
 		} else {
 			/* add all the fields that can be updated */
 			final UpdateResult setResult = collection.updateOne(
 					new BasicDBObject()
+							.append("env", getEnv())
 							.append("type", option.getType().getCode())
 							.append("options.optionId", option.getOptionId().getFullIdentifier()),
 					new BasicDBObject()
@@ -76,17 +79,18 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 									.append("options.$.name.english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
 									.append("options.$.name.french", option.getName().getFrenchName())
 									.append("options.$.name.french_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))));
-			
+
 			if (setResult.getMatchedCount() == 0) {
 				/* if we had no matching option id, then we need to do a push to the existing array */
 				final UpdateResult pushResult = collection.updateOne(
 						new BasicDBObject()
 								.append("type", option.getType().getCode())
+								.append("env", getEnv())
 								.append("options.optionId", new BasicDBObject()
 										.append("$ne", option.getOptionId().getFullIdentifier())),
 						new BasicDBObject()
 								.append("$push", new BasicDBObject()
-										.append("options", toBson(option))));
+										.append("options", BsonUtils.toBson(option))));
 				if (pushResult.getModifiedCount() == 0) {
 					throw new ApiException("Unable to update or insert option: " + option);
 				}
@@ -101,52 +105,56 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("options");
+		MongoCollection<Document> collection = getOptions();
 		ArrayList<Bson> pipeline = new ArrayList<>();
 		/* match on document type if required */
 		if (filter.getTypeCode() != null) {
-			pipeline.add(Aggregates.match(Filters.eq("type", filter.getType().getCode())));
+			pipeline.add(Aggregates.match(Filters.and(
+					Filters.eq("type", filter.getType().getCode()),
+					Filters.eq("env", getEnv()))));
 		}
 		pipeline.add(Aggregates.unwind("$options"));
 		/* match on fields if required */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
 		pipeline.add(Aggregates.facet(
-				new Facet("totalCount", 
-						Aggregates.count()), 
+				new Facet("totalCount",
+						Aggregates.count()),
 				new Facet("results", List.of(
-						Aggregates.sort(sorting(paging, "options")),
+						Aggregates.sort(BsonUtils.toBson(paging, "options")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
-		
+
 		/* single document because we have facets */
 		Document doc = collection.aggregate(pipeline).first();
 		JsonObject json = new JsonObject(doc.toJson());
-		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);		
+		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);
 		JsonArray results = json.getArray("results");
 		List<Option> content = results
 				.stream()
-				.map(o -> (JsonObject)o)
-				.map(o -> toOption(o.getObject("options"), Type.of(o.getString("type"))))
+				.map(o -> (JsonObject) o)
+				.map(o -> JsonUtils.toOption(o.getObject("options"), Type.of(o.getString("type"))))
 				.collect(Collectors.toList());
-		
+
 		return new FilteredPage<>(filter, paging, content, totalCount);
 	}
 
 	@Override
 	public long countOptions(OptionsFilter filter) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("options");
+		MongoCollection<Document> collection = getOptions();
 		ArrayList<Bson> pipeline = new ArrayList<>();
 		/* match on document type if required */
 		if (filter.getTypeCode() != null) {
-			pipeline.add(Aggregates.match(Filters.eq("type", filter.getType().getCode())));
+			pipeline.add(Aggregates.match(Filters.and(
+					Filters.eq("type", filter.getType().getCode()),
+					Filters.eq("env", getEnv()))));
 		}
 		/* unwind the options so we can search for a count of specific options */
 		pipeline.add(Aggregates.unwind("$options"));
 		/* create our matcher based on the filter */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -160,9 +168,11 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 
 	@Override
 	public Option findOption(OptionIdentifier optionId) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("options");
+		MongoCollection<Document> collection = getOptions();
 		Document doc = collection
-				.find(Filters.eq("type", optionId.getType().getCode()))
+				.find(Filters.and(
+						Filters.eq("type", optionId.getType().getCode()),
+						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.elemMatch("options", Filters.eq("optionId", optionId.getFullIdentifier()))))
 				.first();
@@ -170,73 +180,11 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 			return null;
 		}
 		JsonObject json = new JsonObject(doc.toJson());
+		/* check if we found anything in the document */
+		if (!json.contains("options")) {
+			return null;
+		}
 		JsonObject option = json.getArray("options").getObject(0);
-		return toOption(option, optionId.getType());
-	}
-
-	/**
-	 * Converts the option to a Bson for persistence
-	 * @param option
-	 * @return
-	 */
-	private BasicDBObject toBson(Option option) {
-		return new BasicDBObject()
-				.append("optionId", option.getOptionId().getFullIdentifier())
-				.append("parentId", option.getParentId() == null ? null : option.getParentId().getFullIdentifier())
-				.append("status", option.getStatus().getCode())
-				.append("mutable", option.getMutable())
-				.append("name", new BasicDBObject()
-						.append("code", option.getName().getCode())
-						.append("english", option.getName().getEnglishName())
-						.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
-						.append("french", option.getName().getFrenchName())
-						.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName())));
-	}
-
-	/**
-	 * Converts the json response back to an Option for persistence
-	 * @param option
-	 * @param type
-	 * @return
-	 */
-	private Option toOption(JsonObject option, Type type) {
-		return new Option(
-				type.generateId(option.getString("optionId")),
-				option.contains("parentId") ? IdentifierFactory.forOptionId(option.getString("parentId")) : null,
-				type,
-				Status.of(option.getString("status")),
-				option.getBoolean("mutable"),
-				new Localized(
-						option.getObject("name").getString("code"),
-						option.getObject("name").getString("english"),
-						option.getObject("name").getString("french")));
-	}
-	
-
-	/**
-	 * constructs a Bson based on the given Options Filter or null if no filtering provided
-	 * @param filter
-	 * @return
-	 */
-	private Bson toMatcher(OptionsFilter filter) {
-		List<Bson> filters = new ArrayList<>();
-		if (filter.getStatus() != null) {
-			filters.add(Filters.eq("options.status", filter.getStatusCode()));
-		}
-		if (filter.getParentId() != null) {
-			filters.add(Filters.eq("options.parentId", filter.getParentId().getFullIdentifier()));
-		}
-		if (StringUtils.isNotBlank(filter.getCode())) {
-			filters.add(Filters.or(
-					Filters.eq("options.name.code", filter.getCode()), 						// matches full code
-					Filters.regex("options.name.code", "/" + filter.getCode() + "$"))); 	// ends with /code
-		}
-		if (StringUtils.isNotBlank(filter.getEnglishName())) {
-			filters.add(Filters.eq("options.name.english_searchable", TextUtils.toSearchable(filter.getEnglishName())));
-		}		
-		if (StringUtils.isNotBlank(filter.getFrenchName())) {
-			filters.add(Filters.eq("options.name.french_searchable", TextUtils.toSearchable(filter.getFrenchName())));
-		}
-		return conjunction(filters);		
+		return JsonUtils.toOption(option, optionId.getType());
 	}
 }

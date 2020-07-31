@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -17,7 +16,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.UpdateResult;
 
-import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ApiException;
@@ -25,13 +23,11 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
-import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
-import ca.magex.crm.api.system.id.ProvinceIdentifier;
+import ca.magex.crm.mongodb.util.BsonUtils;
+import ca.magex.crm.mongodb.util.JsonUtils;
 import ca.magex.crm.mongodb.util.TextUtils;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
@@ -47,18 +43,19 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 	 * Creates our new MongoDB Backed Location Repository
 	 * @param mongoCrm
 	 * @param notifier
+	 * @param env
 	 */
-	public MongoLocationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier) {
-		super(mongoCrm, notifier);
+	public MongoLocationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
+		super(mongoCrm, notifier, env);
 	}
 
 	@Override
 	public LocationDetails saveLocationDetails(LocationDetails location) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
-
+		MongoCollection<Document> collection = getOrganizations();
 		/* add all the fields that can be updated */
 		final UpdateResult setResult = collection.updateOne(
 				new BasicDBObject()
+						.append("env", getEnv())
 						.append("organizationId", location.getOrganizationId().getFullIdentifier())
 						.append("locations.locationId", location.getLocationId().getFullIdentifier()),
 				new BasicDBObject()
@@ -67,17 +64,18 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 								.append("locations.$.reference", location.getReference())
 								.append("locations.$.displayName", location.getDisplayName())
 								.append("locations.$.displayName_searchable", TextUtils.toSearchable(location.getDisplayName()))
-								.append("locations.$.address", toBson(location.getAddress()))));
+								.append("locations.$.address", BsonUtils.toBson(location.getAddress()))));
 		if (setResult.getMatchedCount() == 0) {
 			/* if we had no matching location id, then we need to do a push to the locations */
 			final UpdateResult pushResult = collection.updateOne(
 					new BasicDBObject()
+							.append("env", getEnv())
 							.append("organizationId", location.getOrganizationId().getFullIdentifier())
 							.append("locations.locationId", new BasicDBObject()
 									.append("$ne", location.getLocationId().getFullIdentifier())),
 					new BasicDBObject()
 							.append("$push", new BasicDBObject()
-									.append("locations", toBson(location))));
+									.append("locations", BsonUtils.toBson(location))));
 			if (pushResult.getModifiedCount() == 0) {
 				throw new ApiException("Unable to update or insert location: " + location);
 			}
@@ -91,51 +89,56 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 
 	@Override
 	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		Document doc = collection
-				.find(Filters.eq("locations.locationId", locationId.getFullIdentifier()))
+				.find(Filters.and(
+						Filters.eq("locations.locationId", locationId.getFullIdentifier()),
+						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
-						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier()))))
-				.projection(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address"))
+						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier())),
+						Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address")))
 				.first();
 		if (doc == null) {
 			return null;
 		}
 		JsonObject json = new JsonObject(doc.toJson());
-		return toDetails(
+		return JsonUtils.toLocationDetails(
 				json.getArray("locations").getObject(0), 
 				new OrganizationIdentifier(json.getString("organizationId")));
 	}
 
 	@Override
 	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		Document doc = collection
-				.find(Filters.eq("locations.locationId", locationId.getFullIdentifier()))
-				.projection(Projections.fields(
-						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier()))))
-				.projection(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName"))				
+				.find(Filters.and(
+						Filters.eq("locations.locationId", locationId.getFullIdentifier()),
+						Filters.eq("env", getEnv())))
+				.projection(Projections.fields(						
+						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier())),
+						Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName")))				
 				.first();
 		if (doc == null) {
 			return null;
 		}
 		JsonObject json = new JsonObject(doc.toJson());
-		return toSummary(
+		return JsonUtils.toLocationSummary(
 				json.getArray("locations").getObject(0), 
 				new OrganizationIdentifier(json.getString("organizationId")));
 	}
 
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		ArrayList<Bson> pipeline = new ArrayList<>();
+		pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		/* match an organization if required */
 		if (filter.getOrganizationId() != null) {
 			pipeline.add(Aggregates.match(Filters.eq("organizationId", filter.getOrganizationId().getFullIdentifier())));
 		}
 		pipeline.add(Aggregates.unwind("$locations"));
 		/* match on fields if required */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -144,7 +147,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 						Aggregates.count()), 
 				new Facet("results", List.of(
 						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address")),
-						Aggregates.sort(sorting(paging, "locations")),
+						Aggregates.sort(BsonUtils.toBson(paging, "locations")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
 		
@@ -156,7 +159,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		List<LocationDetails> content = results
 				.stream()
 				.map(o -> (JsonObject)o)
-				.map(o -> toDetails(o.getObject("locations"), new OrganizationIdentifier(o.getString("organizationId"))))
+				.map(o -> JsonUtils.toLocationDetails(o.getObject("locations"), new OrganizationIdentifier(o.getString("organizationId"))))
 				.collect(Collectors.toList());
 		
 		return new FilteredPage<>(filter, paging, content, totalCount);
@@ -164,15 +167,16 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummary(LocationsFilter filter, Paging paging) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		ArrayList<Bson> pipeline = new ArrayList<>();
+		pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		/* match an organization if required */
 		if (filter.getOrganizationId() != null) {
 			pipeline.add(Aggregates.match(Filters.eq("organizationId", filter.getOrganizationId().getFullIdentifier())));
 		}
 		pipeline.add(Aggregates.unwind("$locations"));
 		/* match on fields if required */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -181,7 +185,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 						Aggregates.count()), 
 				new Facet("results", List.of(
 						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName")),
-						Aggregates.sort(sorting(paging, "locations")),
+						Aggregates.sort(BsonUtils.toBson(paging, "locations")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
 		
@@ -193,7 +197,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		List<LocationSummary> content = results
 				.stream()
 				.map(o -> (JsonObject)o)
-				.map(o -> toSummary(o.getObject("locations"), new OrganizationIdentifier(o.getString("organizationId"))))
+				.map(o -> JsonUtils.toLocationSummary(o.getObject("locations"), new OrganizationIdentifier(o.getString("organizationId"))))
 				.collect(Collectors.toList());
 		
 		return new FilteredPage<>(filter, paging, content, totalCount);
@@ -201,8 +205,9 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 
 	@Override
 	public long countLocations(LocationsFilter filter) {
-		MongoCollection<Document> collection = getMongoCrm().getCollection("organizations");
+		MongoCollection<Document> collection = getOrganizations();
 		ArrayList<Bson> pipeline = new ArrayList<>();
+		pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		/* match on document type if required */
 		if (filter.getOrganizationId() != null) {
 			pipeline.add(Aggregates.match(Filters.eq("organizationId", filter.getOrganizationId().getFullIdentifier())));
@@ -210,7 +215,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		/* unwind the options so we can search for a count of specific locations */
 		pipeline.add(Aggregates.unwind("$locations"));
 		/* create our matcher based on the filter */
-		Bson fieldMatcher = toMatcher(filter);
+		Bson fieldMatcher = BsonUtils.toBson(filter);
 		if (fieldMatcher != null) {
 			pipeline.add(Aggregates.match(fieldMatcher));
 		}
@@ -221,130 +226,4 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 		}
 		return new JsonObject(doc.toJson()).getLong("count");
 	}
-
-	private BasicDBObject toBson(LocationDetails location) {
-		return new BasicDBObject()
-				.append("organizationId", location.getOrganizationId().getFullIdentifier())
-				.append("locationId", location.getLocationId().getFullIdentifier())
-				.append("status", location.getStatus().getCode())
-				.append("reference", location.getReference())
-				.append("displayName", location.getDisplayName())
-				.append("displayName_searchable", TextUtils.toSearchable(location.getDisplayName()))
-				.append("address", toBson(location.getAddress()));
-	}
-	
-	private BasicDBObject toBson(MailingAddress address) {
-		if (address == null) {
-			return null;	
-		}
-		return new BasicDBObject()
-				.append("street", address.getStreet())
-				.append("city", address.getCity())
-				.append("province", toBson(address.getProvince()))					
-				.append("country", toBson(address.getCountry()))				
-				.append("postalCode", address.getPostalCode());
-	}
-	
-	private BasicDBObject toBson(Choice<?> choice) {
-		if (choice == null || choice.isEmpty()) {
-			return new BasicDBObject()
-					.append("identifier", null)
-					.append("other", null);
-		}
-		else if (choice.isIdentifer()) {
-			return new BasicDBObject()
-					.append("identifier", choice.getIdentifier().getFullIdentifier())
-					.append("other", null);
-		}
-		else {
-			return new BasicDBObject()
-					.append("identifier", null)
-					.append("other", choice.getOther());
-		}
-	}
-
-	/**
-	 * converts to a summary
-	 * @param json
-	 * @return
-	 */
-	private LocationSummary toSummary(JsonObject json, OrganizationIdentifier organizationId) {
-		return new LocationSummary(
-				new LocationIdentifier(json.getString("locationId")),
-				new OrganizationIdentifier(organizationId),
-				Status.of(json.getString("status")),
-				json.getString("reference"),
-				json.getString("displayName"));
-	}
-	
-	/**
-	 * converts to a summary
-	 * @param json
-	 * @return
-	 */
-	private LocationDetails toDetails(JsonObject json, OrganizationIdentifier organizationId) {
-		return new LocationDetails(
-				new LocationIdentifier(json.getString("locationId")),
-				new OrganizationIdentifier(organizationId),
-				Status.of(json.getString("status")),
-				json.getString("reference"),
-				json.getString("displayName"),
-				toMailingAddress(json.getObject("address")));
-	}
-	
-	private MailingAddress toMailingAddress(JsonObject json) {
-		if (json == null) {
-			return null;
-		}
-		return new MailingAddress(
-				json.getString("street"),
-				json.getString("city"),
-				toProvince(json.getObject("province")),
-				toCountry(json.getObject("country")),
-				json.getString("postalCode"));
-	}
-	
-	private Choice<ProvinceIdentifier> toProvince(JsonObject json) {
-		if (json.contains("identifier")) {
-			return new Choice<>(new ProvinceIdentifier(json.getString("identifier")));
-		}
-		else if (json.contains("other")) {
-			return new Choice<>(json.getString("other"));
-		}
-		else {
-			return new Choice<>();
-		}
-	}
-	
-	private Choice<CountryIdentifier> toCountry(JsonObject json) {
-		if (json.contains("identifier")) {
-			return new Choice<>(new CountryIdentifier(json.getString("identifier")));
-		}
-		else if (json.contains("other")) {
-			return new Choice<>(json.getString("other"));
-		}
-		else {
-			return new Choice<>();
-		}
-	}
-		
-	/**
-	 * constructs a Bson based on the given Options Filter or null if no filtering provided
-	 * @param filter
-	 * @return
-	 */
-	private Bson toMatcher(LocationsFilter filter) {
-		List<Bson> filters = new ArrayList<>();
-		if (filter.getStatus() != null) {
-			filters.add(Filters.eq("locations.status", filter.getStatusCode()));
-		}		
-		if (StringUtils.isNotBlank(filter.getReference())) {
-			filters.add(Filters.eq("locations.reference", filter.getReference()));
-		}
-		if (StringUtils.isNotBlank(filter.getDisplayName())) {
-			filters.add(Filters.eq("locations.displayName_searchable", TextUtils.toSearchable(filter.getDisplayName())));
-		}
-		return conjunction(filters);		
-	}
-	
 }
