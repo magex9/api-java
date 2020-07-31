@@ -2,8 +2,6 @@ package ca.magex.crm.transform.json;
 
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -11,7 +9,6 @@ import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
-@Component
 public class StatusJsonTransformer extends AbstractJsonTransformer<Status> {
 
 	public StatusJsonTransformer(CrmOptionService crm) {

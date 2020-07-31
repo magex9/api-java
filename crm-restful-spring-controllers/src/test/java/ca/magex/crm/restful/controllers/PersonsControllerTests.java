@@ -26,6 +26,7 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.transform.json.CommunicationJsonTransformer;
 import ca.magex.crm.transform.json.IdentifierJsonTransformer;
 import ca.magex.crm.transform.json.MailingAddressJsonTransformer;
+import ca.magex.crm.transform.json.OptionJsonTransformer;
 import ca.magex.crm.transform.json.PersonNameJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
@@ -855,9 +856,9 @@ public class PersonsControllerTests extends AbstractControllerTests {
 
 		JsonObject linked = patch(personId, null, HttpStatus.OK, new JsonObject()
 			.with("businessRoleIds", new JsonArray()
-				.with(new IdentifierJsonTransformer(crm).format(BusinessRoleIdentifier.EXTERNAL_OWNER, null))
-				.with(new IdentifierJsonTransformer(crm).format(BusinessRoleIdentifier.EXTERNAL_EMPLOYEE, null))
-				.with(new IdentifierJsonTransformer(crm).format(BusinessRoleIdentifier.EXTERNAL_CONTACT, null))));
+				.with(new OptionJsonTransformer(crm).format(crm.findOption(BusinessRoleIdentifier.EXTERNAL_OWNER), null))
+				.with(new OptionJsonTransformer(crm).format(crm.findOption(BusinessRoleIdentifier.EXTERNAL_EMPLOYEE), null))
+				.with(new OptionJsonTransformer(crm).format(crm.findOption(BusinessRoleIdentifier.EXTERNAL_CONTACT), null))));
 			
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), linked.keys());

@@ -32,10 +32,10 @@ import ca.magex.json.model.JsonObject;
 public class OrganizationsController extends AbstractCrmController {
 	
 	@GetMapping("/rest/organizations")
-	public void findOrganizationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
+	public void findOrganizationSumaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
-				crm.findOrganizationDetails(
+				crm.findOrganizationSummaries(
 					extractOrganizationFilter(locale, req), 
 					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
 				), transformer, locale
@@ -43,11 +43,11 @@ public class OrganizationsController extends AbstractCrmController {
 		});
 	}
 	
-	@GetMapping("/rest/organizations/summaries")
-	public void findOrganizationSumaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
+	@GetMapping("/rest/organizations/details")
+	public void findOrganizationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
 			return createPage(
-				crm.findOrganizationSummaries(
+				crm.findOrganizationDetails(
 					extractOrganizationFilter(locale, req), 
 					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
 				), transformer, locale
@@ -86,6 +86,14 @@ public class OrganizationsController extends AbstractCrmController {
 	}
 
 	@GetMapping("/rest/organizations/{organizationId}")
+	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/details")
 	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
@@ -114,14 +122,6 @@ public class OrganizationsController extends AbstractCrmController {
 				crm.updateOrganizationBusinessGroups(organizationId, getOptionIdentifiers(body, "businessGroupIds", true, List.of(), organizationId, messages, BusinessGroupIdentifier.class, locale));
 			}
 			validate(messages);
-			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
-		});
-	}
-
-	@GetMapping("/rest/organizations/{organizationId}/summary")
-	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
 		});
 	}

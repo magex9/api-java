@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.services.CrmOptionService;
@@ -15,7 +13,6 @@ import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class CommunicationJsonTransformer extends AbstractJsonTransformer<Communication> {
 	
 	public CommunicationJsonTransformer(CrmOptionService crm) {

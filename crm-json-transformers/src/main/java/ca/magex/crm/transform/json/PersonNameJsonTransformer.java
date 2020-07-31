@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Choice;
@@ -14,7 +12,6 @@ import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonName> {
 	
 	public PersonNameJsonTransformer(CrmOptionService crm) {

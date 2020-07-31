@@ -16,6 +16,7 @@ import ca.magex.crm.api.repositories.basic.BasicRepositories;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
 public class RestfulCrmConfigurer implements CrmConfigurer {
@@ -23,6 +24,11 @@ public class RestfulCrmConfigurer implements CrmConfigurer {
 	@Bean 
 	public PlatformTransactionManager txManager() {
 		return Mockito.mock(PlatformTransactionManager.class);
+	}
+	
+	@Bean 
+	public JsonTransformerFactory jsonTransformerFactory() {
+		return new JsonTransformerFactory(services());
 	}
 	
 	@Bean 

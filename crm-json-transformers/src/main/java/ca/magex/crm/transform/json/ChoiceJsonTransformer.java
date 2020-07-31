@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Choice;
@@ -20,7 +18,6 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 import ca.magex.json.util.StringConverter;
 
-@Component
 public class ChoiceJsonTransformer<I extends OptionIdentifier> extends AbstractJsonTransformer<Choice<I>> {
 
 	public ChoiceJsonTransformer(CrmOptionService crm) {

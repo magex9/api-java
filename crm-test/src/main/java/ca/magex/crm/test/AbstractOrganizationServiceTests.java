@@ -82,21 +82,21 @@ public abstract class AbstractOrganizationServiceTests {
 		AuthenticationGroupIdentifier QUEBEC = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();	
 		
 		/* create */
-		OrganizationDetails o1 = organizations().createOrganization("Maple Leafs", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("IMIT")));
+		OrganizationDetails o1 = organizations().createOrganization("Maple Leafs", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
 		Assert.assertEquals("Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
 		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertNull(o1.getMainLocationId());
 		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
 		Assert.assertEquals(o1.asSummary(), organizations().findOrganizationSummary(o1.getOrganizationId()));
-		OrganizationDetails o2 = organizations().createOrganization("Senators", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("IMIT")));
+		OrganizationDetails o2 = organizations().createOrganization("Senators", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
 		Assert.assertEquals("Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
 		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertNull(o2.getMainLocationId());
 		Assert.assertEquals(o2, organizations().findOrganizationDetails(o2.getOrganizationId()));
 		Assert.assertEquals(o2.asSummary(), organizations().findOrganizationSummary(o2.getOrganizationId()));
-		OrganizationDetails o3 = organizations().createOrganization("Canadiens", List.of(new AuthenticationGroupIdentifier("NHL")), List.of(new BusinessGroupIdentifier("IMIT")));
+		OrganizationDetails o3 = organizations().createOrganization("Canadiens", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
 		Assert.assertEquals("Canadiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
 		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
@@ -417,7 +417,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCreateOrgWithMissingGroup() throws Exception {				
 		try {
-			organizations().createOrganization("INVALID", List.of(new AuthenticationGroupIdentifier("MISSING")), List.of(new BusinessGroupIdentifier("ORG")));
+			organizations().createOrganization("INVALID", List.of(new AuthenticationGroupIdentifier("MISSING")), List.of(BusinessGroupIdentifier.EXTERNAL));
 			fail("Should have gotten bad request");
 		} catch (BadRequestException e) {
 			assertEquals("Bad Request: Organization has validation errors", e.getMessage());
@@ -428,7 +428,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testOrgWithNoName() throws Exception {
 		try {
-			organizations().createOrganization("", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("ORG")));
+			organizations().createOrganization("", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.EXTERNAL));
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
 			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
@@ -438,7 +438,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testOrgWithLongName() throws Exception {
 		try {
-			organizations().createOrganization("The organization can only have a name with a maximum or 60 characters", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
+			organizations().createOrganization("The organization can only have a name with a maximum or 60 characters", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.EXTERNAL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
 			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_MAXLENGTH));
@@ -448,7 +448,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testOrgWithNoGroup() throws Exception {
 		try {
-			organizations().createOrganization("Org", List.of(), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
+			organizations().createOrganization("Org", List.of(), List.of(BusinessGroupIdentifier.EXTERNAL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
 			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "authenticationGroupIds", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
@@ -460,7 +460,7 @@ public abstract class AbstractOrganizationServiceTests {
 		AuthenticationGroupIdentifier authGroupA = (AuthenticationGroupIdentifier) config().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("A", "A", "A")).getOptionId();
 		config().disableOption(authGroupA);
 		
-		OrganizationDetails organization = organizations().createOrganization("ORG", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT")));
+		OrganizationDetails organization = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT));
 
 		try {
 			organizations().updateOrganizationAuthenticationGroups(organization.getOrganizationId(), List.of(authGroupA));
@@ -472,7 +472,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledMainLocation() throws Exception {
-		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		LocationIdentifier locationId = config().createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 		config().disableLocation(locationId);
 
@@ -486,7 +486,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledMainContact() throws Exception {
-		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.PERSON_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
 		config().disablePerson(personId);
 
@@ -500,8 +500,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCreatingOrgWithMainContactFromOtherOrg() throws Exception {
-		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
-		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		PersonIdentifier personB = config().createPerson(organizationB, CrmAsserts.PERSON_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
 
 		try {
@@ -514,8 +514,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCreatingOrgWithMainLocationFromOtherOrg() throws Exception {
-		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
-		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))).getOrganizationId();
+		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		LocationIdentifier locationB = config().createLocation(organizationB, "B", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 
 		try {
@@ -530,7 +530,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
 		List<Message> messages = CrmOrganizationService.validateOrganizationDetails(
 				config(), 
-				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(new AuthenticationGroupIdentifier("SYS")), List.of(new BusinessGroupIdentifier("IMIT"))));
+				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)));
 		assertEquals(1, messages.size());
 		CrmAsserts.assertMessage(messages.get(0), new OrganizationIdentifier("org"), "/options/message-types/ERROR", "status", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 	}

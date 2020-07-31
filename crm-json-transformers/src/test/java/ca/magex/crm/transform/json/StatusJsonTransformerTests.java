@@ -16,6 +16,7 @@ import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.transform.TestCrm;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
@@ -50,8 +51,9 @@ public class StatusJsonTransformerTests {
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(Status.ACTIVE, null);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("@context", "@value", "@en", "@fr"), root.keys());
-		assertEquals("http://magex.ca/crm/options/Statuses", root.getString("@context"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), root.keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", root.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", root.getString("@id"));
 		assertEquals("ACTIVE", root.getString("@value"));
 		assertEquals("Active", root.getString("@en"));
 		assertEquals("Actif", root.getString("@fr"));

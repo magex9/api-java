@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.services.CrmOptionService;
@@ -15,7 +13,6 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<LocationDetails> {
 
 	public LocationDetailsJsonTransformer(CrmOptionService crm) {
