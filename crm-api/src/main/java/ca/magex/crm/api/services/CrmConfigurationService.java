@@ -171,7 +171,7 @@ public interface CrmConfigurationService {
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CTO", "Chief Technology Officer", "Directeur de la technologie"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CSO", "Chief Security Officer", "Directeur de sécurité"));
 
-		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.IMIT.getCode(), "IM/IT", "GI/TI"));
+		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.IMIT.getCode(), "IM/IT", "GI / TI"));
 		createNestedOption(repos, imitId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("DIRECTOR", "Director", "Réalisateur"));
 
 		OptionIdentifier opsId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("OPS", "Operations", "Operations"));

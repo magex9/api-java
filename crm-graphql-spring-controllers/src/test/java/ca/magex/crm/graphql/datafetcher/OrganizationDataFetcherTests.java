@@ -47,7 +47,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -73,7 +73,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -99,7 +99,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -125,7 +125,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -151,7 +151,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -190,7 +190,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -216,7 +216,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -257,7 +257,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -284,7 +284,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -325,7 +325,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -367,7 +367,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -395,7 +395,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -437,7 +437,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -465,7 +465,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -490,7 +490,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -515,7 +515,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -543,7 +543,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -571,7 +571,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -599,7 +599,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(1, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 
 		/* update groups - change group */
 		johnnuy = execute(
@@ -649,7 +649,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
@@ -676,7 +676,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
 		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI/TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
 		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
