@@ -18,10 +18,13 @@ public class BadRequestException extends ApiException {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	private String reason;
+	
 	private List<Message> messages;
 
-	public BadRequestException(String message, List<Message> messages) {
-		super("Bad Request: " + message);
+	public BadRequestException(String reason, List<Message> messages) {
+		super("Bad Request: " + reason);
+		this.reason = reason;
 		this.messages = messages;
 	}
 
@@ -35,6 +38,10 @@ public class BadRequestException extends ApiException {
 	
 	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, Choice<PhraseIdentifier> reason) {
 		this(message, Arrays.asList(new Message(base, type, path, value, reason)));
+	}
+	
+	public String getReason() {
+		return reason;
 	}
 
 	@Override
