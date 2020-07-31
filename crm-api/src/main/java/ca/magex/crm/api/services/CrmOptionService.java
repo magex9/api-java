@@ -25,7 +25,11 @@ public interface CrmOptionService {
 	default Option prototypeOption(Option parent, Type type, Localized name) {
 		/* if we have a parent provided, then we need to prepend the parent code */
 		if (parent != null) {
-			return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name.withCode(parent.getCode() + "/" + name.getCode()));
+			if (name.getCode().startsWith(parent.getCode() + "/")) {
+				return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name);
+			} else {
+				return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name.withCode(parent.getCode() + "/" + name.getCode()));
+			}
 		}
 		/* no parent provided just do a pass through */
 		else {
