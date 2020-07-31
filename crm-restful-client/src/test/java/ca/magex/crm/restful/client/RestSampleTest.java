@@ -2,6 +2,7 @@ package ca.magex.crm.restful.client;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,22 +20,25 @@ import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestClientTestConfig.class })
 @ActiveProfiles(profiles = {
-		CrmProfiles.AUTH_EMBEDDED_JWT,
-		CrmProfiles.CRM_NO_AUTH,
-		CrmProfiles.DEV
+	CrmProfiles.AUTH_EMBEDDED_JWT,
+	CrmProfiles.CRM_NO_AUTH,
+	CrmProfiles.DEV
 })
-public class OrganizationsTest {
+public class RestSampleTest {
 	
 	@LocalServerPort private int randomPort;
 	
+	private CrmServices crm;
+
+	@Before
+	public void setup() {
+		crm = new RestTemplateClient("http://localhost:" + randomPort + "/crm", null, "admin", "admin").getServices();
+	}
+	
 	@Test
-	public void testCreatingOrg() throws Exception {
-		CrmServices crm = new RestTemplateClient("http://localhost:" + randomPort + "/crm", null, "admin", "admin").getServices();
-		
+	public void testSomething() throws Exception {
 		crm.findOrganizationDetails(new OrganizationsFilter()).getContent().forEach(o -> System.out.println(o.getDisplayName() + " (" + o.getOrganizationId() + ")"));
-		
 		OrganizationDetails org = crm.createOrganization("Scotts Org", List.of(AuthenticationGroupIdentifier.ORG), List.of(BusinessGroupIdentifier.EXTERNAL));
-		
 		System.out.println(org.getDisplayName() + " (" + org.getOrganizationId() + ")");
 	}
 	
