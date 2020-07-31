@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OptionsFilter;
-import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -59,7 +58,11 @@ public class OptionsController extends AbstractCrmController {
 		OptionIdentifier parentId = req.getParameter("parentId") == null ? null : IdentifierFactory.forOptionId(req.getParameter("parentId"));
 		Status status = req.getParameter("status") == null ? null : new StatusJsonTransformer(crm).parseJsonText(new JsonText(req.getParameter("status")), locale);
 		Type type = req.getParameter("type") == null ? null : Type.of(req.getParameter("type").toUpperCase());
-		Localized name = req.getParameter("name") == null ? null : new Localized(locale == null ? Lang.ROOT : locale, req.getParameter("name"));
+		Localized name = new Localized(
+			req.getParameter("name") == null ? "" : req.getParameter("name"), 
+			req.getParameter("name.en") == null ? "" : req.getParameter("name.en"), 
+			req.getParameter("name.fr") == null ? "" : req.getParameter("name.fr")
+		);
 		return new OptionsFilter(name, parentId, type, status);
 	}
 
@@ -75,26 +78,20 @@ public class OptionsController extends AbstractCrmController {
 		});
 	}
 
-	@GetMapping("/rest/options/{optionId}")
-	public void getOption(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("optionId") OptionIdentifier optionId) throws IOException {
+	@GetMapping("/rest/options/{typeCode}/**")
+	public void getOptionByCode(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("typeCode") String typeCode) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
+			OptionIdentifier optionId = IdentifierFactory.forOptionId(req.getRequestURI().split(req.getContextPath() + "/rest")[1]);
 			return transformer.format(crm.findOption(optionId), locale);
 		});
 	}
 
-	@GetMapping("/rest/options/{typeCode}/{optionCode}")
-	public void getOptionByCode(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
-		handle(req, res, Option.class, (messages, transformer, locale) -> {
-			return transformer.format(crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()), locale);
-		});
-	}
-
-	@PatchMapping("/rest/options/{optionId}")
+	@PatchMapping("/rest/options/{typeCode}/**")
 	public void updateOption(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("optionId") OptionIdentifier optionId) throws IOException {
+			@PathVariable("typeCode") String typeCode) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
+			OptionIdentifier optionId = IdentifierFactory.forOptionId(req.getRequestURI().split(req.getContextPath() + "/rest")[1]);
 			JsonObject body = extractBody(req);
 			String code = getString(body, "code", false, "", null, messages);
 			String english = getString(body, "english", false, "", null, messages);
@@ -106,43 +103,24 @@ public class OptionsController extends AbstractCrmController {
 		});
 	}
 
-	@PatchMapping("/rest/options/{typeCode}/{optionCode}")
-	public void updateOptionByCode(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
-		OptionIdentifier optionId = crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()).getOptionId();
-		updateOption(req, res, optionId);
-	}
-
-	@PutMapping("/rest/options/{optionId}/enable")
+	@PutMapping("/rest/options/{typeCode}/**/enable")
 	public void enableOption(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("optionId") OptionIdentifier optionId) throws IOException {
+			@PathVariable("typeCode") String typeCode) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
+			OptionIdentifier optionId = IdentifierFactory.forOptionId(req.getRequestURI().split(req.getContextPath() + "/rest")[1].replaceAll("/enable$", ""));
 			confirm(extractBody(req), optionId, messages);
 			return transformer.format(crm.enableOption(optionId), locale);
 		});
 	}
 
-	@PutMapping("/rest/options/{typeCode}/{optionCode}/enable")
-	public void enableOptionByCode(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
-		OptionIdentifier optionId = crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()).getOptionId();
-		enableOption(req, res, optionId);
-	}
-
-	@PutMapping("/rest/options/{optionId}/disable")
+	@PutMapping("/rest/options/{typeCode}/**/disable")
 	public void disableOption(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("optionId") OptionIdentifier optionId) throws IOException {
+			@PathVariable("typeCode") String typeCode) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
+			OptionIdentifier optionId = IdentifierFactory.forOptionId(req.getRequestURI().split(req.getContextPath() + "/rest")[1].replaceAll("/disable$", ""));
 			confirm(extractBody(req), optionId, messages);
 			return transformer.format(crm.disableOption(optionId), locale);
 		});
-	}
-
-	@PutMapping("/rest/options/{typeCode}/{optionCode}/disable")
-	public void disableOptionByCode(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("typeCode") String typeCode, @PathVariable("optionCode") String optionCode) throws IOException {
-		OptionIdentifier optionId = crm.findOptionByCode(Type.of(typeCode.toUpperCase()), optionCode.toUpperCase()).getOptionId();
-		disableOption(req, res, optionId);
 	}
 
 }

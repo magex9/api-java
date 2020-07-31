@@ -1,6 +1,7 @@
 package ca.magex.crm.restful.client;
 
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -14,19 +15,29 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.restful.client.services.RestfulOptionService;
+import ca.magex.crm.restful.client.services.RestfulOrganizationService;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 import ca.magex.crm.transform.json.MessageJsonTransformer;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonParser;
@@ -39,19 +50,36 @@ public class RestTemplateClient {
 	
 	private Locale locale;
 	
-	private CrmServices crm;
-	
 	private String authToken;
 	
 	private RestTemplate restTemplate;
 	
-	public RestTemplateClient(String server, Locale locale, CrmServices crm, String username, String password) {
+	private RestfulOptionService options;
+	
+	private RestfulOrganizationService organizations;
+	
+	private JsonTransformerFactory transformers;
+	
+	private CrmServices services;
+	
+	public RestTemplateClient(String server, Locale locale, String username, String password) {
 		this.server = server;
 		this.locale = locale;
-		this.crm = crm;
 		this.restTemplate = new RestTemplate();
 		this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+		this.restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
 		this.authToken = authenticateJwt(username, password);
+		this.options = new RestfulOptionService(this);
+		this.organizations = new RestfulOrganizationService(this);
+		this.transformers = new JsonTransformerFactory(this.options);
+		this.services = new CrmServicesAdapter(
+			null, 
+			options, 
+			organizations, 
+			null, 
+			null, 
+			null
+		);
 	}
 	
 	private String authenticateJwt(String username, String password) {
@@ -101,7 +129,19 @@ public class RestTemplateClient {
 	public String getAuthToken() {
 		return authToken;
 	}
-
+	
+	public RestfulOptionService getOptions() {
+		return options;
+	}
+	
+	public RestfulOrganizationService getOrganizations() {
+		return organizations;
+	}
+	
+	public CrmServices getServices() {
+		return services;
+	}
+	
 	public <T extends JsonElement> T get(Object endpoint) {
 		return get(endpoint, new JsonObject());
 	}
@@ -119,11 +159,12 @@ public class RestTemplateClient {
 			logger.debug("Get response: " + response.getBody());
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
-			throw new ItemNotFoundException(url);
+			JsonObject json = new JsonObject(e.getResponseBodyAsString());
+			throw new ItemNotFoundException(json.getString("reason"));
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -141,11 +182,12 @@ public class RestTemplateClient {
 			logger.debug("Post response: " + response.getBody());
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
-			throw new ItemNotFoundException(url);
+			JsonObject json = new JsonObject(e.getResponseBodyAsString());
+			throw new ItemNotFoundException(json.getString("reason"));
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -163,11 +205,12 @@ public class RestTemplateClient {
 			logger.debug("Put response: " + response.getBody());
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
-			throw new ItemNotFoundException(url);
+			JsonObject json = new JsonObject(e.getResponseBodyAsString());
+			throw new ItemNotFoundException(json.getString("reason"));
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -185,11 +228,12 @@ public class RestTemplateClient {
 			logger.debug("Patch response: " + response.getBody());
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
-			throw new ItemNotFoundException(url);
+			JsonObject json = new JsonObject(e.getResponseBodyAsString());
+			throw new ItemNotFoundException(json.getString("reason"));
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
-			MessageJsonTransformer transformer = new MessageJsonTransformer(crm);
+			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
@@ -197,5 +241,47 @@ public class RestTemplateClient {
 			throw new BadRequestException(url, messages);
 		}
 	}
+	
+	public <T> T parse(JsonElement el, Class<T> cls) {
+		return transformers.findByClass(cls).parse(el, locale);
+	}
+	
+	public <T> List<T> parseList(JsonArray el, Class<T> cls) {
+		Transformer<T, JsonElement> transformer = transformers.findByClass(cls);
+		return el.stream().map(e -> transformer.parse(e, locale)).collect(Collectors.toList());
+	}
 
+	public <T> JsonObject format(T obj, Class<T> cls) {
+		return (JsonObject)transformers.findByClass(cls).format(obj, locale);
+	}
+	
+	public <T> JsonArray formatList(List<T> list, Class<T> cls) {
+		Transformer<T, JsonElement> transformer = transformers.findByClass(cls);
+		return new JsonArray(list.stream()
+			.map(o -> transformer.format(o, locale))
+			.collect(Collectors.toList()));
+	}
+	
+	public <I extends Identifier> JsonElement formatIdentifier(I identifier) {
+		return transformers.findByClass(Identifier.class).format(identifier, locale);
+	}
+
+	public <I extends Identifier> JsonElement formatIdentifiers(List<I> identifiers) {
+		Transformer<Identifier, JsonElement> transformer = transformers.findByClass(Identifier.class);
+		return new JsonArray(identifiers.stream()
+			.map(i -> transformer.format(i, locale))
+			.collect(Collectors.toList()));
+	}
+	
+	public <I extends OptionIdentifier> JsonElement formatOption(I identifier) {
+		return transformers.findByClass(Option.class).format(options.findOption(identifier), locale);
+	}
+
+	public <I extends OptionIdentifier> JsonElement formatOptions(List<I> identifiers) {
+		Transformer<Option, JsonElement> transformer = transformers.findByClass(Option.class);
+		return new JsonArray(identifiers.stream()
+			.map(i -> transformer.format(options.findOption(i), locale))
+			.collect(Collectors.toList()));
+		
+	}
 }

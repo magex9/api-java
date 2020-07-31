@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.crm.LocationSummary;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<LocationSummary> {
 	
-	public LocationSummaryJsonTransformer(CrmServices crm) {
+	public LocationSummaryJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

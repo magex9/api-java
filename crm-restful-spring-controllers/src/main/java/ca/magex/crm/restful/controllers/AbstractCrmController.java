@@ -2,6 +2,7 @@ package ca.magex.crm.restful.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -76,6 +77,10 @@ public abstract class AbstractCrmController {
 		} catch (ItemNotFoundException e) {
 			logger.info("Item not found:" + req.getPathInfo(), e);
 			res.setStatus(404);
+			res.getWriter().write(new JsonObject()
+				.with("reason", e.getReason())
+				.with("error", e.getErrorCode())
+				.toString());
 		} catch (Exception e) {
 			logger.error("Exception handling request:" + req.getPathInfo(), e);
 			res.setStatus(500);
@@ -135,7 +140,8 @@ public abstract class AbstractCrmController {
 	protected <I extends OptionIdentifier> List<I> getOptionIdentifiers(JsonObject json, String key, boolean required, List<I> defaultValue, Identifier identifier, List<Message> messages, Class<I> cls, Locale locale) {
 		try {
 			if (locale == null) {
-				return json.getArray(key).stream().map(e -> (I)IdentifierFactory.forOptionId(((JsonText)e).value())).collect(Collectors.toList());
+				//return json.getArray(key, JsonText.class).stream().map(e -> (I)IdentifierFactory.forOptionId(e.value())).collect(Collectors.toList());
+				return json.getArray(key, JsonObject.class).stream().map(e -> (I)IdentifierFactory.forOptionId(e.getString("@id"))).collect(Collectors.toList());
 			} else {
 				return json.getArray(key).stream()
 					.map(e -> (I)crm.findOptions(crm.defaultOptionsFilter().withType(IdentifierFactory.getType(cls)).withName(new Localized(locale, ((JsonText)e).value()))).getSingleItem().getOptionId())
@@ -235,7 +241,7 @@ public abstract class AbstractCrmController {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			StreamUtils.copy(req.getInputStream(), baos);
-			String json = new String(baos.toByteArray());
+			String json = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 			if (StringUtils.isBlank(json))
 				return new JsonObject();
 			return JsonParser.parseObject(json);

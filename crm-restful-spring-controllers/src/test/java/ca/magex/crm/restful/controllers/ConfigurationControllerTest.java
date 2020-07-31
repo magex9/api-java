@@ -83,21 +83,24 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 				.with("firstName", "First")
 				.with("lastName", "Last")
 				.with("email", "system@admin.com")
-				.with("username", "system")
+				.with("username", "admin")
 				.with("password", "admin")
 				.toString())
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString());
+		
 		assertTrue(crm.isInitialized());
 
+		auth.login("admin", "admin");
+		
 		assertEquals(List.of("APP", "CRM", "ORG", "SYS"), crm.findOptions(crm.defaultOptionsFilter().withType(Type.AUTHENTICATION_GROUP), OptionsFilter.getDefaultPaging()).stream().map(g -> g.getCode()).collect(Collectors.toList()));
 		assertEquals(List.of("APP/AUTHENTICATOR", "CRM/ADMIN", "CRM/USER", "ORG/ADMIN", "ORG/USER", "SYS/ACCESS", "SYS/ACTUATOR", "SYS/ADMIN"), crm.findOptions(crm.defaultOptionsFilter().withType(Type.AUTHENTICATION_ROLE), OptionsFilter.getDefaultPaging()).stream().map(r -> r.getCode()).collect(Collectors.toList()));
 		assertEquals(List.of("System Orgainzation"), crm.findOrganizationSummaries(crm.defaultOrganizationsFilter()).stream().map(o -> o.getDisplayName()).collect(Collectors.toList()));
 		assertEquals(List.of("System Administrator"), crm.findLocationSummaries(crm.defaultLocationsFilter()).stream().map(l -> l.getDisplayName()).collect(Collectors.toList()));
 		assertEquals(List.of("Last, First"), crm.findPersonSummaries(crm.defaultPersonsFilter()).stream().map(p -> p.getDisplayName()).collect(Collectors.toList()));
-		assertEquals(List.of("system"), crm.findUserSummaries(crm.defaultUsersFilter()).stream().map(u -> u.getUsername()).collect(Collectors.toList()));
+		assertEquals(List.of("admin"), crm.findUserSummaries(crm.defaultUsersFilter()).stream().map(u -> u.getUsername()).collect(Collectors.toList()));
 
 		assertEquals("true", mockMvc.perform(MockMvcRequestBuilders
 			.post("/rest/initialize")
@@ -106,7 +109,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 				.with("firstName", "First")
 				.with("lastName", "Last")
 				.with("email", "system@admin.com")
-				.with("username", "system")
+				.with("username", "admin")
 				.with("password", "admin")
 				.toString())
 			.header("Locale", Lang.ENGLISH))

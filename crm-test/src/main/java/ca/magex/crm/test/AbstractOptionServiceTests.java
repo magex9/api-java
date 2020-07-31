@@ -58,6 +58,8 @@ public abstract class AbstractOptionServiceTests {
 	public void testInitializedRoles() {
 		Option option = options().findOptionByCode(Type.BUSINESS_ROLE, "IMIT/DEV/APPS/DEV");
 		Assert.assertNotNull(option);
+		Assert.assertEquals("Developer", option.getName(Lang.ENGLISH));
+		Assert.assertEquals("Développeur", option.getName(Lang.FRENCH));
 	}
 	
 	@Test

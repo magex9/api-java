@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
@@ -17,10 +15,9 @@ import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class UserDetailsJsonTransformer extends AbstractJsonTransformer<UserDetails> {
 
-	public UserDetailsJsonTransformer(CrmServices crm) {
+	public UserDetailsJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 

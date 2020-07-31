@@ -67,7 +67,11 @@ public class JunitControllerTests extends AbstractControllerTests {
 			.post("/rest/junit/404"))
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andReturn().getResponse().getContentAsString();
-		assertEquals("", content);
+		String expected = new JsonObject()
+			.with("reason", "JUnit item not found")
+			.with("error", 404)
+			.toString();
+		assertEquals(expected, content);
 	}
 	
 	@Test

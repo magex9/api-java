@@ -1,5 +1,6 @@
 package ca.magex.crm.api.system;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,8 @@ public enum Status {
 	
 	// The entity has been created but not persisted yet
 	PENDING("Pending", "En attente");
+	
+	private static final List<Status> STATUSES = List.of(ACTIVE, INACTIVE, PENDING);
 	
 	private Localized name;
 
@@ -65,4 +68,15 @@ public enum Status {
 			throw new ItemNotFoundException("Status Code '" + value + "'");
 		}
 	}
+	
+	public static Status of(String name, Locale locale) {
+		if (locale == null) 
+			return of(name);
+		for (Status status : STATUSES) {
+			if (status.getName(locale).equals(name)) 
+				return status;
+		}
+		throw new ItemNotFoundException("Status Name '" + name + "' in " + locale);
+	}
+	
 }

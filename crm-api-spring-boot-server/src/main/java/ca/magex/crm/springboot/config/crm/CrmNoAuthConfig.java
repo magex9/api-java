@@ -29,6 +29,7 @@ import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
 @Profile(CrmProfiles.CRM_NO_AUTH)
@@ -40,6 +41,11 @@ public class CrmNoAuthConfig implements CrmConfigurer {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean 
+	public JsonTransformerFactory jsonTransformerFactory() {
+		return new JsonTransformerFactory(services());
 	}
 	
 	@Bean

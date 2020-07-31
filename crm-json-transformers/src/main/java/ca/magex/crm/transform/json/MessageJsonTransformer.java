@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
@@ -18,10 +15,9 @@ import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 
-	public MessageJsonTransformer(CrmServices crm) {
+	public MessageJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -66,7 +62,7 @@ public class MessageJsonTransformer extends AbstractJsonTransformer<Message> {
 		if (!json.contains("identifier")) {
 			return null;
 		} else if (locale == null) {
-			return IdentifierFactory.forId(json.getString("identifier").substring(Crm.REST_BASE.length()));
+			return IdentifierFactory.forId(json.getString("identifier"));
 		} else {
 			return IdentifierFactory.forId("/" + json.getString("context") + "/" + json.getString("identifier"));
 		}

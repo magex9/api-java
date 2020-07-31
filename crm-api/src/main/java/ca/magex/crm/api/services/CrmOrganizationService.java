@@ -96,15 +96,15 @@ public interface CrmOrganizationService {
 	 */
 	OrganizationSummary disableOrganization(OrganizationIdentifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name);
+	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String displaysName);
 
 	OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId);
 
 	OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId);
 
-	OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds);
+	OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds);
 	
-	OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> groupIds);
+	OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds);
 
 	OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId);
 

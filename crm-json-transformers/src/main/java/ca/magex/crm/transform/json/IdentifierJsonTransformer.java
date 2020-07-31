@@ -2,19 +2,16 @@ package ca.magex.crm.transform.json;
 
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.Crm;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonText;
 
-@Component
 public class IdentifierJsonTransformer extends AbstractJsonTransformer<Identifier> {
 
-	public IdentifierJsonTransformer(CrmServices crm) {
+	public IdentifierJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
