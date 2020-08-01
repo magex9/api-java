@@ -89,6 +89,8 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	}
 	
 	public <O extends OptionIdentifier> List<O> parseOptions(String key, JsonObject json, Class<O> cls, Locale locale) {
+		if (!json.contains(key))
+			return List.of();
 		return json.getArray(key).stream().map(e -> parseOption(e, cls, locale)).collect(Collectors.toList());
 	}
 

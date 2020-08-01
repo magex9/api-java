@@ -185,14 +185,15 @@ public class RestTemplateClient {
 			JsonObject json = new JsonObject(e.getResponseBodyAsString());
 			throw new ItemNotFoundException(json.getString("reason"));
 		} catch (HttpClientErrorException.Forbidden e) {
-			throw new PermissionDeniedException(url);
+			JsonObject json = new JsonObject(e.getResponseBodyAsString());
+			throw new PermissionDeniedException(json.getString("reason"));
 		} catch (HttpClientErrorException.BadRequest e) {
 			MessageJsonTransformer transformer = new MessageJsonTransformer(services);
 			List<Message> messages = JsonParser.parseArray(e.getResponseBodyAsString())
 				.stream()
 				.map(el -> transformer.parse(el, locale))
 				.collect(Collectors.toList());
-			throw new BadRequestException(url, messages);
+			throw new BadRequestException("Validation Errors", messages);
 		}
 	}
 	

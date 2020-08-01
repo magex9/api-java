@@ -73,7 +73,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testOrganizations() {		
-		AuthenticationGroupIdentifier NHL = config().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("NHL", "NHL", "LNH")).getOptionId();
+		AuthenticationGroupIdentifier NHL = config().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("NHL", "National Hockey League", "Ligue nationale de hockey")).getOptionId();
 		AuthenticationGroupIdentifier PLAYOFFS = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("PLAYOFFS", "Playoffs", "Playoffs")).getOptionId();
 		AuthenticationGroupIdentifier ONTARIO = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("ONTARIO", "Ontario", "Ontario")).getOptionId();		
 		AuthenticationGroupIdentifier QUEBEC = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();	
@@ -417,7 +417,7 @@ public abstract class AbstractOrganizationServiceTests {
 			organizations().createOrganization("INVALID", List.of(new AuthenticationGroupIdentifier("MISSING")), List.of(BusinessGroupIdentifier.EXTERNAL));
 			fail("Should have gotten bad request");
 		} catch (BadRequestException e) {
-			assertEquals("Bad Request: Organization has validation errors", e.getMessage());
+			assertEquals("Bad Request: Validation Errors", e.getMessage());
 			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "authenticationGroupIds[0]", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INVALID));
 		}
 	}

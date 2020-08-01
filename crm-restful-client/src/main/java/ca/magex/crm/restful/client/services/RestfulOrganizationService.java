@@ -8,7 +8,6 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
@@ -56,14 +55,14 @@ public class RestfulOrganizationService implements CrmOrganizationService {
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId,
 			LocationIdentifier locationId) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("mainLocationId", locationId));
+		JsonObject json = client.patch(organizationId, new JsonObject().with("mainLocationId", client.formatIdentifier(locationId)));
 		return client.parse(json, OrganizationDetails.class);
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId,
 			PersonIdentifier personId) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("mainContactId", client.format(personId, Identifier.class)));
+		JsonObject json = client.patch(organizationId, new JsonObject().with("mainContactId", client.formatIdentifier(personId)));
 		return client.parse(json, OrganizationDetails.class);
 	}
 
@@ -97,8 +96,8 @@ public class RestfulOrganizationService implements CrmOrganizationService {
 		return new JsonObject()
 			.with("displayName", filter.getDisplayName())
 			.with("status", filter.getStatus() == null ? null : (client.format(filter.getStatus(), Status.class)).getString("@value"))
-			.with("authenticationGroupId", filter.getAuthenticationGroupId())
-			.with("businessGroupId", filter.getBusinessGroupId())
+			.with("authenticationGroupId", client.formatIdentifier(filter.getAuthenticationGroupId()))
+			.with("businessGroupId", client.formatIdentifier(filter.getBusinessGroupId()))
 			.prune();
 	}
 
@@ -107,17 +106,25 @@ public class RestfulOrganizationService implements CrmOrganizationService {
 		JsonObject json = client.get("/organizations/count", formatFilter(filter));
 		return json.getLong("total");
 	}
+	
+	public JsonObject page(JsonObject json, Paging paging) {
+		return json
+			.with("page", paging.getPageNumber())
+			.with("limit", paging.getPageSize())
+			.with("direction", paging.getSort().iterator().next().getDirection().toString())
+			.with("order", paging.getSort().iterator().next().getProperty());
+	}
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		JsonObject json = client.get("/organizations", formatFilter(filter));
+		JsonObject json = client.get("/organizations/details", page(formatFilter(filter), paging));
 		List<OrganizationDetails> content = client.parseList(json.getArray("content"), OrganizationDetails.class);
 		return new FilteredPage<>(filter, paging, content, json.getLong("total"));
 	}
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		JsonObject json = client.get("/organizations/summaries", formatFilter(filter));
+		JsonObject json = client.get("/organizations", page(formatFilter(filter), paging));
 		List<OrganizationSummary> content = client.parseList(json.getArray("content"), OrganizationSummary.class);
 		return new FilteredPage<>(filter, paging, content, json.getLong("total"));
 	}

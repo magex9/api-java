@@ -2,6 +2,8 @@ package ca.magex.crm.restful.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +162,7 @@ public abstract class AbstractCrmController {
 	
 	protected String getString(JsonObject json, String key, boolean required, String defaultValue, Identifier identifier, List<Message> messages) {
 		try {
-			return json.getString(key);
+			return URLDecoder.decode(json.getString(key), "UTF-8");
 		} catch (ClassCastException e) {
 			messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.format")));
 			return defaultValue;
@@ -167,6 +170,8 @@ public abstract class AbstractCrmController {
 			if (required)
 				messages.add(new Message(identifier, MessageTypeIdentifier.ERROR, key, "", crm.findMessageId("validation.field.required")));
 			return defaultValue;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
