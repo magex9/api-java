@@ -22,6 +22,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 
 /**
  * The CRM Organization service is used to manage organizations that are owned
@@ -135,16 +136,16 @@ public interface CrmOrganizationService {
 
 		// Status
 		if (organization.getStatus() == null) {
-			messages.add(new Message(organization.getOrganizationId(), error, "status", null, crm.findMessageId("validation.field.required")));
+			messages.add(new Message(organization.getOrganizationId(), error, "status", null, PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 		} else if (organization.getStatus() == Status.PENDING && organization.getOrganizationId() != null) {
-			messages.add(new Message(organization.getOrganizationId(), error, "status", organization.getStatus().name(), crm.findMessageId("validation.status.pending")));
+			messages.add(new Message(organization.getOrganizationId(), error, "status", organization.getStatus().name(), PhraseIdentifier.VALIDATION_STATUS_PENDING));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(organization.getDisplayName())) {
-			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), crm.findMessageId("validation.field.required")));
+			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 		} else if (organization.getDisplayName().length() > 60) {
-			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), crm.findMessageId("validation.field.maxlength")));
+			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), PhraseIdentifier.VALIDATION_FIELD_MAXLENGTH));
 		}
 
 		// Main contact reference
@@ -152,11 +153,11 @@ public interface CrmOrganizationService {
 			PersonSummary person = crm.findPersonSummary(organization.getMainContactId());
 			// Make sure main contact belongs to current org
 			if (!person.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INVALID));
 			}
 			// Make sure main contact is active
 			if (!person.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), crm.findMessageId("validation.field.inactive")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 			}
 		}
 
@@ -165,11 +166,11 @@ public interface CrmOrganizationService {
 			LocationSummary location = crm.findLocationSummary(organization.getMainLocationId());
 			// Make sure main location belongs to current org
 			if (!location.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), crm.findMessageId("validation.field.invalid")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INVALID));
 			}
 			// Make sure main location is active
 			if (!location.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), crm.findMessageId("validation.field.inactive")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 			}
 		}
 
@@ -181,9 +182,9 @@ public interface CrmOrganizationService {
 				AuthenticationGroupIdentifier groupId = organization.getAuthenticationGroupIds().get(i);
 				try {
 					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), crm.findMessageId("validation.field.inactive")));
+						messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), crm.findMessageId("validation.field.invalid")));
+					messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), PhraseIdentifier.VALIDATION_OPTION_INVALID));
 				}
 			}
 		}
