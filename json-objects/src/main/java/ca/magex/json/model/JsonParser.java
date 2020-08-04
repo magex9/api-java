@@ -242,7 +242,7 @@ public class JsonParser {
 		StringBuilder sb = new StringBuilder();
 		while (index < length) {
 			char c = getCurrentChar("parseKey");
-			if (isAlphaNumeric(c) || c == '_' || c == '@' || c == '/' || c == '$' || c == '-' || c == '{' || c == '}') {
+			if (Character.isLetterOrDigit(c) || c == '_' || c == '@' || c == '/' || c == '$' || c == '-' || c == '{' || c == '}') {
 				sb.append(c);
 				index++;
 			} else if (isQuote(c)) {
@@ -265,10 +265,10 @@ public class JsonParser {
 			} else if (c == '\\' && isExcapeable(text.charAt(index + 1))) {
 				sb.append(text.charAt(index + 1));
 				index += 2;
-			} else if (isExtendedCharacter(c)) {
+			} else if (!Character.isISOControl(c)) {
 				sb.append(c);
 				index++;
-			} else {
+			} else {				
 				throw new ParserException("Expected a text at index: " + index + " (" + elipse(index) + ")");
 			}
 		}
@@ -340,22 +340,6 @@ public class JsonParser {
 	
 	private boolean isDigit(char c) {
 		return ((int)'0' <= c && c <= (int)'9') || c == '-';
-	}
-	
-	private boolean isLowercaseCharacter(char c) {
-		return (int)'a' <= c && c <= (int)'z';
-	}
-	
-	private boolean isUppercaseCharacter(char c) {
-		return (int)'A' <= c && c <= (int)'Z';
-	}
-	
-	public boolean isAlphaNumeric(char c) {
-		return isDigit(c) || isLowercaseCharacter(c) || isUppercaseCharacter(c);
-	}
-	
-	private boolean isExtendedCharacter(char c) {
-		return 32 <= (int)c && (int)c <= 255;
 	}
 	
 	private boolean isWhitespace(char c) {
