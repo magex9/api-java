@@ -312,16 +312,22 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return person;
 	}
 
-	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
-		return personService.createPerson(validate(prototypePerson(organizationId, name, address, communication, roleIds)));
+		return personService.createPerson(validate(prototypePerson(organizationId, displayName, legalName, address, communication, roleIds)));
 	}
 
-	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName name) {
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
 		if (!canUpdatePerson(personId))
-			throw new PermissionDeniedException("updatePersonName: " + personId);
-		return personService.updatePersonName(personId, validate(findPersonDetails(personId).withLegalName(name)).getLegalName());
+			throw new PermissionDeniedException("updatePersonDisplayName: " + personId);
+		return personService.updatePersonDisplayName(personId, validate(findPersonDetails(personId).withDisplayName(displayName)).getDisplayName());
+	}
+
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
+		if (!canUpdatePerson(personId))
+			throw new PermissionDeniedException("updatePersonLegalName: " + personId);
+		return personService.updatePersonLegalName(personId, validate(findPersonDetails(personId).withLegalName(legalName)).getLegalName());
 	}
 
 	public PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address) {

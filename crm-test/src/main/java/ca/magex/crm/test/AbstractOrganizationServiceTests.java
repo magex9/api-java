@@ -168,7 +168,7 @@ public abstract class AbstractOrganizationServiceTests {
 
 		/* update main contact */
 		PersonIdentifier freddyId = config().createPerson(
-				o1.getOrganizationId(),
+				o1.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(CrmAsserts.MR, "Freddy", "R", "Davis"),
 				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
 				CrmAsserts.WORK_COMMUNICATIONS,
@@ -183,7 +183,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = organizations().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // reset to original value
 
 		PersonIdentifier craigId = config().createPerson(
-				o2.getOrganizationId(),
+				o2.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(CrmAsserts.MR, "Craig", null, "Phillips"),
 				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "K2V 1A5"),
 				CrmAsserts.WORK_COMMUNICATIONS,
@@ -198,7 +198,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = organizations().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 
 		PersonIdentifier careyId = config().createPerson(
-				o3.getOrganizationId(),
+				o3.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(null, "Carey", null, "Thomas"),
 				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
 				CrmAsserts.WORK_COMMUNICATIONS,
@@ -484,7 +484,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCannotUpdateDisabledMainContact() throws Exception {
 		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
-		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.PERSON_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
+		PersonIdentifier personId = config().createPerson(organizationId,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
 		config().disablePerson(personId);
 
 		try {
@@ -499,7 +499,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCreatingOrgWithMainContactFromOtherOrg() throws Exception {
 		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
-		PersonIdentifier personB = config().createPerson(organizationB, CrmAsserts.PERSON_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
+		PersonIdentifier personB = config().createPerson(organizationB,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
 
 		try {
 			organizations().updateOrganizationMainContact(organizationA, personB);

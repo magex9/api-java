@@ -80,7 +80,7 @@ public abstract class AbstractPersonServiceTests {
 		Communication comms = new Communication("Leader", ENGLISH, "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797");
 		
 		/* create */
-		PersonDetails p1 = persons().createPerson(blizzardId, leroy, eiffel, comms, List.of(CrmAsserts.CEO));
+		PersonDetails p1 = persons().createPerson(blizzardId, CrmAsserts.displayName(leroy), leroy, eiffel, comms, List.of(CrmAsserts.CEO));
 		Assert.assertEquals("Jenkins, Leroy MF", p1.getDisplayName());
 		Assert.assertEquals(leroy, p1.getLegalName());
 		Assert.assertEquals(eiffel, p1.getAddress());
@@ -90,23 +90,35 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(p1, persons().findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1.asSummary(), persons().findPersonSummary(p1.getPersonId()));
 		
+		PersonName tammy = new PersonName(CrmAsserts.MRS, "Tammy", "GD", "Jones");
+		
+		PersonName james = new PersonName(CrmAsserts.MR, "James", "Earl", "Bond");
+		
 		persons().createPerson(
-			blizzardId, 
-			new PersonName(CrmAsserts.MRS, "Tammy", "GD", "Jones"), 
+			blizzardId, CrmAsserts.displayName(tammy), tammy, 
 			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007"), 
 			new Communication("Leader", ENGLISH, "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"), 
 			List.of(CrmAsserts.QA_TEAMLEAD));
 		
 		persons().createPerson(
-			blizzardId, 
-			new PersonName(CrmAsserts.MR, "James", "Earl", "Bond"), 
+			blizzardId, CrmAsserts.displayName(james), james, 
 			new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007"), 
 			new Communication("Leader", FRENCH, "leeroy@blizzard.com", new Telephone("555-9898"), "555-9797"),
 			List.of(CrmAsserts.DEV_TEAMLEAD));
 		
 		/* update */
 		PersonName tommy = new PersonName(CrmAsserts.MRS, "Michelle", "Pauline", "Smith");
-		p1 = persons().updatePersonName(p1.getPersonId(), tommy);
+		p1 = persons().updatePersonDisplayName(p1.getPersonId(), CrmAsserts.displayName(tommy));
+		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
+		Assert.assertEquals(CrmAsserts.displayName(tommy), p1.getDisplayName());
+		Assert.assertEquals(eiffel, p1.getAddress());
+		Assert.assertEquals(comms, p1.getCommunication());
+		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getBusinessRoleIds());
+		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
+		Assert.assertEquals(p1, persons().findPersonDetails(p1.getPersonId()));
+		Assert.assertEquals(p1, persons().updatePersonDisplayName(p1.getPersonId(), CrmAsserts.displayName(tommy)));
+
+		p1 = persons().updatePersonLegalName(p1.getPersonId(), tommy);
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(eiffel, p1.getAddress());
@@ -114,7 +126,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(List.of(CrmAsserts.CEO), p1.getBusinessRoleIds());
 		Assert.assertEquals(Status.ACTIVE, p1.getStatus());
 		Assert.assertEquals(p1, persons().findPersonDetails(p1.getPersonId()));
-		Assert.assertEquals(p1, persons().updatePersonName(p1.getPersonId(), tommy));
+		Assert.assertEquals(p1, persons().updatePersonLegalName(p1.getPersonId(), tommy));
 		
 		MailingAddress louvre = new MailingAddress("Rue de Rivoli", "Paris", ILE_DE_FRANCE, FRANCE, "75001");
 		p1 = persons().updatePersonAddress(p1.getPersonId(), louvre);
@@ -297,7 +309,7 @@ public abstract class AbstractPersonServiceTests {
 		}
 
 		try {
-			persons().updatePersonName(new PersonIdentifier("abc"), CrmAsserts.ADAM);
+			persons().updatePersonLegalName(new PersonIdentifier("abc"), CrmAsserts.ADAM);
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());

@@ -20,6 +20,7 @@ import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.transform.json.IdentifierJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
@@ -43,7 +44,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		systemPersonId = getSystemAdminIdentifier();
 		systemUserId = getSystemUserIdentifier();
 		testOrgId = createTestOrganization("Test Org");
-		testPersonId = crm.createPerson(testOrgId, CHLOE, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId();
+		testPersonId = crm.createPerson(testOrgId, CrmAsserts.displayName(CHLOE), CHLOE, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId();
 	}
 	
 	@Test

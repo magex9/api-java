@@ -32,6 +32,8 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.test.CrmAsserts;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class PersonsFilterControllerTests extends AbstractControllerTests {
@@ -66,18 +68,18 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		org1 = createTestOrganization("Org 1");
 		org2 = createTestOrganization("Org 2");
 				
-		adamId = crm.createPerson(org1, ADAM, CA_ADDRESS, HOME_COMMUNICATIONS, List.of(EXECS_CEO)).getPersonId();
-		bobId = crm.disablePerson(crm.createPerson(org1, BOB, US_ADDRESS, HOME_COMMUNICATIONS, List.of(EXECS_CIO)).getPersonId()).getPersonId();
-		chloeId = crm.createPerson(org1, CHLOE, MX_ADDRESS, WORK_COMMUNICATIONS, List.of(IMIT_DIRECTOR)).getPersonId();
-		danId = crm.createPerson(org2, DAN, EN_ADDRESS, HOME_COMMUNICATIONS, List.of(SYS_ADMINISTRATOR)).getPersonId();
-		elaineId = crm.disablePerson(crm.createPerson(org2, ELAINE, DE_ADDRESS, WORK_COMMUNICATIONS, List.of(DEVELOPER)).getPersonId()).getPersonId();
-		francoisId = crm.createPerson(org2, FRANCOIS, FR_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId();
+		adamId = crm.createPerson(org1, CrmAsserts.displayName(ADAM), ADAM, CA_ADDRESS, HOME_COMMUNICATIONS, List.of(EXECS_CEO)).getPersonId();
+		bobId = crm.disablePerson(crm.createPerson(org1, CrmAsserts.displayName(BOB), BOB, US_ADDRESS, HOME_COMMUNICATIONS, List.of(EXECS_CIO)).getPersonId()).getPersonId();
+		chloeId = crm.createPerson(org1, CrmAsserts.displayName(CHLOE), CHLOE, MX_ADDRESS, WORK_COMMUNICATIONS, List.of(IMIT_DIRECTOR)).getPersonId();
+		danId = crm.createPerson(org2, CrmAsserts.displayName(DAN), DAN, EN_ADDRESS, HOME_COMMUNICATIONS, List.of(SYS_ADMINISTRATOR)).getPersonId();
+		elaineId = crm.disablePerson(crm.createPerson(org2, CrmAsserts.displayName(ELAINE), ELAINE, DE_ADDRESS, WORK_COMMUNICATIONS, List.of(DEVELOPER)).getPersonId()).getPersonId();
+		francoisId = crm.createPerson(org2, CrmAsserts.displayName(FRANCOIS), FRANCOIS, FR_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId();
 	}
 	
 	@Test
 	public void testPersonsFilterDefaultRoot() throws Exception {
 		JsonObject json = get("/persons");
-		//JsonAsserts.print(json, "json");
+		JsonAsserts.print(json, "json");
 		assertEquals(List.of("@context", "page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals("http://api.magex.ca/crm/schema/system/Page", json.getString("@context"));
 		assertEquals(1, json.getNumber("page"));
@@ -96,7 +98,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals("ACTIVE", json.getArray("content").getObject(0).getObject("status").getString("@value"));
 		assertEquals("Active", json.getArray("content").getObject(0).getObject("status").getString("@en"));
 		assertEquals("Actif", json.getArray("content").getObject(0).getObject("status").getString("@fr"));
-		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonSummary", json.getArray("content").getObject(1).getString("@context"));
 		assertEquals(Crm.REST_BASE + adamId.toString(), json.getArray("content").getObject(1).getString("personId"));
@@ -180,7 +182,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(systemPersonId.getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals(systemOrgId.getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals(adamId.getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals(org1.getCode(), json.getArray("content").getObject(1).getString("organizationId"));
@@ -228,7 +230,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 		assertEquals(systemPersonId.getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals(systemOrgId.getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Actif", json.getArray("content").getObject(0).getString("status"));
-		assertEquals("Admin, System", json.getArray("content").getObject(0).getString("displayName"));
+		assertEquals("Admin", json.getArray("content").getObject(0).getString("displayName"));
 		assertEquals(List.of("personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).keys());
 		assertEquals(adamId.getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals(org1.getCode(), json.getArray("content").getObject(1).getString("organizationId"));
@@ -312,7 +314,7 @@ public class PersonsFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterByOrganization() throws Exception {
-		JsonObject json = get("/persons", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("organization", org2.toString()));
+		JsonObject json = get("/persons", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("organizationId", org2.toString()));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));

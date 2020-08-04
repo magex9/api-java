@@ -27,21 +27,23 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public interface CrmPersonService {
 	
-	default PersonDetails prototypePerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
-		return new PersonDetails(null, organizationId, Status.PENDING, name.getDisplayName(), name, address, communication, businessRoleIds);
+	default PersonDetails prototypePerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
+		return new PersonDetails(null, organizationId, Status.PENDING, displayName, legalName, address, communication, businessRoleIds);
 	};
 
 	default PersonDetails createPerson(PersonDetails prototype) {
-		return createPerson(prototype.getOrganizationId(), prototype.getLegalName(), prototype.getAddress(), prototype.getCommunication(), prototype.getBusinessRoleIds());
+		return createPerson(prototype.getOrganizationId(), prototype.getDisplayName(), prototype.getLegalName(), prototype.getAddress(), prototype.getCommunication(), prototype.getBusinessRoleIds());
 	}
 
-	PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds);
+	PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds);
 
 	PersonSummary enablePerson(PersonIdentifier personId);
 
 	PersonSummary disablePerson(PersonIdentifier personId);
 
-	PersonDetails updatePersonName(PersonIdentifier personId, PersonName name);
+	PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName);
+
+	PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName);
 
 	PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address);
 

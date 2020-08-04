@@ -53,7 +53,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	}
 
 	@Override
-	public UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password) {
+	public UserDetails initializeSystem(String organization, PersonName legalName, String email, String username, String password) {
 		if (repos.prepareInitialize()) {			
 			initialize(repos);
 			OrganizationIdentifier organizationId = repos.generateOrganizationId();
@@ -72,7 +72,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 				List.of(SYS, CRM),
 				List.of(BusinessGroupIdentifier.IMIT)));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
-			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
+			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, "Admin", legalName, address, communication, null));
 			repos.saveUserDetails(new UserDetails(systemId, organizationId, mainContactId, username, Status.ACTIVE, List.of(SYS_ADMIN, SYS_ACTUATOR, SYS_ACCESS, CRM_ADMIN)));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));

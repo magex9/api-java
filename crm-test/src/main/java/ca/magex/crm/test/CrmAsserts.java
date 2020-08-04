@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 
@@ -157,7 +158,9 @@ public class CrmAsserts {
 
 	public static final String SYSTEM_EMAIL = "root@localhost";
 
-	public static final PersonName PERSON_NAME = new PersonName(MR, "Chris", "P", "Bacon");
+	public static final PersonName PERSON_LEGAL_NAME = new PersonName(MR, "Chris", "P", "Bacon");
+
+	public static final String PERSON_DISPLAY_NAME = displayName(PERSON_LEGAL_NAME);
 
 	public static final String PERSON_EMAIL = "crhis@bacon.com";
 
@@ -296,6 +299,21 @@ public class CrmAsserts {
 
 	public long countLocalizedNames(LocalizedFilter filter) {
 		return apply(filter).count();
+	}
+	
+	public static String displayName(PersonName personName) {
+		String displayName = "";
+		if (StringUtils.isNotBlank(personName.getLastName()))
+			displayName += personName.getLastName();
+		if (StringUtils.isNotBlank(personName.getFirstName()) && displayName.length() > 0)
+			displayName += ", ";
+		if (StringUtils.isNotBlank(personName.getFirstName()))
+			displayName += personName.getFirstName();
+		if (StringUtils.isNotBlank(personName.getMiddleName()) && displayName.length() > 0)
+			displayName += " ";
+		if (StringUtils.isNotBlank(personName.getMiddleName()))
+			displayName += personName.getMiddleName();
+		return displayName;
 	}
 
 	public FilteredPage<String> findLocalizedNames(LocalizedFilter filter, Paging paging, Locale locale) {
