@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
@@ -33,6 +34,7 @@ public class UserDetailsJsonTransformer extends AbstractJsonTransformer<UserDeta
 	
 	@Override
 	public JsonObject formatLocalized(UserDetails user, Locale locale) {
+		List<Message> messages = new ArrayList<>();
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs, locale);
 		formatIdentifier(pairs, "userId", user, UserIdentifier.class, locale);
@@ -40,7 +42,8 @@ public class UserDetailsJsonTransformer extends AbstractJsonTransformer<UserDeta
 		formatIdentifier(pairs, "personId", user, PersonIdentifier.class, locale);
 		formatText(pairs, "username", user);
 		formatStatus(pairs, "status", user, locale);
-		formatOptions(pairs, "authenticationRoleIds", user, Type.AUTHENTICATION_ROLE, locale);
+		formatOptions(pairs, "authenticationRoleIds", user, Type.AUTHENTICATION_ROLE, locale, user.getUserId(), messages);
+		validate(messages);
 		return new JsonObject(pairs);
 	}
 

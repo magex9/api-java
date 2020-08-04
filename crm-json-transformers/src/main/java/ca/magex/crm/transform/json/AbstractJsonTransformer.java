@@ -9,17 +9,21 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.IdentifierFactory;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonBoolean;
@@ -46,6 +50,11 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	@Override
 	public Class<JsonElement> getTargetType() {
 		return JsonElement.class;
+	}
+	
+	protected void validate(List<Message> messages) {
+		if (!messages.isEmpty())
+			throw new BadRequestException("Validation Errors", messages);
 	}
 	
 	public void formatType(List<JsonPair> parent, Locale locale) {
@@ -207,7 +216,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	}
 
 	@SuppressWarnings("unchecked")
-	public <O extends OptionIdentifier> void formatOptions(List<JsonPair> parent, String key, Object obj, Type type, Locale locale) {
+	public <O extends OptionIdentifier> void formatOptions(List<JsonPair> parent, String key, Object obj, Type type, Locale locale, Identifier objectId, List<Message> messages) {
 		if (obj == null)
 			return;
 		try {
@@ -217,13 +226,18 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			List<O> list = (List<O>)m.invoke(obj, new Object[] { });
 			List<JsonElement> elements = new ArrayList<JsonElement>();
 			if (list != null) {
-				for (O optionId : list) {
-					elements.add(formatOption(crm.findOptionByCode(type, optionId.getCode()), locale));
+				for (int i = 0; i < list.size(); i++) {
+					O optionId = list.get(i);
+					try {
+						elements.add(formatOption(crm.findOptionByCode(type, optionId.getCode()), locale));
+					} catch (ItemNotFoundException e) {
+						messages.add(new Message(objectId, MessageTypeIdentifier.ERROR, key + "[" + i + "]", "", PhraseIdentifier.VALIDATION_OPTION_INVALID));
+					}
 				}
 			}
 			parent.add(new JsonPair(key, new JsonArray(elements)));
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException("Unable to format options: " + key, e);
 		}
 	}
 
@@ -244,7 +258,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <O extends Identifier> void formatIdentifiers(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
+	public <O extends Identifier> void formatIdentifiers(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale, Identifier objectId, List<Message> messages) {
 		if (obj == null)
 			return;
 		try {
@@ -254,13 +268,18 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			List<O> list = (List<O>)m.invoke(obj, new Object[] { });
 			List<JsonElement> elements = new ArrayList<JsonElement>();
 			if (list != null) {
-				for (O identifier : list) {
-					elements.add(new JsonText(Crm.REST_BASE + identifier));
+				for (int i = 0; i < list.size(); i++) {
+					O identifier = list.get(i);
+					try {
+						elements.add(new JsonText(Crm.REST_BASE + identifier));
+					} catch (ItemNotFoundException e) {
+						messages.add(new Message(objectId, MessageTypeIdentifier.ERROR, key + "[" + i + "]", "", PhraseIdentifier.VALIDATION_OPTION_INVALID));
+					}
 				}
 			}
 			parent.add(new JsonPair(key, new JsonArray(elements)));
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException("Unable to format identifiers: " + key, e);
 		}
 	}
 	
