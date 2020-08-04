@@ -24,6 +24,7 @@ import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -34,6 +35,7 @@ import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.restful.client.services.RestfulLocationService;
 import ca.magex.crm.restful.client.services.RestfulOptionService;
 import ca.magex.crm.restful.client.services.RestfulOrganizationService;
+import ca.magex.crm.restful.client.services.RestfulPersonService;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
@@ -61,6 +63,8 @@ public class RestTemplateClient {
 	
 	private RestfulLocationService locations;
 	
+	private RestfulPersonService persons;
+	
 	private JsonTransformerFactory transformers;
 	
 	private CrmServices services;
@@ -75,13 +79,14 @@ public class RestTemplateClient {
 		this.options = new RestfulOptionService(this);
 		this.organizations = new RestfulOrganizationService(this);
 		this.locations = new RestfulLocationService(this);
+		this.persons = new RestfulPersonService(this);
 		this.transformers = new JsonTransformerFactory(this.options);
 		this.services = new CrmServicesAdapter(
 			null, 
 			options, 
 			organizations, 
 			locations, 
-			null, 
+			persons, 
 			null
 		);
 	}
@@ -144,6 +149,10 @@ public class RestTemplateClient {
 	
 	public RestfulLocationService getLocations() {
 		return locations;
+	}
+	
+	public RestfulPersonService getPersons() {
+		return persons;
 	}
 	
 	public CrmServices getServices() {
@@ -249,6 +258,14 @@ public class RestTemplateClient {
 				.collect(Collectors.toList());
 			throw new BadRequestException(url, messages);
 		}
+	}
+	
+	public JsonObject page(JsonObject json, Paging paging) {
+		return json
+			.with("page", paging.getPageNumber())
+			.with("limit", paging.getPageSize())
+			.with("direction", paging.getSort().iterator().next().getDirection().toString())
+			.with("order", paging.getSort().iterator().next().getProperty());
 	}
 	
 	public <T> T parse(JsonElement el, Class<T> cls) {
