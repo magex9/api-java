@@ -43,7 +43,7 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
 @Controller
-public class SwaggerRestfulController {
+public class RestfulSwaggerController {
 
 	@Value("${server.external.address:localhost}") 
 	private String serverAddress;
@@ -106,7 +106,7 @@ public class SwaggerRestfulController {
 	
 	public JsonObject buildApiPaths() throws Exception {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.addAll(buildPaths(OrganizationsController.class).pairs());
+		pairs.addAll(buildPaths(RestfulOrganizationController.class).pairs());
 		return new JsonObject(pairs);
 	}
 	

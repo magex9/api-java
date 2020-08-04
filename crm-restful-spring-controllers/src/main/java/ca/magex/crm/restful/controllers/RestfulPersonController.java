@@ -1,6 +1,7 @@
 package ca.magex.crm.restful.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,16 +22,15 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
-import ca.magex.crm.transform.json.StatusJsonTransformer;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.model.JsonText;
 
 @Controller
-public class PersonsController extends AbstractCrmController {
+public class RestfulPersonController extends AbstractRestfulController {
 
 	@GetMapping("/rest/persons")
 	public void findPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -43,11 +43,32 @@ public class PersonsController extends AbstractCrmController {
 			);
 		});
 	}
+
+	@GetMapping("/rest/persons/details")
+	public void findPersonDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findPersonSummaries(
+					extractPersonFilter(req, locale), 
+					extractPaging(PersonsFilter.getDefaultPaging(), req)
+				), transformer, locale
+			);
+		});
+	}
+	
+	@GetMapping("/rest/persons/count")
+	public void countPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("total", crm.countPersons(extractPersonFilter(req, locale)));
+		});
+	}
 	
 	public PersonsFilter extractPersonFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
-		OrganizationIdentifier organizationId = req.getParameter("organization") == null ? null : new OrganizationIdentifier(req.getParameter("organization"));
-		String displayName = req.getParameter("displayName");
-		Status status = req.getParameter("status") == null ? null : new StatusJsonTransformer(crm).parseJsonText(new JsonText(req.getParameter("status")), locale);
+		List<Message> messages = new ArrayList<>();
+		JsonObject query = extractQuery(req);
+		OrganizationIdentifier organizationId = getIdentifier(query, "organizationId", false, null, null, messages);
+		String displayName = getString(query, "displayName", false, null, null, messages);
+		Status status = getObject(Status.class, query, "status", false, null, null, messages, locale);
 		return new PersonsFilter(organizationId, displayName, status);
 	}
 	
@@ -56,7 +77,7 @@ public class PersonsController extends AbstractCrmController {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> { 
 			JsonObject body = extractBody(req);
 			OrganizationIdentifier organizationId = getIdentifier(body, "organizationId", true, null, null, messages);
-			PersonName name = getObject(PersonName.class, body, "name", true, null, null, messages, locale);
+			PersonName name = getObject(PersonName.class, body, "legalName", true, null, null, messages, locale);
 			MailingAddress address = getObject(MailingAddress.class, body, "address", true, null, null, messages, locale);
 			Communication communication = getObject(Communication.class, body, "communication", true, null, null, messages, locale);
 			List<BusinessRoleIdentifier> roles = getOptionIdentifiers(body, "businessRoleIds", true, List.of(), null, messages, BusinessRoleIdentifier.class, locale);
@@ -66,7 +87,15 @@ public class PersonsController extends AbstractCrmController {
 	}
 
 	@GetMapping("/rest/persons/{personId}")
-	public void getPerson(HttpServletRequest req, HttpServletResponse res, 
+	public void getPersonSummary(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("personId") PersonIdentifier personId) throws IOException {
+		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findPersonDetails(personId), locale);
+		});
+	}
+
+	@GetMapping("/rest/persons/{personId}/details")
+	public void getPersonDetails(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId), locale);
@@ -91,14 +120,6 @@ public class PersonsController extends AbstractCrmController {
 				crm.updatePersonRoles(personId, getOptionIdentifiers(body, "businessRoleIds", true, List.of(), personId, messages, BusinessRoleIdentifier.class, locale));
 			}
 			validate(messages);
-			return transformer.format(crm.findPersonDetails(personId), locale);
-		});
-	}
-
-	@GetMapping("/rest/persons/{personId}/summary")
-	public void getPersonSummary(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("personId") PersonIdentifier personId) throws IOException {
-		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId), locale);
 		});
 	}

@@ -27,7 +27,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
 @Controller
-public class OptionsController extends AbstractCrmController {
+public class RestfulOptionController extends AbstractRestfulController {
 	
 	@GetMapping("/rest/types")
 	public void findTypes(HttpServletRequest req, HttpServletResponse res) throws IOException {

@@ -18,13 +18,13 @@ import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestClientTestConfig.class })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestfulClientTestConfig.class })
 @ActiveProfiles(profiles = {
 	CrmProfiles.AUTH_EMBEDDED_JWT,
 	CrmProfiles.CRM_NO_AUTH,
 	CrmProfiles.DEV
 })
-public class RestSampleTest {
+public class RestfulSampleTest {
 	
 	@LocalServerPort private int randomPort;
 	

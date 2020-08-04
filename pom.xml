@@ -66,7 +66,7 @@
 		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-spring-controllers</module>
-<!-- 		<module>crm-restful-client</module> -->
+ 		<module>crm-restful-client</module>
 
 		<!-- Unified Server -->
 		<module>crm-api-spring-boot-server</module>

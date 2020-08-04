@@ -29,14 +29,14 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
-public class OrganizationsController extends AbstractCrmController {
+public class RestfulOrganizationController extends AbstractRestfulController {
 	
 	@GetMapping("/rest/organizations")
 	public void findOrganizationSumaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findOrganizationSummaries(
-					extractOrganizationFilter(locale, req), 
+					extractOrganizationFilter(req, locale), 
 					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
 				), transformer, locale
 			);
@@ -48,7 +48,7 @@ public class OrganizationsController extends AbstractCrmController {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findOrganizationDetails(
-					extractOrganizationFilter(locale, req), 
+					extractOrganizationFilter(req, locale), 
 					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
 				), transformer, locale
 			);
@@ -58,11 +58,11 @@ public class OrganizationsController extends AbstractCrmController {
 	@GetMapping("/rest/organizations/count")
 	public void countOrganizations(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
-			return new JsonObject().with("total", crm.countOrganizations(extractOrganizationFilter(locale, req)));
+			return new JsonObject().with("total", crm.countOrganizations(extractOrganizationFilter(req, locale)));
 		});
 	}
 	
-	public OrganizationsFilter extractOrganizationFilter(Locale locale, HttpServletRequest req) throws BadRequestException {
+	public OrganizationsFilter extractOrganizationFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
 		List<Message> messages = new ArrayList<>();
 		JsonObject query = extractQuery(req);
 		String displayName = getString(query, "displayName", false, null, null, messages);
@@ -89,12 +89,12 @@ public class OrganizationsController extends AbstractCrmController {
 	public void getOrganizationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
-			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
+			return transformer.format(crm.findOrganizationSummary(organizationId), locale);
 		});
 	}
 
 	@GetMapping("/rest/organizations/{organizationId}/details")
-	public void getOrganization(HttpServletRequest req, HttpServletResponse res, 
+	public void getOrganizationDetails(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findOrganizationDetails(organizationId), locale);

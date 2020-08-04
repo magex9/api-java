@@ -49,9 +49,9 @@ import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonParser;
 import ca.magex.json.model.JsonText;
 
-public abstract class AbstractCrmController {
+public abstract class AbstractRestfulController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractCrmController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractRestfulController.class);
 	
 	@Autowired
 	protected Crm crm;

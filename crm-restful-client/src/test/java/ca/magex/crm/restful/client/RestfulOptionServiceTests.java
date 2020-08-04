@@ -16,13 +16,13 @@ import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.test.AbstractOptionServiceTests;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestClientTestConfig.class })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestfulClientTestConfig.class })
 @ActiveProfiles(profiles = {
 		CrmProfiles.AUTH_EMBEDDED_JWT,
 		CrmProfiles.CRM_NO_AUTH,
 		CrmProfiles.DEV
 })
-public class RestOptionServiceTests extends AbstractOptionServiceTests {
+public class RestfulOptionServiceTests extends AbstractOptionServiceTests {
 
 	@LocalServerPort private int randomPort;
 	

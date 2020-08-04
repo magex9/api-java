@@ -106,25 +106,17 @@ public class RestfulOrganizationService implements CrmOrganizationService {
 		JsonObject json = client.get("/organizations/count", formatFilter(filter));
 		return json.getLong("total");
 	}
-	
-	public JsonObject page(JsonObject json, Paging paging) {
-		return json
-			.with("page", paging.getPageNumber())
-			.with("limit", paging.getPageSize())
-			.with("direction", paging.getSort().iterator().next().getDirection().toString())
-			.with("order", paging.getSort().iterator().next().getProperty());
-	}
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		JsonObject json = client.get("/organizations/details", page(formatFilter(filter), paging));
+		JsonObject json = client.get("/organizations/details", client.page(formatFilter(filter), paging));
 		List<OrganizationDetails> content = client.parseList(json.getArray("content"), OrganizationDetails.class);
 		return new FilteredPage<>(filter, paging, content, json.getLong("total"));
 	}
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		JsonObject json = client.get("/organizations", page(formatFilter(filter), paging));
+		JsonObject json = client.get("/organizations", client.page(formatFilter(filter), paging));
 		List<OrganizationSummary> content = client.parseList(json.getArray("content"), OrganizationSummary.class);
 		return new FilteredPage<>(filter, paging, content, json.getLong("total"));
 	}

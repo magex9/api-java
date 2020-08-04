@@ -29,7 +29,7 @@ import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
-public class UsersController extends AbstractCrmController {
+public class RestfulUserController extends AbstractRestfulController {
 
 	@GetMapping("/rest/users")
 	public void findUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {

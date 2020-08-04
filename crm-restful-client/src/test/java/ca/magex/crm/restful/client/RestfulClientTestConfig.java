@@ -15,7 +15,7 @@ import com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionManagerImpl
 @ComponentScan(basePackages = {
 	"ca.magex.crm.springboot",
 })
-public class RestClientTestConfig {
+public class RestfulClientTestConfig {
 
 	@Bean
 	@Primary
