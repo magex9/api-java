@@ -61,9 +61,10 @@
 		<module>crm-auth-spring-boot-server</module>
 		
 		<!-- GraphQL Endpoint Implementation -->
-		<module>crm-graphql-spring-controllers</module>		
+<!--
+ 		<module>crm-graphql-spring-controllers</module>		
 		<module>crm-graphql-client</module>
-		
+ -->		
 		<!-- REST Endpoint Implementation -->
 		<module>crm-restful-spring-controllers</module>
  		<module>crm-restful-client</module>

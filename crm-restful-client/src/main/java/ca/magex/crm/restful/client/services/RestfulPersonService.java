@@ -48,13 +48,13 @@ public class RestfulPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
-		JsonObject json = client.patch(personId, new JsonObject().with("name", displayName));
+		JsonObject json = client.patch(personId, new JsonObject().with("displayName", displayName));
 		return client.parse(json, PersonDetails.class);
 	}
 
 	@Override
 	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
-		JsonObject json = client.patch(personId, new JsonObject().with("name", client.format(legalName, PersonName.class)));
+		JsonObject json = client.patch(personId, new JsonObject().with("legalName", client.format(legalName, PersonName.class)));
 		return client.parse(json, PersonDetails.class);
 	}
 
