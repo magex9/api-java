@@ -31,6 +31,7 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.restful.client.services.RestfulLocationService;
 import ca.magex.crm.restful.client.services.RestfulOptionService;
 import ca.magex.crm.restful.client.services.RestfulOrganizationService;
 import ca.magex.crm.spring.security.jwt.JwtRequest;
@@ -58,6 +59,8 @@ public class RestTemplateClient {
 	
 	private RestfulOrganizationService organizations;
 	
+	private RestfulLocationService locations;
+	
 	private JsonTransformerFactory transformers;
 	
 	private CrmServices services;
@@ -71,12 +74,13 @@ public class RestTemplateClient {
 		this.authToken = authenticateJwt(username, password);
 		this.options = new RestfulOptionService(this);
 		this.organizations = new RestfulOrganizationService(this);
+		this.locations = new RestfulLocationService(this);
 		this.transformers = new JsonTransformerFactory(this.options);
 		this.services = new CrmServicesAdapter(
 			null, 
 			options, 
 			organizations, 
-			null, 
+			locations, 
 			null, 
 			null
 		);
@@ -136,6 +140,10 @@ public class RestTemplateClient {
 	
 	public RestfulOrganizationService getOrganizations() {
 		return organizations;
+	}
+	
+	public RestfulLocationService getLocations() {
+		return locations;
 	}
 	
 	public CrmServices getServices() {

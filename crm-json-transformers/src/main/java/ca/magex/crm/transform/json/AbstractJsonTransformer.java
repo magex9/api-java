@@ -139,7 +139,7 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	}
 	
 	public <O> O parseObject(String key, JsonObject json, Transformer<O, JsonElement> transformer, Locale locale) {
-		if (json == null)
+		if (json == null || !json.contains(key))
 			return null;
 		return transformer.parse(json.get(key), locale);
 	}

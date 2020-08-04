@@ -12,17 +12,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.test.AbstractOrganizationServiceTests;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.test.AbstractLocationServiceTests;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestClientTestConfig.class })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestfulClientTestConfig.class })
 @ActiveProfiles(profiles = {
 		CrmProfiles.AUTH_EMBEDDED_JWT,
 		CrmProfiles.CRM_NO_AUTH,
 		CrmProfiles.DEV
 })
-public class RestOrganizationServiceTests extends AbstractOrganizationServiceTests {
+public class RestfulLocationServiceTests extends AbstractLocationServiceTests {
 
 	@LocalServerPort private int randomPort;
 	
@@ -30,7 +30,7 @@ public class RestOrganizationServiceTests extends AbstractOrganizationServiceTes
 	
 	@Autowired Crm crm;
 		
-	private CrmOrganizationService remoteServicesAdapter = null;	
+	private CrmLocationService remoteServicesAdapter = null;	
 	
 	@Override
 	protected Crm config() {
@@ -43,7 +43,7 @@ public class RestOrganizationServiceTests extends AbstractOrganizationServiceTes
 	}
 	
 	@Override
-	protected CrmOrganizationService organizations() {
+	protected CrmLocationService locations() {
 		return remoteServicesAdapter;
 	}
 		

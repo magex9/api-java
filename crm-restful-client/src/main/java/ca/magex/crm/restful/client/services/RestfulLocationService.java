@@ -76,7 +76,7 @@ public class RestfulLocationService implements CrmLocationService {
 
 	@Override
 	public LocationSummary findLocationSummary(LocationIdentifier locationId) {
-		JsonObject json = client.get(locationId + "/summary");
+		JsonObject json = client.get(locationId);
 		return summaryTransformer.parse(json, client.getLocale());
 	}
 

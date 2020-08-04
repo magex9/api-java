@@ -26,10 +26,10 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
 @Controller
-public class LocationsController extends AbstractCrmController {
+public class RestfulLocationController extends AbstractRestfulController {
 
 	@GetMapping("/rest/locations")
-	public void findLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void findLocationSumaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findLocationSummaries(
@@ -38,6 +38,33 @@ public class LocationsController extends AbstractCrmController {
 				), transformer, locale
 			);
 		});
+	}
+
+	@GetMapping("/rest/locations/details")
+	public void findLocationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findLocationSummaries(
+					extractLocationFilter(req, locale), 
+					extractPaging(LocationsFilter.getDefaultPaging(), req)
+				), transformer, locale
+			);
+		});
+	}
+	
+	@GetMapping("/rest/locations/count")
+	public void countLocations(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("total", crm.countLocations(extractLocationFilter(req, locale)));
+		});
+	}
+	
+	public LocationsFilter extractLocationFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
+		OrganizationIdentifier organizationId = req.getParameter("organization") == null ? null : new OrganizationIdentifier(req.getParameter("organization"));
+		String displayName = req.getParameter("displayName");
+		String reference = req.getParameter("reference");
+		Status status = req.getParameter("status") == null ? null : new StatusJsonTransformer(crm).parseJsonText(new JsonText(req.getParameter("status")), locale);
+		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 	
 //	private JsonArray formatLocationsActions(Identifier organizationId) {
@@ -63,14 +90,6 @@ public class LocationsController extends AbstractCrmController {
 //		}
 //		return new JsonArray(actions);
 //	}
-	
-	public LocationsFilter extractLocationFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
-		OrganizationIdentifier organizationId = req.getParameter("organization") == null ? null : new OrganizationIdentifier(req.getParameter("organization"));
-		String displayName = req.getParameter("displayName");
-		String reference = req.getParameter("reference");
-		Status status = req.getParameter("status") == null ? null : new StatusJsonTransformer(crm).parseJsonText(new JsonText(req.getParameter("status")), locale);
-		return new LocationsFilter(organizationId, displayName, reference, status);
-	}
 
 	@PostMapping("/rest/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -86,7 +105,15 @@ public class LocationsController extends AbstractCrmController {
 	}
 
 	@GetMapping("/rest/locations/{locationId}")
-	public void getLocation(HttpServletRequest req, HttpServletResponse res, 
+	public void getLocationSummary(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
+		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findLocationSummary(locationId), locale);
+		});
+	}
+
+	@GetMapping("/rest/locations/{locationId}/details")
+	public void getLocationDetails(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findLocationDetails(locationId), locale);
@@ -105,14 +132,6 @@ public class LocationsController extends AbstractCrmController {
 				crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", true, null, locationId, messages, locale));
 			}
 			validate(messages);
-			return transformer.format(crm.findLocationDetails(locationId), locale);
-		});
-	}
-
-	@GetMapping("/rest/locations/{locationId}/summary")
-	public void getLocationSummary(HttpServletRequest req, HttpServletResponse res, 
-			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
-		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findLocationDetails(locationId), locale);
 		});
 	}

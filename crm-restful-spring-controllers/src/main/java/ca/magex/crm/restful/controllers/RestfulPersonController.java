@@ -30,7 +30,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
 @Controller
-public class PersonsController extends AbstractCrmController {
+public class RestfulPersonController extends AbstractRestfulController {
 
 	@GetMapping("/rest/persons")
 	public void findPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
