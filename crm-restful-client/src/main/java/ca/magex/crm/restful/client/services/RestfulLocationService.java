@@ -82,7 +82,7 @@ public class RestfulLocationService implements CrmLocationService {
 
 	@Override
 	public LocationDetails findLocationDetails(LocationIdentifier locationId) {
-		JsonObject json = client.get(locationId);
+		JsonObject json = client.get(locationId + "/details");
 		return detailsTransformer.parse(json, client.getLocale());
 	}
 	
@@ -90,7 +90,7 @@ public class RestfulLocationService implements CrmLocationService {
 		return new JsonObject()
 			.with("displayName", filter.getDisplayName())
 			.with("status", filter.getStatus() == null ? null : ((JsonObject)statusTransformer.format(filter.getStatus(), client.getLocale())).getString("@value"))
-			.with("organizationId", filter.getOrganizationId())
+			.with("organizationId", filter.getOrganizationId() == null ? null : filter.getOrganizationId().toString())
 			.with("reference", filter.getReference())
 			.prune();
 	}
@@ -103,7 +103,7 @@ public class RestfulLocationService implements CrmLocationService {
 
 	@Override
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		JsonObject json = client.get("/locations", formatFilter(filter));
+		JsonObject json = client.get("/locations/details", formatFilter(filter));
 		List<LocationDetails> content = json.getArray("content", JsonObject.class).stream()
 			.map(e -> detailsTransformer.parse(e, client.getLocale())).collect(Collectors.toList());
 		return new FilteredPage<>(filter, paging, content, json.getLong("total"));
@@ -111,7 +111,7 @@ public class RestfulLocationService implements CrmLocationService {
 
 	@Override
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
-		JsonObject json = client.get("/locations/summaries", formatFilter(filter));
+		JsonObject json = client.get("/locations", formatFilter(filter));
 		List<LocationSummary> content = json.getArray("content", JsonObject.class).stream()
 			.map(e -> summaryTransformer.parse(e, client.getLocale())).collect(Collectors.toList());
 		return new FilteredPage<>(filter, paging, content, json.getLong("total"));

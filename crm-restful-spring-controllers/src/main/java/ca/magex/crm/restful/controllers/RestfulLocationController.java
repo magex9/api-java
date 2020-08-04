@@ -1,6 +1,8 @@
 package ca.magex.crm.restful.controllers;
 	
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.LocationsFilter;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -60,10 +63,12 @@ public class RestfulLocationController extends AbstractRestfulController {
 	}
 	
 	public LocationsFilter extractLocationFilter(HttpServletRequest req, Locale locale) throws BadRequestException {
-		OrganizationIdentifier organizationId = req.getParameter("organization") == null ? null : new OrganizationIdentifier(req.getParameter("organization"));
-		String displayName = req.getParameter("displayName");
-		String reference = req.getParameter("reference");
-		Status status = req.getParameter("status") == null ? null : new StatusJsonTransformer(crm).parseJsonText(new JsonText(req.getParameter("status")), locale);
+		List<Message> messages = new ArrayList<>();
+		JsonObject query = extractQuery(req);
+		OrganizationIdentifier organizationId = getIdentifier(query, "organizationId", false, null, null, messages);
+		String displayName = getString(query, "displayName", false, null, null, messages);
+		String reference = getString(query, "reference", false, null, null, messages);
+		Status status = getObject(Status.class, query, "status", false, null, null, messages, locale);
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 	
