@@ -24,9 +24,7 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
-import ca.magex.crm.transform.json.StatusJsonTransformer;
 import ca.magex.json.model.JsonObject;
-import ca.magex.json.model.JsonText;
 
 @Controller
 public class RestfulLocationController extends AbstractRestfulController {
