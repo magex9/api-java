@@ -1,4 +1,4 @@
-package ca.magex.crm.mongodb.repository;
+
 
 import java.util.List;
 import java.util.Locale;
@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +53,19 @@ import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.StatusIdentifier;
 import ca.magex.crm.mongodb.config.MongoTestConfig;
+import ca.magex.crm.mongodb.repository.MongoConfigurationRepository;
+import ca.magex.crm.mongodb.repository.MongoLocationRepository;
+import ca.magex.crm.mongodb.repository.MongoOptionRepository;
+import ca.magex.crm.mongodb.repository.MongoOrganizationRepository;
+import ca.magex.crm.mongodb.repository.MongoPersonRepository;
 import ca.magex.crm.mongodb.util.TextUtils;
 import ca.magex.crm.test.CrmAsserts;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { MongoTestConfig.class })
 @EnableTransactionManagement
-public class MongoOptionRepositoryTests {
+@Ignore
+public class MongoTests {
 
 	@Autowired MongoDatabase mongoCrm;
 	@MockBean CrmUpdateNotifier notifier;
@@ -71,7 +78,8 @@ public class MongoOptionRepositoryTests {
 		Assert.assertFalse(repo.prepareInitialize());
 		repo.setInitialized();
 	}
-
+	
+	
 	//	@Test
 	public void testPersons() {
 		MongoPersonRepository repo = new MongoPersonRepository(mongoCrm, notifier, "test");

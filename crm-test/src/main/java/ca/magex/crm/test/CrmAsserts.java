@@ -226,16 +226,16 @@ public class CrmAsserts {
 			"** Footnote",
 			"* Astrix",
 			"0 Zero",
-			"1 First",
+			"1 First",			
 			"A",
 			"a",
-			"a",
+			"a",			
 			"AA",
 			"aaa",
 			"AAAA",
 			"AaAb",
 			"AaaB",
-			"aaAB",
+			"aaAB",	
 			"Æther",
 			"æther",
 			"Boy",
@@ -243,10 +243,10 @@ public class CrmAsserts {
 			"French",
 			"Java",
 			"Montreal",
-			"Montréal",
+			"Montréal",			
 			"Résumé",
 			"resume",
-			"résumé",
+			"résumé",			
 			" space first",
 			"XYZ",
 			"Zzzz");
@@ -312,7 +312,7 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_ENGLISH_ASC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.ENGLISH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC, names);
+		assertEquals(LOCALIZED_SORTED_ENGLISH_ASC.toString(), names.toString());
 	}
 
 	@Test
@@ -320,7 +320,7 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_ENGLISH_DESC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.ENGLISH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC, names);
+		assertEquals(LOCALIZED_SORTED_ENGLISH_DESC.toString(), names.toString());
 	}
 
 	@Test
@@ -328,7 +328,7 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_FRENCH_ASC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.FRENCH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		assertEquals(LOCALIZED_SORTED_FRENCH_ASC, names);
+		assertEquals(LOCALIZED_SORTED_FRENCH_ASC.toString(), names.toString());
 	}
 
 	@Test
@@ -336,7 +336,7 @@ public class CrmAsserts {
 		Paging paging = LocalizedFilter.getDefaultPaging().withSort(LocalizedFilter.SORT_FRENCH_DESC).allItems();
 		List<String> names = findLocalizedNames(new LocalizedFilter(), paging, Lang.FRENCH).getContent();
 		assertEquals(LOCALIZED_SORTING_OPTIONS.size(), names.size());
-		assertEquals(LOCALIZED_SORTED_FRENCH_DESC, names);
+		assertEquals(LOCALIZED_SORTED_FRENCH_DESC.toString(), names.toString());
 	}
 
 	public static <T> List<T> reverse(List<T> list) {

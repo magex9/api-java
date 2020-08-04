@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort.Direction;
 
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.filters.Paging.CrmStringComparator;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
@@ -40,12 +39,5 @@ public class PagingTests {
 		comparator = new Paging(Sort.by(Direction.ASC, "postalCode", "city")).new PagingComparator<MailingAddress>();
 		Assert.assertEquals(1, comparator.compare(ma1, ma2));
 		Assert.assertEquals(-1, comparator.compare(ma2, ma1));
-	}
-	
-	@Test
-	public void testCrmStringComparator() {
-		CrmStringComparator comparator = new Paging.CrmStringComparator();
-		
-		Assert.assertEquals(0, comparator.compare("e", "é"));
 	}
 }

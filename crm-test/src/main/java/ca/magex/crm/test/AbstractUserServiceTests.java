@@ -73,7 +73,7 @@ public abstract class AbstractUserServiceTests {
 	}
 	
 	@Test
-	public void testUsers() {
+	public void testUsers() {		
 		OrganizationDetails tAndA = config().createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS), List.of(new BusinessGroupIdentifier("ORG")));
 
 		PersonDetails adam = config().createPerson(
@@ -98,19 +98,19 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(u1, users().findUserByUsername(u1.getUsername()));
 		Assert.assertEquals(u1, users().findUserDetails(u1.getUserId()));
 
-		UserDetails u2 = users().createUser(adam.getPersonId(), "adam-admin", List.of(CrmAsserts.SYS_ADMIN));
+		UserDetails u2 = users().createUser(adam.getPersonId(), "adamadmin", List.of(CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(adam.getPersonId(), u2.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.SYS_ADMIN), u2.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u2.getStatus());
-		Assert.assertEquals("adam-admin", u2.getUsername());
+		Assert.assertEquals("adamadmin", u2.getUsername());
 		Assert.assertEquals(u2, users().findUserByUsername(u2.getUsername()));
 		Assert.assertEquals(u2, users().findUserDetails(u2.getUserId()));
 
-		UserDetails u3 = users().createUser(bob.getPersonId(), "bob-uber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
+		UserDetails u3 = users().createUser(bob.getPersonId(), "bobuber", List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		Assert.assertEquals(bob.getPersonId(), u3.getPersonId());
 		Assert.assertEquals(List.of(CrmAsserts.ORG_ADMIN, CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN), u3.getAuthenticationRoleIds());
 		Assert.assertEquals(Status.ACTIVE, u3.getStatus());
-		Assert.assertEquals("bob-uber", u3.getUsername());
+		Assert.assertEquals("bobuber", u3.getUsername());
 		Assert.assertEquals(u3, users().findUserByUsername(u3.getUsername()));
 		Assert.assertEquals(u3, users().findUserDetails(u3.getUserId()));
 
@@ -168,6 +168,8 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals(1, usersPage.getTotalPages());
 		Assert.assertEquals(3, usersPage.getTotalElements());
 		Assert.assertEquals(3, usersPage.getContent().size());
+		
+		System.out.println(usersPage.getContent().get(0).getUsername() + "," + usersPage.getContent().get(1).getUsername() + "," + usersPage.getContent().get(2).getUsername());
 		Assert.assertEquals(u1, usersPage.getContent().get(0));
 		Assert.assertEquals(u2, usersPage.getContent().get(1));
 		Assert.assertEquals(u3, usersPage.getContent().get(2));
