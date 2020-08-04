@@ -157,7 +157,7 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	public OrganizationDetails validate(OrganizationDetails organization) {
 		List<Message> messages = validateOrganizationDetails(this, organization);
 		if (!messages.isEmpty())
-			throw new BadRequestException("Organization has validation errors", messages);
+			throw new BadRequestException("Validation Errors", messages);
 		return organization;
 	}
 	

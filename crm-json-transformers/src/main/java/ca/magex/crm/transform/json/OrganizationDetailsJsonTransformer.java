@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
@@ -34,6 +35,7 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 	
 	@Override
 	public JsonObject formatLocalized(OrganizationDetails organization, Locale locale) {
+		List<Message> messages = new ArrayList<>();
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		formatType(pairs, locale);
 		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
@@ -41,8 +43,9 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		formatText(pairs, "displayName", organization);
 		formatIdentifier(pairs, "mainLocationId", organization, LocationIdentifier.class, locale);
 		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
-		formatOptions(pairs, "authenticationGroupIds", organization, Type.AUTHENTICATION_GROUP, locale);
-		formatOptions(pairs, "businessGroupIds", organization, Type.BUSINESS_GROUP, locale);
+		formatOptions(pairs, "authenticationGroupIds", organization, Type.AUTHENTICATION_GROUP, locale, organization.getOrganizationId(), messages);
+		formatOptions(pairs, "businessGroupIds", organization, Type.BUSINESS_GROUP, locale, organization.getOrganizationId(), messages);
+		validate(messages);
 		return new JsonObject(pairs);
 	}
 

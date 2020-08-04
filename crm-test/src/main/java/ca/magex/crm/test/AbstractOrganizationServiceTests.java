@@ -412,13 +412,13 @@ public abstract class AbstractOrganizationServiceTests {
 	}
 
 	@Test
-	public void testCreateOrgWithMissingGroup() throws Exception {				
+	public void testCreateOrgWithMissingGroup() throws Exception {
 		try {
 			organizations().createOrganization("INVALID", List.of(new AuthenticationGroupIdentifier("MISSING")), List.of(BusinessGroupIdentifier.EXTERNAL));
 			fail("Should have gotten bad request");
 		} catch (BadRequestException e) {
 			assertEquals("Bad Request: Validation Errors", e.getMessage());
-			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "authenticationGroupIds[0]", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INVALID));
+			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "authenticationGroupIds[0]", new Choice<>(PhraseIdentifier.VALIDATION_OPTION_INVALID));
 		}
 	}
 
