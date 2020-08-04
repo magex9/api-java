@@ -1,13 +1,11 @@
 package ca.magex.crm.api.filters;
 
 import java.io.Serializable;
-import java.text.Collator;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -21,6 +19,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.utils.CollationComparator;
 
 public class Paging implements Pageable, Serializable {
 
@@ -122,25 +121,6 @@ public class Paging implements Pageable, Serializable {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
 	}
 
-	public static class CrmStringComparator implements Comparator<String> {
-
-		private Collator collator = null;
-		
-		public CrmStringComparator() {
-			collator = Collator.getInstance();
-			collator.setStrength(Collator.TERTIARY);
-		}
-		
-		@Override
-		public int compare(String o1, String o2) {
-			int compare = collator.compare(o1, o2);
-			if (compare == 0) {
-				return compare = StringUtils.compare(o1, o2);
-			}			
-			return compare;
-		}		
-	}
-	
 	/**
 	 * Creates a new Comparator based on this Paging Instance
 	 * 
@@ -159,7 +139,7 @@ public class Paging implements Pageable, Serializable {
 		public int compare(T o1, T o2) {
 			PropertyUtilsBean pub = new PropertyUtilsBean();
 			Iterator<Order> iterator = Paging.this.getSort().iterator();
-			CrmStringComparator nameComparator = new CrmStringComparator();
+			CollationComparator nameComparator = new CollationComparator();
 			while (iterator.hasNext()) {
 				Order order = iterator.next();
 				String propertyName = order.getProperty();

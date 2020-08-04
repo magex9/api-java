@@ -2,6 +2,7 @@ package ca.magex.crm.mongodb.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
@@ -11,6 +12,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Collation;
+import com.mongodb.client.model.CollationCaseFirst;
+import com.mongodb.client.model.CollationStrength;
 import com.mongodb.client.model.Facet;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
@@ -153,8 +157,17 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
 		
+		Collation collation = Collation
+				.builder()
+				.backwards(false)
+				.collationStrength(CollationStrength.SECONDARY)
+				.locale(Locale.CANADA_FRENCH.toString())
+				.caseLevel(true)
+				.collationCaseFirst(CollationCaseFirst.UPPER)				
+				.build();
+		
 		/* single document because we have facets */
-		Document doc = collection.aggregate(pipeline).first();
+		Document doc = collection.aggregate(pipeline).collation(collation).first();
 		JsonObject json = new JsonObject(doc.toJson());
 		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);
 		JsonArray results = json.getArray("results");
@@ -190,8 +203,17 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
 
+		Collation collation = Collation
+				.builder()
+				.backwards(false)
+				.collationStrength(CollationStrength.SECONDARY)
+				.locale(Locale.CANADA_FRENCH.toString())
+				.caseLevel(true)
+				.collationCaseFirst(CollationCaseFirst.UPPER)				
+				.build();
+		
 		/* single document because we have facets */
-		Document doc = collection.aggregate(pipeline).first();
+		Document doc = collection.aggregate(pipeline).collation(collation).first();
 		JsonObject json = new JsonObject(doc.toJson());
 		Long totalCount = json.getArray("totalCount").getObject(0, new JsonObject()).getLong("count", 0L);
 		JsonArray results = json.getArray("results");
