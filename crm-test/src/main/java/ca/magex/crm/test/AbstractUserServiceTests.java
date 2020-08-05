@@ -271,7 +271,7 @@ public abstract class AbstractUserServiceTests {
 		try {
 			users().createUser(adam.getPersonId(), "adam21", List.of(CrmAsserts.CRM_ADMIN, CrmAsserts.SYS_ADMIN));
 		} catch (DuplicateItemFoundException e) {
-			Assert.assertEquals("Duplicate item found found: Username 'adam21'", e.getMessage());
+			Assert.assertEquals("Duplicate item found: Username 'adam21'", e.getMessage());
 		}
 	}
 

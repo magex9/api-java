@@ -32,4 +32,9 @@ public class MongoBasicUserServiceTests extends AbstractUserServiceTests {
 	protected CrmUserService users() {
 		return crm;
 	}
+	
+	@Override
+	public void testDuplicateUsername() {
+		super.testDuplicateUsername();
+	}
 }

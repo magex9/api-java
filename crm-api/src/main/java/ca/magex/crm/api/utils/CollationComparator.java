@@ -18,7 +18,7 @@ public class CollationComparator implements Comparator<String> {
 	
 	public CollationComparator() {
 		collator = RuleBasedCollator.getInstance(Locale.CANADA_FRENCH);
-		collator.setStrength(Collator.SECONDARY);
+		collator.setStrength(Collator.PRIMARY); // this will treat e as an equal to é for example
 		collator.setDecomposition(Collator.NO_DECOMPOSITION);
 	}
 	
@@ -29,5 +29,5 @@ public class CollationComparator implements Comparator<String> {
 			return result;
 		}
 		return StringUtils.compare(o1, o2);
-	}		
+	}	
 }

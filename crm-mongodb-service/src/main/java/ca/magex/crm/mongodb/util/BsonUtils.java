@@ -12,6 +12,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 
+import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -109,7 +110,23 @@ public class BsonUtils {
 						.getAuthenticationRoleIds()
 						.stream()
 						.map((id) -> id.getFullIdentifier())
-						.collect(Collectors.toList()));
+						.collect(Collectors.toList()))
+				.append("passwords", List.of());
+	}
+	
+	/**
+	 * converts a password to a Bson object
+	 * @param password
+	 * @return
+	 */
+	public static Bson toBson(CrmPasswordDetails password) {
+		if (password == null) {
+			return null;
+		}
+		return new BasicDBObject()
+				.append("cipherText", password.getCipherText())
+				.append("temporary", password.isTemporary())
+				.append("expiration", password.getExpiration() == null ? null : password.getExpiration().getTime());
 	}
 	
 	/**

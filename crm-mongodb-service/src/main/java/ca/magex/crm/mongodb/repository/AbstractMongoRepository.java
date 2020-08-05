@@ -19,17 +19,17 @@ import ca.magex.crm.api.observer.CrmUpdateNotifier;
 public abstract class AbstractMongoRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMongoRepository.class.getPackageName());
-	
+
 	private MongoDatabase mongoCrm;
 	private CrmUpdateNotifier notifier;
 	private String env;
-	
+
 	protected AbstractMongoRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
 		this.mongoCrm = mongoCrm;
 		this.notifier = notifier;
 		this.env = env;
 	}
-	
+
 	/**
 	 * returns the organizations collection
 	 * @return
@@ -37,7 +37,7 @@ public abstract class AbstractMongoRepository {
 	protected MongoCollection<Document> getOrganizations() {
 		return mongoCrm.getCollection("organizations");
 	}
-	
+
 	/**
 	 * returns the options collection
 	 * @return
@@ -45,7 +45,7 @@ public abstract class AbstractMongoRepository {
 	protected MongoCollection<Document> getOptions() {
 		return mongoCrm.getCollection("options");
 	}
-	
+
 	/**
 	 * returns the configurations collection
 	 * @return
@@ -53,7 +53,7 @@ public abstract class AbstractMongoRepository {
 	protected MongoCollection<Document> getConfigurations() {
 		return mongoCrm.getCollection("configurations");
 	}
-	
+
 	/**
 	 * returns our notifier used when items within the repository change
 	 * @return
@@ -61,11 +61,11 @@ public abstract class AbstractMongoRepository {
 	protected CrmUpdateNotifier getNotifier() {
 		return notifier;
 	}
-	
+
 	protected String getEnv() {
 		return env;
 	}
-	
+
 	/**
 	 * logger helper
 	 * @param messageSupplier

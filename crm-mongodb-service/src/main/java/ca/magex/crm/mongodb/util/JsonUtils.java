@@ -1,7 +1,9 @@
 package ca.magex.crm.mongodb.util;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
+import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -32,6 +34,7 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
 public class JsonUtils {
@@ -174,6 +177,24 @@ public class JsonUtils {
 				Status.of(json.getString("status")), 
 				json.getArray("authenticationRoleIds", String.class).stream().map(AuthenticationRoleIdentifier::new).collect(Collectors.toList()));
 				
+	}
+	
+	/**
+	 * converts to a password details
+	 * @param json
+	 * @return
+	 */
+	public static CrmPasswordDetails toPasswordDetails(JsonObject json) {
+		JsonArray passwords = json.getArray("passwords");
+		if (passwords.size() == 0) {
+			return null;
+		}
+		JsonObject passwordDetails = passwords.getObject(passwords.size() - 1);
+		return new CrmPasswordDetails(
+				json.getString("username"), 
+				passwordDetails.getString("cipherText"), 
+				passwordDetails.getBoolean("temporary"),
+				passwordDetails.contains("expiration") ? new Date(passwordDetails.getLong("expiration")) : null);
 	}
 	
 	/**

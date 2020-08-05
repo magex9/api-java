@@ -23,6 +23,7 @@ import com.mongodb.client.result.UpdateResult;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
@@ -73,18 +74,18 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 										.map((id) -> id.getFullIdentifier())
 										.collect(Collectors.toList()))));
 		if (setResult.getMatchedCount() == 0) {
-			/* if we had no matching location id, then we need to do a push to the locations */
+			/* if we had no matching user id, then we need to do a push to the users */
 			final UpdateResult pushResult = collection.updateOne(
 					new BasicDBObject()
 							.append("env", getEnv())
 							.append("organizationId", user.getOrganizationId().getFullIdentifier())
-							.append("users.userId", new BasicDBObject()
-									.append("$ne", user.getPersonId().getFullIdentifier())),
+							.append("users.username", new BasicDBObject()
+									.append("$ne", user.getUsername())),
 					new BasicDBObject()
 							.append("$push", new BasicDBObject()
 									.append("users", BsonUtils.toBson(user))));
 			if (pushResult.getModifiedCount() == 0) {
-				throw new ApiException("Unable to update or insert user: " + user);
+				throw new DuplicateItemFoundException("Username '" + user.getUsername() + "'");
 			}
 			debug(() -> "saveUserDetails(" + user + ") performed an insert with result " + pushResult);
 		} else {

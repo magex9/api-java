@@ -19,11 +19,11 @@ import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
-import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.CrmPasswordStore;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
+import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
 
 @PropertySource("classpath:azure-mongodb.properties")
@@ -70,7 +70,7 @@ public class MongoTestConfig {
 	
 	@Bean
 	public CrmPasswordRepository passwordRepo() {
-		return new BasicPasswordRepository(passwordStore());
+		return new MongoPasswordRepository(mongoCrm(), notifier(), "junit");
 	}
 	
 	@Bean 

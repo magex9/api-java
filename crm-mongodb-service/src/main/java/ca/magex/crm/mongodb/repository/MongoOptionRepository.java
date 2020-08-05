@@ -65,7 +65,7 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 					.append("env", getEnv())
 					.append("options", List.of(BsonUtils.toBson(option))));
 			debug(() -> "saveOption(" + option + ") created a new document with result " + insertResult);
-		} else {
+		} else {			
 			/* add all the fields that can be updated */
 			final UpdateResult setResult = collection.updateOne(
 					new BasicDBObject()
