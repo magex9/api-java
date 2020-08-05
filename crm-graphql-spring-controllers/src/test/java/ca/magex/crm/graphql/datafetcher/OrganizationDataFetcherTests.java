@@ -334,11 +334,13 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject cio = execute(
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, " +
-						"name: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
+						"displayName: %s, " + 
+						"legalName: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
 						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}, " +
 						"communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " +
 						"businessRoleIds: %s ) { personId } }",
 				johnnuyId,
+				"Indiana Jones", 
 				"Henry", "Peter", "Jones", "MR",
 				"123 Frank St", "Ottawa", "CA/ON", "CA", "K5J9F4",
 				"CIO", "EN", "cio@johnnuy.org", "613-555-5556", "97", "613-555-5557",
@@ -356,7 +358,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(cioId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Jones, Henry Peter", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Indiana Jones", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -384,7 +386,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(cioId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Jones, Henry Peter", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Indiana Jones", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -404,11 +406,13 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		JSONObject ceo = execute(
 				"createPerson",
 				"mutation { createPerson(organizationId: %s, " +
-						"name: {" + "firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
+						"displayName: %s, " + 
+						"legalName: {" + "firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " +
 						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s}, " +
 						"communication: { jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s}, " +
 						"businessRoleIds: %s ) { personId } }",
 				johnnuyId,
+				"Tommy Narrow",
 				"Tommy", "Falls", "Narrow", "MRS",
 				"123 Frank St", "Ottawa", "CA/ON", "CA", "K5J9F4",
 				"CIO", "EN", "cio@johnnuy.org", "613-555-5556", "97", "613-555-5557",
@@ -426,7 +430,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -454,7 +458,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -482,7 +486,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(1, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -507,7 +511,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(1, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("ORG", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("Organization", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -532,7 +536,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -560,7 +564,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -588,7 +592,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -613,7 +617,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -638,7 +642,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
@@ -665,7 +669,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals(headQuartersId2.toString(), johnnuy.getJSONObject("mainLocation").getString("locationId"));
 		Assert.assertEquals("HQ2", johnnuy.getJSONObject("mainLocation").getString("reference"));
 		Assert.assertEquals(ceoId.toString(), johnnuy.getJSONObject("mainContact").getString("personId"));
-		Assert.assertEquals("Narrow, Tommy Falls", johnnuy.getJSONObject("mainContact").getString("displayName"));
+		Assert.assertEquals("Tommy Narrow", johnnuy.getJSONObject("mainContact").getString("displayName"));
 		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
 		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
 		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));

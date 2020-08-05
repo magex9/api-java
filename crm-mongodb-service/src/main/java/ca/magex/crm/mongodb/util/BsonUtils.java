@@ -80,8 +80,8 @@ public class BsonUtils {
 		return new BasicDBObject()
 				.append("personId", person.getPersonId().getFullIdentifier())
 				.append("status", person.getStatus().getCode())
-				.append("displayName", person.getLegalName().getDisplayName())
-				.append("displayName_searchable", TextUtils.toSearchable(person.getLegalName().getDisplayName()))
+				.append("displayName", person.getDisplayName())
+				.append("displayName_searchable", TextUtils.toSearchable(person.getDisplayName()))
 				.append("legalName", BsonUtils.toBson(person.getLegalName()))
 				.append("address", BsonUtils.toBson(person.getAddress()))
 				.append("communication", BsonUtils.toBson(person.getCommunication()))
@@ -208,8 +208,7 @@ public class BsonUtils {
 				.append("salutation", toBson(personName.getSalutation()))
 				.append("firstName", personName.getFirstName())
 				.append("middleName", personName.getMiddleName())
-				.append("surname", personName.getLastName())
-				.append("displayName", personName.getDisplayName());
+				.append("surname", personName.getLastName());
 	}
 	
 	/**

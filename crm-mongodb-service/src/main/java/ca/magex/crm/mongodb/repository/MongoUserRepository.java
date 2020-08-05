@@ -22,7 +22,6 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;

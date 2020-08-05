@@ -81,7 +81,8 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 
 			return crm.createPerson(
 					new OrganizationIdentifier((String) environment.getArgument("organizationId")),
-					extractPersonName(environment, "name"),
+					environment.getArgument("displayName"),
+					extractPersonName(environment, "legalName"),
 					extractMailingAddress(environment, "address"),
 					extractCommunication(environment, "communication"),
 					extractBusinessRoles(environment, "businessRoleIds"));
@@ -113,10 +114,16 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
 				}
 			}
-			if (environment.getArgument("name") != null) {
-				PersonName newName = extractPersonName(environment, "name");
+			if (environment.getArgument("displayName") != null) {
+				String displayName = environment.getArgument("displayName");
+				if (!StringUtils.equals(person.getDisplayName(), displayName)) {
+					person = crm.updatePersonDisplayName(personId, displayName);
+				}
+			}
+			if (environment.getArgument("legalName") != null) {
+				PersonName newName = extractPersonName(environment, "legalName");
 				if (!person.getLegalName().equals(newName)) {
-					person = crm.updatePersonName(personId, newName);
+					person = crm.updatePersonLegalName(personId, newName);
 				}
 			}
 			if (environment.getArgument("address") != null) {

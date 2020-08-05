@@ -43,13 +43,14 @@ public class GraphQLPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
 		return ModelBinder.toPersonDetails(graphQLClient
 				.performGraphQLQueryWithVariables(
 						"createPerson",
 						"createPerson",
 						new MapBuilder()
 								.withEntry("organizationId", organizationId.getCode())
+								.withEntry("displayName", displayName)
 								.withEntry("firstName", name.getFirstName())
 								.withEntry("middleName", name.getMiddleName())
 								.withEntry("lastName", name.getLastName())
@@ -98,10 +99,22 @@ public class GraphQLPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName name) {
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
 		return ModelBinder.toPersonDetails(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updatePersonName",
+						"updatePersonDisplayName",
+						"updatePerson",
+						new MapBuilder()
+								.withEntry("personId", personId.getCode())
+								.withEntry("displayName", displayName)
+								.build())); 
+	}
+	
+	@Override
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName name) {
+		return ModelBinder.toPersonDetails(graphQLClient
+				.performGraphQLQueryWithVariables(
+						"updatePersonLegalName",
 						"updatePerson",
 						new MapBuilder()
 								.withEntry("personId", personId.getCode())
