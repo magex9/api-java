@@ -1,9 +1,12 @@
 package ca.magex.crm.mongodb.config;
 
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.mongodb.client.MongoClient;
@@ -25,17 +28,49 @@ import ca.magex.crm.api.store.CrmPasswordStore;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 
-@PropertySource("classpath:azure-mongodb.properties")
 public class MongoTestConfig {
-
-	@Value("${mongo.url}") private String url;
-	@Value("${mongo.username}") private String username;
-	@Value("${mongo.password}") private String password;
+	
+	private MongodExecutable mongod = null;
+	private int mongodbPort = -1; 
+		
+	@PostConstruct
+	public void startEmbeddedMongo() {
+		try {
+			String ip = "localhost";		
+			mongodbPort = Network.getFreeServerPort();
+			IMongodConfig mongodConfig = new MongodConfigBuilder()
+				.version(Version.Main.PRODUCTION)
+				.net(new Net(ip, mongodbPort, Network.localhostIsIPv6()))
+				.build();
+			
+			MongodStarter starter = MongodStarter.getDefaultInstance();
+			mongod = starter.prepare(mongodConfig);
+			mongod.start();
+		}
+		catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+	}
+	
+	@PreDestroy
+	public void stopEmbeddedMongo() {
+		if (mongod != null) {
+			mongod.stop();
+			mongod = null;
+		}
+	}
 
 	@Bean
 	public MongoClient mongoClient() {
-		return MongoClients.create("mongodb+srv://" + username + ":" + password + "@" + url);
+		return MongoClients.create("mongodb://localhost:" + mongodbPort);
 	}
 	
 	@Bean

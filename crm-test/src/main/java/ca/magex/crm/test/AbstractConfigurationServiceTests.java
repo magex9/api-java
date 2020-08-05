@@ -28,10 +28,10 @@ import ca.magex.json.model.JsonObject;
 public abstract class AbstractConfigurationServiceTests {
 
 	@Autowired
-	private Crm crm;
+	protected Crm crm;
 	
 	@Autowired
-	private CrmAuthenticationService auth;
+	protected CrmAuthenticationService auth;
 	
 	@Before
 	public void setup() {

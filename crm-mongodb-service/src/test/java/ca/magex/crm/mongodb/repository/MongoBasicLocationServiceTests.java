@@ -1,5 +1,6 @@
 package ca.magex.crm.mongodb.repository;
 
+import org.junit.After;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,5 +32,11 @@ public class MongoBasicLocationServiceTests extends AbstractLocationServiceTests
 	@Override
 	protected CrmAuthenticationService auth() {
 		return auth;
+	}
+	
+	@After
+	public void cleanup() {
+		super.cleanup();
+		crm.reset();
 	}
 }
