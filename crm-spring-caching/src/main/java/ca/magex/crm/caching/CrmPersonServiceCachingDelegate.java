@@ -70,8 +70,8 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
-		PersonDetails details = delegate.createPerson(organizationId, name, address, communication, roleIds);
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
+		PersonDetails details = delegate.createPerson(organizationId, displayName, legalName, address, communication, roleIds);
 		cacheTemplate.put(detailsCacheSupplier(details, details.getPersonId()));
 		return details;
 	}
@@ -100,8 +100,15 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName name) {
-		PersonDetails details = delegate.updatePersonName(personId, name);
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
+		PersonDetails details = delegate.updatePersonDisplayName(personId, displayName);
+		cacheTemplate.put(detailsCacheSupplier(details, personId));
+		return details;
+	}
+
+	@Override
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
+		PersonDetails details = delegate.updatePersonLegalName(personId, legalName);
 		cacheTemplate.put(detailsCacheSupplier(details, personId));
 		return details;
 	}

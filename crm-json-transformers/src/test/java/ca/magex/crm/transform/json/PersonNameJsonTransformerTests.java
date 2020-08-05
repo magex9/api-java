@@ -1,7 +1,7 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.MR;
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.PERSON_LEGAL_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
@@ -34,7 +34,7 @@ public class PersonNameJsonTransformerTests {
 		crm = TestCrm.build();
 		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonNameJsonTransformer(crm);
-		personName = PERSON_NAME.withSalutation(MR);
+		personName = PERSON_LEGAL_NAME.withSalutation(MR);
 	}
 	
 	@Test

@@ -27,9 +27,9 @@ public class RestfulPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address,
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address,
 			Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
-		PersonDetails details = prototypePerson(organizationId, name, address, communication, businessRoleIds);
+		PersonDetails details = prototypePerson(organizationId, displayName, legalName, address, communication, businessRoleIds);
 		JsonObject json = client.post("/persons", (JsonObject)client.format(details, PersonDetails.class));
 		return client.parse(json, PersonDetails.class);
 	}
@@ -47,8 +47,14 @@ public class RestfulPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName name) {
-		JsonObject json = client.patch(personId, new JsonObject().with("name", client.format(name, PersonName.class)));
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
+		JsonObject json = client.patch(personId, new JsonObject().with("displayName", displayName));
+		return client.parse(json, PersonDetails.class);
+	}
+
+	@Override
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
+		JsonObject json = client.patch(personId, new JsonObject().with("legalName", client.format(legalName, PersonName.class)));
 		return client.parse(json, PersonDetails.class);
 	}
 

@@ -4,12 +4,10 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.data.annotation.Transient;
 import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
@@ -32,26 +30,12 @@ public class PersonName implements Serializable {
 	@NotNull
 	private String lastName;
 
-	@Transient
-	private String displayName;
-
 	public PersonName(Choice<SalutationIdentifier> salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
-		this.displayName = "";
-		if (StringUtils.isNotBlank(lastName))
-			displayName += lastName;
-		if (StringUtils.isNotBlank(firstName) && displayName.length() > 0)
-			displayName += ", ";
-		if (StringUtils.isNotBlank(firstName))
-			displayName += firstName;
-		if (StringUtils.isNotBlank(middleName) && displayName.length() > 0)
-			displayName += " ";
-		if (StringUtils.isNotBlank(middleName))
-			displayName += middleName;
 	}
 
 	public Choice<SalutationIdentifier> getSalutation() {
@@ -84,10 +68,6 @@ public class PersonName implements Serializable {
 	
 	public PersonName withLastName(String lastName) {
 		return new PersonName(salutation, firstName, middleName, lastName);
-	}
-
-	public String getDisplayName() {
-		return displayName;
 	}
 
 	@Override

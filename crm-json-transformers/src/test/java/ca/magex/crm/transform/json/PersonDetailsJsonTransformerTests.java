@@ -1,7 +1,8 @@
 package ca.magex.crm.transform.json;
 
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.PERSON_DISPLAY_NAME;
+import static ca.magex.crm.test.CrmAsserts.PERSON_LEGAL_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
@@ -50,7 +51,7 @@ public class PersonDetailsJsonTransformerTests {
 			crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/DEV/APPS/DEV").getOptionId()
 		);
 		person = new PersonDetails(personId, organizationId, Status.ACTIVE, 
-			PERSON_NAME.getDisplayName(), PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds);
+				PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds);
 	}
 	
 	@Test

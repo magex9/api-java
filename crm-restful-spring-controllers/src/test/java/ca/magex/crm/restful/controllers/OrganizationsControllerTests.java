@@ -5,7 +5,8 @@ import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.ORG_AUTH_GROUPS;
 import static ca.magex.crm.test.CrmAsserts.ORG_BIZ_GROUPS;
 import static ca.magex.crm.test.CrmAsserts.ORG_NAME;
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.PERSON_DISPLAY_NAME;
+import static ca.magex.crm.test.CrmAsserts.PERSON_LEGAL_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.assertSingleJsonMessage;
@@ -117,7 +118,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testGetOrganizationSummary() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
-		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
+		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 		crm.updateOrganizationMainContact(organizationId, personId);
 		
@@ -161,7 +162,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testGetMainLocation() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS.withProvince(new Choice<ProvinceIdentifier>(new ProvinceIdentifier("CA/NL")))).getLocationId();
-		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
+		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainLocation(organizationId, locationId);
 		crm.updateOrganizationMainContact(organizationId, personId);
 
@@ -242,7 +243,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testGetMainContact() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
-		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
+		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 		
 		JsonObject linked = get(organizationId + "/mainContact", null, HttpStatus.OK);
@@ -401,7 +402,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testUpdatingFullOrganization() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
-		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
+		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 
 		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
 		assertEquals(organizationId, org.getOrganizationId());
@@ -504,7 +505,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingMainContact() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
-		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
+		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		
 		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 			.with("mainContactId", personId.toString()));
@@ -523,7 +524,7 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	@Test
 	public void testUpdatingMainContactAsNull() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
-		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
+		PersonIdentifier personId = crm.createPerson(organizationId, PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(CEO)).getPersonId();
 		crm.updateOrganizationMainContact(organizationId, personId);
 
 		JsonObject json = patch(organizationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("mainContactId", null));

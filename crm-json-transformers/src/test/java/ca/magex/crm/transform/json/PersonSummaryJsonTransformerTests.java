@@ -1,6 +1,6 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.PERSON_DISPLAY_NAME;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
 import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
@@ -42,7 +42,7 @@ public class PersonSummaryJsonTransformerTests {
 		transformer = new PersonSummaryJsonTransformer(crm);
 		personId = new PersonIdentifier("TkNj8jzNGC");
 		organizationId = new OrganizationIdentifier("DSbVnvGGyf");
-		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_NAME.getDisplayName());
+		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_DISPLAY_NAME);
 	}
 	
 	@Test

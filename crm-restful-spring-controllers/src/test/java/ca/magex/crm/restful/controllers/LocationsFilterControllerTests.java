@@ -222,7 +222,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByActiveDesc() throws Exception {
 		JsonObject json = get("/locations", Lang.ROOT, HttpStatus.OK, new JsonObject()
-			.with("organization", org1.toString())
+			.with("organizationId", org1.toString())
 			.with("status", "ACTIVE")
 			.with("order", "displayName")
 			.with("direction", "desc"));
@@ -262,7 +262,7 @@ public class LocationsFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterByLocations() throws Exception {
-		JsonObject json = get("/locations", Lang.ROOT, HttpStatus.OK, new JsonObject().with("organization", org2.toString()));
+		JsonObject json = get("/locations", Lang.ROOT, HttpStatus.OK, new JsonObject().with("organizationId", org2.toString()));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));

@@ -37,6 +37,7 @@ import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class UsersFilterControllerTests extends AbstractControllerTests {
@@ -68,13 +69,13 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		org1 = createTestOrganization("Org 1");
 		org2 = createTestOrganization("Org 2");
 		
-		adamId = crm.createUser(crm.createPerson(org1, ADAM, CA_ADDRESS, HOME_COMMUNICATIONS, List.of(SYS_ADMINISTRATOR)).getPersonId(), "adam", List.of(ORG_ADMIN, CRM_ADMIN)).getUserId();
-		bobId = crm.disableUser(crm.createUser(crm.createPerson(org1, BOB, US_ADDRESS, HOME_COMMUNICATIONS, List.of(DEVELOPER)).getPersonId(), "bob", List.of(ORG_USER)).getUserId()).getUserId();
-		chloeId = crm.createUser(crm.createPerson(org1, CHLOE, MX_ADDRESS, WORK_COMMUNICATIONS, List.of(EXECS_CEO)).getPersonId(), "chloe", List.of(CRM_USER)).getUserId();
-		danId = crm.createUser(crm.createPerson(org2, DAN, EN_ADDRESS, HOME_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId(), "dan", List.of(CRM_USER)).getUserId();
-		elaineId = crm.createUser(crm.createPerson(org2, ELAINE, DE_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_EMPLOYEE)).getPersonId(), "elaine", List.of(SYS_ADMIN)).getUserId();
+		adamId = crm.createUser(crm.createPerson(org1, CrmAsserts.displayName(ADAM), ADAM, CA_ADDRESS, HOME_COMMUNICATIONS, List.of(SYS_ADMINISTRATOR)).getPersonId(), "adam", List.of(ORG_ADMIN, CRM_ADMIN)).getUserId();
+		bobId = crm.disableUser(crm.createUser(crm.createPerson(org1, CrmAsserts.displayName(BOB), BOB, US_ADDRESS, HOME_COMMUNICATIONS, List.of(DEVELOPER)).getPersonId(), "bob", List.of(ORG_USER)).getUserId()).getUserId();
+		chloeId = crm.createUser(crm.createPerson(org1, CrmAsserts.displayName(CHLOE), CHLOE, MX_ADDRESS, WORK_COMMUNICATIONS, List.of(EXECS_CEO)).getPersonId(), "chloe", List.of(CRM_USER)).getUserId();
+		danId = crm.createUser(crm.createPerson(org2, CrmAsserts.displayName(DAN), DAN, EN_ADDRESS, HOME_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId(), "dan", List.of(CRM_USER)).getUserId();
+		elaineId = crm.createUser(crm.createPerson(org2, CrmAsserts.displayName(ELAINE), ELAINE, DE_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_EMPLOYEE)).getPersonId(), "elaine", List.of(SYS_ADMIN)).getUserId();
 		crm.disablePerson(crm.findUserDetails(elaineId).getPersonId());
-		francoisId = crm.createUser(crm.createPerson(org2, FRANCOIS, FR_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_CONTACT)).getPersonId(), "francois", List.of(ORG_ADMIN, CRM_USER)).getUserId();
+		francoisId = crm.createUser(crm.createPerson(org2, CrmAsserts.displayName(FRANCOIS), FRANCOIS, FR_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_CONTACT)).getPersonId(), "francois", List.of(ORG_ADMIN, CRM_USER)).getUserId();
 	}
 	
 	@Test

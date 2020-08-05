@@ -78,6 +78,7 @@ public abstract class AbstractUserServiceTests {
 
 		PersonDetails adam = config().createPerson(
 				tAndA.getOrganizationId(),
+				CrmAsserts.displayName(ADAM),
 				ADAM,
 				MAILING_ADDRESS,
 				WORK_COMMUNICATIONS,
@@ -85,6 +86,7 @@ public abstract class AbstractUserServiceTests {
 
 		PersonDetails bob = config().createPerson(
 				tAndA.getOrganizationId(),
+				CrmAsserts.displayName(BOB),
 				BOB,
 				MAILING_ADDRESS,
 				WORK_COMMUNICATIONS,
@@ -262,6 +264,7 @@ public abstract class AbstractUserServiceTests {
 
 		PersonDetails adam = config().createPerson(
 				tAndA.getOrganizationId(),
+				CrmAsserts.displayName(ADAM),
 				ADAM,
 				MAILING_ADDRESS,
 				WORK_COMMUNICATIONS,
@@ -317,7 +320,7 @@ public abstract class AbstractUserServiceTests {
 	@Test
 	public void testResetPassword() throws Exception {
 		OrganizationIdentifier organizationId = config().createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
-		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
+		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.displayName(BOB), CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
 		UserIdentifier userId = users().createUser(personId, "user", List.of(ORG_ADMIN)).getUserId();
 
 		try {
@@ -333,7 +336,7 @@ public abstract class AbstractUserServiceTests {
 	@Test
 	public void testChangePassword() throws Exception {
 		OrganizationIdentifier organizationId = config().createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
-		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
+		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.displayName(BOB), CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
 		UserIdentifier userId = users().createUser(personId, "user", List.of(ORG_ADMIN)).getUserId();
 
 		assertTrue(users().changePassword(userId, users().resetPassword(userId), "pass1"));
