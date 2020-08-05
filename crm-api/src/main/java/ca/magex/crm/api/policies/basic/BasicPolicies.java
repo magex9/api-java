@@ -14,7 +14,6 @@ public class BasicPolicies extends CrmPoliciesAdapter implements CrmPolicies {
 	
 	public BasicPolicies(CrmServices services) {
 		super(
-			new BasicConfigurationPolicy(services),
 			new BasicOptionPolicy(services),
 			new BasicOrganizationPolicy(services),
 			new BasicLocationPolicy(services, services),
@@ -24,14 +23,12 @@ public class BasicPolicies extends CrmPoliciesAdapter implements CrmPolicies {
 	}
 	
 	public BasicPolicies(
-			CrmConfigurationService init,
 			CrmOptionService options,
 			CrmOrganizationService organizations,
 			CrmLocationService locations,
 			CrmPersonService persons,
 			CrmUserService users) {
 		super(
-			new BasicConfigurationPolicy(init),
 			new BasicOptionPolicy(options),
 			new BasicOrganizationPolicy(organizations),
 			new BasicLocationPolicy(organizations, locations),

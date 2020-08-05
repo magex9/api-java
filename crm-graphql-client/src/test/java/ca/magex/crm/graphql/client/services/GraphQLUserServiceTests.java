@@ -14,6 +14,8 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.adapters.CrmServicesAdapter;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.graphql.client.GraphQLClient;
 import ca.magex.crm.graphql.client.service.GraphQLPersonService;
@@ -30,19 +32,25 @@ import ca.magex.crm.test.AbstractUserServiceTests;
 })
 public class GraphQLUserServiceTests extends AbstractUserServiceTests {
 
-
 	@LocalServerPort private int randomPort;
 
 	@MockBean PlatformTransactionManager txManager;
 
 	@MockBean CrmAuthenticationService auth;
+	
+	@Autowired CrmConfigurationService config;
 
 	@Autowired Crm crm;
 
 	private CrmServicesAdapter remoteServicesAdapter = null;
 
 	@Override
-	protected Crm config() {
+	protected CrmConfigurationService config() {
+		return config;
+	}
+	
+	@Override
+	protected CrmServices crm() {
 		return crm;
 	}
 
@@ -64,6 +72,6 @@ public class GraphQLUserServiceTests extends AbstractUserServiceTests {
 		GraphQLClient client = new GraphQLClient(
 				"http://localhost:" + randomPort + "/crm/graphql",
 				"/organization-service-queries.properties");
-		remoteServicesAdapter = new CrmServicesAdapter(crm, crm, crm, crm, new GraphQLPersonService(client), new GraphQLUserService(client));
+		remoteServicesAdapter = new CrmServicesAdapter(crm, crm, crm, new GraphQLPersonService(client), new GraphQLUserService(client));
 	}
 }

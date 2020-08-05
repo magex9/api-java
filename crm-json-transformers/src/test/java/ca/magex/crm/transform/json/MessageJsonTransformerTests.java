@@ -10,8 +10,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Type;
@@ -19,13 +24,17 @@ import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.transform.Transformer;
-import ca.magex.crm.transform.TestCrm;
+import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = { BasicTestConfig.class })
 public class MessageJsonTransformerTests {
 	
-	private Crm crm;
+	@Autowired private Crm crm;
+	
+	@Autowired private CrmConfigurationService config;
 	
 	private Transformer<Message, JsonElement> transformer;
 	
@@ -39,8 +48,7 @@ public class MessageJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = TestCrm.build();
-		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		config.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		organizationId = new OrganizationIdentifier("KJj15ntU2G");
 		transformer = new MessageJsonTransformer(crm);
 		error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();

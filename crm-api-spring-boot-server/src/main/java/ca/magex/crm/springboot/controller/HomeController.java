@@ -7,16 +7,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.services.CrmConfigurationService;
 
 @Controller()
 public class HomeController {
 
-	@Autowired private Crm crm = null;
+	@Autowired private CrmConfigurationService config;
 
 	@GetMapping("/")
 	public String getRoot() {
-		if (!crm.isInitialized()) {
+		if (!config.isInitialized()) {
 			return "redirect:/initialize";
 		}
 		return "redirect:/home";

@@ -2,9 +2,12 @@ package ca.magex.crm.mongodb.repository;
 
 import org.junit.After;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.mongodb.config.MongoTestConfig;
 import ca.magex.crm.test.AbstractConfigurationServiceTests;
 
@@ -12,6 +15,10 @@ import ca.magex.crm.test.AbstractConfigurationServiceTests;
 @ContextConfiguration(classes = { MongoTestConfig.class })
 public class MongoBasicConfigurationServiceTests extends AbstractConfigurationServiceTests {
 
+	@Autowired private CrmConfigurationService config;
+	
+	@Autowired private CrmAuthenticationService auth;
+	
 	@Override
 	public void testDataDump() throws Exception {
 	}
@@ -22,6 +29,17 @@ public class MongoBasicConfigurationServiceTests extends AbstractConfigurationSe
 	
 	@After
 	public void cleanup() {
-		crm.reset();
+		config().reset();
 	}
+
+	@Override
+	protected CrmConfigurationService config() {
+		return config;
+	}
+
+	@Override
+	protected CrmAuthenticationService auth() {
+		return auth;
+	}
+	
 }

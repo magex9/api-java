@@ -8,7 +8,6 @@ public class BasicServices extends CrmServicesAdapter {
 	
 	public BasicServices(CrmRepositories repos, CrmPasswordService passwords) {
 		super(
-			new BasicConfigurationService(repos, passwords),
 			new BasicOptionService(repos),
 			new BasicOrganizationService(repos),
 			new BasicLocationService(repos),

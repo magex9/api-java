@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -24,7 +23,9 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
@@ -45,7 +46,13 @@ public abstract class AbstractOrganizationServiceTests {
 	 * Configuration Service used to setup the system for testing
 	 * @return
 	 */
-	protected abstract Crm config();			
+	protected abstract CrmConfigurationService config();
+	
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmServices crm();
 	
 	/**
 	 * Authentication service used to allow an authenticated test
@@ -73,10 +80,10 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testOrganizations() {		
-		AuthenticationGroupIdentifier NHL = config().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("NHL", "National Hockey League", "Ligue nationale de hockey")).getOptionId();
-		AuthenticationGroupIdentifier PLAYOFFS = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("PLAYOFFS", "Playoffs", "Playoffs")).getOptionId();
-		AuthenticationGroupIdentifier ONTARIO = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("ONTARIO", "Ontario", "Ontario")).getOptionId();		
-		AuthenticationGroupIdentifier QUEBEC = config().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();	
+		AuthenticationGroupIdentifier NHL = crm().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("NHL", "National Hockey League", "Ligue nationale de hockey")).getOptionId();
+		AuthenticationGroupIdentifier PLAYOFFS = crm().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("PLAYOFFS", "Playoffs", "Playoffs")).getOptionId();
+		AuthenticationGroupIdentifier ONTARIO = crm().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("ONTARIO", "Ontario", "Ontario")).getOptionId();		
+		AuthenticationGroupIdentifier QUEBEC = crm().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();	
 		
 		/* create */
 		OrganizationDetails o1 = organizations().createOrganization("Maple Leafs", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
@@ -125,7 +132,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = organizations().updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 
 		/* update main location */
-		LocationIdentifier torontoId = config().createLocation(
+		LocationIdentifier torontoId = crm().createLocation(
 				o1.getOrganizationId(),
 				"TORONTO",
 				"Toronto",
@@ -138,7 +145,7 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
 		o1 = organizations().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId); // set to duplicate value
 
-		LocationIdentifier ottawaId = config().createLocation(
+		LocationIdentifier ottawaId = crm().createLocation(
 				o2.getOrganizationId(),
 				"OTTAWA",
 				"Ottawa",
@@ -152,7 +159,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = organizations().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		o2 = organizations().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 
-		LocationIdentifier montrealId = config().createLocation(
+		LocationIdentifier montrealId = crm().createLocation(
 				o3.getOrganizationId(),
 				"MONTREAL",
 				"Montreal",
@@ -167,7 +174,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o3 = organizations().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 
 		/* update main contact */
-		PersonIdentifier freddyId = config().createPerson(
+		PersonIdentifier freddyId = crm().createPerson(
 				o1.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(CrmAsserts.MR, "Freddy", "R", "Davis"),
 				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
@@ -182,7 +189,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o1 = organizations().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // set to duplicate value
 		o1 = organizations().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // reset to original value
 
-		PersonIdentifier craigId = config().createPerson(
+		PersonIdentifier craigId = crm().createPerson(
 				o2.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(CrmAsserts.MR, "Craig", null, "Phillips"),
 				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "K2V 1A5"),
@@ -197,7 +204,7 @@ public abstract class AbstractOrganizationServiceTests {
 		o2 = organizations().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		o2 = organizations().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 
-		PersonIdentifier careyId = config().createPerson(
+		PersonIdentifier careyId = crm().createPerson(
 				o3.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(null, "Carey", null, "Thomas"),
 				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
@@ -454,8 +461,8 @@ public abstract class AbstractOrganizationServiceTests {
 
 	@Test
 	public void testCannotUpdateDisabledGroup() throws Exception {		
-		AuthenticationGroupIdentifier authGroupA = (AuthenticationGroupIdentifier) config().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("A", "A", "A")).getOptionId();
-		config().disableOption(authGroupA);
+		AuthenticationGroupIdentifier authGroupA = (AuthenticationGroupIdentifier) crm().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("A", "A", "A")).getOptionId();
+		crm().disableOption(authGroupA);
 		
 		OrganizationDetails organization = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT));
 
@@ -470,8 +477,8 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCannotUpdateDisabledMainLocation() throws Exception {
 		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
-		LocationIdentifier locationId = config().createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
-		config().disableLocation(locationId);
+		LocationIdentifier locationId = crm().createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		crm().disableLocation(locationId);
 
 		try {
 			organizations().updateOrganizationMainLocation(organizationId, locationId);
@@ -484,8 +491,8 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCannotUpdateDisabledMainContact() throws Exception {
 		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
-		PersonIdentifier personId = config().createPerson(organizationId,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
-		config().disablePerson(personId);
+		PersonIdentifier personId = crm().createPerson(organizationId,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
+		crm().disablePerson(personId);
 
 		try {
 			organizations().updateOrganizationMainContact(organizationId, personId);
@@ -499,7 +506,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCreatingOrgWithMainContactFromOtherOrg() throws Exception {
 		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
-		PersonIdentifier personB = config().createPerson(organizationB,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
+		PersonIdentifier personB = crm().createPerson(organizationB,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
 
 		try {
 			organizations().updateOrganizationMainContact(organizationA, personB);
@@ -513,7 +520,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCreatingOrgWithMainLocationFromOtherOrg() throws Exception {
 		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
 		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
-		LocationIdentifier locationB = config().createLocation(organizationB, "B", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		LocationIdentifier locationB = crm().createLocation(organizationB, "B", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 
 		try {
 			organizations().updateOrganizationMainLocation(organizationA, locationB);
@@ -526,7 +533,7 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
 		List<Message> messages = CrmOrganizationService.validateOrganizationDetails(
-				config(), 
+				crm(), 
 				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)));
 		assertEquals(1, messages.size());
 		CrmAsserts.assertMessage(messages.get(0), new OrganizationIdentifier("org"), "/options/message-types/ERROR", "status", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));

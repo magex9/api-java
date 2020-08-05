@@ -72,8 +72,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	
 	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
 	
-	private final CrmConfigurationService configurationService;
-
 	private final CrmOptionService optionService;
 	
 	private final CrmOrganizationService organizationService;
@@ -89,12 +87,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public Crm(CrmServices services, CrmPolicies policies) {
-		this(services, policies, services, policies, services, policies, services, policies,
+		this(services, policies, services, policies, services, policies,
 				services, policies, services, policies);
 	}
 	
 	public Crm(
-			CrmConfigurationService configurationService, 
 			CrmOptionService optionService,
 			CrmOrganizationService organizationService,
 			CrmLocationService locationService, 
@@ -102,8 +99,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			CrmUserService userService,
 			CrmPolicies policies) {
 		this(
-			configurationService,
-			policies,
 			optionService,
 			policies,
 			organizationService,
@@ -117,14 +112,12 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		);
 	}
 	
-	public Crm(CrmConfigurationService configurationService, CrmConfigurationPolicy configurationPolicy,
-			CrmOptionService optionService, CrmOptionPolicy optionPolicy,
+	public Crm(CrmOptionService optionService, CrmOptionPolicy optionPolicy,
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
 			CrmUserService userService, CrmUserPolicy userPolicy) {
-		super(configurationPolicy, optionPolicy, organizationPolicy, locationPolicy, personPolicy, userPolicy);
-		this.configurationService = configurationService;
+		super(optionPolicy, organizationPolicy, locationPolicy, personPolicy, userPolicy);
 		this.optionService = optionService;
 		this.organizationService = organizationService;
 		this.locationService = locationService;
@@ -132,28 +125,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		this.userService = userService;
 	}
 	
-	@Override
-	public boolean isInitialized() {
-		return configurationService.isInitialized();
-	}
-
-	@Override
-	public UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password) {
-		if (isInitialized())
-			throw new DuplicateItemFoundException("The system is already initialized");
-		return configurationService.initializeSystem(organization, name, email, username, password); 
-	}
-	
-	@Override
-	public boolean reset() {
-		return configurationService.reset();
-	}
-	
-	@Override
-	public void dump(OutputStream os) {
-		configurationService.dump(os);
-	}
-
 	public OrganizationDetails validate(OrganizationDetails organization) {
 		List<Message> messages = validateOrganizationDetails(this, organization);
 		if (!messages.isEmpty())

@@ -23,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
@@ -32,6 +31,8 @@ import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
+import ca.magex.crm.api.services.CrmConfigurationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
@@ -46,7 +47,13 @@ public abstract class AbstractUserServiceTests {
 	 * Configuration Service used to setup the system for testing
 	 * @return
 	 */
-	protected abstract Crm config();			
+	protected abstract CrmConfigurationService config();
+	
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmServices crm();
 	
 	/**
 	 * Authentication service used to allow an authenticated test
@@ -74,9 +81,9 @@ public abstract class AbstractUserServiceTests {
 	
 	@Test
 	public void testUsers() {		
-		OrganizationDetails tAndA = config().createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS), List.of(new BusinessGroupIdentifier("ORG")));
+		OrganizationDetails tAndA = crm().createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS), List.of(new BusinessGroupIdentifier("ORG")));
 
-		PersonDetails adam = config().createPerson(
+		PersonDetails adam = crm().createPerson(
 				tAndA.getOrganizationId(),
 				CrmAsserts.displayName(ADAM),
 				ADAM,
@@ -84,7 +91,7 @@ public abstract class AbstractUserServiceTests {
 				WORK_COMMUNICATIONS,
 				List.of(CrmAsserts.QA_TEAMLEAD));
 
-		PersonDetails bob = config().createPerson(
+		PersonDetails bob = crm().createPerson(
 				tAndA.getOrganizationId(),
 				CrmAsserts.displayName(BOB),
 				BOB,
@@ -260,9 +267,9 @@ public abstract class AbstractUserServiceTests {
 
 	@Test
 	public void testDuplicateUsername() {
-		OrganizationDetails tAndA = config().createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS), List.of(new BusinessGroupIdentifier("ORG")));
+		OrganizationDetails tAndA = crm().createOrganization("T&A", List.of(CrmAsserts.ORG, CrmAsserts.CRM, CrmAsserts.SYS), List.of(new BusinessGroupIdentifier("ORG")));
 
-		PersonDetails adam = config().createPerson(
+		PersonDetails adam = crm().createPerson(
 				tAndA.getOrganizationId(),
 				CrmAsserts.displayName(ADAM),
 				ADAM,
@@ -319,8 +326,8 @@ public abstract class AbstractUserServiceTests {
 
 	@Test
 	public void testResetPassword() throws Exception {
-		OrganizationIdentifier organizationId = config().createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
-		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.displayName(BOB), CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
+		OrganizationIdentifier organizationId = crm().createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
+		PersonIdentifier personId = crm().createPerson(organizationId, CrmAsserts.displayName(BOB), CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
 		UserIdentifier userId = users().createUser(personId, "user", List.of(ORG_ADMIN)).getUserId();
 
 		try {
@@ -335,8 +342,8 @@ public abstract class AbstractUserServiceTests {
 
 	@Test
 	public void testChangePassword() throws Exception {
-		OrganizationIdentifier organizationId = config().createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
-		PersonIdentifier personId = config().createPerson(organizationId, CrmAsserts.displayName(BOB), CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
+		OrganizationIdentifier organizationId = crm().createOrganization("Org Name", List.of(ORG), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
+		PersonIdentifier personId = crm().createPerson(organizationId, CrmAsserts.displayName(BOB), CrmAsserts.BOB, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(CrmAsserts.CEO)).getPersonId();
 		UserIdentifier userId = users().createUser(personId, "user", List.of(ORG_ADMIN)).getUserId();
 
 		assertTrue(users().changePassword(userId, users().resetPassword(userId), "pass1"));

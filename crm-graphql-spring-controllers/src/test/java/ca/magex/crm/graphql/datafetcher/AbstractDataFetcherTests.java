@@ -18,9 +18,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.graphql.GraphQLTestConfig;
 import ca.magex.crm.graphql.service.GraphQLCrmServices;
@@ -36,12 +36,12 @@ public abstract class AbstractDataFetcherTests {
 	protected ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired private GraphQLCrmServices graphQl;
-	@Autowired private Crm crm;
+	@Autowired private CrmConfigurationService config;
 
 	@Before
 	public void before() {
-		crm.reset();
-		crm.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
+		config.reset();
+		config.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
 	}
 
 	@SuppressWarnings("unchecked")

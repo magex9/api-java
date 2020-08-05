@@ -3,7 +3,6 @@ package ca.magex.crm.api.policies.authenticated;
 import ca.magex.crm.api.adapters.CrmPoliciesAdapter;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmPolicies;
-import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -15,7 +14,6 @@ public class AuthenticatedPolicies extends CrmPoliciesAdapter implements CrmPoli
 	
 	public AuthenticatedPolicies(CrmAuthenticationService auth, CrmServices services) {
 		super(
-			new AuthenticatedConfigurationPolicy(auth, services),
 			new AuthenticatedOptionPolicy(auth, services),
 			new AuthenticatedOrganizationPolicy(auth, services),
 			new AuthenticatedLocationPolicy(auth, services, services),
@@ -26,14 +24,12 @@ public class AuthenticatedPolicies extends CrmPoliciesAdapter implements CrmPoli
 	
 	public AuthenticatedPolicies(			
 			CrmAuthenticationService auth,
-			CrmConfigurationService config,
 			CrmOptionService options,
 			CrmOrganizationService organizations,
 			CrmLocationService locations,
 			CrmPersonService persons,
 			CrmUserService users) {
 		super(
-			new AuthenticatedConfigurationPolicy(auth, config),
 			new AuthenticatedOptionPolicy(auth, options),
 			new AuthenticatedOrganizationPolicy(auth, organizations),
 			new AuthenticatedLocationPolicy(auth, organizations, locations),

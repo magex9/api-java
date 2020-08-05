@@ -18,6 +18,7 @@ import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
@@ -71,6 +72,11 @@ public class CrmConfig implements CrmConfigurer {
 	public BasicPasswordService passwords() {
 		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
 	}
+	
+	@Bean
+	public BasicConfigurationService config() {
+		return new BasicConfigurationService(repos(), passwords());
+	}
 
 	@Bean
 	@Override
@@ -81,6 +87,6 @@ public class CrmConfig implements CrmConfigurer {
 	@PostConstruct
 	public void initialize() {
 		LoggerFactory.getLogger(CrmConfig.class).info("Initializing CRM System for Dev");
-		crm().initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
+		config().initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
 	}
 }

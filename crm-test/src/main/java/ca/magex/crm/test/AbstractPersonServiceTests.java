@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
@@ -31,7 +30,9 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
@@ -45,7 +46,13 @@ public abstract class AbstractPersonServiceTests {
 	 * Configuration Service used to setup the system for testing
 	 * @return
 	 */
-	protected abstract Crm config();			
+	protected abstract CrmConfigurationService config();
+	
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmServices crm();
 	
 	/**
 	 * Authentication service used to allow an authenticated test
@@ -73,7 +80,7 @@ public abstract class AbstractPersonServiceTests {
 
 	@Test
 	public void testPersons() {
-		OrganizationIdentifier blizzardId = config().createOrganization("Blizzard", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
+		OrganizationIdentifier blizzardId = crm().createOrganization("Blizzard", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		
 		PersonName leroy = new PersonName(CrmAsserts.MR, "Leroy", "MF", "Jenkins");
 		MailingAddress eiffel = new MailingAddress("5 Avenue Anatole France", "Paris", ILE_DE_FRANCE, FRANCE, "75007");

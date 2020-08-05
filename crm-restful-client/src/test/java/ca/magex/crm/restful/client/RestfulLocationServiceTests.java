@@ -12,7 +12,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.test.AbstractLocationServiceTests;
 
 @RunWith(SpringRunner.class)
@@ -28,12 +30,19 @@ public class RestfulLocationServiceTests extends AbstractLocationServiceTests {
 	
 	@MockBean CrmAuthenticationService auth;
 	
+	@Autowired CrmConfigurationService config;
+	
 	@Autowired Crm crm;
 		
-	private CrmLocationService remoteServicesAdapter = null;	
+	private CrmLocationService remoteServicesAdapter = null;
 	
 	@Override
-	protected Crm config() {
+	protected CrmConfigurationService config() {
+		return config;
+	}
+	
+	@Override
+	protected CrmServices crm() {
 		return crm;
 	}
 	

@@ -10,9 +10,14 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -20,13 +25,17 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.api.transform.Transformer;
-import ca.magex.crm.transform.TestCrm;
+import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = { BasicTestConfig.class })
 public class UserJsonTransformerTests {
 	
-	private Crm crm;
+	@Autowired private Crm crm;
+	
+	@Autowired private CrmConfigurationService config;
 	
 	private Transformer<UserDetails, JsonElement> transformer;
 	
@@ -40,8 +49,7 @@ public class UserJsonTransformerTests {
 	
 	@Before
 	public void setup() {
-		crm = TestCrm.build();
-		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		config.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new UserDetailsJsonTransformer(crm);
 		userId = new UserIdentifier("R61MD142WM");
 		personId = new PersonIdentifier("Q69WVGMAce");

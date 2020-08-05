@@ -10,10 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.filters.OptionsFilter;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
@@ -28,7 +29,13 @@ public abstract class AbstractOptionServiceTests {
 	 * Configuration Service used to setup the system for testing
 	 * @return
 	 */
-	protected abstract Crm config();			
+	protected abstract CrmConfigurationService config();
+	
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmServices crm();
 	
 	/**
 	 * Authentication service used to allow an authenticated test

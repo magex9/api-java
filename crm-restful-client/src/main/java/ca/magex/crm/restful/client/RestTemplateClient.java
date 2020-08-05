@@ -82,7 +82,6 @@ public class RestTemplateClient {
 		this.persons = new RestfulPersonService(this);
 		this.transformers = new JsonTransformerFactory(this.options);
 		this.services = new CrmServicesAdapter(
-			null, 
 			options, 
 			organizations, 
 			locations, 

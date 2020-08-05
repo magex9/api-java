@@ -13,7 +13,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.graphql.client.GraphQLClient;
 import ca.magex.crm.graphql.client.service.GraphQLOptionService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
@@ -34,12 +36,19 @@ public class GraphQLOptionServiceTests extends AbstractOptionServiceTests {
 	
 	@MockBean CrmAuthenticationService auth;
 	
+	@Autowired CrmConfigurationService config;
+	
 	@Autowired Crm crm;
 		
 	private CrmOptionService remoteServicesAdapter = null;	
 	
 	@Override
-	protected Crm config() {
+	protected CrmConfigurationService config() {
+		return config;
+	}
+	
+	@Override
+	protected CrmServices crm() {
 		return crm;
 	}
 	

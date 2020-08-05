@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.services.CrmConfigurationService;
 
 @Configuration
 @Profile("Dev")
@@ -17,12 +17,12 @@ import ca.magex.crm.api.common.PersonName;
 public class CrmDevConfig {
 
 	@Autowired
-	private Crm crm;
+	private CrmConfigurationService config;
 
 	@PostConstruct
 	public void initialize() {
 		LoggerFactory.getLogger(CrmDevConfig.class).info("Initializing CRM System for Dev");
-		crm.initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
+		config.initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
 	}
 	
 }
