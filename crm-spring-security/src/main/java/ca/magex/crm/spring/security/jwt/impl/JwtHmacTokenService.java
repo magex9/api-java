@@ -1,4 +1,4 @@
-package ca.magex.crm.spring.security.jwt;
+package ca.magex.crm.spring.security.jwt.impl;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -12,7 +12,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
+import ca.magex.crm.spring.security.jwt.JwtToken;
+import ca.magex.crm.spring.security.jwt.JwtTokenDetails;
+import ca.magex.crm.spring.security.jwt.JwtTokenGenerator;
+import ca.magex.crm.spring.security.jwt.JwtTokenValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -24,19 +28,20 @@ import io.jsonwebtoken.SignatureAlgorithm;
  * @author Jonny
  */
 @Component
-@Profile(CrmProfiles.AUTH_EMBEDDED_JWT)
-public class JwtTokenService implements Serializable {
+@Profile(AuthProfiles.EMBEDDED_HMAC)
+public class JwtHmacTokenService implements JwtTokenGenerator, JwtTokenValidator, Serializable {
 
 	private static final long serialVersionUID = -3887579290326971481L;
  
 	private Long expirationDuration;
 	private String secret;
 	
-	public JwtTokenService(@Value("${jwt.expiration.hours:5}") Long expirationDuration, @Value("${jwt.secret}") String secret) {
+	public JwtHmacTokenService(
+			@Value("${jwt.expiration.hours:5}") Long expirationDuration,
+			@Value("${jwt.hmac.secret}") String secret) {
 		this.expirationDuration = expirationDuration;		
 		this.secret = new String(Base64.getEncoder().encode(secret.getBytes(Charset.forName("UTF8"))));
 	}
-	
 
 	public Long getExpirationDuration() {
 		return TimeUnit.HOURS.toMillis(expirationDuration);
@@ -47,14 +52,15 @@ public class JwtTokenService implements Serializable {
 	 * @param authentication
 	 * @return
 	 */
-	public String generateToken(Authentication authentication) {
-		return Jwts.builder()
+	public JwtToken generateToken(Authentication authentication) {
+		String token = Jwts.builder()
 				.setClaims(new HashMap<>())
 				.setSubject(authentication.getName())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + getExpirationDuration()))
 				.signWith(SignatureAlgorithm.HS512, secret)
 				.compact();
+		return new JwtToken(token);
 	}
 	
 	/**
@@ -63,25 +69,14 @@ public class JwtTokenService implements Serializable {
 	 * @param token
 	 * @return
 	 */
-	public String validateToken(String token) {
+	public JwtTokenDetails validateToken(String token) {
 		Jws<Claims> jws = Jwts.parser()
 				.setSigningKey(secret)
 				.parseClaimsJws(token);
 		
-		return jws.getBody().getSubject();
-	}
-	
-	/**
-	 * validates the token and returns the user
-	 * 
-	 * @param token
-	 * @return
-	 */
-	public Date getExpiration(String token) {
-		Jws<Claims> jws = Jwts.parser()
-				.setSigningKey(secret)
-				.parseClaimsJws(token);
-		/* if we have an expiration which is before now then return null */
-		return jws.getBody().getExpiration();
-	}
+		return new JwtTokenDetails(
+				token,
+				jws.getBody().getSubject(),
+				jws.getBody().getExpiration());
+	}	
 }

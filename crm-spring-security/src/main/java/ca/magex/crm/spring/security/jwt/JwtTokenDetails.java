@@ -1,37 +1,39 @@
 package ca.magex.crm.spring.security.jwt;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-/**
- * Represents a JWT Token used for transfer between authentication server and application
- * 
- * @author Jonny
- */
-public class JwtToken implements Serializable {
+public class JwtTokenDetails implements Serializable {
 
-	private static final long serialVersionUID = 2587120691667440745L;
+	private static final long serialVersionUID = -2318271589922449335L;
 	
 	private String token;
+	private String username;	
+	private Date expiration;
 	
-	public JwtToken() {};
-
-	public JwtToken(String token) {
+	public JwtTokenDetails(String token, String username, Date expiration) {
 		this.token = token;
+		this.username = username;
+		this.expiration = expiration;
 	}
-
+	
 	public String getToken() {
 		return token;
 	}
 	
-	public void setToken(String token) {
-		this.token = token;
+	public String getUsername() {
+		return username;
 	}
 	
+	public Date getExpiration() {
+		return expiration;
+	}
+
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);

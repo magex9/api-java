@@ -7,5 +7,5 @@ package ca.magex.crm.spring.security.jwt;
  */
 public interface JwtAuthDetailsService {
 
-	public JwtAuthenticationToken getJwtAuthenticationTokenForUsername(String token);
+	public JwtAuthenticationToken buildAuthenticationToken(String token);
 }

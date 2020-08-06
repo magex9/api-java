@@ -21,7 +21,7 @@ import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
-import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
+import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
 import ca.magex.crm.api.services.CrmServices;
@@ -29,16 +29,15 @@ import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
-import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
-@Profile(CrmProfiles.CRM_AUTH)
-@Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
-public class CrmAuthConfig implements CrmConfigurer {
-	
-	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
+@Profile(CrmProfiles.CRM_NO_AUTH)
+@Description("Configures the CRM by adding caching support, and using the Basic Policies for CRM Processing")
+public class NoAuthBasicCrmConfig implements CrmConfigurer {
 
+	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -90,7 +89,7 @@ public class CrmAuthConfig implements CrmConfigurer {
 	public CrmServices services() {
 		CrmServices services = new BasicServices(repos(), passwords()); 
 		if (enableCachedServices) {
-			LoggerFactory.getLogger(CrmAuthConfig.class).info("CRM Caching Services Enabled");
+			LoggerFactory.getLogger(BasicCrmConfig.class).info("CRM Caching Services Enabled");
 			// clear caches
 			cacheManager().getCacheNames().forEach((cache) -> cacheManager().getCache(cache).clear());
 			return new CrmCachingServices(cacheManager(), services);
@@ -102,13 +101,8 @@ public class CrmAuthConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public AuthenticatedPolicies policies() {
-		return new AuthenticatedPolicies(auth(), services());
-	}
-
-	@Bean
-	public SpringSecurityAuthenticationService auth() {
-		return new SpringSecurityAuthenticationService(services());
+	public BasicPolicies policies() {
+		return new BasicPolicies(services());
 	}
 
 	@Bean

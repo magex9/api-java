@@ -27,11 +27,12 @@ import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.spring.security.auth.AuthClient;
 import ca.magex.crm.spring.security.auth.AuthDetails;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.spring.security.jwt.JwtToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = { CrmProfiles.AUTH_EMBEDDED_JWT, CrmProfiles.DEV })
+@ActiveProfiles(value = { AuthProfiles.EMBEDDED_HMAC, CrmProfiles.DEV })
 public class AuthClientTests {
 
 	@LocalServerPort private int randomPort;

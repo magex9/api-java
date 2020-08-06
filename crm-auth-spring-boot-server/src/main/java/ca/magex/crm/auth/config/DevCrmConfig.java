@@ -25,7 +25,7 @@ import ca.magex.crm.api.store.basic.BasicStore;
 @Configuration
 @Profile("Dev")
 @Description("Configures the CRM used by the Auth Server")
-public class CrmConfig implements CrmConfigurer {
+public class DevCrmConfig implements CrmConfigurer {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -80,7 +80,7 @@ public class CrmConfig implements CrmConfigurer {
 	
 	@PostConstruct
 	public void initialize() {
-		LoggerFactory.getLogger(CrmConfig.class).info("Initializing CRM System for Dev");
+		LoggerFactory.getLogger(DevCrmConfig.class).info("Initializing CRM System for Dev");
 		crm().initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
 	}
 }
