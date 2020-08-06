@@ -1,12 +1,6 @@
 package ca.magex.crm.restful.controllers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Type;
-import ca.magex.json.model.JsonObject;
 
 public class ConfigurationControllerTest extends AbstractControllerTests {
 	
@@ -39,6 +30,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 	}
 	
 	@Test
+	@SuppressWarnings("preview")
 	public void testJsonConfig() throws Exception {
 		String yaml = mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/api.json")
@@ -46,13 +38,14 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString();
-		assertTrue(yaml.replaceAll("\r", "")
-			.startsWith("{\n" + 
-					"  \"openapi\": \"3.0.0\",\n" + 
-					"  \"info\": {\n" + 
-					"    \"version\": \"1.0.0\",\n" + 
-					"    \"title\": \"Customer Relationship Management\"\n" + 
-					"  }"));
+		assertTrue(yaml.replaceAll("\r", "").startsWith("""
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Customer Relationship Management"
+  },
+"""));
 	}
 	
 }
