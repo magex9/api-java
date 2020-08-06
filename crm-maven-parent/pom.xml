@@ -110,10 +110,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<release>14</release>
-					<source>14</source>
-					<target>14</target>
-					<compilerArgs>--enable-preview</compilerArgs>
+					<source>11</source>
+					<target>11</target>
 				</configuration>
 			</plugin>
 
@@ -121,9 +119,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<forkCount>1</forkCount>
+					<forkCount>3</forkCount>
 					<reuseForks>true</reuseForks>
-					<argLine>-Xmx1024m -XX:MaxPermSize=256m --illegal-access=permit --enable-preview</argLine>
+					<argLine>-Xmx1024m -XX:MaxPermSize=256m --illegal-access=permit</argLine>
 				</configuration>
 			</plugin>
 
@@ -131,10 +129,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
-					<argLine>--illegal-access=permit --enable-preview</argLine>
+					<argLine>
+						--illegal-access=permit
+					</argLine>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 
