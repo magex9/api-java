@@ -6,7 +6,6 @@ import static ca.magex.crm.api.services.CrmOrganizationService.validateOrganizat
 import static ca.magex.crm.api.services.CrmPersonService.validatePersonDetails;
 import static ca.magex.crm.api.services.CrmUserService.validateUser;
 
-import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
 
@@ -25,7 +24,6 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
-import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
@@ -33,14 +31,12 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.policies.CrmConfigurationPolicy;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.CrmUserPolicy;
-import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;

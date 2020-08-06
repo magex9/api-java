@@ -30,22 +30,19 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 	}
 	
 	@Test
-	@SuppressWarnings("preview")
 	public void testJsonConfig() throws Exception {
-		String yaml = mockMvc.perform(MockMvcRequestBuilders
+		String json = mockMvc.perform(MockMvcRequestBuilders
 			.get("/rest/api.json")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn().getResponse().getContentAsString();
-		assertTrue(yaml.replaceAll("\r", "").startsWith("""
-{
-  "openapi": "3.0.0",
-  "info": {
-    "version": "1.0.0",
-    "title": "Customer Relationship Management"
-  },
-"""));
+		assertTrue(json.replaceAll("\r", "").startsWith("{\n" + 
+				"  \"openapi\": \"3.0.0\",\n" + 
+				"  \"info\": {\n" + 
+				"    \"version\": \"1.0.0\",\n" + 
+				"    \"title\": \"Customer Relationship Management\"\n" + 
+				"  },"));
 	}
 	
 }
