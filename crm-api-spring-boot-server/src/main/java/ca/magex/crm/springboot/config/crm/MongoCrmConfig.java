@@ -29,6 +29,7 @@ import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
@@ -136,6 +137,11 @@ public class MongoCrmConfig implements CrmConfigurer {
 	@Bean
 	public BasicPasswordService passwords() {
 		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
+	}
+	
+	@Bean 
+	public BasicConfigurationService config() {
+		return new BasicConfigurationService(repos(), passwords());
 	}
 
 	@Bean

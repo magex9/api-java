@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.config.CrmConfigurer;
@@ -24,7 +25,7 @@ import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 
 @Configuration
-@Profile("Dev")
+@Profile(CrmProfiles.DEV)
 @Description("Configures the CRM used by the Auth Server")
 public class DevCrmConfig implements CrmConfigurer {
 
