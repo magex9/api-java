@@ -33,7 +33,7 @@ import ca.magex.json.model.JsonObject;
 public class RestfulPersonController extends AbstractRestfulController {
 
 	@GetMapping("/rest/persons")
-	public void findPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void findPersonSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findPersonSummaries(
