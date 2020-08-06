@@ -12,6 +12,7 @@ import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
@@ -62,6 +63,11 @@ public class UnauthenticatedTestConfig implements CrmConfigurer {
 	@Bean
 	public BasicPasswordService passwords() {
 		return new BasicPasswordService(repos(), passwordRepo());
+	}
+	
+	@Bean
+	public BasicConfigurationService config() {
+		return new BasicConfigurationService(repos(), passwords());
 	}
 	
 	@Bean

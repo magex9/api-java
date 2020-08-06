@@ -20,8 +20,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.graphql.GraphQLTestConfig;
 import ca.magex.crm.test.config.UnauthenticatedTestConfig;
 
@@ -36,12 +36,12 @@ public class GraphQLControllerTests {
 
 	@Autowired private MockMvc mockMvc;
 
-	@Autowired private Crm crm;
+	@Autowired private CrmConfigurationService config;
 
 	@Before
 	public void before() {
-		crm.reset();
-		crm.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
+		config.reset();
+		config.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
 	}
 
 	@Test

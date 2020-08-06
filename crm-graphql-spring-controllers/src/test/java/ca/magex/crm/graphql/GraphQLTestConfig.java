@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackages = {
-		"ca.magex.crm.graphql"
-		})
+	"ca.magex.crm.graphql"
+})
 public class GraphQLTestConfig {
 
 //	/* autowired services */

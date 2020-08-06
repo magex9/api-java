@@ -51,7 +51,7 @@
 		<module>crm-helloworld</module>	
 		
 		<!-- Additional Repository Implementations -->
-<!--  		<module>crm-hazelcast-service</module> -->
+		<!-- <module>crm-hazelcast-service</module> -->
 		<module>crm-mongodb-service</module>
 		
 		<!-- Caching Implementations -->

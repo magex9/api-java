@@ -144,7 +144,6 @@
 							<description>Aggregate adapter for all the CRM policies</description>
 							<targetClass>ca.magex.crm.api.adapters.CrmPoliciesAdapter</targetClass>
 							<interfaces>
-								<interface>ca.magex.crm.api.policies.CrmConfigurationPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmOptionPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmOrganizationPolicy</interface>
 								<interface>ca.magex.crm.api.policies.CrmLocationPolicy</interface>
@@ -157,7 +156,6 @@
 							<description>Aggregate adapter for all the CRM services</description>
 							<targetClass>ca.magex.crm.api.adapters.CrmServicesAdapter</targetClass>
 							<interfaces>
-								<interface>ca.magex.crm.api.services.CrmConfigurationService</interface>
 								<interface>ca.magex.crm.api.services.CrmOptionService</interface>
 								<interface>ca.magex.crm.api.services.CrmOrganizationService</interface>
 								<interface>ca.magex.crm.api.services.CrmLocationService</interface>

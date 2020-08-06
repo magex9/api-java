@@ -12,7 +12,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.test.AbstractOrganizationServiceTests;
 
@@ -29,12 +31,19 @@ public class RestfulOrganizationServiceTests extends AbstractOrganizationService
 	
 	@MockBean CrmAuthenticationService auth;
 	
+	@Autowired CrmConfigurationService config;
+	
 	@Autowired Crm crm;
 		
 	private CrmOrganizationService remoteServicesAdapter = null;	
 	
 	@Override
-	protected Crm config() {
+	protected CrmConfigurationService config() {
+		return config;
+	}
+	
+	@Override
+	protected CrmServices crm() {
 		return crm;
 	}
 	

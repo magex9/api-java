@@ -32,7 +32,19 @@ import ca.magex.json.model.JsonObject;
 public class RestfulUserController extends AbstractRestfulController {
 
 	@GetMapping("/rest/users")
-	public void findUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void findUserSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, UserSummary.class, (messages, transformer, locale) -> { 
+			return createPage(
+				crm.findUserSummaries(
+					extractUserFilter(req, locale), 
+					extractPaging(UsersFilter.getDefaultPaging(), req)
+				), transformer, locale
+			);
+		});
+	}
+	
+	@GetMapping("/rest/users/details")
+	public void findUserDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, UserDetails.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findUserDetails(
@@ -40,6 +52,13 @@ public class RestfulUserController extends AbstractRestfulController {
 					extractPaging(UsersFilter.getDefaultPaging(), req)
 				), transformer, locale
 			);
+		});
+	}
+	
+	@GetMapping("/rest/users/count")
+	public void countUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, UserSummary.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("total", crm.countUsers(extractUserFilter(req, locale)));
 		});
 	}
 	
@@ -68,7 +87,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/users/{userId}")
-	public void getUser(HttpServletRequest req, HttpServletResponse res, 
+	public void getUserSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
 		handle(req, res, UserDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findUserDetails(userId), locale);
@@ -76,9 +95,23 @@ public class RestfulUserController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/user/{username}")
-	public void getUserByUsername(HttpServletRequest req, HttpServletResponse res, 
+	public void getUserSummaryByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		getUser(req, res, crm.findUserByUsername(username).getUserId());
+		getUserSummary(req, res, crm.findUserByUsername(username).getUserId());
+	}
+
+	@GetMapping("/rest/users/{userId}/details")
+	public void getUserDetails(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("userId") UserIdentifier userId) throws IOException {
+		handle(req, res, UserDetails.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findUserDetails(userId), locale);
+		});
+	}
+
+	@GetMapping("/rest/user/{username}/details")
+	public void getUserDetailsByUsername(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("username") String username) throws IOException {
+		getUserDetails(req, res, crm.findUserByUsername(username).getUserId());
 	}
 
 	@PatchMapping("/rest/users/{userId}")
@@ -98,6 +131,26 @@ public class RestfulUserController extends AbstractRestfulController {
 	public void updateUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
 		updateUser(req, res, crm.findUserByUsername(username).getUserId());
+	}
+	
+	@PutMapping("/rest/passwords/{userId}/change")
+	public void changePassword(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("userId") UserIdentifier userId) throws IOException {
+		handle(req, res, Boolean.class, (messages, transformer, locale) -> {
+			JsonObject body = extractBody(req);
+			String currentPassword = body.getString("currentPassword");
+			String newPassword = body.getString("newPassword");
+			return transformer.format(crm.changePassword(userId, currentPassword, newPassword), locale);
+		});
+	}
+	
+	@PutMapping("/rest/passwords/{userId}/reset")
+	public void resetPassword(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("userId") UserIdentifier userId) throws IOException {
+		handle(req, res, String.class, (messages, transformer, locale) -> {
+			confirm(extractBody(req), userId, messages);
+			return transformer.format(crm.resetPassword(userId), locale);
+		});
 	}
 
 	@GetMapping("/rest/users/{userId}/person")

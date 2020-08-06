@@ -19,6 +19,7 @@ import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
@@ -34,7 +35,13 @@ public abstract class AbstractLocationServiceTests {
 	 * Configuration Service used to setup the system for testing
 	 * @return
 	 */
-	protected abstract CrmServices config();			
+	protected abstract CrmConfigurationService config();
+	
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmServices crm();
 	
 	/**
 	 * Authentication service used to allow an authenticated test
@@ -62,7 +69,7 @@ public abstract class AbstractLocationServiceTests {
 	
 	@Test
 	public void testLocations() {		
-		OrganizationIdentifier mlbId = config().createOrganization("MLB", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
+		OrganizationIdentifier mlbId = crm().createOrganization("MLB", List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG"))).getOrganizationId();
 		
 		/* create */
 		MailingAddress newyork = new MailingAddress("1 E 161 St", "The Bronx", CrmAsserts.NEW_YORK, CrmAsserts.UNITED_STATES, "10451");

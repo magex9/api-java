@@ -80,7 +80,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testOrganizationFilterDefaultRoot() throws Exception {
-		JsonObject json = get("/users", Lang.ROOT, HttpStatus.OK);
+		JsonObject json = get("/users/details", Lang.ROOT, HttpStatus.OK);
 
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -154,7 +154,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testOrganizationFilterDefaultEnglish() throws Exception {
-		JsonObject json = get("/users", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK);
 
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -228,7 +228,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testOrganizationFilterDefaultFrench() throws Exception {
-		JsonObject json = get("/users", Lang.FRENCH, HttpStatus.OK);
+		JsonObject json = get("/users/details", Lang.FRENCH, HttpStatus.OK);
 
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -302,7 +302,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterByUsername() throws Exception {
-		JsonObject json = get("/users", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("username", "e"));
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("username", "e"));
 		
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -332,7 +332,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterByRole() throws Exception {
-		JsonObject json = get("/users", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationRoleId", "CRM Viewer"));
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationRoleId", "CRM Viewer"));
 
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -372,7 +372,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	@Test
 	public void testFilterByPersonId() throws Exception {
 		UserDetails user = crm.findUserDetails(francoisId);
-		JsonObject json = get("/users", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("personId", user.getPersonId().toString()));
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("personId", user.getPersonId().toString()));
 				
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -395,7 +395,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterByOrgId() throws Exception {
-		JsonObject json = get("/users", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("organizationId", org2.toString()));
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("organizationId", org2.toString()));
 
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
@@ -434,7 +434,7 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testFilterByInactifDesc() throws Exception {
-		JsonObject json = get("/users", Lang.FRENCH, HttpStatus.OK, new JsonObject()
+		JsonObject json = get("/users/details", Lang.FRENCH, HttpStatus.OK, new JsonObject()
 			.with("status", "Inactif")
 			.with("order", "displayName")
 			.with("direction", "desc"));

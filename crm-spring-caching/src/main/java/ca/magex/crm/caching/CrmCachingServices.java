@@ -21,12 +21,11 @@ public class CrmCachingServices extends CrmServicesAdapter implements CrmService
 	 */
 	public CrmCachingServices(CacheManager cacheManager, CrmServices services) {
 		super(
-				services, 
-				new CrmOptionServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Options)),
-				new CrmOrganizationServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Organizations)),
-				new CrmLocationServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Locations)),
-				new CrmPersonServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Persons)),
-				new CrmUserServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Users))
+			new CrmOptionServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Options)),
+			new CrmOrganizationServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Organizations)),
+			new CrmLocationServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Locations)),
+			new CrmPersonServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Persons)),
+			new CrmUserServiceCachingDelegate(services, new CacheTemplate(cacheManager, CachingConfig.Caches.Users))
 		);
 	}
 }

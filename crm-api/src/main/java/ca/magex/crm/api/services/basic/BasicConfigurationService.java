@@ -23,7 +23,6 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Choice;
@@ -53,8 +52,8 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	}
 
 	@Override
-	public UserDetails initializeSystem(String organization, PersonName legalName, String email, String username, String password) {
-		if (repos.prepareInitialize()) {			
+	public boolean initializeSystem(String organization, PersonName legalName, String email, String username, String password) {
+		if (repos.prepareInitialize()) {
 			initialize(repos);
 			OrganizationIdentifier organizationId = repos.generateOrganizationId();
 			LocationIdentifier mainLocationId = repos.generateLocationId();
@@ -78,7 +77,7 @@ public class BasicConfigurationService implements CrmConfigurationService {
 			passwords.updatePassword(username, passwords.encodePassword(password));
 			repos.setInitialized();
 		}
-		return repos.findUserDetails(new UsersFilter().withAuthenticationRoleId(SYS_ADMIN).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+		return repos.isInitialized();
 	}
 	
 	@Override

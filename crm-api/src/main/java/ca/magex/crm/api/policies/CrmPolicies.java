@@ -1,5 +1,5 @@
 package ca.magex.crm.api.policies;
 
-public interface CrmPolicies extends CrmConfigurationPolicy, CrmOptionPolicy, CrmOrganizationPolicy, CrmLocationPolicy, CrmPersonPolicy, CrmUserPolicy {
+public interface CrmPolicies extends CrmOptionPolicy, CrmOrganizationPolicy, CrmLocationPolicy, CrmPersonPolicy, CrmUserPolicy {
 
 }

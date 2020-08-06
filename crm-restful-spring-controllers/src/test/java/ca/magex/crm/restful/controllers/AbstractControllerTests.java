@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -43,13 +44,15 @@ public abstract class AbstractControllerTests {
 	
 	@Autowired protected Crm crm;
 	
+	@Autowired protected CrmConfigurationService config;
+	
 	@Autowired protected CrmAuthenticationService auth;
 	
 	@Autowired protected MockMvc mockMvc;
 	
 	public void initialize() {
-		crm.reset();
-		crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
+		config.reset();
+		config.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		auth.login("admin", "admin");
 	}
 	

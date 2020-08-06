@@ -6,7 +6,6 @@ import static ca.magex.crm.api.services.CrmOrganizationService.validateOrganizat
 import static ca.magex.crm.api.services.CrmPersonService.validatePersonDetails;
 import static ca.magex.crm.api.services.CrmUserService.validateUser;
 
-import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
 
@@ -25,7 +24,6 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
-import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
@@ -33,14 +31,12 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.policies.CrmConfigurationPolicy;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.CrmUserPolicy;
-import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -72,8 +68,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	
 	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
 	
-	private final CrmConfigurationService configurationService;
-
 	private final CrmOptionService optionService;
 	
 	private final CrmOrganizationService organizationService;
@@ -89,12 +83,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public Crm(CrmServices services, CrmPolicies policies) {
-		this(services, policies, services, policies, services, policies, services, policies,
+		this(services, policies, services, policies, services, policies,
 				services, policies, services, policies);
 	}
 	
 	public Crm(
-			CrmConfigurationService configurationService, 
 			CrmOptionService optionService,
 			CrmOrganizationService organizationService,
 			CrmLocationService locationService, 
@@ -102,8 +95,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			CrmUserService userService,
 			CrmPolicies policies) {
 		this(
-			configurationService,
-			policies,
 			optionService,
 			policies,
 			organizationService,
@@ -117,14 +108,12 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		);
 	}
 	
-	public Crm(CrmConfigurationService configurationService, CrmConfigurationPolicy configurationPolicy,
-			CrmOptionService optionService, CrmOptionPolicy optionPolicy,
+	public Crm(CrmOptionService optionService, CrmOptionPolicy optionPolicy,
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
 			CrmUserService userService, CrmUserPolicy userPolicy) {
-		super(configurationPolicy, optionPolicy, organizationPolicy, locationPolicy, personPolicy, userPolicy);
-		this.configurationService = configurationService;
+		super(optionPolicy, organizationPolicy, locationPolicy, personPolicy, userPolicy);
 		this.optionService = optionService;
 		this.organizationService = organizationService;
 		this.locationService = locationService;
@@ -132,28 +121,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		this.userService = userService;
 	}
 	
-	@Override
-	public boolean isInitialized() {
-		return configurationService.isInitialized();
-	}
-
-	@Override
-	public UserDetails initializeSystem(String organization, PersonName name, String email, String username, String password) {
-		if (isInitialized())
-			throw new DuplicateItemFoundException("The system is already initialized");
-		return configurationService.initializeSystem(organization, name, email, username, password); 
-	}
-	
-	@Override
-	public boolean reset() {
-		return configurationService.reset();
-	}
-	
-	@Override
-	public void dump(OutputStream os) {
-		configurationService.dump(os);
-	}
-
 	public OrganizationDetails validate(OrganizationDetails organization) {
 		List<Message> messages = validateOrganizationDetails(this, organization);
 		if (!messages.isEmpty())

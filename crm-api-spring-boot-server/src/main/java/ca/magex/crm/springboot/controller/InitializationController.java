@@ -13,23 +13,22 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.springboot.model.CrmInitializationRequestVO;
 
 @Controller("crmInitializationController")
 public class InitializationController {
 
-	@Autowired private Crm crm = null;
+	@Autowired private CrmConfigurationService config;
 	
 	@GetMapping("/initialize")
 	public String getInitializeForm(
 			Model model,
 			HttpServletRequest request,
 			HttpServletResponse response) {
-		if (crm.isInitialized()) {
+		if (config.isInitialized()) {
 			return "redirect:/";
 		}
 		model.addAttribute("crmInitializationRequestVO", new CrmInitializationRequestVO());
@@ -42,7 +41,7 @@ public class InitializationController {
 			BindingResult bindingResult, 
 			HttpServletRequest request,
 			HttpServletResponse response) {
-		if (crm.isInitialized()) {
+		if (config.isInitialized()) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			return "redirect:/";
 		}
@@ -51,7 +50,7 @@ public class InitializationController {
 				return "initialize";
 			}
 			else {
-				UserDetails initialUser = crm.initializeSystem(
+				config.initializeSystem(
 					crmInitializationRequestVO.getOrganizationName(),
 					new PersonName(
 						null,
@@ -61,7 +60,7 @@ public class InitializationController {
 					crmInitializationRequestVO.getOwnerEmail(),
 					crmInitializationRequestVO.getUsername(),
 					crmInitializationRequestVO.getPassword());
-				LoggerFactory.getLogger(getClass()).info("CRM System Initialized with initial user: " + initialUser);
+				LoggerFactory.getLogger(getClass()).info("CRM System Initialized with initial user: " + crmInitializationRequestVO.getUsername());
 			}
 		}
 		catch(ApiException e) {

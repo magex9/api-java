@@ -22,7 +22,9 @@ import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.CrmPasswordStore;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
@@ -121,6 +123,11 @@ public class MongoTestConfig {
 	@Bean
 	public CrmPasswordService passwords() {
 		return new BasicPasswordService(repos(), passwordRepo());
+	}
+
+	@Bean
+	public CrmConfigurationService config() {
+		return new BasicConfigurationService(repos(), passwords());
 	}
 	
 	@Bean

@@ -8,27 +8,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.transform.TestCrm;
+import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonPair;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = { BasicTestConfig.class })
 public class CommonJsonTransformerTests {
 
+	@Autowired private Crm crm;
+	
 	@Test
 	public void testFormatTextNull() throws Exception {
-		CrmServices crm = TestCrm.build();
 		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		transformer.formatText(null, null, null);
 	}
 	
 	@Test
 	public void testFormatTextKey() throws Exception {
-		CrmServices crm = TestCrm.build();
 		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
@@ -38,7 +44,6 @@ public class CommonJsonTransformerTests {
 	
 	@Test
 	public void testGetPropertyOptions() throws Exception {
-		CrmServices crm = TestCrm.build();
 		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
 				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP);

@@ -26,6 +26,7 @@ import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
+import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
@@ -97,6 +98,11 @@ public class MongoCrmConfig implements CrmConfigurer {
 	public CrmPasswordService passwords() {
 		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
 	}
+	
+	@Bean 
+	public BasicConfigurationService config() {
+		return new BasicConfigurationService(repos(), passwords());
+	}
 
 	@Bean
 	@Override
@@ -106,12 +112,12 @@ public class MongoCrmConfig implements CrmConfigurer {
 
 	@PostConstruct
 	public void initialize() {
-		if (crm().isInitialized()) {
+		if (config().isInitialized()) {
 			LoggerFactory.getLogger(MongoCrmConfig.class).info("CRM Previously Initialized for " + dbName);
 		}
 		else {
 			LoggerFactory.getLogger(MongoCrmConfig.class).info("Initializing CRM for " + dbName);
-			crm().initializeSystem("Magex", new PersonName(null, "System", null, "Admin"), "crm-admin@magex.ca", "crmadmin", "crmadmin");
+			config().initializeSystem("Magex", new PersonName(null, "System", null, "Admin"), "crm-admin@magex.ca", "crmadmin", "crmadmin");
 		}
 	}
 }

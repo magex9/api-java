@@ -15,14 +15,15 @@ import ca.magex.crm.api.services.CrmConfigurationService;
 @Configuration
 @Profile(CrmProfiles.DEV)
 @Description("Initializes the server with some dummy dev data")
-public class DevInitializerConfig {
+public class CrmDevConfig {
 
 	@Autowired
 	private CrmConfigurationService config;
 
 	@PostConstruct
 	public void initialize() {
-		LoggerFactory.getLogger(DevInitializerConfig.class).info("Initializing CRM System for Dev");
+		LoggerFactory.getLogger(CrmDevConfig.class).info("Initializing CRM System for Dev");
 		config.initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
-	}	
+	}
+	
 }

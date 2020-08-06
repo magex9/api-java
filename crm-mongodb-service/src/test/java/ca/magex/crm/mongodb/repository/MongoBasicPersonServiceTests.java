@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.mongodb.config.MongoTestConfig;
 import ca.magex.crm.test.AbstractPersonServiceTests;
@@ -16,12 +17,25 @@ import ca.magex.crm.test.AbstractPersonServiceTests;
 @ContextConfiguration(classes = { MongoTestConfig.class })
 public class MongoBasicPersonServiceTests extends AbstractPersonServiceTests {
 
-	@Autowired private Crm crm;	
+	@Autowired private CrmConfigurationService config;
+	
 	@Autowired private CrmAuthenticationService auth;
 	
+	@Autowired private Crm crm;
+	
 	@Override
-	protected Crm config() {
-		return crm; // use our default crm to configure the system for tests
+	protected CrmConfigurationService config() {
+		return config;
+	}
+
+	@Override
+	protected CrmAuthenticationService auth() {
+		return auth;
+	}
+
+	@Override
+	protected CrmServices crm() {
+		return crm;
 	}
 	
 	@Override
@@ -29,14 +43,9 @@ public class MongoBasicPersonServiceTests extends AbstractPersonServiceTests {
 		return crm;
 	}
 	
-	@Override
-	protected CrmAuthenticationService auth() {
-		return auth;
-	}
-	
 	@After
 	public void cleanup() {
 		super.cleanup();
-		crm.reset();
+		config().reset();
 	}
 }
