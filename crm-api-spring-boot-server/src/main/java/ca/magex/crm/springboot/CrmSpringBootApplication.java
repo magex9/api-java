@@ -9,12 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 
 @SpringBootApplication(scanBasePackages = {
-		"ca.magex.crm.api",		
+		"ca.magex.crm.api",
 		"ca.magex.crm.graphql",
-		"ca.magex.crm.restful",		
+		"ca.magex.crm.restful",
 		"ca.magex.crm.springboot",
 		"ca.magex.crm.spring.security",
-		"ca.magex.crm.transform", 
+		"ca.magex.crm.transform",
 })
 public class CrmSpringBootApplication {
 
@@ -27,5 +27,5 @@ public class CrmSpringBootApplication {
 		/* generate a file called application.pid, used to track the running process */
 		app.addListeners(new ApplicationPidFileWriter());
 		app.run(args);
-	}	
+	}
 }
