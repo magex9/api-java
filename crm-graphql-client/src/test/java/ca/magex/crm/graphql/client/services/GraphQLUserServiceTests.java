@@ -19,13 +19,14 @@ import ca.magex.crm.graphql.client.GraphQLClient;
 import ca.magex.crm.graphql.client.service.GraphQLPersonService;
 import ca.magex.crm.graphql.client.service.GraphQLUserService;
 import ca.magex.crm.graphql.config.GraphQLClientTestConfig;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.test.AbstractUserServiceTests;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { GraphQLClientTestConfig.class })
 @ActiveProfiles(profiles = {
-		CrmProfiles.AUTH_EMBEDDED_JWT,
-		CrmProfiles.CRM_NO_AUTH,
+		AuthProfiles.EMBEDDED_HMAC,
+		CrmProfiles.BASIC_NO_AUTH,
 		CrmProfiles.DEV
 })
 public class GraphQLUserServiceTests extends AbstractUserServiceTests {

@@ -32,7 +32,7 @@ import ca.magex.crm.caching.CrmCachingServices;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
-@Profile(CrmProfiles.CRM_NO_AUTH)
+@Profile(CrmProfiles.BASIC_NO_AUTH)
 @Description("Configures the CRM by adding caching support, and using the Basic Policies for CRM Processing")
 public class NoAuthBasicCrmConfig implements CrmConfigurer {
 

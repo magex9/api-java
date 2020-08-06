@@ -7,8 +7,9 @@ public class CrmProfiles {
 //	public static final String AUTH_REMOTE_JWT			= "AuthRemoteJwt";
 	
 	// CRM Authentication Profile
-	public static final String CRM_AUTH                 = "CrmAuth";
-	public static final String CRM_NO_AUTH              = "CrmNoAuth";
+	public static final String BASIC                 	= "Basic";
+	public static final String BASIC_NO_AUTH            = "BasicNoAuth";
+	public static final String MONGO                 	= "Mongo";
 	
 	// DEV Profile
 	public static final String DEV						= "Dev";

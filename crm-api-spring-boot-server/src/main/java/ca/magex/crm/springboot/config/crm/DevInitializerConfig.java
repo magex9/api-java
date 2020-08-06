@@ -9,10 +9,11 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.common.PersonName;
 
 @Configuration
-@Profile("Dev")
+@Profile(CrmProfiles.DEV)
 @Description("Initializes the server with some dummy dev data")
 public class DevInitializerConfig {
 

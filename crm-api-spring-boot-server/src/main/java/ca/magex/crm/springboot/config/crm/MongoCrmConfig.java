@@ -21,6 +21,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
@@ -38,7 +39,7 @@ import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
-@Profile("Mongo")
+@Profile(CrmProfiles.MONGO)
 @Description("Configures the CRM using the Mongo Repository")
 @PropertySource("mongodb-config.properties")
 public class MongoCrmConfig implements CrmConfigurer {

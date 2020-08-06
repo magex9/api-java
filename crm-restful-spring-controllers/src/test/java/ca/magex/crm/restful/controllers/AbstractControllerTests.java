@@ -37,7 +37,7 @@ import ca.magex.json.model.JsonParser;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = {
-		CrmProfiles.CRM_NO_AUTH
+		CrmProfiles.BASIC_NO_AUTH
 })
 public abstract class AbstractControllerTests {
 	

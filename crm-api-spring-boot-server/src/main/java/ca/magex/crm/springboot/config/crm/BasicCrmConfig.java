@@ -33,7 +33,7 @@ import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
-@Profile(CrmProfiles.CRM_AUTH)
+@Profile(CrmProfiles.BASIC)
 @Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
 public class BasicCrmConfig implements CrmConfigurer {
 	
