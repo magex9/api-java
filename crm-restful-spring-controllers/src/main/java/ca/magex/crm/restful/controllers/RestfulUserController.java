@@ -56,7 +56,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	}
 	
 	@GetMapping("/rest/users/count")
-	public void countPersons(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void countUsers(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, UserSummary.class, (messages, transformer, locale) -> {
 			return new JsonObject().with("total", crm.countUsers(extractUserFilter(req, locale)));
 		});

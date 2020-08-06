@@ -49,7 +49,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testCreateUser() throws Exception {
-		JsonObject orig = get("/users", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject orig = get("/users/details", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(orig, "orig");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), orig.keys());
 		assertEquals(1, orig.getNumber("page"));
@@ -152,7 +152,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("CRM Admin", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@en"));
 		assertEquals("Administrateur GRC", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@fr"));
 		
-		JsonObject paging = get("/users", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject paging = get("/users/details", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(paging, "paging");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), paging.keys());
 		assertEquals(1, paging.getNumber("page"));

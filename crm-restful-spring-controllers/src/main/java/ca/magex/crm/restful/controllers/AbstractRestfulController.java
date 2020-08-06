@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -26,7 +24,6 @@ import org.springframework.util.StreamUtils;
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
@@ -51,8 +48,6 @@ import ca.magex.json.model.JsonText;
 
 public abstract class AbstractRestfulController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractRestfulController.class);
-	
 	@Autowired
 	protected Crm crm;
 	
@@ -60,32 +55,10 @@ public abstract class AbstractRestfulController {
 	protected JsonTransformerFactory jsonTransformerFactory;
 	
 	protected <T> void handle(HttpServletRequest req, HttpServletResponse res, Class<T> type, RequestHandler<List<Message>, Transformer<T, JsonElement>, Locale, JsonElement> func) throws IOException {
-		List<Message> messages = new ArrayList<Message>();
-		try {
-			JsonElement json = func.apply(messages, jsonTransformerFactory.findByClass(type), extractLocale(req));
-			res.setStatus(200);
-			res.setContentType(getContentType(req));
-			res.getWriter().write(json == null ? "null" : JsonFormatter.formatted(json));
-		} catch (BadRequestException e) {
-			logger.info("Bad request information: " + e.getMessages());
-			JsonArray errors = createErrorMessages(extractLocale(req), e);
-			res.setStatus(400);
-			res.setContentType(getContentType(req));
-			res.getWriter().write(JsonFormatter.formatted(errors));
-		} catch (PermissionDeniedException e) {
-			logger.warn("Permission denied:" + req.getPathInfo(), e);
-			res.setStatus(403);
-		} catch (ItemNotFoundException e) {
-			logger.info("Item not found:" + req.getPathInfo(), e);
-			res.setStatus(404);
-			res.getWriter().write(new JsonObject()
-				.with("reason", e.getReason())
-				.with("error", e.getErrorCode())
-				.toString());
-		} catch (Exception e) {
-			logger.error("Exception handling request:" + req.getPathInfo(), e);
-			res.setStatus(500);
-		}
+		JsonElement json = func.apply(new ArrayList<Message>(), jsonTransformerFactory.findByClass(type), extractLocale(req));
+		res.setStatus(200);
+		res.setContentType(getContentType(req));
+		res.getWriter().write(json == null ? "null" : JsonFormatter.formatted(json));
 	}
 	
 	protected void validate(List<Message> messages) {

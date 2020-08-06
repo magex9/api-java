@@ -89,10 +89,10 @@ public class RestfulUserService implements CrmUserService {
 	public JsonObject formatFilter(UsersFilter filter) {
 		return new JsonObject()
 			.with("organizationId", filter.getOrganizationId() == null ? null : filter.getOrganizationId().toString())
-			.with("personId", filter.getPersonId() == null ? null : filter.getOrganizationId().toString())
+			.with("personId", filter.getPersonId() == null ? null : filter.getPersonId().toString())
 			.with("status", filter.getStatus() == null ? null : (client.format(filter.getStatus(), Status.class)).getString("@value"))
 			.with("username", filter.getUsername())
-			.with("authenticationRoleId", filter.getAuthenticationRoleId() == null ? null : filter.getOrganizationId().toString())
+			.with("authenticationRoleId", filter.getAuthenticationRoleId() == null ? null : filter.getAuthenticationRoleId().toString())
 			.prune();
 	}
 
