@@ -63,13 +63,13 @@ public abstract class AbstractDataFetcher {
 		Map<String, Object> pagingMap = environment.getArgument("paging");
 		List<String> sortFields = (List<String>) pagingMap.get("sortField");
 		List<String> sortOrders = (List<String>) pagingMap.get("sortOrder");
-
+		
 		return new PagingBuilder()
 				.withPageNumber((Integer) pagingMap.get("pageNumber"))
 				.withPageSize((Integer) pagingMap.get("pageSize"))
 				.withSortFields(sortFields)
 				.withSortDirections(sortOrders)
-				.build();
+				.build();		
 	}
 	
 	/**

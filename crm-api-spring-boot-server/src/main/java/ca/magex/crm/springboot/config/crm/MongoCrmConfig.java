@@ -11,34 +11,56 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
+import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
-import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
-import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.repositories.CrmPasswordRepository;
+import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
+import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
+import ca.magex.crm.mongodb.repository.MongoRepositories;
 import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
-@Profile(CrmProfiles.CRM_AUTH)
-@Description("Configures the CRM by adding caching support, and using the Authenticated Policies for CRM Processing")
-public class CrmAuthConfig implements CrmConfigurer {
+@Profile(CrmProfiles.MONGO)
+@Description("Configures the CRM using the Mongo Repository")
+@PropertySource("mongodb-config.properties")
+public class MongoCrmConfig implements CrmConfigurer {
 	
 	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
+	
+	@Value("${mongo.db.url}") private String url;
+	@Value("${mongo.db.username}") private String username;
+	@Value("${mongo.db.password}") private String password;
+	@Value("${mongo.db.name}") private String dbName;
+
+	@Bean
+	public MongoClient mongoClient() {
+		return MongoClients.create("mongodb+srv://" + username + ":" + password + "@" + url);
+	}
+
+	@Bean
+	public MongoDatabase mongoCrm() {
+		return mongoClient().getDatabase("crm");
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -61,18 +83,18 @@ public class CrmAuthConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public BasicUpdateObserver observer() {
-		return new BasicUpdateObserver();
+	public CrmUpdateNotifier notifier() {
+		return new CrmUpdateNotifier();
 	}
 
 	@Bean
-	public BasicRepositories repos() {
-		return new BasicRepositories(store(), observer());
+	public CrmRepositories repos() {
+		return new MongoRepositories(mongoCrm(), notifier(), dbName);
 	}
 
 	@Bean
-	public BasicPasswordRepository passwordRepo() {
-		return new BasicPasswordRepository(passwordStore());
+	public CrmPasswordRepository passwordRepo() {
+		return new MongoPasswordRepository(mongoCrm(), notifier(), dbName);
 	}
 	
 	@Bean
@@ -91,7 +113,7 @@ public class CrmAuthConfig implements CrmConfigurer {
 	public CrmServices services() {
 		CrmServices services = new BasicServices(repos(), passwords()); 
 		if (enableCachedServices) {
-			LoggerFactory.getLogger(CrmAuthConfig.class).info("CRM Caching Services Enabled");
+			LoggerFactory.getLogger(MongoCrmConfig.class).info("CRM Caching Services Enabled");
 			// clear caches
 			cacheManager().getCacheNames().forEach((cache) -> cacheManager().getCache(cache).clear());
 			return new CrmCachingServices(cacheManager(), services);
@@ -117,7 +139,7 @@ public class CrmAuthConfig implements CrmConfigurer {
 		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
 	}
 	
-	@Bean
+	@Bean 
 	public BasicConfigurationService config() {
 		return new BasicConfigurationService(repos(), passwords());
 	}

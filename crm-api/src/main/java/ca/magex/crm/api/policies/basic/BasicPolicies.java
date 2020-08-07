@@ -2,7 +2,6 @@ package ca.magex.crm.api.policies.basic;
 
 import ca.magex.crm.api.adapters.CrmPoliciesAdapter;
 import ca.magex.crm.api.policies.CrmPolicies;
-import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;

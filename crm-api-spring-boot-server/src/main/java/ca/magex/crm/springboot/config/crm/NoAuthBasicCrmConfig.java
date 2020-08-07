@@ -1,8 +1,12 @@
-package ca.magex.crm.auth.config;
+package ca.magex.crm.springboot.config.crm;
 
-import javax.annotation.PostConstruct;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
@@ -10,27 +14,39 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
-import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
+import ca.magex.crm.caching.CrmCachingServices;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
-@Profile("Dev")
-@Description("Configures the CRM used by the Auth Server")
-public class CrmConfig implements CrmConfigurer {
+@Profile(CrmProfiles.BASIC_NO_AUTH)
+@Description("Configures the CRM by adding caching support, and using the Basic Policies for CRM Processing")
+public class NoAuthBasicCrmConfig implements CrmConfigurer {
 
+	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean 
+	public JsonTransformerFactory jsonTransformerFactory() {
+		return new JsonTransformerFactory(services());
 	}
 	
 	@Bean
@@ -57,10 +73,32 @@ public class CrmConfig implements CrmConfigurer {
 	public BasicPasswordRepository passwordRepo() {
 		return new BasicPasswordRepository(passwordStore());
 	}
+	
+	@Bean
+	public CacheManager cacheManager() {
+		CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
+		caffeineCacheManager.setCaffeine(Caffeine
+				.newBuilder()
+				.expireAfterWrite(5, TimeUnit.MINUTES)
+				.expireAfterAccess(10, TimeUnit.MINUTES)
+				.maximumSize(1000L));
+
+		return new TransactionAwareCacheManagerProxy(caffeineCacheManager);
+	}
 
 	@Bean(autowireCandidate = false) // ensure this bean doesn't conflict with our CRM for autowiring
-	public BasicServices services() {
-		return new BasicServices(repos(), passwords());
+	public CrmServices services() {
+		CrmServices services = new BasicServices(repos(), passwords()); 
+		if (enableCachedServices) {
+			LoggerFactory.getLogger(BasicCrmConfig.class).info("CRM Caching Services Enabled");
+			// clear caches
+			cacheManager().getCacheNames().forEach((cache) -> cacheManager().getCache(cache).clear());
+			return new CrmCachingServices(cacheManager(), services);
+		}
+		else {
+			LoggerFactory.getLogger(getClass()).info("CRM Caching Services Disabled");
+			return services;
+		}
 	}
 
 	@Bean
@@ -73,7 +111,7 @@ public class CrmConfig implements CrmConfigurer {
 		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
 	}
 	
-	@Bean
+	@Bean 
 	public BasicConfigurationService config() {
 		return new BasicConfigurationService(repos(), passwords());
 	}
@@ -82,11 +120,5 @@ public class CrmConfig implements CrmConfigurer {
 	@Override
 	public Crm crm() {
 		return new Crm(services(), policies());
-	}
-	
-	@PostConstruct
-	public void initialize() {
-		LoggerFactory.getLogger(CrmConfig.class).info("Initializing CRM System for Dev");
-		config().initializeSystem("System", new PersonName(null, "System", null, "Admin"), "root@localhost", "admin", "admin");
 	}
 }

@@ -15,13 +15,14 @@ import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.test.AbstractOrganizationServiceTests;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestfulClientTestConfig.class })
 @ActiveProfiles(profiles = {
-		CrmProfiles.AUTH_EMBEDDED_JWT,
-		CrmProfiles.CRM_NO_AUTH,
+		AuthProfiles.EMBEDDED_HMAC,
+		CrmProfiles.BASIC_NO_AUTH,
 		CrmProfiles.DEV
 })
 public class RestfulOrganizationServiceTests extends AbstractOrganizationServiceTests {

@@ -352,14 +352,19 @@ public class BsonUtils {
 	 */
 	public static Bson toBson(Paging paging, String prefix) {
 		List<Bson> bsonSorts = new ArrayList<>();
-		paging.getSort().get().forEach((sort) -> {
-			if (sort.getDirection() == Direction.ASC) {
-				bsonSorts.add(Sorts.ascending(prefix == null ? sort.getProperty() : prefix + "." + sort.getProperty()));
-			}
-			else {
-				bsonSorts.add(Sorts.descending(prefix == null ? sort.getProperty() :  prefix + "." + sort.getProperty()));
-			}
-		});
+		if (paging.getSort().isEmpty()) {
+			return null;
+		}
+		else {
+			paging.getSort().get().forEach((sort) -> {
+				if (sort.getDirection() == Direction.ASC) {
+					bsonSorts.add(Sorts.ascending(prefix == null ? sort.getProperty() : prefix + "." + sort.getProperty()));
+				}
+				else {
+					bsonSorts.add(Sorts.descending(prefix == null ? sort.getProperty() :  prefix + "." + sort.getProperty()));
+				}
+			});
+		}
 		return Sorts.orderBy(bsonSorts);
 	}
 }
