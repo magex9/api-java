@@ -18,7 +18,7 @@ import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 @Configuration
 @Order(2)
 @Description("Defines the access for an unauthenticated CRM Server")
-@Profile(CrmProfiles.CRM_NO_AUTH)
+@Profile(CrmProfiles.BASIC_NO_AUTH)
 public class CrmUnauthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String[] URLS = {

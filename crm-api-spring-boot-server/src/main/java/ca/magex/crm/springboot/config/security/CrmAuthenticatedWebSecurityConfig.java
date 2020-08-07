@@ -18,7 +18,7 @@ import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 @Configuration
 @Order(2)
 @Description("Defines the access for an authenticated CRM Server")
-@Profile(CrmProfiles.CRM_AUTH)
+@Profile({CrmProfiles.MONGO, CrmProfiles.BASIC})
 public class CrmAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String[] AUTH_URLS = {

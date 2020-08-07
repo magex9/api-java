@@ -108,6 +108,13 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
+		
+		<!-- Mongo Repository -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-mongodb-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- Test Dependencies -->
 		<dependency>

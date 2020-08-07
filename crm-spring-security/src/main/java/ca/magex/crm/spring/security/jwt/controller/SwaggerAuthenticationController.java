@@ -13,10 +13,10 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 
 @Controller
-@Profile(CrmProfiles.AUTH_EMBEDDED_JWT)
+@Profile({AuthProfiles.EMBEDDED_HMAC, AuthProfiles.EMBEDDED_RSA})
 public class SwaggerAuthenticationController {
 
 	@Value("${server.external.address:localhost}") String serverAddress;

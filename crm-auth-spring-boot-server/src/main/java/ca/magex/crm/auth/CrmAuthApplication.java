@@ -7,7 +7,6 @@ import org.springframework.boot.context.ApplicationPidFileWriter;
 @SpringBootApplication(scanBasePackages = {
 		"ca.magex.crm.api",					// Generic CRM beans 
 		"ca.magex.crm.auth",				// auth server configuration
-		"ca.magex.crm.hazelcast",			// crm implementation
 		"ca.magex.crm.spring.security"		// security implementation
 })
 public class CrmAuthApplication {

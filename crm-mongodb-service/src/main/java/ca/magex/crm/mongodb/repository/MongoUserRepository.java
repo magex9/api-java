@@ -151,11 +151,16 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 		pipeline.add(Aggregates.facet(
 				new Facet("totalCount",
 						Aggregates.count()),
-				new Facet("results", List.of(
-						Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds")),						
-						Aggregates.sort(BsonUtils.toBson(paging, "users")),
-						Aggregates.skip((int) paging.getOffset()),
-						Aggregates.limit(paging.getPageSize())))));
+				new Facet("results", paging.getSort().isEmpty() ? 
+						List.of(
+								Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds")),						
+								Aggregates.skip((int) paging.getOffset()),
+								Aggregates.limit(paging.getPageSize())) : 
+						List.of(
+								Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds")),						
+								Aggregates.sort(BsonUtils.toBson(paging, "users")),
+								Aggregates.skip((int) paging.getOffset()),
+								Aggregates.limit(paging.getPageSize())))));
 		
 		Collation collation = Collation
 				.builder()

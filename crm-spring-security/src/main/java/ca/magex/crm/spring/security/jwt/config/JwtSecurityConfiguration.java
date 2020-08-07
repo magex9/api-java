@@ -18,13 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.spring.security.jwt.JwtRequestFilter;
 
 @Configuration
 @Order(15)
 @Description("Defines the Roles required for accessing the authentication endpoints")
-@Profile(CrmProfiles.AUTH_EMBEDDED_JWT)
+@Profile({AuthProfiles.EMBEDDED_HMAC, AuthProfiles.EMBEDDED_RSA})
 public class JwtSecurityConfiguration extends WebSecurityConfigurerAdapter {	
 
 	@Autowired private JwtRequestFilter jwtRequestFilter;
