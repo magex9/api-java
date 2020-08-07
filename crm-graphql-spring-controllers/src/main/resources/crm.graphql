@@ -85,6 +85,9 @@ input OptionFilter {
 }
 
 type Query {
+	# Context queries
+	context: Context
+
 	# Option Queries
 	findOption(optionId: String!): Option
 	countOptions(filter: OptionFilter!): Int!
@@ -136,6 +139,12 @@ type Mutation {
 }
 
 # Main Types
+type Context {
+	currentUser: User
+	createOrganization: Boolean!
+	createOption: [String]!
+}
+
 type Organization {
 	organizationId: String!
 	status: String!
@@ -144,6 +153,7 @@ type Organization {
 	mainContact: Person
 	authenticationGroups: [Option]!
 	businessGroups: [Option]!
+	actions: OrganizationActions!
 }
 
 type Location {
@@ -152,7 +162,8 @@ type Location {
 	status: String!
 	reference: String
 	displayName: String
-	address: MailingAddress	
+	address: MailingAddress
+	actions: LocationActions!	
 }
 
 type Person {
@@ -164,6 +175,7 @@ type Person {
 	address: MailingAddress
 	communication: Communication
 	businessRoles: [Option]!
+	actions: PersonActions!
 }
 
 type User {
@@ -173,6 +185,7 @@ type User {
 	username: String!
 	status: String!	
 	authenticationRoles: [Option]!
+	actions: UserActions!
 }
 
 type Option {
@@ -182,6 +195,7 @@ type Option {
 	status: String!
 	mutable: String!
 	name: Localized!
+	actions: OptionActions!
 }
 
 # Complex Subtypes
@@ -269,4 +283,38 @@ type Localized {
 type Choice {
 	identifier: String
 	other: String
+}
+
+type OptionActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+}
+
+type OrganizationActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+	createLocation: Boolean!
+	createPerson: Boolean!
+}
+
+type LocationActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+}
+
+type PersonActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+	createUser: Boolean!
+}
+
+type UserActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+	changePassword: Boolean!
 }

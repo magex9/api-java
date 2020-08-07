@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -60,6 +61,18 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findUsers@" + UserDataFetcher.class.getSimpleName());
 			return crm.findUserDetails(
 					new UsersFilter(extractFilter(environment)), extractPaging(environment));
+		};
+	}
+	
+	public DataFetcher<Map<String,Boolean>> findUserActions() {
+		return (environment) -> {
+			logger.info("Entering findUserActions@" + UserDataFetcher.class.getSimpleName());
+			UserDetails source = environment.getSource();
+			return Map.of(
+					"modify", crm.canUpdateUserRole(source.getUserId()),
+					"enable", crm.canEnableUser(source.getUserId()),
+					"disable", crm.canDisableUser(source.getUserId()),
+					"changePassword", crm.canUpdateUserPassword(source.getUserId()));
 		};
 	}
 

@@ -2,22 +2,41 @@ package ca.magex.crm.graphql.datafetcher;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
 import graphql.schema.DataFetcher;
 
 @Component
 public class CommonDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(LocationDataFetcher.class);
+	
+	@Autowired CrmAuthenticationService authService;
+	
+	public DataFetcher<Map<String,Object>> getContext() {
+		return (environment) -> {
+			logger.debug("Entering getContext@" + CommonDataFetcher.class.getSimpleName());
+			UserDetails authUser = authService.getAuthenticatedUser();
+			return Map.of(
+					"currentUser", authUser,			
+					"createOrganization", crm.canCreateOrganization(),
+					"createOption", Stream.of(Type.values()).filter((t) -> crm.canCreateOption(t)).map((t) -> t.getCode()).collect(Collectors.toList()));
+		};
+	}
 	
 	public DataFetcher<Map<String,String>> getCountryChoice() {
 		return (environment) -> {

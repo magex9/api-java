@@ -105,6 +105,9 @@ public class GraphQLCrmServices {
 	private RuntimeWiring buildRuntimeWiring() {
 		logger.info("Building GraphQL runtime wiring");		
 		return RuntimeWiring.newRuntimeWiring()
+				// context data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("context", commonDataFetcher.getContext()))
+				
 				// organization data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countOrganizations", organizationDataFetcher.countOrganizations()))
@@ -115,6 +118,7 @@ public class GraphQLCrmServices {
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainContact", personDataFetcher.byOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("authenticationGroups", optionDataFetcher.findAuthenticationGroupsForOrg()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("businessGroups", optionDataFetcher.findBusinessGroupsForOrg()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("actions", organizationDataFetcher.findOrganizationActions()))
 
 				// location data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))
@@ -123,6 +127,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
 				.type("Location", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byLocation()))
+				.type("Location", typeWiring -> typeWiring.dataFetcher("actions", locationDataFetcher.findLocationActions()))
 
 				// person data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
@@ -132,6 +137,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
 				.type("Person", typeWiring -> typeWiring.dataFetcher("businessRoles", optionDataFetcher.findBusinessRolesForPerson()))
 				.type("Person", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byPerson()))
+				.type("Person", typeWiring -> typeWiring.dataFetcher("actions", personDataFetcher.findPersonActions()))
 
 				// user data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUser()))
@@ -144,6 +150,7 @@ public class GraphQLCrmServices {
 				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
 				.type("User", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byUser()))
 				.type("User", typeWiring -> typeWiring.dataFetcher("authenticationRoles", optionDataFetcher.findAuthenticationRolesForUser()))
+				.type("User", typeWiring -> typeWiring.dataFetcher("actions", userDataFetcher.findUserActions()))
 				
 				// option data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOption", optionDataFetcher.findOption()))
@@ -152,6 +159,7 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOption", optionDataFetcher.createOption()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOption", optionDataFetcher.updateOption()))
 				.type("Option", typeWiring -> typeWiring.dataFetcher("parent", optionDataFetcher.findParentOption()))
+				.type("Option", typeWiring -> typeWiring.dataFetcher("actions", optionDataFetcher.findOptionActions()))
 				
 				// common data fetching
 				.type("Option", typeWiring -> typeWiring.dataFetcher("type", commonDataFetcher.getOptionTypeValue()))

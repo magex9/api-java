@@ -1,5 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,17 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findLocations@" + LocationDataFetcher.class.getSimpleName());
 			return crm.findLocationDetails(new LocationsFilter(extractFilter(environment)), extractPaging(environment));
+		};
+	}
+	
+	public DataFetcher<Map<String,Boolean>> findLocationActions() {
+		return (environment) -> {
+			logger.info("Entering findLocationActions@" + LocationDataFetcher.class.getSimpleName());
+			LocationDetails source = environment.getSource();
+			return Map.of(
+					"modify", crm.canUpdateLocation(source.getLocationId()),
+					"enable", crm.canEnableLocation(source.getLocationId()),
+					"disable", crm.canDisableLocation(source.getLocationId()));
 		};
 	}
 

@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -67,6 +68,19 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("organizationId");
 			return crm.findOrganizationDetails(new OrganizationIdentifier(id));
+		};
+	}
+	
+	public DataFetcher<Map<String,Boolean>> findOrganizationActions() {
+		return (environment) -> {
+			logger.info("Entering findOrganizationActions@" + OrganizationDataFetcher.class.getSimpleName());
+			OrganizationDetails source = environment.getSource();
+			return Map.of(
+					"modify", crm.canUpdateOrganization(source.getOrganizationId()),
+					"enable", crm.canEnableOrganization(source.getOrganizationId()),
+					"disable", crm.canDisableOrganization(source.getOrganizationId()),
+					"createLocation", crm.canCreateLocationForOrganization(source.getOrganizationId()),
+					"createPerson", crm.canCreatePersonForOrganization(source.getOrganizationId()));
 		};
 	}
 

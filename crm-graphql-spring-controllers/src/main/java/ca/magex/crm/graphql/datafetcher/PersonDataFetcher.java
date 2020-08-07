@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,6 +53,18 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findPersons@" + PersonDataFetcher.class.getSimpleName());
 			return crm.findPersonDetails(new PersonsFilter(extractFilter(environment)), extractPaging(environment));
+		};
+	}
+	
+	public DataFetcher<Map<String,Boolean>> findPersonActions() {
+		return (environment) -> {
+			logger.info("Entering findPersonActions@" + PersonDataFetcher.class.getSimpleName());
+			PersonDetails source = environment.getSource();
+			return Map.of(
+					"modify", crm.canUpdatePerson(source.getPersonId()),
+					"enable", crm.canEnablePerson(source.getPersonId()),
+					"disable", crm.canDisablePerson(source.getPersonId()),
+					"createUser", crm.canCreateUserForPerson(source.getPersonId()));
 		};
 	}
 

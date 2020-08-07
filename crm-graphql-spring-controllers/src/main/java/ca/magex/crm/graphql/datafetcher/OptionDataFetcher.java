@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +25,7 @@ import graphql.schema.DataFetcher;
 @Component
 public class OptionDataFetcher extends AbstractDataFetcher {
 
-	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
+	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);	
 
 	public DataFetcher<List<Option>> findAuthenticationGroupsForOrg() {
 		return (environment) -> {
@@ -100,6 +101,17 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 				return null;
 			}
 			return crm.findOption(source.getParentId());
+		};
+	}
+	
+	public DataFetcher<Map<String,Object>> findOptionActions() {
+		return (environment) -> {
+			logger.info("Entering findOptionActions@" + OptionDataFetcher.class.getSimpleName());
+			Option source = environment.getSource();
+			return Map.of(
+					"modify", crm.canUpdateOption(source.getOptionId()),
+					"enable", crm.canEnableOption(source.getOptionId()),
+					"disable", crm.canDisableOption(source.getOptionId()));
 		};
 	}
 	

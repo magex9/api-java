@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
@@ -23,6 +24,11 @@ public class UnauthenticatedTestConfig implements CrmConfigurer {
 	@Bean 
 	public PlatformTransactionManager txManager() {
 		return Mockito.mock(PlatformTransactionManager.class);
+	}
+	
+	@Bean
+	public CrmAuthenticationService authService() {
+		return Mockito.mock(CrmAuthenticationService.class);
 	}
 	
 	@Bean 
