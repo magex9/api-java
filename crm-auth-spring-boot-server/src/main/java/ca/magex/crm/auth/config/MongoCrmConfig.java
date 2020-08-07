@@ -1,5 +1,7 @@
 package ca.magex.crm.auth.config;
 
+import java.util.concurrent.ThreadFactory;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.LoggerFactory;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -31,6 +34,7 @@ import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
+import ca.magex.crm.mongodb.event.MongoChangeListener;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
 
@@ -48,11 +52,23 @@ public class MongoCrmConfig implements CrmConfigurer {
 	@Bean
 	public MongoClient mongoClient() {
 		return MongoClients.create("mongodb+srv://" + username + ":" + password + "@" + url);
-	}
+	}	
 
 	@Bean
 	public MongoDatabase mongoCrm() {
 		return mongoClient().getDatabase("crm");
+	}
+	
+	@Bean
+	public ThreadFactory threadFactory() {
+		CustomizableThreadFactory tf = new CustomizableThreadFactory("mongo");
+		tf.setDaemon(true);
+		return tf;
+	}
+	
+	@Bean
+	public MongoChangeListener mongoCL() {
+		return new MongoChangeListener(mongoCrm(), dbName, threadFactory());
 	}
 
 	@Bean
