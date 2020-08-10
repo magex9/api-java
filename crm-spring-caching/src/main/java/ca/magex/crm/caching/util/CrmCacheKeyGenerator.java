@@ -25,8 +25,17 @@ public class CrmCacheKeyGenerator {
 	 * @param username
 	 * @return
 	 */
-	public String generateUsernameKey(String username) {
-		return "Username_" + username;
+	public String generateUsernameDetailsKey(String username) {
+		return "UsernameDetails_" + username;
+	}
+	
+	/**
+	 * Generates the Key used for the Cache Entry of a details instance by an Username
+	 * @param username
+	 * @return
+	 */
+	public String generateUsernameSummaryKey(String username) {
+		return "UsernameSummary_" + username;
 	}
 	
 	/**

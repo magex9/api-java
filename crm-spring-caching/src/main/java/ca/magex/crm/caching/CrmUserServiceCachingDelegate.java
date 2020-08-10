@@ -52,7 +52,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 			return List.of(
 					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), details),
 					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), details.asSummary()),
-					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameKey(details.getUsername()), details));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameDetailsKey(details.getUsername()), details),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameSummaryKey(details.getUsername()), details.asSummary()));
 		}
 	}
 
@@ -68,7 +69,8 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), null));
 		} else {
 			return List.of(
-					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameSummaryKey(summary.getUsername()), summary));
 		}
 	}
 
@@ -77,15 +79,34 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	 * @param details
 	 * @return
 	 */
-	private List<Pair<String, Object>> summaryCacheSupplier(UserDetails details, String key) {		
+	private List<Pair<String, Object>> summaryCacheSupplier(UserSummary summary, String key) {		
+		if (summary == null) {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameDetailsKey(key), null),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameSummaryKey(key), null));
+		} else {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(summary.getUserId()), summary),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameSummaryKey(key), summary));
+		}
+	}
+
+	/**
+	 * Provides the list of pairs for caching user summaries
+	 * @param details
+	 * @return
+	 */
+	private List<Pair<String, Object>> detailsCacheSupplier(UserDetails details, String key) {		
 		if (details == null) {
 			return List.of(
-					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameKey(key), null));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameDetailsKey(key), null),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameSummaryKey(key), null));
 		} else {
 			return List.of(
 					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(details.getUserId()), details),
 					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(details.getUserId()), details.asSummary()),
-					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameKey(key), details));
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameDetailsKey(key), details),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateUsernameSummaryKey(details.getUsername()), details.asSummary()));
 		}
 	}
 
@@ -108,7 +129,7 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 		UserSummary user = delegate.enableUser(userId);
 		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(userId));
 		if (user != null) {
-			cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateUsernameKey(user.getUsername()));
+			cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateUsernameDetailsKey(user.getUsername()));
 		}
 		cacheTemplate.put(summaryCacheSupplier(user, userId));
 		return user;
@@ -119,15 +140,15 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 		UserSummary user = delegate.disableUser(userId);
 		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(userId));
 		if (user != null) {
-			cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateUsernameKey(user.getUsername()));
+			cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateUsernameDetailsKey(user.getUsername()));
 		}
 		cacheTemplate.put(summaryCacheSupplier(user, userId));
 		return user;
 	}
 
 	@Override
-	public UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roleIds) {
-		UserDetails user = delegate.updateUserRoles(userId, roleIds);
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roleIds) {
+		UserDetails user = delegate.updateUserAuthenticationRoles(userId, roleIds);
 		cacheTemplate.put(detailsCacheSupplier(user, userId));
 		return user;
 	}
@@ -152,6 +173,15 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
+	public UserSummary findUserSummaryByUsername(String username) {
+		return cacheTemplate.get(
+				() -> delegate.findUserSummaryByUsername(username),
+				username,
+				CrmCacheKeyGenerator.getInstance()::generateUsernameSummaryKey,
+				this::summaryCacheSupplier);
+	}
+
+	@Override
 	public UserDetails findUserDetails(UserIdentifier userId) {
 		return cacheTemplate.get(
 				() -> delegate.findUserDetails(userId),
@@ -161,12 +191,12 @@ public class CrmUserServiceCachingDelegate implements CrmUserService {
 	}
 
 	@Override
-	public UserDetails findUserByUsername(String username) {
+	public UserDetails findUserDetailsByUsername(String username) {
 		return cacheTemplate.get(
-				() -> delegate.findUserByUsername(username),
+				() -> delegate.findUserDetailsByUsername(username),
 				username,
-				CrmCacheKeyGenerator.getInstance()::generateUsernameKey,
-				this::summaryCacheSupplier);
+				CrmCacheKeyGenerator.getInstance()::generateUsernameDetailsKey,
+				this::detailsCacheSupplier);
 	}
 
 	@Override

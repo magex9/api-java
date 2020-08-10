@@ -154,7 +154,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			if (environment.getArgument("businessRoleIds") != null) {
 				List<BusinessRoleIdentifier> businessRoles = extractBusinessRoles(environment, "businessRoleIds");
 				if (!person.getBusinessRoleIds().containsAll(businessRoles) || !businessRoles.containsAll(person.getBusinessRoleIds())) {
-					person = crm.updatePersonRoles(personId, businessRoles);
+					person = crm.updatePersonBusinessRoles(personId, businessRoles);
 				}
 			}
 			return person;

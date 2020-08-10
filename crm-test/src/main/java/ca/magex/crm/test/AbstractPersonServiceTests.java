@@ -157,7 +157,7 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(p1, persons().findPersonDetails(p1.getPersonId()));
 		Assert.assertEquals(p1, persons().updatePersonCommunication(p1.getPersonId(), comms2));
 		
-		p1 = persons().updatePersonRoles(p1.getPersonId(), List.of(CrmAsserts.DEV_TEAMLEAD));
+		p1 = persons().updatePersonBusinessRoles(p1.getPersonId(), List.of(CrmAsserts.DEV_TEAMLEAD));
 		Assert.assertEquals("Smith, Michelle Pauline", p1.getDisplayName());
 		Assert.assertEquals(tommy, p1.getLegalName());
 		Assert.assertEquals(louvre, p1.getAddress());
@@ -337,7 +337,7 @@ public abstract class AbstractPersonServiceTests {
 		}
 		
 		try {
-			persons().updatePersonRoles(new PersonIdentifier("abc"), List.of(CrmAsserts.CEO));
+			persons().updatePersonBusinessRoles(new PersonIdentifier("abc"), List.of(CrmAsserts.CEO));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
 			Assert.assertEquals("Item not found: Person ID '/persons/abc'", e.getMessage());

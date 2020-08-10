@@ -544,28 +544,28 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testPutOrganizationAuthenticationGroupIds() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		
-		JsonObject root = get(organizationId + "/authenticationGroupIds", Lang.ROOT, HttpStatus.OK);
+		JsonObject root = get(organizationId + "/authenticationGroups", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("total", "content"), root.keys());
 		assertEquals(1, root.getNumber("total"));
 		assertEquals(1, root.getArray("content").size());
 		assertEquals("ORG", root.getArray("content").getString(0));
 		
-		JsonObject english = get(organizationId + "/authenticationGroupIds", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject english = get(organizationId + "/authenticationGroups", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("total", "content"), english.keys());
 		assertEquals(1, english.getNumber("total"));
 		assertEquals(1, english.getArray("content").size());
 		assertEquals("Organization", english.getArray("content").getString(0));
 		
-		JsonObject french = get(organizationId + "/authenticationGroupIds", Lang.FRENCH, HttpStatus.OK);
+		JsonObject french = get(organizationId + "/authenticationGroups", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("total", "content"), french.keys());
 		assertEquals(1, french.getNumber("total"));
 		assertEquals(1, french.getArray("content").size());
 		assertEquals("Organisation", french.getArray("content").getString(0));
 		
-		JsonObject linked = get(organizationId + "/authenticationGroupIds", null, HttpStatus.OK);
+		JsonObject linked = get(organizationId + "/authenticationGroups", null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("total", "content"), linked.keys());
 		assertEquals(1, linked.getNumber("total"));
@@ -577,28 +577,28 @@ public class OrganizationsControllerTests extends AbstractControllerTests {
 	public void testPutOrganizationBusinessGroupIds() throws Exception {
 		OrganizationIdentifier organizationId = crm.createOrganization(ORG_NAME.getEnglishName(), ORG_AUTH_GROUPS, ORG_BIZ_GROUPS).getOrganizationId();
 		
-		JsonObject root = get(organizationId + "/businessGroupIds", Lang.ROOT, HttpStatus.OK);
+		JsonObject root = get(organizationId + "/businessGroups", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("total", "content"), root.keys());
 		assertEquals(1, root.getNumber("total"));
 		assertEquals(1, root.getArray("content").size());
 		assertEquals("EXTERNAL", root.getArray("content").getString(0));
 		
-		JsonObject english = get(organizationId + "/businessGroupIds", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject english = get(organizationId + "/businessGroups", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("total", "content"), english.keys());
 		assertEquals(1, english.getNumber("total"));
 		assertEquals(1, english.getArray("content").size());
 		assertEquals("External", english.getArray("content").getString(0));
 		
-		JsonObject french = get(organizationId + "/businessGroupIds", Lang.FRENCH, HttpStatus.OK);
+		JsonObject french = get(organizationId + "/businessGroups", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("total", "content"), french.keys());
 		assertEquals(1, french.getNumber("total"));
 		assertEquals(1, french.getArray("content").size());
 		assertEquals("Externe", french.getArray("content").getString(0));
 		
-		JsonObject linked = get(organizationId + "/businessGroupIds", null, HttpStatus.OK);
+		JsonObject linked = get(organizationId + "/businessGroups", null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("total", "content"), linked.keys());
 		assertEquals(1, linked.getNumber("total"));

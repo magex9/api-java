@@ -67,7 +67,7 @@ public class BasicPersonService implements CrmPersonService {
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;

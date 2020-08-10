@@ -128,8 +128,8 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
-		PersonDetails details = delegate.updatePersonRoles(personId, roleIds);
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
+		PersonDetails details = delegate.updatePersonBusinessRoles(personId, roleIds);
 		cacheTemplate.put(detailsCacheSupplier(details, personId));
 		return details;
 	}

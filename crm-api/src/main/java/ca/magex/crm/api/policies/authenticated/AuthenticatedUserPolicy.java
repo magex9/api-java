@@ -67,7 +67,7 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the users organization */
-		UserDetails user = users.findUserByUsername(username);
+		UserDetails user = users.findUserDetailsByUsername(username);
 		PersonSummary person = persons.findPersonSummary(user.getPersonId());
 		return auth.getAuthenticatedOrganizationId().equals(person.getOrganizationId());
 	}

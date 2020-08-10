@@ -79,7 +79,7 @@ public class RestfulOptionController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/options/{typeCode}/**")
-	public void getOptionByCode(HttpServletRequest req, HttpServletResponse res, 
+	public void findOptionByCode(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("typeCode") String typeCode) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			OptionIdentifier optionId = IdentifierFactory.forOptionId(req.getRequestURI().split(req.getContextPath() + "/rest")[1]);
@@ -88,7 +88,7 @@ public class RestfulOptionController extends AbstractRestfulController {
 	}
 
 	@PatchMapping("/rest/options/{typeCode}/**")
-	public void updateOption(HttpServletRequest req, HttpServletResponse res, 
+	public void updateOptionName(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("typeCode") String typeCode) throws IOException {
 		handle(req, res, Option.class, (messages, transformer, locale) -> {
 			OptionIdentifier optionId = IdentifierFactory.forOptionId(req.getRequestURI().split(req.getContextPath() + "/rest")[1]);

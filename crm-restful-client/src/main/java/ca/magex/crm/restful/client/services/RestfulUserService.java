@@ -61,16 +61,10 @@ public class RestfulUserService implements CrmUserService {
 	}
 
 	@Override
-	public UserDetails updateUserRoles(UserIdentifier userId,
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId,
 			List<AuthenticationRoleIdentifier> authenticationRoleIds) {
 		JsonObject json = client.patch(userId, new JsonObject()
 			.with("authenticationRoleIds", client.formatOptions(authenticationRoleIds)));
-		return client.parse(json, UserDetails.class);
-	}
-
-	@Override
-	public UserDetails findUserByUsername(String username) {
-		JsonObject json = client.get("/user/" + username + "/details");
 		return client.parse(json, UserDetails.class);
 	}
 
@@ -81,8 +75,20 @@ public class RestfulUserService implements CrmUserService {
 	}
 
 	@Override
+	public UserSummary findUserSummaryByUsername(String username) {
+		JsonObject json = client.get("/user/" + username);
+		return client.parse(json, UserSummary.class);
+	}
+
+	@Override
 	public UserDetails findUserDetails(UserIdentifier userId) {
 		JsonObject json = client.get(userId + "/details");
+		return client.parse(json, UserDetails.class);
+	}
+
+	@Override
+	public UserDetails findUserDetailsByUsername(String username) {
+		JsonObject json = client.get("/user/" + username + "/details");
 		return client.parse(json, UserDetails.class);
 	}
 	

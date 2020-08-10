@@ -88,7 +88,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/persons/{personId}")
-	public void getPersonSummary(HttpServletRequest req, HttpServletResponse res, 
+	public void findPersonSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId), locale);
@@ -96,7 +96,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/persons/{personId}/details")
-	public void getPersonDetails(HttpServletRequest req, HttpServletResponse res, 
+	public void findPersonDetails(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId), locale);
@@ -121,15 +121,23 @@ public class RestfulPersonController extends AbstractRestfulController {
 				crm.updatePersonCommunication(personId, getObject(Communication.class, body, "communication", true, null, personId, messages, locale));
 			}
 			if (body.contains("businessRoleIds")) {
-				crm.updatePersonRoles(personId, getOptionIdentifiers(body, "businessRoleIds", true, List.of(), personId, messages, BusinessRoleIdentifier.class, locale));
+				crm.updatePersonBusinessRoles(personId, getOptionIdentifiers(body, "businessRoleIds", true, List.of(), personId, messages, BusinessRoleIdentifier.class, locale));
 			}
 			validate(messages);
 			return transformer.format(crm.findPersonDetails(personId), locale);
 		});
 	}
 
-	@GetMapping("/rest/persons/{personId}/name")
-	public void getPersonLegalname(HttpServletRequest req, HttpServletResponse res, 
+	@GetMapping("/rest/persons/{personId}/displayName")
+	public void findPersonDisplayName(HttpServletRequest req, HttpServletResponse res, 
+			@PathVariable("personId") PersonIdentifier personId) throws IOException {
+		handle(req, res, String.class, (messages, transformer, locale) -> {
+			return transformer.format(crm.findPersonDetails(personId).getDisplayName(), locale);
+		});
+	}
+
+	@GetMapping("/rest/persons/{personId}/legalName")
+	public void findPersonLegalName(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, PersonName.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId).getLegalName(), locale);
@@ -137,7 +145,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/persons/{personId}/address")
-	public void getPersonAddress(HttpServletRequest req, HttpServletResponse res, 
+	public void findPersonAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, MailingAddress.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId).getAddress(), locale);
@@ -145,7 +153,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/persons/{personId}/communication")
-	public void getPersonCommunication(HttpServletRequest req, HttpServletResponse res, 
+	public void findPersonCommunication(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, Communication.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findPersonDetails(personId).getCommunication(), locale);
@@ -153,7 +161,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/persons/{personId}/businessRoles")
-	public void getPersonPosition(HttpServletRequest req, HttpServletResponse res, 
+	public void findPersonBusinessRoles(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, BusinessRoleIdentifier.class, (messages, transformer, locale) -> {
 			return createList(crm.findPersonDetails(personId).getBusinessRoleIds(), transformer, locale);
@@ -161,7 +169,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@PutMapping("/rest/persons/{personId}/enable")
-	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
+	public void enablePerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), personId, messages);
@@ -170,7 +178,7 @@ public class RestfulPersonController extends AbstractRestfulController {
 	}
 
 	@PutMapping("/rest/persons/{personId}/disable")
-	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
+	public void disablePerson(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, PersonSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), personId, messages);

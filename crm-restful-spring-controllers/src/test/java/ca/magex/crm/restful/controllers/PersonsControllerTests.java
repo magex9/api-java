@@ -469,7 +469,7 @@ public class PersonsControllerTests extends AbstractControllerTests {
 	public void testGetPersonName() throws Exception {
 		PersonIdentifier personId = crm.createPerson(organizationId, CrmAsserts.displayName(ADAM), ADAM, US_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId();
 		
-		JsonObject root = get(personId + "/name", Lang.ROOT, HttpStatus.OK);
+		JsonObject root = get(personId + "/legalName", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), root.keys());
 		assertEquals("MR", root.getString("salutation"));
@@ -477,7 +477,7 @@ public class PersonsControllerTests extends AbstractControllerTests {
 		assertEquals("A", root.getString("middleName"));
 		assertEquals("Anderson", root.getString("lastName"));
 		
-		JsonObject english = get(personId + "/name", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject english = get(personId + "/legalName", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), english.keys());
 		assertEquals("Mr.", english.getString("salutation"));
@@ -485,7 +485,7 @@ public class PersonsControllerTests extends AbstractControllerTests {
 		assertEquals("A", english.getString("middleName"));
 		assertEquals("Anderson", english.getString("lastName"));
 		
-		JsonObject french = get(personId + "/name", Lang.FRENCH, HttpStatus.OK);
+		JsonObject french = get(personId + "/legalName", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), french.keys());
 		assertEquals("M.", french.getString("salutation"));
@@ -493,7 +493,7 @@ public class PersonsControllerTests extends AbstractControllerTests {
 		assertEquals("A", french.getString("middleName"));
 		assertEquals("Anderson", french.getString("lastName"));
 		
-		JsonObject linked = get(personId + "/name", null, HttpStatus.OK);
+		JsonObject linked = get(personId + "/legalName", null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "salutation", "firstName", "middleName", "lastName"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/common/PersonName", linked.getString("@context"));
