@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
@@ -34,6 +36,7 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -44,6 +47,8 @@ import ca.magex.json.model.JsonText;
 
 @Controller
 public class RestfulSwaggerController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(RestfulSwaggerController.class);
 
 	@Value("${server.external.address:localhost}") 
 	private String serverAddress;
@@ -100,29 +105,84 @@ public class RestfulSwaggerController {
 				)
 			)
 			.with("paths", buildApiPaths())
-			.with("components", buildApiComponents())
+			.with(buildApiComponents())
 		;
 	}
 	
 	public JsonObject buildApiPaths() throws Exception {
-		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.addAll(buildPaths(RestfulOrganizationController.class).pairs());
-		return new JsonObject(pairs);
+		JsonObject paths = new JsonObject();
+		appendPaths(RestfulOrganizationController.class, CrmOrganizationService.class, "Organizations", paths);
+//		appendPaths(RestfulLocationController.class, paths);
+//		appendPaths(RestfulPersonController.class, paths);
+//		appendPaths(RestfulUserController.class, paths);
+//		appendPaths(RestfulOptionController.class, paths);
+		return paths;
 	}
 	
-	public JsonObject buildPaths(Class<?> cls) throws Exception {
-		JsonObject paths = new JsonObject();
-		
-		JsonObject jsondoc = readJsondoc(cls);
+	public JsonObject appendPaths(Class<?> controller, Class<?> api, String tag, JsonObject paths) throws Exception {
+		JsonObject jsondoc = readJsondoc(controller);
+		JsonObject apidoc = readJsondoc(api);
+		JsonArray tags = new JsonArray().with(tag);
 		
 		for (JsonObject methoddoc : jsondoc.getArray("methods", JsonObject.class)) {
-			JsonObject annotation = findAnnotation(methoddoc, "GetMapping");
-			//String path = 
+			try {
+				JsonObject mapping = findMapping(methoddoc);
+				String path = mapping.getString("path");
+				String method = mapping.getString("method");
+				JsonObject desc = buildPathInfo(methoddoc, apidoc, tags);
+				if (!paths.contains(path))
+					paths = paths.with(path, new JsonObject());
+				paths = paths.with(path, paths.getObject(path).with(method, desc));
+			} catch (NoSuchElementException e) {
+				logger.info("Skipping method: " + methoddoc.getString("name"));
+			}
 		}
 		
-		System.out.println(jsondoc);
-		
 		return paths;
+	}
+	
+	public JsonObject findMapping(JsonObject methoddoc) {
+		if (! methoddoc.contains("annotations"))
+			throw new NoSuchElementException("No anntations tag found on method: " + methoddoc);
+		for (JsonObject annotation : methoddoc.getArray("annotations", JsonObject.class)) {
+			String name = annotation.getString("name");
+			if (name.equals("GetMapping")) {
+				return new JsonObject()
+					.with("method", "get")
+					.with("path", annotation.getString("value"));
+			} else if (name.equals("PostMapping")) {
+				return new JsonObject()
+					.with("method", "post")
+					.with("path", annotation.getString("value"));
+			} else if (name.equals("PutMapping")) {
+				return new JsonObject()
+					.with("method", "put")
+					.with("path", annotation.getString("value"));
+			} else if (name.equals("DeleteMapping")) {
+				return new JsonObject()
+					.with("method", "delete")
+					.with("path", annotation.getString("value"));
+			} else if (name.equals("PatchMapping")) {
+				return new JsonObject()
+					.with("method", "patch")
+					.with("path", annotation.getString("value"));
+			}
+		}
+		throw new NoSuchElementException("Unable to find annotation on method: " + methoddoc);
+	}
+	
+	public JsonObject buildPathInfo(JsonObject methoddoc, JsonObject apidoc, JsonArray tags) {
+		Optional<JsonObject> apimethod = apidoc.getArray("methods", JsonObject.class).stream()
+			.filter(m -> m.getString("name").equals(methoddoc.getString("name")))
+			.findFirst();
+		
+		if (!apimethod.isPresent())
+			throw new NoSuchElementException("Unable to find api method: " + methoddoc.getString("name"));
+		
+		return new JsonObject()
+			.with("summary", apimethod.get().contains("description") ? apimethod.get().getString("description") : "Coming soon...")
+			.with("operationId", methoddoc.getString("name"))
+			.with("tags", tags);
 	}
 	
 //	  "paths": {
@@ -131,106 +191,6 @@ public class RestfulSwaggerController {
 //	        "summary": "List all organizations",
 //	        "operationId": "findOrganizations",
 //	        "tags": ["Organizations"],
-//	        "parameters": [
-//	          {
-//	            "in": "query",
-//	            "name": "displayName",
-//	            "description": "Find an organization by its name",
-//	            "required": false,
-//	            "schema": {"type": "string"}
-//	          },
-//	          {
-//	            "in": "query",
-//	            "name": "status",
-//	            "description": "Find organizations in a certian status",
-//	            "required": false,
-//	            "default": "active",
-//	            "schema": {"$ref": "#/components/schemas/Status"}
-//	          },
-//	          {
-//	            "in": "query",
-//	            "name": "page",
-//	            "description": "Page number",
-//	            "required": false,
-//	            "default": 1,
-//	            "schema": {"type": "integer"}
-//	          },
-//	          {
-//	            "in": "query",
-//	            "name": "limit",
-//	            "description": "The number of items on the page",
-//	            "required": false,
-//	            "default": 10,
-//	            "schema": {"type": "integer"}
-//	          },
-//	          {
-//	            "in": "query",
-//	            "name": "order",
-//	            "description": "The proper to order the results by",
-//	            "required": false,
-//	            "default": "displayName",
-//	            "schema": {
-//	              "type": "string",
-//	              "enum": [
-//	                "displayName",
-//	                "status"
-//	              ]
-//	            }
-//	          },
-//	          {
-//	            "in": "query",
-//	            "name": "direction",
-//	            "description": "The order to sort the propert by",
-//	            "default": "asc",
-//	            "required": false,
-//	            "schema": {
-//	              "type": "string",
-//	              "enum": [
-//	                "asc",
-//	                "desc"
-//	              ]
-//	            }
-//	          }
-//	        ],
-//	        "responses": {
-//	          "200": {
-//	            "description": "A paged array of organizations",
-//	            "headers": {
-//	              "X-Rate-Limit-Limit": {
-//	                "description": "The number of allowed requests in the current period",
-//	                "schema": {"type": "integer"}
-//	              },
-//	              "X-Rate-Limit-Remaining": {
-//	                "description": "The number of remaining requests in the current period",
-//	                "schema": {"type": "integer"}
-//	              },
-//	              "X-Rate-Limit-Reset": {
-//	                "description": "The number of seconds left in the current period",
-//	                "schema": {"type": "integer"}
-//	              },
-//	              "x-next": {
-//	                "description": "A link to the next page of responses",
-//	                "schema": {"type": "string"}
-//	              }
-//	            },
-//	            "content": {
-//	              "application/json": {
-//	                "schema": {
-//	                  "type": "array",
-//	                  "items": {"$ref": "#/components/schemas/OrganizationSummary"}
-//	                }
-//	              }
-//	            }
-//	          },
-//	          "default": {
-//	            "description": "System error",
-//	            "content": {
-//	              "application/json": {
-//	                "schema": {"$ref": "#/components/schemas/SystemException"}
-//	              }
-//	            }
-//	          }
-//	        }
 //	      },
 		
 	public JsonPair buildApiComponents() throws Exception {
@@ -260,9 +220,9 @@ public class RestfulSwaggerController {
 			.with(buildApiSchema(Telephone.class))
 			.with(buildApiSchema(Communication.class))
 			.with(buildApiSchema(MailingAddress.class))
+			.with(buildApiSchema(Message.class))
 			.with(buildApiSchema(Type.class))
 			.with(buildApiSchema(Status.class))
-			.with(buildApiSchema(Message.class))
 			.with(buildBadRequestException())
 			.with(buildPermissionDeniedException())
 			.with(buildItemNotFoundException())
