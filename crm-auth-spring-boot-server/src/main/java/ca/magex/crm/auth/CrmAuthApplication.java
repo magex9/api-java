@@ -13,6 +13,7 @@ public class CrmAuthApplication {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(CrmAuthApplication.class);
+		//app.setAdditionalProfiles("ut");
 		/* generate a file called application.pid, used to track the running process */
 		app.addListeners(new ApplicationPidFileWriter());
 		app.run(args);
