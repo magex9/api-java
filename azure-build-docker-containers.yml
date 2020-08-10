@@ -24,7 +24,7 @@ steps:
 - task: DownloadSecureFile@1
   name: gitazurekey
   inputs:
-    secureFile: 'azure-git.key'
+    secureFile: 'azure.key'
 
 - task: CmdLine@2
   inputs:
