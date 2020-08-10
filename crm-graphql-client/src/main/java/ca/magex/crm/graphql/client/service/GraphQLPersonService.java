@@ -163,7 +163,7 @@ public class GraphQLPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
 		return ModelBinder.toPersonDetails(graphQLClient
 				.performGraphQLQueryWithVariables(
 						"updatePersonBusinessRoles",

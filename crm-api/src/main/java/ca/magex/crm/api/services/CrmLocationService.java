@@ -78,6 +78,16 @@ public interface CrmLocationService {
 	LocationSummary disableLocation(LocationIdentifier locationId);
 
 	/**
+	 * Find the common name for a location
+	 * 
+	 * @param locationId
+	 * @return
+	 */
+	default String findLocationDisplayname(LocationIdentifier locationId) {
+		return findLocationDetails(locationId).getDisplayName();
+	}
+	
+	/**
 	 * updates the location name
 	 * @param locationId
 	 * @param displaysName
@@ -86,12 +96,39 @@ public interface CrmLocationService {
 	LocationDetails updateLocationName(LocationIdentifier locationId, String displaysName);
 
 	/**
+	 * Find the address the location can be found at
+	 * 
+	 * @param locationId
+	 * @return
+	 */
+	default MailingAddress findLocationAddress(LocationIdentifier locationId) {
+		return findLocationDetails(locationId).getAddress();
+	}
+
+	/**
 	 * updates the location address
 	 * @param locationId
 	 * @param address
 	 * @return
 	 */
 	LocationDetails updateLocationAddress(LocationIdentifier locationId, MailingAddress address);
+	
+	/**
+	 * Update all or some of the information about the location
+	 * @param locationId The location to update
+	 * @param displaysName The common name for the organization
+	 * @param address The postal address the location can be found at
+	 * @return The updated details for the organization
+	 */
+	default LocationDetails updateOrganization(LocationIdentifier locationId, 
+			String displaysName,
+			MailingAddress address) {
+		if (displaysName != null)
+			updateLocationName(locationId, displaysName);
+		if (address != null)
+			updateLocationAddress(locationId, address);
+		return findLocationDetails(locationId);
+	}
 
 	/**
 	 * returns the location summary for the given location identifier
@@ -136,7 +173,7 @@ public interface CrmLocationService {
 	 * @return
 	 */
 	default FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter) {
-		return findLocationDetails(filter, defaultLocationsPaging());
+		return findLocationDetails(filter, LocationsFilter.getDefaultPaging());
 	}
 
 	/**
@@ -145,7 +182,7 @@ public interface CrmLocationService {
 	 * @return
 	 */
 	default FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter) {
-		return findLocationSummaries(filter, defaultLocationsPaging());
+		return findLocationSummaries(filter, LocationsFilter.getDefaultPaging());
 	}
 
 	/**
@@ -155,22 +192,6 @@ public interface CrmLocationService {
 	 */
 	default FilteredPage<LocationSummary> findActiveLocationSummariesForOrg(OrganizationIdentifier organizationId) {
 		return findLocationSummaries(new LocationsFilter(organizationId, null, null, Status.ACTIVE));
-	}
-
-	/**
-	 * returns the default locations filter
-	 * @return
-	 */
-	default LocationsFilter defaultLocationsFilter() {
-		return new LocationsFilter();
-	};
-
-	/**
-	 * returns the default locations paging
-	 * @return
-	 */
-	default Paging defaultLocationsPaging() {
-		return new Paging(LocationsFilter.getSortOptions().get(0));
 	}
 
 	/**

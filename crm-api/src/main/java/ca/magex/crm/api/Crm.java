@@ -310,10 +310,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
-		return personService.updatePersonRoles(personId, validate(findPersonDetails(personId).withBusinessRoleIds(roleIds)).getBusinessRoleIds());
+		return personService.updatePersonBusinessRoles(personId, validate(findPersonDetails(personId).withBusinessRoleIds(roleIds)).getBusinessRoleIds());
 	}
 
 	public PersonSummary enablePerson(PersonIdentifier personId) {
@@ -400,6 +400,13 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			throw new PermissionDeniedException("findUser: " + userId);
 		return userService.findUserSummary(userId);
 	}
+
+	@Override
+	public UserSummary findUserSummaryByUsername(String username) {
+		if (!canViewUser(username))
+			throw new PermissionDeniedException("findUserSummaryByUsername: " + username);
+		return userService.findUserSummaryByUsername(username);
+	}
 	
 	@Override
 	public UserDetails findUserDetails(UserIdentifier userId) {
@@ -409,17 +416,17 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public UserDetails findUserByUsername(String username) {
+	public UserDetails findUserDetailsByUsername(String username) {
 		if (!canViewUser(username))
-			throw new PermissionDeniedException("findUserByUsername: " + username);
-		return userService.findUserByUsername(username);
+			throw new PermissionDeniedException("findUserDetailsByUsername: " + username);
+		return userService.findUserDetailsByUsername(username);
 	}
 
 	@Override
-	public UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, validate(findUserDetails(userId).withAuthenticationRoleIds(roles)).getAuthenticationRoleIds());
+		return userService.updateUserAuthenticationRoles(userId, validate(findUserDetails(userId).withAuthenticationRoleIds(roles)).getAuthenticationRoleIds());
 	}
 
 	@Override

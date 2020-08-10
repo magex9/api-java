@@ -73,7 +73,7 @@ public class AuthClientTests {
 
 	@Test
 	public void testUnauthorizedUser() throws Exception {
-		UserDetails admin = crm.findUserByUsername("admin");
+		UserDetails admin = crm.findUserDetailsByUsername("admin");
 		UserDetails user = crm.createUser(admin.getPersonId(), "user", List.of(new AuthenticationRoleIdentifier("ORG/ADMIN")));
 		String password = crm.resetPassword(user.getUserId());
 		

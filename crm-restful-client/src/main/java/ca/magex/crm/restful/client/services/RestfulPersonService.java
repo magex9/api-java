@@ -71,7 +71,7 @@ public class RestfulPersonService implements CrmPersonService {
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
 		JsonObject json = client.patch(personId, new JsonObject().with("businessRoleIds", client.formatOptions(businessRoleIds)));
 		return client.parse(json, PersonDetails.class);
 	}

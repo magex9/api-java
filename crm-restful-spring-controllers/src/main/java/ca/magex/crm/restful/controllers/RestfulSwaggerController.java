@@ -36,7 +36,11 @@ import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
+import ca.magex.crm.api.services.CrmLocationService;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
@@ -111,11 +115,11 @@ public class RestfulSwaggerController {
 	
 	public JsonObject buildApiPaths() throws Exception {
 		JsonObject paths = new JsonObject();
-		appendPaths(RestfulOrganizationController.class, CrmOrganizationService.class, "Organizations", paths);
-//		appendPaths(RestfulLocationController.class, paths);
-//		appendPaths(RestfulPersonController.class, paths);
-//		appendPaths(RestfulUserController.class, paths);
-//		appendPaths(RestfulOptionController.class, paths);
+		paths = appendPaths(RestfulOrganizationController.class, CrmOrganizationService.class, "Organizations", paths);
+		paths = appendPaths(RestfulLocationController.class, CrmLocationService.class, "Locations", paths);
+		paths = appendPaths(RestfulPersonController.class, CrmPersonService.class, "Persons", paths);
+		paths = appendPaths(RestfulUserController.class, CrmUserService.class, "Users", paths);
+		paths = appendPaths(RestfulOptionController.class, CrmOptionService.class, "Options", paths);
 		return paths;
 	}
 	

@@ -78,7 +78,7 @@ public class GraphQLUserService implements CrmUserService {
 	}
 
 	@Override
-	public UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
 		return ModelBinder.toUserDetails(graphQLClient
 				.performGraphQLQueryWithVariables(
 						"updateUserRoles",
@@ -125,6 +125,15 @@ public class GraphQLUserService implements CrmUserService {
 	}
 
 	@Override
+	public UserSummary findUserSummaryByUsername(String username) {
+		try {
+			return findUserSummaries(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
+		} catch (ItemNotFoundException e) {
+			throw new ItemNotFoundException("Username '" + username + "'");
+		}
+	}
+
+	@Override
 	public UserDetails findUserDetails(UserIdentifier userId) {
 		return ModelBinder.toUserDetails(graphQLClient
 				.performGraphQLQueryWithVariables(
@@ -136,7 +145,7 @@ public class GraphQLUserService implements CrmUserService {
 	}
 
 	@Override
-	public UserDetails findUserByUsername(String username) {
+	public UserDetails findUserDetailsByUsername(String username) {
 		try {
 			return findUserDetails(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
 		} catch (ItemNotFoundException e) {

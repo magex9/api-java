@@ -59,17 +59,22 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
+	public UserSummary findUserSummaryByUsername(String username) {
+		return repos.findUserDetails(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
+	}
+
+	@Override
 	public UserDetails findUserDetails(UserIdentifier userId) {
 		return repos.findUserDetails(userId);
 	}
 	
 	@Override
-	public UserDetails findUserByUsername(String username) {
+	public UserDetails findUserDetailsByUsername(String username) {
 		return repos.findUserDetails(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
-	}	
-
+	}
+	
 	@Override
-	public UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
 		UserDetails user = repos.findUserDetails(userId);
 		if (user == null) {
 			return null;

@@ -102,7 +102,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			if (environment.getArgument("authenticationRoleIds") != null) {
 				List<AuthenticationRoleIdentifier> authenticationRoles = extractAuthenticationRoles(environment, "authenticationRoleIds");
 				if (!user.getAuthenticationRoleIds().containsAll(authenticationRoles) || !authenticationRoles.containsAll(user.getAuthenticationRoleIds())) {
-					user = crm.updateUserRoles(userId, authenticationRoles);
+					user = crm.updateUserAuthenticationRoles(userId, authenticationRoles);
 				}
 			}
 			return user;

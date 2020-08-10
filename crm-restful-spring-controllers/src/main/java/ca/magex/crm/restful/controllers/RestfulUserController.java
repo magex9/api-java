@@ -87,7 +87,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/users/{userId}")
-	public void getUserSummary(HttpServletRequest req, HttpServletResponse res, 
+	public void findUserSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
 		handle(req, res, UserDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findUserDetails(userId), locale);
@@ -95,9 +95,9 @@ public class RestfulUserController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/user/{username}")
-	public void getUserSummaryByUsername(HttpServletRequest req, HttpServletResponse res, 
+	public void findUserSummaryByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		getUserSummary(req, res, crm.findUserByUsername(username).getUserId());
+		findUserSummary(req, res, crm.findUserSummaryByUsername(username).getUserId());
 	}
 
 	@GetMapping("/rest/users/{userId}/details")
@@ -109,9 +109,9 @@ public class RestfulUserController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/user/{username}/details")
-	public void getUserDetailsByUsername(HttpServletRequest req, HttpServletResponse res, 
+	public void findUserDetailsByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		getUserDetails(req, res, crm.findUserByUsername(username).getUserId());
+		getUserDetails(req, res, crm.findUserDetailsByUsername(username).getUserId());
 	}
 
 	@PatchMapping("/rest/users/{userId}")
@@ -120,7 +120,7 @@ public class RestfulUserController extends AbstractRestfulController {
 		handle(req, res, UserDetails.class, (messages, transformer, locale) -> {
 			JsonObject body = extractBody(req);
 			if (body.contains("authenticationRoleIds")) {
-				crm.updateUserRoles(userId, getOptionIdentifiers(body, "authenticationRoleIds", true, List.of(), userId, messages, AuthenticationRoleIdentifier.class, locale));
+				crm.updateUserAuthenticationRoles(userId, getOptionIdentifiers(body, "authenticationRoleIds", true, List.of(), userId, messages, AuthenticationRoleIdentifier.class, locale));
 			}
 			validate(messages);
 			return transformer.format(crm.findUserDetails(userId), locale);
@@ -130,7 +130,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	@PatchMapping("/rest/user/{username}")
 	public void updateUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		updateUser(req, res, crm.findUserByUsername(username).getUserId());
+		updateUser(req, res, crm.findUserSummaryByUsername(username).getUserId());
 	}
 	
 	@PutMapping("/rest/passwords/{userId}/change")
@@ -164,7 +164,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	@GetMapping("/rest/user/{username}/person")
 	public void getUserPersonByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		getUserPerson(req, res, crm.findUserByUsername(username).getUserId());
+		getUserPerson(req, res, crm.findUserSummaryByUsername(username).getUserId());
 	}
 
 	@GetMapping("/rest/users/{userId}/authenticationRoleIds")
@@ -178,7 +178,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	@GetMapping("/rest/user/{username}/authenticationRoleIds")
 	public void getUserRolesByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		getUserRoles(req, res, crm.findUserByUsername(username).getUserId());
+		getUserRoles(req, res, crm.findUserSummaryByUsername(username).getUserId());
 	}
 
 	@PutMapping("/rest/users/{userId}/enable")
@@ -193,7 +193,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	@PutMapping("/rest/user/{username}/enable")
 	public void enableUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		enableUser(req, res, crm.findUserByUsername(username).getUserId());
+		enableUser(req, res, crm.findUserSummaryByUsername(username).getUserId());
 	}
 
 	@PutMapping("/rest/users/{userId}/disable")
@@ -208,7 +208,7 @@ public class RestfulUserController extends AbstractRestfulController {
 	@PutMapping("/rest/user/{username}/disable")
 	public void disableUserByUsername(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("username") String username) throws IOException {
-		disableUser(req, res, crm.findUserByUsername(username).getUserId());
+		disableUser(req, res, crm.findUserSummaryByUsername(username).getUserId());
 	}
 
 }

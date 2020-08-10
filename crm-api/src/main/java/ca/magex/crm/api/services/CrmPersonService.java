@@ -9,6 +9,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
@@ -20,7 +21,10 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -40,16 +44,65 @@ public interface CrmPersonService {
 	PersonSummary enablePerson(PersonIdentifier personId);
 
 	PersonSummary disablePerson(PersonIdentifier personId);
+	
+	default String findPersonDisplayName(PersonIdentifier personId) {
+		return findPersonDetails(personId).getDisplayName();
+	}
 
 	PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName);
+	
+	default PersonName findPersonLegalName(PersonIdentifier personId) {
+		return findPersonDetails(personId).getLegalName();
+	}
 
 	PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName);
+	
+	default MailingAddress findPersonAddress(PersonIdentifier personId) {
+		return findPersonDetails(personId).getAddress();
+	}
 
 	PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address);
+	
+	default Communication findPersonCommunication(PersonIdentifier personId) {
+		return findPersonDetails(personId).getCommunication();
+	}
 
 	PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication);
+	
+	default List<BusinessRoleIdentifier> findPersonBusinessRoles(PersonIdentifier personId) {
+		return findPersonDetails(personId).getBusinessRoleIds();
+	}
 
-	PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds);
+	PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds);
+
+	/**
+	 * Update all or some of the information about the person
+	 * @param personId The person to update
+	 * @param displaysName The common name for the person
+	 * @param legalName The legal name of the person
+	 * @param address The postal address the person calls home
+	 * @param communication The main communication contact for the person
+	 * @param businessRoleIds The assigned business roles identifiers
+	 * @return The updated details for the organization
+	 */
+	default PersonDetails updatePerson(PersonIdentifier personId, 
+			String displaysName,
+			PersonName legalName, 
+			MailingAddress address,
+			Communication communication,
+			List<BusinessRoleIdentifier> businessRoleIds) {
+		if (displaysName != null)
+			updatePersonDisplayName(personId, displaysName);
+		if (legalName != null)
+			updatePersonLegalName(personId, legalName);
+		if (address != null)
+			updatePersonAddress(personId, address);
+		if (communication != null)
+			updatePersonCommunication(personId, communication);
+		if (businessRoleIds != null)
+			updatePersonBusinessRoles(personId, businessRoleIds);
+		return findPersonDetails(personId);
+	}
 	
 	PersonSummary findPersonSummary(PersonIdentifier personId);
 

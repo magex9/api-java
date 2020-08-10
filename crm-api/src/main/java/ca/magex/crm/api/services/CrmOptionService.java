@@ -1,6 +1,7 @@
 package ca.magex.crm.api.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,10 @@ import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.api.system.id.PhraseIdentifier;
 
 public interface CrmOptionService {
+	
+	default List<Type> findTypes() {
+		return Arrays.asList(Type.values());
+	}
 
 	default Option prototypeOption(Option parent, Type type, Localized name) {
 		/* if we have a parent provided, then we need to prepend the parent code */

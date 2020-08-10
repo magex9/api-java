@@ -32,7 +32,7 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 		if (auth == null || auth instanceof AnonymousAuthenticationToken) {
 			return null;
 		}
-		return userService.findUserByUsername(auth.getName());
+		return userService.findUserDetailsByUsername(auth.getName());
 	}
 
 	@Override

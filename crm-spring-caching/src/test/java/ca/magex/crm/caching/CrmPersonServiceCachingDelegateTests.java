@@ -248,7 +248,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		BDDMockito.willAnswer((invocation) -> {
 			reference.set(reference.get().withBusinessRoleIds(invocation.getArgument(1)));
 			return reference.get();
-		}).given(delegate).updatePersonRoles(Mockito.any(PersonIdentifier.class), Mockito.anyList());
+		}).given(delegate).updatePersonBusinessRoles(Mockito.any(PersonIdentifier.class), Mockito.anyList());
 		
 		/* create and ensure cached */
 		PersonDetails personDetails = personService.createPerson(new OrganizationIdentifier("ABC"), CrmAsserts.PERSON_DISPLAY_NAME, CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
@@ -293,7 +293,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		
 		/* clear cache, update address, and ensure cached */
 		cacheManager.getCache("persons").clear();
-		personDetails = personService.updatePersonRoles(personDetails.getPersonId(), List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
+		personDetails = personService.updatePersonBusinessRoles(personDetails.getPersonId(), List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
 		Assert.assertEquals(personDetails, personService.findPersonDetails(personDetails.getPersonId()));
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(Mockito.any(PersonIdentifier.class));
 		Assert.assertEquals(personDetails.asSummary(), personService.findPersonSummary(personDetails.getPersonId()));
@@ -342,8 +342,8 @@ public class CrmPersonServiceCachingDelegateTests {
 		/* update non existent person (should cache the fact that it doesn't exist for the summary) */
 		BDDMockito.willAnswer((invocation) -> {
 			return null;
-		}).given(delegate).updatePersonRoles(Mockito.eq(new PersonIdentifier("MM")), Mockito.anyList());
-		Assert.assertNull(personService.updatePersonRoles(new PersonIdentifier("MM"), List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))));
+		}).given(delegate).updatePersonBusinessRoles(Mockito.eq(new PersonIdentifier("MM")), Mockito.anyList());
+		Assert.assertNull(personService.updatePersonBusinessRoles(new PersonIdentifier("MM"), List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))));
 		Assert.assertNull(personService.findPersonDetails(new PersonIdentifier("MM")));		
 		BDDMockito.verify(delegate, Mockito.times(0)).findPersonDetails(new PersonIdentifier("MM"));
 		Assert.assertNull(personService.findPersonSummary(new PersonIdentifier("MM")));

@@ -49,7 +49,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	public boolean login(String username, String password) {
 		if (!passwords.verifyPassword(username, password))
 			throw new IllegalArgumentException("Invalid username or password");
-		currentUser.push(users.findUserByUsername(username));
+		currentUser.push(users.findUserDetailsByUsername(username));
 		return true;
 	}
 	

@@ -30,7 +30,7 @@ import ca.magex.json.model.JsonObject;
 public class RestfulLocationController extends AbstractRestfulController {
 
 	@GetMapping("/rest/locations")
-	public void findLocationSumaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public void findLocationSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findLocationSummaries(
@@ -108,7 +108,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/locations/{locationId}")
-	public void getLocationSummary(HttpServletRequest req, HttpServletResponse res, 
+	public void findLocationSummary(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findLocationSummary(locationId), locale);
@@ -116,7 +116,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/locations/{locationId}/details")
-	public void getLocationDetails(HttpServletRequest req, HttpServletResponse res, 
+	public void findLocationDetails(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findLocationDetails(locationId), locale);
@@ -140,7 +140,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 	}
 
 	@GetMapping("/rest/locations/{locationId}/address")
-	public void getLocationMainLocation(HttpServletRequest req, HttpServletResponse res, 
+	public void findLocationAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, MailingAddress.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findLocationDetails(locationId).getAddress(), locale);
@@ -159,7 +159,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 	}
 	
 	@PutMapping("/rest/locations/{locationId}/enable")
-	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
+	public void enableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), locationId, messages);
@@ -168,7 +168,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 	}
 
 	@PutMapping("/rest/locations/{locationId}/disable")
-	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
+	public void disableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
 			confirm(extractBody(req), locationId, messages);

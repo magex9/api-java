@@ -36,9 +36,50 @@ public interface CrmUserService {
 
 	UserSummary enableUser(UserIdentifier userId);
 
+	default UserSummary enableUserByUsername(String username) {
+		return disableUser(findUserSummaryByUsername(username).getUserId());
+	}
+
 	UserSummary disableUser(UserIdentifier userId);
 
-	UserDetails updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds);
+	default UserSummary disableUserByUsername(String username) {
+		return disableUser(findUserSummaryByUsername(username).getUserId());
+	}
+
+	default PersonIdentifier findUserPerson(UserIdentifier userId) {
+		return findUserDetails(userId).getPersonId();
+	}
+	
+	default PersonIdentifier findUserPersonByUsername(String username) {
+		return findUserDetailsByUsername(username).getPersonId();
+	}
+	
+	default List<AuthenticationRoleIdentifier> findUserAuthenticationRoles(UserIdentifier userId) {
+		return findUserDetails(userId).getAuthenticationRoleIds();
+	}
+	
+	default List<AuthenticationRoleIdentifier> findUserAuthenticationRolesByUsername(String username) {
+		return findUserDetailsByUsername(username).getAuthenticationRoleIds();
+	}
+	
+	UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds);
+
+	default UserDetails updateUser(UserIdentifier userId,
+			PersonIdentifier personId,
+			List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		if (authenticationRoleIds != null)
+			updateUserAuthenticationRoles(userId, authenticationRoleIds);
+		return findUserDetails(userId);
+	}
+
+	default UserDetails updateUserByUsername(String username, 
+			PersonIdentifier personId,
+			List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		UserIdentifier userId = findUserSummaryByUsername(username).getUserId();
+		if (authenticationRoleIds != null)
+			updateUserAuthenticationRoles(userId, authenticationRoleIds);
+		return findUserDetails(userId);
+	}
 
 	boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword);
 
@@ -46,9 +87,11 @@ public interface CrmUserService {
 
 	UserSummary findUserSummary(UserIdentifier userId);
 
+	UserSummary findUserSummaryByUsername(String username);
+
 	UserDetails findUserDetails(UserIdentifier userId);
 
-	UserDetails findUserByUsername(String username);
+	UserDetails findUserDetailsByUsername(String username);
 
 	long countUsers(UsersFilter filter);
 

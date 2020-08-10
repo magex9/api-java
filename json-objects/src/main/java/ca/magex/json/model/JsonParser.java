@@ -242,7 +242,7 @@ public class JsonParser {
 		StringBuilder sb = new StringBuilder();
 		while (index < length) {
 			char c = getCurrentChar("parseKey");
-			if (Character.isLetterOrDigit(c) || c == '_' || c == '@' || c == '/' || c == '$' || c == '-' || c == '{' || c == '}') {
+			if (Character.isLetterOrDigit(c) || c == '_' || c == '@' || c == '/' || c == '$' || c == '*' || c == '-' || c == '{' || c == '}') {
 				sb.append(c);
 				index++;
 			} else if (isQuote(c)) {
