@@ -66,7 +66,7 @@ public interface CrmPersonRepository {
 	 * @param paging
 	 * @return
 	 */
-	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging); 
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging); 
 
 	/**
 	 * returns the number of persons that match the given filter

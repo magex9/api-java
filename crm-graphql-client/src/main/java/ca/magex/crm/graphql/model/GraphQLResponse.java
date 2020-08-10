@@ -1,26 +1,26 @@
 package ca.magex.crm.graphql.model;
 
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonObject;
 
 public class GraphQLResponse {
 
-	private JSONObject data;
-	private JSONArray errors = new JSONArray();
+	private JsonObject data;
+	private JsonArray errors = new JsonArray();
 	
-	public JSONObject getData() {
+	public JsonObject getData() {
 		return data;
 	}
 	
-	public void setData(JSONObject data) {
+	public void setData(JsonObject data) {
 		this.data = data;
 	}
 	
-	public JSONArray getErrors() {
+	public JsonArray getErrors() {
 		return errors;
 	}
 	
-	public void setErrors(JSONArray errors) {
+	public void setErrors(JsonArray errors) {
 		this.errors = errors;
 	}	
 }

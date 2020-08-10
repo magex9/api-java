@@ -1,8 +1,18 @@
 package ca.magex.crm.restful.controllers;
 
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.CRM_ADMIN;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.CRM_USER;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.ORG_ADMIN;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.ORG_USER;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.SYS_ADMIN;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.DEVELOPER;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.EXECS_CEO;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.EXTERNAL_CONTACT;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.EXTERNAL_EMPLOYEE;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.EXTERNAL_OWNER;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.SYS_ADMINISTRATOR;
 import static ca.magex.crm.test.CrmAsserts.ADAM;
 import static ca.magex.crm.test.CrmAsserts.BOB;
-import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
 import static ca.magex.crm.test.CrmAsserts.CA_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.CHLOE;
 import static ca.magex.crm.test.CrmAsserts.DAN;
@@ -15,70 +25,63 @@ import static ca.magex.crm.test.CrmAsserts.HOME_COMMUNICATIONS;
 import static ca.magex.crm.test.CrmAsserts.MX_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.US_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.http.HttpStatus;
 
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class UsersFilterControllerTests extends AbstractControllerTests {
 	
-	private Identifier org1;
+	private OrganizationIdentifier org1;
 	
-	private Identifier org2;
+	private OrganizationIdentifier org2;
 	
-	private Identifier adamId;
+	private UserIdentifier adamId;
 	
-	private Identifier bobId;
+	private UserIdentifier bobId;
 	
-	private Identifier chloeId;
+	private UserIdentifier chloeId;
 	
-	private Identifier danId;
+	private UserIdentifier danId;
 	
-	private Identifier elaineId;
+	private UserIdentifier elaineId;
 	
-	private Identifier francoisId;
+	private UserIdentifier francoisId;
 	
-	private Identifier systemOrgId;
-	
-	private Identifier systemPersonId;
-	
-	private Identifier systemUserId;
+	private UserIdentifier systemUserId;
 	
 	@Before
 	public void setup() {
 		initialize();
 
-		systemOrgId = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withGroup("SYS")).getSingleItem().getOrganizationId();
-		systemPersonId = crm.findPersonDetails(crm.defaultPersonsFilter()).getSingleItem().getPersonId();
-		systemUserId = crm.findUserByUsername("admin").getUserId();
+		systemUserId = getSystemUserIdentifier();
 
-		org1 = crm.createOrganization("Org 1", List.of("ORG")).getOrganizationId();
-		org2 = crm.createOrganization("Org 2", List.of("ORG")).getOrganizationId();
+		org1 = createTestOrganization("Org 1");
+		org2 = createTestOrganization("Org 2");
 		
-		adamId = crm.createUser(crm.createPerson(org1, ADAM, CA_ADDRESS, HOME_COMMUNICATIONS, BUSINESS_POSITION).getPersonId(), "adam", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
-		bobId = crm.disableUser(crm.createUser(crm.createPerson(org1, BOB, US_ADDRESS, HOME_COMMUNICATIONS, BUSINESS_POSITION).getPersonId(), "bob", List.of("ORG_USER")).getUserId()).getUserId();
-		chloeId = crm.createUser(crm.createPerson(org1, CHLOE, MX_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId(), "chloe", List.of("CRM_USER")).getUserId();
-		danId = crm.createUser(crm.createPerson(org2, DAN, EN_ADDRESS, HOME_COMMUNICATIONS, BUSINESS_POSITION).getPersonId(), "dan", List.of("CRM_USER")).getUserId();
-		elaineId = crm.createUser(crm.createPerson(org2, ELAINE, DE_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId(), "elaine", List.of("SYS_ADMIN")).getUserId();
-		crm.disablePerson(crm.findUser(elaineId).getPerson().getPersonId());
-		francoisId = crm.createUser(crm.createPerson(org2, FRANCOIS, FR_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId(), "francois", List.of("ORG_ADMIN", "CRM_USER")).getUserId();
+		adamId = crm.createUser(crm.createPerson(org1, CrmAsserts.displayName(ADAM), ADAM, CA_ADDRESS, HOME_COMMUNICATIONS, List.of(SYS_ADMINISTRATOR)).getPersonId(), "adam", List.of(ORG_ADMIN, CRM_ADMIN)).getUserId();
+		bobId = crm.disableUser(crm.createUser(crm.createPerson(org1, CrmAsserts.displayName(BOB), BOB, US_ADDRESS, HOME_COMMUNICATIONS, List.of(DEVELOPER)).getPersonId(), "bob", List.of(ORG_USER)).getUserId()).getUserId();
+		chloeId = crm.createUser(crm.createPerson(org1, CrmAsserts.displayName(CHLOE), CHLOE, MX_ADDRESS, WORK_COMMUNICATIONS, List.of(EXECS_CEO)).getPersonId(), "chloe", List.of(CRM_USER)).getUserId();
+		danId = crm.createUser(crm.createPerson(org2, CrmAsserts.displayName(DAN), DAN, EN_ADDRESS, HOME_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId(), "dan", List.of(CRM_USER)).getUserId();
+		elaineId = crm.createUser(crm.createPerson(org2, CrmAsserts.displayName(ELAINE), ELAINE, DE_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_EMPLOYEE)).getPersonId(), "elaine", List.of(SYS_ADMIN)).getUserId();
+		crm.disablePerson(crm.findUserDetails(elaineId).getPersonId());
+		francoisId = crm.createUser(crm.createPerson(org2, CrmAsserts.displayName(FRANCOIS), FRANCOIS, FR_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_CONTACT)).getPersonId(), "francois", List.of(ORG_ADMIN, CRM_USER)).getUserId();
 	}
 	
 	@Test
 	public void testOrganizationFilterDefaultRoot() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users"))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.ROOT, HttpStatus.OK);
+
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -87,59 +90,72 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(7, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(adamId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(adamId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(adamId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(adamId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("adam", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(adamId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(crm.findUser(adamId).getPerson().getOrganizationId().toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Anderson, Adam A", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
-		assertEquals("active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(1));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemUserId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals("ACTIVE", json.getArray("content").getObject(0).getString("status"));
+		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("ORG/ADMIN", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM/ADMIN", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(1).keys());
+		assertEquals(systemUserId.getCode(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(crm.findUserDetails(systemUserId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(crm.findUserDetails(systemUserId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals("admin", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("Admin, System", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
-		assertEquals("active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(4, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(1).getArray("roles").getString(1));
-		assertEquals("SYS_ACCESS", json.getArray("content").getObject(1).getArray("roles").getString(2));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(3));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(2).keys());
-		assertEquals("User", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(bobId.toString(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals("ACTIVE", json.getArray("content").getObject(1).getString("status"));
+		assertEquals(4, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("SYS/ADMIN", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
+		assertEquals("SYS/ACTUATOR", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
+		assertEquals("SYS/ACCESS", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(2));
+		assertEquals("CRM/ADMIN", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(3));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(2).keys());
+		assertEquals(bobId.getCode(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
 		assertEquals("bob", json.getArray("content").getObject(2).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(2).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(bobId).getPerson().getPersonId().toString(), json.getArray("content").getObject(2).getObject("person").getString("personId"));
-		assertEquals(crm.findUser(bobId).getPerson().getOrganizationId().toString(), json.getArray("content").getObject(2).getObject("person").getString("organizationId"));
-		assertEquals("active", json.getArray("content").getObject(2).getObject("person").getString("status"));
-		assertEquals("Robert, Bob K", json.getArray("content").getObject(2).getObject("person").getString("displayName"));
-		assertEquals("inactive", json.getArray("content").getObject(2).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(2).getArray("roles").size());
-		assertEquals("ORG_USER", json.getArray("content").getObject(2).getArray("roles").getString(0));
+		assertEquals("INACTIVE", json.getArray("content").getObject(2).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
+		assertEquals("ORG/USER", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(3).keys());
+		assertEquals(chloeId.getCode(), json.getArray("content").getObject(3).getString("userId"));
+		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(3).getString("organizationId"));
+		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(3).getString("personId"));
+		assertEquals("chloe", json.getArray("content").getObject(3).getString("username"));
+		assertEquals("ACTIVE", json.getArray("content").getObject(3).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(3).getArray("authenticationRoleIds").size());
+		assertEquals("CRM/USER", json.getArray("content").getObject(3).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(4).keys());
+		assertEquals(danId.getCode(), json.getArray("content").getObject(4).getString("userId"));
+		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(4).getString("organizationId"));
+		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(4).getString("personId"));
+		assertEquals("dan", json.getArray("content").getObject(4).getString("username"));
+		assertEquals("ACTIVE", json.getArray("content").getObject(4).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(4).getArray("authenticationRoleIds").size());
+		assertEquals("CRM/USER", json.getArray("content").getObject(4).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(5).keys());
+		assertEquals(elaineId.getCode(), json.getArray("content").getObject(5).getString("userId"));
+		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(5).getString("organizationId"));
+		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(5).getString("personId"));
+		assertEquals("elaine", json.getArray("content").getObject(5).getString("username"));
+		assertEquals("ACTIVE", json.getArray("content").getObject(5).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(5).getArray("authenticationRoleIds").size());
+		assertEquals("SYS/ADMIN", json.getArray("content").getObject(5).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(6).keys());
+		assertEquals(francoisId.getCode(), json.getArray("content").getObject(6).getString("userId"));
+		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(6).getString("organizationId"));
+		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(6).getString("personId"));
+		assertEquals("francois", json.getArray("content").getObject(6).getString("username"));
+		assertEquals("ACTIVE", json.getArray("content").getObject(6).getString("status"));
+		assertEquals(2, json.getArray("content").getObject(6).getArray("authenticationRoleIds").size());
+		assertEquals("ORG/ADMIN", json.getArray("content").getObject(6).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM/USER", json.getArray("content").getObject(6).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testOrganizationFilterDefaultEnglish() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK);
+
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -148,59 +164,72 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(7, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(adamId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(adamId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(adamId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(adamId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("adam", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(adamId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Anderson, Adam A", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(1));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemUserId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Admin", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(1).keys());
+		assertEquals(systemUserId.getCode(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(crm.findUserDetails(systemUserId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(crm.findUserDetails(systemUserId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals("admin", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("Admin, System", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(4, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(1).getArray("roles").getString(1));
-		assertEquals("SYS_ACCESS", json.getArray("content").getObject(1).getArray("roles").getString(2));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(3));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(2).keys());
-		assertEquals("User", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(bobId.toString(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(4, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("System Administrator", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
+		assertEquals("System Actuator", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
+		assertEquals("System Access", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(2));
+		assertEquals("CRM Admin", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(3));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(2).keys());
+		assertEquals(bobId.getCode(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
 		assertEquals("bob", json.getArray("content").getObject(2).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(2).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(bobId).getPerson().getPersonId().toString(), json.getArray("content").getObject(2).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(2).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(2).getObject("person").getString("status"));
-		assertEquals("Robert, Bob K", json.getArray("content").getObject(2).getObject("person").getString("displayName"));
 		assertEquals("Inactive", json.getArray("content").getObject(2).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(2).getArray("roles").size());
-		assertEquals("ORG_USER", json.getArray("content").getObject(2).getArray("roles").getString(0));
+		assertEquals(1, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Viewer", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(3).keys());
+		assertEquals(chloeId.getCode(), json.getArray("content").getObject(3).getString("userId"));
+		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(3).getString("organizationId"));
+		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(3).getString("personId"));
+		assertEquals("chloe", json.getArray("content").getObject(3).getString("username"));
+		assertEquals("Active", json.getArray("content").getObject(3).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(3).getArray("authenticationRoleIds").size());
+		assertEquals("CRM Viewer", json.getArray("content").getObject(3).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(4).keys());
+		assertEquals(danId.getCode(), json.getArray("content").getObject(4).getString("userId"));
+		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(4).getString("organizationId"));
+		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(4).getString("personId"));
+		assertEquals("dan", json.getArray("content").getObject(4).getString("username"));
+		assertEquals("Active", json.getArray("content").getObject(4).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(4).getArray("authenticationRoleIds").size());
+		assertEquals("CRM Viewer", json.getArray("content").getObject(4).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(5).keys());
+		assertEquals(elaineId.getCode(), json.getArray("content").getObject(5).getString("userId"));
+		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(5).getString("organizationId"));
+		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(5).getString("personId"));
+		assertEquals("elaine", json.getArray("content").getObject(5).getString("username"));
+		assertEquals("Active", json.getArray("content").getObject(5).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(5).getArray("authenticationRoleIds").size());
+		assertEquals("System Administrator", json.getArray("content").getObject(5).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(6).keys());
+		assertEquals(francoisId.getCode(), json.getArray("content").getObject(6).getString("userId"));
+		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(6).getString("organizationId"));
+		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(6).getString("personId"));
+		assertEquals("francois", json.getArray("content").getObject(6).getString("username"));
+		assertEquals("Active", json.getArray("content").getObject(6).getString("status"));
+		assertEquals(2, json.getArray("content").getObject(6).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", json.getArray("content").getObject(6).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Viewer", json.getArray("content").getObject(6).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testOrganizationFilterDefaultFrench() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.header("Locale", Lang.FRENCH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.FRENCH, HttpStatus.OK);
+
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -209,62 +238,72 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(7, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(adamId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(adamId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(adamId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(adamId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("adam", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(adamId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Actif", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Anderson, Adam A", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Actif", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(1));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemUserId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("Administrateur de l'organisation", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals("Administrateur GRC", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(1).keys());
+		assertEquals(systemUserId.getCode(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(crm.findUserDetails(systemUserId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(crm.findUserDetails(systemUserId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals("admin", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Actif", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("Admin, System", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
 		assertEquals("Actif", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(4, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(1).getArray("roles").getString(1));
-		assertEquals("SYS_ACCESS", json.getArray("content").getObject(1).getArray("roles").getString(2));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(3));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(2).keys());
-		assertEquals("User", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(bobId.toString(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(4, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("Adminstrator du système", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
+		assertEquals("Actuator du système", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
+		assertEquals("Access du système", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(2));
+		assertEquals("Administrateur GRC", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(3));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(2).keys());
+		assertEquals(bobId.getCode(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
 		assertEquals("bob", json.getArray("content").getObject(2).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(2).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(bobId).getPerson().getPersonId().toString(), json.getArray("content").getObject(2).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(2).getObject("person").getString("organizationId"));
-		assertEquals("Actif", json.getArray("content").getObject(2).getObject("person").getString("status"));
-		assertEquals("Robert, Bob K", json.getArray("content").getObject(2).getObject("person").getString("displayName"));
 		assertEquals("Inactif", json.getArray("content").getObject(2).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(2).getArray("roles").size());
-		assertEquals("ORG_USER", json.getArray("content").getObject(2).getArray("roles").getString(0));
+		assertEquals(1, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
+		assertEquals("Visionneuse d'organisation", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(3).keys());
+		assertEquals(chloeId.getCode(), json.getArray("content").getObject(3).getString("userId"));
+		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(3).getString("organizationId"));
+		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(3).getString("personId"));
+		assertEquals("chloe", json.getArray("content").getObject(3).getString("username"));
+		assertEquals("Actif", json.getArray("content").getObject(3).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(3).getArray("authenticationRoleIds").size());
+		assertEquals("Visionneuse GRC", json.getArray("content").getObject(3).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(4).keys());
+		assertEquals(danId.getCode(), json.getArray("content").getObject(4).getString("userId"));
+		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(4).getString("organizationId"));
+		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(4).getString("personId"));
+		assertEquals("dan", json.getArray("content").getObject(4).getString("username"));
+		assertEquals("Actif", json.getArray("content").getObject(4).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(4).getArray("authenticationRoleIds").size());
+		assertEquals("Visionneuse GRC", json.getArray("content").getObject(4).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(5).keys());
+		assertEquals(elaineId.getCode(), json.getArray("content").getObject(5).getString("userId"));
+		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(5).getString("organizationId"));
+		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(5).getString("personId"));
+		assertEquals("elaine", json.getArray("content").getObject(5).getString("username"));
+		assertEquals("Actif", json.getArray("content").getObject(5).getString("status"));
+		assertEquals(1, json.getArray("content").getObject(5).getArray("authenticationRoleIds").size());
+		assertEquals("Adminstrator du système", json.getArray("content").getObject(5).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(6).keys());
+		assertEquals(francoisId.getCode(), json.getArray("content").getObject(6).getString("userId"));
+		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(6).getString("organizationId"));
+		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(6).getString("personId"));
+		assertEquals("francois", json.getArray("content").getObject(6).getString("username"));
+		assertEquals("Actif", json.getArray("content").getObject(6).getString("status"));
+		assertEquals(2, json.getArray("content").getObject(6).getArray("authenticationRoleIds").size());
+		assertEquals("Administrateur de l'organisation", json.getArray("content").getObject(6).getArray("authenticationRoleIds").getString(0));
+		assertEquals("Visionneuse GRC", json.getArray("content").getObject(6).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testFilterByUsername() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.queryParam("username", "e")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("username", "e"));
+		
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -273,43 +312,28 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(2, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(chloeId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(0).keys());
+		assertEquals(chloeId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("chloe", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(chloeId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("CRM_USER", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(elaineId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(1).keys());
+		assertEquals(elaineId.getCode(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals("elaine", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(elaineId).getPerson().getPersonId().toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("McKay, Elaine M", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
+		assertEquals(1, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("System Administrator", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
 	}
 	
 	@Test
 	public void testFilterByRole() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.queryParam("role", "CRM_USER")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationRoleId", "CRM Viewer"));
+
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -318,57 +342,38 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(3, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(chloeId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(0).keys());
+		assertEquals(chloeId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("chloe", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(chloeId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("CRM_USER", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(danId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(1).keys());
+		assertEquals(danId.getCode(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals("dan", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(danId).getPerson().getPersonId().toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("O'Sullivan, Daniel D", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("CRM_USER", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(2).keys());
-		assertEquals("User", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(francoisId.toString(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(1, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("CRM Viewer", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(2).keys());
+		assertEquals(francoisId.getCode(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
 		assertEquals("francois", json.getArray("content").getObject(2).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(2).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(francoisId).getPerson().getPersonId().toString(), json.getArray("content").getObject(2).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(2).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(2).getObject("person").getString("status"));
-		assertEquals("Mátyás, François", json.getArray("content").getObject(2).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(2).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(2).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(2).getArray("roles").getString(0));
-		assertEquals("CRM_USER", json.getArray("content").getObject(2).getArray("roles").getString(1));
+		assertEquals(2, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Viewer", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testFilterByPersonId() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.queryParam("person", crm.findUser(francoisId).getPerson().getPersonId().toString())
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		UserDetails user = crm.findUserDetails(francoisId);
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("personId", user.getPersonId().toString()));
+				
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -377,31 +382,21 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(1, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(francoisId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(0).keys());
+		assertEquals(user.getUserId().getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(user.getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(user.getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("francois", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(francoisId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Mátyás, François", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("CRM_USER", json.getArray("content").getObject(0).getArray("roles").getString(1));
+		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testFilterByOrgId() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.queryParam("organization", org2.toString())
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("organizationId", org2.toString()));
+
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -410,59 +405,40 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(3, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(danId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(0).keys());
+		assertEquals(danId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("dan", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(danId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("O'Sullivan, Daniel D", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("CRM_USER", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(elaineId.toString(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(1).keys());
+		assertEquals(elaineId.getCode(), json.getArray("content").getObject(1).getString("userId"));
+		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
 		assertEquals("elaine", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(elaineId).getPerson().getPersonId().toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("McKay, Elaine M", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(2).keys());
-		assertEquals("User", json.getArray("content").getObject(2).getString("@type"));
-		assertEquals(francoisId.toString(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(1, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("System Administrator", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(2).keys());
+		assertEquals(francoisId.getCode(), json.getArray("content").getObject(2).getString("userId"));
+		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
+		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
 		assertEquals("francois", json.getArray("content").getObject(2).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(2).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(2).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(francoisId).getPerson().getPersonId().toString(), json.getArray("content").getObject(2).getObject("person").getString("personId"));
-		assertEquals(org2.toString(), json.getArray("content").getObject(2).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(2).getObject("person").getString("status"));
-		assertEquals("Mátyás, François", json.getArray("content").getObject(2).getObject("person").getString("displayName"));
 		assertEquals("Active", json.getArray("content").getObject(2).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(2).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(2).getArray("roles").getString(0));
-		assertEquals("CRM_USER", json.getArray("content").getObject(2).getArray("roles").getString(1));
+		assertEquals(2, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Viewer", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testFilterByInactifDesc() throws Exception {
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/users")
-			.queryParam("status", "Inactif")
-			.queryParam("order", "displayName")
-			.queryParam("direction", "desc")
-			.header("Locale", Lang.FRENCH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject json = get("/users/details", Lang.FRENCH, HttpStatus.OK, new JsonObject()
+			.with("status", "Inactif")
+			.with("order", "displayName")
+			.with("direction", "desc"));
+
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
 		assertEquals(1, json.getNumber("page"));
@@ -471,20 +447,14 @@ public class UsersFilterControllerTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(1, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(bobId.toString(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.getArray("content").getObject(0).keys());
+		assertEquals(bobId.getCode(), json.getArray("content").getObject(0).getString("userId"));
+		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
 		assertEquals("bob", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(crm.findUser(bobId).getPerson().getPersonId().toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(org1.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Actif", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Robert, Bob K", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
 		assertEquals("Inactif", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(1, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_USER", json.getArray("content").getObject(0).getArray("roles").getString(0));
-
+		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("Visionneuse d'organisation", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
 	}
 	
 }

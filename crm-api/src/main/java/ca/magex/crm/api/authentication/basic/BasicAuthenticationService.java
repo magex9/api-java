@@ -4,12 +4,14 @@ import java.util.Stack;
 
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.CrmPasswordService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
+import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -25,13 +27,14 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	
 	private CrmPersonService persons;
 	
-	private Stack<User> currentUser;
+	private Stack<UserDetails> currentUser;
 
-	public BasicAuthenticationService(CrmServices crm, CrmPasswordRepository repo) {
-		this(crm, crm, crm, new BasicPasswordService(repo));
+	public BasicAuthenticationService(CrmServices crm, CrmUserRepository userRepo, CrmPasswordRepository passwordRepo) {
+		this(crm, crm, crm, new BasicPasswordService(userRepo, passwordRepo));
 	}
 	
 	public BasicAuthenticationService(CrmOptionService options, CrmUserService users, CrmPersonService persons, CrmPasswordService passwords) {
+		this.options = options;
 		this.users = users;
 		this.persons = persons;
 		this.passwords = passwords;
@@ -46,7 +49,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	public boolean login(String username, String password) {
 		if (!passwords.verifyPassword(username, password))
 			throw new IllegalArgumentException("Invalid username or password");
-		currentUser.push(users.findUserByUsername(username));
+		currentUser.push(users.findUserDetailsByUsername(username));
 		return true;
 	}
 	
@@ -62,7 +65,7 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	}
 
 	@Override
-	public User getAuthenticatedUser() {
+	public UserDetails getAuthenticatedUser() {
 		return currentUser.peek();
 	}
 
@@ -70,7 +73,8 @@ public class BasicAuthenticationService implements CrmAuthenticationService {
 	public boolean isUserInRole(String role) {
 		if (!isAuthenticated())
 			return false;
-		return currentUser.peek().getRoles().contains(options.findOptionByCode(Type.AUTHENTICATION_ROLE, role).getOptionId());
+		Option authenticationOption = options.findOptionByCode(Type.AUTHENTICATION_ROLE, role);
+		return currentUser.peek().getAuthenticationRoleIds().contains(authenticationOption.getOptionId());
 	}
 
 	@Override

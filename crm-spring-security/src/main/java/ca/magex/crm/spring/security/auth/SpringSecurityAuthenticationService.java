@@ -4,14 +4,15 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
-@Component
 public class SpringSecurityAuthenticationService implements CrmAuthenticationService {
 
 	private CrmUserService userService;
@@ -26,32 +27,48 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 	}
 
 	@Override
-	public User getAuthenticatedUser() {
+	public UserDetails getAuthenticatedUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
+		if (auth == null || auth instanceof AnonymousAuthenticationToken) {
 			return null;
 		}
-		return userService.findUserByUsername(auth.getName());
+		return userService.findUserDetailsByUsername(auth.getName());
 	}
 
 	@Override
 	public boolean isUserInRole(String role) {
-		return getAuthenticatedUser().getRoles().contains(role);
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return false;
+		}
+		return authUser.isInRole(new AuthenticationRoleIdentifier(role));
 	}
 
 	@Override
-	public Identifier getAuthenticatedUserId() {
-		return getAuthenticatedUser().getUserId();
+	public UserIdentifier getAuthenticatedUserId() {
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getUserId();
 	}
 
 	@Override
-	public Identifier getAuthenticatedPersonId() {
-		return getAuthenticatedUser().getPerson().getPersonId();
+	public PersonIdentifier getAuthenticatedPersonId() {
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getPersonId();
 	}
 
 	@Override
-	public Identifier getAuthenticatedOrganizationId() {
-		return getAuthenticatedUser().getPerson().getOrganizationId();
+	public OrganizationIdentifier getAuthenticatedOrganizationId() {
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getOrganizationId();
 	}
 
 	@Override

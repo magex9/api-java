@@ -14,6 +14,10 @@ public class LocationIdentifier extends Identifier {
 	
 	public static final String CONTEXT = Identifier.CONTEXT + "locations/";	
 
+	public LocationIdentifier(String id) {
+		super(id);
+	}
+	
 	public LocationIdentifier(CharSequence id) {
 		super(id);
 	}

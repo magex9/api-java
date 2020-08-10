@@ -13,9 +13,8 @@ import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.repositories.CrmPersonRepository;
-import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
@@ -37,23 +36,18 @@ public class HazelcastPersonRepository implements CrmPersonRepository {
 	public HazelcastPersonRepository(XATransactionAwareHazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
 	}
-	
-	@Override
-	public Identifier generatePersonId() {
-		return CrmStore.generateId(PersonDetails.class);
-	}
 
 	@Override
 	public PersonDetails savePersonDetails(PersonDetails person) {
-		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
+		TransactionalMap<PersonIdentifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		/* persist a clone of this location, and return the original */
 		persons.put(person.getPersonId(), SerializationUtils.clone(person));
 		return person;
 	}
 
 	@Override
-	public PersonDetails findPersonDetails(Identifier personId) {
-		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
+	public PersonDetails findPersonDetails(PersonIdentifier personId) {
+		TransactionalMap<PersonIdentifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		PersonDetails personDetails = persons.get(personId);
 		if (personDetails == null) {
 			return null;
@@ -62,13 +56,18 @@ public class HazelcastPersonRepository implements CrmPersonRepository {
 	}
 
 	@Override
-	public PersonSummary findPersonSummary(Identifier personId) {
-		return findPersonDetails(personId).asSummary();
+	public PersonSummary findPersonSummary(PersonIdentifier personId) {
+		TransactionalMap<PersonIdentifier, PersonDetails> persons = hzInstance.getPersonsMap();
+		PersonDetails personDetails = persons.get(personId);
+		if (personDetails == null) {
+			return null;
+		}
+		return SerializationUtils.clone(personDetails).asSummary();
 	}
 
 	@Override
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
+		TransactionalMap<PersonIdentifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		List<PersonDetails> allMatchingPersons = persons.values(new CrmFilterPredicate<PersonSummary>(filter))
 				.stream()				
 				.sorted(filter.getComparator(paging))
@@ -78,8 +77,8 @@ public class HazelcastPersonRepository implements CrmPersonRepository {
 	}
 
 	@Override
-	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging) {
-		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
+		TransactionalMap<PersonIdentifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		List<PersonSummary> allMatchingPersons = persons.values(new CrmFilterPredicate<PersonSummary>(filter))
 				.stream()				
 				.sorted(filter.getComparator(paging))
@@ -90,8 +89,7 @@ public class HazelcastPersonRepository implements CrmPersonRepository {
 
 	@Override
 	public long countPersons(PersonsFilter filter) {
-		TransactionalMap<Identifier, PersonDetails> persons = hzInstance.getPersonsMap();
+		TransactionalMap<PersonIdentifier, PersonDetails> persons = hzInstance.getPersonsMap();
 		return persons.values(new CrmFilterPredicate<PersonSummary>(filter)).size();
 	}
-
 }

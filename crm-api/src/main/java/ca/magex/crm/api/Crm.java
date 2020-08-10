@@ -6,8 +6,10 @@ import static ca.magex.crm.api.services.CrmOrganizationService.validateOrganizat
 import static ca.magex.crm.api.services.CrmPersonService.validatePersonDetails;
 import static ca.magex.crm.api.services.CrmUserService.validateUser;
 
-import java.io.OutputStream;
 import java.util.List;
+import java.util.function.Function;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import ca.magex.crm.api.adapters.CrmPoliciesAdapter;
 import ca.magex.crm.api.common.Communication;
@@ -19,10 +21,9 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.dictionary.CrmDictionary;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
-import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.OptionsFilter;
@@ -30,14 +31,12 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.policies.CrmConfigurationPolicy;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.CrmOptionPolicy;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.CrmUserPolicy;
-import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -52,6 +51,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
@@ -59,12 +59,15 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
+@Transactional
 public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies {
 	
 	public static final long SERIAL_UID_VERSION = 1l;
 
-	private final CrmConfigurationService configurationService;
-
+	public static final String SCHEMA_BASE = "http://api.magex.ca/crm/schema";
+	
+	public static final String REST_BASE = "http://api.magex.ca/crm/rest";
+	
 	private final CrmOptionService optionService;
 	
 	private final CrmOrganizationService organizationService;
@@ -80,12 +83,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public Crm(CrmServices services, CrmPolicies policies) {
-		this(services, policies, services, policies, services, policies, services, policies,
+		this(services, policies, services, policies, services, policies,
 				services, policies, services, policies);
 	}
 	
 	public Crm(
-			CrmConfigurationService configurationService, 
 			CrmOptionService optionService,
 			CrmOrganizationService organizationService,
 			CrmLocationService locationService, 
@@ -93,8 +95,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			CrmUserService userService,
 			CrmPolicies policies) {
 		this(
-			configurationService,
-			policies,
 			optionService,
 			policies,
 			organizationService,
@@ -108,14 +108,12 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		);
 	}
 	
-	public Crm(CrmConfigurationService configurationService, CrmConfigurationPolicy configurationPolicy,
-			CrmOptionService optionService, CrmOptionPolicy optionPolicy,
+	public Crm(CrmOptionService optionService, CrmOptionPolicy optionPolicy,
 			CrmOrganizationService organizationService, CrmOrganizationPolicy organizationPolicy,
 			CrmLocationService locationService, CrmLocationPolicy locationPolicy, 
 			CrmPersonService personService, CrmPersonPolicy personPolicy,
 			CrmUserService userService, CrmUserPolicy userPolicy) {
-		super(configurationPolicy, optionPolicy, organizationPolicy, locationPolicy, personPolicy, userPolicy);
-		this.configurationService = configurationService;
+		super(optionPolicy, organizationPolicy, locationPolicy, personPolicy, userPolicy);
 		this.optionService = optionService;
 		this.organizationService = organizationService;
 		this.locationService = locationService;
@@ -123,45 +121,18 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		this.userService = userService;
 	}
 	
-	@Override
-	public boolean isInitialized() {
-		return configurationService.isInitialized();
-	}
-
-	@Override
-	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
-		if (isInitialized())
-			throw new DuplicateItemFoundException("The system is already initialized");
-		return configurationService.initializeSystem(organization, name, email, username, password); 
-	}
-	
-	@Override
-	public CrmDictionary getDictionary() {
-		return configurationService.getDictionary();
-	}
-	
-	@Override
-	public boolean reset() {
-		return configurationService.reset();
-	}
-	
-	@Override
-	public void dump(OutputStream os) {
-		configurationService.dump(os);
-	}
-
 	public OrganizationDetails validate(OrganizationDetails organization) {
 		List<Message> messages = validateOrganizationDetails(this, organization);
 		if (!messages.isEmpty())
-			throw new BadRequestException("Organization has validation errors", messages);
+			throw new BadRequestException("Validation Errors", messages);
 		return organization;
 	}
 	
-	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
+	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
 		if (!canCreateOrganization())
 			throw new PermissionDeniedException("createOrganization");
 		return organizationService.createOrganization(
-			validate(prototypeOrganization(displayName, groupIds)));
+			validate(prototypeOrganization(displayName, authenticationGroupIds, businessGroupIds)));
 	}
 
 	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
@@ -171,26 +142,32 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			validate(organizationService.findOrganizationDetails(organizationId).withDisplayName(name)).getDisplayName());
 	}
 
-	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier mainLocationId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
 		return organizationService.updateOrganizationMainLocation(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(locationId)).getMainLocationId());
+			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(mainLocationId)).getMainLocationId());
 	}
 	
-	@Override
-	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier mainContactId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
 		return organizationService.updateOrganizationMainContact(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());
+			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(mainContactId)).getMainContactId());
 	}
 	
-	public OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds) {
+	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
 		if (!canUpdateOrganization(organizationId))
-			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + groupIds);
-		return organizationService.updateOrganizationGroups(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withGroupIds(groupIds)).getGroupIds());
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + authenticationGroupIds);
+		return organizationService.updateOrganizationAuthenticationGroups(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withAuthenticationGroupIds(authenticationGroupIds)).getAuthenticationGroupIds());
+	}
+	
+	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds) {
+		if (!canUpdateOrganization(organizationId))
+			throw new PermissionDeniedException("setGroups: " + organizationId + ", " + businessGroupIds);
+		return organizationService.updateOrganizationBusinessGroups(organizationId, 
+			validate(organizationService.findOrganizationDetails(organizationId).withBusinessGroupIds(businessGroupIds)).getBusinessGroupIds());
 	}
 
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
@@ -224,11 +201,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		return organizationService.findOrganizationDetails(filter, paging);
+		return applyPolicy(organizationService.findOrganizationDetails(filter, paging), (o) -> canViewOrganization(o.getOrganizationId()));
 	}
 
 	public FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging) {
-		return organizationService.findOrganizationSummaries(filter, paging);
+		return applyPolicy(organizationService.findOrganizationSummaries(filter, paging), (o) -> canViewOrganization(o.getOrganizationId()));
 	}
 
 	public LocationDetails validate(LocationDetails location) {
@@ -288,11 +265,11 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public FilteredPage<LocationDetails> findLocationDetails(LocationsFilter filter, Paging paging) {
-		return locationService.findLocationDetails(filter, paging);
+		return applyPolicy(locationService.findLocationDetails(filter, paging), (o) -> canViewLocation(o.getLocationId()));
 	}
 	
 	public FilteredPage<LocationSummary> findLocationSummaries(LocationsFilter filter, Paging paging) {
-		return locationService.findLocationSummaries(filter, paging);
+		return applyPolicy(locationService.findLocationSummaries(filter, paging), (o) -> canViewLocation(o.getLocationId()));
 	}
 
 	public PersonDetails validate(PersonDetails person) {
@@ -302,16 +279,22 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return person;
 	}
 
-	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName name, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
 		if (!canCreatePersonForOrganization(organizationId))
 			throw new PermissionDeniedException("createPerson: " + organizationId);
-		return personService.createPerson(validate(prototypePerson(organizationId, name, address, communication, roleIds)));
+		return personService.createPerson(validate(prototypePerson(organizationId, displayName, legalName, address, communication, roleIds)));
 	}
 
-	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName name) {
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
 		if (!canUpdatePerson(personId))
-			throw new PermissionDeniedException("updatePersonName: " + personId);
-		return personService.updatePersonName(personId, validate(findPersonDetails(personId).withLegalName(name)).getLegalName());
+			throw new PermissionDeniedException("updatePersonDisplayName: " + personId);
+		return personService.updatePersonDisplayName(personId, validate(findPersonDetails(personId).withDisplayName(displayName)).getDisplayName());
+	}
+
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
+		if (!canUpdatePerson(personId))
+			throw new PermissionDeniedException("updatePersonLegalName: " + personId);
+		return personService.updatePersonLegalName(personId, validate(findPersonDetails(personId).withLegalName(legalName)).getLegalName());
 	}
 
 	public PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address) {
@@ -327,10 +310,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
-		return personService.updatePersonRoles(personId, validate(findPersonDetails(personId).withRoleIds(roleIds)).getRoleIds());
+		return personService.updatePersonBusinessRoles(personId, validate(findPersonDetails(personId).withBusinessRoleIds(roleIds)).getBusinessRoleIds());
 	}
 
 	public PersonSummary enablePerson(PersonIdentifier personId) {
@@ -364,14 +347,14 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	public FilteredPage<PersonDetails> findPersonDetails(PersonsFilter filter, Paging paging) {
-		return personService.findPersonDetails(filter, paging);
+		return applyPolicy(personService.findPersonDetails(filter, paging), (o) -> canViewPerson(o.getPersonId()));
 	}
 	
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		return personService.findPersonSummaries(filter, paging);
+		return applyPolicy(personService.findPersonSummaries(filter, paging), (o) -> canViewPerson(o.getPersonId()));
 	}
 
-	public User validate(User user) {
+	public UserDetails validate(UserDetails user) {
 		List<Message> messages = validateUser(this, user);
 		if (!messages.isEmpty())
 			throw new BadRequestException("User has validation errors", messages);
@@ -379,47 +362,71 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
+	public UserDetails createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roles) {
 		if (!canCreateUserForPerson(personId))
 			throw new PermissionDeniedException("createUser: " + personId);
 		return userService.createUser(validate(prototypeUser(personId, username, roles)));
 	}
 
 	@Override
-	public User enableUser(UserIdentifier userId) {
+	public UserSummary enableUser(UserIdentifier userId) {
 		if (!canEnableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
 		return userService.enableUser(
-			validate(userService.findUser(userId).withStatus(Status.ACTIVE)).getUserId());
+			validate(userService.findUserDetails(userId).withStatus(Status.ACTIVE)).getUserId());
 	}
 
 	@Override
-	public User disableUser(UserIdentifier userId) {
+	public UserSummary disableUser(UserIdentifier userId) {
 		if (!canDisableUser(userId))
 			throw new PermissionDeniedException("enableUser: " + userId);
 		return userService.disableUser(
-			validate(userService.findUser(userId).withStatus(Status.INACTIVE)).getUserId());
-	}
-
-	@Override
-	public User findUser(UserIdentifier userId) {
-		if (!canViewUser(userId))
-			throw new PermissionDeniedException("findUser: " + userId);
-		return userService.findUser(userId);
+			validate(userService.findUserDetails(userId).withStatus(Status.INACTIVE)).getUserId());
 	}
 	
 	@Override
-	public User findUserByUsername(String username) {
-		if (!canViewUser(username))
-			throw new PermissionDeniedException("findUserByUsername: " + username);
-		return userService.findUserByUsername(username);
+	public FilteredPage<UserSummary> findUserSummaries(UsersFilter filter, Paging paging) {
+		return applyPolicy(userService.findUserSummaries(filter, paging), (o) -> canViewUser(o.getUserId()));
+	}
+	
+	@Override
+	public FilteredPage<UserDetails> findUserDetails(UsersFilter filter, Paging paging) {
+		return applyPolicy(userService.findUserDetails(filter, paging), (o) -> canViewUser(o.getUserId()));
+	}
+	
+	@Override
+	public UserSummary findUserSummary(UserIdentifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("findUser: " + userId);
+		return userService.findUserSummary(userId);
 	}
 
 	@Override
-	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
+	public UserSummary findUserSummaryByUsername(String username) {
+		if (!canViewUser(username))
+			throw new PermissionDeniedException("findUserSummaryByUsername: " + username);
+		return userService.findUserSummaryByUsername(username);
+	}
+	
+	@Override
+	public UserDetails findUserDetails(UserIdentifier userId) {
+		if (!canViewUser(userId))
+			throw new PermissionDeniedException("findUser: " + userId);
+		return userService.findUserDetails(userId);
+	}
+	
+	@Override
+	public UserDetails findUserDetailsByUsername(String username) {
+		if (!canViewUser(username))
+			throw new PermissionDeniedException("findUserDetailsByUsername: " + username);
+		return userService.findUserDetailsByUsername(username);
+	}
+
+	@Override
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roles) {
 		if (!canUpdateUserRole(userId))
 			throw new PermissionDeniedException("setRoles: " + userId);
-		return userService.updateUserRoles(userId, validate(findUser(userId).withRoles(roles)).getRoles());
+		return userService.updateUserAuthenticationRoles(userId, validate(findUserDetails(userId).withAuthenticationRoleIds(roles)).getAuthenticationRoleIds());
 	}
 
 	@Override
@@ -440,11 +447,6 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return userService.countUsers(filter);
 	}
 
-	@Override
-	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
-		return userService.findUsers(filter, paging);
-	}
-
 	public Option validate(Option option) {
 		List<Message> messages = validateOption(this, option);
 		if (!messages.isEmpty())
@@ -456,7 +458,8 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
 		if (!canCreateOption(type))
 			throw new PermissionDeniedException("createOption: " + type.getCode() + ", " + name);
-		return optionService.createOption(validate(prototypeOption(parentId, type, name)));
+		Option parent = (parentId == null) ? null : findOption(parentId); 
+		return optionService.createOption(validate(prototypeOption(parent, type, name)));
 	}
 
 	@Override
@@ -495,10 +498,23 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 		return optionService.disableOption(
 				validate(optionService.findOption(optionId).withStatus(Status.INACTIVE)).getOptionId());
 	}
+	
+	@Override
+	public long countOptions(OptionsFilter filter) {
+		return optionService.countOptions(filter);
+	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		return optionService.findOptions(filter, paging);
+		return applyPolicy(optionService.findOptions(filter, paging), (o) -> canViewOption(o.getOptionId()));
+	}
+	
+	private <T> FilteredPage<T> applyPolicy(FilteredPage<T> results, Function<T, Boolean> policy) {
+		results.getContent().forEach(o -> {
+			if (!policy.apply(o))
+				throw new PermissionDeniedException("Cannot view results: " + results.getFilter());
+		});
+		return results;
 	}
 	
 }

@@ -2,6 +2,10 @@ package ca.magex.crm.api.crm;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -22,15 +26,20 @@ public class PersonSummary implements Serializable {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
 	/** a unique identifier for the person within the system */
+	@NotNull
 	protected PersonIdentifier personId;
 
 	/** the unique organization this person belongs to */
+	@NotNull
 	protected OrganizationIdentifier organizationId;
 
 	/** current status of the person */
+	@NotNull
 	protected Status status;
 
 	/** name of the person for display purposes */
+	@NotBlank
+	@Size(max = 60)
 	protected String displayName;
 
 	/**

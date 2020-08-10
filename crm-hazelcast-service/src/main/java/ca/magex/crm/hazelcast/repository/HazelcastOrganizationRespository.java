@@ -13,9 +13,8 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.PageBuilder;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.repositories.CrmOrganizationRepository;
-import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.hazelcast.predicate.CrmFilterPredicate;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
@@ -36,24 +35,19 @@ public class HazelcastOrganizationRespository implements CrmOrganizationReposito
 	 */
 	public HazelcastOrganizationRespository(XATransactionAwareHazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
-	}
-	
-	@Override
-	public Identifier generateOrganizationId() {
-		return CrmStore.generateId(OrganizationDetails.class);
-	}
+	}	
 		
 	@Override
 	public OrganizationDetails saveOrganizationDetails(OrganizationDetails organization) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+		TransactionalMap<OrganizationIdentifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		/* persist a clone of this organization, and return the original */
 		organizations.put(organization.getOrganizationId(), SerializationUtils.clone(organization));
 		return organization;
 	}
 	
 	@Override
-	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId) {
+		TransactionalMap<OrganizationIdentifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		OrganizationDetails orgDetails = organizations.get(organizationId);
 		if (orgDetails == null) {
 			return null;
@@ -62,13 +56,18 @@ public class HazelcastOrganizationRespository implements CrmOrganizationReposito
 	}
 	
 	@Override
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
-		return findOrganizationDetails(organizationId).asSummary();
+	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
+		TransactionalMap<OrganizationIdentifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+		OrganizationDetails orgDetails = organizations.get(organizationId);
+		if (orgDetails == null) {
+			return null;
+		}
+		return SerializationUtils.clone(orgDetails.asSummary());
 	}
 
 	@Override
 	public FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+		TransactionalMap<OrganizationIdentifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		List<OrganizationDetails> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter))
 				.stream()				
 				.sorted(filter.getComparator(paging))
@@ -79,7 +78,7 @@ public class HazelcastOrganizationRespository implements CrmOrganizationReposito
 
 	@Override
 	public FilteredPage<OrganizationSummary> findOrganizationSummary(OrganizationsFilter filter, Paging paging) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+		TransactionalMap<OrganizationIdentifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		List<OrganizationSummary> allMatchingOrgs = organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter))
 				.stream()
 				.sorted(filter.getComparator(paging))
@@ -90,7 +89,7 @@ public class HazelcastOrganizationRespository implements CrmOrganizationReposito
 
 	@Override
 	public long countOrganizations(OrganizationsFilter filter) {
-		TransactionalMap<Identifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
+		TransactionalMap<OrganizationIdentifier, OrganizationDetails> organizations = hzInstance.getOrganizationsMap();
 		return organizations.values(new CrmFilterPredicate<OrganizationDetails>(filter)).size();
 	}
 }

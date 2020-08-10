@@ -1,0 +1,42 @@
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/LocationDetails",
+  "locationId": "http://api.magex.ca/crm/rest/locations/bN2ifcbtzA",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/EEtP6HwXMo",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@en": "Active",
+    "@fr": "Actif",
+    "value": "ACTIVE"
+  },
+  "reference": "REF",
+  "displayName": "Location Name",
+  "address": {
+    "@context": "http://api.magex.ca/crm/rest/schema/common/MailingAddress",
+    "street": "123 Main St",
+    "city": "Ottawa",
+    "province": {
+      "@context": "http://api.magex.ca/crm/schema/options/Provinces",
+      "@id": "http://api.magex.ca/crm/rest/options/provinces/ca/qc",
+      "@en": "Quebec",
+      "@fr": "Québec",
+      "value": "CA/QC",
+      "code": "QC",
+      "parent": {
+        "@context": "http://api.magex.ca/crm/schema/options/Countries",
+        "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
+        "@en": "Canada",
+        "@fr": "Canada",
+        "value": "CA"
+      }
+    },
+    "country": {
+      "@context": "http://api.magex.ca/crm/schema/options/Countries",
+      "@id": "http://api.magex.ca/crm/rest/options/countries/ca",
+      "@en": "Canada",
+      "@fr": "Canada",
+      "value": "CA"
+    },
+    "postalCode": "K1K1K1"
+  }
+}

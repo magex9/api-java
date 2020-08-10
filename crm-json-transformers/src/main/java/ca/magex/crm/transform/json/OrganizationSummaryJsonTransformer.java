@@ -4,19 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.crm.OrganizationSummary;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class OrganizationSummaryJsonTransformer extends AbstractJsonTransformer<OrganizationSummary> {
 
-	public OrganizationSummaryJsonTransformer(CrmServices crm) {
+	public OrganizationSummaryJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -33,8 +30,8 @@ public class OrganizationSummaryJsonTransformer extends AbstractJsonTransformer<
 	@Override
 	public JsonObject formatLocalized(OrganizationSummary organization, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
-		formatIdentifier(pairs, "organizationId", organization, locale);
+		formatType(pairs, locale);
+		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
 		return new JsonObject(pairs);

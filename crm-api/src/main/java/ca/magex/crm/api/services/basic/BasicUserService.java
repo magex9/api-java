@@ -3,7 +3,8 @@ package ca.magex.crm.api.services.basic;
 import java.util.List;
 
 import ca.magex.crm.api.authentication.CrmPasswordService;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
@@ -26,52 +27,66 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public User createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
-		return repos.saveUser(new User(repos.generateUserId(), personId, username, Status.ACTIVE, roleIds));
+	public UserDetails createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
+		return repos.saveUserDetails(new UserDetails(repos.generateUserId(), repos.findPersonSummary(personId).getOrganizationId(), personId, username, Status.ACTIVE, roleIds));
 	}
 
 	@Override
-	public User enableUser(UserIdentifier userId) {
-		User user = repos.findUser(userId);
+	public UserSummary enableUser(UserIdentifier userId) {
+		UserDetails user = repos.findUserDetails(userId);
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUser(user.withStatus(Status.ACTIVE));
+		return repos.saveUserDetails(user.withStatus(Status.ACTIVE)).asSummary();
 	}
 
 	@Override
-	public User disableUser(UserIdentifier userId) {
-		User user = repos.findUser(userId);
+	public UserSummary disableUser(UserIdentifier userId) {
+		UserDetails user = repos.findUserDetails(userId);
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUser(user.withStatus(Status.INACTIVE));
+		return repos.saveUserDetails(user.withStatus(Status.INACTIVE)).asSummary();
 	}
 
 	@Override
-	public User findUser(UserIdentifier userId) {
-		return repos.findUser(userId);
+	public UserSummary findUserSummary(UserIdentifier userId) {
+		UserDetails user = repos.findUserDetails(userId);
+		if (user == null) {
+			return null;
+		}
+		return user.asSummary();
+	}
+
+	@Override
+	public UserSummary findUserSummaryByUsername(String username) {
+		return repos.findUserDetails(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
+	}
+
+	@Override
+	public UserDetails findUserDetails(UserIdentifier userId) {
+		return repos.findUserDetails(userId);
 	}
 	
 	@Override
-	public User findUserByUsername(String username) {
-		return repos.findUsers(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
-	}	
-
+	public UserDetails findUserDetailsByUsername(String username) {
+		return repos.findUserDetails(defaultUsersFilter().withUsername(username), UsersFilter.getDefaultPaging()).getSingleItem();
+	}
+	
 	@Override
-	public User updateUserRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> roleIds) {
-		User user = repos.findUser(userId);
+	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
+		UserDetails user = repos.findUserDetails(userId);
 		if (user == null) {
 			return null;
 		}
-		return repos.saveUser(user.withRoles(roleIds));
+		return repos.saveUserDetails(user.withAuthenticationRoleIds(authenticationRoleIds));
 	}
 
 	@Override
 	public boolean changePassword(UserIdentifier userId, String currentPassword, String newPassword) {
 		if (!isValidPasswordFormat(newPassword))
 			return false;
-		User user = repos.findUser(userId);
+		UserDetails user = repos.findUserDetails(userId);
 		if (passwords.verifyPassword(user.getUsername(), currentPassword)) {
 			passwords.updatePassword(user.getUsername(), passwords.encodePassword(newPassword));
 			return true;
@@ -83,7 +98,7 @@ public class BasicUserService implements CrmUserService {
 
 	@Override
 	public String resetPassword(UserIdentifier userId) {
-		return passwords.generateTemporaryPassword(repos.findUser(userId).getUsername());
+		return passwords.generateTemporaryPassword(repos.findUserDetails(userId).getUsername());
 	}
 
 	@Override
@@ -92,7 +107,12 @@ public class BasicUserService implements CrmUserService {
 	}
 
 	@Override
-	public FilteredPage<User> findUsers(UsersFilter filter, Paging paging) {
-		return repos.findUsers(filter, paging);
+	public FilteredPage<UserSummary> findUserSummaries(UsersFilter filter, Paging paging) {
+		return repos.findUserSummaries(filter, paging);
 	}	
+
+	@Override
+	public FilteredPage<UserDetails> findUserDetails(UsersFilter filter, Paging paging) {
+		return repos.findUserDetails(filter, paging);
+	}
 }

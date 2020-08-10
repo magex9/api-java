@@ -1,6 +1,8 @@
 package ca.magex.json.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,12 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-
-import ca.magex.json.model.JsonArray;
-import ca.magex.json.model.JsonElement;
-import ca.magex.json.model.JsonFormatter;
-import ca.magex.json.model.JsonParser;
-import ca.magex.json.model.JsonText;
 
 public class JsonArrayTest {
 

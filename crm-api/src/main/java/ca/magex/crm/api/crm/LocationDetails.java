@@ -1,5 +1,7 @@
 package ca.magex.crm.api.crm;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -20,6 +22,7 @@ public class LocationDetails extends LocationSummary {
 	private static final long serialVersionUID = 1L;
 	
 	/** the address associated with this location */
+	@NotNull
 	private MailingAddress address;
 	
 	/**

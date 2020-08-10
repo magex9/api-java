@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Province Option Identification
@@ -21,4 +22,10 @@ public class ProvinceIdentifier extends OptionIdentifier {
 	public String getContext() {
 		return ProvinceIdentifier.CONTEXT;
 	}
+	
+	@Override
+	public Type getType() {
+		return Type.PROVINCE;
+	}
+	
 }

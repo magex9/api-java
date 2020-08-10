@@ -10,16 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ca.magex.crm.api.CrmProfiles;
-
 @Component
-@Profile({CrmProfiles.AUTH_EMBEDDED_JWT, CrmProfiles.AUTH_REMOTE_JWT})
 public class JwtRequestFilter extends OncePerRequestFilter {
 
 	@Autowired private JwtAuthDetailsService jwtAuthDetailsService;
@@ -50,11 +46,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 				jwtToken = requestTokenHeader.substring(7);
 				try {
-					JwtAuthenticationToken authenticationToken = jwtAuthDetailsService.getJwtAuthenticationTokenForUsername(jwtToken);
+					JwtAuthenticationToken authenticationToken = jwtAuthDetailsService.buildAuthenticationToken(jwtToken);
 					/* set the authentication for spring */
 					SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				} catch (Exception e) {
-					logger.warn("Cannot parse jwt token: " + jwtToken, e);
+					logger.warn("Cannot parse jwt token '" + jwtToken + "', " + e.getMessage());
 				}
 			} else {
 				logger.debug("Authorization is not JWT");

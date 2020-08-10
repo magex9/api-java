@@ -1,0 +1,11 @@
+{
+  "userId": "R61MD142WM",
+  "organizationId": "gGe79u4rWg",
+  "personId": "Q69WVGMAce",
+  "username": "admin",
+  "status": "Active",
+  "authenticationRoleIds": [
+    "CRM Admin",
+    "Organization Admin"
+  ]
+}

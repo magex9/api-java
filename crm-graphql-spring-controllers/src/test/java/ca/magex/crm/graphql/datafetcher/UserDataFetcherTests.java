@@ -10,139 +10,158 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.crm.graphql.util.MapBuilder;
 
 public class UserDataFetcherTests extends AbstractDataFetcherTests {
 
-	private String orgId;
-	private String personId;
+	private OrganizationIdentifier orgId;
+	private PersonIdentifier managerId;
 	
 	@Before
-	public void createGroup() throws Exception {
-		JSONObject group = execute(
-				"createGroup",
-				"mutation { createGroup(code: %s, englishName: %s, frenchName: %s) { groupId } }",
-				"DEV",
-				"developers",
-				"developeurs");
-
-		execute(
-				"createRole",
-				"mutation { createRole(groupId: %s, code: %s, englishName: %s, frenchName: %s) { roleId code groupId status englishName frenchName } }",
-				group.getString("groupId"),
-				"ADM",
-				"administrator",
-				"administrateur");
-		
-		execute(
-				"createRole",
-				"mutation { createRole(groupId: %s, code: %s, englishName: %s, frenchName: %s) { roleId code groupId status englishName frenchName } }",
-				group.getString("groupId"),
-				"USR",
-				"user",
-				"utilisateur");
-		
-		JSONObject org = execute(
+	public void setup() throws Exception {
+		JSONObject johnnuy = executeWithVariables(
 				"createOrganization",
-				"mutation { createOrganization(displayName: %s, groups: %s) { organizationId } }",
-				"Johnnuy",
-				List.of("DEV"));
-		orgId = org.getString("organizationId");
+				"mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " + 
+						"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " + 
+							"organizationId } }",
+				new MapBuilder()
+					.withEntry("displayName", "Johnnuy")
+					.withEntry("authenticationGroupIds", List.of("SYS", "CRM"))
+					.withEntry("businessGroupIds", List.of("IMIT", "IMIT/DEV")).build()
+				);
+		orgId = new OrganizationIdentifier(johnnuy.getString("organizationId"));
 		
-		JSONObject person = execute(
+		JSONObject manager = execute(
 				"createPerson",
-				"mutation { createPerson(organizationId: %s, name: { "
-				+ "firstName: %s, middleName: %s, lastName: %s, salutation: %s}, address: { "
-				+ "street: %s, city: %s, province: %s, countryCode: %s, postalCode: %s }, communication: {"
-				+ "jobTitle: %s, language: %s, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, position: {"
-				+ "sector: %s, unit: %s, classification: %s }) { personId organizationId status displayName legalName { firstName middleName lastName salutation } address { street city province country postalCode } communication { jobTitle language email homePhone { number extension } faxNumber } position { sector unit classification} } }",
+				"mutation { createPerson(organizationId: %s, " + 
+						"displayName: %s, " +
+						"legalName: {firstName: %s, middleName: %s, lastName: %s, salutation: {identifier: %s} }, " + 
+						"address: {street: %s, city: %s, province: {identifier: %s}, country: {identifier: %s}, postalCode: %s }, " + 
+						"communication: {jobTitle: %s, language: {identifier: %s}, email: %s, phoneNumber: %s, phoneExtension: %s, faxNumber: %s }, " +
+						"businessRoleIds: %s ) " + 
+						"{ personId } }",
 				orgId,
-				"Jonny", "Michael", "Bigford", "3",
-				"99 Blue Jays Way", "Toronto", "Ontario", "CA", "L9K5I9",
-				"Developer", "English", "jonny.bigford@johnnuy.org", "6135551212", "97", "6135551213",
-				"IT", "Solutions", "Senior Developer");
-		personId = person.getString("personId");
+				"Jonny Bigford", 
+				"Jonny", "Michael", "Bigford", "MR",
+				"99 Blue Jays Way", "Toronto", "CA/ON", "CA", "L9K5I9",
+				"Developer", "EN", "jonny.bigford@johnnuy.org", "6135551212", "97", "613-555-1213",
+				List.of("IMIT/DEV/MANAGER"));
+		managerId = new PersonIdentifier(manager.getString("personId"));
 	}
 	
 	@Test
 	public void userDataFetching() throws Exception {
 		JSONObject user = execute(
 				"createUser",
-				"mutation { createUser(personId: %s, username: %s, roles: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
-				personId,
+				"mutation { createUser(personId: %s, username: %s, authenticationRoleIds: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
+				managerId,
 				"jbigford",
-				Arrays.asList("ADM", "USR"));
-		Identifier userId = new Identifier(user.getString("userId"));
+				Arrays.asList("SYS/ADMIN", "CRM/ADMIN"));
+		UserIdentifier userId = new UserIdentifier(user.getString("userId"));
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		
 		/* activate active user */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, status: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				"active");
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		/* inactivate active user */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, status: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				"inactive");
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("INACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 	
 		/* inactivate inactive user */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, status: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				"inactive");
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("INACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		/* activate inactive user */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, status: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
 				"active");
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		/* pass invalid status */
 		try {
 			execute(
 					"updateUser",
-					"mutation { updateUser(userId: %s, status: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+					"mutation { updateUser(userId: %s, status: %s) { " + 
+							"userId } }",
 					userId,
 					"suspended");
 			Assert.fail("Should have failed on bad status");
@@ -153,69 +172,95 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* update roles - no change */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, roles: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
-				Arrays.asList("ADM", "USR"));
+				Arrays.asList("SYS/ADMIN", "CRM/ADMIN"));
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		/* update roles - remove role */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, roles: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
-				Arrays.asList("ADM"));
+				Arrays.asList("SYS/ADMIN"));
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(1, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));		
+		Assert.assertEquals(1, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));		
 		
 		/* update roles - change role */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, roles: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
-				Arrays.asList("USR"));
+				Arrays.asList("CRM/ADMIN"));
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(1, user.getJSONArray("roles").length());
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
+		Assert.assertEquals(1, user.getJSONArray("authenticationRoles").length());		
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
 		
 		/* update roles - reset roles */
 		user = execute(
 				"updateUser",
-				"mutation { updateUser(userId: %s, roles: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"mutation { updateUser(userId: %s, authenticationRoleIds: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId,
-				Arrays.asList("ADM", "USR"));
+				Arrays.asList("SYS/ADMIN", "CRM/ADMIN"));
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		/* find user by id */
 		user = execute(
 				"findUser",
-				"{ findUser(userId: %s) { userId username status roles { englishName } person { displayName communication { email } } } }",
+				"{ findUser(userId: %s) { " + 
+						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
 				userId);
+		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Bigford, Jonny Michael", user.getJSONObject("person").getString("displayName"));
+		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
 		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("roles").length());
-		Assert.assertEquals("administrator", user.getJSONArray("roles").getJSONObject(0).getString("englishName"));
-		Assert.assertEquals("user", user.getJSONArray("roles").getJSONObject(1).getString("englishName"));
+		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
+		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
+		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
+		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
+		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 		
 		/* count users */
 		int userCount = execute(
@@ -233,11 +278,11 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		/* find users paging */
 		JSONObject users = execute(
 				"findUsers",
-				"{ findUsers(filter: {organizationId: %s, personId: %s, status: %s, role: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { userId status username } } }",
+				"{ findUsers(filter: {organizationId: %s, personId: %s, status: %s, authenticationRoleId: %s} paging: {pageNumber: %d, pageSize: %d, sortField: [%s], sortOrder: [%s]}) { number numberOfElements size totalPages totalElements content { userId status username } } }",
 				orgId,
-				personId,				
+				managerId,				
 				"active",
-				"USR",
+				"SYS/ADMIN",
 				1,
 				5,
 				"englishName",

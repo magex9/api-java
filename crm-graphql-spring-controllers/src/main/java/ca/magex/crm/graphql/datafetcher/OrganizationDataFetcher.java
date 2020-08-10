@@ -1,6 +1,7 @@
 package ca.magex.crm.graphql.datafetcher;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -8,11 +9,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
 
@@ -21,12 +29,37 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
+	public DataFetcher<OrganizationDetails> byUser() {
+		return (environment) -> {
+			logger.info("Entering ByUser@" + OrganizationDataFetcher.class.getSimpleName());
+			UserDetails user = environment.getSource();
+			return crm.findOrganizationDetails(user.getOrganizationId());
+		};
+	}
+	
+	public DataFetcher<OrganizationDetails> byLocation() {
+		return (environment) -> {
+			logger.info("Entering ByUser@" + OrganizationDataFetcher.class.getSimpleName());
+			LocationDetails locationDetails = environment.getSource();
+			return crm.findOrganizationDetails(locationDetails.getOrganizationId());
+		};
+	}
+	
+	public DataFetcher<OrganizationDetails> byPerson() {
+		return (environment) -> {
+			logger.info("Entering byPerson@" + OrganizationDataFetcher.class.getSimpleName());
+			PersonDetails personDetails = environment.getSource();
+			return crm.findOrganizationDetails(personDetails.getOrganizationId());
+		};
+	}
+	
 	public DataFetcher<OrganizationDetails> createOrganization() {
 		return (environment) -> {
-			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());
-			String organizationDisplayName = environment.getArgument("displayName");
-			List<String> groups = environment.getArgument("groups");
-			return crm.createOrganization(organizationDisplayName, groups);
+			logger.info("Entering createOrganization@" + OrganizationDataFetcher.class.getSimpleName());			
+			return crm.createOrganization(
+					environment.getArgument("displayName"), 
+					extractAuthenticationGroups(environment, "authenticationGroupIds"),
+					extractBusinessGroups(environment, "businessGroupIds"));
 		};
 	}
 
@@ -34,7 +67,20 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 		return (environment) -> {
 			logger.info("Entering findOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			String id = environment.getArgument("organizationId");
-			return crm.findOrganizationDetails(new Identifier(id));
+			return crm.findOrganizationDetails(new OrganizationIdentifier(id));
+		};
+	}
+	
+	public DataFetcher<Map<String,Boolean>> findOrganizationActions() {
+		return (environment) -> {
+			logger.info("Entering findOrganizationActions@" + OrganizationDataFetcher.class.getSimpleName());
+			OrganizationDetails source = environment.getSource();
+			return Map.of(
+					"modify", crm.canUpdateOrganization(source.getOrganizationId()),
+					"enable", crm.canEnableOrganization(source.getOrganizationId()),
+					"disable", crm.canDisableOrganization(source.getOrganizationId()),
+					"createLocation", crm.canCreateLocationForOrganization(source.getOrganizationId()),
+					"createPerson", crm.canCreatePersonForOrganization(source.getOrganizationId()));
 		};
 	}
 
@@ -57,7 +103,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 	public DataFetcher<OrganizationDetails> updateOrganization() {
 		return (environment) -> {
 			logger.info("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
-			Identifier organizationId = new Identifier((String) environment.getArgument("organizationId"));
+			OrganizationIdentifier organizationId = new OrganizationIdentifier((String) environment.getArgument("organizationId"));
 			OrganizationDetails org = crm.findOrganizationDetails(organizationId);
 			/* update status first because the other updates have validation based on status */
 			if (environment.getArgument("status") != null) {
@@ -86,21 +132,27 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 				}
 			}
 			if (environment.getArgument("mainLocationId") != null) {
-				Identifier newMainLocationId = new Identifier((String) environment.getArgument("mainLocationId"));
+				LocationIdentifier newMainLocationId = new LocationIdentifier((String) environment.getArgument("mainLocationId"));
 				if (org.getMainLocationId() == null || !org.getMainLocationId().equals(newMainLocationId)) {
 					org = crm.updateOrganizationMainLocation(organizationId, newMainLocationId);
 				}
 			}
 			if (environment.getArgument("mainContactId") != null) {
-				Identifier newMainContactId = new Identifier((String) environment.getArgument("mainContactId"));
+				PersonIdentifier newMainContactId = new PersonIdentifier((String) environment.getArgument("mainContactId"));
 				if (org.getMainContactId() == null || !org.getMainContactId().equals(newMainContactId)) {
 					org = crm.updateOrganizationMainContact(organizationId, newMainContactId);
 				}
+			}			
+			if (environment.getArgument("authenticationGroupIds") != null) {
+				List<AuthenticationGroupIdentifier> newGroups = extractAuthenticationGroups(environment, "authenticationGroupIds");
+				if (!org.getAuthenticationGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getAuthenticationGroupIds())) {
+					org = crm.updateOrganizationAuthenticationGroups(organizationId, newGroups);
+				}
 			}
-			if (environment.getArgument("groups") != null) {
-				List<String> newGroups = environment.getArgument("groups");
-				if (!org.getGroups().containsAll(newGroups) || !newGroups.containsAll(org.getGroups())) {
-					org = crm.updateOrganizationGroups(organizationId, newGroups);
+			if (environment.getArgument("businessGroupIds") != null) {
+				List<BusinessGroupIdentifier> newGroups = extractBusinessGroups(environment, "businessGroupIds");
+				if (!org.getBusinessGroupIds().containsAll(newGroups) || !newGroups.containsAll(org.getBusinessGroupIds())) {
+					org = crm.updateOrganizationBusinessGroups(organizationId, newGroups);
 				}
 			}
 

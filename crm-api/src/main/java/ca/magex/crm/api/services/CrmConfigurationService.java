@@ -3,29 +3,27 @@ package ca.magex.crm.api.services;
 import java.io.OutputStream;
 
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.dictionary.CrmDictionary;
-import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
 public interface CrmConfigurationService {
 
 	boolean isInitialized();
 
-	User initializeSystem(String organization, PersonName name, String email, String username, String password);
-	
-	CrmDictionary getDictionary();
+	boolean initializeSystem(String organization, PersonName name, String email, String username, String password);
 	
 	boolean reset();
 	
 	void dump(OutputStream os);
-
 	
 	/**
 	 * Default initialization of the system into the given repositories
@@ -38,6 +36,7 @@ public interface CrmConfigurationService {
 		createOrgGroup(repos);
 		createStatusLookup(repos);
 		createLocaleLookup(repos);
+		createMessageTypeLookup(repos);
 		createLanguageLookup(repos);
 		createSalutationsLookup(repos);
 		createCountriesLookup(repos);
@@ -45,15 +44,20 @@ public interface CrmConfigurationService {
 		createAmericanStates(repos);
 		createMexicanProvinces(repos);
 		createBusinessPositions(repos);
+		createValidationPhrases(repos);
 	}
 	
 	default OptionIdentifier createRootOption(CrmRepositories repos, Type type, Boolean mutable, Localized name) {
-		return createNestedOption(repos, null, type, mutable, name);
+		OptionIdentifier optionId = repos.generateForType(type, name.getCode());
+		return repos.saveOption(new Option(optionId, null, type, Status.ACTIVE, mutable, name)).getOptionId();
 	}
 	
 	default OptionIdentifier createNestedOption(CrmRepositories repos, OptionIdentifier parentId, Type type, Boolean mutable, Localized name) {
-		OptionIdentifier optionId = repos.generateForType(type, parentId == null ? name.getCode() : repos.findOption(parentId).getCode() + "/" + name.getCode());
-		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, mutable, name)).getOptionId();
+		Option parent = repos.findOption(parentId);
+		/* update the code to prepend the parent code */
+		Localized updatedName = name.withCode(parent.getCode() + "/" + name.getCode());
+		OptionIdentifier optionId = repos.generateForType(type, updatedName.getCode());
+		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, mutable, updatedName)).getOptionId();
 	}
 	
 	/**
@@ -65,7 +69,7 @@ public interface CrmConfigurationService {
 	 * </ul>
 	 */
 	default void createSysGroup(CrmRepositories repos) {
-		OptionIdentifier sysGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized("SYS", "System", "Système"));
+		OptionIdentifier sysGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized(AuthenticationGroupIdentifier.SYS.getCode(), "System", "Système"));
 		createNestedOption(repos, sysGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ADMIN", "System Administrator", "Adminstrator du système"));
 		createNestedOption(repos, sysGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ACTUATOR", "System Actuator", "Actuator du système"));
 		createNestedOption(repos, sysGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ACCESS", "System Access", "Access du système"));
@@ -79,7 +83,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createAppGroup(CrmRepositories repos) {
-		OptionIdentifier appGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized("APP", "Application", "Application"));
+		OptionIdentifier appGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized(AuthenticationGroupIdentifier.APP.getCode(), "Application", "Application"));
 		createNestedOption(repos, appGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("AUTHENTICATOR", "Authorization Requestor", "Demandeur d'Autorisation"));
 	}
 	
@@ -92,7 +96,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCrmGroup(CrmRepositories repos) {
-		OptionIdentifier crmGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized("CRM", "Customer Relationship Management", "Gestion de la relation client"));
+		OptionIdentifier crmGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.IMMUTABLE, new Localized(AuthenticationGroupIdentifier.CRM.getCode(), "Customer Relationship Management", "Gestion de la relation client"));
 		createNestedOption(repos, crmGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("ADMIN", "CRM Admin", "Administrateur GRC"));
 		createNestedOption(repos, crmGroupId, Type.AUTHENTICATION_ROLE, Option.IMMUTABLE, new Localized("USER", "CRM Viewer", "Visionneuse GRC"));
 	}
@@ -106,9 +110,9 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createOrgGroup(CrmRepositories repos) {
-		OptionIdentifier orgGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.MUTABLE, new Localized("ORG", "Organization", "Organisation"));
-		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("ADMIN", "Organization Admin", "Administrateur GRC"));
-		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("USER", "Organization Viewer", "Visionneuse GRC"));
+		OptionIdentifier orgGroupId = createRootOption(repos, Type.AUTHENTICATION_GROUP, Option.MUTABLE, new Localized(AuthenticationGroupIdentifier.ORG.getCode(), "Organization", "Organisation"));
+		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("ADMIN", "Organization Admin", "Administrateur de l'organisation"));
+		createNestedOption(repos, orgGroupId, Type.AUTHENTICATION_ROLE, Option.MUTABLE, new Localized("USER", "Organization Viewer", "Visionneuse d'organisation"));
 	}
 
 	/**
@@ -132,12 +136,24 @@ public interface CrmConfigurationService {
 	}
 	
 	/**
+	 * Create a default set of message types that are immutable.
+	 * @param repos
+	 */
+	default void createMessageTypeLookup(CrmRepositories repos) {
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.ERROR.getCode(), "Error", "Erreur"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.WARN.getCode(), "Warning", "Avertissement"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.INFO.getCode(), "Notification", "Notification"));
+		createRootOption(repos, Type.MESSAGE_TYPE, Option.MUTABLE, new Localized(MessageTypeIdentifier.SUCCESS.getCode(), "Success", "Succès"));
+	}
+	
+	/**
 	 * Create a default set of statuses that are immutable.
 	 * @param repos
 	 */
 	default void createLanguageLookup(CrmRepositories repos) {
 		createRootOption(repos, Type.LANGUAGE, Option.MUTABLE, Lang.NAMES.get(Lang.ROOT));
 		createRootOption(repos, Type.LANGUAGE, Option.MUTABLE, Lang.NAMES.get(Lang.ENGLISH));
+		createRootOption(repos, Type.LANGUAGE, Option.MUTABLE, Lang.NAMES.get(Lang.FRENCH));
 	}
 	
 	/**
@@ -145,7 +161,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createBusinessPositions(CrmRepositories repos) {
-		OptionIdentifier execsId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("EXECS", "Executives", "Cadres"));
+		OptionIdentifier execsId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.EXECS.getCode(), "Executives", "Cadres"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CEO", "Chief Executive Officer", "Directeur général"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CFO", "Chief Financial Officer", "Directeur financier"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("COO", "Chief Operations Officer", "Directeur des opérations"));
@@ -154,7 +170,7 @@ public interface CrmConfigurationService {
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CTO", "Chief Technology Officer", "Directeur de la technologie"));
 		createNestedOption(repos, execsId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CSO", "Chief Security Officer", "Directeur de sécurité"));
 
-		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("IMIT", "IM/IT", "GI / TI"));
+		OptionIdentifier imitId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.IMIT.getCode(), "IM/IT", "GI / TI"));
 		createNestedOption(repos, imitId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("DIRECTOR", "Director", "Réalisateur"));
 
 		OptionIdentifier opsId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("OPS", "Operations", "Operations"));
@@ -168,7 +184,7 @@ public interface CrmConfigurationService {
 		createNestedOption(repos, infraId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe"));
 		createNestedOption(repos, infraId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("ADMIN", "System Administrator", "Administrateur du système"));
 		
-		OptionIdentifier devId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("DEV", "Application Development", "Directeur général"));
+		OptionIdentifier devId = createNestedOption(repos, imitId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("DEV", "Application Development", "Développement d'applications"));
 		createNestedOption(repos, devId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("MANAGER", "Manager", "Gestionnaire"));
 
 		OptionIdentifier dmId = createNestedOption(repos, devId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("DM", "Data Management", "Gestion de données"));
@@ -182,6 +198,38 @@ public interface CrmConfigurationService {
 		OptionIdentifier qaId = createNestedOption(repos, devId, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized("QA", "Quality Assurance", "Assurance qualité"));
 		createNestedOption(repos, qaId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TEAMLEAD", "Team Lead", "Chef d'équipe"));
 		createNestedOption(repos, qaId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("TESTER", "Quality Tester", "Testeur de qualité"));
+
+		OptionIdentifier externalId = createRootOption(repos, Type.BUSINESS_GROUP, Option.MUTABLE, new Localized(BusinessGroupIdentifier.EXTERNAL.getCode(), "External", "Externe"));
+		createNestedOption(repos, externalId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("OWNER", "Owner", "Propriétaire"));
+		createNestedOption(repos, externalId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("EMPLOYEE", "Employee", "Employé"));
+		createNestedOption(repos, externalId, Type.BUSINESS_ROLE, Option.MUTABLE, new Localized("CONTACT", "Contact", "Contact"));
+	}
+	
+	/**
+	 * Create a default set of validation phrases
+	 * @param repos
+	 */
+	default void createValidationPhrases(CrmRepositories repos) {
+		OptionIdentifier validationId = createRootOption(repos, Type.DICTIONARY, Option.IMMUTABLE, new Localized("VALIDATION", "Validation Messages", "Messages de validation"));
+
+		OptionIdentifier fieldValidationId = createNestedOption(repos, validationId, Type.DICTIONARY, Option.IMMUTABLE, new Localized("FIELD", "Field Validation", "Validation sur le terrain"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("REQUIRED", "Field is required", "Champ requis"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("FORBIDDEN", "Field is forbidden", "Le champ est interdit"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("INVALID", "Field is invalid", "Le champ n'est pas valide"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("FORMAT", "Format is invalid", "Le format n'est pas valide"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("MINLENGTH", "Field too short", "Champ trop court"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("MAXLENGTH", "Field too long", "Champ trop long"));
+		createNestedOption(repos, fieldValidationId, Type.PHRASE, true, new Localized("INACTIVE", "Field is inactive", "Champ est inactive"));
+
+		OptionIdentifier statusValidationId = createNestedOption(repos, validationId, Type.DICTIONARY, Option.IMMUTABLE, new Localized("STATUS", "Status Validation", "Validation du statut"));
+		createNestedOption(repos, statusValidationId, Type.PHRASE, true, new Localized("PENDING", "Entity should not have a pending status with an identifier", "L'entité ne doit pas avoir de statut en attente avec un identifiant"));
+
+		OptionIdentifier optionValidationId = createNestedOption(repos, validationId, Type.DICTIONARY, Option.IMMUTABLE, new Localized("OPTION", "Option Validation", "Validation des options"));
+		createNestedOption(repos, optionValidationId, Type.PHRASE, true, new Localized("IMMUTABLE", "Option is immutable", "L'option est immuable"));
+		createNestedOption(repos, optionValidationId, Type.PHRASE, true, new Localized("DUPLICATE", "Option is a duplicate", "L'option est un doublon"));
+		createNestedOption(repos, optionValidationId, Type.PHRASE, true, new Localized("INVALID", "Option is an invalid type", "L'option est un type non valide"));
+
+		
 	}
 	
 	/**
@@ -213,7 +261,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createCanadianProvinces(CrmRepositories repos) {
-		Option ca = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("CA"), OptionsFilter.getDefaultPaging()).getSingleItem();
+		Option ca = repos.findOption(new CountryIdentifier("CA"));
 		createNestedOption(repos, ca.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AB", "Alberta", "Alberta"));
 		createNestedOption(repos, ca.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("BC", "British Columbia", "Colombie-Britannique"));
 		createNestedOption(repos, ca.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("MB", "Manitoba", "Manitoba"));
@@ -234,7 +282,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createAmericanStates(CrmRepositories repos) {
-		Option us = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("US"), OptionsFilter.getDefaultPaging()).getSingleItem();
+		Option us = repos.findOption(new CountryIdentifier("US"));
 		createNestedOption(repos, us.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AK", "Alaska", "Alaska"));
 		createNestedOption(repos, us.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AL", "Alabama", "Alabama"));
 		createNestedOption(repos, us.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AR", "Arkansas", "Arkansas"));
@@ -293,7 +341,7 @@ public interface CrmConfigurationService {
 	 * @param repos
 	 */
 	default void createMexicanProvinces(CrmRepositories repos) {
-		Option mx = repos.findOptions(new OptionsFilter().withType(Type.COUNTRY).withOptionCode("MX"), OptionsFilter.getDefaultPaging()).getSingleItem();
+		Option mx = repos.findOption(new CountryIdentifier("MX"));
 		createNestedOption(repos, mx.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("AG", "Aguascalientas", "Aguascalientas"));
 		createNestedOption(repos, mx.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("BA", "Baja California (North)", "Baja California (Nord)"));
 		createNestedOption(repos, mx.getOptionId(), Type.PROVINCE, Option.MUTABLE, new Localized("BJ", "Baja California (South)", "Baja California (Sud)"));

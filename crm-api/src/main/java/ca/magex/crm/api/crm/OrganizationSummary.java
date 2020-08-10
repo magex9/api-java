@@ -2,6 +2,10 @@ package ca.magex.crm.api.crm;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -21,12 +25,16 @@ public class OrganizationSummary implements Serializable {
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
 	/** a unique identifier for the organization within the system */
+	@NotNull
 	protected OrganizationIdentifier organizationId;
 	
 	/** current status of the organization */
+	@NotNull
 	protected Status status;
 	
 	/** name of the organization for display purposes */
+	@NotBlank
+	@Size(max = 60)
 	protected String displayName;
 	
 	/**
@@ -36,13 +44,12 @@ public class OrganizationSummary implements Serializable {
 	 * @param status
 	 * @param displayName
 	 */
-	public OrganizationSummary(OrganizationIdentifier organizationId, Status status, String displayName) {
-		super();
+	public OrganizationSummary(OrganizationIdentifier organizationId, Status status, String displayName) {		
 		this.organizationId = organizationId;
 		this.status = status;
 		this.displayName = displayName;
 	}
-
+	
 	/**
 	 * returns the unique identifier for the organization
 	 * @return

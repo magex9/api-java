@@ -36,6 +36,16 @@ public class Localized implements Serializable {
 		this.text = text;
 	}
 	
+	public boolean isEmpty() {
+		/* return false as soon as one entry is not blank */
+		for (Map.Entry<Locale, String> entry : text.entrySet()) {
+			if (StringUtils.isNotBlank(entry.getValue())) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public String getCode() {
 		return text.get(Lang.ROOT);
 	}
@@ -50,6 +60,18 @@ public class Localized implements Serializable {
 
 	public String get(Locale locale) {
 		return text.get(locale);
+	}	
+	
+	public Localized withCode(String code) {		
+		return new Localized(code, getEnglishName(), getFrenchName());
+	}
+	
+	public Localized withEnglishName(String englishName) {
+		return new Localized(getCode(), englishName, getFrenchName());
+	}
+	
+	public Localized withFrenchName(String frenchName) {
+		return new Localized(getCode(), getEnglishName(), frenchName);
 	}
 	
 	@Override

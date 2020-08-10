@@ -10,9 +10,12 @@ import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.DictionaryIdentifier;
 import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.LocaleIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.crm.api.system.id.StatusIdentifier;
@@ -29,6 +32,12 @@ public interface CrmOptionRepository {
 			return generateBusinessGroupId(lookup);
 		case BUSINESS_ROLE:
 			return generateBusinessRoleId(lookup);
+		case DICTIONARY:
+			return generateDictionaryId(lookup);
+		case PHRASE:
+			return generatePhraseId(lookup);
+		case MESSAGE_TYPE:
+			return generateMessageTypeId(lookup);
 		case COUNTRY:
 			return generateCountryId(lookup);
 		case PROVINCE:
@@ -46,52 +55,64 @@ public interface CrmOptionRepository {
 		}
 	}
 	
-	default AuthenticationGroupIdentifier generateAuthenticationGroupId(String lookup) {
-		return new AuthenticationGroupIdentifier(lookup);
+	default AuthenticationGroupIdentifier generateAuthenticationGroupId(String optionId) {
+		return new AuthenticationGroupIdentifier(optionId);
 	}
 	
-	default AuthenticationRoleIdentifier generateAuthenticationRoleId(String lookup) {
-		return new AuthenticationRoleIdentifier(lookup);
+	default AuthenticationRoleIdentifier generateAuthenticationRoleId(String optionId) {
+		return new AuthenticationRoleIdentifier(optionId);
 	}
 	
-	default BusinessGroupIdentifier generateBusinessGroupId(String lookup) {
-		return new BusinessGroupIdentifier(lookup);
+	default BusinessGroupIdentifier generateBusinessGroupId(String optionId) {
+		return new BusinessGroupIdentifier(optionId);
 	}
 	
-	default BusinessRoleIdentifier generateBusinessRoleId(String lookup) {
-		return new BusinessRoleIdentifier(lookup);
+	default BusinessRoleIdentifier generateBusinessRoleId(String optionId) {
+		return new BusinessRoleIdentifier(optionId);
 	}
 	
-	default StatusIdentifier generateStatusId(String lookup) {
-		return new StatusIdentifier(lookup);
+	default DictionaryIdentifier generateDictionaryId(String optionId) {
+		return new DictionaryIdentifier(optionId);
 	}
 	
-	default LocaleIdentifier generateLocaleId(String lookup) {
-		return new LocaleIdentifier(lookup);
+	default PhraseIdentifier generatePhraseId(String optionId) {
+		return new PhraseIdentifier(optionId);
 	}
 	
-	default LanguageIdentifier generateLanguageId(String lookup) {
-		return new LanguageIdentifier(lookup);
+	default MessageTypeIdentifier generateMessageTypeId(String optionId) {
+		return new MessageTypeIdentifier(optionId);
 	}
 	
-	default SalutationIdentifier generateSalutationId(String lookup) {
-		return new SalutationIdentifier(lookup);
+	default StatusIdentifier generateStatusId(String optionId) {
+		return new StatusIdentifier(optionId);
 	}
 	
-	default CountryIdentifier generateCountryId(String lookup) {
-		return new CountryIdentifier(lookup);
+	default LocaleIdentifier generateLocaleId(String optionId) {
+		return new LocaleIdentifier(optionId);
 	}
 	
-	default ProvinceIdentifier generateProvinceId(String lookup) {
-		return new ProvinceIdentifier(lookup);
+	default LanguageIdentifier generateLanguageId(String optionId) {
+		return new LanguageIdentifier(optionId);
+	}
+	
+	default SalutationIdentifier generateSalutationId(String optionId) {
+		return new SalutationIdentifier(optionId);
+	}
+	
+	default CountryIdentifier generateCountryId(String option) {
+		return new CountryIdentifier(option);
+	}
+	
+	default ProvinceIdentifier generateProvinceId(String option) {
+		return new ProvinceIdentifier(option);
 	}
 	
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging);
 	
 	public long countOptions(OptionsFilter filter);
 	
-	public Option findOption(OptionIdentifier lookupId);
+	public Option findOption(OptionIdentifier optionId);
 
-	public Option saveOption(Option lookup);
+	public Option saveOption(Option option);
 
 }

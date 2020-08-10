@@ -2,13 +2,15 @@ package ca.magex.crm.transform.json;
 
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonText;
 
-@Component
 public class StringJsonTransformer implements Transformer<String, JsonText> {
+
+	public StringJsonTransformer(CrmOptionService crm) {
+		
+	}
 
 	@Override
 	public Class<String> getSourceType() {

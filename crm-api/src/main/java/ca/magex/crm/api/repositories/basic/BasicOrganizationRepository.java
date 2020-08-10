@@ -55,7 +55,8 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 
 	@Override
 	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
-		return findOrganizationDetails(organizationId);
+		OrganizationDetails details = findOrganizationDetails(organizationId);
+		return details == null ? null : details.asSummary();
 	}
 
 	@Override

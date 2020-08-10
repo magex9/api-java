@@ -5,6 +5,7 @@ COPY src ./src
 COPY config ./config
 ENV ENVIRONMENT=ut
 RUN mvn clean package -DskipTests
+#test
 
 FROM openjdk:11
 
@@ -15,3 +16,4 @@ COPY --from=builder /build/config/* /
 EXPOSE 8080
 
 CMD ["java","-jar","/crm-helloworld.jar"]
+

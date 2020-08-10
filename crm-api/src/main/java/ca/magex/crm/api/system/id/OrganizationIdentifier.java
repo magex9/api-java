@@ -14,7 +14,11 @@ public class OrganizationIdentifier extends Identifier {
 	
 	public static final String CONTEXT = Identifier.CONTEXT + "organizations/";	
 	
-	public OrganizationIdentifier(CharSequence id) {		
+	public OrganizationIdentifier(String id) {
+		super(id);
+	}
+	
+	public OrganizationIdentifier(CharSequence id) {
 		super(id);
 	}
 	

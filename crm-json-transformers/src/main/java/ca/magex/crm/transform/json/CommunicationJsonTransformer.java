@@ -4,19 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.Telephone;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class CommunicationJsonTransformer extends AbstractJsonTransformer<Communication> {
 	
-	public CommunicationJsonTransformer(CrmServices crm) {
+	public CommunicationJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -33,9 +32,9 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	@Override
 	public JsonObject formatLocalized(Communication communication, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
+		formatType(pairs, locale);
 		formatText(pairs, "jobTitle", communication);
-		formatOption(pairs, "language", communication, Type.LANGUAGE, locale);
+		formatChoice(pairs, "language", communication, LanguageIdentifier.class, locale);
 		formatText(pairs, "email", communication);
 		formatTransformer(pairs, "homePhone", communication, new TelephoneJsonTransformer(crm), locale);
 		formatText(pairs, "faxNumber", communication);
@@ -45,7 +44,7 @@ public class CommunicationJsonTransformer extends AbstractJsonTransformer<Commun
 	@Override
 	public Communication parseJsonObject(JsonObject json, Locale locale) {
 		String jobTitle = parseText("jobTitle", json);
-		String language = parseOption("language", json, Type.LANGUAGE, locale);
+		Choice<LanguageIdentifier> language = parseChoice("language", json, Type.LANGUAGE, locale);
 		String email = parseText("email", json);
 		Telephone homePhone = parseObject("homePhone", json, new TelephoneJsonTransformer(crm), locale);
 		String faxNumber = parseText("faxNumber", json);

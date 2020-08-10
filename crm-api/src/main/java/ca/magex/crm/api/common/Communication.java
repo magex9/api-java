@@ -2,28 +2,39 @@ package ca.magex.crm.api.common;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
 
 public class Communication implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 
+	@Nullable
 	private String jobTitle;
 	
-	private String language;
+	@NotEmpty
+	private Choice<LanguageIdentifier> language;
 	
+	@NotNull
 	private String email;
 	
+	@Nullable
 	private Telephone homePhone;
 	
+	@Nullable
 	private String faxNumber;
 
-	public Communication(String jobTitle, String language, String email, Telephone homePhone, String faxNumber) {
+	public Communication(String jobTitle, Choice<LanguageIdentifier> language, String email, Telephone homePhone, String faxNumber) {
 		super();
 		this.jobTitle = jobTitle;
 		this.language = language;
@@ -40,11 +51,11 @@ public class Communication implements Serializable {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 
-	public String getLanguage() {
+	public Choice<LanguageIdentifier> getLanguage() {
 		return language;
 	}
 
-	public Communication withLanguage(String language) {
+	public Communication withLanguage(Choice<LanguageIdentifier> language) {
 		return new Communication(jobTitle, language, jobTitle, homePhone, faxNumber);
 	}
 

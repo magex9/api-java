@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonName> {
 	
-	public PersonNameJsonTransformer(CrmServices crm) {
+	public PersonNameJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -32,8 +31,8 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 	@Override
 	public JsonObject formatLocalized(PersonName name, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
-		formatOption(pairs, "salutation", name, Type.SALUTATION, locale);
+		formatType(pairs, locale);
+		formatChoice(pairs, "salutation", name, SalutationIdentifier.class, locale);
 		formatText(pairs, "firstName", name);
 		formatText(pairs, "middleName", name);
 		formatText(pairs, "lastName", name);
@@ -42,7 +41,7 @@ public class PersonNameJsonTransformer extends AbstractJsonTransformer<PersonNam
 
 	@Override
 	public PersonName parseJsonObject(JsonObject json, Locale locale) {
-		String salutation = parseOption("salutation", json, Type.SALUTATION, locale);
+		Choice<SalutationIdentifier> salutation = parseChoice("salutation", json, Type.SALUTATION, locale);
 		String firstName = parseText("firstName", json);
 		String middleName = parseText("middleName", json);
 		String lastName = parseText("lastName", json);

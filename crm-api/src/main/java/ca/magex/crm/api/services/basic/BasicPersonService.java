@@ -26,17 +26,26 @@ public class BasicPersonService implements CrmPersonService {
 	}
 
 	@Override
-	public PersonDetails createPerson(OrganizationIdentifier organizationId, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
-		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, legalName.getDisplayName(), legalName, address, communication, roleIds));
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
+		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, displayName, legalName, address, communication, roleIds));
 	}
 
 	@Override
-	public PersonDetails updatePersonName(PersonIdentifier personId, PersonName legalName) {
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withLegalName(legalName).withDisplayName(legalName.getDisplayName()));
+		return repos.savePersonDetails(person.withDisplayName(displayName));
+	}
+
+	@Override
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
+		PersonDetails person = repos.findPersonDetails(personId);
+		if (person == null) {
+			return null;
+		}
+		return repos.savePersonDetails(person.withLegalName(legalName));
 	}
 
 	@Override
@@ -58,12 +67,12 @@ public class BasicPersonService implements CrmPersonService {
 	}
 	
 	@Override
-	public PersonDetails updatePersonRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withRoleIds(roleIds));
+		return repos.savePersonDetails(person.withBusinessRoleIds(businessRoleIds));
 	}
 
 	@Override
@@ -72,7 +81,7 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withStatus(Status.ACTIVE));
+		return repos.savePersonDetails(person.withStatus(Status.ACTIVE)).asSummary();
 	}
 
 	@Override
@@ -81,7 +90,7 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
-		return repos.savePersonDetails(person.withStatus(Status.INACTIVE));
+		return repos.savePersonDetails(person.withStatus(Status.INACTIVE)).asSummary();
 	}
 
 	@Override
@@ -101,7 +110,7 @@ public class BasicPersonService implements CrmPersonService {
 
 	@Override
 	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
-		return repos.findPersonSummary(filter, paging);
+		return repos.findPersonSummaries(filter, paging);
 	}
 
 	@Override

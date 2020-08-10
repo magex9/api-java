@@ -13,54 +13,51 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.json.model.JsonObject;
 
 @Transactional
 public abstract class AbstractConfigurationServiceTests {
 
-	@Autowired
-	private Crm crm;
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmConfigurationService config();
 	
-	@Autowired
-	private CrmAuthenticationService auth;
+	/**
+	 * Authentication service used to allow an authenticated test
+	 * @return
+	 */
+	protected abstract CrmAuthenticationService auth();
 	
 	@Before
 	public void setup() {
-		crm.reset();
+		config().reset();
 	}
 	
 	@Test
 	public void testSystemInitiailization() throws Exception {
-		assertFalse(crm.isInitialized());
-		Identifier systemId = crm.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin").getUserId();
-		assertTrue(crm.isInitialized());
-		try {
-			assertEquals(systemId, crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), SYSTEM_EMAIL, "admin", "admin").getUserId());
-			fail("System is already initialized");
-		} catch (DuplicateItemFoundException expected) { }
+		assertFalse(config().isInitialized());
+		assertTrue(config().initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin"));
+		assertTrue(config().isInitialized());
+		assertTrue(config().initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), SYSTEM_EMAIL, "admin", "admin"));
 	}
 	
-	@Ignore
 	@Test
 	public void testDataDump() throws Exception {
-		crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
-		auth.login("admin", "admin");
+		config().initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
+		auth().login("admin", "admin");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		crm.dump(baos);
+		config().dump(baos);
 		String[] lines = baos.toString().split("\n");
-		assertEquals(160, lines.length);
+		assertEquals(184, lines.length);
 		for (String line : lines) {
-			line = line.replaceAll("\\[SYS, CRM\\]", "[\"SYS\", \"CRM\"]").replaceAll("\\[SYS_ADMIN, CRM_ADMIN\\]", "[\"SYS_ADMIN\", \"CRM_ADMIN\"]");
 			Matcher m = Pattern.compile("([/\\-A-Za-z0-9]+) => (\\{.*\\}|true|false)").matcher(line);
 			if (!m.matches())
 				fail("Line did not match the pattern: " + line);
@@ -86,10 +83,10 @@ public abstract class AbstractConfigurationServiceTests {
 	
 	@Test
 	public void testDataDumpToInvalidFile() throws Exception {
-		crm.initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
-		auth.login("admin", "admin");
+		config().initializeSystem("org", new PersonName(null, "Scott", null, "Finlay"), "admin@admin.com", "admin", "admin");
+		auth().login("admin", "admin");
 		try {
-			crm.dump(null);
+			config().dump(null);
 			fail("Exception will be thrown");
 		} catch (Exception e) { }
 	}

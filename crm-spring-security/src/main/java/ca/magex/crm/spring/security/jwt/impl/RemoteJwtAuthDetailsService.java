@@ -13,9 +13,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.spring.security.auth.AuthClient;
 import ca.magex.crm.spring.security.auth.AuthDetails;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
 import ca.magex.crm.spring.security.jwt.JwtAuthenticatedPrincipal;
 import ca.magex.crm.spring.security.jwt.JwtAuthenticationToken;
@@ -28,7 +28,7 @@ import ca.magex.crm.spring.security.jwt.JwtToken;
  * @author Jonny
  */
 @Service
-@Profile(CrmProfiles.AUTH_REMOTE_JWT)
+@Profile(AuthProfiles.REMOTE_HMAC)
 public class RemoteJwtAuthDetailsService implements JwtAuthDetailsService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -57,9 +57,8 @@ public class RemoteJwtAuthDetailsService implements JwtAuthDetailsService {
 	}
 
 	@Override
-	public JwtAuthenticationToken getJwtAuthenticationTokenForUsername(String token) {
+	public JwtAuthenticationToken buildAuthenticationToken(String token) {
 		ResponseEntity<AuthDetails> authDetails = authClient.validateJwtToken(token, authToken);
-		 // TODO generate a graceful failure here
 		Assert.isTrue(authDetails.getStatusCode().is2xxSuccessful(), authDetails.toString());
 		Assert.isTrue(authDetails.getBody().isSuccessful(), authDetails.getBody().getFailureReason());
 		return new JwtAuthenticationToken(

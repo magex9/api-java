@@ -85,6 +85,15 @@ public class Option implements Serializable {
 		return new Option(optionId, parentId, type, status, mutable, name);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <I extends OptionIdentifier> Choice<I> asChoice() {
+		return new Choice<I>((I)optionId);
+	}
+	
+	public static <I extends OptionIdentifier> Choice<I> of(String text) {
+		return new Choice<I>(text);
+	}
+	
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
@@ -97,7 +106,15 @@ public class Option implements Serializable {
 	
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+		ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+				.append("type", type.getCode())
+				.append("optionId", optionId)
+				.append("parentId", parentId)
+				.append("status", status)
+				.append("mutable", mutable)
+				.append("name", name);
+		
+		return builder.build();
 	}	
 	
 }
