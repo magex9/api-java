@@ -142,18 +142,18 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 			validate(organizationService.findOrganizationDetails(organizationId).withDisplayName(name)).getDisplayName());
 	}
 
-	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier mainLocationId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateMainLocation: " + organizationId);
 		return organizationService.updateOrganizationMainLocation(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(locationId)).getMainLocationId());
+			validate(organizationService.findOrganizationDetails(organizationId).withMainLocationId(mainLocationId)).getMainLocationId());
 	}
 	
-	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier mainContactId) {
 		if (!canUpdateOrganization(organizationId))
 			throw new PermissionDeniedException("updateOrganizationMainContact: " + organizationId);
 		return organizationService.updateOrganizationMainContact(organizationId, 
-			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(personId)).getMainContactId());
+			validate(organizationService.findOrganizationDetails(organizationId).withMainContactId(mainContactId)).getMainContactId());
 	}
 	
 	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
