@@ -1,1 +1,0 @@
-java -jar crm-graphql-spring-boot-jwt-server-1.0.0-SNAPSHOT-bootable.jar | tee logs\crm.out
