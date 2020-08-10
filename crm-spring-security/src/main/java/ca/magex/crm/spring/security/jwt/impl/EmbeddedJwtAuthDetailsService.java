@@ -6,11 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.spring.security.jwt.JwtAuthDetailsService;
 import ca.magex.crm.spring.security.jwt.JwtAuthenticatedPrincipal;
 import ca.magex.crm.spring.security.jwt.JwtAuthenticationToken;
-import ca.magex.crm.spring.security.jwt.JwtTokenService;
+import ca.magex.crm.spring.security.jwt.JwtTokenValidator;
 import io.jsonwebtoken.JwtException;
 
 /**
@@ -20,15 +20,15 @@ import io.jsonwebtoken.JwtException;
  * @author Jonny
  */
 @Service
-@Profile(MagexCrmProfiles.AUTH_EMBEDDED_JWT)
+@Profile({AuthProfiles.EMBEDDED_HMAC, AuthProfiles.EMBEDDED_RSA, AuthProfiles.REMOTE_RSA})
 public class EmbeddedJwtAuthDetailsService implements JwtAuthDetailsService {
 
 	@Autowired private UserDetailsService userDetailsService;
-	@Autowired private JwtTokenService jwtTokenService;
+	@Autowired private JwtTokenValidator jwtTokenValidator;
 	
 	@Override
-	public JwtAuthenticationToken getJwtAuthenticationTokenForUsername(String token) {
-		String username = jwtTokenService.validateToken(token);
+	public JwtAuthenticationToken buildAuthenticationToken(String token) {
+		String username = jwtTokenValidator.validateToken(token).getUsername();
 		
 		if (username != null) {
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);

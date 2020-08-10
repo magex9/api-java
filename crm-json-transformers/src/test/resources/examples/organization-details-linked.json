@@ -1,0 +1,37 @@
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/OrganizationDetails",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/Mc9rbFKPqf",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@en": "Active",
+    "@fr": "Actif",
+    "value": "ACTIVE"
+  },
+  "displayName": "Org Name",
+  "mainLocationId": "http://api.magex.ca/crm/rest/locations/Z9XCi4sCTk",
+  "mainContactId": "http://api.magex.ca/crm/rest/persons/5Z7cuX3K2T",
+  "authenticationGroupIds": [
+    {
+      "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
+      "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/crm",
+      "@en": "Customer Relationship Management",
+      "@fr": "Gestion de la relation client",
+      "value": "CRM"
+    },
+    {
+      "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
+      "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/org",
+      "@en": "Organization",
+      "@fr": "Organisation",
+      "value": "ORG"
+    }
+  ],
+  "businessGroupIds": [{
+    "@context": "http://api.magex.ca/crm/schema/options/BusinessGroups",
+    "@id": "http://api.magex.ca/crm/rest/options/business-groups/execs",
+    "@en": "Executives",
+    "@fr": "Cadres",
+    "value": "EXECS"
+  }]
+}

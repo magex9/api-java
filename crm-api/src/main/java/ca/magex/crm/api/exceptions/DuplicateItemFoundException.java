@@ -1,13 +1,20 @@
 package ca.magex.crm.api.exceptions;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
 
 public class DuplicateItemFoundException extends ApiException {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
+	
+	private String reason;
 
-	public DuplicateItemFoundException(String uri) {
-		super("Duplicate item found found: " + uri);
+	public DuplicateItemFoundException(String reason) {
+		super("Duplicate item found: " + reason);
+		this.reason = reason;
+	}
+	
+	public String getReason() {
+		return reason;
 	}
 
 	@Override

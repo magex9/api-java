@@ -8,16 +8,14 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.graphql.datafetcher.CommonDataFetcher;
 import ca.magex.crm.graphql.datafetcher.LocationDataFetcher;
-import ca.magex.crm.graphql.datafetcher.LookupDataFetcher;
+import ca.magex.crm.graphql.datafetcher.OptionDataFetcher;
 import ca.magex.crm.graphql.datafetcher.OrganizationDataFetcher;
-import ca.magex.crm.graphql.datafetcher.PermissionDataFetcher;
 import ca.magex.crm.graphql.datafetcher.PersonDataFetcher;
 import ca.magex.crm.graphql.datafetcher.UserDataFetcher;
 import ca.magex.crm.graphql.error.GraphQLExceptionHandler;
@@ -26,6 +24,7 @@ import graphql.execution.AsyncExecutionStrategy;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.SimpleDataFetcherExceptionHandler;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.PropertyDataFetcherHelper;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
@@ -35,19 +34,39 @@ public class GraphQLCrmServices {
 
 	private static Logger logger = LoggerFactory.getLogger(GraphQLCrmServices.class);
 
-	// TODO switch these to constructor args instead of autowired fields when
-	// everything is working again
-	@Autowired LocationDataFetcher locationDataFetcher;
-	@Autowired OrganizationDataFetcher organizationDataFetcher;
-	@Autowired PersonDataFetcher personDataFetcher;
-	@Autowired LookupDataFetcher lookupDataFetcher;
-	@Autowired UserDataFetcher userDataFetcher;
-	@Autowired PermissionDataFetcher permissionDataFetcher;
-
+	/* schema location injected via classpath lookup by spring */
 	@Value("classpath:crm.graphql") private Resource resource;
+	
+	/* data fetchers used for implementing the queries */
+	private LocationDataFetcher locationDataFetcher;
+	private OrganizationDataFetcher organizationDataFetcher;
+	private PersonDataFetcher personDataFetcher;
+	private UserDataFetcher userDataFetcher;
+	private OptionDataFetcher optionDataFetcher;
+	private CommonDataFetcher commonDataFetcher;
+	
+	/* graphql instance used to parse and execute the query */
+	private GraphQL graphQL;	
 
-	private GraphQL graphQL;
+	public GraphQLCrmServices(
+			OrganizationDataFetcher organizationDataFetcher,
+			LocationDataFetcher locationDataFetcher,
+			PersonDataFetcher personDataFetcher,
+			UserDataFetcher userDataFetcher,
+			OptionDataFetcher optionDataFetcher,
+			CommonDataFetcher commonDataFetcher) {
+		this.organizationDataFetcher = organizationDataFetcher;
+		this.locationDataFetcher = locationDataFetcher;
+		this.personDataFetcher = personDataFetcher;
+		this.userDataFetcher = userDataFetcher;
+		this.optionDataFetcher = optionDataFetcher;
+		this.commonDataFetcher = commonDataFetcher;
+	}
 
+	/**
+	 * returns our GraphQL Engine
+	 * @return
+	 */
 	public GraphQL getGraphQL() {
 		return graphQL;
 	}
@@ -73,6 +92,9 @@ public class GraphQLCrmServices {
 				.mutationExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
 				.subscriptionExecutionStrategy(new AsyncExecutionStrategy(new GraphQLExceptionHandler(delegate)))
 				.build();
+		
+		/* NOTE: this is required for spring development hot deploys or any other deployment where the classes are swapped at runtime (think jrebel, etc) */
+		PropertyDataFetcherHelper.clearReflectionCache();
 	}
 
 	/**
@@ -81,8 +103,11 @@ public class GraphQLCrmServices {
 	 * @return
 	 */
 	private RuntimeWiring buildRuntimeWiring() {
-		logger.info("Building GraphQL runtime wiring");
+		logger.info("Building GraphQL runtime wiring");		
 		return RuntimeWiring.newRuntimeWiring()
+				// context data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("context", commonDataFetcher.getContext()))
+				
 				// organization data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findOrganization", organizationDataFetcher.findOrganization()))
 				.type("Query", typeWiring -> typeWiring.dataFetcher("countOrganizations", organizationDataFetcher.countOrganizations()))
@@ -91,7 +116,9 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOrganization", organizationDataFetcher.updateOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainLocation", locationDataFetcher.byOrganization()))
 				.type("Organization", typeWiring -> typeWiring.dataFetcher("mainContact", personDataFetcher.byOrganization()))
-				.type("Organization", typeWiring -> typeWiring.dataFetcher("groups", permissionDataFetcher.groupsByOrganization()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("authenticationGroups", optionDataFetcher.findAuthenticationGroupsForOrg()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("businessGroups", optionDataFetcher.findBusinessGroupsForOrg()))
+				.type("Organization", typeWiring -> typeWiring.dataFetcher("actions", organizationDataFetcher.findOrganizationActions()))
 
 				// location data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocation", locationDataFetcher.findLocation()))
@@ -99,6 +126,8 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findLocations", locationDataFetcher.findLocations()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createLocation", locationDataFetcher.createLocation()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateLocation", locationDataFetcher.updateLocation()))
+				.type("Location", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byLocation()))
+				.type("Location", typeWiring -> typeWiring.dataFetcher("actions", locationDataFetcher.findLocationActions()))
 
 				// person data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPerson", personDataFetcher.findPerson()))
@@ -106,6 +135,9 @@ public class GraphQLCrmServices {
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findPersons", personDataFetcher.findPersons()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createPerson", personDataFetcher.createPerson()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updatePerson", personDataFetcher.updatePerson()))
+				.type("Person", typeWiring -> typeWiring.dataFetcher("businessRoles", optionDataFetcher.findBusinessRolesForPerson()))
+				.type("Person", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byPerson()))
+				.type("Person", typeWiring -> typeWiring.dataFetcher("actions", personDataFetcher.findPersonActions()))
 
 				// user data fetching
 				.type("Query", typeWiring -> typeWiring.dataFetcher("findUser", userDataFetcher.findUser()))
@@ -116,30 +148,29 @@ public class GraphQLCrmServices {
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("resetUserPassword", userDataFetcher.resetUserPassword()))
 				.type("Mutation", typeWiring -> typeWiring.dataFetcher("changeUserPassword", userDataFetcher.changeUserPassword()))
 				.type("User", typeWiring -> typeWiring.dataFetcher("person", personDataFetcher.byUser()))
-				.type("User", typeWiring -> typeWiring.dataFetcher("roles", permissionDataFetcher.rolesByUser()))
-
-				// group data fetching
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroup", permissionDataFetcher.findGroup()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findGroups", permissionDataFetcher.findGroups()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createGroup", permissionDataFetcher.createGroup()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateGroup", permissionDataFetcher.updateGroup()))
-				.type("Group", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
-				.type("Group", typeWiring -> typeWiring.dataFetcher("frenchName", permissionDataFetcher.getNameByLocale(Lang.FRENCH)))
-
-				// role data fetching
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findRole", permissionDataFetcher.findRole()))
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findRoles", permissionDataFetcher.findRoles()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createRole", permissionDataFetcher.createRole()))
-				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateRole", permissionDataFetcher.updateRole()))
-				.type("Role", typeWiring -> typeWiring.dataFetcher("englishName", permissionDataFetcher.getNameByLocale(Lang.ENGLISH)))
-				.type("Role", typeWiring -> typeWiring.dataFetcher("frenchName", permissionDataFetcher.getNameByLocale(Lang.FRENCH)))
-
-				// lookup data fetching
-				.type("Query", typeWiring -> typeWiring.dataFetcher("findCodeLookups", lookupDataFetcher.findCodeLookups()))
-				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("englishName", lookupDataFetcher.getNameByLocale(Lang.ENGLISH)))
-				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("frenchName", lookupDataFetcher.getNameByLocale(Lang.FRENCH)))
-				.type("CodeLookup", typeWiring -> typeWiring.dataFetcher("parent", lookupDataFetcher.findParent()))
-
+				.type("User", typeWiring -> typeWiring.dataFetcher("organization", organizationDataFetcher.byUser()))
+				.type("User", typeWiring -> typeWiring.dataFetcher("authenticationRoles", optionDataFetcher.findAuthenticationRolesForUser()))
+				.type("User", typeWiring -> typeWiring.dataFetcher("actions", userDataFetcher.findUserActions()))
+				
+				// option data fetching
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOption", optionDataFetcher.findOption()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("countOptions", optionDataFetcher.countOptions()))
+				.type("Query", typeWiring -> typeWiring.dataFetcher("findOptions", optionDataFetcher.findOptions()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("createOption", optionDataFetcher.createOption()))
+				.type("Mutation", typeWiring -> typeWiring.dataFetcher("updateOption", optionDataFetcher.updateOption()))
+				.type("Option", typeWiring -> typeWiring.dataFetcher("parent", optionDataFetcher.findParentOption()))
+				.type("Option", typeWiring -> typeWiring.dataFetcher("actions", optionDataFetcher.findOptionActions()))
+				
+				// common data fetching
+				.type("Option", typeWiring -> typeWiring.dataFetcher("type", commonDataFetcher.getOptionTypeValue()))
+				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("country", commonDataFetcher.getCountryChoice()))
+				.type("MailingAddress", typeWiring -> typeWiring.dataFetcher("province", commonDataFetcher.getProvinceChoice()))				
+				.type("PersonName", typeWiring -> typeWiring.dataFetcher("salutation", commonDataFetcher.getSalutationValue()))				
+				.type("Communication", typeWiring -> typeWiring.dataFetcher("language", commonDataFetcher.getLanguageValue()))				
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("english", commonDataFetcher.getEnglishValue()))
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("french", commonDataFetcher.getFrenchValue()))
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("english", commonDataFetcher.getEnglishValue()))
+				.type("Localized", typeWiring -> typeWiring.dataFetcher("french", commonDataFetcher.getFrenchValue()))
 				.build();
 	}
 }

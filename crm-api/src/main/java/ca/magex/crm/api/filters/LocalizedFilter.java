@@ -11,7 +11,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Localized;
 
@@ -96,12 +96,12 @@ public class LocalizedFilter implements CrmFilter<Localized> {
 	@Override
 	public boolean apply(Localized instance) {
 		return List.of(instance)
-				.stream()
-				.filter(g -> this.getCode() == null || StringUtils.equalsIgnoreCase(this.getCode(), g.getCode()))
-				.filter(g -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getEnglishName(), this.getEnglishName()))
-				.filter(g -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getFrenchName(), this.getFrenchName()))
-				.findAny()
-				.isPresent();
+			.stream()
+			.filter(g -> this.getCode() == null || StringUtils.equalsIgnoreCase(this.getCode(), g.getCode()))
+			.filter(g -> this.getEnglishName() == null || StringUtils.containsIgnoreCase(g.getEnglishName(), this.getEnglishName()))
+			.filter(g -> this.getFrenchName() == null || StringUtils.containsIgnoreCase(g.getFrenchName(), this.getFrenchName()))
+			.findAny()
+			.isPresent();
 	}
 	
 	@Override

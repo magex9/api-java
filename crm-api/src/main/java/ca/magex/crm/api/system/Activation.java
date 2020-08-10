@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
 
 public class Activation implements Serializable {
 

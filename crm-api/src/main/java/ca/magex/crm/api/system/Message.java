@@ -7,7 +7,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 
 public class Message implements Serializable {
 
@@ -15,17 +17,28 @@ public class Message implements Serializable {
 	
 	private Identifier identifier;
 	
-	private String type;
+	private MessageTypeIdentifier type;
 	
 	private String path;
 	
-	private Localized reason;
+	private String value;
+	
+	private Choice<PhraseIdentifier> reason;
 
-	public Message(Identifier identifier, String type, String path, Localized reason) {
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String value, String reason) {
+		this(identifier, type, path, value, new Choice<>(reason));
+	}
+
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String value, PhraseIdentifier reason) {
+		this(identifier, type, path, value, new Choice<>(reason));
+	}
+	
+	public Message(Identifier identifier, MessageTypeIdentifier type, String path, String value, Choice<PhraseIdentifier> reason) {
 		super();
 		this.identifier = identifier;
 		this.type = type;
 		this.path = path;
+		this.value = value;
 		this.reason = reason;
 	}
 
@@ -33,15 +46,19 @@ public class Message implements Serializable {
 		return identifier;
 	}
 
-	public String getType() {
+	public MessageTypeIdentifier getType() {
 		return type;
 	}
 
 	public String getPath() {
 		return path;
 	}
+	
+	public String getValue() {
+		return value;
+	}	
 
-	public Localized getReason() {
+	public Choice<PhraseIdentifier> getReason() {
 		return reason;
 	}
 	

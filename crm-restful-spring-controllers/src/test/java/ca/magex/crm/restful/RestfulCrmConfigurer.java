@@ -1,50 +1,90 @@
 package ca.magex.crm.restful;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
+import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.policies.CrmPolicies;
-import ca.magex.crm.api.policies.basic.BasicPolicies;
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmLocationService;
-import ca.magex.crm.api.services.CrmLookupService;
-import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
+import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
+import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
+import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.basic.BasicConfigurationService;
+import ca.magex.crm.api.services.basic.BasicServices;
+import ca.magex.crm.api.store.basic.BasicPasswordStore;
+import ca.magex.crm.api.store.basic.BasicStore;
+import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
 public class RestfulCrmConfigurer implements CrmConfigurer {
 
-	/* autowired services */
-	@Autowired private CrmInitializationService initializationService;	
-	@Autowired private CrmLookupService lookupService;	
-	@Autowired private CrmOrganizationService organizationService;
-	@Autowired private CrmLocationService locationService;
-	@Autowired private CrmPersonService personService;
-	@Autowired private CrmUserService userService;
-	@Autowired private CrmPermissionService permissionService;
-		
-	@Bean
-	@Override
-	public Crm crm() {		
-		return new Crm(
-				initializationService, 
-				lookupService, 
-				permissionService, 
-				organizationService, 
-				locationService, 
-				personService,
-				userService, 
-				crmPolicies());
+	@Bean 
+	public PlatformTransactionManager txManager() {
+		return Mockito.mock(PlatformTransactionManager.class);
+	}
+	
+	@Bean 
+	public JsonTransformerFactory jsonTransformerFactory() {
+		return new JsonTransformerFactory(services());
+	}
+	
+	@Bean 
+	public BasicStore store() {
+		return new BasicStore();
 	}
 	
 	@Bean
-	@Override
-	public CrmPolicies crmPolicies() {
-		return new BasicPolicies(lookupService, permissionService, organizationService, locationService, personService, userService);
+	public BasicPasswordStore passwordStore() {
+		return new BasicPasswordStore();
 	}
+	
+	@Bean 
+	public BasicUpdateObserver observer() {
+		return new BasicUpdateObserver();
+	}
+	
+	@Bean
+	public BasicRepositories repos() {
+		return new BasicRepositories(store(), observer());
+	}
+	
+	@Bean
+	public BasicPasswordRepository passwordRepo() {
+		return new BasicPasswordRepository(passwordStore());
+	}
+	
+	@Bean 
+	public BasicServices services() {
+		return new BasicServices(repos(), passwords());
+	}
+	
+	@Bean
+	public AuthenticatedPolicies policies() {
+		return new AuthenticatedPolicies(auth(), services());
+	}
+	
+	@Bean 
+	public BasicAuthenticationService auth() {
+		return new BasicAuthenticationService(services(), services(), services(), passwords());
+	}
+	
+	@Bean
+	public BasicPasswordService passwords() {
+		return new BasicPasswordService(repos(), passwordRepo());
+	}
+
+	@Bean
+	public BasicConfigurationService config() {
+		return new BasicConfigurationService(repos(), passwords());
+	}
+	
+	@Bean
+	public Crm crm() {
+		return new Crm(services(), policies());
+	}
+	
 }

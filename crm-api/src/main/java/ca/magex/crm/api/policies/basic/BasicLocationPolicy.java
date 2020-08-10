@@ -6,8 +6,9 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class BasicLocationPolicy implements CrmLocationPolicy {
 
@@ -27,7 +28,7 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	}
 	
 	@Override
-	public boolean canCreateLocationForOrganization(Identifier organizationId) {
+	public boolean canCreateLocationForOrganization(OrganizationIdentifier organizationId) {
 		/* can only create a location for the organization, if the organization exists, and is active */
 		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
 		if (summary == null) {
@@ -37,7 +38,7 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canViewLocation(Identifier locationId) {
+	public boolean canViewLocation(LocationIdentifier locationId) {
 		/* can only view a location if it exists */
 		if (locations.findLocationSummary(locationId) == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
@@ -46,7 +47,7 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canUpdateLocation(Identifier locationId) {
+	public boolean canUpdateLocation(LocationIdentifier locationId) {
 		/* can only update a location if it exists, and is active */
 		LocationSummary summary = locations.findLocationSummary(locationId);
 		if (summary == null) {
@@ -56,7 +57,7 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canEnableLocation(Identifier locationId) {
+	public boolean canEnableLocation(LocationIdentifier locationId) {
 		/* can only enable a location if it exists */
 		LocationSummary summary = locations.findLocationSummary(locationId);
 		if (summary == null) {
@@ -66,7 +67,7 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canDisableLocation(Identifier locationId) {
+	public boolean canDisableLocation(LocationIdentifier locationId) {
 		/* can only disable a location if it exists */
 		LocationSummary summary = locations.findLocationSummary(locationId);
 		if (summary == null) {

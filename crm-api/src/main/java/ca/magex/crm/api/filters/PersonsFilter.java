@@ -12,11 +12,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
 public class PersonsFilter implements CrmFilter<PersonSummary> {
 
@@ -29,7 +30,7 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 		Sort.by(Order.desc("status"))
 	);
 
-	private Identifier organizationId;
+	private OrganizationIdentifier organizationId;
 
 	private String displayName;
 
@@ -39,7 +40,7 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 		this(null, null, null);
 	}
 	
-	public PersonsFilter(Identifier organizationId, String displayName, Status status) {
+	public PersonsFilter(OrganizationIdentifier organizationId, String displayName, Status status) {
 		this.organizationId = organizationId;
 		this.displayName = displayName;
 		this.status = status;
@@ -48,7 +49,7 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 	public PersonsFilter(Map<String, Object> filterCriteria) {
 		try {
 			this.displayName = (String) filterCriteria.get("displayName");
-			this.organizationId = filterCriteria.containsKey("organizationId") ? new Identifier((String) filterCriteria.get("organizationId")) : null;
+			this.organizationId = filterCriteria.containsKey("organizationId") ? new OrganizationIdentifier((CharSequence) filterCriteria.get("organizationId")) : null;
 			this.status = null;
 			if (filterCriteria.containsKey("status") && StringUtils.isNotBlank((String) filterCriteria.get("status"))) {
 				try {
@@ -71,12 +72,16 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public String getStatusCode() {
+		return status == null ? null : status.getCode();
+	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 	
-	public PersonsFilter withOrganizationId(Identifier organizationId) {
+	public PersonsFilter withOrganizationId(OrganizationIdentifier organizationId) {
 		return new PersonsFilter(organizationId, displayName, status);
 	}
 

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.config.CrmConfigurerAdapter;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
@@ -14,7 +14,7 @@ import ca.magex.crm.api.services.Crm;
 import ca.magex.crm.api.services.CrmAuthenticationService;
 
 @Configuration
-@Profile(MagexCrmProfiles.CRM_AUTH)
+@Profile(CrmProfiles.CRM_AUTH)
 public class GraphQLCrmAuthConfig extends CrmConfigurerAdapter {	
 	
 	private CrmAuthenticationService authenticationService;
