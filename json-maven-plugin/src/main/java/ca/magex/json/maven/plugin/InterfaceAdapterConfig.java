@@ -14,6 +14,8 @@ public class InterfaceAdapterConfig {
 	private String description;
 	
 	private List<String> interfaces;
+	
+	private List<String> passiveInterfaces;
 
 	private String targetClass;
 	
@@ -32,6 +34,14 @@ public class InterfaceAdapterConfig {
 	public void setInterfaces(List<String> interfaces) {
 		this.interfaces = interfaces;
 	}
+	
+	public List<String> getPassiveInterfaces() {
+		return passiveInterfaces;
+	}
+	
+	public void setPassiveInterfaces(List<String> passiveInterfaces) {
+		this.passiveInterfaces = passiveInterfaces;
+	}
 
 	public String getTargetClass() {
 		return targetClass;
@@ -46,7 +56,7 @@ public class InterfaceAdapterConfig {
 			String adapterPackage = targetClass.substring(0, targetClass.lastIndexOf('.')); 
 			String adapterClass = targetClass.substring(targetClass.lastIndexOf('.') + 1);
 			File adapterFile = new File(targetDir, targetClass.replaceAll("\\.", "/") + ".java");
-			JavadocInterfaceAdapterBuilder.build(description, sourceDir, interfaces, adapterFile, adapterPackage, adapterClass);
+			JavadocInterfaceAdapterBuilder.build(description, sourceDir, interfaces, passiveInterfaces, adapterFile, adapterPackage, adapterClass);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem building adapter class: " + interfaces + " to " + targetClass, e);
 		}

@@ -36,7 +36,7 @@ public class BasicPersonRepository implements CrmPersonRepository {
 	}
 
 	@Override
-	public FilteredPage<PersonSummary> findPersonSummary(PersonsFilter filter, Paging paging) {
+	public FilteredPage<PersonSummary> findPersonSummaries(PersonsFilter filter, Paging paging) {
 		return PageBuilder.buildPageFor(filter, apply(filter)
 				.map(i -> SerializationUtils.clone(i))
 				.sorted(filter.getComparator(paging))
@@ -55,7 +55,8 @@ public class BasicPersonRepository implements CrmPersonRepository {
 
 	@Override
 	public PersonSummary findPersonSummary(PersonIdentifier personId) {
-		return findPersonDetails(personId);
+		PersonDetails personDetails = findPersonDetails(personId);
+		return personDetails == null ? null : personDetails.asSummary();
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -20,33 +20,33 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import ca.magex.crm.api.CrmProfiles;
-import ca.magex.crm.api.services.CrmInitializationService;
-import ca.magex.crm.api.services.CrmPermissionService;
-import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.common.PersonName;
+import ca.magex.crm.api.services.CrmConfigurationService;
+import ca.magex.crm.graphql.GraphQLTestConfig;
+import ca.magex.crm.test.config.UnauthenticatedTestConfig;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles(value = {
-		CrmProfiles.CRM_DATASTORE_CENTRALIZED,
-		CrmProfiles.CRM_NO_AUTH
+@ContextConfiguration(classes = { 
+		UnauthenticatedTestConfig.class
+	   ,GraphQLTestConfig.class
 })
 public class GraphQLControllerTests {
 
 	@Autowired private MockMvc mockMvc;
 
-	@Autowired private CrmInitializationService initializationService;
-	@Autowired private CrmPermissionService permissionService;
+	@Autowired private CrmConfigurationService config;
 
 	@Before
-	public void reset() {
-		initializationService.reset();
+	public void before() {
+		config.reset();
+		config.initializeSystem("johnnuy", new PersonName(null, "Jonny", "Alex", "Thomson"), "jonny@johnnuy.org", "admin", "admin");
 	}
 
 	@Test
 	public void doGraphQlPostQuery() throws Exception {		
-		String query = "mutation { createGroup(code: \"DEV\", englishName: \"Developers\", frenchName: \"Developeurs\") { groupId code englishName frenchName status } }";
+		String query = "mutation { createOption (type: \"COUNTRIES\", name: {code: \"PT\", english: \"Petoria\", french: \"Pètorie\"} ) { optionId } }";
 		RequestBuilder postQueryRequest = MockMvcRequestBuilders
 				.post("/graphql")
 				.header(HttpHeaders.CONTENT_TYPE, "application/graphql")
@@ -67,12 +67,12 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOption"));
 	}
 
 	@Test
 	public void doJsonPostQueryWithoutVariables() throws Exception {
-		String query = "mutation { createGroup(code: \"DEV\", englishName: \"Developers\", frenchName: \"Developeurs\") { groupId code englishName frenchName status } }";
+		String query = "mutation { createOption (type: \"COUNTRIES\", name: {code: \"PT\", english: \"Petoria\", french: \"Pètorie\"} ) { optionId } }";
 		JSONObject request = new JSONObject();
 		request.put("query", query);
 		RequestBuilder postQueryRequest = MockMvcRequestBuilders
@@ -89,13 +89,13 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOption"));
 				
 	}
 
 	@Test
 	public void doJsonPostQueryWithBlankVariables() throws Exception {
-		String query = "mutation { createGroup(code: \"DEV\", englishName: \"Developers\", frenchName: \"Developeurs\") { groupId code englishName frenchName status } }";
+		String query = "mutation { createOption (type: \"COUNTRIES\", name: {code: \"PT\", english: \"Petoria\", french: \"Pètorie\"} ) { optionId } }";
 		JSONObject request = new JSONObject();
 		request.put("query", query);
 		request.put("variables", new JSONObject());
@@ -113,12 +113,12 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOption"));
 	}
 
 	@Test
 	public void doJsonPostQueryWithNullVariables() throws Exception {
-		String query = "mutation { createGroup(code: \"DEV\", englishName: \"Developers\", frenchName: \"Developeurs\") { groupId code englishName frenchName status } }";
+		String query = "mutation { createOption (type: \"COUNTRIES\", name: {code: \"PT\", english: \"Petoria\", french: \"Pètorie\"} ) { optionId } }";
 		JSONObject request = new JSONObject();
 		request.put("query", query);
 		request.put("variables", JSONObject.NULL);
@@ -136,16 +136,16 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOption"));
 	}
 
 	@Test
 	public void doJsonPostQueryWithVariables() throws Exception {
-		String query = "mutation ($code: String!, $englishName: String!, $frenchName: String!) { createGroup(code: $code, englishName: $englishName, frenchName: $frenchName) { groupId code englishName frenchName status } }";
+		String query = "mutation ($code: String!, $english: String!, $french: String!) { createOption(type: \"COUNTRIES\", name: {code: $code, english: $english, french: $french}) { optionId } }";
 		JSONObject variables = new JSONObject();
-		variables.put("code", "DEV");
-		variables.put("englishName", "Developers");
-		variables.put("frenchName", "Developeurs");
+		variables.put("code", "PT");
+		variables.put("english", "Petoria");
+		variables.put("french", "Pètorie");
 
 		JSONObject request = new JSONObject();
 		request.put("query", query);
@@ -165,15 +165,20 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createGroup"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOption"));
 		
 		/* add an array variable */
-		query = "mutation ($displayName: String!, $groups: [String]!) { createOrganization(displayName: $displayName, groups: $groups) { organizationId } }";
+		query = "mutation ($displayName: String!, $authenticationGroupIds: [String]!, $businessGroupIds: [String]!) { " + 
+				"createOrganization(displayName: $displayName, authenticationGroupIds: $authenticationGroupIds, businessGroupIds: $businessGroupIds) { " +
+				"organizationId } }";
 		variables = new JSONObject();
 		variables.put("displayName", "MyOrg");
-		JSONArray jsonArray = new JSONArray();
-		jsonArray.put("DEV");
-		variables.put("groups", jsonArray);
+		JSONArray authenticationGroupsArray = new JSONArray();
+		authenticationGroupsArray.put("CRM");
+		variables.put("authenticationGroupIds", authenticationGroupsArray);
+		JSONArray businessGroupsArray = new JSONArray();
+		businessGroupsArray.put("IMIT");
+		variables.put("businessGroupIds", businessGroupsArray);
 		
 		request = new JSONObject();
 		request.put("query", query);
@@ -193,8 +198,7 @@ public class GraphQLControllerTests {
 		jsonResponse = new JSONObject(response);
 		Assert.assertEquals(0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOrganization"));
-		
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("createOrganization"));	
 	}
 
 	@Test
@@ -259,8 +263,7 @@ public class GraphQLControllerTests {
 
 	@Test
 	public void doGraphqlGetQueryWithoutVariables() throws Exception {		
-		permissionService.createGroup(new Localized("ADM", "Admin", "Admin"));
-		String query = "{ findGroups(filter: { code: \"ADM\" }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }";
+		String query = "{ findOptions(filter: { code: \"ADMIN\" }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { optionId } } }";
 		RequestBuilder postQueryRequest = MockMvcRequestBuilders
 				.get("/graphql")
 				.principal(new Principal() {					
@@ -280,16 +283,15 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(jsonResponse.getJSONArray("errors").toString(3), 0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findGroups"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findOptions"));
 		
-		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findGroups");
-		Assert.assertEquals(1, page.getJSONArray("content").length());
+		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findOptions");
+		Assert.assertEquals(4, page.getJSONArray("content").length());
 	}
 		
 	@Test
 	public void doGraphqlGetQueryWithEmptyVariables() throws Exception {		
-		permissionService.createGroup(new Localized("ADM", "Admin", "Admin"));
-		String query = "{ findGroups(filter: { code: \"ADM\" }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }";
+		String query = "{ findOptions(filter: { code: \"ADMIN\" }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { optionId } } }";
 		
 		JSONObject variables = new JSONObject();
 		
@@ -307,19 +309,18 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(jsonResponse.getJSONArray("errors").toString(3), 0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findGroups"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findOptions"));
 		
-		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findGroups");
-		Assert.assertEquals(1, page.getJSONArray("content").length());
+		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findOptions");
+		Assert.assertEquals(4, page.getJSONArray("content").length());
 	}
 
 	@Test
 	public void doGraphqlGetQueryWithVariables() throws Exception {
-		permissionService.createGroup(new Localized("ADM", "Admin", "Admin"));
-		String query = "query ($code: String!) { findGroups(filter: { code: $code }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }";
+		String query = "query ($code: String!) { findOptions(filter: { code: $code }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { optionId } } }";
 		
 		JSONObject variables = new JSONObject();
-		variables.put("code", "ADM");
+		variables.put("code", "ADMIN");
 		
 		RequestBuilder getQueryRequest = MockMvcRequestBuilders
 				.get("/graphql")
@@ -335,15 +336,15 @@ public class GraphQLControllerTests {
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(jsonResponse.getJSONArray("errors").toString(3), 0, jsonResponse.getJSONArray("errors").length());
 		Assert.assertNotNull(jsonResponse.getJSONObject("data"));
-		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findGroups"));
+		Assert.assertNotNull(jsonResponse.getJSONObject("data").getJSONObject("findOptions"));
 		
-		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findGroups");
-		Assert.assertEquals(1, page.getJSONArray("content").length());		
+		JSONObject page = jsonResponse.getJSONObject("data").getJSONObject("findOptions");
+		Assert.assertEquals(4, page.getJSONArray("content").length());		
 	}
 	
 	@Test
 	public void doGetBadVariablesBadRequest() throws Exception {
-		String query = "{ findGroups(filter: { code: \"ADM\" }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { groupId status englishName frenchName } } }";
+		String query = "{ findOptions(filter: { code: \"ADMIN\" }, paging: {pageNumber: 1, pageSize: 5, sortField: [\"englishName\"], sortOrder: [\"ASC\"]}) { number numberOfElements size totalPages totalElements content { optionId } } }";
 		RequestBuilder postQueryRequest = MockMvcRequestBuilders
 				.get("/graphql")
 				.param("query", query)
@@ -359,7 +360,7 @@ public class GraphQLControllerTests {
 	
 	@Test
 	public void doGetMutationBadRequest() throws Exception {
-		String query = "mutation { createGroup(code: \"DEV\", englishName: \"Developers\", frenchName: \"Developeurs\") { groupId code englishName frenchName status } }";
+		String query = "mutation { createOption(type: \"COUNTIRES\", name: {code: \"PT\", englishName: \"Petoria\", frenchName: \"Pètorie\") { optionId } }";
 		RequestBuilder postQueryRequest = MockMvcRequestBuilders
 				.get("/graphql")
 				.param("query", query);

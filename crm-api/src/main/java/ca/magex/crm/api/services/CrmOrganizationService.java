@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
@@ -14,14 +13,16 @@ import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Lang;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 
 /**
  * The CRM Organization service is used to manage organizations that are owned
@@ -50,12 +51,30 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
  */
 public interface CrmOrganizationService {
 
-	default OrganizationDetails prototypeOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds) {
-		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, groupIds);
+	/**
+	 * Create a prototype of an organization that is not persisted and does not have an organization id
+	 * 
+	 * @param displayName The common name of the organization
+	 * @param authenticationGroupIds The authentication groups users of the organization can have roles from.
+	 * @param businessGroupIds The business groups users of the organization can have business roles from.
+	 * @return A stub of an organization not persisted in the system
+	 */
+	default OrganizationDetails prototypeOrganization(
+			String displayName, 
+			List<AuthenticationGroupIdentifier> authenticationGroupIds, 
+			List<BusinessGroupIdentifier> businessGroupIds) {
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, authenticationGroupIds, businessGroupIds);
 	}
 	
+	/**
+	 * Create an organization based on a template or the organization details created from a prototype or 
+	 * duplicate the information from an already existing organization.
+	 * 
+	 * @param prototype The template organization details.
+	 * @return A new organization created from the template provided.
+	 */
 	default OrganizationDetails createOrganization(OrganizationDetails prototype) {
-		return createOrganization(prototype.getDisplayName(), prototype.getGroupIds());
+		return createOrganization(prototype.getDisplayName(), prototype.getAuthenticationGroupIds(), prototype.getBusinessGroupIds());
 	}
 	
 	/**
@@ -66,11 +85,11 @@ public interface CrmOrganizationService {
 	 * The "CRM" group should be assigned for internal users.
 	 * The "ORG" group should be assigned for customer users.
 	 * 
-	 * @param organizationDisplayName The name the organization should be displayed in.
-	 * @param groups The list of permission groups the users can be assigned to. 
+	 * @param organizationDisplayName The common name of the organization.
+	 * @param authenticationGroupIds The list of permission groups the users can be assigned to. 
 	 * @return Details about the new organization
 	 */
-	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> groupIds);
+	OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds);
 
 	/**
 	 * Enable an existing organization that was disabled. If the organization is
@@ -93,51 +112,209 @@ public interface CrmOrganizationService {
 	 */
 	OrganizationSummary disableOrganization(OrganizationIdentifier organizationId);
 
-	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name);
+	/**
+	 * Find the common name for an organization
+	 * 
+	 * @param organizationId The organization identifier to retrieve information from
+	 * @return The display name
+	 */
+	default String findOrganizationDisplayName(OrganizationIdentifier organizationId) {
+		return findOrganizationDetails(organizationId).getDisplayName();
+	}
+	
+	/**
+	 * Update the common name for an organization
+	 * 
+	 * @param organizationId The organization to update
+	 * @param displaysName The display name
+	 * @return The updated details for an organization
+	 */
+	OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String displaysName);
 
-	OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId);
+	/**
+	 * Find the main location identifier of the requested organization
+	 * 
+	 * @param organizationId The organization identifier to retrieve information from
+	 * @return The main location identifier
+	 */
+	default LocationIdentifier findOrganizationMainLocation(OrganizationIdentifier organizationId) {
+		return findOrganizationDetails(organizationId).getMainLocationId();
+	}
+	
+	/**
+	 * Update the main location identifier for an organization
+	 * 
+	 * @param organizationId The organization to update
+	 * @param mainLocationId The main location identifier
+	 * @return The updated details for an organization
+	 */
+	OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier mainLocationId);
 
-	OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId);
+	/**
+	 * Find the main contact identifier of the requested organization
+	 * 
+	 * @param organizationId The organization identifier to retrieve information from
+	 * @return The main contact identifier
+	 */
+	default PersonIdentifier findOrganizationMainContact(OrganizationIdentifier organizationId) {
+		return findOrganizationDetails(organizationId).getMainContactId();
+	}
+	
+	/**
+	 * Update the main contact identifier for an organization
+	 * 
+	 * @param organizationId The organization to update
+	 * @param mainLocationId The main contact identifier
+	 * @return The updated details for an organization
+	 */
+	OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier mainContactId);
 
-	OrganizationDetails updateOrganizationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> groupIds);
+	/**
+	 * Find the assigned authentication group identifiers of the requested organization
+	 * 
+	 * @param organizationId The organization identifier to retrieve information from
+	 * @return The assigned authentication group identifiers
+	 */
+	default List<AuthenticationGroupIdentifier> findOrganizationAuthenticationGroups(OrganizationIdentifier organizationId) {
+		return findOrganizationDetails(organizationId).getAuthenticationGroupIds();
+	}
+	
+	/**
+	 * Update the assigned authentication group identifiers for an organization
+	 * 
+	 * @param organizationId The organization to update
+	 * @param authenticationGroupIds The assigned authentication group identifiers
+	 * @return The updated details for an organization
+	 */
+	OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds);
+	
+	/**
+	 * Find the assigned business group identifiers of the requested organization
+	 * 
+	 * @param organizationId The organization identifier to retrieve information from
+	 * @return The assigned business group identifiers
+	 */
+	default List<BusinessGroupIdentifier> findOrganizationBusinessGroups(OrganizationIdentifier organizationId) {
+		return findOrganizationDetails(organizationId).getBusinessGroupIds();
+	}
+	
+	/**
+	 * Update the assigned business group identifiers for an organization
+	 * 
+	 * @param organizationId The organization to update
+	 * @param businessGroupIds The assigned business group identifiers
+	 * @return The updated details for an organization
+	 */
+	OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds);
+	
+	/**
+	 * Update all or some of the information about the organization
+	 * @param organizationId The organization to update
+	 * @param displaysName The common name for the organization
+	 * @param mainLocationId The main location identifier for the organization
+	 * @param mainContactId The main contact person identifier for the organization
+	 * @param authenticationGroupIds The assigned authentication group identifiers
+	 * @param businessGroupIds The assigned business group identifiers
+	 * @return The updated details for the organization
+	 */
+	default OrganizationDetails updateOrganization(OrganizationIdentifier organizationId, 
+			String displaysName,
+			LocationIdentifier mainLocationId, 
+			PersonIdentifier mainContactId,
+			List<AuthenticationGroupIdentifier> authenticationGroupIds,
+			List<BusinessGroupIdentifier> businessGroupIds) {
+		if (displaysName != null)
+			updateOrganizationDisplayName(organizationId, displaysName);
+		if (mainLocationId != null)
+			updateOrganizationMainLocation(organizationId, mainLocationId);
+		if (mainContactId != null)
+			updateOrganizationMainContact(organizationId, mainContactId);
+		if (authenticationGroupIds != null)
+			updateOrganizationAuthenticationGroups(organizationId, authenticationGroupIds);
+		if (businessGroupIds != null)
+			updateOrganizationBusinessGroups(organizationId, businessGroupIds);
+		return findOrganizationDetails(organizationId);
+	}
 
+	/**
+	 * Find the core organization summary information about a specific organization.
+	 * 
+	 * @param organizationId The organization identifier provided by the user.
+	 * @return The core organization information
+	 */
 	OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId);
 
+	/**
+	 * Find the full organization details about a specific organization.
+	 * 
+	 * @param organizationId The organization identifier provided by the user.
+	 * @return The full organization details
+	 */
 	OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId);
 
-	long countOrganizations(OrganizationsFilter filter);
-
-	FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging);
-
+	/**
+	 * Find a paginated list of organization summaries based on the filter criteria provided by the user.
+	 * 
+	 * @param filter The filter information to limit the organization retrieved
+	 * @param paging The paging information
+	 * @return The paginated list of information
+	 */
 	FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter, Paging paging);
 	
-	default FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
-		return findOrganizationDetails(filter, OrganizationsFilter.getDefaultPaging());
-	};
-	
+	/**
+	 * Find a paginated list of the full organization details based on the filter criteria provided by the user.
+	 * 
+	 * @param filter The filter information to limit the organization retrieved
+	 * @param paging The paging information
+	 * @return The paginated list of information
+	 */
+	FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter, Paging paging);
+
+	/**
+	 * Find the initial page of organization summaries based on the filter criteria provided by the user.
+	 * 
+	 * @param filter The filter information to limit the organization retrieved
+	 * @return The paginated list of information
+	 */
 	default FilteredPage<OrganizationSummary> findOrganizationSummaries(OrganizationsFilter filter) {
 		return findOrganizationSummaries(filter, OrganizationsFilter.getDefaultPaging());
 	};
 	
-	default OrganizationsFilter defaultOrganizationsFilter() {
-		return new OrganizationsFilter();
+	/**
+	 * Find the initial page of the full organization details based on the filter criteria provided by the user.
+	 * 
+	 * @param filter The filter information to limit the organization retrieved
+	 * @return The paginated list of information
+	 */
+	default FilteredPage<OrganizationDetails> findOrganizationDetails(OrganizationsFilter filter) {
+		return findOrganizationDetails(filter, OrganizationsFilter.getDefaultPaging());
 	};
+	
+	/**
+	 * The number of organizations that match the filter criteria provided by the user.
+	 * 
+	 * @param filter
+	 * @return
+	 */
+	long countOrganizations(OrganizationsFilter filter);
 
-	static List<Message> validateOrganizationDetails(Crm crm, OrganizationDetails organization) {
+	static List<Message> validateOrganizationDetails(CrmServices crm, OrganizationDetails organization) {
 		List<Message> messages = new ArrayList<Message>();
+		
+		MessageTypeIdentifier error = crm.findOptionByCode(Type.MESSAGE_TYPE, "ERROR").getOptionId();
 
 		// Status
 		if (organization.getStatus() == null) {
-			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized(Lang.ENGLISH, "Status is mandatory for an organization")));
+			messages.add(new Message(organization.getOrganizationId(), error, "status", null, PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 		} else if (organization.getStatus() == Status.PENDING && organization.getOrganizationId() != null) {
-			messages.add(new Message(organization.getOrganizationId(), "error", "status", new Localized(Lang.ENGLISH, "Pending statuses should not have identifiers")));
+			messages.add(new Message(organization.getOrganizationId(), error, "status", organization.getStatus().name(), PhraseIdentifier.VALIDATION_STATUS_PENDING));
 		}
 
 		// Display Name
 		if (StringUtils.isBlank(organization.getDisplayName())) {
-			messages.add(new Message(organization.getOrganizationId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name is mandatory for an organization")));
+			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 		} else if (organization.getDisplayName().length() > 60) {
-			messages.add(new Message(organization.getOrganizationId(), "error", "displayName", new Localized(Lang.ENGLISH, "Display name must be 60 characters or less")));
+			messages.add(new Message(organization.getOrganizationId(), error, "displayName", organization.getDisplayName(), PhraseIdentifier.VALIDATION_FIELD_MAXLENGTH));
 		}
 
 		// Main contact reference
@@ -145,11 +322,11 @@ public interface CrmOrganizationService {
 			PersonSummary person = crm.findPersonSummary(organization.getMainContactId());
 			// Make sure main contact belongs to current org
 			if (!person.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), "error", "mainContactId", new Localized(Lang.ENGLISH, "Main contact organization has invalid referential integrity")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INVALID));
 			}
 			// Make sure main contact is active
 			if (!person.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), "error", "mainContactId", new Localized(Lang.ENGLISH, "Main contact must be active")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainContactId", organization.getMainContactId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 			}
 		}
 
@@ -158,25 +335,25 @@ public interface CrmOrganizationService {
 			LocationSummary location = crm.findLocationSummary(organization.getMainLocationId());
 			// Make sure main location belongs to current org
 			if (!location.getOrganizationId().equals(organization.getOrganizationId())) {
-				messages.add(new Message(organization.getOrganizationId(), "error", "mainLocationId", new Localized(Lang.ENGLISH, "Main location organization has invalid referential integrity")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INVALID));
 			}
 			// Make sure main location is active
 			if (!location.getStatus().equals(Status.ACTIVE)) {
-				messages.add(new Message(organization.getOrganizationId(), "error", "mainLocationId", new Localized(Lang.ENGLISH, "Main location must be active")));
+				messages.add(new Message(organization.getOrganizationId(), error, "mainLocationId", organization.getMainLocationId().getCode(), PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 			}
 		}
 
 		// Group
-		if (organization.getGroupIds().isEmpty()) {
-			messages.add(new Message(organization.getOrganizationId(), "error", "groups", new Localized(Lang.ENGLISH, "Organizations must have a permission group assigned to them")));
+		if (organization.getAuthenticationGroupIds().isEmpty()) {
+			messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds", null, crm.findMessageId("validation.field.required")));
 		} else {
-			for (int i = 0; i < organization.getGroupIds().size(); i++) {
-				AuthenticationGroupIdentifier groupId = organization.getGroupIds().get(i);
+			for (int i = 0; i < organization.getAuthenticationGroupIds().size(); i++) {
+				AuthenticationGroupIdentifier groupId = organization.getAuthenticationGroupIds().get(i);
 				try {
 					if (!crm.findOption(groupId).getStatus().equals(Status.ACTIVE))
-						messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group is not active: " + groupId)));
+						messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 				} catch (ItemNotFoundException e) {
-					messages.add(new Message(organization.getOrganizationId(), "error", "groups[" + i + "]", new Localized(Lang.ENGLISH, "Group does not exist: " + groupId)));
+					messages.add(new Message(organization.getOrganizationId(), error, "authenticationGroupIds[" + i + "]", groupId.getCode(), PhraseIdentifier.VALIDATION_OPTION_INVALID));
 				}
 			}
 		}

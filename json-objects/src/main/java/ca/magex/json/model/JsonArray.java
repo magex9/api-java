@@ -65,44 +65,143 @@ public final class JsonArray extends JsonElement {
 		return elements.get(index);
 	}
 	
+	public JsonElement get(int index, JsonElement defaultValue) {
+		try {
+			return get(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
+	}
+	
 	public JsonObject getObject(int index) {
 		return (JsonObject)get(index);
+	}
+	
+	public JsonObject getObject(int index, JsonObject defaultValue) {
+		try {
+			return getObject(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
 	}
 	
 	public JsonArray getArray(int index) {
 		return (JsonArray)get(index);
 	}
 	
+	public JsonArray getArray(int index, JsonArray defaultValue) {
+		try {
+			return getArray(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
+	}
+	
 	public String getString(int index) {
 		return ((JsonText)get(index)).value();
+	}
+	
+	public String getString(int index, String defaultValue) {
+		try {
+			return getString(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Number getNumber(int index) {
 		return ((JsonNumber)get(index)).value();
 	}
 	
+	public Number getNumber(int index, Number defaultValue) {
+		try {
+			return getNumber(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
+	}
+	
 	public Integer getInt(int index) {
 		return ((JsonNumber)get(index)).value().intValue();
+	}
+	
+	public Integer getInt(int index, Integer defaultValue) {
+		try {
+			return getInt(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Long getLong(int index) {
 		return ((JsonNumber)get(index)).value().longValue();
 	}
 	
+	public Long getLong(int index, Long defaultValue) {
+		try {
+			return getLong(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
+	}
+	
 	public Float getFloat(int index) {
 		return ((JsonNumber)get(index)).value().floatValue();
+	}
+	
+	public Float getFloat(int index, Float defaultValue) {
+		try {
+			return getFloat(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
 	}
 	
 	public Boolean getBoolean(int index) {
 		return ((JsonBoolean)get(index)).value();
 	}
 	
+	public Boolean getBoolean(int index, Boolean defaultValue) {
+		try {
+			return getBoolean(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
+	}
+	
 	public LocalDate getDate(int index) {
 		return LocalDate.parse(((JsonText)get(index)).value(), DateTimeFormatter.ISO_DATE);
 	}
 	
+	public LocalDate getDate(int index, LocalDate defaultValue) {
+		try {
+			return getDate(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
+	}
+	
 	public LocalDateTime getDateTime(int index) {
 		return LocalDateTime.parse(((JsonText)get(index)).value(), DateTimeFormatter.ISO_DATE_TIME);
+	}
+	
+	public LocalDateTime getDateTime(int index, LocalDateTime defaultValue) {
+		try {
+			return getDateTime(index);
+		}
+		catch(IndexOutOfBoundsException e) {
+			return defaultValue;
+		}
 	}
 	
 	public int size() {

@@ -18,12 +18,13 @@ import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicAuthenticationService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.dictionary.basic.BasicDictionary;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
+import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.hazelcast.repository.HazelcastPasswordRepository;
 import ca.magex.crm.hazelcast.repository.HazelcastRepositories;
+import ca.magex.crm.hazelcast.repository.HazelcastUserRepository;
 import ca.magex.crm.hazelcast.xa.XATransactionAwareHazelcastInstance;
 
 @Configuration
@@ -40,11 +41,15 @@ public class HazelcastTestConfig implements CrmConfigurer {
 	public Crm crm() {
 		BasicServices services = new BasicServices(
 				new HazelcastRepositories(hzInstance),
-				passwords(),
-				new BasicDictionary());
+				passwords());
 		return new Crm(services, new BasicPolicies(services));
 	}
 
+	@Bean
+	public CrmUserRepository usersRepo() {
+		return new HazelcastUserRepository(hzInstance);
+	}
+	
 	@Bean
 	public CrmPasswordRepository passwordRepo() {
 		return new HazelcastPasswordRepository(hzInstance);
@@ -52,12 +57,12 @@ public class HazelcastTestConfig implements CrmConfigurer {
 
 	@Bean
 	public CrmAuthenticationService authenticationService() {
-		return new BasicAuthenticationService(crm(), passwordRepo());
+		return new BasicAuthenticationService(crm(), usersRepo(), passwordRepo());
 	}
 	
 	@Bean
 	public CrmPasswordService passwords() {
-		return new BasicPasswordService(passwordRepo());
+		return new BasicPasswordService(usersRepo(), passwordRepo());
 	}
 
 	@Bean

@@ -1,9 +1,14 @@
 package ca.magex.crm.api.services.basic;
 
+import static ca.magex.crm.api.system.id.AuthenticationGroupIdentifier.CRM;
+import static ca.magex.crm.api.system.id.AuthenticationGroupIdentifier.SYS;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.CRM_ADMIN;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.SYS_ACCESS;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.SYS_ACTUATOR;
+import static ca.magex.crm.api.system.id.AuthenticationRoleIdentifier.SYS_ADMIN;
+
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -17,14 +22,14 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
-import ca.magex.crm.api.dictionary.CrmDictionary;
-import ca.magex.crm.api.filters.UsersFilter;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.services.CrmConfigurationService;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.CountryIdentifier;
+import ca.magex.crm.api.system.id.LanguageIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -36,12 +41,9 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	
 	private CrmPasswordService passwords;
 	
-	private CrmDictionary dictionary;
-	
-	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords, CrmDictionary dictionary) {
+	public BasicConfigurationService(CrmRepositories repos, CrmPasswordService passwords) {
 		this.repos = repos;
 		this.passwords = passwords;
-		this.dictionary = dictionary;
 	}
 
 	@Override
@@ -50,44 +52,34 @@ public class BasicConfigurationService implements CrmConfigurationService {
 	}
 
 	@Override
-	public User initializeSystem(String organization, PersonName name, String email, String username, String password) {
-		if (!isInitialized()) {
+	public boolean initializeSystem(String organization, PersonName legalName, String email, String username, String password) {
+		if (repos.prepareInitialize()) {
 			initialize(repos);
 			OrganizationIdentifier organizationId = repos.generateOrganizationId();
 			LocationIdentifier mainLocationId = repos.generateLocationId();
 			PersonIdentifier mainContactId = repos.generatePersonId();
 			UserIdentifier systemId = repos.generateUserId();
-			
-			MailingAddress address = new MailingAddress("221b Baker Street", "London", "England", "GB", "NW1 6XE");
-			Communication communication = new Communication("System Admin", "en", email, null, null);
-			repos.saveOrganizationDetails(new OrganizationDetails(organizationId, Status.ACTIVE, organization, mainLocationId, mainContactId, groups("SYS", "CRM")));
+
+			MailingAddress address = new MailingAddress("221b Baker Street", "London", new Choice<>("England"), new Choice<>(new CountryIdentifier("GB")), "NW1 6XE");
+			Communication communication = new Communication("System Admin", new Choice<>(LanguageIdentifier.ENGLISH), email, null, null);
+			repos.saveOrganizationDetails(new OrganizationDetails(
+				organizationId, 
+				Status.ACTIVE, 
+				organization, 
+				mainLocationId, 
+				mainContactId, 
+				List.of(SYS, CRM),
+				List.of(BusinessGroupIdentifier.IMIT)));
 			repos.saveLocationDetails(new LocationDetails(mainLocationId, organizationId, Status.ACTIVE, "SYSTEM", "System Administrator", address));
-			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, name.getDisplayName(), name, address, communication, null));
-			repos.saveUser(new User(systemId, mainContactId, username, Status.ACTIVE, roles("SYS/ADMIN", "SYS/ACTUATOR", "SYS/ACCESS", "CRM/ADMIN")));
+			repos.savePersonDetails(new PersonDetails(mainContactId, organizationId, Status.ACTIVE, "Admin", legalName, address, communication, null));
+			repos.saveUserDetails(new UserDetails(systemId, organizationId, mainContactId, username, Status.ACTIVE, List.of(SYS_ADMIN, SYS_ACTUATOR, SYS_ACCESS, CRM_ADMIN)));
 			passwords.generateTemporaryPassword(username);
 			passwords.updatePassword(username, passwords.encodePassword(password));
 			repos.setInitialized();
 		}
-		return repos.findUsers(new UsersFilter().withRoleId(roles("SYS/ADMIN").get(0)).withStatus(Status.ACTIVE), UsersFilter.getDefaultPaging()).getContent().get(0);
+		return repos.isInitialized();
 	}
 	
-	private List<AuthenticationGroupIdentifier> groups(String... codes) {
-		return Arrays.asList(codes).stream()
-				.map(c -> new AuthenticationGroupIdentifier(c))
-				.collect(Collectors.toList());
-	}
-
-	private List<AuthenticationRoleIdentifier> roles(String... roleCodes) {
-		return Arrays.asList(roleCodes).stream()
-				.map(c -> new AuthenticationRoleIdentifier(c))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public CrmDictionary getDictionary() {
-		return dictionary;
-	}
-		
 	@Override
 	public boolean reset() {
 		repos.reset();

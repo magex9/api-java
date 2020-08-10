@@ -32,6 +32,7 @@ public final class JsonObject extends JsonElement {
 		this(Arrays.asList(pairs));
 	}
 	
+	
 	public JsonObject(List<JsonPair> pairs) {
 		super(digest(pairs.stream().map(e -> e.mid()).collect(Collectors.joining(","))));
 		this.pairs = Collections.unmodifiableList(pairs);

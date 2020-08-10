@@ -1,0 +1,12 @@
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/OrganizationSummary",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/vAmFx4WQ6Q",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@en": "Active",
+    "@fr": "Actif",
+    "value": "ACTIVE"
+  },
+  "displayName": "Org Name"
+}

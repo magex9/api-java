@@ -4,6 +4,8 @@ public interface CrmConfigurationRepository {
 	
 	boolean isInitialized();
 	
+	public boolean prepareInitialize();
+	
 	public void setInitialized();
 
 }

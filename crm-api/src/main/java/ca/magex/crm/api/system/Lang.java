@@ -18,7 +18,7 @@ public class Lang {
 	public static final Map<Locale, Localized> NAMES = Map.of(
 		ROOT, new Localized("ROOT", "API", "IPA"),
 		ENGLISH, new Localized("EN", "English", "Anglais"),
-		FRENCH, new Localized("FR", "French", "Francais")
+		FRENCH, new Localized("FR", "French", "Français")
 	);
 	
 	public static boolean isEnglish(Locale locale) {

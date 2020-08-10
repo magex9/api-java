@@ -8,7 +8,6 @@ import javax.transaction.TransactionManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -16,17 +15,20 @@ import com.hazelcast.core.TransactionalMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 import com.hazelcast.transaction.HazelcastXAResource;
 
-import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmPasswordDetails;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OptionIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
 @Component
-@Profile(CrmProfiles.CRM_DATASTORE_DECENTRALIZED)
 public class XATransactionAwareHazelcastInstance {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XATransactionAwareHazelcastInstance.class);
@@ -63,7 +65,7 @@ public class XATransactionAwareHazelcastInstance {
 		}
 	}
 
-	public TransactionalMap<Identifier, OrganizationDetails> getOrganizationsMap() {
+	public TransactionalMap<OrganizationIdentifier, OrganizationDetails> getOrganizationsMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
@@ -74,7 +76,7 @@ public class XATransactionAwareHazelcastInstance {
 		}
 	}
 
-	public TransactionalMap<Identifier, LocationDetails> getLocationsMap() {
+	public TransactionalMap<LocationIdentifier, LocationDetails> getLocationsMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
@@ -85,7 +87,7 @@ public class XATransactionAwareHazelcastInstance {
 		}
 	}
 
-	public TransactionalMap<Identifier, PersonDetails> getPersonsMap() {
+	public TransactionalMap<PersonIdentifier, PersonDetails> getPersonsMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
@@ -96,7 +98,7 @@ public class XATransactionAwareHazelcastInstance {
 		}
 	}
 
-	public TransactionalMap<Identifier, User> getUsersMap() {
+	public TransactionalMap<UserIdentifier, UserDetails> getUsersMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();
@@ -106,19 +108,8 @@ public class XATransactionAwareHazelcastInstance {
 			throw new ApiException("Error retrieving users map", e);
 		}
 	}
-
-	public TransactionalMap<Identifier, User> getTypesMap() {
-		try {
-			HazelcastXAResource xaRes = hzInstance.getXAResource();
-			Transaction currentTrans = tm.getTransaction();
-			enlistResource(xaRes, currentTrans);
-			return xaRes.getTransactionContext().getMap(Keys.HZ_TYPE_KEY);
-		} catch (RollbackException | SystemException e) {
-			throw new ApiException("Error retrieving types map", e);
-		}
-	}
 	
-	public TransactionalMap<Identifier, User> getOptionsMap() {
+	public TransactionalMap<OptionIdentifier, Option> getOptionsMap() {
 		try {
 			HazelcastXAResource xaRes = hzInstance.getXAResource();
 			Transaction currentTrans = tm.getTransaction();

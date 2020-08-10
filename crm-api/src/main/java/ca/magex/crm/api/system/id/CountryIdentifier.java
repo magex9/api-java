@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Country Option Identification
@@ -21,4 +22,10 @@ public class CountryIdentifier extends OptionIdentifier {
 	public String getContext() {
 		return CountryIdentifier.CONTEXT;
 	}
+	
+	@Override
+	public Type getType() {
+		return Type.COUNTRY;
+	}
+	
 }

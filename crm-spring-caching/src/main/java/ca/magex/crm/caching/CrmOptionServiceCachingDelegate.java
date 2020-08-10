@@ -1,18 +1,17 @@
 package ca.magex.crm.caching;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.roles.Role;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
@@ -43,36 +42,13 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	 * @param key
 	 * @return
 	 */
-	private List<Pair<String, Object>> optionCacheSupplier(Option option, Identifier key) {
-		if (option == null) {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), option));
-		} else {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), option),
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(option.getCode()), option));
-		}
-	}
-
-	/**
-	 * Provides the list of pairs for caching group details
-	 * @param details
-	 * @return
-	 */
-	private List<Pair<String, Object>> optionCacheSupplier(Option option, String code) {
-		if (option == null) {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(code), option));
-		} else {
-			return List.of(
-					Pair.of(CrmCacheKeyGenerator.generateDetailsKey(option.getOptionId()), option),
-					Pair.of(CrmCacheKeyGenerator.generateCodeKey(code), option));
-		}
+	private List<Pair<String, Object>> optionCacheSupplier(Option option, OptionIdentifier key) {
+		return List.of(Pair.of(CrmCacheKeyGenerator.getInstance().generateOptionKey(key), option));
 	}
 
 	@Override
-	public Option createOption(Identifier lookupId, Localized name) {
-		Option option = delegate.createOption(lookupId, name);
+	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {
+		Option option = delegate.createOption(parentId, type, name);
 		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
 		return option;
 	}
@@ -85,55 +61,56 @@ public class CrmOptionServiceCachingDelegate implements CrmOptionService {
 	}
 	
 	@Override
-	public Option enableOption(Identifier optionId) {
+	public Option enableOption(OptionIdentifier optionId) {
 		Option option = delegate.enableOption(optionId);
-		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
+		cacheTemplate.put(optionCacheSupplier(option, optionId));
 		return option;
 	}
 
 	@Override
-	public Option disableOption(Identifier optionId) {
-		Option option = delegate.disableOption(optionId);
-		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
+	public Option disableOption(OptionIdentifier optionId) {
+		Option option = delegate.disableOption(optionId);	
+		cacheTemplate.put(optionCacheSupplier(option, optionId));
 		return option;
 	}
 	
 	@Override
-	public Option updateOptionName(Identifier optionId, Localized name) {
+	public Option updateOptionName(OptionIdentifier optionId, Localized name) {
 		Option option = delegate.updateOptionName(optionId, name);
-		cacheTemplate.put(optionCacheSupplier(option, option.getOptionId()));
+		cacheTemplate.put(optionCacheSupplier(option, optionId));
 		return option;
 	}
 
 	@Override
-	public Option findOption(Identifier optionId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Option findOptionByCode(Type type, String optionCode) {
+		OptionIdentifier optionId = type.generateId(optionCode);
+		return cacheTemplate.get(
+				() -> delegate.findOptionByCode(type, optionCode),
+				optionId,
+				CrmCacheKeyGenerator.getInstance()::generateOptionKey,				
+				this::optionCacheSupplier);
 	}
 	
 	@Override
-	public Option findOptionByCode(Identifier lookupId, String optionCode) {
-		// TODO Auto-generated method stub
-		return CrmOptionService.super.findOptionByCode(lookupId, optionCode);
+	public Option findOption(OptionIdentifier optionId) {
+		return cacheTemplate.get(
+				() -> delegate.findOption(optionId),
+				optionId,
+				CrmCacheKeyGenerator.getInstance()::generateOptionKey,
+				this::optionCacheSupplier);
 	}
 	
 	@Override
-	public Option findOptionByLocalizedName(Identifier lookupId, Locale locale, String name) {
-		// TODO Auto-generated method stub
-		return CrmOptionService.super.findOptionByLocalizedName(lookupId, locale, name);
-	}
-	
-
-	@Override
-	public Option findOption(String lookupCode, String optionCode) {
-		// TODO Auto-generated method stub
-		return null;
+	public long countOptions(OptionsFilter filter) {
+		return delegate.countOptions(filter);
 	}
 
 	@Override
 	public FilteredPage<Option> findOptions(OptionsFilter filter, Paging paging) {
-		// TODO Auto-generated method stub
-		return null;
+		FilteredPage<Option> page = delegate.findOptions(filter, paging);
+		page.forEach((option) -> {
+			cacheTemplate.putIfAbsent(optionCacheSupplier(option, option.getOptionId()));
+		});
+		return page;
 	}
-
 }

@@ -11,6 +11,11 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
@@ -42,8 +47,8 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	 */
 	private List<Pair<String, Object>> detailsCacheSupplier(OrganizationDetails details, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), details == null ? null : details.asSummary()));
 	}
 
 	/**
@@ -53,8 +58,14 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	 * @return
 	 */
 	private List<Pair<String, Object>> summaryCacheSupplier(OrganizationSummary summary, Identifier key) {
-		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
+		if (summary == null) {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), null),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), null));
+		} else {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
+		}
 	}
 
 	@Override
@@ -65,71 +76,78 @@ public class CrmOrganizationServiceCachingDelegate implements CrmOrganizationSer
 	}
 
 	@Override
-	public OrganizationDetails createOrganization(String displayName, List<Identifier> groupIds) {
-		OrganizationDetails details = delegate.createOrganization(displayName, groupIds);
+	public OrganizationDetails createOrganization(String displayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
+		OrganizationDetails details = delegate.createOrganization(displayName, authenticationGroupIds, businessGroupIds);
 		cacheTemplate.put(detailsCacheSupplier(details, details.getOrganizationId()));
 		return details;
 	}
 
 	@Override
-	public OrganizationSummary enableOrganization(Identifier organizationId) {
+	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationSummary summary = delegate.enableOrganization(organizationId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(organizationId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(organizationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, organizationId));
 		return summary;
 	}
 
 	@Override
-	public OrganizationSummary disableOrganization(Identifier organizationId) {
+	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationSummary summary = delegate.disableOrganization(organizationId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(organizationId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(organizationId));
 		cacheTemplate.put(summaryCacheSupplier(summary, organizationId));
 		return summary;
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationDisplayName(Identifier organizationId, String name) {
+	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
 		OrganizationDetails details = delegate.updateOrganizationDisplayName(organizationId, name);
 		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
 		return details;
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainLocation(Identifier organizationId, Identifier locationId) {
+	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId, LocationIdentifier locationId) {
 		OrganizationDetails details = delegate.updateOrganizationMainLocation(organizationId, locationId);
 		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
 		return details;
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationMainContact(Identifier organizationId, Identifier personId) {
+	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId, PersonIdentifier personId) {
 		OrganizationDetails details = delegate.updateOrganizationMainContact(organizationId, personId);
 		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
 		return details;
 	}
 
 	@Override
-	public OrganizationDetails updateOrganizationGroups(Identifier organizationId, List<Identifier> groupIds) {
-		OrganizationDetails details = delegate.updateOrganizationGroups(organizationId, groupIds);
+	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId, List<AuthenticationGroupIdentifier> authenticationGroupIds) {
+		OrganizationDetails details = delegate.updateOrganizationAuthenticationGroups(organizationId, authenticationGroupIds);
+		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
+		return details;
+	}
+	
+	@Override
+	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId, List<BusinessGroupIdentifier> businessGroupIds) {
+		OrganizationDetails details = delegate.updateOrganizationBusinessGroups(organizationId, businessGroupIds);
 		cacheTemplate.put(detailsCacheSupplier(details, organizationId));
 		return details;
 	}
 
 	@Override
-	public OrganizationSummary findOrganizationSummary(Identifier organizationId) {
+	public OrganizationSummary findOrganizationSummary(OrganizationIdentifier organizationId) {
 		return cacheTemplate.get(
 				() -> delegate.findOrganizationSummary(organizationId),
 				organizationId,
-				CrmCacheKeyGenerator::generateSummaryKey,
+				CrmCacheKeyGenerator.getInstance()::generateSummaryKey,
 				this::summaryCacheSupplier);
 	}
 
 	@Override
-	public OrganizationDetails findOrganizationDetails(Identifier organizationId) {
+	public OrganizationDetails findOrganizationDetails(OrganizationIdentifier organizationId) {
 		return cacheTemplate.get(
 				() -> delegate.findOrganizationDetails(organizationId),
 				organizationId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateDetailsKey,
 				this::detailsCacheSupplier);
 	}
 

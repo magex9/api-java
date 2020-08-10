@@ -19,6 +19,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -26,8 +27,11 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.type.ArrayType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.TypeParameter;
@@ -111,26 +115,44 @@ public class JsondocBuilder {
     @SuppressWarnings("rawtypes")
 	public static JsonObject processFile(File file) throws FileNotFoundException {
     	System.out.println("Processing: " + file.getAbsolutePath());
-        CompilationUnit cu = StaticJavaParser.parse(file);
-        List<TypeDeclaration> types = cu.findAll(TypeDeclaration.class);
-        if (types.get(0) instanceof EnumDeclaration) {
-        	return processEnum(cu, (EnumDeclaration)types.get(0));
-        } else if (types.get(0) instanceof ClassOrInterfaceDeclaration) {
-        	return processClass(cu, (ClassOrInterfaceDeclaration)types.get(0));
-        } else {
-        	throw new IllegalArgumentException("Unknown type of declaration: " + types.get(0));
-        }
+    	try {
+	        CompilationUnit cu = StaticJavaParser.parse(file);
+	        List<TypeDeclaration> types = cu.findAll(TypeDeclaration.class);
+	        if (types.get(0) instanceof EnumDeclaration) {
+	        	return processEnum(cu, (EnumDeclaration)types.get(0));
+	        } else if (types.get(0) instanceof ClassOrInterfaceDeclaration) {
+	        	return processClass(cu, (ClassOrInterfaceDeclaration)types.get(0));
+	        } else {
+	        	throw new IllegalArgumentException("Unknown type of declaration: " + types.get(0));
+	        }
+    	} catch (Exception e) {
+    		throw new RuntimeException("Unable to process file: " + file.getAbsolutePath(), e);
+    	}
     }
 
     public static JsonObject processEnum(CompilationUnit cu, EnumDeclaration declaration) throws FileNotFoundException {
-        JsonObject json = new JsonObject()
+        return new JsonObject()
         	.with("name", declaration.getNameAsString())
-        	.with("description", buildComment(declaration.getComment()));
-
-        return json;
+        	.with("type", "enum")
+        	.with("description", buildComment(declaration.getComment()))
+        	.with("constants", declaration.getEntries().stream().map(e -> processEnumConstant(cu, e)).collect(Collectors.toList()));
     }
     
-    /**
+    public static JsonObject processEnumConstant(CompilationUnit cu, EnumConstantDeclaration declaration) {
+    	return new JsonObject()
+    		.with("name", declaration.getNameAsString())
+        	.with("description", buildComment(declaration.getComment()))
+    		.with("arguments", new JsonArray(declaration.getArguments().stream().map(a -> buildExpression(a)).collect(Collectors.toList())));
+    }
+    
+    private static JsonText buildExpression(Expression expr) {
+    	if (expr.isStringLiteralExpr()) {
+    		return new JsonText(((StringLiteralExpr)expr).getValue());
+    	}
+		return new JsonText(expr.toString());
+	}
+
+	/**
      * Get the json representation of the javadocs for the given source file
      */
     public static JsonObject processClass(CompilationUnit cu, ClassOrInterfaceDeclaration cls) throws FileNotFoundException {
@@ -221,6 +243,8 @@ public class JsondocBuilder {
     private static JsonElement buildType(Node type) {
     	if (type instanceof PrimitiveType) {
         	return new JsonText(((PrimitiveType)type).getElementType().toString());
+    	} else if (type instanceof ArrayType) {
+    		return new JsonText(type.toString());
     	} else if (type instanceof SimpleName) {
     		return new JsonText(type.toString());
     	} else if (type instanceof WildcardType) {
@@ -322,6 +346,9 @@ public class JsondocBuilder {
     	List<MemberValuePair> properties = annotation.findAll(MemberValuePair.class);
     	if (!properties.isEmpty()) {
     		json = json.with("properties", properties.stream().map(p -> buildPair(p)).collect(Collectors.toList()));
+    	}
+    	if (!annotation.findAll(StringLiteralExpr.class).isEmpty()) {
+    		json = json.with("value", annotation.findAll(StringLiteralExpr.class).stream().map(l -> l.asString()).collect(Collectors.joining(",")));
     	}
 		return json;
 	}

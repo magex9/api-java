@@ -88,6 +88,10 @@ public class LocationsFilter implements CrmFilter<LocationSummary> {
 		return status;
 	}
 	
+	public String getStatusCode() {
+		return status == null ? null : status.getCode();
+	}
+	
 	public LocationsFilter withOrganizationId(OrganizationIdentifier organizationId) {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}

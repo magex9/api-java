@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.lang.Nullable;
 
 import ca.magex.crm.api.Crm;
 
@@ -13,8 +14,10 @@ public class Telephone implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	@Nullable
 	private String number;
 
+	@Nullable
 	private String extension;
 
 	public Telephone(String number, String extension) {

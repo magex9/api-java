@@ -72,6 +72,10 @@ public class PersonsFilter implements CrmFilter<PersonSummary> {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public String getStatusCode() {
+		return status == null ? null : status.getCode();
+	}
 
 	public String getDisplayName() {
 		return displayName;

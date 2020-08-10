@@ -3,26 +3,23 @@ package ca.magex.crm.transform.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
-import ca.magex.json.model.JsonText;
 
-@Component
 public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<OrganizationDetails> {
 
-	public OrganizationDetailsJsonTransformer(CrmServices crm) {
+	public OrganizationDetailsJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -38,14 +35,17 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 	
 	@Override
 	public JsonObject formatLocalized(OrganizationDetails organization, Locale locale) {
+		List<Message> messages = new ArrayList<>();
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
-		formatIdentifier(pairs, "organizationId", organization, locale);
+		formatType(pairs, locale);
+		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
-		formatIdentifier(pairs, "mainLocationId", organization, locale);
-		formatIdentifier(pairs, "getMainContactId", organization, locale);
-		formatObjects(pairs, "groups", organization, Identifier.class);
+		formatIdentifier(pairs, "mainLocationId", organization, LocationIdentifier.class, locale);
+		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
+		formatOptions(pairs, "authenticationGroupIds", organization, Type.AUTHENTICATION_GROUP, locale, organization.getOrganizationId(), messages);
+		formatOptions(pairs, "businessGroupIds", organization, Type.BUSINESS_GROUP, locale, organization.getOrganizationId(), messages);
+		validate(messages);
 		return new JsonObject(pairs);
 	}
 
@@ -56,8 +56,9 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		String displayName = parseText("displayName", json);
 		LocationIdentifier mainLocationId = parseIdentifier("mainLocationId", json, LocationIdentifier.class, locale);
 		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
-		List<AuthenticationGroupIdentifier> groups = json.getArray("groups").stream().map(e -> new AuthenticationGroupIdentifier(((JsonText)e).value())).collect(Collectors.toList());
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, groups);
+		List<AuthenticationGroupIdentifier> authenticationGroups = parseOptions("authenticationGroupIds", json, AuthenticationGroupIdentifier.class, locale);
+		List<BusinessGroupIdentifier> businessGroups = parseOptions("businessGroupIds", json, BusinessGroupIdentifier.class, locale);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroups, businessGroups);
 	}
-
+	
 }

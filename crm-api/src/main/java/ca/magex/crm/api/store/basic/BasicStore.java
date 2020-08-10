@@ -1,13 +1,20 @@
 package ca.magex.crm.api.store.basic;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.crm.User;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.Configuration;
 import ca.magex.crm.api.system.Option;
@@ -37,7 +44,7 @@ public class BasicStore implements CrmStore {
 	
 	private Map<PersonIdentifier, PersonDetails> persons;
 	
-	private Map<UserIdentifier, User> users;
+	private Map<UserIdentifier, UserDetails> users;
 	
 	/**
 	 * Creates a new Basic Store with no data associated to it
@@ -50,6 +57,24 @@ public class BasicStore implements CrmStore {
 		locations = new ConcurrentHashMap<>();
 		persons = new ConcurrentHashMap<>();
 		users = new ConcurrentHashMap<>();
+	}
+	
+	@Override
+	public String encode(Object obj, CrmServices crm) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(obj);
+		oos.close();
+		return Base64.getEncoder().encodeToString(baos.toByteArray());
+	}
+
+	@Override
+	public Object decode(String text, CrmServices crm) throws IOException, ClassNotFoundException {
+		byte[] data = Base64.getDecoder().decode(text);
+		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+		Object o = ois.readObject();
+		ois.close();
+		return o;
 	}
 	
 	@Override
@@ -83,7 +108,7 @@ public class BasicStore implements CrmStore {
 	}
 
 	@Override
-	public Map<UserIdentifier, User> getUsers() {
+	public Map<UserIdentifier, UserDetails> getUsers() {
 		return users;
 	}
 }

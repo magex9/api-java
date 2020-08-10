@@ -3,28 +3,24 @@ package ca.magex.crm.transform.json;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.PersonDetails;
-import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
-import ca.magex.json.model.JsonText;
 
-@Component
 public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<PersonDetails> {
 
-	public PersonDetailsJsonTransformer(CrmServices crm) {
+	public PersonDetailsJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -40,16 +36,18 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 	
 	@Override
 	public JsonObject formatLocalized(PersonDetails person, Locale locale) {
+		List<Message> messages = new ArrayList<>();
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
-		formatIdentifier(pairs, "personId", person, locale);
-		formatIdentifier(pairs, "organizationId", person, locale);
+		formatType(pairs, locale);
+		formatIdentifier(pairs, "personId", person, PersonIdentifier.class, locale);
+		formatIdentifier(pairs, "organizationId", person, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", person, locale);
 		formatText(pairs, "displayName", person);
 		formatTransformer(pairs, "legalName", person, new PersonNameJsonTransformer(crm), locale);
 		formatTransformer(pairs, "address", person, new MailingAddressJsonTransformer(crm), locale);
 		formatTransformer(pairs, "communication", person, new CommunicationJsonTransformer(crm), locale);
-		formatObjects(pairs, "roles", person, Identifier.class);
+		formatOptions(pairs, "businessRoleIds", person, Type.BUSINESS_ROLE, locale, person.getPersonId(), messages);
+		validate(messages);
 		return new JsonObject(pairs);
 	}
 
@@ -62,7 +60,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		PersonName legalName = parseObject("legalName", json, new PersonNameJsonTransformer(crm), locale);
 		MailingAddress address = parseObject("address", json, new MailingAddressJsonTransformer(crm), locale);
 		Communication communication = parseObject("communication", json, new CommunicationJsonTransformer(crm), locale);
-		List<BusinessRoleIdentifier> roles = json.getArray("roles").stream().map(e -> new BusinessRoleIdentifier(((JsonText)e).value())).collect(Collectors.toList());
+		List<BusinessRoleIdentifier> roles = parseOptions("businessRoleIds", json, BusinessRoleIdentifier.class, locale);
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roles);
 	}
 

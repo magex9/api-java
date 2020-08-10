@@ -8,23 +8,40 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 
 public class BadRequestException extends ApiException {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
+	private String reason;
+	
 	private List<Message> messages;
 
-	public BadRequestException(String message, List<Message> messages) {
-		super("Bad Request: " + message);
+	public BadRequestException(String reason, List<Message> messages) {
+		super("Bad Request: " + reason);
+		this.reason = reason;
 		this.messages = messages;
 	}
+
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, String reason) {
+		this(message, base, type, path, value, new Choice<PhraseIdentifier>(reason));
+	}
 	
-	public BadRequestException(String message, Identifier base, String type, String path, Localized reason) {
-		this(message, Arrays.asList(new Message(base, type, path, reason)));
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, PhraseIdentifier reason) {
+		this(message, base, type, path, value, new Choice<PhraseIdentifier>(reason));
+	}
+	
+	public BadRequestException(String message, Identifier base, MessageTypeIdentifier type, String path, String value, Choice<PhraseIdentifier> reason) {
+		this(message, Arrays.asList(new Message(base, type, path, value, reason)));
+	}
+	
+	public String getReason() {
+		return reason;
 	}
 
 	@Override

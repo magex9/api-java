@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ca.magex.crm.api.common.BusinessPosition;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -15,6 +14,9 @@ import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.caching.util.CrmCacheKeyGenerator;
 
@@ -46,8 +48,8 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	 */
 	private List<Pair<String, Object>> detailsCacheSupplier(PersonDetails details, Identifier key) {
 		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateDetailsKey(key), details),
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), details == null ? null : details.asSummary()));
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), details),
+				Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), details == null ? null : details.asSummary()));
 	}
 
 	/**
@@ -57,13 +59,19 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	 * @return
 	 */
 	private List<Pair<String, Object>> summaryCacheSupplier(PersonSummary summary, Identifier key) {
-		return List.of(
-				Pair.of(CrmCacheKeyGenerator.generateSummaryKey(key), summary));
+		if (summary == null) {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateDetailsKey(key), null),
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), null));
+		} else {
+			return List.of(
+					Pair.of(CrmCacheKeyGenerator.getInstance().generateSummaryKey(key), summary));
+		}
 	}
 
 	@Override
-	public PersonDetails createPerson(Identifier organizationId, PersonName name, MailingAddress address, Communication communication, BusinessPosition position) {
-		PersonDetails details = delegate.createPerson(organizationId, name, address, communication, position);
+	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
+		PersonDetails details = delegate.createPerson(organizationId, displayName, legalName, address, communication, roleIds);
 		cacheTemplate.put(detailsCacheSupplier(details, details.getPersonId()));
 		return details;
 	}
@@ -76,64 +84,71 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	}
 
 	@Override
-	public PersonSummary enablePerson(Identifier personId) {
+	public PersonSummary enablePerson(PersonIdentifier personId) {
 		PersonSummary summary = delegate.enablePerson(personId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(personId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(personId));
 		cacheTemplate.put(summaryCacheSupplier(summary, personId));
 		return summary;
 	}
 
 	@Override
-	public PersonSummary disablePerson(Identifier personId) {
+	public PersonSummary disablePerson(PersonIdentifier personId) {
 		PersonSummary summary = delegate.disablePerson(personId);
-		cacheTemplate.evict(CrmCacheKeyGenerator.generateDetailsKey(personId));
+		cacheTemplate.evict(CrmCacheKeyGenerator.getInstance().generateDetailsKey(personId));
 		cacheTemplate.put(summaryCacheSupplier(summary, personId));
 		return summary;
 	}
 
 	@Override
-	public PersonDetails updatePersonName(Identifier personId, PersonName name) {
-		PersonDetails details = delegate.updatePersonName(personId, name);
+	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
+		PersonDetails details = delegate.updatePersonDisplayName(personId, displayName);
 		cacheTemplate.put(detailsCacheSupplier(details, personId));
 		return details;
 	}
 
 	@Override
-	public PersonDetails updatePersonAddress(Identifier personId, MailingAddress address) {
+	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
+		PersonDetails details = delegate.updatePersonLegalName(personId, legalName);
+		cacheTemplate.put(detailsCacheSupplier(details, personId));
+		return details;
+	}
+
+	@Override
+	public PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address) {
 		PersonDetails details = delegate.updatePersonAddress(personId, address);
 		cacheTemplate.put(detailsCacheSupplier(details, personId));
 		return details;
 	}
 
 	@Override
-	public PersonDetails updatePersonCommunication(Identifier personId, Communication communication) {
+	public PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication) {
 		PersonDetails details = delegate.updatePersonCommunication(personId, communication);
 		cacheTemplate.put(detailsCacheSupplier(details, personId));
 		return details;
 	}
-
+	
 	@Override
-	public PersonDetails updatePersonBusinessPosition(Identifier personId, BusinessPosition position) {
-		PersonDetails details = delegate.updatePersonBusinessPosition(personId, position);
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
+		PersonDetails details = delegate.updatePersonBusinessRoles(personId, roleIds);
 		cacheTemplate.put(detailsCacheSupplier(details, personId));
 		return details;
 	}
 
 	@Override
-	public PersonSummary findPersonSummary(Identifier personId) {
+	public PersonSummary findPersonSummary(PersonIdentifier personId) {
 		return cacheTemplate.get(
 				() -> delegate.findPersonSummary(personId),
 				personId,
-				CrmCacheKeyGenerator::generateSummaryKey,
+				CrmCacheKeyGenerator.getInstance()::generateSummaryKey,
 				this::summaryCacheSupplier);
 	}
 
 	@Override
-	public PersonDetails findPersonDetails(Identifier personId) {
+	public PersonDetails findPersonDetails(PersonIdentifier personId) {
 		return cacheTemplate.get(
 				() -> delegate.findPersonDetails(personId),
 				personId,
-				CrmCacheKeyGenerator::generateDetailsKey,
+				CrmCacheKeyGenerator.getInstance()::generateDetailsKey,
 				this::detailsCacheSupplier);
 	}
 
@@ -161,7 +176,7 @@ public class CrmPersonServiceCachingDelegate implements CrmPersonService {
 	}
 
 	@Override
-	public FilteredPage<PersonSummary> findActivePersonSummariesForOrg(Identifier organizationId) {
+	public FilteredPage<PersonSummary> findActivePersonSummariesForOrg(OrganizationIdentifier organizationId) {
 		FilteredPage<PersonSummary> page = delegate.findActivePersonSummariesForOrg(organizationId);
 		page.forEach((summary) -> {
 			cacheTemplate.putIfAbsent(summaryCacheSupplier(summary, summary.getPersonId()));

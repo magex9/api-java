@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- Sample Configurations can be found here https://github.com/jbosstm/quickstart/blob/master/transactionaldriver/transactionaldriver-standalone/src/main/resources/jbossts-properties.xml -->
+
+	<entry key="com.arjuna.ats.arjuna.objectstore.objectStoreDir">./target/tx-object-store</entry>
+
+	<entry key="ObjectStoreEnvironmentBean.objectStoreDir">./target/tx-object-store</entry>
+
+	<entry key="CoordinatorEnvironmentBean.transactionStatusManagerEnable">NO</entry>
+
+</properties>

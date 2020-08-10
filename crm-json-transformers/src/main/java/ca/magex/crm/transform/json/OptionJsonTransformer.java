@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Lang;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
@@ -16,12 +13,10 @@ import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
-import ca.magex.json.model.JsonText;
 
-@Component
 public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
-
-	public OptionJsonTransformer(CrmServices crm) {
+	
+	public OptionJsonTransformer(CrmOptionService crm) {
 		super(crm);
 	}
 
@@ -32,37 +27,31 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 	
 	@Override
 	public JsonElement formatRoot(Option option) {
-		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("@context", buildContext(option)));
-		pairs.add(new JsonPair("@value", option.getCode()));
-		pairs.add(new JsonPair("@en", option.getName(Lang.ENGLISH)));
-		pairs.add(new JsonPair("@fr", option.getName(Lang.FRENCH)));
-		return new JsonObject(pairs);
-	}
-	
-	public String buildContext(Option option) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("http://magex.ca/crm/lookups/");
-		sb.append(option.getCode());
-		if (option.getParentId() != null) {
-			sb.append("/");
-			sb.append(crm.findOption(option.getParentId()).getCode());
-		}
-		return sb.toString();
+		return formatLocalized(option, null);
 	}
 	
 	@Override
 	public JsonElement formatLocalized(Option option, Locale locale) {
-		return new JsonText(option.getName(locale));
+		List<JsonPair> pairs = new ArrayList<JsonPair>();
+		formatType(pairs, locale);
+		if (locale == null)
+			pairs.add(new JsonPair("@id", buildContext(option, true, null) + "/" + option.getCode().replaceAll("_", "-").toLowerCase()));
+		formatIdentifier(pairs, "optionId", option, OptionIdentifier.class, locale);
+		formatIdentifier(pairs, "parentId", option, OptionIdentifier.class, locale);
+		formatTransformer(pairs, "type", option, new TypeJsonTransformer(crm), locale);
+		formatStatus(pairs, "status", option, locale);
+		formatBoolean(pairs, "mutable", option);
+		formatLocalized(pairs, "name", option, locale);
+		return new JsonObject(pairs);
 	}
 
 	@Override
 	public Option parseJsonObject(JsonObject json, Locale locale) {
-		OptionIdentifier optionId = parseIdentifier("optionId", json, OptionIdentifier.class, locale);
-		OptionIdentifier parentId = parseIdentifier("parentId", json, OptionIdentifier.class, locale);
-		Type type = null;
-		Boolean mutable = false;
-		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
+		Type type = Type.of(json.get("type") instanceof JsonObject ? json.getObject("type").getString("@value") : json.getString("type"));
+		OptionIdentifier optionId = parseOption("optionId", json, type, locale);
+		OptionIdentifier parentId = parseOption("parentId", json, type.getParent(), locale);
+		Boolean mutable = parseBoolean("mutable", json);
+		Status status = parseStatus("status", json, locale);
 		Localized name = parseObject("name", json, new LocalizedJsonTransformer(crm), locale);
 		return new Option(optionId, parentId, type, status, mutable, name);
 	}

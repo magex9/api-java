@@ -21,7 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +34,8 @@ import ca.magex.crm.graphql.util.MapBuilder;
 import graphql.ExecutionInput;
 
 @RestController
-public class GraphQLController implements CrmGraphQLController {
+@CrossOrigin
+public class GraphQLController {
 	
 	private static Logger logger = LoggerFactory.getLogger(GraphQLController.class);
 
@@ -48,52 +53,65 @@ public class GraphQLController implements CrmGraphQLController {
 		}
 	}
 
-	@Override
-	public ResponseEntity<Object> doQuery(String content, HttpServletRequest req, HttpServletResponse res) throws JSONException {
-		Principal principal = req.getUserPrincipal();
-		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
-		
-		if (content == null) {
-			return new ResponseEntity<Object>("No content provided", HttpStatus.BAD_REQUEST);
-		}
-		
+	@PostMapping("/graphql")
+	public ResponseEntity<Object> doQuery(
+			@RequestBody(required = false) String content, 
+			HttpServletRequest req, 
+			HttpServletResponse res) throws JSONException {
+		long start = System.nanoTime();
 		try {
-			String query = null;
-			MapBuilder variablesBuilder = new MapBuilder();
-			/* check if we have been provided a json query, or a graphql query directly */
-			if (req.getHeader(HttpHeaders.CONTENT_TYPE) == null) {
-				return new ResponseEntity<Object>("No " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);
+			Principal principal = req.getUserPrincipal();
+			logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));
+			
+			if (content == null) {
+				return new ResponseEntity<Object>("No content provided", HttpStatus.BAD_REQUEST);
 			}
-			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains(MediaType.APPLICATION_JSON_VALUE)) {
-				JSONObject jsonRequest = new JSONObject(content);
-				query = jsonRequest.getString("query");
-				if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {
-					parseVariables(variablesBuilder, jsonRequest.getJSONObject("variables"));
+			
+			try {
+				String query = null;
+				MapBuilder variablesBuilder = new MapBuilder();
+				/* check if we have been provided a json query, or a graphql query directly */
+				if (req.getHeader(HttpHeaders.CONTENT_TYPE) == null) {
+					return new ResponseEntity<Object>("No " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);
 				}
+				else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains(MediaType.APPLICATION_JSON_VALUE)) {
+					JSONObject jsonRequest = new JSONObject(content);
+					query = jsonRequest.getString("query");
+					if (jsonRequest.has("variables") && jsonRequest.get("variables") != JSONObject.NULL) {
+						parseVariables(variablesBuilder, jsonRequest.getJSONObject("variables"));
+					}
+				}
+				else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains("application/graphql")) {
+					query = content;
+				}
+				else {
+					return new ResponseEntity<Object>("Unknown " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);
+				}
+		
+				ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+						.query(query)
+						.variables(variablesBuilder.build())
+						.context(req)
+						.build();
+		
+				return new ResponseEntity<>(graphQLService.getGraphQL().execute(executionInput), HttpStatus.OK);
 			}
-			else if (req.getHeader(HttpHeaders.CONTENT_TYPE).contains("application/graphql")) {
-				query = content;
+			catch(JSONException jsone) {
+				logger.warn("Non parseable contents provided: " + jsone.getMessage());
+				return new ResponseEntity<Object>("Non parseable contents provided", HttpStatus.BAD_REQUEST);
 			}
-			else {
-				return new ResponseEntity<Object>("Unknown " + HttpHeaders.CONTENT_TYPE + " specified, expected one of 'application/json' or 'application/graphql'", HttpStatus.BAD_REQUEST);
-			}
-	
-			ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-					.query(query)
-					.variables(variablesBuilder.build())
-					.context(req)
-					.build();
-	
-			return new ResponseEntity<>(graphQLService.getGraphQL().execute(executionInput), HttpStatus.OK);
 		}
-		catch(JSONException jsone) {
-			logger.warn("Non parseable contents provided: " + jsone.getMessage());
-			return new ResponseEntity<Object>("Non parseable contents provided", HttpStatus.BAD_REQUEST);
+		finally {
+			logger.debug("doQuery took " + java.time.Duration.ofNanos(System.nanoTime() - start) + "ms.");
 		}
 	}
 	
-	@Override
-	public ResponseEntity<Object> doQueryAsGet(String query, String variables, HttpServletRequest req, HttpServletResponse res) throws JSONException {
+	@GetMapping("/graphql")
+	public ResponseEntity<Object> doQueryAsGet(
+			@RequestParam String query, 
+			@RequestParam(required = false) String variables, 
+			HttpServletRequest req,
+			HttpServletResponse res) throws JSONException {
 		Principal principal = req.getUserPrincipal();
 		logger.info("Entering doQuery@" + getClass().getSimpleName() + " as " + (principal == null ? "Anonymous" : principal.getName()));		
 				

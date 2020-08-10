@@ -1,6 +1,7 @@
 package ca.magex.crm.api.system.id;
 
 import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Type;
 
 /**
  * A Specific Identifier used for Salutation Identification
@@ -21,4 +22,10 @@ public class SalutationIdentifier extends OptionIdentifier {
 	public String getContext() {
 		return SalutationIdentifier.CONTEXT;
 	}
+	
+	@Override
+	public Type getType() {
+		return Type.SALUTATION;
+	}
+	
 }
