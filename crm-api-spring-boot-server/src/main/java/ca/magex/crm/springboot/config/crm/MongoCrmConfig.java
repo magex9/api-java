@@ -42,7 +42,6 @@ import ca.magex.crm.transform.json.JsonTransformerFactory;
 @Configuration
 @Profile(CrmProfiles.MONGO)
 @Description("Configures the CRM using the Mongo Repository")
-@PropertySource("mongodb-config.properties")
 public class MongoCrmConfig implements CrmConfigurer {
 	
 	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
