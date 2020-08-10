@@ -48,7 +48,7 @@
 		<module>crm-zuul-spring-boot-server</module>
 		
 		<!-- Playground Module -->
-		<module>crm-helloworld</module>	
+		<!-- <module>crm-helloworld</module> -->	
 		
 		<!-- Additional Repository Implementations -->
 		<!-- <module>crm-hazelcast-service</module> -->
