@@ -1,5 +1,7 @@
 package ca.magex.json.model;
 
+import java.util.stream.Collectors;
+
 import ca.magex.json.util.FormattedStringBuilder;
 
 public class JsonAsserts {
@@ -100,6 +102,13 @@ public class JsonAsserts {
 			}
 		}
 		return sb.toString().trim();
+	}
+	
+	public static void printKeyMap(JsonObject json) {
+		System.out.println("Map<String, List<String>> map = new HashMap<>();");
+		for (String key : json.keys()) {
+			System.out.println("map.put(\"" + key + "\", List.of(" + json.getObject(key).keys().stream().map(i -> "\"" + i + "\"").collect(Collectors.joining(", ")) + "));");
+		}
 	}
 	
 }

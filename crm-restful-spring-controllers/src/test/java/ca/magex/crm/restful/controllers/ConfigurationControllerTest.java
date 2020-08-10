@@ -1,11 +1,11 @@
 package ca.magex.crm.restful.controllers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 	
 	public JsonObject getJsonConfig() throws Exception {
 		return new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/rest/api.json")
+			.get("/rest/oas.json")
 			.header("Locale", Lang.ENGLISH))
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -67,54 +67,77 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 	}
 	
 	@Test
-	public void testConfigPathsExist() throws Exception {
-		JsonObject json = getJsonConfig();
-		Map<String, List<String>> paths = new HashMap<>();
-		paths.put("/rest/organizations", List.of("get", "post"));
-		paths.put("/rest/organizations/count", List.of("get"));
-		paths.put("/rest/organizations/{organizationId}", List.of("get", "patch"));
-		paths.put("/rest/organizations/{organizationId}/summary", List.of("get"));
-		paths.put("/rest/organizations/{organizationId}/mainLocation", List.of("get"));
-		paths.put("/rest/organizations/{organizationId}/enable", List.of("put"));
-		paths.put("/rest/organizations/{organizationId}/disable", List.of("put"));
-		paths.put("/rest/locations", List.of("get", "post"));
-		paths.put("/rest/locations/count", List.of("get"));
-		paths.put("/rest/locations/{locationId}", List.of("get", "patch"));
-		paths.put("/rest/locations/{locationId}/summary", List.of("get"));
-		paths.put("/rest/locations/{locationId}/enable", List.of("put"));
-		paths.put("/rest/locations/{locationId}/disable", List.of("put"));
-		paths.put("/rest/persons", List.of("get", "post"));
-		paths.put("/rest/persons/count", List.of("get"));
-		paths.put("/rest/persons/{personId}", List.of("get", "patch"));
-		paths.put("/rest/persons/{personId}/summary", List.of("get"));
-		paths.put("/rest/persons/{personId}/legalName", List.of("get"));
-		paths.put("/rest/persons/{personId}/address", List.of("get"));
-		paths.put("/rest/persons/{personId}/communication", List.of("get"));
-		paths.put("/rest/persons/{personId}/position", List.of("get"));
-		paths.put("/rest/persons/{personId}/user", List.of("get"));
-		paths.put("/rest/persons/{personId}/enable", List.of("put"));
-		paths.put("/rest/persons/{personId}/disable", List.of("put"));
-		paths.put("/rest/persons/{personId}/roles", List.of("get", "post"));
-		paths.put("/rest/persons/{personId}/roles/{roleId}", List.of("put", "delete"));
-		paths.put("/rest/lookups/{lookupId}/{locale}", List.of("get"));
+	public void testExpectedPathMethods() throws Exception {
+		Map<String, List<String>> map = new HashMap<>();
+		map.put("/rest/organizations", List.of("get", "post"));
+		map.put("/rest/organizations/details", List.of("get"));
+		map.put("/rest/organizations/count", List.of("get"));
+		map.put("/rest/organizations/{organizationId}", List.of("get", "patch"));
+		map.put("/rest/organizations/{organizationId}/details", List.of("get"));
+		map.put("/rest/organizations/{organizationId}/mainLocation", List.of("get", "put"));
+		map.put("/rest/organizations/{organizationId}/mainContact", List.of("get", "put"));
+		map.put("/rest/organizations/{organizationId}/authenticationGroups", List.of("get", "put"));
+		map.put("/rest/organizations/{organizationId}/businessGroups", List.of("get", "put"));
+		map.put("/rest/organizations/{organizationId}/enable", List.of("put"));
+		map.put("/rest/organizations/{organizationId}/disable", List.of("put"));
+//		map.put("/rest/locations", List.of("get", "post"));
+//		map.put("/rest/locations/count", List.of("get"));
+//		map.put("/rest/locations/{locationId}", List.of("get", "patch"));
+//		map.put("/rest/locations/{locationId}/summary", List.of("get"));
+//		map.put("/rest/locations/{locationId}/enable", List.of("put"));
+//		map.put("/rest/locations/{locationId}/disable", List.of("put"));
+//		map.put("/rest/persons", List.of("get", "post"));
+//		map.put("/rest/persons/count", List.of("get"));
+//		map.put("/rest/persons/{personId}", List.of("get", "patch"));
+//		map.put("/rest/persons/{personId}/summary", List.of("get"));
+//		map.put("/rest/persons/{personId}/legalName", List.of("get"));
+//		map.put("/rest/persons/{personId}/address", List.of("get"));
+//		map.put("/rest/persons/{personId}/communication", List.of("get"));
+//		map.put("/rest/persons/{personId}/position", List.of("get"));
+//		map.put("/rest/persons/{personId}/user", List.of("get"));
+//		map.put("/rest/persons/{personId}/enable", List.of("put"));
+//		map.put("/rest/persons/{personId}/disable", List.of("put"));
+//		map.put("/rest/persons/{personId}/roles", List.of("get", "post"));
+//		map.put("/rest/persons/{personId}/roles/{roleId}", List.of("put", "delete"));
+//		map.put("/rest/lookups/{lookupId}/{locale}", List.of("get"));
 		
-		assertEquals(paths.size(), json.getObject("paths").size());
-		for (String key : paths.keySet()) {
-			assertTrue(json.getObject("paths").contains(key));
-			assertEquals(paths.get(key), json.getObject("paths").getObject(key).keys());
+		JsonObject paths = getJsonConfig().getObject("paths");
+		assertEquals(map.size(), paths.size());
+		for (String key : map.keySet()) {
+			assertTrue(paths.contains(key));
+			assertEquals(map.get(key), paths.getObject(key).keys());
 		}
 	}
 	
 	@Test
-	public void testConfigComponentsExist() throws Exception {
-		JsonObject json = getJsonConfig();
-		Map<String, List<String>> paths = new HashMap<>();
-		JsonObject schemas = json.getObject("components").getObject("schemas");
-		for (String key : schemas.keys()) {
-			System.out.println("components.put(\"" + key + "\", List.of(" + schemas.getObject(key).keys().stream().map(i -> "\"" + i + "\"").collect(Collectors.joining(", ")) + ");");
+	public void testExpectedSchemas() throws Exception {
+		Map<String, List<String>> map = new HashMap<>();
+		map.put("OrganizationSummary", List.of("description", "type", "required", "properties"));
+		map.put("OrganizationDetails", List.of("description", "type", "required", "properties"));
+		map.put("LocationSummary", List.of("description", "type", "required", "properties"));
+		map.put("LocationDetails", List.of("description", "type", "required", "properties"));
+		map.put("PersonSummary", List.of("description", "type", "required", "properties"));
+		map.put("PersonDetails", List.of("description", "type", "required", "properties"));
+		map.put("UserSummary", List.of("description", "type", "required", "properties"));
+		map.put("UserDetails", List.of("description", "type", "required", "properties"));
+		map.put("PersonName", List.of("description", "type", "required", "properties"));
+		map.put("Telephone", List.of("description", "type", "required", "properties"));
+		map.put("Communication", List.of("description", "type", "required", "properties"));
+		map.put("MailingAddress", List.of("description", "type", "required", "properties"));
+		map.put("Message", List.of("description", "type", "required", "properties"));
+		map.put("Type", List.of("description", "type", "oneOf"));
+		map.put("Status", List.of("description", "type", "oneOf"));
+		map.put("BadRequestException", List.of("description", "type", "required", "properties"));
+		map.put("PermissionDeniedException", List.of("description", "type", "required", "properties"));
+		map.put("ItemNotFoundException", List.of("description", "type", "required", "properties"));
+		map.put("ApiException", List.of("description", "type", "required", "properties"));
+		
+		JsonObject schemas = getJsonConfig().getObject("components").getObject("schemas");
+		assertEquals(map.size(), schemas.size());
+		for (String key : map.keySet()) {
+			assertTrue(schemas.contains(key));
+			assertEquals(map.get(key), schemas.getObject(key).keys());
 		}
-		
-		
 	}
 	
 }
