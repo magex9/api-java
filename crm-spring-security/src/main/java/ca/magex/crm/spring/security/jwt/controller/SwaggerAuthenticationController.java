@@ -28,10 +28,9 @@ public class SwaggerAuthenticationController {
 	public void getSwaggerYaml(HttpServletResponse res) throws IOException {
 		try (InputStream yaml = getClass().getResourceAsStream("/auth.yaml")) {
 			String server = StringUtils.isBlank(serverAddress) ?
-					"" : "http://" + serverAddress + ":" + serverPort;
+					contextPath : "http://" + serverAddress + ":" + serverPort + contextPath;
 			String yamlContents = StreamUtils.copyToString(yaml, Charset.forName("UTF-8"))
-					.replace("${server}", server)
-					.replace("${contextPath}", contextPath);
+					.replace("${server}", server);
 			res.getWriter().append(yamlContents);
 			res.getWriter().flush();
 		}

@@ -6,7 +6,7 @@
   },
   "security": [{"bearerAuth": []}],
   "servers": [{
-    "url": "${server}${contextPath}",
+    "url": "${server}",
     "description": "Local development (uses test data)"
   }],
   "paths": {
