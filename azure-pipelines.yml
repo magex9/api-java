@@ -80,13 +80,10 @@ stages:
               parameters:
                 environment: 'ut'
                 application_name: crm-helloworld
-                sshEndpoint: 'ssh - RD3'
+                
 
             #Deploy crm-graphql-spring-boot-server
             - template: azure-package.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-api-spring-boot-server
-                application_version: 1.0.0-SNAPSHOT
-                sshEndpoint: 'ssh - RD3'
- 
