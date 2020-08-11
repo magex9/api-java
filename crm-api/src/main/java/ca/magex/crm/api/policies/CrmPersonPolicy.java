@@ -1,12 +1,13 @@
 package ca.magex.crm.api.policies;
 
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
 public interface CrmPersonPolicy {
 
-    boolean canCreatePersonForOrganization(Identifier organizationId);
-    boolean canViewPerson(Identifier personId);
-    boolean canUpdatePerson(Identifier personId);
-    boolean canEnablePerson(Identifier personId);
-    boolean canDisablePerson(Identifier personId);        
+    boolean canCreatePersonForOrganization(OrganizationIdentifier organizationId);
+    boolean canViewPerson(PersonIdentifier personId);
+    boolean canUpdatePerson(PersonIdentifier personId);
+    boolean canEnablePerson(PersonIdentifier personId);
+    boolean canDisablePerson(PersonIdentifier personId);        
 }

@@ -79,7 +79,7 @@ public class CrmTestSuite {
 		assertSinglePage(orgs, 2);
 		
 		logger.info("Make sure the organization can be found using case-insensitive filters with the default no user or location.");
-		OrganizationDetails org = crm.findOrganizationByDisplayName("crm");
+		OrganizationDetails org = crm.findOrganizationDetails(crm.defaultOrganizationsFilter().withDisplayName("crm")).getSingleItem();
 		assertEquals("CRM Management", org.getDisplayName());
 		assertNull(org.getMainLocationId());
 		assertNull(org.getMainContactId());
@@ -97,7 +97,7 @@ public class CrmTestSuite {
 		Identifier organizationId = crm.createOrganization("MageX", List.of("CRM")).getOrganizationId();
 
 		MailingAddress address = new MailingAddress("1234 Alta Vista Drive", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K3J 3I3");
-		Identifier mainLocationId = crm.createLocation(organizationId, "Headquarters", "HQ", address).getLocationId();
+		Identifier mainLocationId = crm.createLocation(organizationId, "HQ", "Headquarters", address).getLocationId();
 		crm.updateOrganizationMainLocation(organizationId, mainLocationId);
 		
 		PersonName scottName = new PersonName("Mr.", "Scott", null, "Finlay");
@@ -123,7 +123,7 @@ public class CrmTestSuite {
 		Page<OrganizationDetails> orgs = crm.findOrganizationDetails(crm.defaultOrganizationsFilter());
 		assertSinglePage(orgs, 2);
 		
-		Identifier organizationId = crm.findOrganizationByDisplayName("MageX").getOrganizationId();
+		Identifier organizationId = crm.findOrganizationDetails(crm.defaultOrganizationsFilter().withDisplayName("MageX")).getSingleItem().getOrganizationId();
 		OrganizationDetails org = crm.findOrganizationDetails(organizationId);
 		assertEquals("MageX", org.getDisplayName());
 		assertEquals(List.of("CRM"), org.getGroups());

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>CRM Login Page</title>
+
+<link rel="icon" type="image/ico" href="/crm/favicon.ico" />
+<link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/crm.css}" />
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Magex.ca</a>
+  </nav>
+
+  <main role="main" class="container">      
+      <form th:action="@{/login}" method="post">
+        <div class="row">
+          <div class="col-12">
+            <label>Login Credentials:</label>  
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <input class="form-control" type="text" name="username" />
+              <small class="field-label text-muted">Username</small>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <input class="form-control" type="password" name="password" />
+              <small class="field-label text-muted">Password</small>&nbsp;<small
+              class="field-label error-text"
+              th:if="${param.error}">Invalid Credentials</small>
+            </div>            
+          </div>
+        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="btn btn-primary">Sign In</button>
+      </form>
+  </main>
+  <!-- /.container -->
+
+  <!-- must load JQuery before loading Bootstrap or else bad things happen -->
+  <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+</body>
+</html>

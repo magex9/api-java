@@ -12,9 +12,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.exceptions.BadRequestException;
-import ca.magex.crm.api.system.Identifier;
-import ca.magex.crm.api.system.Localized;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Message;
+import ca.magex.crm.api.system.id.MessageTypeIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
 import graphql.execution.DataFetcherExceptionHandlerResult;
@@ -32,8 +34,8 @@ public class GraphQLExceptionHandlerTests {
 	@Test
 	public void testHandleBadRequestException() {
 		BadRequestException bre = new BadRequestException("Error During Load", List.of(
-				new Message(new Identifier("A"), "error", "p1", new Localized("A", "en", "fr")),
-				new Message(new Identifier("B"), "error", "p2", new Localized("B", "en", "fr"))));
+				new Message(new OrganizationIdentifier("A"), new MessageTypeIdentifier("error"), "p1", "blank", new Choice<>("Custom 1")),
+				new Message(new OrganizationIdentifier("B"), new MessageTypeIdentifier("error"), "p2", "empty", new Choice<>(new PhraseIdentifier("error")))));
 
 		DataFetcherExceptionHandlerParameters handlerParameters = Mockito.mock(DataFetcherExceptionHandlerParameters.class);
 		Mockito.when(handlerParameters.getException()).thenReturn(bre);

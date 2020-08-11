@@ -1,20 +1,12 @@
 package ca.magex.crm.api.policies.basic;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 
 	private CrmOrganizationService organizations;
@@ -35,7 +27,7 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canViewOrganization(Identifier organizationId) {
+	public boolean canViewOrganization(OrganizationIdentifier organizationId) {
 		/* can only view an organization if it exists */
 		if (organizations.findOrganizationSummary(organizationId) == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
@@ -44,7 +36,7 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canUpdateOrganization(Identifier organizationId) {
+	public boolean canUpdateOrganization(OrganizationIdentifier organizationId) {
 		/* can only update an organization if it exists, and is active */
 		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
 		if (summary == null) {
@@ -54,7 +46,7 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canEnableOrganization(Identifier organizationId) {
+	public boolean canEnableOrganization(OrganizationIdentifier organizationId) {
 		/* can only update an organization if it exists, and is active */
 		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
 		if (summary == null) {
@@ -64,7 +56,7 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canDisableOrganization(Identifier organizationId) {
+	public boolean canDisableOrganization(OrganizationIdentifier organizationId) {
 		/* can only update an organization if it exists, and is active */
 		OrganizationSummary summary = organizations.findOrganizationSummary(organizationId);
 		if (summary == null) {

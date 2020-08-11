@@ -1,6 +1,10 @@
 package ca.magex.crm.transform.json;
 
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
+import static ca.magex.crm.test.CrmAsserts.MR;
+import static ca.magex.crm.test.CrmAsserts.PERSON_LEGAL_NAME;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -8,32 +12,37 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.lookup.Salutation;
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = { BasicTestConfig.class })
 public class PersonNameJsonTransformerTests {
 	
-	private Crm crm;
+	@Autowired private Crm crm;
+	
+	@Autowired private CrmConfigurationService config;
 	
 	private Transformer<PersonName, JsonElement> transformer;
-	
-	private Salutation salutation;
 	
 	private PersonName personName;
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		config.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new PersonNameJsonTransformer(crm);
-		salutation = crm.findSalutationByLocalizedName(Lang.ENGLISH, "Mr.");
-		personName = PERSON_NAME.withSalutation(salutation.getCode());
+		personName = PERSON_LEGAL_NAME.withSalutation(MR);
 	}
 	
 	@Test
@@ -52,25 +61,27 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(personName, null);
-		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), linked.keys());
-		assertEquals("PersonName", linked.getString("@type"));
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
-		assertEquals("Salutation", linked.getObject("salutation").getString("@type"));
-		assertEquals("3", linked.getObject("salutation").getString("@value"));
-		assertEquals("Mr.", linked.getObject("salutation").getString("@en"));
-		assertEquals("M.", linked.getObject("salutation").getString("@fr"));
-		assertEquals("Chris", linked.getString("firstName"));
-		assertEquals("P", linked.getString("middleName"));
-		assertEquals("Bacon", linked.getString("lastName"));
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "salutation", "firstName", "middleName", "lastName"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/PersonName", linked.getString("@context").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("salutation").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Salutations", linked.getObject("salutation").getString("@context").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("http://api.magex.ca/crm/rest/options/salutations/mr", linked.getObject("salutation").getString("@id").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("MR", linked.getObject("salutation").getString("@value").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Mr.", linked.getObject("salutation").getString("@en").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("M.", linked.getObject("salutation").getString("@fr").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Chris", linked.getString("firstName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("P", linked.getString("middleName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
+		assertEquals("Bacon", linked.getString("lastName").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r"));
 		assertEquals(personName, transformer.parse(linked, null));
 	}
 	
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(personName, Lang.ROOT);
-		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), root.keys());
-		assertEquals("PersonName", root.getString("@type"));
-		assertEquals("3", root.getString("salutation"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), root.keys());
+		assertEquals("MR", root.getString("salutation"));
 		assertEquals("Chris", root.getString("firstName"));
 		assertEquals("P", root.getString("middleName"));
 		assertEquals("Bacon", root.getString("lastName"));
@@ -80,8 +91,8 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(personName, Lang.ENGLISH);
-		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), english.keys());
-		assertEquals("PersonName", english.getString("@type"));
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), english.keys());
 		assertEquals("Mr.", english.getString("salutation"));
 		assertEquals("Chris", english.getString("firstName"));
 		assertEquals("P", english.getString("middleName"));
@@ -92,8 +103,8 @@ public class PersonNameJsonTransformerTests {
 	@Test
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(personName, Lang.FRENCH);
-		assertEquals(List.of("@type", "salutation", "firstName", "middleName", "lastName"), french.keys());
-		assertEquals("PersonName", french.getString("@type"));
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("salutation", "firstName", "middleName", "lastName"), french.keys());
 		assertEquals("M.", french.getString("salutation"));
 		assertEquals("Chris", french.getString("firstName"));
 		assertEquals("P", french.getString("middleName"));

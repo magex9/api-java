@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>crm-api-spring-boot-server</artifactId>
+
+	<parent>
+		<groupId>ca.magex.crm</groupId>
+		<artifactId>crm-maven-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../crm-maven-parent/pom.xml</relativePath>
+	</parent>
+
+	<description>Spring Boot Server for the CRM APIs</description>
+
+	<dependencies>
+		<!-- Run Spring Boot using Jetty Web Server -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency>
+
+		<!-- Include thymeleaf and spring validation for UI -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+		</dependency>
+
+		<!-- Include JWT Security Support -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-spring-security</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- Include Narayana JTA Transactions -->
+		<dependency>
+			<groupId>me.snowdrop</groupId>
+			<artifactId>narayana-spring-boot-starter</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<!-- Include Caffeine caching support -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-spring-caching</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Include Graphql end points -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-graphql-spring-controllers</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Include Restful end points -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-restful-spring-controllers</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Include Actuator Support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Include Devtools for running locally from eclipse -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<!-- Mongo Repository -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-mongodb-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Test Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Include spring boot maven plugin to build a bootable jar file for deployment c -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>bootable</classifier>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

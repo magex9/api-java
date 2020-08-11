@@ -8,37 +8,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
-import ca.magex.crm.api.roles.Group;
-import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonPair;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = { BasicTestConfig.class })
 public class CommonJsonTransformerTests {
 
+	@Autowired private Crm crm;
+	
 	@Test
 	public void testFormatTextNull() throws Exception {
-		CrmServices crm = new AmnesiaCrm();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		transformer.formatText(null, null, null);
 	}
 	
 	@Test
 	public void testFormatTextKey() throws Exception {
-		CrmServices crm = new AmnesiaCrm();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
+		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
-		transformer.formatText(pairs, "code", group);
+		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
+				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP);
+		transformer.formatText(pairs, "code", option);
 	}
 	
 	@Test
 	public void testGetPropertyOptions() throws Exception {
-		CrmServices crm = new AmnesiaCrm();
-		AbstractJsonTransformer<Group> transformer = new GroupJsonTransformer(crm);
-		Group group = new Group(new Identifier("g"), Status.ACTIVE, GROUP);
+		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
+		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
+				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP);
 		try {
 			transformer.getProperty(null, "code", String.class);
 			fail("Illegal arguments");
@@ -46,28 +54,28 @@ public class CommonJsonTransformerTests {
 			assertEquals("Object cannot be null", e.getMessage());
 		}
 		try {
-			transformer.getProperty(group, null, String.class);
+			transformer.getProperty(option, null, String.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
 			assertEquals("Key cannot be null", e.getMessage());
 		}
 		try {
-			transformer.getProperty(group, "code", null);
+			transformer.getProperty(option, "code", null);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
 			assertEquals("Type cannot be null", e.getMessage());
 		}
 		try {
-			transformer.getProperty(group, "code", Group.class);
+			transformer.getProperty(option, "code", Option.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unable to get code from {\"groupId\":\"g\",\"status\":\"ACTIVE\",\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+			assertEquals("Unable to get code from {\"type\":\"AUTHENTICATION_GROUPS\",\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
 		}
 		try {
-			transformer.getProperty(group, "invalid", String.class);
+			transformer.getProperty(option, "invalid", String.class);
 			fail("Illegal arguments");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unable to get invalid from {\"groupId\":\"g\",\"status\":\"ACTIVE\",\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
+			assertEquals("Unable to get invalid from {\"type\":\"AUTHENTICATION_GROUPS\",\"optionId\":\"\\/options\\/authentication-groups\\/o\",\"parentId\":\"\\/options\\/authentication-groups\\/p\",\"status\":\"ACTIVE\",\"mutable\":false,\"name\":{\"code\":\"GRP\",\"en\":\"Group\",\"fr\":\"Groupe\"}}", e.getMessage());
 		}
 	}
 	

@@ -1,5 +1,8 @@
 package ca.magex.crm.transform.json;
 
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_EMAIL;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_ORG;
+import static ca.magex.crm.test.CrmAsserts.SYSTEM_PERSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -7,25 +10,34 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import ca.magex.crm.amnesia.services.AmnesiaCrm;
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = { BasicTestConfig.class })
 public class StatusJsonTransformerTests {
 	
-	private Crm crm;
+	@Autowired private Crm crm;
+	
+	@Autowired private CrmConfigurationService config;
 	
 	private Transformer<Status, JsonElement> transformer;
 	
 	@Before
 	public void setup() {
-		crm = new AmnesiaCrm();
+		config.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new StatusJsonTransformer(crm);
 	}
 	
@@ -45,21 +57,23 @@ public class StatusJsonTransformerTests {
 	@Test
 	public void testFormatJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(Status.ACTIVE, null);
-		assertEquals(List.of("@type", "@value", "@en", "@fr"), root.keys());
-		assertEquals("Status", root.getString("@type"));
-		assertEquals("active", root.getString("@value"));
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), root.keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", root.getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", root.getString("@id"));
+		assertEquals("ACTIVE", root.getString("@value"));
 		assertEquals("Active", root.getString("@en"));
 		assertEquals("Actif", root.getString("@fr"));
 
-		assertEquals(new JsonText("active"), transformer.format(Status.ACTIVE, Lang.ROOT));
+		assertEquals(new JsonText("ACTIVE"), transformer.format(Status.ACTIVE, Lang.ROOT));
 		assertEquals(new JsonText("Active"), transformer.format(Status.ACTIVE, Lang.ENGLISH));
 		assertEquals(new JsonText("Actif"), transformer.format(Status.ACTIVE, Lang.FRENCH));
 
-		assertEquals(new JsonText("inactive"), transformer.format(Status.INACTIVE, Lang.ROOT));
+		assertEquals(new JsonText("INACTIVE"), transformer.format(Status.INACTIVE, Lang.ROOT));
 		assertEquals(new JsonText("Inactive"), transformer.format(Status.INACTIVE, Lang.ENGLISH));
 		assertEquals(new JsonText("Inactif"), transformer.format(Status.INACTIVE, Lang.FRENCH));
 
-		assertEquals(new JsonText("pending"), transformer.format(Status.PENDING, Lang.ROOT));
+		assertEquals(new JsonText("PENDING"), transformer.format(Status.PENDING, Lang.ROOT));
 		assertEquals(new JsonText("Pending"), transformer.format(Status.PENDING, Lang.ENGLISH));
 		assertEquals(new JsonText("En attente"), transformer.format(Status.PENDING, Lang.FRENCH));
 	}

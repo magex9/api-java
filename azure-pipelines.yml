@@ -22,38 +22,45 @@ resources:
 
 trigger:
       - azure
+      - dev
 #test
 #Stages Configuration (to be ran sequentially)
 stages:
-- stage: Build
+- stage: CI
+  displayName: Continuous Integration (CI) Build
   jobs:
-  - job: Build
+  - job: Build_apps
+    displayName: Build Applications
     steps:
             
     - task: Maven@3
       inputs:
         goals: 'install'
         mavenPomFile: 'pom.xml'
-        options: '-Dmaven.test.failure.ignore=true'
+        #options: '-Dmaven.test.failure.ignore=true'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
+      env: { ENVIRONMENT=ut }
+
 
     - publish: $(System.DefaultWorkingDirectory)/crm-api-spring-boot-server/target/
       artifact: crm-api-spring-boot-server
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
+    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/
       artifact: crm-helloworld
+    
 
-- stage: deployApplications
+- stage: Continuous_Deployment
+  displayName: Continuous Deployment to UT
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure'))
   jobs:
 
     - deployment: Deploy
-      displayName: "Deploy Application"
+      displayName: "Deploy Application to UT"
       environment: 'ut'
       strategy:
       # default deployment strategy, more coming...
@@ -68,15 +75,18 @@ stages:
               path: adlc  # path to check out source code, relative to the agent's build directory (e.g. \_work\1)
               persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
       
-            - template: azure-deploy.yml
+            #Deploy crm-helloworld
+            - template: azure-package.yml
+              parameters:
+                environment: 'ut'
+                application_name: crm-helloworld
+                sshEndpoint: 'ssh - RD3'
+
+            #Deploy crm-graphql-spring-boot-server
+            - template: azure-package.yml
               parameters:
                 environment: 'ut'
                 application_name: crm-api-spring-boot-server
                 application_version: 1.0.0-SNAPSHOT
                 sshEndpoint: 'ssh - RD3'
-            - template: azure-deploy.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-helloworld
-                application_version: 1.0.0-SNAPSHOT
-                sshEndpoint: 'ssh - RD3'    
+ 

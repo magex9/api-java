@@ -3,7 +3,6 @@ package ca.magex.crm.spring.security.auth;
 import java.io.IOException;
 import java.net.URI;
 
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;

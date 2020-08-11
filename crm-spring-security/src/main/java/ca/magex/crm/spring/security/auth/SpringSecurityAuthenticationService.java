@@ -1,18 +1,18 @@
 package ca.magex.crm.spring.security.auth;
 
-import org.springframework.context.annotation.Profile;
+import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
-import ca.magex.crm.api.MagexCrmProfiles;
-import ca.magex.crm.api.roles.User;
-import ca.magex.crm.api.services.CrmAuthenticationService;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
-@Component
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class SpringSecurityAuthenticationService implements CrmAuthenticationService {
 
 	private CrmUserService userService;
@@ -23,35 +23,61 @@ public class SpringSecurityAuthenticationService implements CrmAuthenticationSer
 
 	@Override
 	public boolean isAuthenticated() {
-		return SecurityContextHolder.getContext().getAuthentication() != null;
+		return SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken;
 	}
 
 	@Override
-	public User getCurrentUser() {
+	public UserDetails getAuthenticatedUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null) {
+		if (auth == null || auth instanceof AnonymousAuthenticationToken) {
 			return null;
 		}
-		return userService.findUserByUsername(auth.getName());
+		return userService.findUserDetailsByUsername(auth.getName());
 	}
 
 	@Override
 	public boolean isUserInRole(String role) {
-		return getCurrentUser().getRoles().contains(role);
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return false;
+		}
+		return authUser.isInRole(new AuthenticationRoleIdentifier(role));
 	}
 
 	@Override
-	public Identifier getUserId() {
-		return getCurrentUser().getUserId();
+	public UserIdentifier getAuthenticatedUserId() {
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getUserId();
 	}
 
 	@Override
-	public Identifier getPersonId() {
-		return getCurrentUser().getPerson().getPersonId();
+	public PersonIdentifier getAuthenticatedPersonId() {
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getPersonId();
 	}
 
 	@Override
-	public Identifier getOrganizationId() {
-		return getCurrentUser().getPerson().getOrganizationId();
+	public OrganizationIdentifier getAuthenticatedOrganizationId() {
+		UserDetails authUser = getAuthenticatedUser();
+		if (authUser == null) {
+			return null;
+		}
+		return authUser.getOrganizationId();
+	}
+
+	@Override
+	public boolean login(String username, String password) {
+		throw new NotImplementedException("unimplemented");
+	}
+
+	@Override
+	public boolean logout() {
+		throw new NotImplementedException("unimplemented");
 	}
 }

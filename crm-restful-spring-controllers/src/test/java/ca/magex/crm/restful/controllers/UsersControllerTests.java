@@ -1,683 +1,579 @@
 package ca.magex.crm.restful.controllers;
 
-import static ca.magex.crm.test.CrmAsserts.BUSINESS_POSITION;
+import static ca.magex.crm.api.system.id.BusinessRoleIdentifier.EXTERNAL_OWNER;
 import static ca.magex.crm.test.CrmAsserts.CHLOE;
 import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
 import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.http.HttpStatus;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.crm.test.CrmAsserts;
+import ca.magex.crm.transform.json.IdentifierJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
 public class UsersControllerTests extends AbstractControllerTests {
 
-	private Identifier systemOrgId;
+	private OrganizationIdentifier systemOrgId;
 	
-	private Identifier systemPersonId;
+	private PersonIdentifier systemPersonId;
 	
-	private Identifier systemUserId;
+	private UserIdentifier systemUserId;
 	
-	private Identifier testOrgId;
+	private OrganizationIdentifier testOrgId;
 	
-	private Identifier testPersonId;
+	private PersonIdentifier testPersonId;
 	
 	@Before
 	public void setup() {
 		initialize();
-		systemOrgId = crm.findOrganizationSummaries(crm.defaultOrganizationsFilter().withGroup("SYS")).getSingleItem().getOrganizationId();
-		systemPersonId = crm.findPersonDetails(crm.defaultPersonsFilter()).getSingleItem().getPersonId();
-		systemUserId = crm.findUsers(crm.defaultUsersFilter().withPersonId(systemPersonId)).getSingleItem().getUserId();
-		testOrgId = crm.createOrganization("Test Org", List.of("ORG")).getOrganizationId();
-		testPersonId = crm.createPerson(testOrgId, CHLOE, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		systemOrgId = getSystemOrganizationIdentifier();
+		systemPersonId = getSystemAdminIdentifier();
+		systemUserId = getSystemUserIdentifier();
+		testOrgId = createTestOrganization("Test Org");
+		testPersonId = crm.createPerson(testOrgId, CrmAsserts.displayName(CHLOE), CHLOE, MAILING_ADDRESS, WORK_COMMUNICATIONS, List.of(EXTERNAL_OWNER)).getPersonId();
 	}
 	
 	@Test
 	public void testCreateUser() throws Exception {
-		// Get the initial list of groups to make sure they are blank
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
-		assertEquals(1, json.getNumber("page"));
-		assertEquals(10, json.getNumber("limit"));
-		assertEquals(1, json.getNumber("total"));
-		assertEquals(false, json.getBoolean("hasNext"));
-		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(1, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(systemUserId.toString(), json.getArray("content").getObject(0).getString("userId"));
-		assertEquals("system", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(4, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(0).getArray("roles").getString(1));
-		assertEquals("SYS_ACCESS", json.getArray("content").getObject(0).getArray("roles").getString(2));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(3));
+		JsonObject orig = get("/users/details", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(orig, "orig");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), orig.keys());
+		assertEquals(1, orig.getNumber("page"));
+		assertEquals(10, orig.getNumber("limit"));
+		assertEquals(1, orig.getNumber("total"));
+		assertEquals(false, orig.getBoolean("hasNext"));
+		assertEquals(false, orig.getBoolean("hasPrevious"));
+		assertEquals(1, orig.getArray("content").size());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), orig.getArray("content").getObject(0).keys());
+		assertEquals(systemUserId.getCode(), orig.getArray("content").getObject(0).getString("userId"));
+		assertEquals(systemOrgId.getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(systemPersonId.getCode(), orig.getArray("content").getObject(0).getString("personId"));
+		assertEquals("admin", orig.getArray("content").getObject(0).getString("username"));
+		assertEquals("Active", orig.getArray("content").getObject(0).getString("status"));
+		assertEquals(4, orig.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("System Administrator", orig.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals("System Actuator", orig.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
+		assertEquals("System Access", orig.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(2));
+		assertEquals("CRM Admin", orig.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(3));
 		
-		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.post("/api/users")
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("personId", testPersonId.toString())
-				.with("username", "bob")
-				.with("roles", List.of("ORG_ADMIN", "CRM_ADMIN"))
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
-		assertEquals("User", json.getString("@type"));
-		assertEquals("bob", json.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
-		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
-		assertEquals("Active", json.getString("status"));
-		assertEquals(2, json.getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
+		JsonObject create = post("/users", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+			.with("personId", testPersonId.toString())
+			.with("username", "chloe")
+			.with("authenticationRoleIds", List.of(
+				new IdentifierJsonTransformer(crm).format(AuthenticationRoleIdentifier.ORG_ADMIN, Lang.ENGLISH),
+				new IdentifierJsonTransformer(crm).format(AuthenticationRoleIdentifier.CRM_ADMIN, Lang.ENGLISH)
+			)));
+		//JsonAsserts.print(create, "create");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), create.keys());
+		assertEquals(testOrgId.getCode(), create.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), create.getString("personId"));
+		assertEquals("chloe", create.getString("username"));
+		assertEquals("Active", create.getString("status"));
+		assertEquals(2, create.getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", create.getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Admin", create.getArray("authenticationRoleIds").getString(1));		
+		UserIdentifier userId = new UserIdentifier(create.getString("userId"));
 		
-		Identifier userId = new Identifier(json.getString("userId"));
+		JsonObject fetch = get(userId, Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(fetch, "fetch");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), fetch.keys());
+		assertEquals(userId.getCode(), fetch.getString("userId"));
+		assertEquals(testOrgId.getCode(), fetch.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), fetch.getString("personId"));
+		assertEquals("chloe", fetch.getString("username"));
+		assertEquals("ACTIVE", fetch.getString("status"));
+		assertEquals(2, fetch.getArray("authenticationRoleIds").size());
+		assertEquals("ORG/ADMIN", fetch.getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM/ADMIN", fetch.getArray("authenticationRoleIds").getString(1));
 		
-		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId)
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
-		assertEquals("User", json.getString("@type"));
-		assertEquals(userId.toString(), json.getString("userId"));
-		assertEquals("bob", json.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
-		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
-		assertEquals("Active", json.getString("status"));
-		assertEquals(2, json.getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
+		JsonObject english = get(userId, Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), english.keys());
+		assertEquals(userId.getCode(), english.getString("userId"));
+		assertEquals(testOrgId.getCode(), english.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), english.getString("personId"));
+		assertEquals("chloe", english.getString("username"));
+		assertEquals("Active", english.getString("status"));
+		assertEquals(2, english.getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", english.getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Admin", english.getArray("authenticationRoleIds").getString(1));
 		
-		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId)
-			.header("Locale", Lang.FRENCH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
-		assertEquals("User", json.getString("@type"));
-		assertEquals(userId.toString(), json.getString("userId"));
-		assertEquals("bob", json.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
-		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
-		assertEquals("Actif", json.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
-		assertEquals("Actif", json.getString("status"));
-		assertEquals(2, json.getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
+		JsonObject french = get(userId, Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), french.keys());
+		assertEquals(userId.getCode(), french.getString("userId"));
+		assertEquals(testOrgId.getCode(), french.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), french.getString("personId"));
+		assertEquals("chloe", french.getString("username"));
+		assertEquals("Actif", french.getString("status"));
+		assertEquals(2, french.getArray("authenticationRoleIds").size());
+		assertEquals("Administrateur de l'organisation", french.getArray("authenticationRoleIds").getString(0));
+		assertEquals("Administrateur GRC", french.getArray("authenticationRoleIds").getString(1));
 		
-		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users/" + userId))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
-		assertEquals("User", json.getString("@type"));
-		assertEquals(userId.toString(), json.getString("userId"));
-		assertEquals("bob", json.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
-		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
-		assertEquals("active", json.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
-		assertEquals("active", json.getString("status"));
-		assertEquals(2, json.getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("roles").getString(1));
-
-		json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.get("/api/users")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), json.keys());
-		assertEquals(1, json.getNumber("page"));
-		assertEquals(10, json.getNumber("limit"));
-		assertEquals(2, json.getNumber("total"));
-		assertEquals(false, json.getBoolean("hasNext"));
-		assertEquals(false, json.getBoolean("hasPrevious"));
-		assertEquals(2, json.getArray("content").size());
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(0).keys());
-		assertEquals("User", json.getArray("content").getObject(0).getString("@type"));
-		assertEquals(userId.toString(), json.getArray("content").getObject(0).getString("userId"));
-		assertEquals("bob", json.getArray("content").getObject(0).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(0).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(0).getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getArray("content").getObject(0).getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getArray("content").getObject(0).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(0).getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getArray("content").getObject(0).getObject("person").getString("displayName"));
-		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
-		assertEquals(2, json.getArray("content").getObject(0).getArray("roles").size());
-		assertEquals("ORG_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(0).getArray("roles").getString(1));
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.getArray("content").getObject(1).keys());
-		assertEquals("User", json.getArray("content").getObject(1).getString("@type"));
-		assertEquals(systemUserId.toString(), json.getArray("content").getObject(1).getString("userId"));
-		assertEquals("system", json.getArray("content").getObject(1).getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getArray("content").getObject(1).getObject("person").keys());
-		assertEquals("PersonSummary", json.getArray("content").getObject(1).getObject("person").getString("@type"));
-		assertEquals(systemPersonId.toString(), json.getArray("content").getObject(1).getObject("person").getString("personId"));
-		assertEquals(systemOrgId.toString(), json.getArray("content").getObject(1).getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getArray("content").getObject(1).getObject("person").getString("status"));
-		assertEquals("Bacon, Chris P", json.getArray("content").getObject(1).getObject("person").getString("displayName"));
-		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
-		assertEquals(4, json.getArray("content").getObject(1).getArray("roles").size());
-		assertEquals("SYS_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(0));
-		assertEquals("SYS_ACTUATOR", json.getArray("content").getObject(1).getArray("roles").getString(1));
-		assertEquals("SYS_ACCESS", json.getArray("content").getObject(1).getArray("roles").getString(2));
-		assertEquals("CRM_ADMIN", json.getArray("content").getObject(1).getArray("roles").getString(3));
+		JsonObject jsonld = get(userId, null, HttpStatus.OK);
+		//JsonAsserts.print(jsonld, "jsonld");
+		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), jsonld.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/UserDetails", jsonld.getString("@context"));
+		assertEquals(Crm.REST_BASE + userId, jsonld.getString("userId"));
+		assertEquals(Crm.REST_BASE + testOrgId, jsonld.getString("organizationId"));
+		assertEquals(Crm.REST_BASE + testPersonId, jsonld.getString("personId"));
+		assertEquals("chloe", jsonld.getString("username"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), jsonld.getObject("status").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", jsonld.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", jsonld.getObject("status").getString("@id"));
+		assertEquals("ACTIVE", jsonld.getObject("status").getString("@value"));
+		assertEquals("Active", jsonld.getObject("status").getString("@en"));
+		assertEquals("Actif", jsonld.getObject("status").getString("@fr"));
+		assertEquals(2, jsonld.getArray("authenticationRoleIds").size());
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), jsonld.getArray("authenticationRoleIds").getObject(0).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", jsonld.getArray("authenticationRoleIds").getObject(0).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/org/admin", jsonld.getArray("authenticationRoleIds").getObject(0).getString("@id"));
+		assertEquals("ORG/ADMIN", jsonld.getArray("authenticationRoleIds").getObject(0).getString("@value"));
+		assertEquals("Organization Admin", jsonld.getArray("authenticationRoleIds").getObject(0).getString("@en"));
+		assertEquals("Administrateur de l'organisation", jsonld.getArray("authenticationRoleIds").getObject(0).getString("@fr"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), jsonld.getArray("authenticationRoleIds").getObject(1).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@id"));
+		assertEquals("CRM/ADMIN", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@value"));
+		assertEquals("CRM Admin", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@en"));
+		assertEquals("Administrateur GRC", jsonld.getArray("authenticationRoleIds").getObject(1).getString("@fr"));
+		
+		JsonObject paging = get("/users/details", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(paging, "paging");
+		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), paging.keys());
+		assertEquals(1, paging.getNumber("page"));
+		assertEquals(10, paging.getNumber("limit"));
+		assertEquals(2, paging.getNumber("total"));
+		assertEquals(false, paging.getBoolean("hasNext"));
+		assertEquals(false, paging.getBoolean("hasPrevious"));
+		assertEquals(2, paging.getArray("content").size());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), paging.getArray("content").getObject(0).keys());
+		assertEquals(systemUserId.getCode(), paging.getArray("content").getObject(0).getString("userId"));
+		assertEquals(systemOrgId.getCode(), paging.getArray("content").getObject(0).getString("organizationId"));
+		assertEquals(systemPersonId.getCode(), paging.getArray("content").getObject(0).getString("personId"));
+		assertEquals("admin", paging.getArray("content").getObject(0).getString("username"));
+		assertEquals("Active", paging.getArray("content").getObject(0).getString("status"));
+		assertEquals(4, paging.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
+		assertEquals("System Administrator", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
+		assertEquals("System Actuator", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
+		assertEquals("System Access", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(2));
+		assertEquals("CRM Admin", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(3));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), paging.getArray("content").getObject(1).keys());
+		assertEquals(userId.getCode(), paging.getArray("content").getObject(1).getString("userId"));
+		assertEquals(testOrgId.getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
+		assertEquals(testPersonId.getCode(), paging.getArray("content").getObject(1).getString("personId"));
+		assertEquals("chloe", paging.getArray("content").getObject(1).getString("username"));
+		assertEquals("Active", paging.getArray("content").getObject(1).getString("status"));
+		assertEquals(2, paging.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", paging.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Admin", paging.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testGetUser() throws Exception {
-		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId)
-				.header("Locale", Lang.ROOT))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(data, "data");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), data.keys());
-		assertEquals("User", data.getString("@type"));
-		assertEquals(userId.toString(), data.getString("userId"));
-		assertEquals("chloe", data.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), data.getObject("person").keys());
-		assertEquals("PersonSummary", data.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), data.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), data.getObject("person").getString("organizationId"));
-		assertEquals("active", data.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", data.getObject("person").getString("displayName"));
-		assertEquals("active", data.getString("status"));
-		assertEquals(2, data.getArray("roles").size());
-		assertEquals("ORG_ADMIN", data.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", data.getArray("roles").getString(1));
+		JsonObject root = get(userId, Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), root.keys());
+		assertEquals(userId.getCode(), root.getString("userId"));
+		assertEquals(testOrgId.getCode(), root.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), root.getString("personId"));
+		assertEquals("chloe", root.getString("username"));
+		assertEquals("ACTIVE", root.getString("status"));
+		assertEquals(2, root.getArray("authenticationRoleIds").size());
+		assertEquals("ORG/ADMIN", root.getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM/ADMIN", root.getArray("authenticationRoleIds").getString(1));
+
+		assertEquals(root, get("/user/chloe", Lang.ROOT, HttpStatus.OK));
 		
-		assertEquals(data, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe")
-				.header("Locale", Lang.ROOT))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString()));
-		
-		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId)
-				.header("Locale", Lang.ENGLISH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString());
+		JsonObject english = get(userId, Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), english.keys());
-		assertEquals("User", english.getString("@type"));
-		assertEquals(userId.toString(), english.getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), english.keys());
+		assertEquals(userId.getCode(), english.getString("userId"));
+		assertEquals(testOrgId.getCode(), english.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), english.getString("personId"));
 		assertEquals("chloe", english.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), english.getObject("person").keys());
-		assertEquals("PersonSummary", english.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), english.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), english.getObject("person").getString("organizationId"));
-		assertEquals("Active", english.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", english.getObject("person").getString("displayName"));
 		assertEquals("Active", english.getString("status"));
-		assertEquals(2, english.getArray("roles").size());
-		assertEquals("ORG_ADMIN", english.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", english.getArray("roles").getString(1));
+		assertEquals(2, english.getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", english.getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Admin", english.getArray("authenticationRoleIds").getString(1));
 		
-		assertEquals(english, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe")
-				.header("Locale", Lang.ENGLISH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString()));
+		assertEquals(english, get("/user/chloe", Lang.ENGLISH, HttpStatus.OK));
 		
-		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId)
-				.header("Locale", Lang.FRENCH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString());
+		JsonObject french = get(userId, Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), french.keys());
-		assertEquals("User", french.getString("@type"));
-		assertEquals(userId.toString(), french.getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), french.keys());
+		assertEquals(userId.getCode(), french.getString("userId"));
+		assertEquals(testOrgId.getCode(), french.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), french.getString("personId"));
 		assertEquals("chloe", french.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), french.getObject("person").keys());
-		assertEquals("PersonSummary", french.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), french.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), french.getObject("person").getString("organizationId"));
-		assertEquals("Actif", french.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", french.getObject("person").getString("displayName"));
 		assertEquals("Actif", french.getString("status"));
-		assertEquals(2, french.getArray("roles").size());
-		assertEquals("ORG_ADMIN", french.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", french.getArray("roles").getString(1));
+		assertEquals(2, french.getArray("authenticationRoleIds").size());
+		assertEquals("Administrateur de l'organisation", french.getArray("authenticationRoleIds").getString(0));
+		assertEquals("Administrateur GRC", french.getArray("authenticationRoleIds").getString(1));
 		
-		assertEquals(french, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe")
-				.header("Locale", Lang.FRENCH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString()));
+		assertEquals(french, get("/user/chloe", Lang.FRENCH, HttpStatus.OK));
+		
+		JsonObject linked = get(userId, null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/UserDetails", linked.getString("@context"));
+		assertEquals(Crm.REST_BASE + userId.toString(), linked.getString("userId"));
+		assertEquals(Crm.REST_BASE + testOrgId.toString(), linked.getString("organizationId"));
+		assertEquals(Crm.REST_BASE + testPersonId.toString(), linked.getString("personId"));
+		assertEquals("chloe", linked.getString("username"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
+		assertEquals("ACTIVE", linked.getObject("status").getString("@value"));
+		assertEquals("Active", linked.getObject("status").getString("@en"));
+		assertEquals("Actif", linked.getObject("status").getString("@fr"));
+		assertEquals(2, linked.getArray("authenticationRoleIds").size());
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("authenticationRoleIds").getObject(0).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", linked.getArray("authenticationRoleIds").getObject(0).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/org/admin", linked.getArray("authenticationRoleIds").getObject(0).getString("@id"));
+		assertEquals("ORG/ADMIN", linked.getArray("authenticationRoleIds").getObject(0).getString("@value"));
+		assertEquals("Organization Admin", linked.getArray("authenticationRoleIds").getObject(0).getString("@en"));
+		assertEquals("Administrateur de l'organisation", linked.getArray("authenticationRoleIds").getObject(0).getString("@fr"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("authenticationRoleIds").getObject(1).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/AuthenticationRoles", linked.getArray("authenticationRoleIds").getObject(1).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin", linked.getArray("authenticationRoleIds").getObject(1).getString("@id"));
+		assertEquals("CRM/ADMIN", linked.getArray("authenticationRoleIds").getObject(1).getString("@value"));
+		assertEquals("CRM Admin", linked.getArray("authenticationRoleIds").getObject(1).getString("@en"));
+		assertEquals("Administrateur GRC", linked.getArray("authenticationRoleIds").getObject(1).getString("@fr"));
+
+		assertEquals(linked, get("/user/chloe", null, HttpStatus.OK));
 	}
 	
 	@Test
 	public void testGetUserPerson() throws Exception {
-		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject data = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId + "/person")
-				.header("Locale", Lang.ROOT))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString());
-		//JsonAsserts.print(data, "data");
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), data.keys());
-		assertEquals("PersonDetails", data.getString("@type"));
-		assertEquals(testPersonId.toString(), data.getString("personId"));
-		assertEquals(testOrgId.toString(), data.getString("organizationId"));
-		assertEquals("active", data.getString("status"));
-		assertEquals("LaRue, Chloé", data.getString("displayName"));
-		assertEquals(List.of("@type", "firstName", "lastName"), data.getObject("legalName").keys());
-		assertEquals("PersonName", data.getObject("legalName").getString("@type"));
-		assertEquals("Chloé", data.getObject("legalName").getString("firstName"));
-		assertEquals("LaRue", data.getObject("legalName").getString("lastName"));
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), data.getObject("address").keys());
-		assertEquals("MailingAddress", data.getObject("address").getString("@type"));
-		assertEquals("123 Main St", data.getObject("address").getString("street"));
-		assertEquals("Ottawa", data.getObject("address").getString("city"));
-		assertEquals("QC", data.getObject("address").getString("province"));
-		assertEquals("CA", data.getObject("address").getString("country"));
-		assertEquals("K1K1K1", data.getObject("address").getString("postalCode"));
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), data.getObject("communication").keys());
-		assertEquals("Communication", data.getObject("communication").getString("@type"));
-		assertEquals("Developer", data.getObject("communication").getString("jobTitle"));
-		assertEquals("EN", data.getObject("communication").getString("language"));
-		assertEquals("user@work.ca", data.getObject("communication").getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), data.getObject("communication").getObject("homePhone").keys());
-		assertEquals("Telephone", data.getObject("communication").getObject("homePhone").getString("@type"));
-		assertEquals("5551234567", data.getObject("communication").getObject("homePhone").getString("number"));
-		assertEquals("42", data.getObject("communication").getObject("homePhone").getString("extension"));
-		assertEquals("8881234567", data.getObject("communication").getString("faxNumber"));
-		assertEquals(List.of("@type", "sector", "unit", "classification"), data.getObject("position").keys());
-		assertEquals("BusinessPosition", data.getObject("position").getString("@type"));
-		assertEquals("1", data.getObject("position").getString("sector"));
-		assertEquals("1", data.getObject("position").getString("unit"));
-		assertEquals("1", data.getObject("position").getString("classification"));
+		JsonObject root = get(userId + "/person", Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), root.keys());
+		assertEquals(testPersonId.getCode(), root.getString("personId"));
+		assertEquals(testOrgId.getCode(), root.getString("organizationId"));
+		assertEquals("ACTIVE", root.getString("status"));
+		assertEquals("LaRue, Chloé", root.getString("displayName"));
+		assertEquals(List.of("firstName", "lastName"), root.getObject("legalName").keys());
+		assertEquals("Chloé", root.getObject("legalName").getString("firstName"));
+		assertEquals("LaRue", root.getObject("legalName").getString("lastName"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), root.getObject("address").keys());
+		assertEquals("123 Main St", root.getObject("address").getString("street"));
+		assertEquals("Ottawa", root.getObject("address").getString("city"));
+		assertEquals("CA/QC", root.getObject("address").getString("province"));
+		assertEquals("CA", root.getObject("address").getString("country"));
+		assertEquals("K1K1K1", root.getObject("address").getString("postalCode"));
+		assertEquals(List.of("jobTitle", "language", "email", "homePhone", "faxNumber"), root.getObject("communication").keys());
+		assertEquals("Developer", root.getObject("communication").getString("jobTitle"));
+		assertEquals("EN", root.getObject("communication").getString("language"));
+		assertEquals("user@work.ca", root.getObject("communication").getString("email"));
+		assertEquals(List.of("number", "extension"), root.getObject("communication").getObject("homePhone").keys());
+		assertEquals("5551234567", root.getObject("communication").getObject("homePhone").getString("number"));
+		assertEquals("42", root.getObject("communication").getObject("homePhone").getString("extension"));
+		assertEquals("8881234567", root.getObject("communication").getString("faxNumber"));
+		assertEquals(1, root.getArray("businessRoleIds").size());
+		assertEquals("EXTERNAL/OWNER", root.getArray("businessRoleIds").getString(0));
 		
-		assertEquals(data, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe/person")
-				.header("Locale", Lang.ROOT))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString()));
+		assertEquals(root, get("/user/chloe/person", Lang.ROOT, HttpStatus.OK));
 		
-		JsonObject english = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId + "/person")
-				.header("Locale", Lang.ENGLISH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString());
+		JsonObject english = get(userId + "/person", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), english.keys());
-		assertEquals("PersonDetails", english.getString("@type"));
-		assertEquals(testPersonId.toString(), english.getString("personId"));
-		assertEquals(testOrgId.toString(), english.getString("organizationId"));
+		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), english.keys());
+		assertEquals(testPersonId.getCode(), english.getString("personId"));
+		assertEquals(testOrgId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("LaRue, Chloé", english.getString("displayName"));
-		assertEquals(List.of("@type", "firstName", "lastName"), english.getObject("legalName").keys());
-		assertEquals("PersonName", english.getObject("legalName").getString("@type"));
+		assertEquals(List.of("firstName", "lastName"), english.getObject("legalName").keys());
 		assertEquals("Chloé", english.getObject("legalName").getString("firstName"));
 		assertEquals("LaRue", english.getObject("legalName").getString("lastName"));
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
-		assertEquals("MailingAddress", english.getObject("address").getString("@type"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.getObject("address").keys());
 		assertEquals("123 Main St", english.getObject("address").getString("street"));
 		assertEquals("Ottawa", english.getObject("address").getString("city"));
 		assertEquals("Quebec", english.getObject("address").getString("province"));
 		assertEquals("Canada", english.getObject("address").getString("country"));
 		assertEquals("K1K1K1", english.getObject("address").getString("postalCode"));
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), english.getObject("communication").keys());
-		assertEquals("Communication", english.getObject("communication").getString("@type"));
+		assertEquals(List.of("jobTitle", "language", "email", "homePhone", "faxNumber"), english.getObject("communication").keys());
 		assertEquals("Developer", english.getObject("communication").getString("jobTitle"));
 		assertEquals("English", english.getObject("communication").getString("language"));
 		assertEquals("user@work.ca", english.getObject("communication").getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), english.getObject("communication").getObject("homePhone").keys());
-		assertEquals("Telephone", english.getObject("communication").getObject("homePhone").getString("@type"));
+		assertEquals(List.of("number", "extension"), english.getObject("communication").getObject("homePhone").keys());
 		assertEquals("5551234567", english.getObject("communication").getObject("homePhone").getString("number"));
 		assertEquals("42", english.getObject("communication").getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", english.getObject("communication").getString("faxNumber"));
-		assertEquals(List.of("@type", "sector", "unit", "classification"), english.getObject("position").keys());
-		assertEquals("BusinessPosition", english.getObject("position").getString("@type"));
-		assertEquals("External", english.getObject("position").getString("sector"));
-		assertEquals("Solutions", english.getObject("position").getString("unit"));
-		assertEquals("Developer", english.getObject("position").getString("classification"));
+		assertEquals(1, english.getArray("businessRoleIds").size());
+		assertEquals("Owner", english.getArray("businessRoleIds").getString(0));
 		
-		assertEquals(english, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe/person")
-				.header("Locale", Lang.ENGLISH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString()));
+		assertEquals(english, get("/user/chloe/person", Lang.ENGLISH, HttpStatus.OK));
 		
-		JsonObject french = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/users/" + userId + "/person")
-				.header("Locale", Lang.FRENCH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString());
+		JsonObject french = get(userId + "/person", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "position"), french.keys());
-		assertEquals("PersonDetails", french.getString("@type"));
-		assertEquals(testPersonId.toString(), french.getString("personId"));
-		assertEquals(testOrgId.toString(), french.getString("organizationId"));
+		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), french.keys());
+		assertEquals(testPersonId.getCode(), french.getString("personId"));
+		assertEquals(testOrgId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("LaRue, Chloé", french.getString("displayName"));
-		assertEquals(List.of("@type", "firstName", "lastName"), french.getObject("legalName").keys());
-		assertEquals("PersonName", french.getObject("legalName").getString("@type"));
+		assertEquals(List.of("firstName", "lastName"), french.getObject("legalName").keys());
 		assertEquals("Chloé", french.getObject("legalName").getString("firstName"));
 		assertEquals("LaRue", french.getObject("legalName").getString("lastName"));
-		assertEquals(List.of("@type", "street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
-		assertEquals("MailingAddress", french.getObject("address").getString("@type"));
+		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.getObject("address").keys());
 		assertEquals("123 Main St", french.getObject("address").getString("street"));
 		assertEquals("Ottawa", french.getObject("address").getString("city"));
 		assertEquals("Québec", french.getObject("address").getString("province"));
 		assertEquals("Canada", french.getObject("address").getString("country"));
 		assertEquals("K1K1K1", french.getObject("address").getString("postalCode"));
-		assertEquals(List.of("@type", "jobTitle", "language", "email", "homePhone", "faxNumber"), french.getObject("communication").keys());
-		assertEquals("Communication", french.getObject("communication").getString("@type"));
+		assertEquals(List.of("jobTitle", "language", "email", "homePhone", "faxNumber"), french.getObject("communication").keys());
 		assertEquals("Developer", french.getObject("communication").getString("jobTitle"));
 		assertEquals("Anglais", french.getObject("communication").getString("language"));
 		assertEquals("user@work.ca", french.getObject("communication").getString("email"));
-		assertEquals(List.of("@type", "number", "extension"), french.getObject("communication").getObject("homePhone").keys());
-		assertEquals("Telephone", french.getObject("communication").getObject("homePhone").getString("@type"));
+		assertEquals(List.of("number", "extension"), french.getObject("communication").getObject("homePhone").keys());
 		assertEquals("5551234567", french.getObject("communication").getObject("homePhone").getString("number"));
 		assertEquals("42", french.getObject("communication").getObject("homePhone").getString("extension"));
 		assertEquals("8881234567", french.getObject("communication").getString("faxNumber"));
-		assertEquals(List.of("@type", "sector", "unit", "classification"), french.getObject("position").keys());
-		assertEquals("BusinessPosition", french.getObject("position").getString("@type"));
-		assertEquals("External", french.getObject("position").getString("sector"));
-		assertEquals("Solutions", french.getObject("position").getString("unit"));
-		assertEquals("Développeur", french.getObject("position").getString("classification"));
+		assertEquals(1, french.getArray("businessRoleIds").size());
+		assertEquals("Propriétaire", french.getArray("businessRoleIds").getString(0));
 		
-		assertEquals(french, new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-				.get("/api/user/chloe/person")
-				.header("Locale", Lang.FRENCH))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString()));
+		assertEquals(french, get("/user/chloe/person", Lang.FRENCH, HttpStatus.OK));
+		
+		JsonObject linked = get(userId + "/person", null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds"), linked.keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonDetails", linked.getString("@context"));
+		assertEquals(Crm.REST_BASE + testPersonId.toString(), linked.getString("personId"));
+		assertEquals(Crm.REST_BASE + testOrgId.toString(), linked.getString("organizationId"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Statuses", linked.getObject("status").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/statuses/active", linked.getObject("status").getString("@id"));
+		assertEquals("ACTIVE", linked.getObject("status").getString("@value"));
+		assertEquals("Active", linked.getObject("status").getString("@en"));
+		assertEquals("Actif", linked.getObject("status").getString("@fr"));
+		assertEquals("LaRue, Chloé", linked.getString("displayName"));
+		assertEquals(List.of("@context", "firstName", "lastName"), linked.getObject("legalName").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/PersonName", linked.getObject("legalName").getString("@context"));
+		assertEquals("Chloé", linked.getObject("legalName").getString("firstName"));
+		assertEquals("LaRue", linked.getObject("legalName").getString("lastName"));
+		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), linked.getObject("address").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", linked.getObject("address").getString("@context"));
+		assertEquals("123 Main St", linked.getObject("address").getString("street"));
+		assertEquals("Ottawa", linked.getObject("address").getString("city"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("address").getObject("province").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Provinces", linked.getObject("address").getObject("province").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/provinces/ca/qc", linked.getObject("address").getObject("province").getString("@id"));
+		assertEquals("CA/QC", linked.getObject("address").getObject("province").getString("@value"));
+		assertEquals("Quebec", linked.getObject("address").getObject("province").getString("@en"));
+		assertEquals("Québec", linked.getObject("address").getObject("province").getString("@fr"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("address").getObject("country").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Countries", linked.getObject("address").getObject("country").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/countries/ca", linked.getObject("address").getObject("country").getString("@id"));
+		assertEquals("CA", linked.getObject("address").getObject("country").getString("@value"));
+		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@en"));
+		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@fr"));
+		assertEquals("K1K1K1", linked.getObject("address").getString("postalCode"));
+		assertEquals(List.of("@context", "jobTitle", "language", "email", "homePhone", "faxNumber"), linked.getObject("communication").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Communication", linked.getObject("communication").getString("@context"));
+		assertEquals("Developer", linked.getObject("communication").getString("jobTitle"));
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("communication").getObject("language").keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/Languages", linked.getObject("communication").getObject("language").getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/languages/en", linked.getObject("communication").getObject("language").getString("@id"));
+		assertEquals("EN", linked.getObject("communication").getObject("language").getString("@value"));
+		assertEquals("English", linked.getObject("communication").getObject("language").getString("@en"));
+		assertEquals("Anglais", linked.getObject("communication").getObject("language").getString("@fr"));
+		assertEquals("user@work.ca", linked.getObject("communication").getString("email"));
+		assertEquals(List.of("@context", "number", "extension"), linked.getObject("communication").getObject("homePhone").keys());
+		assertEquals("http://api.magex.ca/crm/rest/schema/common/Telephone", linked.getObject("communication").getObject("homePhone").getString("@context"));
+		assertEquals("5551234567", linked.getObject("communication").getObject("homePhone").getString("number"));
+		assertEquals("42", linked.getObject("communication").getObject("homePhone").getString("extension"));
+		assertEquals("8881234567", linked.getObject("communication").getString("faxNumber"));
+		assertEquals(1, linked.getArray("businessRoleIds").size());
+		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getArray("businessRoleIds").getObject(0).keys());
+		assertEquals("http://api.magex.ca/crm/schema/options/BusinessRoles", linked.getArray("businessRoleIds").getObject(0).getString("@context"));
+		assertEquals("http://api.magex.ca/crm/rest/options/business-roles/external/owner", linked.getArray("businessRoleIds").getObject(0).getString("@id"));
+		assertEquals("EXTERNAL/OWNER", linked.getArray("businessRoleIds").getObject(0).getString("@value"));
+		assertEquals("Owner", linked.getArray("businessRoleIds").getObject(0).getString("@en"));
+		assertEquals("Propriétaire", linked.getArray("businessRoleIds").getObject(0).getString("@fr"));
+		
+		assertEquals(linked, get("/user/chloe/person", null, HttpStatus.OK));
+	}
+	
+	@Test
+	public void testUpdatingUsernameNotChanged() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
+		
+		JsonObject json = patch(userId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("username", "updated"));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.keys());
+		assertEquals(userId.getCode(), json.getString("userId"));
+		assertEquals(testOrgId.getCode(), json.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), json.getString("personId"));
+		assertEquals("chloe", json.getString("username"));
+		assertEquals("Active", json.getString("status"));
+		assertEquals(2, json.getArray("authenticationRoleIds").size());
+		assertEquals("Organization Admin", json.getArray("authenticationRoleIds").getString(0));
+		assertEquals("CRM Admin", json.getArray("authenticationRoleIds").getString(1));
 	}
 	
 	@Test
 	public void testUpdatingRoles() throws Exception {
-		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject json = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.patch("/api/users/" + userId)
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("roles", List.of("ORG_USER", "SYS_ADMIN"))
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
-		
+		JsonObject json = patch(userId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationRoleIds", List.of("Organization Viewer", "System Administrator")));
 		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), json.keys());
-		assertEquals("User", json.getString("@type"));
-		assertEquals(userId.toString(), json.getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.keys());
+		assertEquals(userId.getCode(), json.getString("userId"));
+		assertEquals(testOrgId.getCode(), json.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), json.getString("personId"));
 		assertEquals("chloe", json.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), json.getObject("person").keys());
-		assertEquals("PersonSummary", json.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), json.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), json.getObject("person").getString("organizationId"));
-		assertEquals("Active", json.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", json.getObject("person").getString("displayName"));
 		assertEquals("Active", json.getString("status"));
-		assertEquals(2, json.getArray("roles").size());
-		assertEquals("ORG_USER", json.getArray("roles").getString(0));
-		assertEquals("SYS_ADMIN", json.getArray("roles").getString(1));
+		assertEquals(2, json.getArray("authenticationRoleIds").size());
+		assertEquals("Organization Viewer", json.getArray("authenticationRoleIds").getString(0));
+		assertEquals("System Administrator", json.getArray("authenticationRoleIds").getString(1));
+	}
+	
+	@Test
+	public void testUpdatingRolesByUsername() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.CRM_USER)).getUserId();
+		
+		JsonObject json = patch("/user/chloe", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("authenticationRoleIds", List.of("Visionneuse GRC")));
+		//JsonAsserts.print(json, "json");
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds"), json.keys());
+		assertEquals(userId.getCode(), json.getString("userId"));
+		assertEquals(testOrgId.getCode(), json.getString("organizationId"));
+		assertEquals(testPersonId.getCode(), json.getString("personId"));
+		assertEquals("chloe", json.getString("username"));
+		assertEquals("Actif", json.getString("status"));
+		assertEquals(1, json.getArray("authenticationRoleIds").size());
+		assertEquals("Visionneuse GRC", json.getArray("authenticationRoleIds").getString(0));
+	}
+	
+	@Test
+	public void testGetUserRolesByUserId() throws Exception {
+		Identifier userId = crm.createUser(testPersonId, "chloe", 
+				List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
+		
+		JsonObject root = get(userId + "/authenticationRoleIds", Lang.ROOT, HttpStatus.OK);
+		//JsonAsserts.print(root, "root");
+		assertEquals(List.of("total", "content"), root.keys());
+		assertEquals(2, root.getNumber("total"));
+		assertEquals(2, root.getArray("content").size());
+		assertEquals("ORG/ADMIN", root.getArray("content").getString(0));
+		assertEquals("CRM/ADMIN", root.getArray("content").getString(1));
+		assertEquals(root, get("/user/chloe/authenticationRoleIds", Lang.ROOT, HttpStatus.OK));
+				
+		JsonObject english = get(userId + "/authenticationRoleIds", Lang.ENGLISH, HttpStatus.OK);
+		//JsonAsserts.print(english, "english");
+		assertEquals(List.of("total", "content"), english.keys());
+		assertEquals(2, english.getNumber("total"));
+		assertEquals(2, english.getArray("content").size());
+		assertEquals("Organization Admin", english.getArray("content").getString(0));
+		assertEquals("CRM Admin", english.getArray("content").getString(1));
+		assertEquals(english, get("/user/chloe/authenticationRoleIds", Lang.ENGLISH, HttpStatus.OK));
+				
+		JsonObject french = get(userId + "/authenticationRoleIds", Lang.FRENCH, HttpStatus.OK);
+		//JsonAsserts.print(french, "french");
+		assertEquals(List.of("total", "content"), french.keys());
+		assertEquals(2, french.getNumber("total"));
+		assertEquals(2, french.getArray("content").size());
+		assertEquals("Administrateur de l'organisation", french.getArray("content").getString(0));
+		assertEquals("Administrateur GRC", french.getArray("content").getString(1));
+		assertEquals(french, get("/user/chloe/authenticationRoleIds", Lang.FRENCH, HttpStatus.OK));
+				
+		JsonObject linked = get(userId + "/authenticationRoleIds", null, HttpStatus.OK);
+		//JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("total", "content"), linked.keys());
+		assertEquals(2, linked.getNumber("total"));
+		assertEquals(2, linked.getArray("content").size());
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/org/admin", linked.getArray("content").getString(0));
+		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin", linked.getArray("content").getString(1));
+		assertEquals(linked, get("/user/chloe/authenticationRoleIds", null, HttpStatus.OK));
 	}
 
 	@Test
 	public void testEnableDisablePerson() throws Exception {
-		Identifier userId = crm.createUser(testPersonId, "chloe", List.of("ORG_ADMIN", "CRM_ADMIN")).getUserId();
+		UserIdentifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonArray error1 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-			.andReturn().getResponse().getContentAsString());
+		JsonArray error1 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(userId.toString(), error1.getObject(0).getString("identifier"));
-		assertEquals("error", error1.getObject(0).getString("type"));
+		assertEquals("Error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
-		assertEquals("You must send in the confirmation message", error1.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals("Field is required", error1.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonArray error2 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("confirm", false)
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-			.andReturn().getResponse().getContentAsString());
+		JsonArray error2 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(userId.toString(), error2.getObject(0).getString("identifier"));
-		assertEquals("error", error2.getObject(0).getString("type"));
+		assertEquals("Error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
-		assertEquals("You must send in the confirmation message", error2.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals("Field is required", error2.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonArray error3 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("confirm", "Test")
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-			.andReturn().getResponse().getContentAsString());
+		JsonArray error3 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(userId.toString(), error3.getObject(0).getString("identifier"));
-		assertEquals("error", error3.getObject(0).getString("type"));
+		assertEquals("Error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
-		assertEquals("Confirmation message must be a boolean", error3.getObject(0).getString("reason"));
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonObject disable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/disable")
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("confirm", true)
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject disable = put(userId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(disable, "disable");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), disable.keys());
-		assertEquals("User", disable.getString("@type"));
-		assertEquals(userId.toString(), disable.getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "username", "status"), disable.keys());
+		assertEquals(userId.getCode(), disable.getString("userId"));
+		assertEquals(testOrgId.getCode(), disable.getString("organizationId"));
 		assertEquals("chloe", disable.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), disable.getObject("person").keys());
-		assertEquals("PersonSummary", disable.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), disable.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), disable.getObject("person").getString("organizationId"));
-		assertEquals("Active", disable.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", disable.getObject("person").getString("displayName"));
 		assertEquals("Inactive", disable.getString("status"));
-		assertEquals(2, disable.getArray("roles").size());
-		assertEquals("ORG_ADMIN", disable.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", disable.getArray("roles").getString(1));
 		
-		JsonArray error4 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
-			.header("Locale", Lang.ENGLISH))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-			.andReturn().getResponse().getContentAsString());
+		JsonArray error4 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(userId.toString(), error4.getObject(0).getString("identifier"));
-		assertEquals("error", error4.getObject(0).getString("type"));
+		assertEquals("Error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
-		assertEquals("You must send in the confirmation message", error4.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals("Field is required", error4.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 		
-		JsonArray error5 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("confirm", false)
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-			.andReturn().getResponse().getContentAsString());
+		JsonArray error5 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(userId.toString(), error5.getObject(0).getString("identifier"));
-		assertEquals("error", error5.getObject(0).getString("type"));
+		assertEquals("Error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
-		assertEquals("You must send in the confirmation message", error5.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals("Field is required", error5.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 		
-		JsonArray error6 = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
-			.header("Locale", Lang.ENGLISH)
-			.content(new JsonObject()
-				.with("confirm", "test")
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().is4xxClientError())
-			.andReturn().getResponse().getContentAsString());
+		JsonArray error6 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(userId.toString(), error6.getObject(0).getString("identifier"));
-		assertEquals("error", error6.getObject(0).getString("type"));
+		assertEquals("Error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
-		assertEquals("Confirmation message must be a boolean", error6.getObject(0).getString("reason"));
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 	
-		JsonObject enable = new JsonObject(mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/users/" + userId + "/enable")
-			.header("Locale", Lang.FRENCH)
-			.content(new JsonObject()
-				.with("confirm", true)
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString());
+		JsonObject enable = put(userId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(enable, "enable");
-		assertEquals(List.of("@type", "userId", "username", "person", "status", "roles"), enable.keys());
-		assertEquals("User", enable.getString("@type"));
-		assertEquals(userId.toString(), enable.getString("userId"));
+		assertEquals(List.of("userId", "organizationId", "username", "status"), disable.keys());
+		assertEquals(userId.getCode(), enable.getString("userId"));
+		assertEquals(testOrgId.getCode(), enable.getString("organizationId"));
 		assertEquals("chloe", enable.getString("username"));
-		assertEquals(List.of("@type", "personId", "organizationId", "status", "displayName"), enable.getObject("person").keys());
-		assertEquals("PersonSummary", enable.getObject("person").getString("@type"));
-		assertEquals(testPersonId.toString(), enable.getObject("person").getString("personId"));
-		assertEquals(testOrgId.toString(), enable.getObject("person").getString("organizationId"));
-		assertEquals("Actif", enable.getObject("person").getString("status"));
-		assertEquals("LaRue, Chloé", enable.getObject("person").getString("displayName"));
 		assertEquals("Actif", enable.getString("status"));
-		assertEquals(2, enable.getArray("roles").size());
-		assertEquals("ORG_ADMIN", enable.getArray("roles").getString(0));
-		assertEquals("CRM_ADMIN", enable.getArray("roles").getString(1));
 		
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 		
-		mockMvc.perform(MockMvcRequestBuilders
-			.put("/api/user/chloe/disable")
-			.header("Locale", Lang.FRENCH)
-			.content(new JsonObject()
-				.with("confirm", true)
-				.toString()))
-			//.andDo(MockMvcResultHandlers.print())
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn().getResponse().getContentAsString();
-		
-		assertEquals(Status.INACTIVE, crm.findUser(userId).getStatus());
+		put("/user/chloe/disable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 
-		mockMvc.perform(MockMvcRequestBuilders
-				.put("/api/user/chloe/enable")
-				.header("Locale", Lang.FRENCH)
-				.content(new JsonObject()
-					.with("confirm", true)
-					.toString()))
-				//.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn().getResponse().getContentAsString();
-		
-		assertEquals(Status.ACTIVE, crm.findUser(userId).getStatus());
-
+		put("/user/chloe/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 	}
-	
-//	@Test
-//	public void testPersonWithLongName() throws Exception {
-//		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/api/users")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("displayName", LoremIpsumGenerator.buildWords(20))
-//				.with("groups", List.of("ORG"))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isBadRequest())
-//			.andReturn().getResponse().getContentAsString());
-//		assertSingleJsonMessage(json, null, "error", "displayName", "Display name must be 60 characters or less");
-//	}
-//
-//	@Test
-//	public void testPersonWithNoName() throws Exception {
-//		JsonArray json = new JsonArray(mockMvc.perform(MockMvcRequestBuilders
-//			.post("/api/users")
-//			.header("Locale", Lang.ENGLISH)
-//			.content(new JsonObject()
-//				.with("groups", List.of("ORG"))
-//				.toString()))
-//			//.andDo(MockMvcResultHandlers.print())
-//			.andExpect(MockMvcResultMatchers.status().isBadRequest())
-//			.andReturn().getResponse().getContentAsString());
-//		assertSingleJsonMessage(json, null, "error", "displayName", "Field is mandatory");
-//	}
 	
 }

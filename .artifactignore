@@ -1,2 +1,3 @@
 **/*
-!*.jar
+!*/target/*-bootable.jar
+!*/config/*

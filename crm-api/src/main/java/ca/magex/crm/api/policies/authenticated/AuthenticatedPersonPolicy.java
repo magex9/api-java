@@ -1,23 +1,16 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
-import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmPersonPolicy;
 import ca.magex.crm.api.policies.basic.BasicPersonPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 
 	private CrmAuthenticationService auth;
@@ -44,7 +37,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canCreatePersonForOrganization(Identifier organizationId) {
+	public boolean canCreatePersonForOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canCreatePersonForOrganization(organizationId)) {
 			return false;
 		}
@@ -53,7 +46,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 			return true;
 		}
 		/* if the current user is associated to the organization, then return true if RE Admin */
-		if (auth.getOrganizationId().equals(organizationId)) {
+		if (auth.getAuthenticatedOrganizationId().equals(organizationId)) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user is not associated with the organization */
@@ -61,7 +54,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canViewPerson(Identifier personId) {
+	public boolean canViewPerson(PersonIdentifier personId) {
 		if (!delegate.canViewPerson(personId)) {
 			return false;
 		}
@@ -70,11 +63,11 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the organization this person belongs to */
-		return auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId());
+		return auth.getAuthenticatedOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId());
 	}
 
 	@Override
-	public boolean canUpdatePerson(Identifier personId) {
+	public boolean canUpdatePerson(PersonIdentifier personId) {
 		if (!delegate.canUpdatePerson(personId)) {
 			return false;
 		}
@@ -83,11 +76,11 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 			return true;
 		}
 		/* can always update yourself */
-		if (auth.getPersonId().equals(personId)) {
+		if (auth.getAuthenticatedPersonId().equals(personId)) {
 			return true;
 		}
 		/* ensure the current user is associated to the organization this person belongs to and they are an RE Admin */
-		if (auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user is not associated with the organization */
@@ -95,7 +88,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canEnablePerson(Identifier personId) {
+	public boolean canEnablePerson(PersonIdentifier personId) {
 		if (!delegate.canEnablePerson(personId)) {
 			return false;
 		}
@@ -104,7 +97,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the organization this person belongs to and they are an RE Admin */
-		if (auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user is not associated with the organization */
@@ -112,12 +105,12 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 	}
 
 	@Override
-	public boolean canDisablePerson(Identifier personId) {
+	public boolean canDisablePerson(PersonIdentifier personId) {
 		if (!delegate.canDisablePerson(personId)) {
 			return false;
 		}
 		/* cannot disable yourself!! */
-		if (auth.getPersonId().equals(personId)) {
+		if (auth.getAuthenticatedPersonId().equals(personId)) {
 			return false;
 		}
 		/* if the user is a CRM_ADMIN then return true */
@@ -125,7 +118,7 @@ public class AuthenticatedPersonPolicy implements CrmPersonPolicy {
 			return true;
 		}
 		/* ensure the current user is associated to the organization this person belongs to and they are an RE Admin */
-		if (auth.getOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(persons.findPersonSummary(personId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user is not associated with the organization */

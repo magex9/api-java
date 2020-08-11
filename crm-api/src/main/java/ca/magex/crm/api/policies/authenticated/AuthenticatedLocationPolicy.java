@@ -1,23 +1,16 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
-import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmLocationPolicy;
 import ca.magex.crm.api.policies.basic.BasicLocationPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	
 	private CrmAuthenticationService auth;
@@ -45,7 +38,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canCreateLocationForOrganization(Identifier organizationId) {
+	public boolean canCreateLocationForOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canCreateLocationForOrganization(organizationId)) {
 			return false;
 		}
@@ -54,7 +47,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 			return true;
 		}
 		/* if the current user is associated with the organization, then return true if they are an RE Admin */
-		if (auth.getOrganizationId().equals(organizationId)) {
+		if (auth.getAuthenticatedOrganizationId().equals(organizationId)) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user doesn't belong to the organization that this location is associated with */
@@ -62,7 +55,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canViewLocation(Identifier locationId) {
+	public boolean canViewLocation(LocationIdentifier locationId) {
 		if (!delegate.canViewLocation(locationId)) {
 			return false;
 		}
@@ -71,11 +64,11 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 			return true;
 		}
 		/* ensure this location is associated with the organization the current user is associated with */
-		return auth.getOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId());
+		return auth.getAuthenticatedOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId());
 	}
 
 	@Override
-	public boolean canUpdateLocation(Identifier locationId) {
+	public boolean canUpdateLocation(LocationIdentifier locationId) {
 		if (!delegate.canUpdateLocation(locationId)) {
 			return false;
 		}
@@ -84,7 +77,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 			return true;
 		}
 		/* ensure this location is associated with the organization the current user is associated with, then return true if they are an RE Admin */
-		if (auth.getOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user doesn't belong to the organization that this location is associated with */
@@ -92,7 +85,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canEnableLocation(Identifier locationId) {
+	public boolean canEnableLocation(LocationIdentifier locationId) {
 		if (!delegate.canEnableLocation(locationId)) {
 			return false;
 		}
@@ -101,7 +94,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 			return true;
 		}
 		/* ensure this location is associated with the organization the current user is associated with, then return true if they are an RE Admin */
-		if (auth.getOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user doesn't belong to the organization that this location is associated with */
@@ -109,7 +102,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 	}
 
 	@Override
-	public boolean canDisableLocation(Identifier locationId) {
+	public boolean canDisableLocation(LocationIdentifier locationId) {
 		if (!delegate.canDisableLocation(locationId)) {
 			return false;
 		}
@@ -118,7 +111,7 @@ public class AuthenticatedLocationPolicy implements CrmLocationPolicy {
 			return true;
 		}
 		/* ensure this location is associated with the organization the current user is associated with, then return true if they are an RE Admin */
-		if (auth.getOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId())) {
+		if (auth.getAuthenticatedOrganizationId().equals(locations.findLocationSummary(locationId).getOrganizationId())) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user doesn't belong to the organization that this location is associated with */
