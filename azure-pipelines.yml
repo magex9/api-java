@@ -42,8 +42,8 @@ stages:
         mavenVersionOption: 'Default'
         mavenOptions: '-Xmx3072m'
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
-      artifact: crm-graphql-spring-boot-server
+    - publish: $(System.DefaultWorkingDirectory)/crm-api-spring-boot-server/target/
+      artifact: crm-api-spring-boot-server
 
     - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
       artifact: crm-helloworld
@@ -71,7 +71,7 @@ stages:
             - template: azure-deploy.yml
               parameters:
                 environment: 'ut'
-                application_name: crm-graphql-spring-boot-server
+                application_name: crm-api-spring-boot-server
                 application_version: 1.0.0-SNAPSHOT
                 sshEndpoint: 'ssh - RD3'
             - template: azure-deploy.yml
