@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
@@ -19,16 +20,17 @@ import ca.magex.crm.spring.security.auth.AuthProfiles;
 @Profile({AuthProfiles.EMBEDDED_HMAC, AuthProfiles.EMBEDDED_RSA})
 public class SwaggerAuthenticationController {
 
-	@Value("${server.external.address:localhost}") String serverAddress;
+	@Value("${server.external.address:}") String serverAddress;
 	@Value("${server.port}") String serverPort;
 	@Value("${server.servlet.context-path}") String contextPath;
 
 	@GetMapping("/auth-yaml")
 	public void getSwaggerYaml(HttpServletResponse res) throws IOException {
 		try (InputStream yaml = getClass().getResourceAsStream("/auth.yaml")) {
+			String server = StringUtils.isBlank(serverAddress) ?
+					"" : "http://" + serverAddress + ":" + serverPort + "contetPath";
 			String yamlContents = StreamUtils.copyToString(yaml, Charset.forName("UTF-8"))
-					.replace("${serverAddress}", serverAddress)
-					.replace("${serverPort}", serverPort)
+					.replace("${server}", server)
 					.replace("${contextPath}", contextPath);
 			res.getWriter().append(yamlContents);
 			res.getWriter().flush();
