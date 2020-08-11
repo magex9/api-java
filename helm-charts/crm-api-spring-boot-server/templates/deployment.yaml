@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.application.name }}
+  labels:
+    app: {{ .Values.application.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.application.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.application.name }}
+    spec:
+      containers:
+      - name: {{ .Values.application.name }}
+        image: w2020.azurecr.io/{{ .Values.application.name }}
+        ports:
+        - containerPort: {{ .Values.application.port }}
+        env:
+        - name: SPRING_CONFIG_SERVER_URI
+          value: "http://centralized-configuration-service"
+        - name: MONGODB_DBNAME
+          value: "magex"
+        - name: MONGODB_URL
+          value: "cluster0.oofhz.azure.mongodb.net/?retryWrites=true&w=majority"
+        - name : MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-username
+              key: "mongo.db.username"
+        - name : MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-password
+              key: "mongo.db.password"
+
