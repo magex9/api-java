@@ -1,26 +1,35 @@
 spring.application.name=crm-auth-server
 
+# Disable Mongo Auto configuration
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+
+# Mongo Configuration
+mongo.db.name=magex
+mongo.db.url=
+mongo.db.username=
+mongo.db.password=
+
 # Run with HMAC Symmetric tokens
-#spring.profiles.active=AuthEmbeddedHmac,Mongo
+spring.profiles.active=AuthEmbeddedHmac,Mongo
 
 # Run with RSA public/private tokens
-spring.profiles.active=AuthEmbeddedRsa,Mongo
+#spring.profiles.active=AuthEmbeddedRsa,Mongo
 
 server.servlet.context-path=/auth
 server.port=9012
-server.external.address=localhost
+#server.external.address=localhost
 
 # JWT Token Properties
 jwt.expiration.hours=5
 jwt.request.filter.ignore=/authenticate
 
 # HMAC Symmetric Key Secret
-#jwt.hmac.secret=LifeFindsAWay
+jwt.hmac.secret=LifeFindsAWay
 
 # RSA Cert
-jwt.rsa.jks=file:./config/crm-dev.jks
-jwt.rsa.cert=file:./config/crm-dev.cer
-jwt.rsa.keypass=Crm2020!
+#jwt.rsa.jks=file:./config/crm-dev.jks
+#jwt.rsa.cert=file:./config/crm-dev.cer
+#jwt.rsa.keypass=Crm2020!
 
 
 # actuator configuration 
@@ -32,4 +41,5 @@ management.server.port=9013
 endpoints.shutdown.enabled=true
 
 # set specific log levels
+logging.level.ca.magex.crm.caching=INFO
 logging.level.org.springframework.security=INFO

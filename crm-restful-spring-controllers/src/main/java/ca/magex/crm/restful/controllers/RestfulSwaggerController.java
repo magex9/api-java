@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +55,7 @@ public class RestfulSwaggerController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RestfulSwaggerController.class);
 
-	@Value("${server.external.address:localhost}") 
+	@Value("${server.external.address:}") 
 	private String serverAddress;
 	
 	@Value("${server.port:9002}") 
@@ -66,10 +67,10 @@ public class RestfulSwaggerController {
 	@GetMapping("/rest/api.json")
 	public void getJsonConfig(HttpServletRequest req, HttpServletResponse res) throws IOException {		
 		try (InputStream is = getClass().getResource("/crm.json").openStream()) {
+			String server = StringUtils.isBlank(serverAddress) ?
+					contextPath : "http://" + serverAddress + ":" + serverPort + contextPath;
 			String contents = StreamUtils.copyToString(is, Charset.forName("UTF-8"))
-				.replace("${serverAddress}", serverAddress)
-				.replace("${serverPort}", serverPort)
-				.replace("${contextPath}", contextPath);
+					.replace("${server}", server);
 			res.getWriter().append(contents);
 			res.getWriter().flush();
 		}

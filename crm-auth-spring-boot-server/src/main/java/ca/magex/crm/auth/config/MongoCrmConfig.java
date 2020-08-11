@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,9 +40,8 @@ import ca.magex.crm.mongodb.repository.MongoRepositories;
 @Configuration
 @Profile(CrmProfiles.MONGO)
 @Description("Configures the CRM used by the Auth Server with a Mongo repository")
-@PropertySource("mongodb-config.properties")
 public class MongoCrmConfig implements CrmConfigurer {
-
+	
 	@Value("${mongo.db.url}") private String url;
 	@Value("${mongo.db.username}") private String username;
 	@Value("${mongo.db.password}") private String password;

@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -42,7 +41,6 @@ import ca.magex.crm.transform.json.JsonTransformerFactory;
 @Configuration
 @Profile(CrmProfiles.MONGO)
 @Description("Configures the CRM using the Mongo Repository")
-@PropertySource("mongodb-config.properties")
 public class MongoCrmConfig implements CrmConfigurer {
 	
 	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
