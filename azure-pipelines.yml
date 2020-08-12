@@ -82,5 +82,5 @@ stages:
                 namespace: 'appdev'
                 command: 'upgrade'
                 chartType: 'FilePath'
-                chartPath: '$(Build.ArtifactStagingDirectory)/helm-charts/crm-api-spring-boot-server'
+                chartPath: '$(Pipeline.Workspace)/helm-charts/crm-api-spring-boot-server'
                 recreate: true
