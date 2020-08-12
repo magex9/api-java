@@ -86,7 +86,7 @@ stages:
             steps: 
             - task: HelmInstaller@1
               inputs:
-              helmVersionToInstall: 'latest'
+                helmVersionToInstall: 'latest'
             - task: HelmDeploy@0
               inputs:
                 connectionType: 'Azure Resource Manager'
