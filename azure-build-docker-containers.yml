@@ -46,5 +46,5 @@ steps:
       ${{parameters.application_version}}-$(Build.BuildId)
       latest
 
-- publish: $(Build.SourcesDirectory)/manifests
-  artifact: $(application_name)_manifests
+- publish: $(Build.SourcesDirectory)/helm-charts
+  artifact: helm-charts
