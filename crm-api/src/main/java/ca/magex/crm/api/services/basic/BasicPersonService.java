@@ -27,7 +27,7 @@ public class BasicPersonService implements CrmPersonService {
 
 	@Override
 	public PersonDetails createPerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> roleIds) {
-		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, displayName, legalName, address, communication, roleIds));
+		return repos.savePersonDetails(new PersonDetails(repos.generatePersonId(), organizationId, Status.ACTIVE, displayName, legalName, address, communication, roleIds, null));
 	}
 
 	@Override

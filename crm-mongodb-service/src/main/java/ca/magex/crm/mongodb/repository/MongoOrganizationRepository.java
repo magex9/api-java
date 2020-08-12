@@ -25,10 +25,8 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
-import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.mongodb.util.BsonUtils;
 import ca.magex.crm.mongodb.util.JsonUtils;
@@ -129,10 +127,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 		if (doc == null) {
 			return null;
 		}
-		return new OrganizationSummary(
-				organizationId,
-				Status.of(doc.getString("status")),
-				doc.getString("displayName"));
+		JsonObject json = new JsonObject(doc.toJson());
+		return JsonUtils.toOrganizationSummary(json);		
 	}
 
 	@Override
@@ -148,14 +144,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 		if (doc == null) {
 			return null;
 		}
-		return new OrganizationDetails(
-				organizationId,
-				Status.of(doc.getString("status")),
-				doc.getString("displayName"),
-				IdentifierFactory.forId(doc.getString("mainLocationId")),
-				IdentifierFactory.forId(doc.getString("mainContactId")),
-				doc.getList("authenticationGroupIds", String.class).stream().map(AuthenticationGroupIdentifier::new).collect(Collectors.toList()),
-				doc.getList("businessGroupIds", String.class).stream().map(BusinessGroupIdentifier::new).collect(Collectors.toList()));
+		JsonObject json = new JsonObject(doc.toJson());
+		return JsonUtils.toOrganizationDetails(json);		
 	}
 
 	@Override

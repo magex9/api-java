@@ -25,7 +25,7 @@ public class BasicOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
-		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, authenticationGroupIds, businessGroupIds));
+		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, authenticationGroupIds, businessGroupIds, null));
 	}
 
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {

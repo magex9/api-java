@@ -21,7 +21,7 @@ public class BasicLocationService implements CrmLocationService {
 	}
 	
 	public LocationDetails createLocation(OrganizationIdentifier organizationId, String locationReference, String locationName, MailingAddress address) {
-		return repos.saveLocationDetails(new LocationDetails(repos.generateLocationId(), organizationId, Status.ACTIVE, locationReference, locationName, address));
+		return repos.saveLocationDetails(new LocationDetails(repos.generateLocationId(), organizationId, Status.ACTIVE, locationReference, locationName, address, null));
 	}
 
 	public LocationDetails updateLocationName(LocationIdentifier locationId, String locationName) {

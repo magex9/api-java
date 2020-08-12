@@ -58,7 +58,7 @@ public class OrganizationDetailsJsonTransformerTests {
 			mainLocationId, mainContactId, List.of(
 			crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "CRM").getOptionId(),
 			crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "ORG").getOptionId()
-		), List.of(crm.findOptionByCode(Type.BUSINESS_GROUP,  "EXECS").getOptionId()));
+		), List.of(crm.findOptionByCode(Type.BUSINESS_GROUP,  "EXECS").getOptionId()), 100L);
 	}
 	
 	@Test

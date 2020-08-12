@@ -63,7 +63,7 @@ public interface CrmOrganizationService {
 			String displayName, 
 			List<AuthenticationGroupIdentifier> authenticationGroupIds, 
 			List<BusinessGroupIdentifier> businessGroupIds) {
-		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(null, Status.PENDING, displayName, null, null, authenticationGroupIds, businessGroupIds, null);
 	}
 	
 	/**

@@ -50,7 +50,7 @@ public class PersonSummaryJsonTransformerTests {
 		transformer = new PersonSummaryJsonTransformer(crm);
 		personId = new PersonIdentifier("TkNj8jzNGC");
 		organizationId = new OrganizationIdentifier("DSbVnvGGyf");
-		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_DISPLAY_NAME);
+		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_DISPLAY_NAME, 100L);
 	}
 	
 	@Test

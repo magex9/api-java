@@ -49,7 +49,7 @@ public class LocationSummaryJsonTransformerTests {
 		transformer = new LocationSummaryJsonTransformer(crm);
 		locationId = new LocationIdentifier("YnkAfZQnsk");
 		organizationId = new OrganizationIdentifier("s6rf61eooZ");
-		location = new LocationSummary(locationId, organizationId, Status.ACTIVE, "SUM_REF", "Summary Name");
+		location = new LocationSummary(locationId, organizationId, Status.ACTIVE, "SUM_REF", "Summary Name", 100L);
 	}
 	
 	@Test

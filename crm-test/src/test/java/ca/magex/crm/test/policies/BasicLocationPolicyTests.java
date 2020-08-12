@@ -35,9 +35,9 @@ public class BasicLocationPolicyTests {
 		/* throw item not found for any identifier */
 		BDDMockito.willThrow(new ItemNotFoundException("")).given(organizationService).findOrganizationSummary(Mockito.any());
 		/* return an Active Org Summary for our specific identifier */
-		BDDMockito.willReturn(new OrganizationSummary(orgId, Status.ACTIVE, "Org 1")).given(organizationService).findOrganizationSummary(orgId);
+		BDDMockito.willReturn(new OrganizationSummary(orgId, Status.ACTIVE, "Org 1", null)).given(organizationService).findOrganizationSummary(orgId);
 		/* return an Active Org Summary for our specific identifier */
-		BDDMockito.willReturn(new OrganizationSummary(orgId2, Status.INACTIVE, "Org 2")).given(organizationService).findOrganizationSummary(orgId2);
+		BDDMockito.willReturn(new OrganizationSummary(orgId2, Status.INACTIVE, "Org 2", null)).given(organizationService).findOrganizationSummary(orgId2);
 		/* should be able to create a location for an active org */
 		Assert.assertTrue(policy.canCreateLocationForOrganization(orgId));
 		/* should not be able to create a location for an inactive org */

@@ -135,7 +135,7 @@ public class PersonsFilterTests {
 
 	@Test
 	public void testApplyFilter() {
-		PersonSummary person = new PersonSummary(new PersonIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "Bobby Thomson");
+		PersonSummary person = new PersonSummary(new PersonIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "Bobby Thomson", null);
 		/* default filter should match */
 		Assert.assertTrue(new PersonsFilter().apply(person));
 

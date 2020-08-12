@@ -57,7 +57,7 @@ public class UserJsonTransformerTests {
 		user = new UserDetails(userId, organizationId, personId, "admin", Status.ACTIVE, List.of(
 			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "CRM/ADMIN").getOptionId(),
 			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "ORG/ADMIN").getOptionId()
-		));
+		), 100L);
 	}
 	
 	@Test

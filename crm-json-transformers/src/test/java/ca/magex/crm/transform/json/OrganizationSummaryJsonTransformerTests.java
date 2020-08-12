@@ -45,7 +45,7 @@ public class OrganizationSummaryJsonTransformerTests {
 		config.initializeSystem(SYSTEM_ORG, SYSTEM_PERSON, SYSTEM_EMAIL, "admin", "admin");
 		transformer = new OrganizationSummaryJsonTransformer(crm);
 		organizationId = new OrganizationIdentifier("vAmFx4WQ6Q");
-		organization = new OrganizationSummary(organizationId, Status.ACTIVE, "Org Name");
+		organization = new OrganizationSummary(organizationId, Status.ACTIVE, "Org Name", 100L);
 	}
 	
 	@Test

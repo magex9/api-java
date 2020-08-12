@@ -28,7 +28,7 @@ public class BasicUserService implements CrmUserService {
 
 	@Override
 	public UserDetails createUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> roleIds) {
-		return repos.saveUserDetails(new UserDetails(repos.generateUserId(), repos.findPersonSummary(personId).getOrganizationId(), personId, username, Status.ACTIVE, roleIds));
+		return repos.saveUserDetails(new UserDetails(repos.generateUserId(), repos.findPersonSummary(personId).getOrganizationId(), personId, username, Status.ACTIVE, roleIds, null));
 	}
 
 	@Override

@@ -41,6 +41,9 @@ public class PersonSummary implements Serializable {
 	@NotBlank
 	@Size(max = 60)
 	protected String displayName;
+	
+	/** last modified timestamp provided by the backing datastore */
+	protected Long lastModified;
 
 	/**
 	 * Constructs a new Person Summary from the provided information
@@ -49,8 +52,9 @@ public class PersonSummary implements Serializable {
 	 * @param organizationId
 	 * @param status
 	 * @param displayName
+	 * @param lastModified
 	 */
-	public PersonSummary(PersonIdentifier personId, OrganizationIdentifier organizationId, Status status, String displayName) {
+	public PersonSummary(PersonIdentifier personId, OrganizationIdentifier organizationId, Status status, String displayName, Long lastModified) {
 		super();
 		this.personId = personId;
 		this.organizationId = organizationId;
@@ -89,6 +93,14 @@ public class PersonSummary implements Serializable {
 	public String getDisplayName() {
 		return displayName;
 	}
+	
+	/**
+	 * returns the last modified timestamp for the instance
+	 * @return
+	 */
+	public Long getLastModified() {
+		return lastModified;
+	}
 
 	/**
 	 * returns a copy of the person with the given status
@@ -96,7 +108,7 @@ public class PersonSummary implements Serializable {
 	 * @return
 	 */
 	public PersonSummary withStatus(Status status) {
-		return new PersonSummary(personId, organizationId, status, displayName);
+		return new PersonSummary(personId, organizationId, status, displayName, lastModified);
 	}
 
 	/**
@@ -105,7 +117,16 @@ public class PersonSummary implements Serializable {
 	 * @return
 	 */
 	public PersonSummary withDisplayName(String displayName) {
-		return new PersonSummary(personId, organizationId, status, displayName);
+		return new PersonSummary(personId, organizationId, status, displayName, lastModified);
+	}
+	
+	/**
+	 * returns a copy of the person with the last modified provided
+	 * @param lastModified
+	 * @return
+	 */
+	public PersonSummary withLastModified(Long lastModified) {
+		return new PersonSummary(personId, organizationId, status, displayName, lastModified);
 	}
 
 	@Override

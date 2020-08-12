@@ -58,7 +58,7 @@ public class CrmUserServiceCachingDelegateTests {
 	public void testCacheNewUser() {
 		final AtomicInteger userIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
-			return new UserDetails(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), new OrganizationIdentifier("O"), invocation.getArgument(0), invocation.getArgument(1), Status.ACTIVE, invocation.getArgument(2));
+			return new UserDetails(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), new OrganizationIdentifier("O"), invocation.getArgument(0), invocation.getArgument(1), Status.ACTIVE, invocation.getArgument(2), null);
 		}).given(delegate).createUser(Mockito.any(), Mockito.anyString(), Mockito.anyList());
 		UserDetails user = userService.createUser(new PersonIdentifier("PP"), "userA", List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
 		BDDMockito.verify(delegate, Mockito.times(1)).createUser(Mockito.any(), Mockito.anyString(), Mockito.anyList());
@@ -85,9 +85,9 @@ public class CrmUserServiceCachingDelegateTests {
 		final AtomicInteger userIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
 			UserDetails arg = invocation.getArgument(0);
-			return new UserDetails(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), arg.getOrganizationId(), arg.getPersonId(), arg.getUsername(), arg.getStatus(), arg.getAuthenticationRoleIds());
+			return new UserDetails(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), arg.getOrganizationId(), arg.getPersonId(), arg.getUsername(), arg.getStatus(), arg.getAuthenticationRoleIds(), null);
 		}).given(delegate).createUser(Mockito.any(UserDetails.class));		
-		UserDetails user = userService.createUser(new UserDetails(null, new OrganizationIdentifier("ABC"), new PersonIdentifier("PP"), "userA", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN"))));
+		UserDetails user = userService.createUser(new UserDetails(null, new OrganizationIdentifier("ABC"), new PersonIdentifier("PP"), "userA", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")), null));
 		BDDMockito.verify(delegate, Mockito.times(1)).createUser(Mockito.any(UserDetails.class));
 
 		/* should have added the details to the cache */
@@ -109,7 +109,7 @@ public class CrmUserServiceCachingDelegateTests {
 
 	@Test
 	public void testCacheExistingUserById() {
-		UserDetails user = new UserDetails(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+		UserDetails user = new UserDetails(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")), null);
 		BDDMockito.willAnswer((invocation) -> {
 			return user;
 		}).given(delegate).findUserDetails(Mockito.any(UserIdentifier.class));
@@ -145,7 +145,7 @@ public class CrmUserServiceCachingDelegateTests {
 
 	@Test
 	public void testCacheExistingUserByUsername() {
-		UserDetails user = new UserDetails(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+		UserDetails user = new UserDetails(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")), null);
 		BDDMockito.willAnswer((invocation) -> {
 			return user;
 		}).given(delegate).findUserDetails(Mockito.any(UserIdentifier.class));
@@ -227,7 +227,7 @@ public class CrmUserServiceCachingDelegateTests {
 		final AtomicInteger userIndex = new AtomicInteger();
 		final AtomicReference<UserDetails> reference = new AtomicReference<UserDetails>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new UserDetails(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), new OrganizationIdentifier("O"), invocation.getArgument(0), invocation.getArgument(1), Status.ACTIVE, invocation.getArgument(2)));
+			reference.set(new UserDetails(new UserIdentifier(Integer.toString(userIndex.getAndIncrement())), new OrganizationIdentifier("O"), invocation.getArgument(0), invocation.getArgument(1), Status.ACTIVE, invocation.getArgument(2), null));
 			return reference.get();
 		}).given(delegate).createUser(Mockito.any(), Mockito.anyString(), Mockito.anyList());
 		
@@ -324,9 +324,9 @@ public class CrmUserServiceCachingDelegateTests {
 	
 	@Test
 	public void testCachingFindResults() {
-		UserDetails user1 = new UserDetails(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user1", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
-		UserDetails user2 = new UserDetails(new UserIdentifier("B"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user2", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
-		UserDetails user3 = new UserDetails(new UserIdentifier("C"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user3", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+		UserDetails user1 = new UserDetails(new UserIdentifier("A"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user1", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")), null);
+		UserDetails user2 = new UserDetails(new UserIdentifier("B"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user2", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")), null);
+		UserDetails user3 = new UserDetails(new UserIdentifier("C"), new OrganizationIdentifier("O"), new PersonIdentifier("P"), "user3", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")), null);
 		
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(user1, user2, user3), 3);

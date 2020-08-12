@@ -113,7 +113,7 @@ public class OrganizationsFilterTests {
 
 	@Test
 	public void testApplyFilter() {
-		OrganizationDetails organization = new OrganizationDetails(new OrganizationIdentifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG")));
+		OrganizationDetails organization = new OrganizationDetails(new OrganizationIdentifier("ABC"), Status.ACTIVE, "Road and Track", null, null, List.of(new AuthenticationGroupIdentifier("ORG")), List.of(new BusinessGroupIdentifier("ORG")), null);
 		/* default filter should match */
 		Assert.assertTrue(new OrganizationsFilter().apply(organization));
 
