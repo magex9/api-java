@@ -17,6 +17,10 @@ parameters:
 - name: environment
   type: string
 
+- name: dockerfile
+  type: string
+  default: ./Dockerfile
+
 # ---------------------------------------------------------------------------------------------
 # Main JOB
 # ---------------------------------------------------------------------------------------------
@@ -37,7 +41,7 @@ steps:
     containerRegistry: 'azure w2020 registry'
     repository: '${{parameters.application_group}}/${{parameters.application_name}}'
     command: 'buildandPush'
-    Dockerfile: '**/Dockerfile'
+    Dockerfile: '${{parameters.dockerfile}}'
     tags: |
       ${{parameters.application_version}}-$(Build.BuildId)
       latest

@@ -60,26 +60,16 @@ stages:
         mavenOptions: '-Xmx3072m'
       env: { ENVIRONMENT=ut }
 
+
     #Build Docker container and push to azure container registry
     - template: azure-build-docker-containers.yml
       parameters:
         environment: 'ut'
-        application_group: $(application_group)
-        application_name: $(application_name)
+        application_group: crm
+        application_name: crm-api-spring-boot-server
         application_version: 1.0.0-SNAPSHOT
+        dockerfile: ./crm-api-spring-boot-server.dockerfile 
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/
-      artifact: crm-helloworld
-
-    - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/
-      artifact: crm-graphql-spring-boot-server
-
-    - publish: $(System.DefaultWorkingDirectory)/crm-auth-spring-boot-server/
-      artifact: crm-auth-spring-boot-server
-
-    - publish: $(System.DefaultWorkingDirectory)/crm-restful-spring-boot-server/
-      artifact: crm-restful-spring-boot-server
-  
 
 - stage: Continuous_Deployment
   displayName: Continuous Deployment to UT
@@ -94,54 +84,17 @@ stages:
         runOnce:
           deploy:
             steps: 
-            - checkout: "ADLC"  # self represents the repo where the initial Pipelines YAML file was found
-              clean: true  # whether to fetch clean each time
-              fetchDepth: 1  # the depth of commits to ask Git to fetch
-              lfs: false  # whether to download Git-LFS files
-              submodules: false  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
-              path: adlc  # path to check out source code, relative to the agent's build directory (e.g. \_work\1)
-              persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
-      
-            #Deploy crm-helloworld
-            - template: azure-package-webapp.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-helloworld
-            - template: azure-deploy-webapp.yml
-              parameters:
-                application_name: crm-helloworld
-                sshEndpoint: 'ssh - RD3'
-
-            #Deploy crm-graphql-spring-boot-server
-            # - template: azure-package.yml
-            #   parameters:
-            #     environment: 'ut'
-            #     application_name: crm-graphql-spring-boot-server
-            # - template: azure-deploy-vm.yml
-            #   parameters:
-            #     application_name: crm-graphql-spring-boot-server
-            #     sshEndpoint: 'ssh - RD3'
-
-            #Deploy crm-restful-spring-boot-server
-
-            # - template: azure-package.yml
-            #   parameters:
-            #     environment: 'ut'
-            #     application_name: crm-restful-spring-boot-server
-            
-            # - template: azure-deploy-vm.yml
-            #   parameters:
-            #     application_name: crm-restful-spring-boot-server
-            #     sshEndpoint: 'ssh - RD3'
-
-            #Deploy crm-auth-spring-boot-server
-
-            # - template: azure-package.yml
-            #   parameters:
-            #     environment: 'ut'
-            #     application_name: crm-auth-spring-boot-server
-                
-            # - template: azure-deploy-vm.yml
-            #   parameters:
-            #     application_name: crm-auth-spring-boot-server
-            #     sshEndpoint: 'ssh - RD3'      
+            - task: HelmInstaller@1
+              inputs:
+              helmVersionToInstall: 'latest'
+            - task: HelmDeploy@0
+              inputs:
+                connectionType: 'Azure Resource Manager'
+                azureSubscription: 'appdev aks connection'
+                azureResourceGroup: 'AppDev_Kubernetes'
+                kubernetesCluster: 'appdev-cluster'
+                namespace: 'appdev'
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: 'helm-charts/crm-api-spring-boot-server'
+                recreate: true
