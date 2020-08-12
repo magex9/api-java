@@ -47,20 +47,6 @@ stages:
     displayName: Build Applications
     steps:
             
-    - task: Maven@3
-      inputs:
-        goals: 'install'
-        mavenPomFile: 'crm-helloworld/pom.xml'
-        #options: '-Dmaven.test.failure.ignore=true'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.11'
-        mavenVersionOption: 'Default'
-        mavenOptions: '-Xmx3072m'
-      env: { ENVIRONMENT=ut }
-
-
     #Build Docker container and push to azure container registry
     - template: azure-build-docker-containers.yml
       parameters:
