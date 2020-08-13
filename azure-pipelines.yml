@@ -83,4 +83,5 @@ stages:
                 command: 'upgrade'
                 chartType: 'FilePath'
                 chartPath: '$(Pipeline.Workspace)/helm-charts/crm-api-spring-boot-server'
+                releaseName: 'crm-api-spring-boot-server'
                 #recreate: true
