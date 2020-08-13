@@ -5,6 +5,13 @@ metadata:
   name: {{ .Values.application.name }}
   labels:
     app: {{ .Values.application.name }}
+    app.kubernetes.io/name: {{ .Values.application.name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/component: application
+    app.kubernetes.io/part-of: crm
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version \| replace "+" "_" }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -12,6 +19,8 @@ spec:
       app: {{ .Values.application.name }}
   template:
     metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
       labels:
         app: {{ .Values.application.name }}
     spec:
