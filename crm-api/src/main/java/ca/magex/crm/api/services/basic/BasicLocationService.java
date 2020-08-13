@@ -1,5 +1,7 @@
 package ca.magex.crm.api.services.basic;
 
+import org.apache.commons.codec.binary.StringUtils;
+
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
@@ -29,6 +31,9 @@ public class BasicLocationService implements CrmLocationService {
 		if (loc == null) {
 			return null;
 		}
+		if (StringUtils.equals(loc.getDisplayName(), locationName)) {
+			return loc;
+		}
 		return repos.saveLocationDetails(loc.withDisplayName(locationName));
 	}
 
@@ -36,6 +41,9 @@ public class BasicLocationService implements CrmLocationService {
 		LocationDetails loc = repos.findLocationDetails(locationId);
 		if (loc == null) {
 			return null;
+		}
+		if (loc.getAddress().equals(address)) {
+			return loc;
 		}
 		return repos.saveLocationDetails(loc.withAddress(address));
 	}
@@ -45,6 +53,9 @@ public class BasicLocationService implements CrmLocationService {
 		if (loc == null) {
 			return null;
 		}
+		if (loc.getStatus() == Status.ACTIVE) {
+			return loc.asSummary();
+		}
 		return repos.saveLocationDetails(loc.withStatus(Status.ACTIVE)).asSummary();
 	}
 
@@ -52,6 +63,9 @@ public class BasicLocationService implements CrmLocationService {
 		LocationDetails loc = repos.findLocationDetails(locationId);
 		if (loc == null) {
 			return null;
+		}
+		if (loc.getStatus() == Status.INACTIVE) {
+			return loc.asSummary();
 		}
 		return repos.saveLocationDetails(loc.withStatus(Status.INACTIVE)).asSummary();
 	}

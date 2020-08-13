@@ -370,7 +370,8 @@ public class ModelBinder {
 				new Localized(
 						json.getObject("name").getString("code", ""), 
 						json.getObject("name").getString("english", ""), 
-						json.getObject("name").getString("french", "")));
+						json.getObject("name").getString("french", "")),
+				json.getLong("lastModified"));
 	}
 	
 	/**

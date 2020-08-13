@@ -72,7 +72,7 @@ public class PersonDetails extends PersonSummary {
 		this.legalName = legalName;
 		this.address = address;
 		this.communication = communication;
-		this.businessRoleIds = businessRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(businessRoleIds);
+		this.businessRoleIds = businessRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(businessRoleIds);		
 	}
 
 	/**

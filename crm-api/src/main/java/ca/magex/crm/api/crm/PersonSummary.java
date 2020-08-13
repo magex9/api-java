@@ -60,6 +60,7 @@ public class PersonSummary implements Serializable {
 		this.organizationId = organizationId;
 		this.status = status;
 		this.displayName = displayName;
+		this.lastModified = lastModified;
 	}
 
 	/**

@@ -63,10 +63,11 @@ public class BasicLocationRepository implements CrmLocationRepository {
 	}
 
 	@Override
-	public LocationDetails saveLocationDetails(LocationDetails location) {
-		store.getNotifier().locationUpdated(System.nanoTime(), location.getLocationId());
+	public LocationDetails saveLocationDetails(LocationDetails locationToSave) {
+		LocationDetails location = locationToSave.withLastModified(System.currentTimeMillis());		
 		store.getLocations().put(location.getLocationId(), location);
-		return location;
+		store.getNotifier().locationUpdated(location.getLastModified(), location.getLocationId());
+		return SerializationUtils.clone(location);
 	}
 
 }

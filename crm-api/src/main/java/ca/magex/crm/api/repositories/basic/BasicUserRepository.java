@@ -59,10 +59,11 @@ public class BasicUserRepository implements CrmUserRepository {
 	}
 
 	@Override
-	public UserDetails saveUserDetails(UserDetails user) {
-		store.getNotifier().userUpdated(System.nanoTime(), user.getUserId());
+	public UserDetails saveUserDetails(UserDetails userToSave) {
+		UserDetails user = userToSave.withLastModified(System.currentTimeMillis());
 		store.getUsers().put(user.getUserId(), user);
-		return user;
+		store.getNotifier().userUpdated(user.getLastModified(), user.getUserId());
+		return SerializationUtils.clone(user);
 	}
 
 }

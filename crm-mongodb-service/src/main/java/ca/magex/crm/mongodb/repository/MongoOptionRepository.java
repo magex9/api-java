@@ -50,7 +50,8 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 	}
 
 	@Override
-	public Option saveOption(Option option) {
+	public Option saveOption(Option original) {
+		final Option option = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOptions();
 		Document doc = collection
 				.find(Filters.and(
@@ -78,7 +79,8 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 									.append("options.$.name.english", option.getName().getEnglishName())
 									.append("options.$.name.english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
 									.append("options.$.name.french", option.getName().getFrenchName())
-									.append("options.$.name.french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))));
+									.append("options.$.name.french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
+									.append("options.$.lastModified", option.getLastModified())));
 
 			if (setResult.getMatchedCount() == 0) {
 				/* if we had no matching option id, then we need to do a push to the existing array */

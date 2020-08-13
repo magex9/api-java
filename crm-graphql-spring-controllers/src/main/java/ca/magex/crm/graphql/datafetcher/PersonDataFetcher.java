@@ -113,14 +113,12 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 				switch (status) {
 				case "ACTIVE":
 					if (person.getStatus() != Status.ACTIVE) {
-						crm.enablePerson(personId);
-						person = person.withStatus(Status.ACTIVE);
+						person = person.withStatus(Status.ACTIVE).withLastModified(crm.enablePerson(personId).getLastModified());
 					}
 					break;
 				case "INACTIVE":
 					if (person.getStatus() != Status.INACTIVE) {
-						crm.disablePerson(personId);
-						person = person.withStatus(Status.INACTIVE);
+						person = person.withStatus(Status.INACTIVE).withLastModified(crm.disablePerson(personId).getLastModified());
 					}
 					break;
 				default:

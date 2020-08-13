@@ -49,10 +49,11 @@ public class BasicOptionRepository implements CrmOptionRepository {
 	}
 
 	@Override
-	public Option saveOption(Option option) {
-		store.getNotifier().optionUpdated(System.nanoTime(), option.getOptionId());
-		store.getOptions().put(option.getOptionId(), SerializationUtils.clone(option)); // store a clone of the object in the repository
-		return option;
+	public Option saveOption(Option optionToSave) {
+		Option option = optionToSave.withLastModified(System.currentTimeMillis());		
+		store.getOptions().put(option.getOptionId(), option);
+		store.getNotifier().optionUpdated(option.getLastModified(), option.getOptionId());
+		return SerializationUtils.clone(option);
 	}
 
 }

@@ -182,7 +182,7 @@ public class OptionsFilterTests {
 
 	@Test
 	public void testApplyFilter() {
-		Option option = new Option(new ProvinceIdentifier("ON"), new CountryIdentifier("CA"), Type.PROVINCE, Status.ACTIVE, Option.MUTABLE, new Localized("ON", "Ontario", "L'Ontario")); 
+		Option option = new Option(new ProvinceIdentifier("ON"), new CountryIdentifier("CA"), Type.PROVINCE, Status.ACTIVE, Option.MUTABLE, new Localized("ON", "Ontario", "L'Ontario"), 100L); 
 		/* default filter should match */
 		Assert.assertTrue(new OptionsFilter().apply(option));
 		
@@ -211,7 +211,7 @@ public class OptionsFilterTests {
 		Assert.assertFalse(new OptionsFilter().withStatus(Status.INACTIVE).apply(option));
 		
 		/* test nested code */
-		option = new Option(new ProvinceIdentifier("CA/ON"), new CountryIdentifier("CA"), Type.PROVINCE, Status.ACTIVE, Option.MUTABLE, new Localized("CA/ON", "Ontario", "L'Ontario"));
+		option = new Option(new ProvinceIdentifier("CA/ON"), new CountryIdentifier("CA"), Type.PROVINCE, Status.ACTIVE, Option.MUTABLE, new Localized("CA/ON", "Ontario", "L'Ontario"), 100L);
 		Assert.assertTrue(new OptionsFilter().withName(new Localized(Lang.ROOT, "ON")).apply(option));
 		Assert.assertFalse(new OptionsFilter().withName(new Localized(Lang.ROOT, "QC")).apply(option));
 	}

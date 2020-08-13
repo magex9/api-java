@@ -22,7 +22,7 @@ public class BasicOptionService implements CrmOptionService {
 	@Override
 	public Option createOption(OptionIdentifier parentId, Type type, Localized name) {	
 		OptionIdentifier optionId = repos.generateForType(type, name.getCode());
-		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, true, name));
+		return repos.saveOption(new Option(optionId, parentId, type, Status.ACTIVE, true, name, null));
 	}
 
 	@Override

@@ -32,7 +32,9 @@ public class Option implements Serializable {
 	
 	private Localized name;
 	
-	public Option(OptionIdentifier optionId, OptionIdentifier parentId, Type type, Status status, Boolean mutable, Localized name) {
+	private Long lastModified;
+	
+	public Option(OptionIdentifier optionId, OptionIdentifier parentId, Type type, Status status, Boolean mutable, Localized name, Long lastModified) {
 		super();
 		this.optionId = optionId;
 		this.parentId = parentId;
@@ -40,6 +42,7 @@ public class Option implements Serializable {
 		this.status = status;
 		this.mutable = mutable;
 		this.name = name;
+		this.lastModified = lastModified;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -63,8 +66,16 @@ public class Option implements Serializable {
 		return status;
 	}
 	
+	public Long getLastModified() {
+		return lastModified;
+	}
+	
+	public Option withLastModified(Long lastModified) {
+		return new Option(optionId, parentId, type, status, mutable, name, lastModified);
+	}
+	
 	public Option withStatus(Status status) {
-		return new Option(optionId, parentId, type, status, mutable, name);
+		return new Option(optionId, parentId, type, status, mutable, name, lastModified);
 	}
 	
 	public Boolean getMutable() {
@@ -82,7 +93,7 @@ public class Option implements Serializable {
 	public Option withName(Localized name) {
 		if (!StringUtils.equals(name.getCode(), this.name.getCode()))
 			throw new IllegalArgumentException("Cannot change option codes");
-		return new Option(optionId, parentId, type, status, mutable, name);
+		return new Option(optionId, parentId, type, status, mutable, name, lastModified);
 	}
 	
 	@SuppressWarnings("unchecked")

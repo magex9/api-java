@@ -2,6 +2,8 @@ package ca.magex.crm.api.services.basic;
 
 import java.util.List;
 
+import org.apache.commons.codec.binary.StringUtils;
+
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -36,6 +38,9 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
+		if (StringUtils.equals(person.getDisplayName(), displayName)) {
+			return person;
+		}
 		return repos.savePersonDetails(person.withDisplayName(displayName));
 	}
 
@@ -44,6 +49,9 @@ public class BasicPersonService implements CrmPersonService {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
+		}
+		if (person.getLegalName().equals(legalName)) {
+			return person;
 		}
 		return repos.savePersonDetails(person.withLegalName(legalName));
 	}
@@ -54,6 +62,9 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
+		if (person.getAddress().equals(address)) {
+			return person;
+		}
 		return repos.savePersonDetails(person.withAddress(address));
 	}
 
@@ -62,6 +73,9 @@ public class BasicPersonService implements CrmPersonService {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
+		}
+		if (person.getCommunication().equals(communication)) {
+			return person;
 		}
 		return repos.savePersonDetails(person.withCommunication(communication));
 	}
@@ -72,6 +86,9 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
+		if (person.getBusinessRoleIds().containsAll(businessRoleIds) && businessRoleIds.containsAll(person.getBusinessRoleIds())) {
+			return person;
+		}
 		return repos.savePersonDetails(person.withBusinessRoleIds(businessRoleIds));
 	}
 
@@ -81,6 +98,9 @@ public class BasicPersonService implements CrmPersonService {
 		if (person == null) {
 			return null;
 		}
+		if (person.getStatus() == Status.ACTIVE) {
+			return person.asSummary();
+		}
 		return repos.savePersonDetails(person.withStatus(Status.ACTIVE)).asSummary();
 	}
 
@@ -89,6 +109,9 @@ public class BasicPersonService implements CrmPersonService {
 		PersonDetails person = repos.findPersonDetails(personId);
 		if (person == null) {
 			return null;
+		}
+		if (person.getStatus() == Status.INACTIVE) {
+			return person.asSummary();
 		}
 		return repos.savePersonDetails(person.withStatus(Status.INACTIVE)).asSummary();
 	}

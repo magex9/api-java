@@ -252,7 +252,8 @@ public class ModelBinderTests {
 						new JsonPair("city", "Ottawa"),
 						new JsonPair("province", new JsonObject(new JsonPair("identifier", "/options/provinces/CA/ON"))),
 						new JsonPair("country", new JsonObject(new JsonPair("identifier", "/options/countries/CA"))),
-						new JsonPair("postalCode", "K1N6J3"))));
+						new JsonPair("postalCode", "K1N6J3"))),
+				new JsonPair("lastModified", 100L));
 
 		LocationDetails details = ModelBinder.toLocationDetails(json);
 		Assert.assertEquals(new LocationIdentifier("Loc1"), details.getLocationId());
@@ -275,7 +276,8 @@ public class ModelBinderTests {
 				new JsonPair("organization", new JsonObject(
 						new JsonPair("organizationId", "/organizations/Org1"))),
 				new JsonPair("status", "active"),
-				new JsonPair("displayName", "Michael"));
+				new JsonPair("displayName", "Michael"),
+				new JsonPair("lastModified", 100L));
 		
 		PersonSummary summary = ModelBinder.toPersonSummary(json);
 		Assert.assertEquals(new PersonIdentifier("Per1"), summary.getPersonId());
@@ -315,7 +317,8 @@ public class ModelBinderTests {
 				new JsonPair("businessRoles", new JsonArray(List.of(
 						new JsonObject(new JsonPair("optionId", "/options/business-roles/A")),
 						new JsonObject(new JsonPair("optionId", "/options/business-roles/B")),
-						new JsonObject(new JsonPair("optionId", "/options/business-roles/C"))))));
+						new JsonObject(new JsonPair("optionId", "/options/business-roles/C"))))),
+				new JsonPair("lastModified", 100L));
 		
 		PersonDetails details = ModelBinder.toPersonDetails(json);
 		Assert.assertEquals(new PersonIdentifier("Per1"), details.getPersonId());
@@ -355,7 +358,8 @@ public class ModelBinderTests {
 						new JsonObject(
 								new JsonPair("organizationId", "/organizations/Org1"))),
 				new JsonPair("status", "active"),
-				new JsonPair("username", "User1"));
+				new JsonPair("username", "User1"),
+				new JsonPair("lastModified", 100L));
 		
 		UserSummary summary = ModelBinder.toUserSummary(json);
 		Assert.assertEquals(new UserIdentifier("User1"), summary.getUserId());
@@ -379,7 +383,8 @@ public class ModelBinderTests {
 				new JsonPair("authenticationRoles", new JsonArray(List.of(
 						new JsonObject(new JsonPair("optionId", "/options/authentication-roles/A")),
 						new JsonObject(new JsonPair("optionId", "/options/authentication-roles/B")),
-						new JsonObject(new JsonPair("optionId", "/options/authentication-roles/C"))))));
+						new JsonObject(new JsonPair("optionId", "/options/authentication-roles/C"))))),
+				new JsonPair("lastModified", 100L));
 		
 		UserDetails details = ModelBinder.toUserDetails(json);
 		Assert.assertEquals(new UserIdentifier("User1"), details.getUserId());
@@ -405,7 +410,8 @@ public class ModelBinderTests {
 				new JsonPair("name", new JsonObject(
 						new JsonPair("code", "CA/ON"),
 						new JsonPair("english", "Ontario"),
-						new JsonPair("french",  "'ntario"))));
+						new JsonPair("french",  "'ntario"))),
+				new JsonPair("lastModified", 100L));
 		
 		Option option = ModelBinder.toOption(json);
 		Assert.assertEquals(new ProvinceIdentifier("CA/ON"), option.getOptionId());

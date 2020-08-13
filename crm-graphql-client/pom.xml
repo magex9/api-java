@@ -46,6 +46,12 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>crm-api-spring-boot-server</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+          			<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-config</artifactId>
+        		</exclusion>
+			</exclusions>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

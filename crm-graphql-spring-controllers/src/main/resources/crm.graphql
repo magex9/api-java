@@ -153,6 +153,7 @@ type Organization {
 	mainContact: Person
 	authenticationGroups: [Option]!
 	businessGroups: [Option]!
+	lastModified: Long
 	actions: OrganizationActions!
 }
 
@@ -163,6 +164,7 @@ type Location {
 	reference: String
 	displayName: String
 	address: MailingAddress
+	lastModified: Long
 	actions: LocationActions!	
 }
 
@@ -175,6 +177,7 @@ type Person {
 	address: MailingAddress
 	communication: Communication
 	businessRoles: [Option]!
+	lastModified: Long
 	actions: PersonActions!
 }
 
@@ -185,6 +188,7 @@ type User {
 	username: String!
 	status: String!	
 	authenticationRoles: [Option]!
+	lastModified: Long
 	actions: UserActions!
 }
 
@@ -195,6 +199,7 @@ type Option {
 	status: String!
 	mutable: String!
 	name: Localized!
+	lastModified: Long
 	actions: OptionActions!
 }
 

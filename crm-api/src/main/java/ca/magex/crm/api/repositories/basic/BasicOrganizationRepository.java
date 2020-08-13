@@ -60,9 +60,10 @@ public class BasicOrganizationRepository implements CrmOrganizationRepository {
 	}
 
 	@Override
-	public OrganizationDetails saveOrganizationDetails(OrganizationDetails organization) {
-		store.getNotifier().organizationUpdated(System.nanoTime(), organization.getOrganizationId());
+	public OrganizationDetails saveOrganizationDetails(OrganizationDetails original) {
+		OrganizationDetails organization = original.withLastModified(System.currentTimeMillis());
 		store.getOrganizations().put(organization.getOrganizationId(), organization);
-		return organization;
+		store.getNotifier().organizationUpdated(organization.getLastModified(), organization.getOrganizationId());
+		return SerializationUtils.clone(organization);
 	}
 }

@@ -37,6 +37,9 @@ public class BasicUserService implements CrmUserService {
 		if (user == null) {
 			return null;
 		}
+		if (user.getStatus() == Status.ACTIVE) {
+			return user.asSummary();
+		}
 		return repos.saveUserDetails(user.withStatus(Status.ACTIVE)).asSummary();
 	}
 
@@ -45,6 +48,9 @@ public class BasicUserService implements CrmUserService {
 		UserDetails user = repos.findUserDetails(userId);
 		if (user == null) {
 			return null;
+		}
+		if (user.getStatus() == Status.INACTIVE) {
+			return user.asSummary();
 		}
 		return repos.saveUserDetails(user.withStatus(Status.INACTIVE)).asSummary();
 	}
@@ -78,6 +84,9 @@ public class BasicUserService implements CrmUserService {
 		UserDetails user = repos.findUserDetails(userId);
 		if (user == null) {
 			return null;
+		}
+		if (user.getAuthenticationRoleIds().containsAll(authenticationRoleIds) && authenticationRoleIds.containsAll(user.getAuthenticationRoleIds())) {
+			return user;
 		}
 		return repos.saveUserDetails(user.withAuthenticationRoleIds(authenticationRoleIds));
 	}

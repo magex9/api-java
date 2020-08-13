@@ -52,7 +52,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 	}
 
 	@Override
-	public OrganizationDetails saveOrganizationDetails(OrganizationDetails orgDetails) {
+	public OrganizationDetails saveOrganizationDetails(OrganizationDetails original) {		
+		OrganizationDetails orgDetails = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOrganizations();
 		Document doc = collection
 				.find(Filters.and(
@@ -81,7 +82,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 							.collect(Collectors.toList()))
 					.append("locations", List.of())
 					.append("persons", List.of())
-					.append("users", List.of()));
+					.append("users", List.of())
+					.append("lastModified", orgDetails.getLastModified()));
 			debug(() -> "saveOrganizationDetials(" + orgDetails + ") created a new document with result " + insertResult);			
 		} else {
 			/* add all the fields that can be updated */
@@ -105,7 +107,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 										.getBusinessGroupIds()
 										.stream()
 										.map((id) -> new BusinessGroupIdentifier(id).getFullIdentifier())
-										.collect(Collectors.toList()))));
+										.collect(Collectors.toList()))
+								.append("lastModified", orgDetails.getLastModified())));
 			if (setResult.getMatchedCount() == 0) {
 				throw new ApiException("Unable to update or insert organization: " + orgDetails);
 			}
@@ -122,7 +125,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Filters.eq("organizationId", organizationId.getFullIdentifier()),
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
-						Projections.include("status", "displayName")))
+						Projections.include("organizationId", "status", "displayName", "lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -139,7 +142,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Filters.eq("organizationId", organizationId.getFullIdentifier()),
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
-						Projections.include("status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds")))
+						Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -184,7 +187,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Aggregates.sort(BsonUtils.toBson(paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
-						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName")))))));
+						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "lastModified")))))));
 
 		/* single document because we have facets */
 		Document doc = collection.aggregate(pipeline).first();
@@ -216,7 +219,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Aggregates.sort(BsonUtils.toBson(paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
-						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds")))))));
+						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified")))))));
 
 		/* single document because we have facets */
 		Document doc = collection.aggregate(pipeline).first();
