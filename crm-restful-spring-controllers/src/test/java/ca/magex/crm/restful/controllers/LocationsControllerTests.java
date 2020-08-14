@@ -44,7 +44,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(false, orig.getBoolean("hasNext"));
 		assertEquals(false, orig.getBoolean("hasPrevious"));
 		assertEquals(1, orig.getArray("content").size());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), orig.getArray("content").getObject(0).keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), orig.getArray("content").getObject(0).keys());
 		assertEquals(getSystemLocationIdentifier().getCode(), orig.getArray("content").getObject(0).getString("locationId"));
 		assertEquals(getSystemOrganizationIdentifier().getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", orig.getArray("content").getObject(0).getString("status"));
@@ -57,7 +57,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 				.with("reference", "LOC")
 				.with("address", new MailingAddressJsonTransformer(crm).format(MAILING_ADDRESS, Lang.ENGLISH)));
 		//JsonAsserts.print(created, "created");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), created.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), created.keys());
 		assertEquals(organizationId.getCode(), created.getString("organizationId"));
 		assertEquals("Active", created.getString("status"));
 		assertEquals("LOC", created.getString("reference"));
@@ -72,7 +72,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject fetch = get(locationId + "/details", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(fetch, "fetch");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), fetch.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), fetch.keys());
 		assertEquals(locationId.getCode(), fetch.getString("locationId"));
 		assertEquals(organizationId.getCode(), fetch.getString("organizationId"));
 		assertEquals("ACTIVE", fetch.getString("status"));
@@ -87,7 +87,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject english = get(locationId + "/details", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), english.keys());
 		assertEquals(locationId.getCode(), english.getString("locationId"));
 		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
@@ -102,7 +102,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonObject french = get(locationId + "/details", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), french.keys());
 		assertEquals(locationId.getCode(), french.getString("locationId"));
 		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
@@ -117,7 +117,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject jsonld = get(locationId + "/details", null, HttpStatus.OK);
 		//JsonAsserts.print(jsonld, "jsonld");
-		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), jsonld.keys());
+		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), jsonld.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", jsonld.getString("@context"));
 		assertEquals(Crm.REST_BASE + locationId.toString(), jsonld.getString("locationId"));
 		assertEquals(Crm.REST_BASE + organizationId.toString(), jsonld.getString("organizationId"));
@@ -156,13 +156,13 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals(false, paging.getBoolean("hasNext"));
 		assertEquals(false, paging.getBoolean("hasPrevious"));
 		assertEquals(2, paging.getArray("content").size());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), paging.getArray("content").getObject(0).keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), paging.getArray("content").getObject(0).keys());
 		assertEquals(locationId.getCode(), paging.getArray("content").getObject(0).getString("locationId"));
 		assertEquals(organizationId.getCode(), paging.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", paging.getArray("content").getObject(0).getString("status"));
 		assertEquals("LOC", paging.getArray("content").getObject(0).getString("reference"));
 		assertEquals("Organization", paging.getArray("content").getObject(0).getString("displayName"));
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), paging.getArray("content").getObject(1).keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), paging.getArray("content").getObject(1).keys());
 		assertEquals(getSystemLocationIdentifier().getCode(), paging.getArray("content").getObject(1).getString("locationId"));
 		assertEquals(getSystemOrganizationIdentifier().getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("Active", paging.getArray("content").getObject(1).getString("status"));
@@ -176,7 +176,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject root = get(locationId + "/details", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), root.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), root.keys());
 		assertEquals(locationId.getCode(), root.getString("locationId"));
 		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
@@ -191,7 +191,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject english = get(locationId + "/details", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), english.keys());
 		assertEquals(locationId.getCode(), english.getString("locationId"));
 		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
@@ -206,7 +206,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject french = get(locationId + "/details", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), french.keys());
 		assertEquals(locationId.getCode(), french.getString("locationId"));
 		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
@@ -226,7 +226,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonObject linked = get(locationId, null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
-		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName"), linked.keys());
+		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "lastModified"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationSummary", linked.getString("@context"));
 		assertEquals(Crm.REST_BASE + locationId.toString(), linked.getString("locationId"));
 		assertEquals(Crm.REST_BASE + organizationId.toString(), linked.getString("organizationId"));
@@ -241,7 +241,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonObject root = get(locationId, Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), root.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), root.keys());
 		assertEquals(locationId.getCode(), root.getString("locationId"));
 		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
@@ -250,7 +250,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonObject english = get(locationId, Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), english.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), english.keys());
 		assertEquals(locationId.getCode(), english.getString("locationId"));
 		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
@@ -259,7 +259,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonObject french = get(locationId, Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), french.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), french.keys());
 		assertEquals(locationId.getCode(), french.getString("locationId"));
 		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
@@ -325,7 +325,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		
 		JsonObject json = patch(locationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("displayName", "Updated name"));
 		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), json.keys());
 		assertEquals(locationId.getCode(), json.getString("locationId"));
 		assertEquals(organizationId.getCode(), json.getString("organizationId"));
 		assertEquals("Active", json.getString("status"));
@@ -347,7 +347,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
 
 		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), json.keys());
 		assertEquals(locationId.getCode(), json.getString("locationId"));
 		assertEquals(organizationId.getCode(), json.getString("organizationId"));
 		assertEquals("Active", json.getString("status"));
@@ -369,7 +369,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
 
 		//JsonAsserts.print(json, "json");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), json.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), json.keys());
 		assertEquals(locationId.getCode(), json.getString("locationId"));
 		assertEquals(organizationId.getCode(), json.getString("organizationId"));
 		assertEquals("Active", json.getString("status"));
@@ -411,7 +411,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 
 		JsonObject disable = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(disable, "disable");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), disable.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), disable.keys());
 		assertEquals(locationId.getCode(), disable.getString("locationId"));
 		assertEquals(organizationId.getCode(), disable.getString("organizationId"));
 		assertEquals("Inactive", disable.getString("status"));
@@ -441,7 +441,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	
 		JsonObject enable = put(locationId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(enable, "enable");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName"), enable.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), enable.keys());
 		assertEquals(locationId.getCode(), enable.getString("locationId"));
 		assertEquals(organizationId.getCode(), enable.getString("organizationId"));
 		assertEquals("Actif", enable.getString("status"));
