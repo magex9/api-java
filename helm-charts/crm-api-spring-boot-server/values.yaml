@@ -4,11 +4,30 @@
 application:
   name: "crm-api-spring-boot-server"
   port: 9002
+  group: crm
+  context: /crm
+  env:
+    - name: SPRING_CONFIG_SERVER_URI
+      value: "http://centralized-configuration-service"
+    - name: MONGODB_DBNAME
+      value: "magex"
+    - name: MONGODB_URL
+      value: "cluster0.oofhz.azure.mongodb.net/?retryWrites=true&w=majority"
+    - name : MONGODB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: mongo-username
+          key: "mongo.db.username"
+    - name : MONGODB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mongo-password
+          key: "mongo.db.password"
 
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: w2020.azurecr.io
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -44,13 +63,14 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: addon-http-application-routing
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
-      paths: []
+    - host: crm-api-spring-boot-server.5ffaf4931ba8e.canadacentral.aksapp.io
+      paths:
+        path: /
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -77,6 +97,6 @@ autoscaling:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations: {}
 
 affinity: {}

@@ -48,6 +48,9 @@ Selector labels
 {{- define "crm-api-spring-boot-server.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "crm-api-spring-boot-server.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion }}
+app.kubernetes.io/component: application
+app.kubernetes.io/part-of: {{ .Values.application.group }}
 {{- end }}
 
 {{/*
