@@ -35,7 +35,11 @@ determine image name (with repo, tags and app name}
 */}}
 
 {{- define "crm-api-spring-boot-server.image" -}}
-{{ printf "%s/%s:%s" .Values.image.repository .Chart.Name (include "crm-api-spring-boot-server.appVersion" .) }}
+  {{- if .Values.application.group }}
+    {{- printf "%s/%s/%s:%s" .Values.image.repository .Values.application.group .Chart.Name (include "crm-api-spring-boot-server.appVersion" .) }}
+  {{- else }}
+    {{- printf "%s/%s:%s" .Values.image.repository .Chart.Name (include "crm-api-spring-boot-server.appVersion" .) }}
+  {{- end }}
 {{- end }}
 
 
