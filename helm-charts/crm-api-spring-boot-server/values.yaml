@@ -27,8 +27,9 @@ application:
 
 replicaCount: 1
 
+#image url consists of {image.repository}/{application.group}/{application.name}:{application.version}
 image:
-  repository: w2020.azurecr.io/crm/crm-api-spring-boot-server
+  repository: w2020.azurecr.io
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
