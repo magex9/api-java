@@ -86,7 +86,7 @@ stages:
                 chartType: 'FilePath'
                 chartPath: '$(Pipeline.Workspace)/helm-charts/crm-api-spring-boot-server'
                 releaseName: 'crm-api-spring-boot-server'
-                force: true
+                force: false
                 failOnStderr: false
                 overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
                 #recreate: true
