@@ -13,6 +13,8 @@ variables:
 - group: ut-server-info
 - name: application_name
   value: crm-helloworld
+- name: application_version
+  value: 1.0.0-SNAPSHOT
 - name: aks_service_connection_name
   value: 'appdev aks'
 - name: application_group
@@ -53,7 +55,7 @@ stages:
         environment: 'ut'
         application_group: crm
         application_name: crm-api-spring-boot-server
-        application_version: 1.0.0-SNAPSHOT
+        application_version: $(application_version)
         dockerfile: ./crm-api-spring-boot-server.dockerfile 
 
 
@@ -86,4 +88,5 @@ stages:
                 releaseName: 'crm-api-spring-boot-server'
                 force: true
                 failOnStderr: false
+                overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
                 #recreate: true

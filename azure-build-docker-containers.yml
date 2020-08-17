@@ -43,6 +43,7 @@ steps:
     command: 'buildandPush'
     Dockerfile: '${{parameters.dockerfile}}'
     tags: |
+      ${{parameters.application_version}}
       ${{parameters.application_version}}-$(Build.BuildId)
       latest
 
