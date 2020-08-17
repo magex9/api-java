@@ -7,9 +7,12 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.application.port }}
       protocol: TCP
-      name: http
+  {{- if not .Values.service.omitClusterIP }}
+    {{ with .Values.service.clusterIP }}clusterIP: {{ quote . }}{{ end }}
+  {{- end }}
   selector:
     {{- include "crm-api-spring-boot-server.selectorLabels" . | nindent 4 }}

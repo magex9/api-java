@@ -27,7 +27,7 @@ application:
 replicaCount: 1
 
 image:
-  repository: w2020.azurecr.io
+  repository: w2020.azurecr.io/crm/crm-api-spring-boot-server
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -61,6 +61,7 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 80
+  omitClusterIP: true
 
 ingress:
   enabled: true
@@ -68,7 +69,7 @@ ingress:
     kubernetes.io/ingress.class: addon-http-application-routing
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: crm-api-spring-boot-server.5ffaf4931ba8e.canadacentral.aksapp.io
+    - host: crm-api-spring-boot-server.466356a5ffaf4931ba8e.canadacentral.aksapp.io
       paths:
         path: /
   tls: []
