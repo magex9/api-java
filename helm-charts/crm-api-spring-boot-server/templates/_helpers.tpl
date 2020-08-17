@@ -24,6 +24,23 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Get application version from either the chart name or the parameters
+
+*/}}
+{{- define "crm-api-spring-boot-server.appVersion" -}}
+{{- default .Chart.AppVersion .Values.application.version }}
+{{- end }}
+{{/* 
+determine image name (with repo, tags and app name}
+*/}}
+
+{{- define "crm-api-spring-boot-server.image" -}}
+{{ printf "%s/%s:%s" .Values.image.repository .Chart.Name (include "crm-api-spring-boot-server.appVersion" .) }}
+{{- end }}
+
+
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "crm-api-spring-boot-server.chart" -}}
@@ -38,9 +55,7 @@ helm.sh/chart: {{ include "crm-api-spring-boot-server.chart" . }}
 helm.sh/release-name: {{ .Release.Name }}
 helm.sh/release-namespace: {{ .Release.Namespace }}
 {{ include "crm-api-spring-boot-server.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/version: {{ include "crm-api-spring-boot-server.appVersion" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 

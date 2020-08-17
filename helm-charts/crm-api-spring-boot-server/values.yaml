@@ -6,6 +6,7 @@ application:
   port: 9002
   group: crm
   context: /crm
+  version: 1.0.0-SNAPSHOT
   env:
     - name: SPRING_CONFIG_SERVER_URI
       value: "http://centralized-configuration-service"
