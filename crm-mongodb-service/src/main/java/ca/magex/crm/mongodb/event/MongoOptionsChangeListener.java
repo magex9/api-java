@@ -27,14 +27,14 @@ import com.mongodb.client.model.changestream.OperationType;
 import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 
-public class MongoChangeListener implements Runnable {
+public class MongoOptionsChangeListener implements Runnable {
 
 	private MongoDatabase mongoCrm;
 	private String env;
 	private ThreadFactory tf;
 	private Thread t;
 
-	public MongoChangeListener(MongoDatabase mongoCrm, String env, ThreadFactory tf) {
+	public MongoOptionsChangeListener(MongoDatabase mongoCrm, String env, ThreadFactory tf) {
 		this.mongoCrm = mongoCrm;
 		this.env = env;
 		this.tf = tf;

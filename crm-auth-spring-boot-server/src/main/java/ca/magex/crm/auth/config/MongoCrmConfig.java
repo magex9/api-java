@@ -33,7 +33,7 @@ import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
-import ca.magex.crm.mongodb.event.MongoChangeListener;
+import ca.magex.crm.mongodb.event.MongoOptionsChangeListener;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
 
@@ -65,8 +65,8 @@ public class MongoCrmConfig implements CrmConfigurer {
 	}
 	
 	@Bean
-	public MongoChangeListener mongoCL() {
-		return new MongoChangeListener(mongoCrm(), dbName, threadFactory());
+	public MongoOptionsChangeListener mongoCL() {
+		return new MongoOptionsChangeListener(mongoCrm(), dbName, threadFactory());
 	}
 
 	@Bean
