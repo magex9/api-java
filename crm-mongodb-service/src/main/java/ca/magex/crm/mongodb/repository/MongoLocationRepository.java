@@ -18,10 +18,10 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -45,8 +45,8 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 	 * @param notifier
 	 * @param env
 	 */
-	public MongoLocationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoLocationRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override

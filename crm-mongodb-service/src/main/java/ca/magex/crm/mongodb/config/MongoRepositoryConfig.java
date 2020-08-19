@@ -11,7 +11,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 import ca.magex.crm.api.CrmProfiles;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventNotifier;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
@@ -38,8 +38,8 @@ public class MongoRepositoryConfig {
 	}
 	
 	@Bean
-	public CrmUpdateNotifier notifier() {
-		return new CrmUpdateNotifier();
+	public CrmEventNotifier notifier() {
+		return new CrmEventNotifier();
 	}
 	
 	@Bean

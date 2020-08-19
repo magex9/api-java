@@ -24,7 +24,8 @@ import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventNotifier;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
@@ -33,7 +34,7 @@ import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
-import ca.magex.crm.mongodb.event.MongoOptionsChangeListener;
+import ca.magex.crm.mongodb.event.MongoOptionsDocumentChangeListener;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
 
@@ -65,8 +66,13 @@ public class MongoCrmConfig implements CrmConfigurer {
 	}
 	
 	@Bean
-	public MongoOptionsChangeListener mongoCL() {
-		return new MongoOptionsChangeListener(mongoCrm(), dbName, threadFactory());
+	public MongoOptionsDocumentChangeListener mongoCL() {
+		return new MongoOptionsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, threadFactory());
+	}
+	
+	@Bean
+	public CrmEventNotifier eventNotifier() {
+		return new CrmEventNotifier();
 	}
 
 	@Bean
@@ -85,18 +91,18 @@ public class MongoCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public CrmUpdateNotifier notifier() {
-		return new CrmUpdateNotifier();
+	public CrmEventObserver observer() {
+		return new CrmEventNotifier();
 	}
 
 	@Bean
 	public CrmRepositories repos() {
-		return new MongoRepositories(mongoCrm(), notifier(), dbName);
+		return new MongoRepositories(mongoCrm(), eventNotifier(), dbName);
 	}
 
 	@Bean
 	public CrmPasswordRepository passwordRepo() {
-		return new MongoPasswordRepository(mongoCrm(), notifier(), dbName);
+		return new MongoPasswordRepository(mongoCrm(), eventNotifier(), dbName);
 	}
 
 	@Bean(autowireCandidate = false) // ensure this bean doesn't conflict with our CRM for autowiring

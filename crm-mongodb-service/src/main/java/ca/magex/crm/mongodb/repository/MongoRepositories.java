@@ -16,7 +16,7 @@ import ca.magex.crm.api.decorators.CrmOptionRepositorySlf4jDecorator;
 import ca.magex.crm.api.decorators.CrmOrganizationRepositorySlf4jDecorator;
 import ca.magex.crm.api.decorators.CrmPersonRepositorySlf4jDecorator;
 import ca.magex.crm.api.decorators.CrmUserRepositorySlf4jDecorator;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.repositories.CrmRepositories;
 
 /**
@@ -34,27 +34,28 @@ public class MongoRepositories extends CrmRepositoriesAdapter implements CrmRepo
 	/**
 	 * Constructs our Repositories with the given mongo database
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
+	 * @param env
 	 */
-	public MongoRepositories(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
+	public MongoRepositories(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
 		super(
 				new CrmConfigurationRepositorySlf4jDecorator(
-						new MongoConfigurationRepository(mongoCrm, notifier, env), 
+						new MongoConfigurationRepository(mongoCrm, observer, env), 
 						logger), 
 				new CrmOptionRepositorySlf4jDecorator(
-						new MongoOptionRepository(mongoCrm, notifier, env), 
+						new MongoOptionRepository(mongoCrm, observer, env), 
 						logger),
 				new CrmOrganizationRepositorySlf4jDecorator(
-						new MongoOrganizationRepository(mongoCrm, notifier, env), 
+						new MongoOrganizationRepository(mongoCrm, observer, env), 
 						logger),
 				new CrmLocationRepositorySlf4jDecorator(
-						new MongoLocationRepository(mongoCrm, notifier, env), 
+						new MongoLocationRepository(mongoCrm, observer, env), 
 						logger),
 				new CrmPersonRepositorySlf4jDecorator(
-						new MongoPersonRepository(mongoCrm, notifier, env), 
+						new MongoPersonRepository(mongoCrm, observer, env), 
 						logger),
 				new CrmUserRepositorySlf4jDecorator(
-						new MongoUserRepository(mongoCrm, notifier, env),
+						new MongoUserRepository(mongoCrm, observer, env),
 						logger));
 		this.mongoCrm = mongoCrm;
 		this.env = env;

@@ -17,10 +17,10 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Option;
@@ -42,11 +42,11 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 	/**
 	 * Creates our new MongoDB Backed Option Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoOptionRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoOptionRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
@@ -101,7 +101,6 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 				debug(() -> "saveOption(" + option + ") performed an update with result " + setResult);
 			}
 		}
-		getNotifier().optionUpdated(System.currentTimeMillis(), option.getOptionId());
 		return option;
 	}
 

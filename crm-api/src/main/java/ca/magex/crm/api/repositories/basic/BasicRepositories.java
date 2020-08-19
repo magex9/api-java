@@ -3,8 +3,8 @@ package ca.magex.crm.api.repositories.basic;
 import java.io.OutputStream;
 
 import ca.magex.crm.api.adapters.CrmRepositoriesAdapter;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
-import ca.magex.crm.api.observer.CrmUpdateObserver;
+import ca.magex.crm.api.event.CrmEventNotifier;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.repositories.CrmRepositories;
 import ca.magex.crm.api.store.CrmStore;
 
@@ -12,7 +12,7 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 	
 	private CrmStore store;
 	
-	public BasicRepositories(CrmStore store, CrmUpdateObserver observer) {
+	public BasicRepositories(CrmStore store, CrmEventObserver observer) {
 		super(
 			new BasicConfigurationRepository(store),
 			new BasicOptionRepository(store),
@@ -34,7 +34,7 @@ public class BasicRepositories extends CrmRepositoriesAdapter implements CrmRepo
 		return store;
 	}
 	
-	public CrmUpdateNotifier getNotifier() {
+	public CrmEventNotifier getNotifier() {
 		return store.getNotifier();
 	}
 

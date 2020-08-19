@@ -22,10 +22,10 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -47,10 +47,10 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 	/**
 	 * Creates our new MongoDB Backed User Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 */
-	public MongoUserRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoUserRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 	
 	@Override

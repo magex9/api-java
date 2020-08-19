@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.data.domain.Sort;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
@@ -19,10 +20,10 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
@@ -44,11 +45,11 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 	/**
 	 * Creates our new MongoDB Backed Organization Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoOrganizationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoOrganizationRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
@@ -216,7 +217,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 				new Facet("totalCount", 
 						Aggregates.count()), 
 				new Facet("results", List.of(
-						Aggregates.sort(BsonUtils.toBson(paging)),
+						Aggregates.sort(BsonUtils.toBson(paging.getSort() == Sort.unsorted() ? paging.withSort(OrganizationsFilter.getDefaultSort()) : paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
 						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified")))))));
