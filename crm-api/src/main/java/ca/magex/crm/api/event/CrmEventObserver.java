@@ -21,6 +21,6 @@ public interface CrmEventObserver {
 
 	CrmEventObserver personUpdated(Long timestamp, PersonIdentifier personId);
 
-	CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId);
+	CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId, String username);
 		
 }

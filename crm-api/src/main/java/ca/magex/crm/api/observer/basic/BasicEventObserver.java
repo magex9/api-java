@@ -46,7 +46,7 @@ public class BasicEventObserver implements CrmEventObserver {
 	}
 
 	@Override
-	public CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId) {
+	public CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId, String username) {
 		updates.add(Pair.of(userId, timestamp));
 		return this;
 	}

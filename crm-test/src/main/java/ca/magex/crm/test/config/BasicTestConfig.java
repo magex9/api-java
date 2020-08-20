@@ -13,6 +13,7 @@ import ca.magex.crm.api.observer.basic.BasicEventObserver;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
@@ -52,7 +53,7 @@ public class BasicTestConfig implements CrmConfigurer {
 	}
 	
 	@Bean 
-	public BasicServices services() {
+	public CrmServices services() {
 		return new BasicServices(repos(), passwords());
 	}
 	

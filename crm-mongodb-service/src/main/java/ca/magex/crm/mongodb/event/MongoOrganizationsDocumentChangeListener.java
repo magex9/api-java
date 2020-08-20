@@ -69,8 +69,9 @@ public class MongoOrganizationsDocumentChangeListener extends AbstractMongoDocum
 		List<Document> users = (List<Document>) fullDocument.getList("users", Document.class);
 		for (Document user : users) {
 			UserIdentifier userId = new UserIdentifier(user.getString("userId"));
+			String username = user.getString("username");
 			/* pass null date time because we don't know why the document was replaced (this generally happens through a tool like MongoDB Compass) */
-			observer.userUpdated(null, userId);
+			observer.userUpdated(null, userId, username);
 		}
 	}
 	
@@ -132,8 +133,9 @@ public class MongoOrganizationsDocumentChangeListener extends AbstractMongoDocum
 			for (Integer index : userIndices) {
 				UserIdentifier userId = new UserIdentifier(users.get(index).getString("userId"));
 				Long lastModified = users.get(index).getLong("lastModified");
-				logger.debug("User " + userId + " was modified on " + new Date(lastModified));
-				observer.userUpdated(lastModified, userId);
+				String username = users.get(index).getString("username");
+				logger.debug("User " + userId + " [" + username + "] was modified on " + new Date(lastModified));
+				observer.userUpdated(lastModified, userId, username);
 			}
 		}
 	}

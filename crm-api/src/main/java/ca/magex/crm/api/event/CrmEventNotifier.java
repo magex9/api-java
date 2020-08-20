@@ -62,8 +62,8 @@ public class CrmEventNotifier implements CrmEventObserver {
 	}
 
 	@Override
-	public CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId) {
-		observers.forEach(o -> o.userUpdated(timestamp, userId));
+	public CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId, String username) {
+		observers.forEach(o -> o.userUpdated(timestamp, userId, username));
 		return this;
 	}
 

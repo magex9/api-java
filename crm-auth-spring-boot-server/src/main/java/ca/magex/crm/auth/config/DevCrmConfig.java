@@ -16,6 +16,7 @@ import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.observer.basic.BasicEventObserver;
+import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
@@ -65,7 +66,7 @@ public class DevCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public BasicPolicies policies() {
+	public CrmPolicies policies() {
 		return new BasicPolicies(services());
 	}
 

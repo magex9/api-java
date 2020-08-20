@@ -25,7 +25,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.decorators.CrmUpdateObserverSlf4jDecorator;
+import ca.magex.crm.api.decorators.CrmEventObserverSlf4jDecorator;
 import ca.magex.crm.api.event.CrmEventNotifier;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
@@ -136,7 +136,7 @@ public class MongoCrmConfig implements CrmConfigurer {
 			/* clear caches */
 			cacheManager().getCacheNames().forEach((cache) -> cacheManager().getCache(cache).clear());
 			/* register our caching update observers */
-			eventNotifier().register(new CrmUpdateObserverSlf4jDecorator(new CrmCacheUpdateObserver(cacheManager()), LoggerFactory.getLogger(CrmCacheUpdateObserver.class)));
+			eventNotifier().register(new CrmEventObserverSlf4jDecorator(new CrmCacheUpdateObserver(cacheManager()), LoggerFactory.getLogger(CrmCacheUpdateObserver.class)));
 			
 			return new CrmCachingServices(cacheManager(), services);
 		} else {

@@ -2,7 +2,14 @@ package ca.magex.crm.caching.event;
 
 import org.springframework.cache.CacheManager;
 
+import ca.magex.crm.api.crm.LocationDetails;
+import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.crm.PersonDetails;
+import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.UserDetails;
+import ca.magex.crm.api.crm.UserSummary;
 import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -25,10 +32,16 @@ public class CrmCacheUpdateObserver implements CrmEventObserver {
 	
 	private CacheTemplate optionsCacheTemplate;
 	private CacheTemplate organizationCacheTemplate;
+	private CacheTemplate locationCacheTemplate;
+	private CacheTemplate personCacheTemplate;
+	private CacheTemplate userCacheTemplate;
 	
 	public CrmCacheUpdateObserver(CacheManager cacheManager) {
 		optionsCacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Options);
 		organizationCacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Organizations);
+		locationCacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Locations);
+		personCacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Persons);
+		userCacheTemplate = new CacheTemplate(cacheManager, CachingConfig.Caches.Users);
 	}
 	
 	@Override
@@ -52,7 +65,7 @@ public class CrmCacheUpdateObserver implements CrmEventObserver {
 		}
 		
 		String detailsKey = keyGenerator.generateDetailsKey(organizationId);
-		OrganizationSummary details = organizationCacheTemplate.getIfPresent(detailsKey);
+		OrganizationDetails details = organizationCacheTemplate.getIfPresent(detailsKey);
 		/* evict if cached and last modified has changed */
 		if (details != null && !details.getLastModified().equals(timestamp)) {
 			organizationCacheTemplate.evict(detailsKey);
@@ -62,21 +75,71 @@ public class CrmCacheUpdateObserver implements CrmEventObserver {
 	
 	@Override
 	public CrmEventObserver locationUpdated(Long timestamp, LocationIdentifier locationId) {
-		// TODO Auto-generated method stub
-		return null;
+		String summaryKey = keyGenerator.generateSummaryKey(locationId);
+		LocationSummary summary = locationCacheTemplate.getIfPresent(summaryKey);
+		/* evict if cached and last modified has changed */
+		if (summary != null && !summary.getLastModified().equals(timestamp)) {
+			locationCacheTemplate.evict(summaryKey);
+		}
+		
+		String detailsKey = keyGenerator.generateDetailsKey(locationId);
+		LocationDetails details = locationCacheTemplate.getIfPresent(detailsKey);
+		/* evict if cached and last modified has changed */
+		if (details != null && !details.getLastModified().equals(timestamp)) {
+			locationCacheTemplate.evict(detailsKey);
+		}		
+		return this;
 	}
-	
-	
 	
 	@Override
 	public CrmEventObserver personUpdated(Long timestamp, PersonIdentifier personId) {
-		// TODO Auto-generated method stub
-		return null;
+		String summaryKey = keyGenerator.generateSummaryKey(personId);
+		PersonSummary summary = personCacheTemplate.getIfPresent(summaryKey);
+		/* evict if cached and last modified has changed */
+		if (summary != null && !summary.getLastModified().equals(timestamp)) {
+			personCacheTemplate.evict(summaryKey);
+		}
+		
+		String detailsKey = keyGenerator.generateDetailsKey(personId);
+		PersonDetails details = personCacheTemplate.getIfPresent(detailsKey);
+		/* evict if cached and last modified has changed */
+		if (details != null && !details.getLastModified().equals(timestamp)) {
+			personCacheTemplate.evict(detailsKey);
+		}		
+		return this;
 	}
 	
 	@Override
-	public CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId) {
-		// TODO Auto-generated method stub
-		return null;
+	public CrmEventObserver userUpdated(Long timestamp, UserIdentifier userId, String username) {
+		String summaryKey = keyGenerator.generateSummaryKey(userId);
+		UserSummary summary = userCacheTemplate.getIfPresent(summaryKey);
+		/* evict if cached and last modified has changed */
+		if (summary != null && !summary.getLastModified().equals(timestamp)) {
+			userCacheTemplate.evict(summaryKey);
+		}
+		
+		summaryKey = keyGenerator.generateUsernameSummaryKey(username);
+		summary = userCacheTemplate.getIfPresent(summaryKey);
+		/* evict if cached and last modified has changed */
+		if (summary != null && !summary.getLastModified().equals(timestamp)) {
+			userCacheTemplate.evict(summaryKey);
+		}
+		
+		
+		String detailsKey = keyGenerator.generateDetailsKey(userId);
+		UserDetails details = userCacheTemplate.getIfPresent(detailsKey);
+		/* evict if cached and last modified has changed */
+		if (details != null && !details.getLastModified().equals(timestamp)) {
+			userCacheTemplate.evict(detailsKey);
+		}		
+		
+		detailsKey = keyGenerator.generateUsernameDetailsKey(username);
+		details = userCacheTemplate.getIfPresent(detailsKey);
+		/* evict if cached and last modified has changed */
+		if (details != null && !details.getLastModified().equals(timestamp)) {
+			userCacheTemplate.evict(detailsKey);
+		}		
+		
+		return this;
 	}
 }

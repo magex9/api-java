@@ -62,7 +62,7 @@ public class BasicUserRepository implements CrmUserRepository {
 	public UserDetails saveUserDetails(UserDetails userToSave) {
 		UserDetails user = userToSave.withLastModified(System.currentTimeMillis());
 		store.getUsers().put(user.getUserId(), user);
-		store.getNotifier().userUpdated(user.getLastModified(), user.getUserId());
+		store.getNotifier().userUpdated(user.getLastModified(), user.getUserId(), user.getUsername());
 		return SerializationUtils.clone(user);
 	}
 
