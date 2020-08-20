@@ -114,7 +114,7 @@ public abstract class AbstractMongoDocumentChangeListener implements Runnable {
 				if (stopIssued) {
 					break main;
 				}
-				logger.warn("MongoCursor was Interrupted, attempting to reconnect", ie);
+				logger.warn("MongoCursor Failed retry will be attempted: " + ie.getClass() + ": " + ie.getMessage() + "");
 				cursor = null;
 				int reconnect = 1;
 				/* attempt to reconnect until a stop has been issued */

@@ -23,13 +23,16 @@ import com.mongodb.client.MongoDatabase;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
 import ca.magex.crm.api.decorators.CrmEventObserverSlf4jDecorator;
 import ca.magex.crm.api.event.CrmEventNotifier;
+import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
@@ -92,18 +95,20 @@ public class MongoCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public ThreadFactory mongoClThreadFactory() {
-		return new CustomizableThreadFactory("mongoCl");
+	public ThreadFactory mongoCLThreadFactory() {
+		CustomizableThreadFactory tf = new CustomizableThreadFactory("mongoCL");
+		tf.setDaemon(true);
+		return tf;
 	}
 
 	@Bean
 	public MongoOptionsDocumentChangeListener optionsCl() {
-		return new MongoOptionsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, mongoClThreadFactory());
+		return new MongoOptionsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, mongoCLThreadFactory());
 	}
 	
 	@Bean
 	public MongoOrganizationsDocumentChangeListener organizationsCl() {
-		return new MongoOrganizationsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, mongoClThreadFactory());
+		return new MongoOrganizationsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, mongoCLThreadFactory());
 	}
 
 	@Bean
@@ -146,22 +151,22 @@ public class MongoCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public AuthenticatedPolicies policies() {
+	public CrmPolicies policies() {
 		return new AuthenticatedPolicies(auth(), services());
 	}
 
+	@Bean
+	public CrmPasswordService passwords() {
+		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
+	}
+	
 	@Bean
 	public SpringSecurityAuthenticationService auth() {
 		return new SpringSecurityAuthenticationService(services());
 	}
 
 	@Bean
-	public BasicPasswordService passwords() {
-		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
-	}
-
-	@Bean
-	public BasicConfigurationService config() {
+	public CrmConfigurationService config() {
 		return new BasicConfigurationService(repos(), passwords());
 	}
 
