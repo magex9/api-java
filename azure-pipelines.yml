@@ -27,6 +27,11 @@ variables:
   value: 'fintraccanafe'
 - name:  artifacts_sshKeySecureFile
   value: 'azure-git.key'
+- name: is_azure_branch
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/azure')]
+- name: is_dev_branch
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
+
 
 resources:
   repositories:
@@ -61,7 +66,7 @@ stages:
 
 - stage: Continuous_Deployment
   displayName: Continuous Deployment to UT
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure'))
+  condition: and(succeeded(), or(eq(variables.is_azure_branch, true),eq(variables.is_dev_branch, true)))
   jobs:
 
     - deployment: Deploy
