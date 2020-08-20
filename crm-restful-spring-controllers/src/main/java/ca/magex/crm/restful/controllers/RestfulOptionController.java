@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
 @Controller
+@CrossOrigin
 public class RestfulOptionController extends AbstractRestfulController {
 	
 	@GetMapping("/rest/types")

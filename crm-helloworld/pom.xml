@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>ca.magex.crm</groupId>
 	<artifactId>crm-helloworld</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>crm-helloworld</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -78,11 +78,30 @@
     	</resources>
 	</build>
 
+	<distributionManagement>
+		<repository>
+			<id>finapplicationdevelopment-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+		</repository>
+
+	</distributionManagement>
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
 			<url>https://repo.spring.io/milestone</url>
+		</repository>
+	
+
+		<repository>
+			<id>finapplicationdevelopment-snapshots</id>
+			<url>https://pkgs.dev.azure.com/FinApplicationDevelopment/_packaging/finapplicationdevelopment-snapshots/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 

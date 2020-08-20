@@ -1,0 +1,51 @@
+#Variables that needs to be setup in main pipeline:
+
+#container_registry : Azure container registry name
+#
+
+parameters:
+
+- name: application_name
+  type: string
+
+- name: application_group
+  type: string
+
+- name: application_version
+  type: string
+
+- name: environment
+  type: string
+
+- name: dockerfile
+  type: string
+  default: ./Dockerfile
+
+# ---------------------------------------------------------------------------------------------
+# Main JOB
+# ---------------------------------------------------------------------------------------------
+steps:
+- task: DownloadSecureFile@1
+  name: gitazurekey
+  inputs:
+    secureFile: 'azure.key'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      ls -la *
+      cp $(gitazurekey.secureFilePath) azure-git.key
+      ls -la *
+- task: Docker@2
+  inputs:
+    containerRegistry: 'azure w2020 registry'
+    repository: '${{parameters.application_group}}/${{parameters.application_name}}'
+    command: 'buildandPush'
+    Dockerfile: '${{parameters.dockerfile}}'
+    tags: |
+      ${{parameters.application_version}}
+      ${{parameters.application_version}}-$(Build.BuildId)
+      latest
+
+- publish: $(Build.SourcesDirectory)/helm-charts
+  artifact: helm-charts

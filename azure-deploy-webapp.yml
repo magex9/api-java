@@ -1,0 +1,29 @@
+### INPUT PARAMETERS ######################
+parameters:
+- name: application_name
+  type: string
+
+- name: sshEndpoint
+  type: string
+
+
+##########################################
+
+steps:
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'appdev webapps connection'
+    appType: 'webAppLinux'
+    WebAppName: 'AppDevWebAppTest'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'AppDev_WebApps'
+    SlotName: 'production'
+    packageForLinux: '$(application_package_publish_dir)/$(application_package_name)'
+    RuntimeStack: 'JAVA|11-java11'
+    #StartupCommand: 'java -jar $(application_name)/$(application_jar_name)'
+    StartupCommand: 'java -DENVIRONMENT=ut -jar /home/site/wwwroot/$(application_jar_name) '
+    #ScriptType: 'Inline Script'
+    #InlineScript: ':: You can provide your deployment commands here. One command per line.'
+    #AppSettings: '-Dspring.application.name=crm-helloworld -Dspring.cloud.config.uri=http://40.86.226.36:8888 -Dspring.profiles.active=ut -Dmanagement.endpoints.web.exposure.include=refresh'
