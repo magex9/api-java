@@ -34,8 +34,7 @@ public class JwtRsaTokenValidator implements JwtTokenValidator, Serializable {
 
 	public JwtRsaTokenValidator(
 			@Value("${jwt.expiration.hours:5}") Long expirationDuration,
-			@Value("${jwt.rsa.cert}") String certResource,
-			@Value("${jwt.rsa.keypass}") String keypass) {
+			@Value("${jwt.rsa.cert}") String certResource) {
 		InputStream certStream = null;
 		try {
 			if (certResource.startsWith("classpath:")) {
