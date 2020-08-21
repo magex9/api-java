@@ -114,6 +114,9 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 					Filters.eq("type", filter.getType().getCode()),
 					Filters.eq("env", getEnv()))));
 		}
+		else {
+			pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
+		}
 		pipeline.add(Aggregates.unwind("$options"));
 		/* match on fields if required */
 		Bson fieldMatcher = BsonUtils.toBson(filter);
