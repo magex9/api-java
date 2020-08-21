@@ -22,8 +22,9 @@ jwt.request.filter.ignore=/authenticate
 
 # RSA Cert
 jwt.rsa.jks=file:./config/crm-dev.jks
-jwt.rsa.cert=file:./config/crm-dev.cer
+jwt.rsa.alias=crm
 jwt.rsa.keypass=Crm2020!
+jwt.rsa.cert=file:./config/crm-dev.cer
 
 # actuator configuration 
 # will be accessible on http://localhost:9012/actuator
