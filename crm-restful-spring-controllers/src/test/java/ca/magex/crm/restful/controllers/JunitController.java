@@ -46,7 +46,7 @@ public class JunitController extends AbstractRestfulController {
 			JsonObject body = extractBody(req);
 			OptionIdentifier identifier = getIdentifier(body, key, key.contains("required"), null, null, messages);
 			validate(messages);
-			return transformer.format(new Option(identifier, null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
+			return transformer.format(new Option(identifier, null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP, 100L), locale);
 		});
 	}
 
@@ -57,7 +57,7 @@ public class JunitController extends AbstractRestfulController {
 			JsonObject body = extractBody(req);
 			getStrings(body, key, key.contains("required"), null, null, messages);
 			validate(messages);
-			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
+			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP, 100L), locale);
 		});
 	}
 
@@ -68,7 +68,7 @@ public class JunitController extends AbstractRestfulController {
 			JsonObject body = extractBody(req);
 			getObject(MailingAddress.class, body, key, key.contains("required"), null, null, messages, locale);
 			validate(messages);
-			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP), locale);
+			return transformer.format(new Option(new AuthenticationGroupIdentifier("test"), null, Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP, 100L), locale);
 		});
 	}
 

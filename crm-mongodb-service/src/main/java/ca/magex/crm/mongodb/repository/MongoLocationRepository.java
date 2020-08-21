@@ -18,10 +18,10 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmLocationRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -45,12 +45,13 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 	 * @param notifier
 	 * @param env
 	 */
-	public MongoLocationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoLocationRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
-	public LocationDetails saveLocationDetails(LocationDetails location) {
+	public LocationDetails saveLocationDetails(LocationDetails original) {
+		LocationDetails location = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOrganizations();
 		/* add all the fields that can be updated */
 		final UpdateResult setResult = collection.updateOne(
@@ -64,7 +65,8 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 								.append("locations.$.reference", location.getReference())
 								.append("locations.$.displayName", location.getDisplayName())
 								.append("locations.$.displayName_searchable", TextUtils.toSearchable(location.getDisplayName()))
-								.append("locations.$.address", BsonUtils.toBson(location.getAddress()))));
+								.append("locations.$.address", BsonUtils.toBson(location.getAddress()))
+								.append("locations.$.lastModified", location.getLastModified())));
 		if (setResult.getMatchedCount() == 0) {
 			/* if we had no matching location id, then we need to do a push to the locations */
 			final UpdateResult pushResult = collection.updateOne(
@@ -96,7 +98,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier())),
-						Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address")))
+						Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address", "locations.lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -116,7 +118,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(						
 						Projections.elemMatch("locations", Filters.eq("locationId", locationId.getFullIdentifier())),
-						Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName")))				
+						Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.lastModified")))				
 				.first();
 		if (doc == null) {
 			return null;
@@ -146,7 +148,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 				new Facet("totalCount", 
 						Aggregates.count()), 
 				new Facet("results", List.of(
-						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address")),
+						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.address", "locations.lastModified")),
 						Aggregates.sort(BsonUtils.toBson(paging, "locations")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
@@ -184,7 +186,7 @@ public class MongoLocationRepository extends AbstractMongoRepository implements 
 				new Facet("totalCount", 
 						Aggregates.count()), 
 				new Facet("results", List.of(
-						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName")),
+						Aggregates.project(Projections.include("organizationId", "locations.locationId", "locations.status", "locations.reference", "locations.displayName", "locations.lastModified")),
 						Aggregates.sort(BsonUtils.toBson(paging, "locations")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));

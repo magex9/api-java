@@ -111,14 +111,12 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 				switch (newStatus) {
 				case "ACTIVE":
 					if (org.getStatus() != Status.ACTIVE) {
-						crm.enableOrganization(organizationId);
-						org = org.withStatus(Status.ACTIVE);
+						org = org.withStatus(Status.ACTIVE).withLastModified(crm.enableOrganization(organizationId).getLastModified());
 					}
 					break;
 				case "INACTIVE":
 					if (org.getStatus() != Status.INACTIVE) {
-						crm.disableOrganization(organizationId);
-						org = org.withStatus(Status.INACTIVE);
+						org = org.withStatus(Status.INACTIVE).withLastModified(crm.disableOrganization(organizationId).getLastModified());
 					}
 					break;
 				default:

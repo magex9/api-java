@@ -37,17 +37,22 @@ public class OrganizationSummary implements Serializable {
 	@Size(max = 60)
 	protected String displayName;
 	
+	/** last modified timestamp provided by the backing datastore */
+	protected Long lastModified;
+	
 	/**
 	 * Constructs a new Organization Summary from the provided information
 	 * 
 	 * @param organizationId
 	 * @param status
 	 * @param displayName
+	 * @param lastModified
 	 */
-	public OrganizationSummary(OrganizationIdentifier organizationId, Status status, String displayName) {		
+	public OrganizationSummary(OrganizationIdentifier organizationId, Status status, String displayName, Long lastModified) {		
 		this.organizationId = organizationId;
 		this.status = status;
 		this.displayName = displayName;
+		this.lastModified = lastModified;
 	}
 	
 	/**
@@ -75,12 +80,20 @@ public class OrganizationSummary implements Serializable {
 	}
 	
 	/**
+	 * returns the last modified timestamp for the instance
+	 * @return
+	 */
+	public Long getLastModified() {
+		return lastModified;
+	}
+	
+	/**
 	 * returns a copy of the organization with the new status provided
 	 * @param status
 	 * @return
 	 */
 	public OrganizationSummary withStatus(Status status) {
-		return new OrganizationSummary(organizationId, status, displayName);
+		return new OrganizationSummary(organizationId, status, displayName, lastModified);
 	}
 
 	/**
@@ -89,7 +102,16 @@ public class OrganizationSummary implements Serializable {
 	 * @return
 	 */
 	public OrganizationSummary withDisplayName(String displayName) {
-		return new OrganizationSummary(organizationId, status, displayName);
+		return new OrganizationSummary(organizationId, status, displayName, lastModified);
+	}
+	
+	/**
+	 * returns a copy of the organization with the last modified provided
+	 * @param lastModified
+	 * @return
+	 */
+	public OrganizationSummary withLastModified(Long lastModified) {
+		return new OrganizationSummary(organizationId, status, displayName, lastModified);
 	}
 
 	@Override

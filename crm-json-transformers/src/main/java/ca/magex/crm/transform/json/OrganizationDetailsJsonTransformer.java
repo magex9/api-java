@@ -45,6 +45,7 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		formatIdentifier(pairs, "mainContactId", organization, PersonIdentifier.class, locale);
 		formatOptions(pairs, "authenticationGroupIds", organization, Type.AUTHENTICATION_GROUP, locale, organization.getOrganizationId(), messages);
 		formatOptions(pairs, "businessGroupIds", organization, Type.BUSINESS_GROUP, locale, organization.getOrganizationId(), messages);
+		formatLong(pairs, "lastModified", organization);
 		validate(messages);
 		return new JsonObject(pairs);
 	}
@@ -58,7 +59,8 @@ public class OrganizationDetailsJsonTransformer extends AbstractJsonTransformer<
 		PersonIdentifier mainContactId = parseIdentifier("mainContactId", json, PersonIdentifier.class, locale);
 		List<AuthenticationGroupIdentifier> authenticationGroups = parseOptions("authenticationGroupIds", json, AuthenticationGroupIdentifier.class, locale);
 		List<BusinessGroupIdentifier> businessGroups = parseOptions("businessGroupIds", json, BusinessGroupIdentifier.class, locale);
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroups, businessGroups);
+		Long lastModified = parseLong("lastModified", json);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroups, businessGroups, lastModified);
 	}
 	
 }

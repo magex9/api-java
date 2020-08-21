@@ -22,8 +22,8 @@ public class PagingTests {
 	@Test
 	public void testPagingComparator() {
 
-		Option canada = new Option(new CountryIdentifier("CA"), null, Type.COUNTRY, Status.ACTIVE, false, new Localized("CA", "Canada", "Canada"));		
-		Option ontario = new Option(new ProvinceIdentifier("CA/ON"), canada.getOptionId(), Type.PROVINCE, Status.ACTIVE, false, new Localized("CA/ON", "Ontario", "Ontario"));
+		Option canada = new Option(new CountryIdentifier("CA"), null, Type.COUNTRY, Status.ACTIVE, false, new Localized("CA", "Canada", "Canada"), 100L);		
+		Option ontario = new Option(new ProvinceIdentifier("CA/ON"), canada.getOptionId(), Type.PROVINCE, Status.ACTIVE, false, new Localized("CA/ON", "Ontario", "Ontario"), 100L);
 		
 		MailingAddress ma1 = new MailingAddress("125 Stewart St", "Ottawa", new Choice<>(ontario.getOptionId()), new Choice<>(canada.getOptionId()), "K1N 6J3");
 		MailingAddress ma2 = new MailingAddress("125 Stewart St", "Nepean", new Choice<>("Ontario"), new Choice<>("Canada"), "K1N 6J3");

@@ -66,12 +66,13 @@ public class PersonDetails extends PersonSummary {
 			PersonName legalName, 
 			MailingAddress address, 
 			Communication communication, 
-			List<BusinessRoleIdentifier> businessRoleIds) {
-		super(personId, organizationId, status, displayName);		
+			List<BusinessRoleIdentifier> businessRoleIds,
+			Long lastModified) {
+		super(personId, organizationId, status, displayName, lastModified);		
 		this.legalName = legalName;
 		this.address = address;
 		this.communication = communication;
-		this.businessRoleIds = businessRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(businessRoleIds);
+		this.businessRoleIds = businessRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(businessRoleIds);		
 	}
 
 	/**
@@ -108,12 +109,17 @@ public class PersonDetails extends PersonSummary {
 	
 	@Override
 	public PersonDetails withStatus(Status status) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
 	}
 
 	@Override
 	public PersonDetails withDisplayName(String displayName) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
+	}
+	
+	@Override
+	public PersonDetails withLastModified(Long lastModified) {
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
 	}
 
 	/**
@@ -122,7 +128,7 @@ public class PersonDetails extends PersonSummary {
 	 * @return
 	 */
 	public PersonDetails withLegalName(PersonName legalName) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
 	}	
 
 	/**
@@ -131,7 +137,7 @@ public class PersonDetails extends PersonSummary {
 	 * @return
 	 */
 	public PersonDetails withAddress(MailingAddress address) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
 	}
 	
 	/**
@@ -140,7 +146,7 @@ public class PersonDetails extends PersonSummary {
 	 * @return
 	 */
 	public PersonDetails withCommunication(Communication communication) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
 	}	
 	
 	/**
@@ -149,7 +155,7 @@ public class PersonDetails extends PersonSummary {
 	 * @return
 	 */
 	public PersonDetails withBusinessRoleIds(List<BusinessRoleIdentifier> businessRoleIds) {
-		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, businessRoleIds, lastModified);
 	}	
 
 	/**
@@ -157,7 +163,7 @@ public class PersonDetails extends PersonSummary {
 	 * @return
 	 */
 	public PersonSummary asSummary() {
-		return new PersonSummary(personId, organizationId, status, displayName);
+		return new PersonSummary(personId, organizationId, status, displayName, lastModified);
 	}
 	
 	@Override

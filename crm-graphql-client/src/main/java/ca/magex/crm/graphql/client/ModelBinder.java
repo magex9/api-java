@@ -229,7 +229,8 @@ public class ModelBinder {
 		return new OrganizationSummary(
 				new OrganizationIdentifier(json.getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName", ""));
+				json.getString("displayName", ""),
+				json.getLong("lastModified", null));
 	}
 
 	/**
@@ -253,7 +254,8 @@ public class ModelBinder {
 				locationId,
 				contactId,
 				toIdentifierList(AuthenticationGroupIdentifier::new, json.getArray("authenticationGroups"), "optionId"),
-				toIdentifierList(BusinessGroupIdentifier::new, json.getArray("businessGroups"), "optionId"));
+				toIdentifierList(BusinessGroupIdentifier::new, json.getArray("businessGroups"), "optionId"),
+				json.getLong("lastModified", null));
 	}
 
 	/**
@@ -267,7 +269,8 @@ public class ModelBinder {
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
 				json.getString("reference", ""),
-				json.getString("displayName", ""));
+				json.getString("displayName", ""),
+				json.getLong("lastModified", null));
 	}
 
 	/**
@@ -282,7 +285,8 @@ public class ModelBinder {
 				Status.of(json.getString("status")),
 				json.getString("reference", ""),
 				json.getString("displayName", ""),
-				toMailingAddress(json.getObject("address", new JsonObject())));
+				toMailingAddress(json.getObject("address", new JsonObject())),
+				json.getLong("lastModified"));
 	}
 
 	/**
@@ -295,7 +299,8 @@ public class ModelBinder {
 				new PersonIdentifier(json.getString("personId")),
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName", ""));
+				json.getString("displayName", ""),
+				json.getLong("lastModified"));
 	}
 
 	/**
@@ -312,7 +317,8 @@ public class ModelBinder {
 				toPersonName(json.getObject("legalName", new JsonObject())),
 				toMailingAddress(json.getObject("address", new JsonObject())),
 				toCommunication(json.getObject("communication", new JsonObject())),
-				toIdentifierList(BusinessRoleIdentifier::new, json.getArray("businessRoles", new JsonArray()), "optionId"));
+				toIdentifierList(BusinessRoleIdentifier::new, json.getArray("businessRoles", new JsonArray()), "optionId"),
+				json.getLong("lastModified"));
 	}
 
 	/**
@@ -325,7 +331,8 @@ public class ModelBinder {
 				new UserIdentifier(json.getString("userId")),
 				new OrganizationIdentifier(json.getObject("organization").getString("organizationId")),
 				json.getString("username", ""),
-				Status.of(json.getString("status")));
+				Status.of(json.getString("status")),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -340,7 +347,8 @@ public class ModelBinder {
 				new PersonIdentifier(json.getObject("person").getString("personId")),				
 				json.getString("username", ""),
 				Status.of(json.getString("status")),
-				toIdentifierList(AuthenticationRoleIdentifier::new, json.getArray("authenticationRoles", new JsonArray()), "optionId"));
+				toIdentifierList(AuthenticationRoleIdentifier::new, json.getArray("authenticationRoles", new JsonArray()), "optionId"),
+				json.getLong("lastModified"));
 	}
 
 	/**
@@ -362,7 +370,8 @@ public class ModelBinder {
 				new Localized(
 						json.getObject("name").getString("code", ""), 
 						json.getObject("name").getString("english", ""), 
-						json.getObject("name").getString("french", "")));
+						json.getObject("name").getString("french", "")),
+				json.getLong("lastModified"));
 	}
 	
 	/**

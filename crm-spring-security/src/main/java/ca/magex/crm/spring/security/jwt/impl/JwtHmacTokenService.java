@@ -70,6 +70,7 @@ public class JwtHmacTokenService implements JwtTokenGenerator, JwtTokenValidator
 	 * @return
 	 */
 	public JwtTokenDetails validateToken(String token) {
+				
 		Jws<Claims> jws = Jwts.parser()
 				.setSigningKey(secret)
 				.parseClaimsJws(token);

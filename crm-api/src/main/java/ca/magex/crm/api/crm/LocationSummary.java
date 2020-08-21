@@ -48,6 +48,9 @@ public class LocationSummary implements Serializable {
 	@NotBlank
 	@Size(max = 60)
 	protected String displayName;
+		
+	/** last modified timestamp provided by the backing datastore */
+	protected Long lastModified;
 	
 	/**
 	 * Constructs a new Organization Summary from the provided information
@@ -57,14 +60,16 @@ public class LocationSummary implements Serializable {
 	 * @param status
 	 * @param reference
 	 * @param displayName
+	 * @param lastModified
 	 */
-	public LocationSummary(LocationIdentifier locationId, OrganizationIdentifier organizationId, Status status, String reference, String displayName) {
+	public LocationSummary(LocationIdentifier locationId, OrganizationIdentifier organizationId, Status status, String reference, String displayName, Long lastModified) {
 		super();
 		this.locationId = locationId;
 		this.organizationId = organizationId;
 		this.status = status;
 		this.reference = reference;
 		this.displayName = displayName;
+		this.lastModified = lastModified;
 	}
 
 	/**
@@ -108,12 +113,20 @@ public class LocationSummary implements Serializable {
 	}
 	
 	/**
+	 * returns the last modified timestamp for the instance
+	 * @return
+	 */
+	public Long getLastModified() {
+		return lastModified;
+	}
+	
+	/**
 	 * returns a copy of the location with the new status provided
 	 * @param status
 	 * @return
 	 */
 	public LocationSummary withStatus(Status status) {
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+		return new LocationSummary(locationId, organizationId, status, reference, displayName, lastModified);
 	}
 	
 	/**
@@ -122,7 +135,7 @@ public class LocationSummary implements Serializable {
 	 * @return
 	 */
 	public LocationSummary withReference(String reference) {
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+		return new LocationSummary(locationId, organizationId, status, reference, displayName, lastModified);
 	}
 
 	/**
@@ -131,7 +144,16 @@ public class LocationSummary implements Serializable {
 	 * @return
 	 */
 	public LocationSummary withDisplayName(String displayName) {
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+		return new LocationSummary(locationId, organizationId, status, reference, displayName, lastModified);
+	}
+	
+	/**
+	 * returns a copy of the location with the new last modified provided
+	 * @param lastModified
+	 * @return
+	 */
+	public LocationSummary withLastModified(Long lastModified) {
+		return new LocationSummary(locationId, organizationId, status, reference, displayName, lastModified);
 	}
 	
 	@Override

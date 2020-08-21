@@ -25,7 +25,7 @@ import ca.magex.crm.api.system.id.UserIdentifier;
 public interface CrmUserService {
 
 	default UserDetails prototypeUser(PersonIdentifier personId, String username, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		return new UserDetails(null, null, personId, username, Status.PENDING, authenticationRoleIds);
+		return new UserDetails(null, null, personId, username, Status.PENDING, authenticationRoleIds, null);
 	};
 
 	default UserDetails createUser(UserDetails prototype) {

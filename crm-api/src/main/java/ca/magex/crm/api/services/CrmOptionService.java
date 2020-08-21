@@ -31,14 +31,14 @@ public interface CrmOptionService {
 		/* if we have a parent provided, then we need to prepend the parent code */
 		if (parent != null) {
 			if (name.getCode().startsWith(parent.getCode() + "/")) {
-				return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name);
+				return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name, null);
 			} else {
-				return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name.withCode(parent.getCode() + "/" + name.getCode()));
+				return new Option(null, parent.getOptionId(), type, Status.PENDING, true, name.withCode(parent.getCode() + "/" + name.getCode()), null);
 			}
 		}
 		/* no parent provided just do a pass through */
 		else {
-			return new Option(null, null, type, Status.PENDING, true, name);
+			return new Option(null, null, type, Status.PENDING, true, name, null);
 		}
 	}
 

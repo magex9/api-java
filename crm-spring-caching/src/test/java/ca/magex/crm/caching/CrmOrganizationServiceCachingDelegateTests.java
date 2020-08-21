@@ -58,7 +58,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 	public void testCacheNewOrg() {
 		final AtomicInteger orgIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2));
+			return new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2), null);
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList(), Mockito.anyList());
 		OrganizationDetails orgDetails = organizationService.createOrganization("hello", List.of(new AuthenticationGroupIdentifier("CRM")), List.of(new BusinessGroupIdentifier("IMIT")));
 		BDDMockito.verify(delegate, Mockito.times(1)).createOrganization(Mockito.anyString(), Mockito.anyList(), Mockito.anyList());
@@ -77,9 +77,9 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		final AtomicInteger orgIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
 			OrganizationDetails orgDetails = invocation.getArgument(0);
-			return new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), orgDetails.getStatus(), orgDetails.getDisplayName(), orgDetails.getMainLocationId(), orgDetails.getMainContactId(), orgDetails.getAuthenticationGroupIds(), orgDetails.getBusinessGroupIds());
+			return new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), orgDetails.getStatus(), orgDetails.getDisplayName(), orgDetails.getMainLocationId(), orgDetails.getMainContactId(), orgDetails.getAuthenticationGroupIds(), orgDetails.getBusinessGroupIds(), null);
 		}).given(delegate).createOrganization(Mockito.any(OrganizationDetails.class));
-		OrganizationDetails orgDetails = organizationService.createOrganization(new OrganizationDetails(null, Status.ACTIVE, "Hello", null, null, List.of(new AuthenticationGroupIdentifier("CRM")), List.of(new BusinessGroupIdentifier("IMIT"))));
+		OrganizationDetails orgDetails = organizationService.createOrganization(new OrganizationDetails(null, Status.ACTIVE, "Hello", null, null, List.of(new AuthenticationGroupIdentifier("CRM")), List.of(new BusinessGroupIdentifier("IMIT")), null));
 		BDDMockito.verify(delegate, Mockito.times(1)).createOrganization(Mockito.any(OrganizationDetails.class));
 
 		/* should have added the details to the cache */
@@ -94,7 +94,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 	@Test
 	public void testCacheExistingOrg() {
 		BDDMockito.willAnswer((invocation) -> {
-			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "Org1", null, null, List.of(new AuthenticationGroupIdentifier("CRM")), List.of(new BusinessGroupIdentifier("IMIT")));
+			return new OrganizationDetails(invocation.getArgument(0), Status.ACTIVE, "Org1", null, null, List.of(new AuthenticationGroupIdentifier("CRM")), List.of(new BusinessGroupIdentifier("IMIT")), null);
 		}).given(delegate).findOrganizationDetails(Mockito.any(OrganizationIdentifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
@@ -134,7 +134,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		final AtomicInteger orgIndex = new AtomicInteger();
 		final AtomicReference<OrganizationDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2)));
+			reference.set(new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2), null));
 			return reference.get();
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList(), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
@@ -179,7 +179,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		final AtomicInteger orgIndex = new AtomicInteger();
 		final AtomicReference<OrganizationDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2)));
+			reference.set(new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2), null));
 			return reference.get();
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList(), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
@@ -224,7 +224,7 @@ public class CrmOrganizationServiceCachingDelegateTests {
 		final AtomicInteger orgIndex = new AtomicInteger();
 		final AtomicReference<OrganizationDetails> reference = new AtomicReference<OrganizationDetails>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2)));
+			reference.set(new OrganizationDetails(new OrganizationIdentifier(Integer.toString(orgIndex.incrementAndGet())), Status.ACTIVE, invocation.getArgument(0), null, null, invocation.getArgument(1), invocation.getArgument(2), null));
 			return reference.get();
 		}).given(delegate).createOrganization(Mockito.anyString(), Mockito.anyList(), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
@@ -338,9 +338,9 @@ public class CrmOrganizationServiceCachingDelegateTests {
 
 	@Test
 	public void testCachingFindDetailsResults() {
-		OrganizationDetails details1 = new OrganizationDetails(new OrganizationIdentifier("A"), Status.ACTIVE, "A", null, null, List.of(), List.of());
-		OrganizationDetails details2 = new OrganizationDetails(new OrganizationIdentifier("B"), Status.ACTIVE, "B", null, null, List.of(), List.of());
-		OrganizationDetails details3 = new OrganizationDetails(new OrganizationIdentifier("C"), Status.ACTIVE, "C", null, null, List.of(), List.of());
+		OrganizationDetails details1 = new OrganizationDetails(new OrganizationIdentifier("A"), Status.ACTIVE, "A", null, null, List.of(), List.of(), null);
+		OrganizationDetails details2 = new OrganizationDetails(new OrganizationIdentifier("B"), Status.ACTIVE, "B", null, null, List.of(), List.of(), null);
+		OrganizationDetails details3 = new OrganizationDetails(new OrganizationIdentifier("C"), Status.ACTIVE, "C", null, null, List.of(), List.of(), null);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);
@@ -391,9 +391,9 @@ public class CrmOrganizationServiceCachingDelegateTests {
 
 	@Test
 	public void testCachingFindSummaryResults() {
-		OrganizationDetails details1 = new OrganizationDetails(new OrganizationIdentifier("A"), Status.ACTIVE, "A", null, null, List.of(), List.of());
-		OrganizationDetails details2 = new OrganizationDetails(new OrganizationIdentifier("B"), Status.ACTIVE, "B", null, null, List.of(), List.of());
-		OrganizationDetails details3 = new OrganizationDetails(new OrganizationIdentifier("C"), Status.ACTIVE, "C", null, null, List.of(), List.of());
+		OrganizationDetails details1 = new OrganizationDetails(new OrganizationIdentifier("A"), Status.ACTIVE, "A", null, null, List.of(), List.of(), null);
+		OrganizationDetails details2 = new OrganizationDetails(new OrganizationIdentifier("B"), Status.ACTIVE, "B", null, null, List.of(), List.of(), null);
+		OrganizationDetails details3 = new OrganizationDetails(new OrganizationIdentifier("C"), Status.ACTIVE, "C", null, null, List.of(), List.of(), null);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);

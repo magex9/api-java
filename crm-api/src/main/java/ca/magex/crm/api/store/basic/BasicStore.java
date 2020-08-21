@@ -13,7 +13,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventNotifier;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.store.CrmStore;
 import ca.magex.crm.api.system.Configuration;
@@ -32,7 +32,7 @@ import ca.magex.crm.api.system.id.UserIdentifier;
  */
 public class BasicStore implements CrmStore {
 	
-	private CrmUpdateNotifier notifier; 
+	private CrmEventNotifier notifier; 
 	
 	private Map<ConfigurationIdentifier, Configuration> configurations;
 	
@@ -50,7 +50,7 @@ public class BasicStore implements CrmStore {
 	 * Creates a new Basic Store with no data associated to it
 	 */
 	public BasicStore() {
-		notifier = new CrmUpdateNotifier();
+		notifier = new CrmEventNotifier();
 		configurations = new ConcurrentHashMap<>();
 		options = new ConcurrentHashMap<>();
 		organizations = new ConcurrentHashMap<>();
@@ -78,7 +78,7 @@ public class BasicStore implements CrmStore {
 	}
 	
 	@Override
-	public CrmUpdateNotifier getNotifier() {
+	public CrmEventNotifier getNotifier() {
 		return notifier;
 	}
 

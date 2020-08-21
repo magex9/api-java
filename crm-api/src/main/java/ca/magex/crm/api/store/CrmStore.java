@@ -11,7 +11,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventNotifier;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Configuration;
 import ca.magex.crm.api.system.Identifier;
@@ -41,7 +41,7 @@ public interface CrmStore {
 	
 	public Object decode(String text, CrmServices crm) throws IOException, ClassNotFoundException;
 	
-	public CrmUpdateNotifier getNotifier();
+	public CrmEventNotifier getNotifier();
 	
 	public Map<ConfigurationIdentifier, Configuration> getConfigurations();
 	
