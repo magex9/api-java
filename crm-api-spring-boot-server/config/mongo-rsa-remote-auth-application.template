@@ -25,7 +25,6 @@ server.external.address=localhost
 jwt.rsa.cert=file:./config/crm-dev.cer
 jwt.rsa.keypass=Crm2020!
 
-
 # actuator will be accessible on http://localhost:9003/actuator (including remote shutdown)
 management.endpoints.web.exposure.include=*
 management.endpoints.web.base-path=/actuator
