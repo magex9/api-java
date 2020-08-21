@@ -123,8 +123,7 @@ public class CrmCacheUpdateObserver implements CrmEventObserver {
 		/* evict if cached and last modified has changed */
 		if (summary != null && !summary.getLastModified().equals(timestamp)) {
 			userCacheTemplate.evict(summaryKey);
-		}
-		
+		}		
 		
 		String detailsKey = keyGenerator.generateDetailsKey(userId);
 		UserDetails details = userCacheTemplate.getIfPresent(detailsKey);
@@ -138,7 +137,11 @@ public class CrmCacheUpdateObserver implements CrmEventObserver {
 		/* evict if cached and last modified has changed */
 		if (details != null && !details.getLastModified().equals(timestamp)) {
 			userCacheTemplate.evict(detailsKey);
-		}		
+		}
+		
+		/* evict password keys */
+		userCacheTemplate.evict(keyGenerator.generatePasswordKey(username));
+		userCacheTemplate.evict(keyGenerator.generateTemporaryPasswordKey(username));
 		
 		return this;
 	}

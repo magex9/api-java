@@ -36,7 +36,7 @@ public class CrmCacheKeyGenerator {
 	 */
 	public String generateUsernameSummaryKey(String username) {
 		return "UsernameSummary_" + username;
-	}
+	}	
 	
 	/**
 	 * Generates the Key used for the Cache Entry of a Summary instance
@@ -54,5 +54,21 @@ public class CrmCacheKeyGenerator {
 	 */
 	public String generateOptionKey(OptionIdentifier identifier) {
 		return identifier.getType().getCode() + "_" + identifier.getCode();
+	}
+	
+	/**
+	 * Generates the key used for the Cache Entry of a user password
+	 * @param username
+	 */
+	public String generatePasswordKey(String username) {
+		return "UserPassword_" + username;
+	}
+	
+	/**
+	 * Generates the key used for the Cache Entry of a user password status
+	 * @param username
+	 */
+	public String generateTemporaryPasswordKey(String username) {
+		return "TemporaryPassword_" + username;
 	}
 }
