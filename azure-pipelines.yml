@@ -95,7 +95,7 @@ stages:
                 azureSubscription: 'appdev aks connection'
                 azureResourceGroup: 'AppDev_Kubernetes'
                 kubernetesCluster: 'appdev-cluster'
-                namespace: $(Build.SourceBranch)
+                namespace: $(Build.SourceBranchName)
                 command: 'upgrade'
                 chartType: 'FilePath'
                 chartPath: '$(Pipeline.Workspace)/helm-charts/crm-api-spring-boot-server'
@@ -111,7 +111,7 @@ stages:
                 azureSubscription: 'appdev aks connection'
                 azureResourceGroup: 'AppDev_Kubernetes'
                 kubernetesCluster: 'appdev-cluster'
-                namespace: $(Build.SourceBranch)
+                namespace: $(Build.SourceBranchName)
                 command: 'upgrade'
                 chartType: 'FilePath'
                 chartPath: '$(Pipeline.Workspace)/helm-charts/crm-auth-spring-boot-server'
