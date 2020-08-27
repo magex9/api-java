@@ -25,18 +25,6 @@ parameters:
 # Main JOB
 # ---------------------------------------------------------------------------------------------
 steps:
-- task: DownloadSecureFile@1
-  name: gitazurekey
-  inputs:
-    secureFile: 'azure.key'
-
-- task: CmdLine@2
-  inputs:
-    script: |
-      ls -la *
-      cp $(gitazurekey.secureFilePath) azure-git.key
-      ls -la *
-
 - task: Docker@2
   inputs:
     command: 'build'

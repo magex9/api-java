@@ -53,7 +53,19 @@ stages:
   - job: Build_apps
     displayName: Build Applications
     steps:
-            
+    - task: DownloadSecureFile@1
+      name: gitazurekey
+      inputs:
+        secureFile: 'azure.key'
+
+    - task: CmdLine@2
+      inputs:
+        script: |
+          ls -la *
+          cp $(gitazurekey.secureFilePath) azure-git.key
+          ls -la *
+
+       
     #Build Docker container and push to azure container registry
     - template: azure-build-docker-containers.yml
       parameters:
