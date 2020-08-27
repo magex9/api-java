@@ -29,7 +29,7 @@ steps:
   inputs:
     command: 'build'
     Dockerfile: '${{parameters.dockerfile}}'
-    arguments: 'appname=${application_name)'
+    arguments: '--build-arg appname=${{parameters.application_name}}'
 
 - task: Docker@2
   inputs:
