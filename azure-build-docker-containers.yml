@@ -28,6 +28,8 @@ steps:
 - task: Docker@2
   inputs:
     command: 'build'
+    containerRegistry: 'azure w2020 registry'
+    repository: '${{parameters.application_group}}/${{parameters.application_name}}'
     Dockerfile: '${{parameters.dockerfile}}'
     tags: |
       ${{parameters.application_version}}
