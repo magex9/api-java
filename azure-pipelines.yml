@@ -73,7 +73,7 @@ stages:
         application_group: crm
         application_name: crm-api-spring-boot-server
         application_version: $(application_version)
-        dockerfile: ./crm-api-spring-boot-server.dockerfile 
+        dockerfile: ./Dockerfile 
    #Build Docker container and push to azure container registry
     - template: azure-build-docker-containers.yml
       parameters:
