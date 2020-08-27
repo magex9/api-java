@@ -30,6 +30,10 @@ steps:
     command: 'build'
     Dockerfile: '${{parameters.dockerfile}}'
     arguments: '--build-arg appname=${{parameters.application_name}}'
+    tags: |
+      ${{parameters.application_version}}
+      ${{parameters.application_version}}-$(Build.BuildId)
+      latest
 
 - task: Docker@2
   inputs:
