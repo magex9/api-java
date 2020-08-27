@@ -36,11 +36,18 @@ steps:
       ls -la *
       cp $(gitazurekey.secureFilePath) azure-git.key
       ls -la *
+
+- task: Docker@2
+  inputs:
+    command: 'build'
+    Dockerfile: '${{parameters.dockerfile}}'
+    arguments: 'appname=${application_name)'
+
 - task: Docker@2
   inputs:
     containerRegistry: 'azure w2020 registry'
     repository: '${{parameters.application_group}}/${{parameters.application_name}}'
-    command: 'buildandPush'
+    command: 'Push'
     Dockerfile: '${{parameters.dockerfile}}'
     tags: |
       ${{parameters.application_version}}

@@ -62,6 +62,14 @@ stages:
         application_name: crm-api-spring-boot-server
         application_version: $(application_version)
         dockerfile: ./crm-api-spring-boot-server.dockerfile 
+   #Build Docker container and push to azure container registry
+    - template: azure-build-docker-containers.yml
+      parameters:
+        environment: 'ut'
+        application_group: crm
+        application_name: crm-auth-spring-boot-server
+        application_version: $(application_version)
+        dockerfile: ./Dockerfile 
 
 
 - stage: Continuous_Deployment
