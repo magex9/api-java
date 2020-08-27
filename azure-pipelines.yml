@@ -81,6 +81,7 @@ stages:
               inputs:
                 helmVersionToInstall: 'latest'
             - task: HelmDeploy@0
+              displayName: "Deploy crm-api"
               inputs:
                 connectionType: 'Azure Resource Manager'
                 azureSubscription: 'appdev aks connection'
@@ -95,3 +96,19 @@ stages:
                 failOnStderr: false
                 overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
                 #recreate: true
+            - task: HelmDeploy@0
+              displayName: "Deploy crm-auth"
+              inputs:
+                connectionType: 'Azure Resource Manager'
+                azureSubscription: 'appdev aks connection'
+                azureResourceGroup: 'AppDev_Kubernetes'
+                kubernetesCluster: 'appdev-cluster'
+                namespace: $(Build.SourceBranch)
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '$(Pipeline.Workspace)/helm-charts/crm-auth-spring-boot-server'
+                releaseName: 'crm-auth-spring-boot-server'
+                force: false
+                failOnStderr: false
+                overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
+                #recreate: true#
