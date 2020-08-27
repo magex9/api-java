@@ -29,11 +29,11 @@ steps:
   inputs:
     command: 'build'
     Dockerfile: '${{parameters.dockerfile}}'
-    arguments: '--build-arg appname=${{parameters.application_name}}'
     tags: |
       ${{parameters.application_version}}
       ${{parameters.application_version}}-$(Build.BuildId)
       latest
+    arguments: '--build-arg appname=${{parameters.application_name}}'
 
 - task: Docker@2
   inputs:
