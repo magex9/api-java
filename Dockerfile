@@ -1,4 +1,4 @@
-FROM maven:3-jdk-11 as builder
+FROM maven:3-jdk-11
 ARG appname
 WORKDIR /build
 #COPY pom.xml .
@@ -7,14 +7,11 @@ COPY . .
 ENV ENVIRONMENT=ut
 RUN mvn clean package -DskipTests
 RUN pwd && ls -la
-#test
-
-FROM openjdk:11
-WORKDIR /application
 
 ENV ENVIRONMENT=ut
-COPY --from=builder /build/${appname}/target/*-bootable.jar /application/application.jar
-COPY --from=builder /build/${appname}/config/* /application/
+RUN mkdir -p /application && cp /build/${appname}/target/*-bootable.jar /application/application.jar
+RUN cp /build/${appname}/config/* /application/
+RUN rm -rf /build
 
 EXPOSE 80
 

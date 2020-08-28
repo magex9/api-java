@@ -14,5 +14,5 @@ if [ "${appname}" == "" ];then
 fi
 
 #need to run using root if we want to set the ulimit ... to investigate why
-#buildah bud --ulimit nofile=1048576 -f Dockerfile -t $appname -t w2020.azurecr.io/crm/${appname} --build-arg appname=${appname}.
-buildah bud -f Dockerfile -t crm/$appname -t w2020.azurecr.io/crm/${appname} --build-arg appname=${appname} .
+buildah bud --ulimit nofile=1048576 -f Dockerfile -t $appname -t w2020.azurecr.io/crm/${appname} --build-arg appname=${appname} .
+#buildah bud -f Dockerfile -t crm/$appname -t w2020.azurecr.io/crm/${appname} --build-arg appname=${appname} .

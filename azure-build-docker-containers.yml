@@ -35,7 +35,7 @@ steps:
       ${{parameters.application_version}}
       ${{parameters.application_version}}-$(Build.BuildId)
       latest
-    arguments: '--build-arg appname=${{parameters.application_name}}'
+    arguments: '--build-arg "appname=${{parameters.application_name}}"'
 
 - task: Docker@2
   inputs:
