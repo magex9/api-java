@@ -6,7 +6,7 @@ COPY . .
 #COPY config ./config
 ENV ENVIRONMENT=ut
 RUN mvn clean package -DskipTests
-#RUN pwd && ls -la
+RUN pwd && ls -la
 #test
 
 FROM openjdk:11
