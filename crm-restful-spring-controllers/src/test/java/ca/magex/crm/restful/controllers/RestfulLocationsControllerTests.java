@@ -22,7 +22,7 @@ import ca.magex.crm.transform.json.MailingAddressJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
-public class LocationsControllerTests extends AbstractControllerTests {
+public class RestfulLocationsControllerTests extends AbstractControllerTests {
 
 	private OrganizationIdentifier organizationId;
 	
@@ -271,7 +271,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	public void testGetLocationAddress() throws Exception {
 		LocationIdentifier locationId = crm.createLocation(organizationId, "NEWFOUNDLAND", "Labrador City", NL_ADDRESS).getLocationId();
 
-		JsonObject linked = get(locationId + "/address", null, HttpStatus.OK);
+		JsonObject linked = get(locationId + "/details/address", null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "street", "city", "province", "country", "postalCode"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/common/MailingAddress", linked.getString("@context"));
@@ -291,7 +291,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("Canada", linked.getObject("country").getString("@fr"));
 		assertEquals("A2V 2Y2", linked.getString("postalCode"));
 
-		JsonObject root = get(locationId + "/address", Lang.ROOT, HttpStatus.OK);
+		JsonObject root = get(locationId + "/details/address", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("street", "city", "province", "country", "postalCode"), root.keys());
 		assertEquals("90 Avalon Drive", root.getString("street"));
@@ -300,7 +300,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("CA", root.getString("country"));
 		assertEquals("A2V 2Y2", root.getString("postalCode"));
 
-		JsonObject english = get(locationId + "/address", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject english = get(locationId + "/details/address", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("street", "city", "province", "country", "postalCode"), english.keys());
 		assertEquals("90 Avalon Drive", english.getString("street"));
@@ -309,7 +309,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("Canada", english.getString("country"));
 		assertEquals("A2V 2Y2", english.getString("postalCode"));
 
-		JsonObject french = get(locationId + "/address", Lang.FRENCH, HttpStatus.OK);
+		JsonObject french = get(locationId + "/details/address", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("street", "city", "province", "country", "postalCode"), french.keys());
 		assertEquals("90 Avalon Drive", french.getString("street"));
@@ -323,7 +323,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	public void testUpdatingDisplayName() throws Exception {
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
-		JsonObject json = patch(locationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("displayName", "Updated name"));
+		JsonObject json = patch(locationId + "/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("displayName", "Updated name"));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), json.keys());
 		assertEquals(locationId.getCode(), json.getString("locationId"));
@@ -343,7 +343,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	public void testUpdatingAddress() throws Exception {
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
-		JsonObject json = patch(locationId, Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+		JsonObject json = patch(locationId + "/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
 
 		//JsonAsserts.print(json, "json");
@@ -365,7 +365,7 @@ public class LocationsControllerTests extends AbstractControllerTests {
 	public void testUpdatingAddressEndpoint() throws Exception {
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		
-		JsonObject json = put(locationId + "/address", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
+		JsonObject json = put(locationId + "/details/address", Lang.ENGLISH, HttpStatus.OK, new JsonObject()
 			.with("address", new MailingAddressJsonTransformer(crm).format(US_ADDRESS, Lang.ENGLISH)));
 
 		//JsonAsserts.print(json, "json");
@@ -388,28 +388,28 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		LocationIdentifier locationId = crm.createLocation(organizationId, "MAIN", "Main Location", MAILING_ADDRESS).getLocationId();
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
-		JsonArray error1 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error1 = put(locationId + "/actions/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(locationId.toString(), error1.getObject(0).getString("identifier"));
 		assertEquals("Error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
-		JsonArray error2 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error2 = put(locationId + "/actions/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(locationId.toString(), error2.getObject(0).getString("identifier"));
 		assertEquals("Error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
-		JsonArray error3 = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error3 = put(locationId + "/actions/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(locationId.toString(), error3.getObject(0).getString("identifier"));
 		assertEquals("Error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findLocationSummary(locationId).getStatus());
 
-		JsonObject disable = put(locationId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		JsonObject disable = put(locationId + "/actions/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(disable, "disable");
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), disable.keys());
 		assertEquals(locationId.getCode(), disable.getString("locationId"));
@@ -418,28 +418,28 @@ public class LocationsControllerTests extends AbstractControllerTests {
 		assertEquals("MAIN", disable.getString("reference"));
 		assertEquals("Main Location", disable.getString("displayName"));
 		
-		JsonArray error4 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error4 = put(locationId + "/actions/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(locationId.toString(), error4.getObject(0).getString("identifier"));
 		assertEquals("Error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 		
-		JsonArray error5 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error5 = put(locationId + "/actions/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(locationId.toString(), error5.getObject(0).getString("identifier"));
 		assertEquals("Error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 		
-		JsonArray error6 = put(locationId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error6 = put(locationId + "/actions/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(locationId.toString(), error6.getObject(0).getString("identifier"));
 		assertEquals("Error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findLocationSummary(locationId).getStatus());
 	
-		JsonObject enable = put(locationId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		JsonObject enable = put(locationId + "/actions/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(enable, "enable");
 		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), enable.keys());
 		assertEquals(locationId.getCode(), enable.getString("locationId"));

@@ -32,7 +32,7 @@ import ca.magex.json.model.JsonObject;
 
 @Controller
 @CrossOrigin
-public class RestfulPersonController extends AbstractRestfulController {
+public class RestfulPersonsController extends AbstractRestfulController {
 
 	@GetMapping("/rest/persons")
 	public void findPersonSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {

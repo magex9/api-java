@@ -24,7 +24,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 
-public class LocationsFilterControllerTests extends AbstractControllerTests {
+public class RestfulLocationsControllerFilterTests extends AbstractControllerTests {
 	
 	private OrganizationIdentifier org1;
 	

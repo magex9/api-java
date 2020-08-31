@@ -32,7 +32,7 @@ import ca.magex.crm.transform.json.PersonNameJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
-public class PersonsControllerTests extends AbstractControllerTests {
+public class RestfulPersonsControllerCrudTests extends AbstractControllerTests {
 
 	private OrganizationIdentifier organizationId;
 	

@@ -25,7 +25,7 @@ import ca.magex.crm.transform.json.IdentifierJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
-public class UsersControllerTests extends AbstractControllerTests {
+public class RestfulUsersControllerCrudTests extends AbstractControllerTests {
 
 	private OrganizationIdentifier systemOrgId;
 	

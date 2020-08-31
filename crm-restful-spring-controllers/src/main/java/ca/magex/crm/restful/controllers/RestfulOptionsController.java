@@ -29,7 +29,7 @@ import ca.magex.json.model.JsonText;
 
 @Controller
 @CrossOrigin
-public class RestfulOptionController extends AbstractRestfulController {
+public class RestfulOptionsController extends AbstractRestfulController {
 	
 	@GetMapping("/rest/types")
 	public void findTypes(HttpServletRequest req, HttpServletResponse res) throws IOException {

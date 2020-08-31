@@ -116,11 +116,11 @@ public class RestfulSwaggerController {
 	
 	public JsonObject buildApiPaths() throws Exception {
 		JsonObject paths = new JsonObject();
-		paths = appendPaths(RestfulOrganizationController.class, CrmOrganizationService.class, "Organizations", paths);
-		paths = appendPaths(RestfulLocationController.class, CrmLocationService.class, "Locations", paths);
-		paths = appendPaths(RestfulPersonController.class, CrmPersonService.class, "Persons", paths);
-		paths = appendPaths(RestfulUserController.class, CrmUserService.class, "Users", paths);
-		paths = appendPaths(RestfulOptionController.class, CrmOptionService.class, "Options", paths);
+		paths = appendPaths(RestfulOrganizationsController.class, CrmOrganizationService.class, "Organizations", paths);
+		paths = appendPaths(RestfulLocationsController.class, CrmLocationService.class, "Locations", paths);
+		paths = appendPaths(RestfulPersonsController.class, CrmPersonService.class, "Persons", paths);
+		paths = appendPaths(RestfulUsersController.class, CrmUserService.class, "Users", paths);
+		paths = appendPaths(RestfulOptionsController.class, CrmOptionService.class, "Options", paths);
 		return paths;
 	}
 	

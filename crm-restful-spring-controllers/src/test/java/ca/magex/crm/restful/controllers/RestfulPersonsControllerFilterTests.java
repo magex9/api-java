@@ -36,7 +36,7 @@ import ca.magex.crm.test.CrmAsserts;
 import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
-public class PersonsFilterControllerTests extends AbstractControllerTests {
+public class RestfulPersonsControllerFilterTests extends AbstractControllerTests {
 	
 	private OrganizationIdentifier org1;
 	

@@ -24,7 +24,7 @@ import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.json.model.JsonObject;
 
-public class OrganizationsFilterControllerTests extends AbstractControllerTests {
+public class RestfulOrganizationsControllerFilterTests extends AbstractControllerTests {
 	
 	private Identifier org0;
 	

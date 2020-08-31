@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.json.model.JsonObject;
 
-public class ConfigurationControllerTest extends AbstractControllerTests {
+public class RestfulSwaggerControllerTest extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {

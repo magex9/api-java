@@ -40,7 +40,7 @@ import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.test.CrmAsserts;
 import ca.magex.json.model.JsonObject;
 
-public class UsersFilterControllerTests extends AbstractControllerTests {
+public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 	
 	private OrganizationIdentifier org1;
 	

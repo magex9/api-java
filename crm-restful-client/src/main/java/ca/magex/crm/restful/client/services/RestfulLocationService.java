@@ -33,25 +33,25 @@ public class RestfulLocationService implements CrmLocationService {
 
 	@Override
 	public LocationSummary enableLocation(LocationIdentifier locationId) {
-		JsonObject json = client.put(locationId + "/enable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(locationId + "/actions/enable", new JsonObject().with("confirm", true));
 		return client.parse(json, LocationSummary.class);
 	}
 
 	@Override
 	public LocationSummary disableLocation(LocationIdentifier locationId) {
-		JsonObject json = client.put(locationId + "/disable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(locationId + "/actions/disable", new JsonObject().with("confirm", true));
 		return client.parse(json, LocationSummary.class);
 	}
 
 	@Override
 	public LocationDetails updateLocationName(LocationIdentifier locationId, String displaysName) {
-		JsonObject json = client.patch(locationId, new JsonObject().with("displayName", displaysName));
+		JsonObject json = client.patch(locationId + "/details", new JsonObject().with("displayName", displaysName));
 		return client.parse(json, LocationDetails.class);
 	}
 
 	@Override
 	public LocationDetails updateLocationAddress(LocationIdentifier locationId, MailingAddress address) {
-		JsonObject json = client.patch(locationId, new JsonObject().with("address", client.format(address, MailingAddress.class)));
+		JsonObject json = client.patch(locationId + "/details", new JsonObject().with("address", client.format(address, MailingAddress.class)));
 		return client.parse(json, LocationDetails.class);
 	}
 

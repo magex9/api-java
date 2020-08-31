@@ -29,7 +29,7 @@ import ca.magex.json.model.JsonObject;
 
 @Controller
 @CrossOrigin
-public class RestfulLocationController extends AbstractRestfulController {
+public class RestfulLocationsController extends AbstractRestfulController {
 
 	@GetMapping("/rest/locations")
 	public void findLocationSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {

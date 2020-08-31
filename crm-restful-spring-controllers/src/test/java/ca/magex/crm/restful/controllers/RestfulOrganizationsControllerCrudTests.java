@@ -36,7 +36,7 @@ import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.util.LoremIpsumGenerator;
 
-public class OrganizationsControllerTests extends AbstractControllerTests {
+public class RestfulOrganizationsControllerCrudTests extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
