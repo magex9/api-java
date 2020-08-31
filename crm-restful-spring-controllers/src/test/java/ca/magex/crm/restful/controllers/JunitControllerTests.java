@@ -206,14 +206,6 @@ public class JunitControllerTests extends AbstractControllerTests {
 //		JsonArray json = post("/junit/object/status", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
 //		assertSingleJsonMessage(json, null, "Error", "status", "Field is required");
 //	}
-	
-	@Test
-	public void testBuildingActions() throws Exception {
-		JsonObject json = new JunitController().action("name", "title", "method", "href");
-		assertEquals(List.of("name", "title", "method", "href"), json.keys());
-		assertEquals("name", json.getString("name"));
-		assertEquals("title", json.getString("title"));
-		assertEquals("method", json.getString("method"));
-		assertEquals("href", json.getString("href"));	}
+
 	
 }
