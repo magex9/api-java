@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
+@CrossOrigin
 public class RestfulLocationController extends AbstractRestfulController {
 
 	@GetMapping("/rest/locations")
@@ -123,7 +125,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@PatchMapping("/rest/locations/{locationId}")
+	@PatchMapping("/rest/locations/{locationId}/details")
 	public void updateLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -139,7 +141,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@GetMapping("/rest/locations/{locationId}/address")
+	@GetMapping("/rest/locations/{locationId}/details/address")
 	public void findLocationAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, MailingAddress.class, (messages, transformer, locale) -> {
@@ -147,7 +149,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/locations/{locationId}/address")
+	@PutMapping("/rest/locations/{locationId}/details/address")
 	public void updateLocationAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -158,7 +160,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 	
-	@PutMapping("/rest/locations/{locationId}/enable")
+	@PutMapping("/rest/locations/{locationId}/actions/enable")
 	public void enableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
@@ -167,7 +169,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/locations/{locationId}/disable")
+	@PutMapping("/rest/locations/{locationId}/actions/disable")
 	public void disableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
