@@ -40,6 +40,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+#Secrets volume mounts
 secrets:
   - name: crm-auth-spring-boot-server-cert
     readOnly: true
