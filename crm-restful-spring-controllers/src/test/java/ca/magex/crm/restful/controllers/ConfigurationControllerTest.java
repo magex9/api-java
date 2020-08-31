@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -18,7 +17,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.json.model.JsonObject;
 
-@Ignore
 public class ConfigurationControllerTest extends AbstractControllerTests {
 	
 	@Before
@@ -66,16 +64,18 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 	@Test
 	public void testRootElementsExist() throws Exception {
 		JsonObject json = getJsonConfig();
-		assertEquals(List.of("openapi", "info", "security", "servers", "paths", "components"), json.getObject("paths").getObject("/rest/persons").getObject("get").getArray("parameters").getObject(6).keys());
+		assertEquals(List.of("openapi", "info", "security", "servers", "paths", "components"), json.keys());
 	}
 	
 	@Test
 	public void testExpectedPathMethods() throws Exception {
 		Map<String, List<String>> map = new HashMap<>();
+		map.put("/rest/actions", List.of("get"));
+		
 		map.put("/rest/organizations", List.of("get", "post"));
+		map.put("/rest/organizations/prototype", List.of("get"));
 		map.put("/rest/organizations/details", List.of("get"));
 		map.put("/rest/organizations/count", List.of("get"));
-		map.put("/rest/organizations/actions", List.of("get"));
 		map.put("/rest/organizations/{organizationId}", List.of("get"));
 		map.put("/rest/organizations/{organizationId}/details", List.of("get", "patch"));
 		map.put("/rest/organizations/{organizationId}/details/mainLocation", List.of("get", "patch"));
@@ -87,9 +87,9 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		map.put("/rest/organizations/{organizationId}/actions/disable", List.of("put"));
 
 		map.put("/rest/locations", List.of("get", "post"));
+		map.put("/rest/locations/prototype", List.of("get"));
 		map.put("/rest/locations/details", List.of("get"));
 		map.put("/rest/locations/count", List.of("get"));
-		map.put("/rest/locations/actions", List.of("get"));
 		map.put("/rest/locations/{locationId}", List.of("get"));
 		map.put("/rest/locations/{locationId}/details", List.of("get", "patch"));
 		map.put("/rest/locations/{locationId}/details/address", List.of("get", "patch"));
@@ -98,9 +98,9 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		map.put("/rest/locations/{locationId}/actions/disable", List.of("get", "put"));
 
 		map.put("/rest/persons", List.of("get", "post"));
+		map.put("/rest/persons/prototype", List.of("get"));
 		map.put("/rest/persons/details", List.of("get"));
 		map.put("/rest/persons/count", List.of("get"));
-		map.put("/rest/persons/actions", List.of("get"));
 		map.put("/rest/persons/{personId}", List.of("get"));
 		map.put("/rest/persons/{personId}/details", List.of("get", "patch"));
 		map.put("/rest/persons/{personId}/details/name", List.of("get", "patch"));
@@ -113,7 +113,7 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		map.put("/rest/users", List.of("get", "post"));
 		map.put("/rest/users/details", List.of("get"));
 		map.put("/rest/users/count", List.of("get"));
-		map.put("/rest/users/actions", List.of("get"));
+		map.put("/rest/users/prototype", List.of("get"));
 		map.put("/rest/users/{userId}", List.of("get"));
 		map.put("/rest/users/{userId}/details", List.of("get", "patch"));
 		map.put("/rest/users/{userId}/details/person", List.of("get", "patch"));
@@ -136,8 +136,8 @@ public class ConfigurationControllerTest extends AbstractControllerTests {
 		map.put("/rest/types/{typeId}", List.of("get"));
 		
 		map.put("/rest/options", List.of("get", "post"));
+		map.put("/rest/options/prototype", List.of("get"));
 		map.put("/rest/options/count", List.of("get"));
-		map.put("/rest/options/actions", List.of("get"));
 		map.put("/rest/options/{optionId}", List.of("get", "patch"));
 		map.put("/rest/options/{optionId}/actions", List.of("get"));
 		map.put("/rest/options/{optionId}/enable", List.of("get", "put"));
