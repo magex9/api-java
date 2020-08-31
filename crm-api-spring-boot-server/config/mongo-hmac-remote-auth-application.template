@@ -24,8 +24,8 @@ server.external.address=localhost
 # Remote Authentication Server for validating tokens
 jwt.auth.host=localhost
 jwt.auth.port=9012
-jwt.auth.username=crmadmin
-jwt.auth.password=crmadmin
+jwt.auth.username=<user>
+jwt.auth.password=<password>
 jwt.auth.context=/auth
 
 # actuator will be accessible on http://localhost:9003/actuator (including remote shutdown)

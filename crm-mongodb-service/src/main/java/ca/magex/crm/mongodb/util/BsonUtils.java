@@ -47,7 +47,8 @@ public class BsonUtils {
 						.append("english", option.getName().getEnglishName())
 						.append("english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
 						.append("french", option.getName().getFrenchName())
-						.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName())));
+						.append("french_searchable", TextUtils.toSearchable(option.getName().getFrenchName())))
+				.append("lastModified", option.getLastModified());
 	}
 	
 	/**
@@ -65,7 +66,8 @@ public class BsonUtils {
 				.append("reference", location.getReference())
 				.append("displayName", location.getDisplayName())
 				.append("displayName_searchable", TextUtils.toSearchable(location.getDisplayName()))
-				.append("address", toBson(location.getAddress()));
+				.append("address", toBson(location.getAddress()))
+				.append("lastModified", location.getLastModified());
 	}
 	
 	/**
@@ -89,7 +91,8 @@ public class BsonUtils {
 						.getBusinessRoleIds()
 						.stream()
 						.map((id) -> id.getFullIdentifier())
-						.collect(Collectors.toList()));
+						.collect(Collectors.toList()))
+				.append("lastModified", person.getLastModified());
 	}
 	
 	/**
@@ -111,6 +114,7 @@ public class BsonUtils {
 						.stream()
 						.map((id) -> id.getFullIdentifier())
 						.collect(Collectors.toList()))
+				.append("lastModified", user.getLastModified())
 				.append("passwords", List.of());
 	}
 	

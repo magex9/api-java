@@ -37,6 +37,7 @@ public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<Loca
 		formatStatus(pairs, "status", location, locale);
 		formatText(pairs, "reference", location);
 		formatText(pairs, "displayName", location);
+		formatLong(pairs, "lastModified", location);
 		return new JsonObject(pairs);
 	}
 
@@ -47,7 +48,8 @@ public class LocationSummaryJsonTransformer extends AbstractJsonTransformer<Loca
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		String reference = parseText("reference", json);
 		String displayName = parseText("displayName", json);
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+		Long lastModified = parseLong("lastModified", json);
+		return new LocationSummary(locationId, organizationId, status, reference, displayName, lastModified);
 	}
 
 }

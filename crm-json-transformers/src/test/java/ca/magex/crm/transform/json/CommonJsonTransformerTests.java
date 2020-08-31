@@ -38,7 +38,7 @@ public class CommonJsonTransformerTests {
 		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
 		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
-				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP);
+				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP, 100L);
 		transformer.formatText(pairs, "code", option);
 	}
 	
@@ -46,7 +46,7 @@ public class CommonJsonTransformerTests {
 	public void testGetPropertyOptions() throws Exception {
 		AbstractJsonTransformer<Option> transformer = new OptionJsonTransformer(crm);
 		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
-				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP);
+				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP, 100L);
 		try {
 			transformer.getProperty(null, "code", String.class);
 			fail("Illegal arguments");

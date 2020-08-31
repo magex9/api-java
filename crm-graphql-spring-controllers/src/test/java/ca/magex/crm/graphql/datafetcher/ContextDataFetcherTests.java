@@ -29,7 +29,8 @@ public class ContextDataFetcherTests extends AbstractDataFetcherTests {
 				new PersonIdentifier("System"), 
 				"sysadmin", 
 				Status.ACTIVE, 
-				List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")));
+				List.of(new AuthenticationRoleIdentifier("CRM/ADMIN")),
+				System.currentTimeMillis());
 		BDDMockito.willReturn(user).given(authService).getAuthenticatedUser();
 		BDDMockito.willReturn(user.getPersonId()).given(authService).getAuthenticatedPersonId();
 		BDDMockito.willReturn(user.getOrganizationId()).given(authService).getAuthenticatedOrganizationId();

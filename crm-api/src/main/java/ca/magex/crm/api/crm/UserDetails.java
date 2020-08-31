@@ -44,8 +44,8 @@ public class UserDetails extends UserSummary {
 	 * @param status
 	 * @param authenticationRoleIds
 	 */
-	public UserDetails(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		super(userId, organizationId, username, status);
+	public UserDetails(UserIdentifier userId, OrganizationIdentifier organizationId, PersonIdentifier personId, String username, Status status, List<AuthenticationRoleIdentifier> authenticationRoleIds, Long lastModified) {
+		super(userId, organizationId, username, status, lastModified);
 		this.personId = personId;
 		this.authenticationRoleIds = authenticationRoleIds == null ? new IdentifierList<>() : new IdentifierList<>(authenticationRoleIds);
 	}
@@ -66,14 +66,15 @@ public class UserDetails extends UserSummary {
 		return Collections.unmodifiableList(authenticationRoleIds);
 	}
 	
-	/**
-	 * returns a copy of the user with the new status
-	 * @param status
-	 * @return
-	 */
+	@Override
 	public UserDetails withStatus(Status status) {
-		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds);
+		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds, lastModified);
 	}	
+	
+	@Override
+	public UserDetails withLastModified(Long lastModified) {
+		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds, lastModified);
+	}
 	
 	/**
 	 * returns a copy of the user with the new roles
@@ -81,7 +82,7 @@ public class UserDetails extends UserSummary {
 	 * @return
 	 */
 	public UserDetails withAuthenticationRoleIds(List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds);
+		return new UserDetails(userId, organizationId, personId, username, status, authenticationRoleIds, lastModified);
 	}
 	
 	/**
@@ -98,7 +99,7 @@ public class UserDetails extends UserSummary {
 	 * @return
 	 */
 	public UserSummary asSummary() {
-		return new UserSummary(userId, organizationId, username, status);
+		return new UserSummary(userId, organizationId, username, status, lastModified);
 	}
 	
 	@Override

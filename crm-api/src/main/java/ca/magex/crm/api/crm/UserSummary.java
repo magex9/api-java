@@ -42,20 +42,24 @@ public class UserSummary implements Serializable {
 	@NotNull
 	protected Status status;
 	
+	/** last modified timestamp provided by the backing datastore */
+	protected Long lastModified;
+	
 	/**
 	 * Constructs a new user from the information provided
 	 * @param userId
 	 * @param personId
 	 * @param username
 	 * @param status
-	 * @param authenticationRoleIds
+	 * @param lastModified
 	 */
-	public UserSummary(UserIdentifier userId, OrganizationIdentifier organizationId, String username, Status status) {
+	public UserSummary(UserIdentifier userId, OrganizationIdentifier organizationId, String username, Status status, Long lastModified) {
 		super();
 		this.userId = userId;
 		this.organizationId = organizationId;
 		this.username = username;		
 		this.status = status;
+		this.lastModified = lastModified;
 	}
 	
 	/**
@@ -91,13 +95,30 @@ public class UserSummary implements Serializable {
 	}
 	
 	/**
+	 * returns the last modified timestamp for the instance
+	 * @return
+	 */
+	public Long getLastModified() {
+		return lastModified;
+	}
+	
+	/**
 	 * returns a copy of the user with the new status
 	 * @param status
 	 * @return
 	 */
 	public UserSummary withStatus(Status status) {
-		return new UserSummary(userId, organizationId, username, status);
+		return new UserSummary(userId, organizationId, username, status, lastModified);
 	}	
+	
+	/**
+	 * returns a copy of the user with the last modified provided
+	 * @param lastModified
+	 * @return
+	 */
+	public UserSummary withLastModified(Long lastModified) {
+		return new UserSummary(userId, organizationId, username, status, lastModified);
+	}
 	
 	@Override
 	public int hashCode() {

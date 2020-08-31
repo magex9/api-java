@@ -25,6 +25,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
 import ca.magex.crm.test.config.BasicTestConfig;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 
@@ -50,7 +51,7 @@ public class LocationDetailsJsonTransformerTests {
 		transformer = new LocationDetailsJsonTransformer(crm);
 		locationId = new LocationIdentifier("bN2ifcbtzA");
 		organizationId = new OrganizationIdentifier("EEtP6HwXMo");
-		location = new LocationDetails(locationId, organizationId, Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS);
+		location = new LocationDetails(locationId, organizationId, Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS, 100L);
 	}
 	
 	@Test
@@ -69,8 +70,8 @@ public class LocationDetailsJsonTransformerTests {
 	@Test
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(location, null);
-		//JsonAsserts.print(linked, "linked");
-		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address"), linked.keys());
+		JsonAsserts.print(linked, "linked");
+		assertEquals(List.of("@context", "locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/LocationDetails", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/locations/" + locationId.getCode(), linked.getString("locationId"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getCode(), linked.getString("organizationId"));
@@ -99,14 +100,15 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@en"));
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@fr"));
 		assertEquals("K1K1K1", linked.getObject("address").getString("postalCode"));
-		assertEquals(location, transformer.parse(linked, null));
+		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(location, transformer.parse(linked, null));		
 	}
 	
 	@Test
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(location, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), root.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), root.keys());
 		assertEquals(locationId.getCode(), root.getString("locationId"));
 		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
@@ -118,6 +120,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("CA/QC", root.getObject("address").getString("province"));
 		assertEquals("CA", root.getObject("address").getString("country"));
 		assertEquals("K1K1K1", root.getObject("address").getString("postalCode"));
+		assertEquals(100L, root.getNumber("lastModified"));
 		assertEquals(location, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -125,7 +128,7 @@ public class LocationDetailsJsonTransformerTests {
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(location, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), english.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), english.keys());
 		assertEquals(locationId.getCode(), english.getString("locationId"));
 		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
@@ -137,6 +140,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("Quebec", english.getObject("address").getString("province"));
 		assertEquals("Canada", english.getObject("address").getString("country"));
 		assertEquals("K1K1K1", english.getObject("address").getString("postalCode"));
+		assertEquals(100L, english.getNumber("lastModified"));
 		assertEquals(location, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -144,7 +148,7 @@ public class LocationDetailsJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(location, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address"), french.keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "address", "lastModified"), french.keys());
 		assertEquals(locationId.getCode(), french.getString("locationId"));
 		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
@@ -156,6 +160,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("Québec", french.getObject("address").getString("province"));
 		assertEquals("Canada", french.getObject("address").getString("country"));
 		assertEquals("K1K1K1", french.getObject("address").getString("postalCode"));
+		assertEquals(100L, french.getNumber("lastModified"));
 		assertEquals(location, transformer.parse(french, Lang.FRENCH));
 	}
 	

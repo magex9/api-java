@@ -42,6 +42,7 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 		formatStatus(pairs, "status", option, locale);
 		formatBoolean(pairs, "mutable", option);
 		formatLocalized(pairs, "name", option, locale);
+		formatLong(pairs, "lastModified", option);
 		return new JsonObject(pairs);
 	}
 
@@ -53,7 +54,8 @@ public class OptionJsonTransformer extends AbstractJsonTransformer<Option> {
 		Boolean mutable = parseBoolean("mutable", json);
 		Status status = parseStatus("status", json, locale);
 		Localized name = parseObject("name", json, new LocalizedJsonTransformer(crm), locale);
-		return new Option(optionId, parentId, type, status, mutable, name);
+		Long lastModified = parseLong("lastModified", json);
+		return new Option(optionId, parentId, type, status, mutable, name, lastModified);
 	}
 
 }

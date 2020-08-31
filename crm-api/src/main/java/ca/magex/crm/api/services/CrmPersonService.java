@@ -9,7 +9,6 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
-import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
@@ -21,10 +20,7 @@ import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
-import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
-import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
-import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.MessageTypeIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -32,7 +28,7 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 public interface CrmPersonService {
 	
 	default PersonDetails prototypePerson(OrganizationIdentifier organizationId, String displayName, PersonName legalName, MailingAddress address, Communication communication, List<BusinessRoleIdentifier> businessRoleIds) {
-		return new PersonDetails(null, organizationId, Status.PENDING, displayName, legalName, address, communication, businessRoleIds);
+		return new PersonDetails(null, organizationId, Status.PENDING, displayName, legalName, address, communication, businessRoleIds, null);
 	};
 
 	default PersonDetails createPerson(PersonDetails prototype) {

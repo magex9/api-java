@@ -5,7 +5,7 @@ info:
 security:
   - bearerAuth: []
 servers:
-  - url: http://${serverAddress}:${serverPort}${contextPath}
+  - url: ${server}
     description: Local development (uses test data)
 paths:
   /authenticate:

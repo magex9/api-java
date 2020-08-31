@@ -17,7 +17,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventNotifier;
 import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
@@ -96,8 +96,8 @@ public class MongoTestConfig {
 	}
 	
 	@Bean
-	public CrmUpdateNotifier notifier() {
-		return new CrmUpdateNotifier();
+	public CrmEventNotifier notifier() {
+		return new CrmEventNotifier();
 	}
 	
 	@Bean

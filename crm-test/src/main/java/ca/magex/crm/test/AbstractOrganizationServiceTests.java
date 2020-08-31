@@ -534,7 +534,7 @@ public abstract class AbstractOrganizationServiceTests {
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
 		List<Message> messages = CrmOrganizationService.validateOrganizationDetails(
 				crm(), 
-				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)));
+				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT), null));
 		assertEquals(1, messages.size());
 		CrmAsserts.assertMessage(messages.get(0), new OrganizationIdentifier("org"), "/options/message-types/ERROR", "status", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 	}

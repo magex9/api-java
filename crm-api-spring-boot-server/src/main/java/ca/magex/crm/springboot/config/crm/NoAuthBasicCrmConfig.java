@@ -20,7 +20,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
+import ca.magex.crm.api.observer.basic.BasicEventObserver;
 import ca.magex.crm.api.policies.basic.BasicPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
@@ -60,8 +60,8 @@ public class NoAuthBasicCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public BasicUpdateObserver observer() {
-		return new BasicUpdateObserver();
+	public BasicEventObserver observer() {
+		return new BasicEventObserver();
 	}
 
 	@Bean

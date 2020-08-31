@@ -60,7 +60,7 @@ public class CrmPersonServiceCachingDelegateTests {
 	public void testCacheNewPerson() {
 		final AtomicInteger personIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
-			return new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5));
+			return new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5), null);
 		}).given(delegate).createPerson(Mockito.any(OrganizationIdentifier.class), Mockito.any(String.class), Mockito.any(PersonName.class), Mockito.any(MailingAddress.class), Mockito.any(Communication.class), Mockito.anyList());
 		PersonDetails personDetails = personService.createPerson(new OrganizationIdentifier("ABC"), CrmAsserts.PERSON_DISPLAY_NAME, CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
 		BDDMockito.verify(delegate, Mockito.times(1)).createPerson(Mockito.any(), Mockito.any(String.class), Mockito.any(PersonName.class), Mockito.any(MailingAddress.class), Mockito.any(Communication.class), Mockito.anyList());
@@ -79,9 +79,9 @@ public class CrmPersonServiceCachingDelegateTests {
 		final AtomicInteger personIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
 			PersonDetails arg = invocation.getArgument(0);
-			return new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), arg.getOrganizationId(), arg.getStatus(), arg.getDisplayName(), arg.getLegalName(), arg.getAddress(), arg.getCommunication(), arg.getBusinessRoleIds());
+			return new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), arg.getOrganizationId(), arg.getStatus(), arg.getDisplayName(), arg.getLegalName(), arg.getAddress(), arg.getCommunication(), arg.getBusinessRoleIds(), null);
 		}).given(delegate).createPerson(Mockito.any(PersonDetails.class));
-		PersonDetails personDetails = personService.createPerson(new PersonDetails(null, new OrganizationIdentifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))));
+		PersonDetails personDetails = personService.createPerson(new PersonDetails(null, new OrganizationIdentifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null));
 		BDDMockito.verify(delegate, Mockito.times(1)).createPerson(Mockito.any(PersonDetails.class));
 		
 		/* should have added the details to the cache */
@@ -96,7 +96,7 @@ public class CrmPersonServiceCachingDelegateTests {
 	@Test
 	public void testCacheExistingPerson() {
 		BDDMockito.willAnswer((invocation) -> {
-			return new PersonDetails(invocation.getArgument(0), new OrganizationIdentifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
+			return new PersonDetails(invocation.getArgument(0), new OrganizationIdentifier("ABC"), Status.ACTIVE, "display", CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
 		}).given(delegate).findPersonDetails(Mockito.any(PersonIdentifier.class));
 		
 		/* this should also cache the result, so the second find doesn't hit the delegate */
@@ -136,7 +136,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		final AtomicInteger personIndex = new AtomicInteger();
 		final AtomicReference<PersonDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5)));
+			reference.set(new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5), null));
 			return reference.get();
 		}).given(delegate).createPerson(Mockito.any(OrganizationIdentifier.class), Mockito.any(String.class), Mockito.any(PersonName.class), Mockito.any(MailingAddress.class), Mockito.any(Communication.class), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
@@ -181,7 +181,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		final AtomicInteger personIndex = new AtomicInteger();
 		final AtomicReference<PersonDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.INACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5)));
+			reference.set(new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.INACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5), null));
 			return reference.get();
 		}).given(delegate).createPerson(Mockito.any(OrganizationIdentifier.class), Mockito.any(String.class), Mockito.any(PersonName.class), Mockito.any(MailingAddress.class), Mockito.any(Communication.class), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
@@ -226,7 +226,7 @@ public class CrmPersonServiceCachingDelegateTests {
 		final AtomicInteger personIndex = new AtomicInteger();
 		final AtomicReference<PersonDetails> reference = new AtomicReference<PersonDetails>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5)));
+			reference.set(new PersonDetails(new PersonIdentifier(Integer.toString(personIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3), invocation.getArgument(4), invocation.getArgument(5), null));
 			return reference.get();
 		}).given(delegate).createPerson(Mockito.any(OrganizationIdentifier.class), Mockito.any(String.class), Mockito.any(PersonName.class), Mockito.any(MailingAddress.class), Mockito.any(Communication.class), Mockito.anyList());
 		BDDMockito.willAnswer((invocation) -> {
@@ -352,9 +352,9 @@ public class CrmPersonServiceCachingDelegateTests {
 	
 	@Test
 	public void testCachingFindDetailsResults() {
-		PersonDetails details1 = new PersonDetails(new PersonIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.CA_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
-		PersonDetails details2 = new PersonDetails(new PersonIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
-		PersonDetails details3 = new PersonDetails(new PersonIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.DE_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
+		PersonDetails details1 = new PersonDetails(new PersonIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.CA_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
+		PersonDetails details2 = new PersonDetails(new PersonIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
+		PersonDetails details3 = new PersonDetails(new PersonIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.DE_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);
@@ -405,9 +405,9 @@ public class CrmPersonServiceCachingDelegateTests {
 	
 	@Test
 	public void testCachingFindSummariesResults() {
-		PersonDetails details1 = new PersonDetails(new PersonIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.CA_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
-		PersonDetails details2 = new PersonDetails(new PersonIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
-		PersonDetails details3 = new PersonDetails(new PersonIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.DE_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")));
+		PersonDetails details1 = new PersonDetails(new PersonIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.CA_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
+		PersonDetails details2 = new PersonDetails(new PersonIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.FR_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
+		PersonDetails details3 = new PersonDetails(new PersonIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "display", CrmAsserts.ADAM, CrmAsserts.DE_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER")), null);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);

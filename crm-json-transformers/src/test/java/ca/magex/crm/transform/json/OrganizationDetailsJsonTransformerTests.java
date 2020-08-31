@@ -58,7 +58,7 @@ public class OrganizationDetailsJsonTransformerTests {
 			mainLocationId, mainContactId, List.of(
 			crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "CRM").getOptionId(),
 			crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "ORG").getOptionId()
-		), List.of(crm.findOptionByCode(Type.BUSINESS_GROUP,  "EXECS").getOptionId()));
+		), List.of(crm.findOptionByCode(Type.BUSINESS_GROUP,  "EXECS").getOptionId()), 100L);
 	}
 	
 	@Test
@@ -78,7 +78,7 @@ public class OrganizationDetailsJsonTransformerTests {
 	public void testLinkedJson() throws Exception {
 		JsonObject linked = (JsonObject)transformer.format(organization, null);
 		//JsonAsserts.print(linked, "linked");
-		assertEquals(List.of("@context", "organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds"), linked.keys());
+		assertEquals(List.of("@context", "organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/OrganizationDetails", linked.getString("@context"));
 		assertEquals("http://api.magex.ca/crm/rest/organizations/" + organizationId.getCode(), linked.getString("organizationId"));
 		assertEquals(List.of("@context", "@id", "@value", "@en", "@fr"), linked.getObject("status").keys());
@@ -110,6 +110,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("EXECS", linked.getArray("businessGroupIds").getObject(0).getString("@value"));
 		assertEquals("Executives", linked.getArray("businessGroupIds").getObject(0).getString("@en"));
 		assertEquals("Cadres", linked.getArray("businessGroupIds").getObject(0).getString("@fr"));		
+		assertEquals(100L, linked.getNumber("lastModified"));
 		assertEquals(organization, transformer.parse(linked, null));
 	}
 	
@@ -117,7 +118,7 @@ public class OrganizationDetailsJsonTransformerTests {
 	public void testRootJson() throws Exception {
 		JsonObject root = (JsonObject)transformer.format(organization, Lang.ROOT);
 		//JsonAsserts.print(root, "root");
-		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds"), root.keys());
+		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified"), root.keys());
 		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Org Name", root.getString("displayName"));
@@ -128,6 +129,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("ORG", root.getArray("authenticationGroupIds").getString(1));
 		assertEquals(1, root.getArray("businessGroupIds").size());
 		assertEquals("EXECS", root.getArray("businessGroupIds").getString(0));
+		assertEquals(100L, root.getNumber("lastModified"));
 		assertEquals(organization, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -135,7 +137,7 @@ public class OrganizationDetailsJsonTransformerTests {
 	public void testEnglishJson() throws Exception {
 		JsonObject english = (JsonObject)transformer.format(organization, Lang.ENGLISH);
 		//JsonAsserts.print(english, "english");
-		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds"), english.keys());
+		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified"), english.keys());
 		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Org Name", english.getString("displayName"));
@@ -146,6 +148,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("Organization", english.getArray("authenticationGroupIds").getString(1));
 		assertEquals(1, english.getArray("businessGroupIds").size());
 		assertEquals("Executives", english.getArray("businessGroupIds").getString(0));
+		assertEquals(100L, english.getNumber("lastModified"));
 		assertEquals(organization, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -153,7 +156,7 @@ public class OrganizationDetailsJsonTransformerTests {
 	public void testFrenchJson() throws Exception {
 		JsonObject french = (JsonObject)transformer.format(organization, Lang.FRENCH);
 		//JsonAsserts.print(french, "french");
-		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds"), french.keys());
+		assertEquals(List.of("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified"), french.keys());
 		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Org Name", french.getString("displayName"));
@@ -164,6 +167,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("Organisation", french.getArray("authenticationGroupIds").getString(1));
 		assertEquals(1, french.getArray("businessGroupIds").size());
 		assertEquals("Cadres", french.getArray("businessGroupIds").getString(0));
+		assertEquals(100L, french.getNumber("lastModified"));
 		assertEquals(organization, transformer.parse(french, Lang.FRENCH));
 	}
 	

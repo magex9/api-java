@@ -166,7 +166,7 @@ public class LocationsFilterTests {
 
 	@Test
 	public void testApplyFilter() {
-		LocationSummary location = new LocationSummary(new LocationIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "RT", "Road and Track");
+		LocationSummary location = new LocationSummary(new LocationIdentifier("ABC"), new OrganizationIdentifier("G1"), Status.ACTIVE, "RT", "Road and Track", null);
 		/* default filter should match */
 		Assert.assertTrue(new LocationsFilter().apply(location));
 

@@ -10,9 +10,9 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.authentication.CrmPasswordDetails;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.store.CrmPasswordStore;
 import ca.magex.crm.mongodb.util.BsonUtils;
@@ -31,11 +31,11 @@ public class MongoPasswordRepository extends AbstractMongoRepository implements 
 	/**
 	 * Creates our new MongoDB Backed Organization Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoPasswordRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoPasswordRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
