@@ -269,13 +269,4 @@ public abstract class AbstractRestfulController {
 		return paging;
 	}
 	
-	public JsonObject action(String name, String title, String method, String href) {
-		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("name", name));
-		pairs.add(new JsonPair("title", title));
-		pairs.add(new JsonPair("method", method));
-		pairs.add(new JsonPair("href", href));
-		return new JsonObject(pairs);
-	}
-	
 }

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
@@ -28,9 +30,11 @@ import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
+@CrossOrigin
 public class RestfulOrganizationController extends AbstractRestfulController {
 	
 	@GetMapping("/rest/organizations")
@@ -74,7 +78,7 @@ public class RestfulOrganizationController extends AbstractRestfulController {
 		validate(messages);
 		return new OrganizationsFilter(displayName, status, authenticationGroupId, businessGroupId);
 	}
-
+	
 	@PostMapping("/rest/organizations")
 	public void createOrganization(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
@@ -100,6 +104,23 @@ public class RestfulOrganizationController extends AbstractRestfulController {
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			return transformer.format(crm.findOrganizationDetails(organizationId), locale);
+		});
+	}
+
+	@GetMapping("/rest/organizations/{organizationId}/actions")
+	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res,
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
+			List<RestfulAction> actions = new ArrayList<>();
+			if (crm.canCreateLocationForOrganization(organizationId))
+				actions.add(new RestfulAction("createLocation", new Localized("CREATE_LOCATION", "Create Location", "Location cree"), "post", "/rest/locations/prototype"));
+			if (crm.canCreatePersonForOrganization(organizationId))
+				actions.add(new RestfulAction("createPerson", new Localized("CREATE_PERSON", "Create Person", "Person cree"), "post", "/rest/locations/prototype"));
+			if (crm.canDisableOrganization(organizationId))
+				actions.add(new RestfulAction("disableOrganization", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", organizationId + "/disable"));
+			if (crm.canEnableOrganization(organizationId))
+				actions.add(new RestfulAction("enableOrganization", new Localized("ACTIVATE", "Activate", "Activate"), "put", organizationId + "/enable"));
+			return createList(actions, transformer, locale);
 		});
 	}
 
