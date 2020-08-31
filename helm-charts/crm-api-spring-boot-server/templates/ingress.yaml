@@ -27,10 +27,9 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host }}
+    - host: {{ include "crm-auth-spring-boot-server.ingress.host" . }}
       http:
-      {{- range .paths }}
+      {{- range .Values.ingress.host.paths }}
         paths:
           - path: {{ .path }}
             backend:

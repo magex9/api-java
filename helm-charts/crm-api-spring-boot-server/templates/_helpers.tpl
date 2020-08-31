@@ -58,12 +58,8 @@ ex: the value .Values.ingress.hosts.host becomes only . in this loop
 in order to get the root scope , we need to preprend variable with a $ , like $.Release.Name . the .Release.Name variable is from the root scope and not the current scope
 */}}
 
-{{- define "crm-api-spring-boot-server.ingress.host" -}}
-  {{- if .name }}
-    {{ .name }}
-  {{- else }}
-    {{ $.Release.Name }}-{{ $.Release.Namespace }}-{{ .domain }}
-  {{- end }}
+{{- define "crm-auth-spring-boot-server.ingress.host" -}}
+	{{ .Release.Name }}-{{ .Release.Namespace }}.{{ .Values.ingress.host.domain }}
 {{- end}}
 
 

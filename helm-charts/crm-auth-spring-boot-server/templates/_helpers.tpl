@@ -59,15 +59,7 @@ in order to get the root scope , we need to preprend variable with a $ , like $.
 */}}
 
 {{- define "crm-auth-spring-boot-server.ingress.host" -}}
-{{/*
-  {{- if .name }}
-    {{ .name }}
-  {{- else }}
-    {{ $.Release.Name }}-{{ $.Release.Namespace }}-{{ .domain }}
-  {{- end }}
-*/}}
-appdev
-
+	{{ .Release.Name }}-{{ .Release.Namespace }}.{{ .Values.ingress.host.domain }}
 {{- end}}
 
 
