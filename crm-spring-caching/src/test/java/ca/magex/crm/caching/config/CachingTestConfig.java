@@ -42,15 +42,6 @@ public class CachingTestConfig {
 				.expireAfterWrite(5, TimeUnit.MINUTES)
 				.expireAfterAccess(10, TimeUnit.MINUTES)
 				.maximumSize(1000L));
-
 		return new TransactionAwareCacheManagerProxy(caffeineCacheManager);
-
-		//						// TOOD switch to Caffeine Cache Manager
-		//						new ConcurrentMapCacheManager(
-		//								Caches.Organizations, 
-		//								Caches.Locations,
-		//								Caches.Persons,
-		//								Caches.Users,
-		//								Caches.Options));
 	}
 }
