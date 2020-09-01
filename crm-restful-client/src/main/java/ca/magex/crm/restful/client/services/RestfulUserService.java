@@ -35,13 +35,13 @@ public class RestfulUserService implements CrmUserService {
 
 	@Override
 	public UserSummary enableUser(UserIdentifier userId) {
-		JsonObject json = client.put(userId + "/enable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(userId + "/actions/enable", new JsonObject().with("confirm", true));
 		return client.parse(json, UserSummary.class);	
 	}
 
 	@Override
 	public UserSummary disableUser(UserIdentifier userId) {
-		JsonObject json = client.put(userId + "/disable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(userId + "/actions/disable", new JsonObject().with("confirm", true));
 		return client.parse(json, UserSummary.class);	
 	}
 
@@ -63,7 +63,7 @@ public class RestfulUserService implements CrmUserService {
 	@Override
 	public UserDetails updateUserAuthenticationRoles(UserIdentifier userId,
 			List<AuthenticationRoleIdentifier> authenticationRoleIds) {
-		JsonObject json = client.patch(userId, new JsonObject()
+		JsonObject json = client.patch(userId + "/details", new JsonObject()
 			.with("authenticationRoleIds", client.formatOptions(authenticationRoleIds)));
 		return client.parse(json, UserDetails.class);
 	}

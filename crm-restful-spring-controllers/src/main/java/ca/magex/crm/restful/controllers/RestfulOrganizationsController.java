@@ -22,7 +22,6 @@ import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
@@ -30,33 +29,34 @@ import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
-import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
 @CrossOrigin
 public class RestfulOrganizationsController extends AbstractRestfulController {
-	
+		
 	@GetMapping("/rest/organizations")
 	public void findOrganizationSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> { 
+		RestfulOrganizationsActionHandler<OrganizationSummary> actionHandler = new RestfulOrganizationsActionHandler<>();
+		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
 			return createPage(
 				crm.findOrganizationSummaries(
 					extractOrganizationFilter(req, locale), 
 					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
-				), transformer, locale
+				), actionHandler, transformer, locale
 			);
 		});
 	}
 	
 	@GetMapping("/rest/organizations/details")
 	public void findOrganizationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> { 
+		RestfulOrganizationsActionHandler<OrganizationDetails> actionHandler = new RestfulOrganizationsActionHandler<>();
+		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			return createPage(
 				crm.findOrganizationDetails(
 					extractOrganizationFilter(req, locale), 
 					extractPaging(OrganizationsFilter.getDefaultPaging(), req)
-				), transformer, locale
+				), actionHandler, transformer, locale
 			);
 		});
 	}
@@ -107,24 +107,7 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}/actions")
-	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res,
-			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
-		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
-			List<RestfulAction> actions = new ArrayList<>();
-			if (crm.canCreateLocationForOrganization(organizationId))
-				actions.add(new RestfulAction("createLocation", new Localized("CREATE_LOCATION", "Create Location", "Location cree"), "post", "/rest/locations/prototype"));
-			if (crm.canCreatePersonForOrganization(organizationId))
-				actions.add(new RestfulAction("createPerson", new Localized("CREATE_PERSON", "Create Person", "Person cree"), "post", "/rest/locations/prototype"));
-			if (crm.canDisableOrganization(organizationId))
-				actions.add(new RestfulAction("disableOrganization", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", organizationId + "/disable"));
-			if (crm.canEnableOrganization(organizationId))
-				actions.add(new RestfulAction("enableOrganization", new Localized("ACTIVATE", "Activate", "Activate"), "put", organizationId + "/enable"));
-			return createList(actions, transformer, locale);
-		});
-	}
-
-	@PatchMapping("/rest/organizations/{organizationId}")
+	@PatchMapping("/rest/organizations/{organizationId}/details")
 	public void updateOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
@@ -149,7 +132,7 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}/mainLocation")
+	@GetMapping("/rest/organizations/{organizationId}/details/mainLocation")
 	public void findOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -157,16 +140,17 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/organizations/{organizationId}/mainLocation")
+	@PutMapping("/rest/organizations/{organizationId}/details/mainLocation")
 	public void updateOrganizationMainLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			LocationIdentifier mainLocationId = getIdentifier(extractBody(req), "mainLocationId", true, null, organizationId, messages);
+			validate(messages);
 			return transformer.format(crm.updateOrganizationMainLocation(organizationId, mainLocationId), locale);
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}/mainContact")
+	@GetMapping("/rest/organizations/{organizationId}/details/mainContact")
 	public void findOrganizationMainContact(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, PersonDetails.class, (messages, transformer, locale) -> {
@@ -174,16 +158,17 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/organizations/{organizationId}/mainContact")
+	@PutMapping("/rest/organizations/{organizationId}/details/mainContact")
 	public void updateOrganizationMainContact(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			PersonIdentifier mainContactId = getIdentifier(extractBody(req), "mainContactId", true, null, organizationId, messages);
+			validate(messages);
 			return transformer.format(crm.updateOrganizationMainContact(organizationId, mainContactId), locale);
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}/authenticationGroups")
+	@GetMapping("/rest/organizations/{organizationId}/details/authenticationGroups")
 	public void findOrganizationAuthenticationGroups(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, AuthenticationGroupIdentifier.class, (messages, transformer, locale) -> {
@@ -191,16 +176,17 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/organizations/{organizationId}/authenticationGroups")
+	@PutMapping("/rest/organizations/{organizationId}/details/authenticationGroups")
 	public void updateOrganizationAuthenticationGroups(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			List<AuthenticationGroupIdentifier> authenticationGroupIds = getOptionIdentifiers(extractBody(req), "authenticationGroupIds", true, List.of(), organizationId, messages, AuthenticationGroupIdentifier.class, locale);
+			validate(messages);
 			return transformer.format(crm.updateOrganizationAuthenticationGroups(organizationId, authenticationGroupIds), locale);
 		});
 	}
 
-	@GetMapping("/rest/organizations/{organizationId}/businessGroups")
+	@GetMapping("/rest/organizations/{organizationId}/details/businessGroups")
 	public void findOrganizationBusinessGroups(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, BusinessGroupIdentifier.class, (messages, transformer, locale) -> {
@@ -208,16 +194,25 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/organizations/{organizationId}/businessGroups")
+	@PutMapping("/rest/organizations/{organizationId}/details/businessGroups")
 	public void updateOrganizationBusinessGroups(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationDetails.class, (messages, transformer, locale) -> {
 			List<BusinessGroupIdentifier> businessGroupIds = getOptionIdentifiers(extractBody(req), "businessGroupIds", true, List.of(), organizationId, messages, BusinessGroupIdentifier.class, locale);
+			validate(messages);
 			return transformer.format(crm.updateOrganizationBusinessGroups(organizationId, businessGroupIds), locale);
 		});
 	}
+	
+	@GetMapping("/rest/organizations/{organizationId}/actions")
+	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res,
+			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
+		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("actions", new RestfulOrganizationsActionHandler<>().buildActions(crm.findOrganizationSummary(organizationId), crm, locale));
+		});
+	}
 
-	@PutMapping("/rest/organizations/{organizationId}/enable")
+	@PutMapping("/rest/organizations/{organizationId}/actions/enable")
 	public void enableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {
@@ -226,7 +221,7 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/organizations/{organizationId}/disable")
+	@PutMapping("/rest/organizations/{organizationId}/actions/disable")
 	public void disableOrganization(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, OrganizationSummary.class, (messages, transformer, locale) -> {

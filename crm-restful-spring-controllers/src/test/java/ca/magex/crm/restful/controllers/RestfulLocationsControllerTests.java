@@ -20,6 +20,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.transform.json.MailingAddressJsonTransformer;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonObject;
 
 public class RestfulLocationsControllerTests extends AbstractControllerTests {
@@ -44,7 +45,7 @@ public class RestfulLocationsControllerTests extends AbstractControllerTests {
 		assertEquals(false, orig.getBoolean("hasNext"));
 		assertEquals(false, orig.getBoolean("hasPrevious"));
 		assertEquals(1, orig.getArray("content").size());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), orig.getArray("content").getObject(0).keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified", "actions"), orig.getArray("content").getObject(0).keys());
 		assertEquals(getSystemLocationIdentifier().getCode(), orig.getArray("content").getObject(0).getString("locationId"));
 		assertEquals(getSystemOrganizationIdentifier().getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", orig.getArray("content").getObject(0).getString("status"));
@@ -147,8 +148,8 @@ public class RestfulLocationsControllerTests extends AbstractControllerTests {
 		assertEquals("Canada", jsonld.getObject("address").getObject("country").getString("@fr"));
 		assertEquals("K1K1K1", jsonld.getObject("address").getString("postalCode"));
 		
-		JsonObject paging = get("/locations" + "/details", Lang.ENGLISH, HttpStatus.OK);
-		//JsonAsserts.print(paging, "paging");
+		JsonObject paging = get("/locations", Lang.ENGLISH, HttpStatus.OK);
+		JsonAsserts.print(paging, "paging");
 		assertEquals(List.of("page", "limit", "total", "hasNext", "hasPrevious", "content"), paging.keys());
 		assertEquals(1, paging.getNumber("page"));
 		assertEquals(10, paging.getNumber("limit"));
@@ -156,13 +157,13 @@ public class RestfulLocationsControllerTests extends AbstractControllerTests {
 		assertEquals(false, paging.getBoolean("hasNext"));
 		assertEquals(false, paging.getBoolean("hasPrevious"));
 		assertEquals(2, paging.getArray("content").size());
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), paging.getArray("content").getObject(0).keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified", "actions"), paging.getArray("content").getObject(0).keys());
 		assertEquals(locationId.getCode(), paging.getArray("content").getObject(0).getString("locationId"));
 		assertEquals(organizationId.getCode(), paging.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals("Active", paging.getArray("content").getObject(0).getString("status"));
 		assertEquals("LOC", paging.getArray("content").getObject(0).getString("reference"));
 		assertEquals("Organization", paging.getArray("content").getObject(0).getString("displayName"));
-		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified"), paging.getArray("content").getObject(1).keys());
+		assertEquals(List.of("locationId", "organizationId", "status", "reference", "displayName", "lastModified", "actions"), paging.getArray("content").getObject(1).keys());
 		assertEquals(getSystemLocationIdentifier().getCode(), paging.getArray("content").getObject(1).getString("locationId"));
 		assertEquals(getSystemOrganizationIdentifier().getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals("Active", paging.getArray("content").getObject(1).getString("status"));

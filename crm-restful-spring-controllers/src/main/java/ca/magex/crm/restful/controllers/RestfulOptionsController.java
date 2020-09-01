@@ -40,12 +40,13 @@ public class RestfulOptionsController extends AbstractRestfulController {
 
 	@GetMapping("/rest/options")
 	public void findOptions(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		RestfulOptionsActionHandler<Option> actionHandler = new RestfulOptionsActionHandler<>();
 		handle(req, res, Option.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findOptions(
 					extractOptionsFilter(locale, req), 
 					extractPaging(OptionsFilter.getDefaultPaging(), req)
-				), transformer, locale);
+				), actionHandler, transformer, locale);
 		});
 	}
 	

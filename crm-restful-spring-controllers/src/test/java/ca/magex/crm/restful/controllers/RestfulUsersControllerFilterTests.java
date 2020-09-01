@@ -98,7 +98,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
 		assertEquals("ORG/ADMIN", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
 		assertEquals("CRM/ADMIN", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(1).keys());
 		assertEquals(systemUserId.getCode(), json.getArray("content").getObject(1).getString("userId"));
 		assertEquals(crm.findUserDetails(systemUserId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(crm.findUserDetails(systemUserId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
@@ -109,7 +109,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("SYS/ACTUATOR", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
 		assertEquals("SYS/ACCESS", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(2));
 		assertEquals("CRM/ADMIN", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(3));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(2).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(2).keys());
 		assertEquals(bobId.getCode(), json.getArray("content").getObject(2).getString("userId"));
 		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
 		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
@@ -117,7 +117,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("INACTIVE", json.getArray("content").getObject(2).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
 		assertEquals("ORG/USER", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(3).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(3).keys());
 		assertEquals(chloeId.getCode(), json.getArray("content").getObject(3).getString("userId"));
 		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(3).getString("organizationId"));
 		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(3).getString("personId"));
@@ -125,7 +125,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("ACTIVE", json.getArray("content").getObject(3).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(3).getArray("authenticationRoleIds").size());
 		assertEquals("CRM/USER", json.getArray("content").getObject(3).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(4).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(4).keys());
 		assertEquals(danId.getCode(), json.getArray("content").getObject(4).getString("userId"));
 		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(4).getString("organizationId"));
 		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(4).getString("personId"));
@@ -133,7 +133,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("ACTIVE", json.getArray("content").getObject(4).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(4).getArray("authenticationRoleIds").size());
 		assertEquals("CRM/USER", json.getArray("content").getObject(4).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(5).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(5).keys());
 		assertEquals(elaineId.getCode(), json.getArray("content").getObject(5).getString("userId"));
 		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(5).getString("organizationId"));
 		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(5).getString("personId"));
@@ -141,7 +141,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("ACTIVE", json.getArray("content").getObject(5).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(5).getArray("authenticationRoleIds").size());
 		assertEquals("SYS/ADMIN", json.getArray("content").getObject(5).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(6).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(6).keys());
 		assertEquals(francoisId.getCode(), json.getArray("content").getObject(6).getString("userId"));
 		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(6).getString("organizationId"));
 		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(6).getString("personId"));
@@ -172,7 +172,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
 		assertEquals("Organization Admin", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
 		assertEquals("CRM Admin", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(1).keys());
 		assertEquals(systemUserId.getCode(), json.getArray("content").getObject(1).getString("userId"));
 		assertEquals(crm.findUserDetails(systemUserId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(crm.findUserDetails(systemUserId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
@@ -183,7 +183,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("System Actuator", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
 		assertEquals("System Access", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(2));
 		assertEquals("CRM Admin", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(3));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(2).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(2).keys());
 		assertEquals(bobId.getCode(), json.getArray("content").getObject(2).getString("userId"));
 		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
 		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
@@ -191,7 +191,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Inactive", json.getArray("content").getObject(2).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
 		assertEquals("Organization Viewer", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(3).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(3).keys());
 		assertEquals(chloeId.getCode(), json.getArray("content").getObject(3).getString("userId"));
 		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(3).getString("organizationId"));
 		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(3).getString("personId"));
@@ -199,7 +199,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(3).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(3).getArray("authenticationRoleIds").size());
 		assertEquals("CRM Viewer", json.getArray("content").getObject(3).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(4).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(4).keys());
 		assertEquals(danId.getCode(), json.getArray("content").getObject(4).getString("userId"));
 		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(4).getString("organizationId"));
 		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(4).getString("personId"));
@@ -207,7 +207,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(4).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(4).getArray("authenticationRoleIds").size());
 		assertEquals("CRM Viewer", json.getArray("content").getObject(4).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(5).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(5).keys());
 		assertEquals(elaineId.getCode(), json.getArray("content").getObject(5).getString("userId"));
 		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(5).getString("organizationId"));
 		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(5).getString("personId"));
@@ -215,7 +215,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(5).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(5).getArray("authenticationRoleIds").size());
 		assertEquals("System Administrator", json.getArray("content").getObject(5).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(6).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(6).keys());
 		assertEquals(francoisId.getCode(), json.getArray("content").getObject(6).getString("userId"));
 		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(6).getString("organizationId"));
 		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(6).getString("personId"));
@@ -246,7 +246,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(2, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
 		assertEquals("Administrateur de l'organisation", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
 		assertEquals("Administrateur GRC", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(1).keys());
 		assertEquals(systemUserId.getCode(), json.getArray("content").getObject(1).getString("userId"));
 		assertEquals(crm.findUserDetails(systemUserId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(crm.findUserDetails(systemUserId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
@@ -257,7 +257,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Actuator du système", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(1));
 		assertEquals("Access du système", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(2));
 		assertEquals("Administrateur GRC", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(3));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(2).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(2).keys());
 		assertEquals(bobId.getCode(), json.getArray("content").getObject(2).getString("userId"));
 		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
 		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
@@ -265,7 +265,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Inactif", json.getArray("content").getObject(2).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(2).getArray("authenticationRoleIds").size());
 		assertEquals("Visionneuse d'organisation", json.getArray("content").getObject(2).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(3).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(3).keys());
 		assertEquals(chloeId.getCode(), json.getArray("content").getObject(3).getString("userId"));
 		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(3).getString("organizationId"));
 		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(3).getString("personId"));
@@ -273,7 +273,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Actif", json.getArray("content").getObject(3).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(3).getArray("authenticationRoleIds").size());
 		assertEquals("Visionneuse GRC", json.getArray("content").getObject(3).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(4).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(4).keys());
 		assertEquals(danId.getCode(), json.getArray("content").getObject(4).getString("userId"));
 		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(4).getString("organizationId"));
 		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(4).getString("personId"));
@@ -281,7 +281,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Actif", json.getArray("content").getObject(4).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(4).getArray("authenticationRoleIds").size());
 		assertEquals("Visionneuse GRC", json.getArray("content").getObject(4).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(5).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(5).keys());
 		assertEquals(elaineId.getCode(), json.getArray("content").getObject(5).getString("userId"));
 		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(5).getString("organizationId"));
 		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(5).getString("personId"));
@@ -289,7 +289,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Actif", json.getArray("content").getObject(5).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(5).getArray("authenticationRoleIds").size());
 		assertEquals("Adminstrator du système", json.getArray("content").getObject(5).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(6).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(6).keys());
 		assertEquals(francoisId.getCode(), json.getArray("content").getObject(6).getString("userId"));
 		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(6).getString("organizationId"));
 		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(6).getString("personId"));
@@ -312,7 +312,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(2, json.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(0).keys());
 		assertEquals(chloeId.getCode(), json.getArray("content").getObject(0).getString("userId"));
 		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
@@ -320,7 +320,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
 		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(1).keys());
 		assertEquals(elaineId.getCode(), json.getArray("content").getObject(1).getString("userId"));
 		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
@@ -342,7 +342,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(3, json.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(0).keys());
 		assertEquals(chloeId.getCode(), json.getArray("content").getObject(0).getString("userId"));
 		assertEquals(crm.findUserDetails(chloeId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(crm.findUserDetails(chloeId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
@@ -350,7 +350,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
 		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(1).keys());
 		assertEquals(danId.getCode(), json.getArray("content").getObject(1).getString("userId"));
 		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
@@ -358,7 +358,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
 		assertEquals("CRM Viewer", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(2).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(2).keys());
 		assertEquals(francoisId.getCode(), json.getArray("content").getObject(2).getString("userId"));
 		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
 		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
@@ -382,7 +382,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(1, json.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(0).keys());
 		assertEquals(user.getUserId().getCode(), json.getArray("content").getObject(0).getString("userId"));
 		assertEquals(user.getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(user.getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
@@ -405,7 +405,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(3, json.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(0).keys());
 		assertEquals(danId.getCode(), json.getArray("content").getObject(0).getString("userId"));
 		assertEquals(crm.findUserDetails(danId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(crm.findUserDetails(danId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));
@@ -413,7 +413,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(0).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(0).getArray("authenticationRoleIds").size());
 		assertEquals("CRM Viewer", json.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(1).keys());
 		assertEquals(elaineId.getCode(), json.getArray("content").getObject(1).getString("userId"));
 		assertEquals(crm.findUserDetails(elaineId).getOrganizationId().getCode(), json.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(crm.findUserDetails(elaineId).getPersonId().getCode(), json.getArray("content").getObject(1).getString("personId"));
@@ -421,7 +421,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals("Active", json.getArray("content").getObject(1).getString("status"));
 		assertEquals(1, json.getArray("content").getObject(1).getArray("authenticationRoleIds").size());
 		assertEquals("System Administrator", json.getArray("content").getObject(1).getArray("authenticationRoleIds").getString(0));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(2).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(2).keys());
 		assertEquals(francoisId.getCode(), json.getArray("content").getObject(2).getString("userId"));
 		assertEquals(crm.findUserDetails(francoisId).getOrganizationId().getCode(), json.getArray("content").getObject(2).getString("organizationId"));
 		assertEquals(crm.findUserDetails(francoisId).getPersonId().getCode(), json.getArray("content").getObject(2).getString("personId"));
@@ -447,7 +447,7 @@ public class RestfulUsersControllerFilterTests extends AbstractControllerTests {
 		assertEquals(false, json.getBoolean("hasNext"));
 		assertEquals(false, json.getBoolean("hasPrevious"));
 		assertEquals(1, json.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), json.getArray("content").getObject(0).keys());
 		assertEquals(bobId.getCode(), json.getArray("content").getObject(0).getString("userId"));
 		assertEquals(crm.findUserDetails(bobId).getOrganizationId().getCode(), json.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(crm.findUserDetails(bobId).getPersonId().getCode(), json.getArray("content").getObject(0).getString("personId"));

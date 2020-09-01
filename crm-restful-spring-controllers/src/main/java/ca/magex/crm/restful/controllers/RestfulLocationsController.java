@@ -33,24 +33,26 @@ public class RestfulLocationsController extends AbstractRestfulController {
 
 	@GetMapping("/rest/locations")
 	public void findLocationSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		RestfulLocationsActionHandler<LocationSummary> actionHandler = new RestfulLocationsActionHandler<>();
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findLocationSummaries(
 					extractLocationFilter(req, locale), 
 					extractPaging(LocationsFilter.getDefaultPaging(), req)
-				), transformer, locale
+				), actionHandler, transformer, locale
 			);
 		});
 	}
 
 	@GetMapping("/rest/locations/details")
 	public void findLocationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
+		RestfulLocationsActionHandler<LocationDetails> actionHandler = new RestfulLocationsActionHandler<>();
+		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> { 
 			return createPage(
-				crm.findLocationSummaries(
+				crm.findLocationDetails(
 					extractLocationFilter(req, locale), 
 					extractPaging(LocationsFilter.getDefaultPaging(), req)
-				), transformer, locale
+				), actionHandler, transformer, locale
 			);
 		});
 	}
@@ -72,30 +74,6 @@ public class RestfulLocationsController extends AbstractRestfulController {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 	
-//	private JsonArray formatLocationsActions(Identifier organizationId) {
-//		List<JsonElement> actions = new ArrayList<JsonElement>();
-//		if (crm.canCreateLocationForOrganization(organizationId)) {
-//			actions.add(action("create", "Create Location", "post", "/rest/locations"));
-//		}
-//		return new JsonArray(actions);
-//	}
-//	
-//	private JsonArray formatLocationActions(Identifier locationId) {
-//		List<JsonElement> actions = new ArrayList<JsonElement>();
-//		if (crm.canUpdateLocation(locationId)) {
-//			actions.add(action("edit", "Edit", "get", "/rest/locations/" + locationId + "/edit"));
-//		} else if (crm.canViewLocation(locationId)) {
-//			actions.add(action("view", "View", "get", "/rest/locations/" + locationId));
-//		}
-//		if (crm.canDisableLocation(locationId)) {
-//			actions.add(action("disable", "Inactivate", "put", "/rest/locations/" + locationId + "/disable"));
-//		}
-//		if (crm.canEnableLocation(locationId)) {
-//			actions.add(action("enable", "Activate", "put", "/rest/locations/" + locationId + "/enable"));
-//		}
-//		return new JsonArray(actions);
-//	}
-
 	@PostMapping("/rest/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> { 
@@ -153,8 +131,7 @@ public class RestfulLocationsController extends AbstractRestfulController {
 	public void updateLocationAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
-			JsonObject body = extractBody(req);
-			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", true, null, locationId, messages, locale));
+			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, extractBody(req), "address", true, null, locationId, messages, locale));
 			validate(messages);
 			return transformer.format(crm.findLocationDetails(locationId), locale);
 		});
