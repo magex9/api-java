@@ -41,6 +41,11 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 		info(() -> "Found configuration document for env: " + getEnv());
 		boolean isInitialized = doc.containsKey("initialized") && doc.getLong("initialized") > 0L;
 		info(() -> "doc.containsKey(\"initialized\")" + (doc.containsKey("initialized")));
+		
+		for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+			info(() -> ste.toString());
+		}
+				
 		return isInitialized;
 	}
 
