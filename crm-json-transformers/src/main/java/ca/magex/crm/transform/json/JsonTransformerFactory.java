@@ -13,11 +13,13 @@ import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonElement;
 
 public class JsonTransformerFactory {
+	
+	public static final String BASE_TRANSFORMER_PACKAGE = "ca.magex.crm.transform.json";
 
 	private Map<Class<?>, Transformer<?, JsonElement>> transformers;
 	
 	public JsonTransformerFactory(CrmOptionService options) {
-		this(options, List.of("ca.magex.crm.transform.json"));
+		this(options, List.of(BASE_TRANSFORMER_PACKAGE));
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

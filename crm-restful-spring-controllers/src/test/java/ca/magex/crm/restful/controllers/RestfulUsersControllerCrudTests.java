@@ -25,7 +25,7 @@ import ca.magex.crm.transform.json.IdentifierJsonTransformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 
-public class UsersControllerTests extends AbstractControllerTests {
+public class RestfulUsersControllerCrudTests extends AbstractControllerTests {
 
 	private OrganizationIdentifier systemOrgId;
 	
@@ -58,7 +58,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(false, orig.getBoolean("hasNext"));
 		assertEquals(false, orig.getBoolean("hasPrevious"));
 		assertEquals(1, orig.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), orig.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), orig.getArray("content").getObject(0).keys());
 		assertEquals(systemUserId.getCode(), orig.getArray("content").getObject(0).getString("userId"));
 		assertEquals(systemOrgId.getCode(), orig.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(systemPersonId.getCode(), orig.getArray("content").getObject(0).getString("personId"));
@@ -161,7 +161,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(false, paging.getBoolean("hasNext"));
 		assertEquals(false, paging.getBoolean("hasPrevious"));
 		assertEquals(2, paging.getArray("content").size());
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), paging.getArray("content").getObject(0).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), paging.getArray("content").getObject(0).keys());
 		assertEquals(systemUserId.getCode(), paging.getArray("content").getObject(0).getString("userId"));
 		assertEquals(systemOrgId.getCode(), paging.getArray("content").getObject(0).getString("organizationId"));
 		assertEquals(systemPersonId.getCode(), paging.getArray("content").getObject(0).getString("personId"));
@@ -172,7 +172,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("System Actuator", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(1));
 		assertEquals("System Access", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(2));
 		assertEquals("CRM Admin", paging.getArray("content").getObject(0).getArray("authenticationRoleIds").getString(3));
-		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), paging.getArray("content").getObject(1).keys());
+		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified", "actions"), paging.getArray("content").getObject(1).keys());
 		assertEquals(userId.getCode(), paging.getArray("content").getObject(1).getString("userId"));
 		assertEquals(testOrgId.getCode(), paging.getArray("content").getObject(1).getString("organizationId"));
 		assertEquals(testPersonId.getCode(), paging.getArray("content").getObject(1).getString("personId"));
@@ -264,7 +264,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 	public void testGetUserPerson() throws Exception {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject root = get(userId + "/person", Lang.ROOT, HttpStatus.OK);
+		JsonObject root = get(userId + "/details/person", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds", "lastModified"), root.keys());
 		assertEquals(testPersonId.getCode(), root.getString("personId"));
@@ -291,9 +291,9 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(1, root.getArray("businessRoleIds").size());
 		assertEquals("EXTERNAL/OWNER", root.getArray("businessRoleIds").getString(0));
 		
-		assertEquals(root, get("/user/chloe/person", Lang.ROOT, HttpStatus.OK));
+		assertEquals(root, get("/user/chloe/details/person", Lang.ROOT, HttpStatus.OK));
 		
-		JsonObject english = get(userId + "/person", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject english = get(userId + "/details/person", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds", "lastModified"), english.keys());
 		assertEquals(testPersonId.getCode(), english.getString("personId"));
@@ -320,9 +320,9 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(1, english.getArray("businessRoleIds").size());
 		assertEquals("Owner", english.getArray("businessRoleIds").getString(0));
 		
-		assertEquals(english, get("/user/chloe/person", Lang.ENGLISH, HttpStatus.OK));
+		assertEquals(english, get("/user/chloe/details/person", Lang.ENGLISH, HttpStatus.OK));
 		
-		JsonObject french = get(userId + "/person", Lang.FRENCH, HttpStatus.OK);
+		JsonObject french = get(userId + "/details/person", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds", "lastModified"), french.keys());
 		assertEquals(testPersonId.getCode(), french.getString("personId"));
@@ -349,9 +349,9 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals(1, french.getArray("businessRoleIds").size());
 		assertEquals("Propriétaire", french.getArray("businessRoleIds").getString(0));
 		
-		assertEquals(french, get("/user/chloe/person", Lang.FRENCH, HttpStatus.OK));
+		assertEquals(french, get("/user/chloe/details/person", Lang.FRENCH, HttpStatus.OK));
 		
-		JsonObject linked = get(userId + "/person", null, HttpStatus.OK);
+		JsonObject linked = get(userId + "/details/person", null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("@context", "personId", "organizationId", "status", "displayName", "legalName", "address", "communication", "businessRoleIds", "lastModified"), linked.keys());
 		assertEquals("http://api.magex.ca/crm/rest/schema/organization/PersonDetails", linked.getString("@context"));
@@ -408,14 +408,14 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("Owner", linked.getArray("businessRoleIds").getObject(0).getString("@en"));
 		assertEquals("Propriétaire", linked.getArray("businessRoleIds").getObject(0).getString("@fr"));
 		
-		assertEquals(linked, get("/user/chloe/person", null, HttpStatus.OK));
+		assertEquals(linked, get("/user/chloe/details/person", null, HttpStatus.OK));
 	}
 	
 	@Test
 	public void testUpdatingUsernameNotChanged() throws Exception {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject json = patch(userId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("username", "updated"));
+		JsonObject json = patch(userId + "/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("username", "updated"));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.keys());
 		assertEquals(userId.getCode(), json.getString("userId"));
@@ -432,7 +432,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 	public void testUpdatingRoles() throws Exception {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject json = patch(userId, Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationRoleIds", List.of("Organization Viewer", "System Administrator")));
+		JsonObject json = patch(userId + "/details", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("authenticationRoleIds", List.of("Organization Viewer", "System Administrator")));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.keys());
 		assertEquals(userId.getCode(), json.getString("userId"));
@@ -449,7 +449,7 @@ public class UsersControllerTests extends AbstractControllerTests {
 	public void testUpdatingRolesByUsername() throws Exception {
 		Identifier userId = crm.createUser(testPersonId, "chloe", List.of(AuthenticationRoleIdentifier.CRM_USER)).getUserId();
 		
-		JsonObject json = patch("/user/chloe", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("authenticationRoleIds", List.of("Visionneuse GRC")));
+		JsonObject json = patch("/user/chloe/details", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("authenticationRoleIds", List.of("Visionneuse GRC")));
 		//JsonAsserts.print(json, "json");
 		assertEquals(List.of("userId", "organizationId", "personId", "username", "status", "authenticationRoleIds", "lastModified"), json.keys());
 		assertEquals(userId.getCode(), json.getString("userId"));
@@ -466,41 +466,41 @@ public class UsersControllerTests extends AbstractControllerTests {
 		Identifier userId = crm.createUser(testPersonId, "chloe", 
 				List.of(AuthenticationRoleIdentifier.ORG_ADMIN, AuthenticationRoleIdentifier.CRM_ADMIN)).getUserId();
 		
-		JsonObject root = get(userId + "/authenticationRoleIds", Lang.ROOT, HttpStatus.OK);
+		JsonObject root = get(userId + "/details/authenticationRoleIds", Lang.ROOT, HttpStatus.OK);
 		//JsonAsserts.print(root, "root");
 		assertEquals(List.of("total", "content"), root.keys());
 		assertEquals(2, root.getNumber("total"));
 		assertEquals(2, root.getArray("content").size());
 		assertEquals("ORG/ADMIN", root.getArray("content").getString(0));
 		assertEquals("CRM/ADMIN", root.getArray("content").getString(1));
-		assertEquals(root, get("/user/chloe/authenticationRoleIds", Lang.ROOT, HttpStatus.OK));
+		assertEquals(root, get("/user/chloe/details/authenticationRoleIds", Lang.ROOT, HttpStatus.OK));
 				
-		JsonObject english = get(userId + "/authenticationRoleIds", Lang.ENGLISH, HttpStatus.OK);
+		JsonObject english = get(userId + "/details/authenticationRoleIds", Lang.ENGLISH, HttpStatus.OK);
 		//JsonAsserts.print(english, "english");
 		assertEquals(List.of("total", "content"), english.keys());
 		assertEquals(2, english.getNumber("total"));
 		assertEquals(2, english.getArray("content").size());
 		assertEquals("Organization Admin", english.getArray("content").getString(0));
 		assertEquals("CRM Admin", english.getArray("content").getString(1));
-		assertEquals(english, get("/user/chloe/authenticationRoleIds", Lang.ENGLISH, HttpStatus.OK));
+		assertEquals(english, get("/user/chloe/details/authenticationRoleIds", Lang.ENGLISH, HttpStatus.OK));
 				
-		JsonObject french = get(userId + "/authenticationRoleIds", Lang.FRENCH, HttpStatus.OK);
+		JsonObject french = get(userId + "/details/authenticationRoleIds", Lang.FRENCH, HttpStatus.OK);
 		//JsonAsserts.print(french, "french");
 		assertEquals(List.of("total", "content"), french.keys());
 		assertEquals(2, french.getNumber("total"));
 		assertEquals(2, french.getArray("content").size());
 		assertEquals("Administrateur de l'organisation", french.getArray("content").getString(0));
 		assertEquals("Administrateur GRC", french.getArray("content").getString(1));
-		assertEquals(french, get("/user/chloe/authenticationRoleIds", Lang.FRENCH, HttpStatus.OK));
+		assertEquals(french, get("/user/chloe/details/authenticationRoleIds", Lang.FRENCH, HttpStatus.OK));
 				
-		JsonObject linked = get(userId + "/authenticationRoleIds", null, HttpStatus.OK);
+		JsonObject linked = get(userId + "/details/authenticationRoleIds", null, HttpStatus.OK);
 		//JsonAsserts.print(linked, "linked");
 		assertEquals(List.of("total", "content"), linked.keys());
 		assertEquals(2, linked.getNumber("total"));
 		assertEquals(2, linked.getArray("content").size());
 		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/org/admin", linked.getArray("content").getString(0));
 		assertEquals("http://api.magex.ca/crm/rest/options/authentication-roles/crm/admin", linked.getArray("content").getString(1));
-		assertEquals(linked, get("/user/chloe/authenticationRoleIds", null, HttpStatus.OK));
+		assertEquals(linked, get("/user/chloe/details/authenticationRoleIds", null, HttpStatus.OK));
 	}
 
 	@Test
@@ -509,28 +509,28 @@ public class UsersControllerTests extends AbstractControllerTests {
 
 		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonArray error1 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error1 = put(userId + "/actions/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(userId.toString(), error1.getObject(0).getString("identifier"));
 		assertEquals("Error", error1.getObject(0).getString("type"));
 		assertEquals("confirm", error1.getObject(0).getString("path"));
 		assertEquals("Field is required", error1.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonArray error2 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error2 = put(userId + "/actions/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(userId.toString(), error2.getObject(0).getString("identifier"));
 		assertEquals("Error", error2.getObject(0).getString("type"));
 		assertEquals("confirm", error2.getObject(0).getString("path"));
 		assertEquals("Field is required", error2.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonArray error3 = put(userId + "/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error3 = put(userId + "/actions/disable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(userId.toString(), error3.getObject(0).getString("identifier"));
 		assertEquals("Error", error3.getObject(0).getString("type"));
 		assertEquals("confirm", error3.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error3.getObject(0).getString("reason"));
 		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 
-		JsonObject disable = put(userId + "/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		JsonObject disable = put(userId + "/actions/disable", Lang.ENGLISH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(disable, "disable");
 		assertEquals(List.of("userId", "organizationId", "username", "status", "lastModified"), disable.keys());
 		assertEquals(userId.getCode(), disable.getString("userId"));
@@ -538,28 +538,28 @@ public class UsersControllerTests extends AbstractControllerTests {
 		assertEquals("chloe", disable.getString("username"));
 		assertEquals("Inactive", disable.getString("status"));
 		
-		JsonArray error4 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
+		JsonArray error4 = put(userId + "/actions/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, null);
 		assertEquals(userId.toString(), error4.getObject(0).getString("identifier"));
 		assertEquals("Error", error4.getObject(0).getString("type"));
 		assertEquals("confirm", error4.getObject(0).getString("path"));
 		assertEquals("Field is required", error4.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 		
-		JsonArray error5 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
+		JsonArray error5 = put(userId + "/actions/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", false));
 		assertEquals(userId.toString(), error5.getObject(0).getString("identifier"));
 		assertEquals("Error", error5.getObject(0).getString("type"));
 		assertEquals("confirm", error5.getObject(0).getString("path"));
 		assertEquals("Field is required", error5.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 		
-		JsonArray error6 = put(userId + "/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
+		JsonArray error6 = put(userId + "/actions/enable", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject().with("confirm", "Test"));
 		assertEquals(userId.toString(), error6.getObject(0).getString("identifier"));
 		assertEquals("Error", error6.getObject(0).getString("type"));
 		assertEquals("confirm", error6.getObject(0).getString("path"));
 		assertEquals("Format is invalid", error6.getObject(0).getString("reason"));
 		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 	
-		JsonObject enable = put(userId + "/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		JsonObject enable = put(userId + "/actions/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		//JsonAsserts.print(enable, "enable");
 		assertEquals(List.of("userId", "organizationId", "username", "status", "lastModified"), disable.keys());
 		assertEquals(userId.getCode(), enable.getString("userId"));
@@ -569,10 +569,10 @@ public class UsersControllerTests extends AbstractControllerTests {
 		
 		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 		
-		put("/user/chloe/disable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		put("/user/chloe/actions/disable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		assertEquals(Status.INACTIVE, crm.findUserDetails(userId).getStatus());
 
-		put("/user/chloe/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
+		put("/user/chloe/actions/enable", Lang.FRENCH, HttpStatus.OK, new JsonObject().with("confirm", true));
 		assertEquals(Status.ACTIVE, crm.findUserDetails(userId).getStatus());
 	}
 	

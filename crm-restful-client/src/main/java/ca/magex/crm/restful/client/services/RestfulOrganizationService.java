@@ -36,47 +36,47 @@ public class RestfulOrganizationService implements CrmOrganizationService {
 
 	@Override
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
-		JsonObject json = client.put(organizationId + "/enable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(organizationId + "/actions/enable", new JsonObject().with("confirm", true));
 		return client.parse(json, OrganizationSummary.class);	
 	}
 
 	@Override
 	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
-		JsonObject json = client.put(organizationId + "/disable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(organizationId + "/actions/disable", new JsonObject().with("confirm", true));
 		return client.parse(json, OrganizationSummary.class);	
 	}
 	
 	@Override
 	public OrganizationDetails updateOrganizationDisplayName(OrganizationIdentifier organizationId, String name) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("displayName", name));
+		JsonObject json = client.patch(organizationId + "/details", new JsonObject().with("displayName", name));
 		return client.parse(json, OrganizationDetails.class);
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainLocation(OrganizationIdentifier organizationId,
 			LocationIdentifier locationId) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("mainLocationId", client.formatIdentifier(locationId)));
+		JsonObject json = client.patch(organizationId + "/details", new JsonObject().with("mainLocationId", client.formatIdentifier(locationId)));
 		return client.parse(json, OrganizationDetails.class);
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationMainContact(OrganizationIdentifier organizationId,
 			PersonIdentifier personId) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("mainContactId", client.formatIdentifier(personId)));
+		JsonObject json = client.patch(organizationId + "/details", new JsonObject().with("mainContactId", client.formatIdentifier(personId)));
 		return client.parse(json, OrganizationDetails.class);
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationAuthenticationGroups(OrganizationIdentifier organizationId,
 			List<AuthenticationGroupIdentifier> authenticationGroupIds) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("authenticationGroupIds", client.formatOptions(authenticationGroupIds)));
+		JsonObject json = client.patch(organizationId + "/details", new JsonObject().with("authenticationGroupIds", client.formatOptions(authenticationGroupIds)));
 		return client.parse(json, OrganizationDetails.class);
 	}
 
 	@Override
 	public OrganizationDetails updateOrganizationBusinessGroups(OrganizationIdentifier organizationId,
 			List<BusinessGroupIdentifier> businessGroupIdentifier) {
-		JsonObject json = client.patch(organizationId, new JsonObject().with("businessGroupIds", client.formatOptions(businessGroupIdentifier)));
+		JsonObject json = client.patch(organizationId + "/details", new JsonObject().with("businessGroupIds", client.formatOptions(businessGroupIdentifier)));
 		return client.parse(json, OrganizationDetails.class);
 	}
 

@@ -25,32 +25,35 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonObject;
 
 @Controller
 @CrossOrigin
-public class RestfulLocationController extends AbstractRestfulController {
+public class RestfulLocationsController extends AbstractRestfulController {
 
 	@GetMapping("/rest/locations")
 	public void findLocationSummaries(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		RestfulLocationsActionHandler<LocationSummary> actionHandler = new RestfulLocationsActionHandler<>();
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findLocationSummaries(
 					extractLocationFilter(req, locale), 
 					extractPaging(LocationsFilter.getDefaultPaging(), req)
-				), transformer, locale
+				), actionHandler, transformer, locale
 			);
 		});
 	}
 
 	@GetMapping("/rest/locations/details")
 	public void findLocationDetails(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> { 
+		RestfulLocationsActionHandler<LocationDetails> actionHandler = new RestfulLocationsActionHandler<>();
+		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> { 
 			return createPage(
-				crm.findLocationSummaries(
+				crm.findLocationDetails(
 					extractLocationFilter(req, locale), 
 					extractPaging(LocationsFilter.getDefaultPaging(), req)
-				), transformer, locale
+				), actionHandler, transformer, locale
 			);
 		});
 	}
@@ -72,30 +75,6 @@ public class RestfulLocationController extends AbstractRestfulController {
 		return new LocationsFilter(organizationId, displayName, reference, status);
 	}
 	
-//	private JsonArray formatLocationsActions(Identifier organizationId) {
-//		List<JsonElement> actions = new ArrayList<JsonElement>();
-//		if (crm.canCreateLocationForOrganization(organizationId)) {
-//			actions.add(action("create", "Create Location", "post", "/rest/locations"));
-//		}
-//		return new JsonArray(actions);
-//	}
-//	
-//	private JsonArray formatLocationActions(Identifier locationId) {
-//		List<JsonElement> actions = new ArrayList<JsonElement>();
-//		if (crm.canUpdateLocation(locationId)) {
-//			actions.add(action("edit", "Edit", "get", "/rest/locations/" + locationId + "/edit"));
-//		} else if (crm.canViewLocation(locationId)) {
-//			actions.add(action("view", "View", "get", "/rest/locations/" + locationId));
-//		}
-//		if (crm.canDisableLocation(locationId)) {
-//			actions.add(action("disable", "Inactivate", "put", "/rest/locations/" + locationId + "/disable"));
-//		}
-//		if (crm.canEnableLocation(locationId)) {
-//			actions.add(action("enable", "Activate", "put", "/rest/locations/" + locationId + "/enable"));
-//		}
-//		return new JsonArray(actions);
-//	}
-
 	@PostMapping("/rest/locations")
 	public void createLocation(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> { 
@@ -125,7 +104,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@PatchMapping("/rest/locations/{locationId}")
+	@PatchMapping("/rest/locations/{locationId}/details")
 	public void updateLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
@@ -141,7 +120,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@GetMapping("/rest/locations/{locationId}/address")
+	@GetMapping("/rest/locations/{locationId}/details/address")
 	public void findLocationAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, MailingAddress.class, (messages, transformer, locale) -> {
@@ -149,18 +128,25 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/locations/{locationId}/address")
+	@PutMapping("/rest/locations/{locationId}/details/address")
 	public void updateLocationAddress(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationDetails.class, (messages, transformer, locale) -> {
-			JsonObject body = extractBody(req);
-			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, body, "address", true, null, locationId, messages, locale));
+			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, extractBody(req), "address", true, null, locationId, messages, locale));
 			validate(messages);
 			return transformer.format(crm.findLocationDetails(locationId), locale);
 		});
 	}
 	
-	@PutMapping("/rest/locations/{locationId}/enable")
+	@GetMapping("/rest/locations/{locationId}/actions")
+	public void listLocationActions(HttpServletRequest req, HttpServletResponse res,
+			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
+		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("actions", new RestfulLocationsActionHandler<>().buildActions(crm.findLocationSummary(locationId), crm));
+		});
+	}
+	
+	@PutMapping("/rest/locations/{locationId}/actions/enable")
 	public void enableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
@@ -169,7 +155,7 @@ public class RestfulLocationController extends AbstractRestfulController {
 		});
 	}
 
-	@PutMapping("/rest/locations/{locationId}/disable")
+	@PutMapping("/rest/locations/{locationId}/actions/disable")
 	public void disableLocation(HttpServletRequest req, HttpServletResponse res, 
 			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
 		handle(req, res, LocationSummary.class, (messages, transformer, locale) -> {
