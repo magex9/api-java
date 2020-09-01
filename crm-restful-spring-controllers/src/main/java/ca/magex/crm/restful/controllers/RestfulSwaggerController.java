@@ -42,16 +42,18 @@ import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
 @Controller
-public class RestfulSwaggerController {
+public class RestfulSwaggerController extends AbstractRestfulController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RestfulSwaggerController.class);
 
@@ -89,6 +91,15 @@ public class RestfulSwaggerController {
 			String htmlContents = StreamUtils.copyToString(html, Charset.forName("UTF-8"));
 			return htmlContents.replace("${contextPath}", contextPath);
 		}
+	}
+	
+	@GetMapping("/rest/actions")
+	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
+			List<RestfulAction> actions = new ArrayList<>();
+			actions.add(new RestfulAction("organizations", new Localized("ORGANIZATIONS", "Organizations", "Organizations"), "get", "/rest/organizations"));
+			return new JsonObject().with("actions", actions);
+		});
 	}
 	
 	public JsonObject buildApiConfig() throws Exception {

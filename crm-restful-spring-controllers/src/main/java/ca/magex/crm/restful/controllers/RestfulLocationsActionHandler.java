@@ -2,29 +2,27 @@ package ca.magex.crm.restful.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.id.LocationIdentifier;
-import ca.magex.json.model.JsonArray;
-import ca.magex.json.model.JsonElement;
+import ca.magex.crm.restful.models.RestfulAction;
 
 public class RestfulLocationsActionHandler<T extends LocationSummary> implements RestfulActionHandler<T> {
 	
-	public JsonArray buildActions(LocationSummary location, Crm crm, Locale locale) {
+	public List<RestfulAction> buildActions(LocationSummary location, Crm crm) {
 		LocationIdentifier locationId = location.getLocationId();
-		List<JsonElement> elements = new ArrayList<>();
+		List<RestfulAction> actions = new ArrayList<>();
 		if (crm.canViewLocation(locationId))
-			elements.add(buildAction(crm, locale, "view", new Localized("VIEW", "View", "Vue"), "get", locationId));
+			actions.add(buildAction("view", new Localized("VIEW", "View", "Vue"), "get", locationId));
 		if (crm.canUpdateLocation(locationId))
-			elements.add(buildAction(crm, locale, "edit", new Localized("EDIT", "Edit", "Éditer"), "patch", locationId));
+			actions.add(buildAction("edit", new Localized("EDIT", "Edit", "Éditer"), "patch", locationId));
 		if (crm.canDisableLocation(locationId))
-			elements.add(buildAction(crm, locale, "disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", locationId + "/disable"));
+			actions.add(buildAction("disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", locationId + "/disable"));
 		if (crm.canEnableLocation(locationId))
-			elements.add(buildAction(crm, locale, "enable", new Localized("ACTIVATE", "Activate", "Activate"), "put", locationId + "/enable"));
-		return new JsonArray(elements);
+			actions.add(buildAction("enable", new Localized("ACTIVATE", "Activate", "Activate"), "put", locationId + "/enable"));
+		return actions;
 	}
 	
 }

@@ -25,6 +25,7 @@ import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonObject;
 
 @Controller
@@ -134,6 +135,14 @@ public class RestfulLocationsController extends AbstractRestfulController {
 			crm.updateLocationAddress(locationId, getObject(MailingAddress.class, extractBody(req), "address", true, null, locationId, messages, locale));
 			validate(messages);
 			return transformer.format(crm.findLocationDetails(locationId), locale);
+		});
+	}
+	
+	@GetMapping("/rest/locations/{locationId}/actions")
+	public void listLocationActions(HttpServletRequest req, HttpServletResponse res,
+			@PathVariable("locationId") LocationIdentifier locationId) throws IOException {
+		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
+			return new JsonObject().with("actions", new RestfulLocationsActionHandler<>().buildActions(crm.findLocationSummary(locationId), crm));
 		});
 	}
 	

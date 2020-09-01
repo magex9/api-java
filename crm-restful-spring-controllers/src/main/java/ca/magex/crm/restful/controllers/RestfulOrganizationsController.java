@@ -29,6 +29,7 @@ import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonObject;
 
 @Controller
@@ -208,7 +209,7 @@ public class RestfulOrganizationsController extends AbstractRestfulController {
 	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res,
 			@PathVariable("organizationId") OrganizationIdentifier organizationId) throws IOException {
 		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
-			return new JsonObject().with("actions", new RestfulOrganizationsActionHandler<>().buildActions(crm.findOrganizationSummary(organizationId), crm, locale));
+			return new JsonObject().with("actions", new RestfulOrganizationsActionHandler<>().buildActions(crm.findOrganizationSummary(organizationId), crm));
 		});
 	}
 

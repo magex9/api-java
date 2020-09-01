@@ -27,6 +27,7 @@ import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonObject;
 
 @Controller
@@ -205,7 +206,7 @@ public class RestfulUsersController extends AbstractRestfulController {
 	public void listUserActions(HttpServletRequest req, HttpServletResponse res,
 			@PathVariable("userId") UserIdentifier userId) throws IOException {
 		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
-			return new JsonObject().with("actions", new RestfulUsersActionHandler<>().buildActions(crm.findUserDetails(userId), crm, locale));
+			return new JsonObject().with("actions", new RestfulUsersActionHandler<>().buildActions(crm.findUserDetails(userId), crm));
 		});
 	}
 

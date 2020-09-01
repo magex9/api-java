@@ -28,6 +28,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonObject;
 
 @Controller
@@ -226,7 +227,7 @@ public class RestfulPersonsController extends AbstractRestfulController {
 	public void listPersonActions(HttpServletRequest req, HttpServletResponse res,
 			@PathVariable("personId") PersonIdentifier personId) throws IOException {
 		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
-			return new JsonObject().with("actions", new RestfulPersonsActionHandler<>().buildActions(crm.findPersonSummary(personId), crm, locale));
+			return new JsonObject().with("actions", new RestfulPersonsActionHandler<>().buildActions(crm.findPersonSummary(personId), crm));
 		});
 	}
 

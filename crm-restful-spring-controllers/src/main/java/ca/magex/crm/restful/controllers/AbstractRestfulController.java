@@ -187,7 +187,7 @@ public abstract class AbstractRestfulController {
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.hasPrevious())
 			.with("content", new JsonArray(page.getContent().stream()
-				.map(i -> ((JsonObject)transfomer.format(i, locale)).with("actions", actionHandler.buildActions(i, crm, locale)))
+				.map(i -> ((JsonObject)transfomer.format(i, locale)).with("actions", actionHandler.transformAction(i, crm, locale)))
 				.collect(Collectors.toList())));
 	}
 	

@@ -2,29 +2,27 @@ package ca.magex.crm.restful.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.id.PersonIdentifier;
-import ca.magex.json.model.JsonArray;
-import ca.magex.json.model.JsonElement;
+import ca.magex.crm.restful.models.RestfulAction;
 
 public class RestfulPersonsActionHandler<T extends PersonSummary> implements RestfulActionHandler<T> {
 	
-	public JsonArray buildActions(PersonSummary person, Crm crm, Locale locale) {
+	public List<RestfulAction> buildActions(PersonSummary person, Crm crm) {
 		PersonIdentifier personId = person.getPersonId();
-		List<JsonElement> elements = new ArrayList<>();
+		List<RestfulAction> actions = new ArrayList<>();
 		if (crm.canViewPerson(personId))
-			elements.add(buildAction(crm, locale, "view", new Localized("VIEW", "View", "Vue"), "get", personId));
+			actions.add(buildAction("view", new Localized("VIEW", "View", "Vue"), "get", personId));
 		if (crm.canUpdatePerson(personId))
-			elements.add(buildAction(crm, locale, "edit", new Localized("EDIT", "Edit", "Éditer"), "patch", personId));
+			actions.add(buildAction("edit", new Localized("EDIT", "Edit", "Éditer"), "patch", personId));
 		if (crm.canDisablePerson(personId))
-			elements.add(buildAction(crm, locale, "disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", personId + "/disable"));
+			actions.add(buildAction("disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", personId + "/disable"));
 		if (crm.canEnablePerson(personId))
-			elements.add(buildAction(crm, locale, "enable", new Localized("ACTIVATE", "Activate", "Activate"), "put", personId + "/enable"));
-		return new JsonArray(elements);
+			actions.add(buildAction("enable", new Localized("ACTIVATE", "Activate", "Activate"), "put", personId + "/enable"));
+		return actions;
 	}
 	
 }

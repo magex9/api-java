@@ -94,8 +94,8 @@ public class RestfulSwaggerControllerTest extends AbstractControllerTests {
 		map.put("/rest/locations/{locationId}/details", List.of("get", "patch"));
 		map.put("/rest/locations/{locationId}/details/address", List.of("get", "patch"));
 		map.put("/rest/locations/{locationId}/actions", List.of("get"));
-		map.put("/rest/locations/{locationId}/actions/enable", List.of("get", "put"));
-		map.put("/rest/locations/{locationId}/actions/disable", List.of("get", "put"));
+		map.put("/rest/locations/{locationId}/actions/enable", List.of("put"));
+		map.put("/rest/locations/{locationId}/actions/disable", List.of("put"));
 
 		map.put("/rest/persons", List.of("get", "post"));
 		map.put("/rest/persons/prototype", List.of("get"));
@@ -107,8 +107,8 @@ public class RestfulSwaggerControllerTest extends AbstractControllerTests {
 		map.put("/rest/persons/{personId}/details/communication", List.of("get", "patch"));
 		map.put("/rest/persons/{personId}/details/businessRoles", List.of("get", "patch"));
 		map.put("/rest/persons/{personId}/actions", List.of("get"));
-		map.put("/rest/persons/{personId}/actions/enable", List.of("get", "put"));
-		map.put("/rest/persons/{personId}/actions/disable", List.of("get", "put"));
+		map.put("/rest/persons/{personId}/actions/enable", List.of("put"));
+		map.put("/rest/persons/{personId}/actions/disable", List.of("put"));
 
 		map.put("/rest/users", List.of("get", "post"));
 		map.put("/rest/users/details", List.of("get"));
@@ -119,18 +119,18 @@ public class RestfulSwaggerControllerTest extends AbstractControllerTests {
 		map.put("/rest/users/{userId}/details/person", List.of("get", "patch"));
 		map.put("/rest/users/{userId}/details/authenticationRoles", List.of("get", "patch"));
 		map.put("/rest/users/{userId}/actions", List.of("get"));
-		map.put("/rest/users/{userId}/actions/changePassword", List.of("get", "put"));
-		map.put("/rest/users/{userId}/actions/resetPassword", List.of("get", "put"));
-		map.put("/rest/users/{userId}/actions/enable", List.of("get", "put"));
-		map.put("/rest/users/{userId}/actions/disable", List.of("get", "put"));
+		map.put("/rest/users/{userId}/actions/changePassword", List.of("put"));
+		map.put("/rest/users/{userId}/actions/resetPassword", List.of("put"));
+		map.put("/rest/users/{userId}/actions/enable", List.of("put"));
+		map.put("/rest/users/{userId}/actions/disable", List.of("put"));
 		
 		map.put("/rest/user/{username}", List.of("get"));
 		map.put("/rest/user/{username}/details", List.of("get"));
 		map.put("/rest/user/{username}/actions", List.of("get"));
-		map.put("/rest/user/{username}/actions/changePassword", List.of("get", "put"));
-		map.put("/rest/user/{username}/actions/resetPassword", List.of("get", "put"));
-		map.put("/rest/user/{username}/actions/enable", List.of("get", "put"));
-		map.put("/rest/user/{username}/actions/disable", List.of("get", "put"));
+		map.put("/rest/user/{username}/actions/changePassword", List.of("put"));
+		map.put("/rest/user/{username}/actions/resetPassword", List.of("put"));
+		map.put("/rest/user/{username}/actions/enable", List.of("put"));
+		map.put("/rest/user/{username}/actions/disable", List.of("put"));
 
 		map.put("/rest/types", List.of("get"));
 		map.put("/rest/types/{typeId}", List.of("get"));
@@ -140,8 +140,8 @@ public class RestfulSwaggerControllerTest extends AbstractControllerTests {
 		map.put("/rest/options/count", List.of("get"));
 		map.put("/rest/options/{optionId}", List.of("get", "patch"));
 		map.put("/rest/options/{optionId}/actions", List.of("get"));
-		map.put("/rest/options/{optionId}/enable", List.of("get", "put"));
-		map.put("/rest/options/{optionId}/disable", List.of("get", "put"));
+		map.put("/rest/options/{optionId}/enable", List.of("put"));
+		map.put("/rest/options/{optionId}/disable", List.of("put"));
 		
 		JsonObject paths = getJsonConfig().getObject("paths");
 		Map<String, List<String>> actual = new HashMap<>();
