@@ -39,7 +39,10 @@ import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
+import ca.magex.crm.caching.CrmConfigurationServiceCachingDelegate;
+import ca.magex.crm.caching.config.CachingConfig;
 import ca.magex.crm.caching.event.CrmCacheUpdateObserver;
+import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.mongodb.event.MongoOptionsDocumentChangeListener;
 import ca.magex.crm.mongodb.event.MongoOrganizationsDocumentChangeListener;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
@@ -165,9 +168,15 @@ public class MongoCrmConfig implements CrmConfigurer {
 		return new SpringSecurityAuthenticationService(services());
 	}
 
-	@Bean
+	@Bean 
 	public CrmConfigurationService config() {
-		return new BasicConfigurationService(repos(), passwords());
+		CrmConfigurationService config = new BasicConfigurationService(repos(), passwords());
+		if (enableCachedServices) {
+			return new CrmConfigurationServiceCachingDelegate(config, new CacheTemplate(cacheManager(), CachingConfig.Caches.init));
+		}
+		else {
+			return config;
+		}
 	}
 
 	@Bean

@@ -36,7 +36,7 @@ public class CrmConfigurationServiceCachingDelegate implements CrmConfigurationS
 	 * @return
 	 */
 	private List<Pair<String, Object>> initializedCacheSupplier(Boolean response, String key) {
-		return List.of(Pair.of(key, response));
+		return List.of(Pair.of(CrmCacheKeyGenerator.getInstance().generateInitKey(key), response));
 	}
 	
 	@Override
