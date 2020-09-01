@@ -35,9 +35,13 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 		MongoCollection<Document> configurations = getConfigurations();
 		Document doc = configurations.find(Filters.eq("env", getEnv())).first();
 		if (doc == null) {
+			info(() -> "No configuration document found for env: " + getEnv());
 			return false;
 		}
-		return doc.containsKey("initialized") && doc.getLong("initialized") > 0L;
+		info(() -> "Found configuration document for env: " + getEnv());
+		boolean isInitialized = doc.containsKey("initialized") && doc.getLong("initialized") > 0L;
+		info(() -> "doc.containsKey(\"initialized\")" + (doc.containsKey("initialized")));
+		return isInitialized;
 	}
 
 	@Override
@@ -48,7 +52,7 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 			final InsertOneResult result = configurations.insertOne(new Document()
 					.append("env", getEnv())
 					.append("initialized", 0L));
-			debug(() -> "prepareInitiailze() inserted new document with result: " + result);
+			info(() -> "prepareInitiailze() inserted new document with result: " + result);
 			return true;
 		}
 		return false;
@@ -67,6 +71,7 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 				new BasicDBObject()
 						.append("$set", new BasicDBObject()
 								.append("initialized", System.currentTimeMillis())));
+		info(() -> "setResult() -> " + setResult.toString());
 		if (setResult.getMatchedCount() != 1) {
 			throw new ApiException("Unable to set initialized: " + setResult);
 		}
