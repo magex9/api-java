@@ -27,10 +27,6 @@ variables:
   value: 'fintraccanafe'
 - name:  artifacts_sshKeySecureFile
   value: 'azure-git.key'
-- name: is_azure_branch
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/azure')]
-- name: is_dev_branch
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
 
 
 resources:
@@ -86,7 +82,9 @@ stages:
 
 - stage: Continuous_Deployment
   displayName: Continuous Deployment to UT
-  condition: succeeded()
+  #deploy only if branch is beta,azure or dev ... 
+  #TODO: we need to find a convention for branch names and just apply a generic filter like feature-* , release-* , etc...
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'],'beta','azure','dev'))
   jobs:
 
     - deployment: Deploy
