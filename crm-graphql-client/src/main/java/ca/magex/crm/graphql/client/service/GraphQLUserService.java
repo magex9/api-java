@@ -57,8 +57,8 @@ public class GraphQLUserService implements CrmUserService {
 	public UserSummary enableUser(UserIdentifier userId) {
 		return ModelBinder.toUserSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateUserStatus",
-						"updateUser",
+						"enableUser",
+						"enableUser",
 						new MapBuilder()
 								.withEntry("userId", userId.toString())
 								.withEntry("status", Status.ACTIVE)
@@ -69,8 +69,8 @@ public class GraphQLUserService implements CrmUserService {
 	public UserSummary disableUser(UserIdentifier userId) {
 		return ModelBinder.toUserSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateUserStatus",
-						"updateUser",
+						"disableUser",
+						"disableUser",
 						new MapBuilder()
 								.withEntry("userId", userId.toString())
 								.withEntry("status", Status.INACTIVE)

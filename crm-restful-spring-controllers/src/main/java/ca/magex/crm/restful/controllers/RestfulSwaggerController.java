@@ -98,7 +98,7 @@ public class RestfulSwaggerController extends AbstractRestfulController {
 		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
 			List<RestfulAction> actions = new ArrayList<>();
 			actions.add(new RestfulAction("organizations", new Localized("ORGANIZATIONS", "Organizations", "Organizations"), "get", "/rest/organizations"));
-			return new JsonObject().with("actions", actions);
+			return new JsonObject().with("actions", new JsonArray(actions.stream().map(a -> RestfulActionHandler.transformAction(a, crm, locale)).collect(Collectors.toList())));
 		});
 	}
 	

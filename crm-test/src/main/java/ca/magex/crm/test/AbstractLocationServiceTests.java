@@ -1,6 +1,6 @@
 package ca.magex.crm.test;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.LocationSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmConfigurationService;
@@ -144,21 +145,30 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals("Yankee Stadium", ls1.getDisplayName());
 		Assert.assertEquals("NYY", ls1.getReference());
 		Assert.assertEquals(Status.INACTIVE, ls1.getStatus());
-		Assert.assertEquals(ls1, locations().disableLocation(l1.getLocationId()));
+		try {
+			Assert.assertEquals(ls1, locations().disableLocation(l1.getLocationId()));
+			Assert.fail("Already disabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(ls1, locations().findLocationSummary(l1.getLocationId()));
 
 		LocationSummary ls2 = locations().disableLocation(l2.getLocationId());
 		Assert.assertEquals("Fenway Park", ls2.getDisplayName());
 		Assert.assertEquals("BOS", ls2.getReference());
 		Assert.assertEquals(Status.INACTIVE, ls2.getStatus());
-		Assert.assertEquals(ls2, locations().disableLocation(l2.getLocationId()));
+		try {
+			Assert.assertEquals(ls2, locations().disableLocation(l2.getLocationId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(ls2, locations().findLocationSummary(l2.getLocationId()));
 
 		LocationSummary ls3 = locations().disableLocation(l3.getLocationId());
 		Assert.assertEquals("Wrigley Field", ls3.getDisplayName());
 		Assert.assertEquals("CHC", ls3.getReference());
 		Assert.assertEquals(Status.INACTIVE, ls3.getStatus());
-		Assert.assertEquals(ls3, locations().disableLocation(l3.getLocationId()));
+		try {
+			Assert.assertEquals(ls3, locations().disableLocation(l3.getLocationId()));
+			Assert.fail("Already disabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(ls3, locations().findLocationSummary(l3.getLocationId()));
 		
 		/* enable */
@@ -166,21 +176,30 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals("Yankee Stadium", ls1.getDisplayName());
 		Assert.assertEquals("NYY", ls1.getReference());
 		Assert.assertEquals(Status.ACTIVE, ls1.getStatus());
-		Assert.assertEquals(ls1, locations().enableLocation(l1.getLocationId()));
+		try {
+			Assert.assertEquals(ls1, locations().enableLocation(l1.getLocationId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(ls1, locations().findLocationSummary(l1.getLocationId()));
 
 		ls2 = locations().enableLocation(l2.getLocationId());
 		Assert.assertEquals("Fenway Park", ls2.getDisplayName());
 		Assert.assertEquals("BOS", ls2.getReference());
 		Assert.assertEquals(Status.ACTIVE, ls2.getStatus());
-		Assert.assertEquals(ls2, locations().enableLocation(l2.getLocationId()));
+		try {
+			Assert.assertEquals(ls2, locations().enableLocation(l2.getLocationId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(ls2, locations().findLocationSummary(l2.getLocationId()));
 
 		ls3 = locations().enableLocation(l3.getLocationId());
 		Assert.assertEquals("Wrigley Field", ls3.getDisplayName());
 		Assert.assertEquals("CHC", ls3.getReference());
 		Assert.assertEquals(Status.ACTIVE, ls3.getStatus());
-		Assert.assertEquals(ls3, locations().enableLocation(l3.getLocationId()));
+		try {
+			Assert.assertEquals(ls3, locations().enableLocation(l3.getLocationId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(ls3, locations().findLocationSummary(l3.getLocationId()));
 
 		/* count locations */
@@ -319,6 +338,39 @@ public abstract class AbstractLocationServiceTests {
 		Assert.assertEquals(0, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(0, summariesPage.getTotalPages());
 		Assert.assertEquals(0, summariesPage.getTotalElements());
+	}
+	
+	@Test
+	public void testCannotDisabledMainLocation() throws Exception {
+		OrganizationIdentifier organizationId = crm().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.ORG), List.of(BusinessGroupIdentifier.EXTERNAL)).getOrganizationId();
+		LocationIdentifier locationId = locations().createLocation(organizationId, "MAIN", "Main Location", CrmAsserts.US_ADDRESS).getLocationId();
+		Assert.assertEquals(Status.ACTIVE, locations().findLocationSummary(locationId).getStatus());
+
+		// Disable and enable a new location
+		locations().disableLocation(locationId).getStatus();
+		Assert.assertEquals(Status.INACTIVE, locations().findLocationSummary(locationId).getStatus());
+		locations().enableLocation(locationId).getStatus();
+		Assert.assertEquals(Status.ACTIVE, locations().findLocationSummary(locationId).getStatus());
+		
+		// Make the location a main location which cannot be disabled.
+		crm().updateOrganizationMainLocation(organizationId, locationId);
+		try {
+			locations().disableLocation(locationId).getStatus();
+			Assert.fail("Cannot disable main location");
+		} catch (PermissionDeniedException e) { }
+		Assert.assertEquals(Status.ACTIVE, locations().findLocationSummary(locationId).getStatus());
+		try {
+			locations().enableLocation(locationId).getStatus();
+			Assert.fail("Location already active");
+		} catch (PermissionDeniedException e) { }
+		Assert.assertEquals(Status.ACTIVE, locations().findLocationSummary(locationId).getStatus());
+		
+		// Set the main location back to null and try again
+		crm().updateOrganizationMainLocation(organizationId, null);
+		locations().disableLocation(locationId).getStatus();
+		Assert.assertEquals(Status.INACTIVE, locations().findLocationSummary(locationId).getStatus());
+		locations().enableLocation(locationId).getStatus();
+		Assert.assertEquals(Status.ACTIVE, locations().findLocationSummary(locationId).getStatus());
 	}
 
 	@Test

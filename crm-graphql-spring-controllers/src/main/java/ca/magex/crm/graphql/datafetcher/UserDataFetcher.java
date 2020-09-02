@@ -3,16 +3,13 @@ package ca.magex.crm.graphql.datafetcher;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationRoleIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
@@ -69,7 +66,7 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findUserActions@" + UserDataFetcher.class.getSimpleName());
 			UserDetails source = environment.getSource();
 			return Map.of(
-					"modify", crm.canUpdateUserRole(source.getUserId()),
+					"update", crm.canUpdateUserRole(source.getUserId()),
 					"enable", crm.canEnableUser(source.getUserId()),
 					"disable", crm.canDisableUser(source.getUserId()),
 					"changePassword", crm.canUpdateUserPassword(source.getUserId()));
@@ -81,24 +78,6 @@ public class UserDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering updateUser@" + UserDataFetcher.class.getSimpleName());
 			UserIdentifier userId = new UserIdentifier((String) environment.getArgument("userId"));
 			UserDetails user = crm.findUserDetails(userId);
-			/* update status first since other validation requires status */
-			if (environment.getArgument("status") != null) {
-				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch (status) {
-				case "ACTIVE":
-					if (user.getStatus() != Status.ACTIVE) {
-						user = crm.findUserDetails(crm.enableUser(userId).getUserId());
-					}
-					break;
-				case "INACTIVE":
-					if (user.getStatus() != Status.INACTIVE) {
-						user = crm.findUserDetails(crm.disableUser(userId).getUserId());
-					}
-					break;
-				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
-				}
-			}
 			if (environment.getArgument("authenticationRoleIds") != null) {
 				List<AuthenticationRoleIdentifier> authenticationRoles = extractAuthenticationRoles(environment, "authenticationRoleIds");
 				if (!user.getAuthenticationRoleIds().containsAll(authenticationRoles) || !authenticationRoles.containsAll(user.getAuthenticationRoleIds())) {
@@ -106,6 +85,22 @@ public class UserDataFetcher extends AbstractDataFetcher {
 				}
 			}
 			return user;
+		};
+	}
+	
+	public DataFetcher<UserDetails> enableUser() {
+		return (environment) -> {
+			logger.info("Entering enableUser@" + UserDataFetcher.class.getSimpleName());
+			UserIdentifier userId = new UserIdentifier((String) environment.getArgument("userId"));
+			return crm.findUserDetails(crm.enableUser(userId).getUserId());
+		};
+	}
+	
+	public DataFetcher<UserDetails> disableUser() {
+		return (environment) -> {
+			logger.info("Entering disableUser@" + UserDataFetcher.class.getSimpleName());
+			UserIdentifier userId = new UserIdentifier((String) environment.getArgument("userId"));
+			return crm.findUserDetails(crm.disableUser(userId).getUserId());
 		};
 	}
 	

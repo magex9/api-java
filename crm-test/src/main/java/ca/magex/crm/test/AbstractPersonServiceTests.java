@@ -28,6 +28,7 @@ import ca.magex.crm.api.common.Telephone;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmConfigurationService;
@@ -36,6 +37,7 @@ import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 
@@ -171,14 +173,20 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals("Smith, Michelle Pauline", ps1.getDisplayName());
 		Assert.assertEquals(Status.INACTIVE, ps1.getStatus());
 		Assert.assertEquals(ps1, persons().findPersonSummary(ps1.getPersonId()));
-		Assert.assertEquals(ps1, persons().disablePerson(p1.getPersonId()));
+		try {
+			Assert.assertEquals(ps1, persons().disablePerson(p1.getPersonId()));
+			Assert.fail("Already disabled");
+		} catch (PermissionDeniedException e) { }
 		
 		/* enable */
 		ps1 = persons().enablePerson(p1.getPersonId());
 		Assert.assertEquals("Smith, Michelle Pauline", ps1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, ps1.getStatus());
 		Assert.assertEquals(ps1, persons().findPersonSummary(ps1.getPersonId()));
-		Assert.assertEquals(ps1, persons().enablePerson(p1.getPersonId()));
+		try {
+			Assert.assertEquals(ps1, persons().enablePerson(p1.getPersonId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 		
 		/* count */
 		Assert.assertEquals(4, persons().countPersons(new PersonsFilter(null, null, null)));
@@ -297,6 +305,39 @@ public abstract class AbstractPersonServiceTests {
 		Assert.assertEquals(0, summariesPage.getNumberOfElements());		
 		Assert.assertEquals(0, summariesPage.getTotalPages());
 		Assert.assertEquals(0, summariesPage.getTotalElements());
+	}
+	
+	@Test
+	public void testCannotDisabledMainContact() throws Exception {
+		OrganizationIdentifier organizationId = crm().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.ORG), List.of(BusinessGroupIdentifier.EXTERNAL)).getOrganizationId();
+		PersonIdentifier personId = persons().createPerson(organizationId, "Person", CrmAsserts.BOB, CrmAsserts.CA_ADDRESS, CrmAsserts.HOME_COMMUNICATIONS, List.of(BusinessRoleIdentifier.EXTERNAL_CONTACT)).getPersonId();
+		Assert.assertEquals(Status.ACTIVE, persons().findPersonSummary(personId).getStatus());
+
+		// Disable and enable a new person
+		persons().disablePerson(personId).getStatus();
+		Assert.assertEquals(Status.INACTIVE, persons().findPersonSummary(personId).getStatus());
+		persons().enablePerson(personId).getStatus();
+		Assert.assertEquals(Status.ACTIVE, persons().findPersonSummary(personId).getStatus());
+		
+		// Make the person a main person which cannot be disabled.
+		crm().updateOrganizationMainContact(organizationId, personId);
+		try {
+			persons().disablePerson(personId).getStatus();
+			Assert.fail("Cannot disable main person");
+		} catch (PermissionDeniedException e) { }
+		Assert.assertEquals(Status.ACTIVE, persons().findPersonSummary(personId).getStatus());
+		try {
+			persons().enablePerson(personId).getStatus();
+			Assert.fail("Person already active");
+		} catch (PermissionDeniedException e) { }
+		Assert.assertEquals(Status.ACTIVE, persons().findPersonSummary(personId).getStatus());
+		
+		// Set the main person back to null and try again
+		crm().updateOrganizationMainContact(organizationId, null);
+		persons().disablePerson(personId).getStatus();
+		Assert.assertEquals(Status.INACTIVE, persons().findPersonSummary(personId).getStatus());
+		persons().enablePerson(personId).getStatus();
+		Assert.assertEquals(Status.ACTIVE, persons().findPersonSummary(personId).getStatus());
 	}
 	
 	@Test

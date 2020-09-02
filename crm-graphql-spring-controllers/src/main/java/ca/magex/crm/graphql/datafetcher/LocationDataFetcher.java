@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.LocationsFilter;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import graphql.schema.DataFetcher;
@@ -50,7 +48,7 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findLocationActions@" + LocationDataFetcher.class.getSimpleName());
 			LocationDetails source = environment.getSource();
 			return Map.of(
-					"modify", crm.canUpdateLocation(source.getLocationId()),
+					"update", crm.canUpdateLocation(source.getLocationId()),
 					"enable", crm.canEnableLocation(source.getLocationId()),
 					"disable", crm.canDisableLocation(source.getLocationId()));
 		};
@@ -84,24 +82,6 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering updateLocation@" + LocationDataFetcher.class.getSimpleName());
 			LocationIdentifier locationId = new LocationIdentifier((String) environment.getArgument("locationId"));
 			LocationDetails loc = crm.findLocationDetails(locationId);
-			/* update status first because other elements depend on the status for validation */
-			if (environment.getArgument("status") != null) {
-				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch (status) {
-				case "ACTIVE":
-					if (loc.getStatus() != Status.ACTIVE) {
-						loc = loc.withStatus(Status.ACTIVE).withLastModified(crm.enableLocation(locationId).getLastModified());
-					}
-					break;
-				case "INACTIVE":
-					if (loc.getStatus() != Status.INACTIVE) {
-						loc = loc.withStatus(Status.INACTIVE).withLastModified(crm.disableLocation(locationId).getLastModified());
-					}
-					break;
-				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
-				}
-			}
 			if (environment.getArgument("displayName") != null) {
 				String newLocationName = environment.getArgument("displayName");
 				if (!StringUtils.equals(loc.getDisplayName(), newLocationName)) {
@@ -117,4 +97,21 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 			return loc;
 		};
 	}
+	
+	public DataFetcher<LocationDetails> enableLocation() {
+		return (environment) -> {
+			logger.info("Entering enableLocation@" + LocationDataFetcher.class.getSimpleName());
+			LocationIdentifier locationId = new LocationIdentifier((String) environment.getArgument("locationId"));
+			return crm.findLocationDetails(crm.enableLocation(locationId).getLocationId());
+		};
+	}
+	
+	public DataFetcher<LocationDetails> disableLocation() {
+		return (environment) -> {
+			logger.info("Entering disableLocation@" + LocationDataFetcher.class.getSimpleName());
+			LocationIdentifier locationId = new LocationIdentifier((String) environment.getArgument("locationId"));
+			return crm.findLocationDetails(crm.disableLocation(locationId).getLocationId());
+		};
+	}
+	
 }

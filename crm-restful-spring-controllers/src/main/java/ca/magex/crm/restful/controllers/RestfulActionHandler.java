@@ -21,12 +21,16 @@ public interface RestfulActionHandler<T> {
 	
 	public default JsonArray transformAction(T instance, Crm crm, Locale locale) {
 		return new JsonArray(buildActions(instance, crm).stream()
-			.map(action -> new JsonObject()
-				.with("action", action.getAction())
-				.with("label", locale == null ? action.getLabel().getCode() : new LocalizedJsonTransformer(crm).formatLocalized(action.getLabel(), locale))
-				.with("method", action.getMethod())
-				.with("link", action.getLink()))
+			.map(action -> transformAction(action, crm, locale))
 			.collect(Collectors.toList()));
+	}
+	
+	public static JsonObject transformAction(RestfulAction action, Crm crm, Locale locale) {
+		return new JsonObject()
+			.with("action", action.getAction())
+			.with("label", locale == null ? action.getLabel().getCode() : new LocalizedJsonTransformer(crm).formatLocalized(action.getLabel(), locale))
+			.with("method", action.getMethod())
+			.with("link", action.getLink());
 	}
 	
 }

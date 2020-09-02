@@ -117,23 +117,33 @@ type Query {
 type Mutation {
 	# Option Maintenance
 	createOption(type: String!, parentId: String, name: LocalizedInput!): Option
-	updateOption(optionId: String!, status: String, english: String, french: String): Option
+	updateOption(optionId: String!, english: String, french: String): Option
+	enableOption(optionId: String!): Option
+	disableOption(optionId: String!): Option
 	
 	# Organization Maintenance 
 	createOrganization(displayName: String!, authenticationGroupIds: [String]!, businessGroupIds: [String]!): Organization
-	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, authenticationGroupIds: [String], businessGroupIds: [String]): Organization
+	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, authenticationGroupIds: [String], businessGroupIds: [String]): Organization
+	enableOrganization(organizationId: String!): Organization
+	disableOrganization(organizationId: String!): Organization
 	
 	# Location Maintenance
 	createLocation(organizationId: String!, reference: String!, displayName: String!, address: MailingAddressInput!): Location
-	updateLocation(locationId: String!, displayName: String, address: MailingAddressInput, status: String): Location
+	updateLocation(locationId: String!, displayName: String, address: MailingAddressInput): Location
+	enableLocation(locationId: String!): Location
+	disableLocation(locationId: String!): Location
 	
 	# Person Maintenance
 	createPerson(organizationId: String!, displayName: String!, legalName: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, businessRoleIds: [String]!): Person
-	updatePerson(personId: String!, displayName:String, legalName: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoleIds: [String], status: String): Person
+	updatePerson(personId: String!, displayName:String, legalName: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoleIds: [String]): Person
+	enablePerson(personId: String!): Person
+	disablePerson(personId: String!): Person
 		
 	# User Maintenance
 	createUser(personId: String!, username: String!, authenticationRoleIds: [String]!): User
-	updateUser(userId: String!, status: String, authenticationRoleIds: [String]): User
+	updateUser(userId: String!, authenticationRoleIds: [String]): User
+	enableUser(userId: String!): User
+	disableUser(userId: String): User
 	resetUserPassword(userId: String!): String
 	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean
 }
@@ -291,13 +301,13 @@ type Choice {
 }
 
 type OptionActions {
-	modify: Boolean!
+	update: Boolean!
 	enable: Boolean!
 	disable: Boolean!
 }
 
 type OrganizationActions {
-	modify: Boolean!
+	update: Boolean!
 	enable: Boolean!
 	disable: Boolean!
 	createLocation: Boolean!
@@ -305,20 +315,20 @@ type OrganizationActions {
 }
 
 type LocationActions {
-	modify: Boolean!
+	update: Boolean!
 	enable: Boolean!
 	disable: Boolean!
 }
 
 type PersonActions {
-	modify: Boolean!
+	update: Boolean!
 	enable: Boolean!
 	disable: Boolean!
 	createUser: Boolean!
 }
 
 type UserActions {
-	modify: Boolean!
+	update: Boolean!
 	enable: Boolean!
 	disable: Boolean!
 	changePassword: Boolean!
