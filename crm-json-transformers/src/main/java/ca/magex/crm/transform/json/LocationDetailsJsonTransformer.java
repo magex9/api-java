@@ -39,6 +39,7 @@ public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<Loca
 		formatText(pairs, "reference", location);
 		formatText(pairs, "displayName", location);
 		formatTransformer(pairs, "address", location, new MailingAddressJsonTransformer(crm), locale);
+		formatLong(pairs, "lastModified", location);
 		return new JsonObject(pairs);
 	}
 
@@ -48,9 +49,10 @@ public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<Loca
 		OrganizationIdentifier organizationId = parseIdentifier("organizationId", json, OrganizationIdentifier.class, locale);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		String reference = parseText("reference", json);
-		String displayName = parseText("displayName", json);
+		String displayName = parseText("displayName", json);		
 		MailingAddress address = parseObject("address", json, new MailingAddressJsonTransformer(crm), locale);
-		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
+		Long lastModified = parseLong("lastModified", json);
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
 	}
 
 }

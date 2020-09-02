@@ -18,10 +18,10 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmPersonRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -42,15 +42,16 @@ public class MongoPersonRepository extends AbstractMongoRepository implements Cr
 	/**
 	 * Creates our new MongoDB Backed Person Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoPersonRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoPersonRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
-	public PersonDetails savePersonDetails(PersonDetails person) {
+	public PersonDetails savePersonDetails(PersonDetails original) {
+		PersonDetails person = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOrganizations();
 		/* add all the fields that can be updated */
 		final UpdateResult setResult = collection.updateOne(
@@ -70,7 +71,8 @@ public class MongoPersonRepository extends AbstractMongoRepository implements Cr
 										.getBusinessRoleIds()
 										.stream()
 										.map((id) -> id.getFullIdentifier())
-										.collect(Collectors.toList()))));
+										.collect(Collectors.toList()))
+								.append("persons.$.lastModified", person.getLastModified())));
 		if (setResult.getMatchedCount() == 0) {
 			/* if we had no matching location id, then we need to do a push to the locations */
 			final UpdateResult pushResult = collection.updateOne(
@@ -101,7 +103,7 @@ public class MongoPersonRepository extends AbstractMongoRepository implements Cr
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.elemMatch("persons", Filters.eq("personId", personId.getFullIdentifier())),
-						Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName", "persons.legalName", "persons.address", "persons.communication", "persons.businessRoleIds")))
+						Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName", "persons.legalName", "persons.address", "persons.communication", "persons.businessRoleIds", "persons.lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -121,7 +123,7 @@ public class MongoPersonRepository extends AbstractMongoRepository implements Cr
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.elemMatch("persons", Filters.eq("personId", personId.getFullIdentifier())),
-						Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName")))
+						Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName", "persons.lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -151,7 +153,7 @@ public class MongoPersonRepository extends AbstractMongoRepository implements Cr
 				new Facet("totalCount",
 						Aggregates.count()),
 				new Facet("results", List.of(
-						Aggregates.project(Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName", "persons.legalName", "persons.address", "persons.communication", "persons.businessRoleIds")),
+						Aggregates.project(Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName", "persons.legalName", "persons.address", "persons.communication", "persons.businessRoleIds", "persons.lastModified")),
 						Aggregates.sort(BsonUtils.toBson(paging, "persons")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));
@@ -189,7 +191,7 @@ public class MongoPersonRepository extends AbstractMongoRepository implements Cr
 				new Facet("totalCount",
 						Aggregates.count()),
 				new Facet("results", List.of(
-						Aggregates.project(Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName")),
+						Aggregates.project(Projections.include("organizationId", "persons.personId", "persons.status", "persons.displayName", "persons.lastModified")),
 						Aggregates.sort(BsonUtils.toBson(paging, "persons")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));

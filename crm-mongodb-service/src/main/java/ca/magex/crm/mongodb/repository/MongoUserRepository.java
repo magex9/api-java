@@ -22,10 +22,10 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.crm.UserSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmUserRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
@@ -47,14 +47,15 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 	/**
 	 * Creates our new MongoDB Backed User Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 */
-	public MongoUserRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoUserRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 	
 	@Override
-	public UserDetails saveUserDetails(UserDetails user) {
+	public UserDetails saveUserDetails(UserDetails original) {
+		UserDetails user = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOrganizations();
 		/* add all the fields that can be updated */
 		final UpdateResult setResult = collection.updateOne(
@@ -71,7 +72,8 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 										.getAuthenticationRoleIds()
 										.stream()
 										.map((id) -> id.getFullIdentifier())
-										.collect(Collectors.toList()))));
+										.collect(Collectors.toList()))
+								.append("users.$.lastModified", user.getLastModified())));
 		if (setResult.getMatchedCount() == 0) {
 			/* if we had no matching user id, then we need to do a push to the users */
 			final UpdateResult pushResult = collection.updateOne(
@@ -102,7 +104,7 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.elemMatch("users", Filters.eq("userId", userId.getFullIdentifier())),
-						Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds")))
+						Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds", "users.lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -122,7 +124,7 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
 						Projections.elemMatch("users", Filters.eq("userId", userId.getFullIdentifier())),
-						Projections.include("organizationId", "users.userId", "users.status", "users.username")))
+						Projections.include("organizationId", "users.userId", "users.status", "users.username", "users.lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
@@ -153,11 +155,11 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 						Aggregates.count()),
 				new Facet("results", paging.getSort().isEmpty() ? 
 						List.of(
-								Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds")),						
+								Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds", "users.lastModified")),						
 								Aggregates.skip((int) paging.getOffset()),
 								Aggregates.limit(paging.getPageSize())) : 
 						List.of(
-								Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds")),						
+								Aggregates.project(Projections.include("organizationId", "users.userId", "users.personId", "users.status", "users.username", "users.authenticationRoleIds", "users.lastModified")),						
 								Aggregates.sort(BsonUtils.toBson(paging, "users")),
 								Aggregates.skip((int) paging.getOffset()),
 								Aggregates.limit(paging.getPageSize())))));
@@ -203,7 +205,7 @@ public class MongoUserRepository extends AbstractMongoRepository implements CrmU
 				new Facet("totalCount",
 						Aggregates.count()),
 				new Facet("results", List.of(
-						Aggregates.project(Projections.include("organizationId", "users.userId", "users.status", "users.username")),
+						Aggregates.project(Projections.include("organizationId", "users.userId", "users.status", "users.username", "users.lastModified")),
 						Aggregates.sort(BsonUtils.toBson(paging, "users")),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize())))));

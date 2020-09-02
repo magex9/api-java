@@ -27,10 +27,6 @@ variables:
   value: 'fintraccanafe'
 - name:  artifacts_sshKeySecureFile
   value: 'azure-git.key'
-- name: is_azure_branch
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/azure')]
-- name: is_dev_branch
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/dev')]
 
 
 resources:
@@ -53,7 +49,19 @@ stages:
   - job: Build_apps
     displayName: Build Applications
     steps:
-            
+    - task: DownloadSecureFile@1
+      name: gitazurekey
+      inputs:
+        secureFile: 'azure.key'
+
+    - task: CmdLine@2
+      inputs:
+        script: |
+          ls -la *
+          cp $(gitazurekey.secureFilePath) azure-git.key
+          ls -la *
+
+       
     #Build Docker container and push to azure container registry
     - template: azure-build-docker-containers.yml
       parameters:
@@ -61,12 +69,22 @@ stages:
         application_group: crm
         application_name: crm-api-spring-boot-server
         application_version: $(application_version)
-        dockerfile: ./crm-api-spring-boot-server.dockerfile 
+        dockerfile: ./Dockerfile 
+   #Build Docker container and push to azure container registry
+    - template: azure-build-docker-containers.yml
+      parameters:
+        environment: 'ut'
+        application_group: crm
+        application_name: crm-auth-spring-boot-server
+        application_version: $(application_version)
+        dockerfile: ./Dockerfile 
 
 
 - stage: Continuous_Deployment
   displayName: Continuous Deployment to UT
-  condition: and(succeeded(), or(eq(variables.is_azure_branch, true),eq(variables.is_dev_branch, true)))
+  #deploy only if branch is beta,azure or dev ... 
+  #TODO: we need to find a convention for branch names and just apply a generic filter like feature-* , release-* , etc...
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'],'beta','azure','dev'))
   jobs:
 
     - deployment: Deploy
@@ -81,12 +99,13 @@ stages:
               inputs:
                 helmVersionToInstall: 'latest'
             - task: HelmDeploy@0
+              displayName: "Deploy crm-api"
               inputs:
                 connectionType: 'Azure Resource Manager'
                 azureSubscription: 'appdev aks connection'
                 azureResourceGroup: 'AppDev_Kubernetes'
                 kubernetesCluster: 'appdev-cluster'
-                namespace: 'appdev'
+                namespace: $(Build.SourceBranchName)
                 command: 'upgrade'
                 chartType: 'FilePath'
                 chartPath: '$(Pipeline.Workspace)/helm-charts/crm-api-spring-boot-server'
@@ -95,3 +114,19 @@ stages:
                 failOnStderr: false
                 overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
                 #recreate: true
+            - task: HelmDeploy@0
+              displayName: "Deploy crm-auth"
+              inputs:
+                connectionType: 'Azure Resource Manager'
+                azureSubscription: 'appdev aks connection'
+                azureResourceGroup: 'AppDev_Kubernetes'
+                kubernetesCluster: 'appdev-cluster'
+                namespace: $(Build.SourceBranchName)
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '$(Pipeline.Workspace)/helm-charts/crm-auth-spring-boot-server'
+                releaseName: 'crm-auth-spring-boot-server'
+                force: false
+                failOnStderr: false
+                overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
+                #recreate: true#

@@ -56,12 +56,12 @@ public class CrmOptionServiceCachingDelegateTests {
 	public void testCacheNewOption() {
 		BDDMockito.willAnswer((invocation) -> {
 			Localized name = invocation.getArgument(2);
-			return new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name);
+			return new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name, 100L);
 		}).given(delegate).createOption(Mockito.isNull(), Mockito.eq(Type.COUNTRY), Mockito.any());
 		
 		BDDMockito.willAnswer((invocation) -> {
 			Localized name = invocation.getArgument(2);
-			return new Option(new LanguageIdentifier(name.getCode()), invocation.getArgument(0), Type.LANGUAGE, Status.ACTIVE, Option.IMMUTABLE, name);
+			return new Option(new LanguageIdentifier(name.getCode()), invocation.getArgument(0), Type.LANGUAGE, Status.ACTIVE, Option.IMMUTABLE, name, 100L);
 		}).given(delegate).createOption(Mockito.isNull(), Mockito.eq(Type.LANGUAGE), Mockito.any());
 		
 		Option countryOption = optionService.createOption(null, Type.COUNTRY, new Localized("PT", "Petoria", "Pètorie"));
@@ -91,10 +91,10 @@ public class CrmOptionServiceCachingDelegateTests {
 	public void testCacheNewOptionFromPrototype() {
 		BDDMockito.willAnswer((invocation) -> {
 			Option option = invocation.getArgument(0);
-			return new Option(new CountryIdentifier(option.getName().getCode()), option.getParentId(), option.getType(), option.getStatus(), option.getMutable(), option.getName());
+			return new Option(new CountryIdentifier(option.getName().getCode()), option.getParentId(), option.getType(), option.getStatus(), option.getMutable(), option.getName(), 100L);
 		}).given(delegate).createOption(Mockito.any(Option.class));
 		
-		Option countryOption = optionService.createOption(new Option(null, null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("PT", "Petoria", "Pètorie")));
+		Option countryOption = optionService.createOption(new Option(null, null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("PT", "Petoria", "Pètorie"), 100L));
 		BDDMockito.verify(delegate, Mockito.times(1)).createOption(Mockito.any(Option.class));
 
 		/* should have added the details to the cache */
@@ -109,7 +109,7 @@ public class CrmOptionServiceCachingDelegateTests {
 	@Test
 	public void testCacheExistingOptionById() {
 		BDDMockito.willAnswer((invocation) -> {
-			return new Option(invocation.getArgument(0), null, Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, new Localized("PT", "Petoria", "Pètorie"));
+			return new Option(invocation.getArgument(0), null, Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, new Localized("PT", "Petoria", "Pètorie"), 100L);
 		}).given(delegate).findOption(Mockito.any(OptionIdentifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
@@ -123,7 +123,7 @@ public class CrmOptionServiceCachingDelegateTests {
 	@Test
 	public void testCacheExistingOptionByCode() {
 		BDDMockito.willAnswer((invocation) -> {
-			return new Option(new CountryIdentifier(invocation.getArgument(1)), null, Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, new Localized("PT", "Petoria", "Pètorie"));
+			return new Option(new CountryIdentifier(invocation.getArgument(1)), null, Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, new Localized("PT", "Petoria", "Pètorie"), 100L);
 		}).given(delegate).findOptionByCode(Mockito.any(), Mockito.any());
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
@@ -163,7 +163,7 @@ public class CrmOptionServiceCachingDelegateTests {
 		final AtomicReference<Option> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
 			Localized name = invocation.getArgument(2);
-			reference.set(new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name));
+			reference.set(new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name, 100L));
 			return reference.get();
 		}).given(delegate).createOption(Mockito.isNull(), Mockito.eq(Type.COUNTRY), Mockito.any());
 		BDDMockito.willAnswer((invocation) -> {
@@ -209,7 +209,7 @@ public class CrmOptionServiceCachingDelegateTests {
 		final AtomicReference<Option> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
 			Localized name = invocation.getArgument(2);
-			reference.set(new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name));
+			reference.set(new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name, 100L));
 			return reference.get();
 		}).given(delegate).createOption(Mockito.isNull(), Mockito.eq(Type.COUNTRY), Mockito.any());
 		BDDMockito.willAnswer((invocation) -> {
@@ -255,7 +255,7 @@ public class CrmOptionServiceCachingDelegateTests {
 		final AtomicReference<Option> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
 			Localized name = invocation.getArgument(2);
-			reference.set(new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name));
+			reference.set(new Option(new CountryIdentifier(name.getCode()), invocation.getArgument(0), Type.COUNTRY, Status.ACTIVE, Option.IMMUTABLE, name, 100L));
 			return reference.get();
 		}).given(delegate).createOption(Mockito.isNull(), Mockito.eq(Type.COUNTRY), Mockito.any());
 		BDDMockito.willAnswer((invocation) -> {
@@ -298,9 +298,9 @@ public class CrmOptionServiceCachingDelegateTests {
 	
 	@Test
 	public void testCachingFindDetailsResults() {
-		Option country1 = new Option(new CountryIdentifier("A"), null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("A", "a_en", "a_fr"));
-		Option country2 = new Option(new CountryIdentifier("B"), null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("B", "b_en", "b_fr"));
-		Option country3 = new Option(new CountryIdentifier("C"), null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("C", "c_en", "c_fr"));
+		Option country1 = new Option(new CountryIdentifier("A"), null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("A", "a_en", "a_fr"), 100L);
+		Option country2 = new Option(new CountryIdentifier("B"), null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("B", "b_en", "b_fr"), 100L);
+		Option country3 = new Option(new CountryIdentifier("C"), null, Type.COUNTRY, Status.ACTIVE, Option.MUTABLE, new Localized("C", "c_en", "c_fr"), 100L);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(country1, country2, country3), 3);

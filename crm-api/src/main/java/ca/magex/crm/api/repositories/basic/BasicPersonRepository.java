@@ -60,10 +60,11 @@ public class BasicPersonRepository implements CrmPersonRepository {
 	}
 
 	@Override
-	public PersonDetails savePersonDetails(PersonDetails person) {
-		store.getNotifier().personUpdated(System.nanoTime(), person.getPersonId());
+	public PersonDetails savePersonDetails(PersonDetails personToSave) {
+		PersonDetails person = personToSave.withLastModified(System.currentTimeMillis());		
 		store.getPersons().put(person.getPersonId(), person);
-		return person;
+		store.getNotifier().personUpdated(person.getLastModified(), person.getPersonId());
+		return SerializationUtils.clone(person);
 	}
 
 }

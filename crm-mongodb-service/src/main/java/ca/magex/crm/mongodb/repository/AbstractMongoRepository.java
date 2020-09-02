@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.event.CrmEventObserver;
 
 /**
  * Base class used for all of the Mono Repositories
@@ -18,15 +18,15 @@ import ca.magex.crm.api.observer.CrmUpdateNotifier;
  */
 public abstract class AbstractMongoRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractMongoRepository.class.getPackageName());
+	private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
 	private MongoDatabase mongoCrm;
-	private CrmUpdateNotifier notifier;
+	private CrmEventObserver observer;
 	private String env;
 
-	protected AbstractMongoRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
+	protected AbstractMongoRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
 		this.mongoCrm = mongoCrm;
-		this.notifier = notifier;
+		this.observer = observer;
 		this.env = env;
 	}
 
@@ -58,8 +58,8 @@ public abstract class AbstractMongoRepository {
 	 * returns our notifier used when items within the repository change
 	 * @return
 	 */
-	protected CrmUpdateNotifier getNotifier() {
-		return notifier;
+	protected CrmEventObserver getUpdateObserver() {
+		return observer;
 	}
 
 	protected String getEnv() {
@@ -73,6 +73,16 @@ public abstract class AbstractMongoRepository {
 	protected void debug(Supplier<String> messageSupplier) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(messageSupplier.get());
+		}
+	}	
+	
+	/**
+	 * logger helper
+	 * @param messageSupplier
+	 */
+	protected void info(Supplier<String> messageSupplier) {
+		if (logger.isInfoEnabled()) {
+			logger.info(messageSupplier.get());
 		}
 	}
 }

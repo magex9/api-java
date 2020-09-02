@@ -205,7 +205,7 @@ public class UsersFilterTests {
 	
 	@Test
 	public void testApplyFilter() {
-		UserDetails user = new UserDetails(new UserIdentifier("DEF"), new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), "Admin", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("USR"), new AuthenticationRoleIdentifier("ADM")));
+		UserDetails user = new UserDetails(new UserIdentifier("DEF"), new OrganizationIdentifier("O1"), new PersonIdentifier("P1"), "Admin", Status.ACTIVE, List.of(new AuthenticationRoleIdentifier("USR"), new AuthenticationRoleIdentifier("ADM")), null);
 		/* default filter should match */
 		Assert.assertTrue(new UsersFilter().apply(user));
 		

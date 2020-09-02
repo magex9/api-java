@@ -1,5 +1,6 @@
 package ca.magex.crm.springboot.config.crm;
 
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -21,18 +23,28 @@ import com.mongodb.client.MongoDatabase;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
+import ca.magex.crm.api.decorators.CrmEventObserverSlf4jDecorator;
+import ca.magex.crm.api.event.CrmEventNotifier;
+import ca.magex.crm.api.policies.CrmPolicies;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.CrmPasswordRepository;
 import ca.magex.crm.api.repositories.CrmRepositories;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
+import ca.magex.crm.caching.CrmConfigurationServiceCachingDelegate;
+import ca.magex.crm.caching.config.CachingConfig;
+import ca.magex.crm.caching.event.CrmCacheUpdateObserver;
+import ca.magex.crm.caching.util.CacheTemplate;
+import ca.magex.crm.mongodb.event.MongoOptionsDocumentChangeListener;
+import ca.magex.crm.mongodb.event.MongoOrganizationsDocumentChangeListener;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
 import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
@@ -42,9 +54,9 @@ import ca.magex.crm.transform.json.JsonTransformerFactory;
 @Profile(CrmProfiles.MONGO)
 @Description("Configures the CRM using the Mongo Repository")
 public class MongoCrmConfig implements CrmConfigurer {
-	
+
 	@Value("${crm.caching.services.enabled:false}") private Boolean enableCachedServices;
-	
+
 	@Value("${mongo.db.url}") private String url;
 	@Value("${mongo.db.username}") private String username;
 	@Value("${mongo.db.password}") private String password;
@@ -64,12 +76,12 @@ public class MongoCrmConfig implements CrmConfigurer {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	@Bean 
+
+	@Bean
 	public JsonTransformerFactory jsonTransformerFactory() {
 		return new JsonTransformerFactory(services());
 	}
-	
+
 	@Bean
 	public BasicStore store() {
 		return new BasicStore();
@@ -81,20 +93,37 @@ public class MongoCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public CrmUpdateNotifier notifier() {
-		return new CrmUpdateNotifier();
+	public CrmEventNotifier eventNotifier() {
+		return new CrmEventNotifier();
+	}
+
+	@Bean
+	public ThreadFactory mongoCLThreadFactory() {
+		CustomizableThreadFactory tf = new CustomizableThreadFactory("mongoCL");
+		tf.setDaemon(true);
+		return tf;
+	}
+
+	@Bean
+	public MongoOptionsDocumentChangeListener optionsCl() {
+		return new MongoOptionsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, mongoCLThreadFactory());
+	}
+	
+	@Bean
+	public MongoOrganizationsDocumentChangeListener organizationsCl() {
+		return new MongoOrganizationsDocumentChangeListener(eventNotifier(), mongoCrm(), dbName, mongoCLThreadFactory());
 	}
 
 	@Bean
 	public CrmRepositories repos() {
-		return new MongoRepositories(mongoCrm(), notifier(), dbName);
+		return new MongoRepositories(mongoCrm(), eventNotifier(), dbName);
 	}
 
 	@Bean
 	public CrmPasswordRepository passwordRepo() {
-		return new MongoPasswordRepository(mongoCrm(), notifier(), dbName);
+		return new MongoPasswordRepository(mongoCrm(), eventNotifier(), dbName);
 	}
-	
+
 	@Bean
 	public CacheManager cacheManager() {
 		CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
@@ -109,37 +138,45 @@ public class MongoCrmConfig implements CrmConfigurer {
 
 	@Bean(autowireCandidate = false) // ensure this bean doesn't conflict with our CRM for autowiring
 	public CrmServices services() {
-		CrmServices services = new BasicServices(repos(), passwords()); 
+		CrmServices services = new BasicServices(repos(), passwords());
 		if (enableCachedServices) {
 			LoggerFactory.getLogger(MongoCrmConfig.class).info("CRM Caching Services Enabled");
-			// clear caches
+			/* clear caches */
 			cacheManager().getCacheNames().forEach((cache) -> cacheManager().getCache(cache).clear());
+			/* register our caching update observers */
+			eventNotifier().register(new CrmEventObserverSlf4jDecorator(new CrmCacheUpdateObserver(cacheManager()), LoggerFactory.getLogger(CrmCacheUpdateObserver.class)));
+			
 			return new CrmCachingServices(cacheManager(), services);
-		}
-		else {
+		} else {
 			LoggerFactory.getLogger(getClass()).info("CRM Caching Services Disabled");
 			return services;
 		}
 	}
 
 	@Bean
-	public AuthenticatedPolicies policies() {
+	public CrmPolicies policies() {
 		return new AuthenticatedPolicies(auth(), services());
 	}
 
+	@Bean
+	public CrmPasswordService passwords() {
+		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
+	}
+	
 	@Bean
 	public SpringSecurityAuthenticationService auth() {
 		return new SpringSecurityAuthenticationService(services());
 	}
 
-	@Bean
-	public BasicPasswordService passwords() {
-		return new BasicPasswordService(repos(), passwordRepo(), passwordEncoder());
-	}
-	
 	@Bean 
-	public BasicConfigurationService config() {
-		return new BasicConfigurationService(repos(), passwords());
+	public CrmConfigurationService config() {
+		CrmConfigurationService config = new BasicConfigurationService(repos(), passwords());
+		if (enableCachedServices) {
+			return new CrmConfigurationServiceCachingDelegate(config, new CacheTemplate(cacheManager(), CachingConfig.Caches.init));
+		}
+		else {
+			return config;
+		}
 	}
 
 	@Bean

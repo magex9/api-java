@@ -27,15 +27,13 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{.host | quote }}
+    - host: {{ include "crm-auth-spring-boot-server.ingress.host" . }}
       http:
+      {{- range .Values.ingress.host.paths }}
         paths:
-          {{- range .paths }}
-          - path: {{ . }}
+          - path: {{ .path }}
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
-          {{- end }}
-    {{- end }}
-  {{- end }}
+      {{- end }}
+{{- end }}

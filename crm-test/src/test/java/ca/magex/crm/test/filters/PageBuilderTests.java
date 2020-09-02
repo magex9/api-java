@@ -19,10 +19,10 @@ import ca.magex.crm.api.system.id.CountryIdentifier;
 
 public class PageBuilderTests {
 
-	private Option ca = new Option(new CountryIdentifier("CA"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("CA", "Canada", "Canada"));
-	private Option us = new Option(new CountryIdentifier("US"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("US", "United States", "Etats Unis"));
-	private Option mx = new Option(new CountryIdentifier("MX"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("MX", "Mexico", "Mexico"));
-	private Option de = new Option(new CountryIdentifier("DE"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("DE", "Germany", "Germany"));
+	private Option ca = new Option(new CountryIdentifier("CA"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("CA", "Canada", "Canada"), 100L);
+	private Option us = new Option(new CountryIdentifier("US"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("US", "United States", "Etats Unis"), 100L);
+	private Option mx = new Option(new CountryIdentifier("MX"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("MX", "Mexico", "Mexico"), 100L);
+	private Option de = new Option(new CountryIdentifier("DE"), null, Type.COUNTRY, Status.ACTIVE, true, new Localized("DE", "Germany", "Germany"), 100L);
 	
 	@Test
 	public void testInstantiate() {

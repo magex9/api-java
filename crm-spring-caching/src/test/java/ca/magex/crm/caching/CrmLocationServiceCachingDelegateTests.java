@@ -57,7 +57,7 @@ public class CrmLocationServiceCachingDelegateTests {
 	public void testCacheNewLoc() {
 		final AtomicInteger locIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
-			return new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3));
+			return new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3), null);
 		}).given(delegate).createLocation(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(MailingAddress.class));
 		LocationDetails locDetails = locationService.createLocation(new OrganizationIdentifier("ABC"), "Head Quarters", "HQ", CrmAsserts.MAILING_ADDRESS);
 		BDDMockito.verify(delegate, Mockito.times(1)).createLocation(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(MailingAddress.class));
@@ -76,9 +76,9 @@ public class CrmLocationServiceCachingDelegateTests {
 		final AtomicInteger locIndex = new AtomicInteger();
 		BDDMockito.willAnswer((invocation) -> {
 			LocationDetails locDetails = invocation.getArgument(0);
-			return new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), locDetails.getOrganizationId(), locDetails.getStatus(), locDetails.getReference(), locDetails.getDisplayName(), locDetails.getAddress());
+			return new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), locDetails.getOrganizationId(), locDetails.getStatus(), locDetails.getReference(), locDetails.getDisplayName(), locDetails.getAddress(), locDetails.getLastModified());
 		}).given(delegate).createLocation(Mockito.any(LocationDetails.class));
-		LocationDetails locDetails = locationService.createLocation(new LocationDetails(null, new OrganizationIdentifier("ABC"), Status.ACTIVE, "Head Quarters", "HQ", CrmAsserts.MAILING_ADDRESS));
+		LocationDetails locDetails = locationService.createLocation(new LocationDetails(null, new OrganizationIdentifier("ABC"), Status.ACTIVE, "Head Quarters", "HQ", CrmAsserts.MAILING_ADDRESS, null));
 		BDDMockito.verify(delegate, Mockito.times(1)).createLocation(Mockito.any(LocationDetails.class));
 
 		/* should have added the details to the cache */
@@ -93,7 +93,7 @@ public class CrmLocationServiceCachingDelegateTests {
 	@Test
 	public void testCacheLoc() {
 		BDDMockito.willAnswer((invocation) -> {
-			return new LocationDetails(invocation.getArgument(0), new OrganizationIdentifier("ABC"), Status.ACTIVE, "HQ", "Head Quarters", CrmAsserts.MAILING_ADDRESS);
+			return new LocationDetails(invocation.getArgument(0), new OrganizationIdentifier("ABC"), Status.ACTIVE, "HQ", "Head Quarters", CrmAsserts.MAILING_ADDRESS, null);
 		}).given(delegate).findLocationDetails(Mockito.any(LocationIdentifier.class));
 
 		/* this should also cache the result, so the second find doesn't hit the delegate */
@@ -133,7 +133,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		final AtomicInteger locIndex = new AtomicInteger();
 		final AtomicReference<LocationDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3)));
+			reference.set(new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.ACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3), null));
 			return reference.get();
 		}).given(delegate).createLocation(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(MailingAddress.class));
 		BDDMockito.willAnswer((invocation) -> {
@@ -178,7 +178,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		final AtomicInteger locIndex = new AtomicInteger();
 		final AtomicReference<LocationDetails> reference = new AtomicReference<>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.INACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3)));
+			reference.set(new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.INACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3), null));
 			return reference.get();
 		}).given(delegate).createLocation(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(MailingAddress.class));
 		BDDMockito.willAnswer((invocation) -> {
@@ -223,7 +223,7 @@ public class CrmLocationServiceCachingDelegateTests {
 		final AtomicInteger locIndex = new AtomicInteger();
 		final AtomicReference<LocationDetails> reference = new AtomicReference<LocationDetails>();
 		BDDMockito.willAnswer((invocation) -> {
-			reference.set(new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.INACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3)));
+			reference.set(new LocationDetails(new LocationIdentifier(Integer.toString(locIndex.getAndIncrement())), invocation.getArgument(0), Status.INACTIVE, invocation.getArgument(2), invocation.getArgument(1), invocation.getArgument(3), null));
 			return reference.get();
 		}).given(delegate).createLocation(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any(MailingAddress.class));
 		BDDMockito.willAnswer((invocation) -> {
@@ -278,9 +278,9 @@ public class CrmLocationServiceCachingDelegateTests {
 
 	@Test
 	public void testCachingFindDetailsResults() {
-		LocationDetails details1 = new LocationDetails(new LocationIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "A", "a", CrmAsserts.CA_ADDRESS);
-		LocationDetails details2 = new LocationDetails(new LocationIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "B", "b", CrmAsserts.US_ADDRESS);
-		LocationDetails details3 = new LocationDetails(new LocationIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "C", "c", CrmAsserts.DE_ADDRESS);
+		LocationDetails details1 = new LocationDetails(new LocationIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "A", "a", CrmAsserts.CA_ADDRESS, null);
+		LocationDetails details2 = new LocationDetails(new LocationIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "B", "b", CrmAsserts.US_ADDRESS, null);
+		LocationDetails details3 = new LocationDetails(new LocationIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "C", "c", CrmAsserts.DE_ADDRESS, null);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);
@@ -331,9 +331,9 @@ public class CrmLocationServiceCachingDelegateTests {
 
 	@Test
 	public void testCachingFindSummariesResults() {
-		LocationDetails details1 = new LocationDetails(new LocationIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "A", "a", CrmAsserts.CA_ADDRESS);
-		LocationDetails details2 = new LocationDetails(new LocationIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "B", "b", CrmAsserts.US_ADDRESS);
-		LocationDetails details3 = new LocationDetails(new LocationIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "C", "c", CrmAsserts.DE_ADDRESS);
+		LocationDetails details1 = new LocationDetails(new LocationIdentifier("A"), new OrganizationIdentifier("O"), Status.ACTIVE, "A", "a", CrmAsserts.CA_ADDRESS, null);
+		LocationDetails details2 = new LocationDetails(new LocationIdentifier("B"), new OrganizationIdentifier("O"), Status.ACTIVE, "B", "b", CrmAsserts.US_ADDRESS, null);
+		LocationDetails details3 = new LocationDetails(new LocationIdentifier("C"), new OrganizationIdentifier("O"), Status.ACTIVE, "C", "c", CrmAsserts.DE_ADDRESS, null);
 
 		BDDMockito.willAnswer((invocation) -> {
 			return new FilteredPage<>(invocation.getArgument(0), invocation.getArgument(1), List.of(details1, details2, details3), 3);

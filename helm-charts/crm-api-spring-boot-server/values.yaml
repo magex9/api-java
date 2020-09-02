@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 application:
   name: "crm-api-spring-boot-server"
-  port: 9002
+  port: 80
   group: crm
   context: /crm
   version: 1.0.0-SNAPSHOT
@@ -11,7 +11,7 @@ application:
     - name: SPRING_CONFIG_SERVER_URI
       value: "http://centralized-configuration-service"
     - name: MONGODB_DBNAME
-      value: "magex"
+      value: "magex2"
     - name: MONGODB_URL
       value: "cluster0.oofhz.azure.mongodb.net/?retryWrites=true&w=majority"
     - name : MONGODB_USERNAME
@@ -24,6 +24,12 @@ application:
         secretKeyRef:
           name: mongo-password
           key: "mongo.db.password"
+    - name : AUTH_PROFILE
+      value: AuthRemoteRsa
+    - name: REPOSITORY_PROFILE
+      value: Mongo
+    - name: JWT_RSA_CERT
+      value: file:/application/certs/crm-auth-spring-boot-server.cer
 
 replicaCount: 1
 
@@ -33,6 +39,12 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
+
+#Secrets volume mounts
+secrets:
+  - name: crm-auth-spring-boot-server-cert
+    readOnly: true
+    mountPath: "/application/certs"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -70,10 +82,13 @@ ingress:
   annotations: 
     kubernetes.io/ingress.class: addon-http-application-routing
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: crm-api-spring-boot-server.466356a5ffaf4931ba8e.canadacentral.aksapp.io
-      paths:
-        path: /
+  #hosts:
+    #if host is empty , then the hostname will be : {app_name}-{namespace}.{domain}
+  #  - host: crm-api-spring-boot-server.466356a5ffaf4931ba8e.canadacentral.aksapp.io
+  host:
+    domain: 466356a5ffaf4931ba8e.canadacentral.aksapp.io
+    paths:
+      - path: /
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

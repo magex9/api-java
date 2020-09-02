@@ -55,7 +55,8 @@ public class JsonUtils {
 				new Localized(
 						option.getObject("name").getString("code"),
 						option.getObject("name").getString("english"),
-						option.getObject("name").getString("french")));
+						option.getObject("name").getString("french")),
+				option.getLong("lastModified"));
 	}
 	
 	/**
@@ -67,7 +68,8 @@ public class JsonUtils {
 		return new OrganizationSummary(
 				new OrganizationIdentifier(json.getString("organizationId")),
 				Status.of(json.getString("status")),
-				json.getString("displayName"));
+				json.getString("displayName"),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -80,10 +82,11 @@ public class JsonUtils {
 				new OrganizationIdentifier(json.getString("organizationId")),
 				Status.of(json.getString("status")),
 				json.getString("displayName"),
-				IdentifierFactory.forId(json.getString("mainLocationId")),
-				IdentifierFactory.forId(json.getString("mainContactId")),
+				IdentifierFactory.forId(json.getString("mainLocationId", null)),
+				IdentifierFactory.forId(json.getString("mainContactId", null)),
 				json.getArray("authenticationGroupIds", String.class).stream().map(AuthenticationGroupIdentifier::new).collect(Collectors.toList()),
-				json.getArray("businessGroupIds", String.class).stream().map(BusinessGroupIdentifier::new).collect(Collectors.toList()));
+				json.getArray("businessGroupIds", String.class).stream().map(BusinessGroupIdentifier::new).collect(Collectors.toList()),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -97,7 +100,8 @@ public class JsonUtils {
 				organizationId,
 				Status.of(json.getString("status")),
 				json.getString("reference"),
-				json.getString("displayName"));
+				json.getString("displayName"),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -112,7 +116,8 @@ public class JsonUtils {
 				Status.of(json.getString("status")),
 				json.getString("reference"),
 				json.getString("displayName"),
-				toMailingAddress(json.getObject("address")));
+				toMailingAddress(json.getObject("address")),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -126,7 +131,8 @@ public class JsonUtils {
 				new PersonIdentifier(json.getString("personId")),
 				organizationId,
 				Status.of(json.getString("status")),
-				json.getString("displayName"));
+				json.getString("displayName"),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -144,7 +150,8 @@ public class JsonUtils {
 				toPersonName(json.getObject("legalName")),
 				toMailingAddress(json.getObject("address")),
 				toCommunication(json.getObject("communication")),
-				json.getArray("businessRoleIds", String.class).stream().map(BusinessRoleIdentifier::new).collect(Collectors.toList()));
+				json.getArray("businessRoleIds", String.class).stream().map(BusinessRoleIdentifier::new).collect(Collectors.toList()),
+				json.getLong("lastModified"));
 	}
 	
 	/**
@@ -158,7 +165,8 @@ public class JsonUtils {
 				new UserIdentifier("userId"), 
 				organizationId, 
 				json.getString("userName"), 
-				Status.of(json.getString("status")));
+				Status.of(json.getString("status")),
+				json.getLong("lastModified"));
 				
 	}
 	
@@ -175,7 +183,8 @@ public class JsonUtils {
 				new PersonIdentifier(json.getString("personId")), 
 				json.getString("username"), 
 				Status.of(json.getString("status")), 
-				json.getArray("authenticationRoleIds", String.class).stream().map(AuthenticationRoleIdentifier::new).collect(Collectors.toList()));
+				json.getArray("authenticationRoleIds", String.class).stream().map(AuthenticationRoleIdentifier::new).collect(Collectors.toList()),
+				json.getLong("lastModified"));
 				
 	}
 	

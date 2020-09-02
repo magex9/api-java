@@ -17,10 +17,10 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOptionRepository;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Option;
@@ -42,15 +42,16 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 	/**
 	 * Creates our new MongoDB Backed Option Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoOptionRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoOptionRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
-	public Option saveOption(Option option) {
+	public Option saveOption(Option original) {
+		final Option option = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOptions();
 		Document doc = collection
 				.find(Filters.and(
@@ -78,7 +79,8 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 									.append("options.$.name.english", option.getName().getEnglishName())
 									.append("options.$.name.english_searchable", TextUtils.toSearchable(option.getName().getEnglishName()))
 									.append("options.$.name.french", option.getName().getFrenchName())
-									.append("options.$.name.french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))));
+									.append("options.$.name.french_searchable", TextUtils.toSearchable(option.getName().getFrenchName()))
+									.append("options.$.lastModified", option.getLastModified())));
 
 			if (setResult.getMatchedCount() == 0) {
 				/* if we had no matching option id, then we need to do a push to the existing array */
@@ -99,7 +101,6 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 				debug(() -> "saveOption(" + option + ") performed an update with result " + setResult);
 			}
 		}
-		getNotifier().optionUpdated(System.currentTimeMillis(), option.getOptionId());
 		return option;
 	}
 
@@ -112,6 +113,9 @@ public class MongoOptionRepository extends AbstractMongoRepository implements Cr
 			pipeline.add(Aggregates.match(Filters.and(
 					Filters.eq("type", filter.getType().getCode()),
 					Filters.eq("env", getEnv()))));
+		}
+		else {
+			pipeline.add(Aggregates.match(Filters.eq("env", getEnv())));
 		}
 		pipeline.add(Aggregates.unwind("$options"));
 		/* match on fields if required */

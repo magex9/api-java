@@ -25,22 +25,23 @@ parameters:
 # Main JOB
 # ---------------------------------------------------------------------------------------------
 steps:
-- task: DownloadSecureFile@1
-  name: gitazurekey
+- task: Docker@2
   inputs:
-    secureFile: 'azure.key'
+    command: 'build'
+    containerRegistry: 'azure w2020 registry'
+    repository: '${{parameters.application_group}}/${{parameters.application_name}}'
+    Dockerfile: '${{parameters.dockerfile}}'
+    tags: |
+      ${{parameters.application_version}}
+      ${{parameters.application_version}}-$(Build.BuildId)
+      latest
+    arguments: '--build-arg "appname=${{parameters.application_name}}"'
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      ls -la *
-      cp $(gitazurekey.secureFilePath) azure-git.key
-      ls -la *
 - task: Docker@2
   inputs:
     containerRegistry: 'azure w2020 registry'
     repository: '${{parameters.application_group}}/${{parameters.application_name}}'
-    command: 'buildandPush'
+    command: 'Push'
     Dockerfile: '${{parameters.dockerfile}}'
     tags: |
       ${{parameters.application_version}}

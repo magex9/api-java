@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.data.domain.Sort;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
@@ -19,16 +20,14 @@ import com.mongodb.client.result.UpdateResult;
 
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmOrganizationRepository;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
-import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.mongodb.util.BsonUtils;
 import ca.magex.crm.mongodb.util.JsonUtils;
@@ -46,15 +45,16 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 	/**
 	 * Creates our new MongoDB Backed Organization Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoOrganizationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoOrganizationRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
-	public OrganizationDetails saveOrganizationDetails(OrganizationDetails orgDetails) {
+	public OrganizationDetails saveOrganizationDetails(OrganizationDetails original) {		
+		OrganizationDetails orgDetails = original.withLastModified(System.currentTimeMillis());
 		MongoCollection<Document> collection = getOrganizations();
 		Document doc = collection
 				.find(Filters.and(
@@ -83,7 +83,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 							.collect(Collectors.toList()))
 					.append("locations", List.of())
 					.append("persons", List.of())
-					.append("users", List.of()));
+					.append("users", List.of())
+					.append("lastModified", orgDetails.getLastModified()));
 			debug(() -> "saveOrganizationDetials(" + orgDetails + ") created a new document with result " + insertResult);			
 		} else {
 			/* add all the fields that can be updated */
@@ -107,7 +108,8 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 										.getBusinessGroupIds()
 										.stream()
 										.map((id) -> new BusinessGroupIdentifier(id).getFullIdentifier())
-										.collect(Collectors.toList()))));
+										.collect(Collectors.toList()))
+								.append("lastModified", orgDetails.getLastModified())));
 			if (setResult.getMatchedCount() == 0) {
 				throw new ApiException("Unable to update or insert organization: " + orgDetails);
 			}
@@ -124,15 +126,13 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Filters.eq("organizationId", organizationId.getFullIdentifier()),
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
-						Projections.include("status", "displayName")))
+						Projections.include("organizationId", "status", "displayName", "lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
 		}
-		return new OrganizationSummary(
-				organizationId,
-				Status.of(doc.getString("status")),
-				doc.getString("displayName"));
+		JsonObject json = new JsonObject(doc.toJson());
+		return JsonUtils.toOrganizationSummary(json);		
 	}
 
 	@Override
@@ -143,19 +143,13 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Filters.eq("organizationId", organizationId.getFullIdentifier()),
 						Filters.eq("env", getEnv())))
 				.projection(Projections.fields(
-						Projections.include("status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds")))
+						Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified")))
 				.first();
 		if (doc == null) {
 			return null;
 		}
-		return new OrganizationDetails(
-				organizationId,
-				Status.of(doc.getString("status")),
-				doc.getString("displayName"),
-				IdentifierFactory.forId(doc.getString("mainLocationId")),
-				IdentifierFactory.forId(doc.getString("mainContactId")),
-				doc.getList("authenticationGroupIds", String.class).stream().map(AuthenticationGroupIdentifier::new).collect(Collectors.toList()),
-				doc.getList("businessGroupIds", String.class).stream().map(BusinessGroupIdentifier::new).collect(Collectors.toList()));
+		JsonObject json = new JsonObject(doc.toJson());
+		return JsonUtils.toOrganizationDetails(json);		
 	}
 
 	@Override
@@ -194,7 +188,7 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 						Aggregates.sort(BsonUtils.toBson(paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
-						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName")))))));
+						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "lastModified")))))));
 
 		/* single document because we have facets */
 		Document doc = collection.aggregate(pipeline).first();
@@ -223,10 +217,10 @@ public class MongoOrganizationRepository extends AbstractMongoRepository impleme
 				new Facet("totalCount", 
 						Aggregates.count()), 
 				new Facet("results", List.of(
-						Aggregates.sort(BsonUtils.toBson(paging)),
+						Aggregates.sort(BsonUtils.toBson(paging.getSort() == Sort.unsorted() ? paging.withSort(OrganizationsFilter.getDefaultSort()) : paging)),
 						Aggregates.skip((int) paging.getOffset()),
 						Aggregates.limit(paging.getPageSize()),
-						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds")))))));
+						Aggregates.project(Projections.fields(Projections.include("organizationId", "status", "displayName", "mainLocationId", "mainContactId", "authenticationGroupIds", "businessGroupIds", "lastModified")))))));
 
 		/* single document because we have facets */
 		Document doc = collection.aggregate(pipeline).first();

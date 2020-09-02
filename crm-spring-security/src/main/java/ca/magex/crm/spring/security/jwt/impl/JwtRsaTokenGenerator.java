@@ -38,6 +38,7 @@ public class JwtRsaTokenGenerator implements JwtTokenGenerator, Serializable {
 	public JwtRsaTokenGenerator(
 			@Value("${jwt.expiration.hours:5}") Long expirationDuration,
 			@Value("${jwt.rsa.jks}") String jksResource,
+			@Value("${jwt.rsa.alias}") String alias,
 			@Value("${jwt.rsa.keypass}") String keypass) {
 		this.expirationDuration = expirationDuration;
 		InputStream jksStream = null;
@@ -53,7 +54,7 @@ public class JwtRsaTokenGenerator implements JwtTokenGenerator, Serializable {
 			}
 			KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 			ks.load(jksStream, keypass.toCharArray());
-			this.key = ks.getKey("crm", keypass.toCharArray());
+			this.key = ks.getKey(alias, keypass.toCharArray());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

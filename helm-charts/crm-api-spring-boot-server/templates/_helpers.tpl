@@ -52,6 +52,18 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Populate ingress hostname like : {app_name}-{namespace}.{domain}  if the host.name is empty
+This is running inside a ingress.hosts scope, then the the root is now .Values.ingress.hosts
+ex: the value .Values.ingress.hosts.host becomes only . in this loop
+in order to get the root scope , we need to preprend variable with a $ , like $.Release.Name . the .Release.Name variable is from the root scope and not the current scope
+*/}}
+
+{{- define "crm-auth-spring-boot-server.ingress.host" -}}
+	{{ .Release.Name }}-{{ .Release.Namespace }}.{{ .Values.ingress.host.domain }}
+{{- end}}
+
+
+{{/*
 Common labels
 */}}
 {{- define "crm-api-spring-boot-server.labels" -}}

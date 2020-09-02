@@ -15,8 +15,8 @@ public class JwtRsaTokenServiceTests {
 	@Test
 	public void testGenerateValidateToken() {
 		
-		JwtRsaTokenGenerator tokenGenerator = new JwtRsaTokenGenerator(TimeUnit.DAYS.toMillis(1), "classpath:crm-dev.jks", "Crm2020!");
-		JwtRsaTokenValidator tokenValidator = new JwtRsaTokenValidator(TimeUnit.DAYS.toMillis(1), "classpath:crm-dev.cer", "Crm2020!");
+		JwtRsaTokenGenerator tokenGenerator = new JwtRsaTokenGenerator(TimeUnit.DAYS.toMillis(1), "classpath:crm-dev.jks", "crm", "Crm2020!");
+		JwtRsaTokenValidator tokenValidator = new JwtRsaTokenValidator(TimeUnit.DAYS.toMillis(1), "classpath:crm-dev.cer");
 
 		Authentication auth = new UsernamePasswordAuthenticationToken("admin", "admin");
 		JwtToken token = tokenGenerator.generateToken(auth);

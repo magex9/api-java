@@ -2,6 +2,8 @@ package ca.magex.crm.api.services.basic;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.filters.OrganizationsFilter;
@@ -25,13 +27,16 @@ public class BasicOrganizationService implements CrmOrganizationService {
 	}
 	
 	public OrganizationDetails createOrganization(String organizationDisplayName, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
-		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, authenticationGroupIds, businessGroupIds));
+		return repos.saveOrganizationDetails(new OrganizationDetails(repos.generateOrganizationId(), Status.ACTIVE, organizationDisplayName, null, null, authenticationGroupIds, businessGroupIds, null));
 	}
 
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
+		}
+		if (details.getStatus() == Status.ACTIVE) {
+			return details.asSummary();
 		}
 		return repos.saveOrganizationDetails(details.withStatus(Status.ACTIVE)).asSummary();
 	}
@@ -41,6 +46,9 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		if (details == null) {
 			return null;
 		}
+		if (details.getStatus() == Status.INACTIVE) {
+			return details.asSummary();
+		}
 		return repos.saveOrganizationDetails(details.withStatus(Status.INACTIVE)).asSummary();
 	}
 
@@ -48,6 +56,9 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
+		}
+		if (StringUtils.equals(details.getDisplayName(), name)) {
+			return details;
 		}
 		return repos.saveOrganizationDetails(details.withDisplayName(name));
 	}
@@ -57,6 +68,9 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		if (details == null) {
 			return null;
 		}
+		if ((details.getMainLocationId() == null && locationId == null) || (details.getMainLocationId() != null && details.getMainLocationId().equals(locationId))) {
+			return details;
+		}
 		return repos.saveOrganizationDetails(details.withMainLocationId(locationId));
 	}
 	
@@ -64,6 +78,9 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
+		}
+		if ((details.getMainContactId() == null && personId == null) || (details.getMainContactId() != null && details.getMainContactId().equals(personId))) {
+			return details;
 		}
 		return repos.saveOrganizationDetails(details.withMainContactId(personId));
 	}
@@ -73,6 +90,9 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		if (details == null) {
 			return null;
 		}
+		if (details.getAuthenticationGroupIds().containsAll(authenticationGroupIds) && authenticationGroupIds.containsAll(details.getAuthenticationGroupIds())) {
+			return details;
+		}
 		return repos.saveOrganizationDetails(details.withAuthenticationGroupIds(authenticationGroupIds));
 	}
 	
@@ -81,6 +101,9 @@ public class BasicOrganizationService implements CrmOrganizationService {
 		OrganizationDetails details = findOrganizationDetails(organizationId);
 		if (details == null) {
 			return null;
+		}
+		if (details.getBusinessGroupIds().containsAll(businessGroupIds) && businessGroupIds.containsAll(details.getBusinessGroupIds())) {
+			return details;
 		}
 		return repos.saveOrganizationDetails(details.withBusinessGroupIds(businessGroupIds));
 	}

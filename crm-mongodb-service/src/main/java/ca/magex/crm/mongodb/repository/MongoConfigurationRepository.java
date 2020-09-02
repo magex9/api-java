@@ -9,8 +9,8 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
+import ca.magex.crm.api.event.CrmEventObserver;
 import ca.magex.crm.api.exceptions.ApiException;
-import ca.magex.crm.api.observer.CrmUpdateNotifier;
 import ca.magex.crm.api.repositories.CrmConfigurationRepository;
 
 /**
@@ -23,11 +23,11 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 	/**
 	 * Creates our new MongoDB Backed Option Repository
 	 * @param mongoCrm
-	 * @param notifier
+	 * @param observer
 	 * @param env
 	 */
-	public MongoConfigurationRepository(MongoDatabase mongoCrm, CrmUpdateNotifier notifier, String env) {
-		super(mongoCrm, notifier, env);
+	public MongoConfigurationRepository(MongoDatabase mongoCrm, CrmEventObserver observer, String env) {
+		super(mongoCrm, observer, env);
 	}
 
 	@Override
@@ -35,8 +35,10 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 		MongoCollection<Document> configurations = getConfigurations();
 		Document doc = configurations.find(Filters.eq("env", getEnv())).first();
 		if (doc == null) {
+			info(() -> "No configuration document found for env: " + getEnv());
 			return false;
 		}
+		info(() -> "Found configuration document for env: " + getEnv());
 		return doc.containsKey("initialized") && doc.getLong("initialized") > 0L;
 	}
 
@@ -48,7 +50,7 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 			final InsertOneResult result = configurations.insertOne(new Document()
 					.append("env", getEnv())
 					.append("initialized", 0L));
-			debug(() -> "prepareInitiailze() inserted new document with result: " + result);
+			info(() -> "prepareInitiailze() inserted new document with result: " + result);
 			return true;
 		}
 		return false;
@@ -67,6 +69,7 @@ public class MongoConfigurationRepository extends AbstractMongoRepository implem
 				new BasicDBObject()
 						.append("$set", new BasicDBObject()
 								.append("initialized", System.currentTimeMillis())));
+		info(() -> "setResult() -> " + setResult.toString());
 		if (setResult.getMatchedCount() != 1) {
 			throw new ApiException("Unable to set initialized: " + setResult);
 		}

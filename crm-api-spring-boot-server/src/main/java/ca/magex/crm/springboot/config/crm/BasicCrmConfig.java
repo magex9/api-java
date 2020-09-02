@@ -20,16 +20,20 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.basic.BasicPasswordService;
 import ca.magex.crm.api.config.CrmConfigurer;
-import ca.magex.crm.api.observer.basic.BasicUpdateObserver;
+import ca.magex.crm.api.observer.basic.BasicEventObserver;
 import ca.magex.crm.api.policies.authenticated.AuthenticatedPolicies;
 import ca.magex.crm.api.repositories.basic.BasicPasswordRepository;
 import ca.magex.crm.api.repositories.basic.BasicRepositories;
+import ca.magex.crm.api.services.CrmConfigurationService;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
 import ca.magex.crm.caching.CrmCachingServices;
+import ca.magex.crm.caching.CrmConfigurationServiceCachingDelegate;
+import ca.magex.crm.caching.config.CachingConfig;
+import ca.magex.crm.caching.util.CacheTemplate;
 import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
@@ -61,8 +65,8 @@ public class BasicCrmConfig implements CrmConfigurer {
 	}
 
 	@Bean
-	public BasicUpdateObserver observer() {
-		return new BasicUpdateObserver();
+	public BasicEventObserver observer() {
+		return new BasicEventObserver();
 	}
 
 	@Bean
@@ -83,7 +87,6 @@ public class BasicCrmConfig implements CrmConfigurer {
 				.expireAfterWrite(5, TimeUnit.MINUTES)
 				.expireAfterAccess(10, TimeUnit.MINUTES)
 				.maximumSize(1000L));
-
 		return new TransactionAwareCacheManagerProxy(caffeineCacheManager);
 	}
 
@@ -92,7 +95,7 @@ public class BasicCrmConfig implements CrmConfigurer {
 		CrmServices services = new BasicServices(repos(), passwords()); 
 		if (enableCachedServices) {
 			LoggerFactory.getLogger(BasicCrmConfig.class).info("CRM Caching Services Enabled");
-			// clear caches
+			/* clear caches */
 			cacheManager().getCacheNames().forEach((cache) -> cacheManager().getCache(cache).clear());
 			return new CrmCachingServices(cacheManager(), services);
 		}
@@ -118,8 +121,14 @@ public class BasicCrmConfig implements CrmConfigurer {
 	}
 	
 	@Bean 
-	public BasicConfigurationService config() {
-		return new BasicConfigurationService(repos(), passwords());
+	public CrmConfigurationService config() {
+		CrmConfigurationService config = new BasicConfigurationService(repos(), passwords());
+		if (enableCachedServices) {
+			return new CrmConfigurationServiceCachingDelegate(config, new CacheTemplate(cacheManager(), CachingConfig.Caches.init));
+		}
+		else {
+			return config;
+		}
 	}
 
 	@Bean

@@ -51,9 +51,10 @@ public class OrganizationDetails extends OrganizationSummary {
 	 * @param mainLocationId
 	 * @param mainContactId
 	 * @param authenticationGroupIds
+	 * @param lastModified
 	 */
-	public OrganizationDetails(OrganizationIdentifier organizationId, Status status, String displayName, LocationIdentifier mainLocationId, PersonIdentifier mainContactId, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds) {
-		super(organizationId, status, displayName);
+	public OrganizationDetails(OrganizationIdentifier organizationId, Status status, String displayName, LocationIdentifier mainLocationId, PersonIdentifier mainContactId, List<AuthenticationGroupIdentifier> authenticationGroupIds, List<BusinessGroupIdentifier> businessGroupIds, Long lastModified) {
+		super(organizationId, status, displayName, lastModified);
 		this.mainLocationId = mainLocationId;
 		this.mainContactId = mainContactId;
 		this.authenticationGroupIds = authenticationGroupIds == null ? new IdentifierList<>() : new IdentifierList<>(authenticationGroupIds);
@@ -94,13 +95,18 @@ public class OrganizationDetails extends OrganizationSummary {
 	
 	@Override
 	public OrganizationDetails withStatus(Status status) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
 	}
 
 	@Override
 	public OrganizationDetails withDisplayName(String displayName) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
 	}	
+	
+	@Override
+	public OrganizationDetails withLastModified(Long lastModified) {
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
+	}
 	
 	/**
 	 * returns a copy of the Organization with the new main location identifier
@@ -108,7 +114,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	 * @return
 	 */
 	public OrganizationDetails withMainLocationId(LocationIdentifier mainLocationId) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
 	}
 	
 	/**
@@ -117,7 +123,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	 * @return
 	 */
 	public OrganizationDetails withMainContactId(PersonIdentifier mainContactId) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
 	}
 
 	/**
@@ -126,7 +132,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	 * @return
 	 */
 	public OrganizationDetails withAuthenticationGroupIds(List<AuthenticationGroupIdentifier> authenticationGroupIds) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
 	}
 	
 	/**
@@ -135,7 +141,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	 * @return
 	 */
 	public OrganizationDetails withBusinessGroupIds(List<BusinessGroupIdentifier> businessGroupIds) {
-		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds);
+		return new OrganizationDetails(organizationId, status, displayName, mainLocationId, mainContactId, authenticationGroupIds, businessGroupIds, lastModified);
 	}
 	
 	/**
@@ -143,7 +149,7 @@ public class OrganizationDetails extends OrganizationSummary {
 	 * @return
 	 */
 	public OrganizationSummary asSummary() {
-		return new OrganizationSummary(organizationId, status, displayName);
+		return new OrganizationSummary(organizationId, status, displayName, lastModified);
 	}
 
 	@Override

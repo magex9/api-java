@@ -33,9 +33,10 @@ public class LocationDetails extends LocationSummary {
 	 * @param reference
 	 * @param displayName
 	 * @param address
+	 * @param lastModified
 	 */
-	public LocationDetails(LocationIdentifier locationId, OrganizationIdentifier organizationId, Status status, String reference, String displayName, MailingAddress address) {
-		super(locationId, organizationId, status, reference, displayName);		
+	public LocationDetails(LocationIdentifier locationId, OrganizationIdentifier organizationId, Status status, String reference, String displayName, MailingAddress address, Long lastModified) {
+		super(locationId, organizationId, status, reference, displayName, lastModified);		
 		this.address = address;
 	}
 	
@@ -49,34 +50,38 @@ public class LocationDetails extends LocationSummary {
 
 	@Override
 	public LocationDetails withStatus(Status status) {
-		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
 	}
 
 	@Override
 	public LocationDetails withReference(String reference) {
-		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
 	}
 	
 	@Override
 	public LocationDetails withDisplayName(String displayName) {
-		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
 	}
 
+	@Override
+	public LocationDetails withLastModified(Long lastModified) {
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
+	}
+	
 	/**
 	 * returns a copy of the location with the associated address
 	 * @param address
 	 * @return
 	 */
 	public LocationDetails withAddress(MailingAddress address) {
-		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
 	}
-
 	/**
 	 * returns the summary information for this location
 	 * @return
 	 */
 	public LocationSummary asSummary() {
-		return new LocationSummary(locationId, organizationId, status, reference, displayName);
+		return new LocationSummary(locationId, organizationId, status, reference, displayName, lastModified);
 	}
 	
 	@Override

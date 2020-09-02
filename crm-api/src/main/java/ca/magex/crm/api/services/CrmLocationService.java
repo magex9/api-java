@@ -37,7 +37,7 @@ public interface CrmLocationService {
 	 * @return
 	 */
 	default LocationDetails prototypeLocation(OrganizationIdentifier organizationId, String reference, String displayName, MailingAddress address) {
-		return new LocationDetails(null, organizationId, Status.PENDING, reference, displayName, address);
+		return new LocationDetails(null, organizationId, Status.PENDING, reference, displayName, address, null);
 	};
 
 	/**

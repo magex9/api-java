@@ -1,5 +1,6 @@
 package ca.magex.crm.spring.security.jwt;
 
+import java.util.Base64;
 import java.util.Date;
 
 import org.junit.Assert;
@@ -38,5 +39,13 @@ public class HmacJwtTokenServiceTest {
 		}
 		catch(ExpiredJwtException e) {
 		}
+		
+		String[] components = token.getToken().split("\\.");
+		String part1 = new String(Base64.getDecoder().decode(components[0]));
+		System.out.println(part1);
+		String part2 = new String(Base64.getDecoder().decode(components[1]));
+		System.out.println(part2);
+		
+
 	}
 }

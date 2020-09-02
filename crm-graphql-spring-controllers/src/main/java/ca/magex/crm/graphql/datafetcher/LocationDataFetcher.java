@@ -90,14 +90,12 @@ public class LocationDataFetcher extends AbstractDataFetcher {
 				switch (status) {
 				case "ACTIVE":
 					if (loc.getStatus() != Status.ACTIVE) {
-						crm.enableLocation(locationId);
-						loc = loc.withStatus(Status.ACTIVE);
+						loc = loc.withStatus(Status.ACTIVE).withLastModified(crm.enableLocation(locationId).getLastModified());
 					}
 					break;
 				case "INACTIVE":
 					if (loc.getStatus() != Status.INACTIVE) {
-						crm.disableLocation(locationId);
-						loc = loc.withStatus(Status.INACTIVE);
+						loc = loc.withStatus(Status.INACTIVE).withLastModified(crm.disableLocation(locationId).getLastModified());
 					}
 					break;
 				default:

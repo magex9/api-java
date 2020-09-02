@@ -28,6 +28,7 @@ import ca.magex.crm.api.transform.Transformer;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonBoolean;
 import ca.magex.json.model.JsonElement;
+import ca.magex.json.model.JsonNumber;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
@@ -168,6 +169,14 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 		String text = getProperty(obj, key, String.class);
 		if (text != null)
 			parent.add(new JsonPair(key, new JsonText(text)));
+	}
+	
+	public void formatLong(List<JsonPair> parent, String key, Object obj) {
+		if (obj == null)
+			return;
+		Long value = getProperty(obj, key, Long.class);
+		if (value != null)
+			parent.add(new JsonPair(key, new JsonNumber(value)));
 	}
 	
 	public <O extends OptionIdentifier> void formatChoice(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
@@ -331,6 +340,10 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	
 	public String parseText(String key, JsonObject json) {
 		return json.contains(key) ? json.getString(key) : null;
+	}
+	
+	public Long parseLong(String key, JsonObject json) {
+		return json.contains(key) ? json.getLong(key) : null;
 	}
 	
 	public Boolean parseBoolean(String key, JsonObject json) {
