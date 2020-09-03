@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
-import ca.magex.crm.api.services.CrmOptionService;
+import ca.magex.crm.api.services.CrmConfigurationService;
+import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.hazelcast.config.HazelcastTestConfig;
 import ca.magex.crm.test.AbstractOptionServiceTests;
 
@@ -16,22 +17,28 @@ import ca.magex.crm.test.AbstractOptionServiceTests;
 @ContextConfiguration(classes = { HazelcastTestConfig.class })
 @EnableTransactionManagement
 public class HazelcastOptionServiceTests extends AbstractOptionServiceTests {
-
+	
 	@Autowired private Crm crm;	
+	@Autowired private CrmConfigurationService config;
 	@Autowired private CrmAuthenticationService auth;
 	
 	@Override
-	protected Crm config() {
-		return crm; // use our default crm to configure the system for tests
+	protected CrmConfigurationService config() {
+		return config; // use our default crm to configure the system for tests
+	}
+	
+	@Override
+	protected CrmServices crm() {
+		return crm;
+	}
+	
+	@Override
+	protected CrmServices options() {
+		return crm;
 	}
 	
 	@Override
 	protected CrmAuthenticationService auth() {
 		return auth;
-	}
-	
-	@Override
-	protected CrmOptionService options() {
-		return crm;
 	}
 }
