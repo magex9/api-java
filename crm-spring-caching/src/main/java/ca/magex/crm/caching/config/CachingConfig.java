@@ -8,5 +8,6 @@ public class CachingConfig {
 		public static final String Persons 			= "persons";
 		public static final String Users			= "users";
 		public static final String Options 			= "options";
+		public static final String init				= "init";
 	}	
 }

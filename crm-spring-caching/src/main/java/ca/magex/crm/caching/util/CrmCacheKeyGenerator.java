@@ -12,6 +12,15 @@ public class CrmCacheKeyGenerator {
 	}	
 	
 	/**
+	 * Generates the system initialization key
+	 * @param system
+	 * @return
+	 */
+	public String generateInitKey(String system) {
+		return "Init_" + system;
+	}
+	
+	/**
 	 * Generates the Key used for the Cache Entry of a Details instance
 	 * @param identifier
 	 * @return

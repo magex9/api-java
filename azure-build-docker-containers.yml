@@ -1,0 +1,52 @@
+#Variables that needs to be setup in main pipeline:
+
+#container_registry : Azure container registry name
+#
+
+parameters:
+
+- name: application_name
+  type: string
+
+- name: application_group
+  type: string
+
+- name: application_version
+  type: string
+
+- name: environment
+  type: string
+
+- name: dockerfile
+  type: string
+  default: ./Dockerfile
+
+# ---------------------------------------------------------------------------------------------
+# Main JOB
+# ---------------------------------------------------------------------------------------------
+steps:
+- task: Docker@2
+  inputs:
+    command: 'build'
+    containerRegistry: 'azure w2020 registry'
+    repository: '${{parameters.application_group}}/${{parameters.application_name}}'
+    Dockerfile: '${{parameters.dockerfile}}'
+    tags: |
+      ${{parameters.application_version}}
+      ${{parameters.application_version}}-$(Build.BuildId)
+      latest
+    arguments: '--build-arg "appname=${{parameters.application_name}}"'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'azure w2020 registry'
+    repository: '${{parameters.application_group}}/${{parameters.application_name}}'
+    command: 'Push'
+    Dockerfile: '${{parameters.dockerfile}}'
+    tags: |
+      ${{parameters.application_version}}
+      ${{parameters.application_version}}-$(Build.BuildId)
+      latest
+
+- publish: $(Build.SourcesDirectory)/helm-charts
+  artifact: helm-charts

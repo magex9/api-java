@@ -1,0 +1,19 @@
+# Source: crm-api-spring-boot-server/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: crm-api-spring-boot-server-2
+  labels:
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    nginx.ingress.kubernetes.io/rewrite-target: /crm
+spec:
+  rules:
+    - host: "finappdev.canadacentral.cloudapp.azure.com"
+      http:
+        paths:
+          - path: /crm
+            backend:
+              serviceName: crm-api-spring-boot-server
+              servicePort: 80
+---

@@ -1,0 +1,109 @@
+### INPUT PARAMETERS ######################
+parameters:
+- name: application_name
+  type: string
+
+- name: environment
+  type: string
+  default: 'ut'
+  values:
+  - 'ut'
+  - 'qa'
+  - 'ua'
+  - 'pr'
+
+
+##########################################
+
+steps:
+      
+- bash: | 
+
+    application_package_root_dir="${PIPELINE_WORKSPACE}/${{parameters.application_name}}"
+    echo "application_package_root_dir=${application_package_root_dir}"
+    echo "##vso[task.setvariable variable=application_package_root_dir]${application_package_root_dir}"
+        
+    application_package_target_dir="${application_package_root_dir}/target"
+    echo "application_package_target_dir=${application_package_target_dir}"
+
+    #-----------------------------------------------------
+    # BUILD Directory -> where we assemble all pieces to create a package    
+    
+    #echo "##vso[task.setvariable variable=application_package_build_dir]${application_package_build_dir}"
+    application_package_build_dir=${PIPELINE_WORKSPACE}/build/${{parameters.application_name}}
+    echo "application_package_build_dir=${application_package_build_dir}"
+
+    #-----------------------------------------------------
+    #Package Directory -> Where we put the final package
+    echo "application_package_publish_dir=${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}/"
+    echo "##vso[task.setvariable variable=application_package_publish_dir]${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}/"
+    application_package_publish_dir=${PIPELINE_WORKSPACE}/publish/${{parameters.application_name}}
+
+    
+    config_dir=${application_package_root_dir}/config
+    echo "config_dir=${config_dir}"
+    source ${application_package_target_dir}/maven-archiver/pom.properties
+    cat ${application_package_target_dir}/maven-archiver/pom.properties
+    
+    # Application Version (make it accessible from outside this script)
+    echo "application_version=${version}"
+    application_version=${version}
+    #echo "##vso[task.setvariable variable=application_version]${version}"
+
+    echo "application_package_name=${{parameters.application_name}}-${application_version}.zip"
+    application_package_name=${{parameters.application_name}}-${application_version}.zip
+    echo "##vso[task.setvariable variable=application_package_name]${{parameters.application_name}}-${application_version}.zip"
+
+    echo "application_package_publish_path=${application_package_publish_dir}/${application_package_name}"
+    echo "##vso[task.setvariable variable=application_package_publish_path]${application_package_publish_dir}/${application_package_name}"
+    application_package_publish_path=${application_package_publish_dir}/${application_package_name}
+    
+    adlc_dir=${AGENT_BUILDDIRECTORY}/adlc
+    echo "adlc_dir=$adlc_dir"
+    admin_dir=${adlc_dir}/admin
+    echo "admin_dir=${admin_dir}"
+    application_config_dir=${application_package_build_dir}/
+    
+    application_config_path=${application_config_dir}/application.cfg
+    
+    #-----------------------------------------------------
+    #env      
+    ls -la ${application_package_root_dir}/**
+    ls -la ${adlc_dir}       
+    mkdir -p ${application_package_publish_dir}
+    mkdir -p ${application_package_build_dir}
+
+    if [ ! -d ${application_config_dir} ];then
+      mkdir -p ${application_config_dir}
+    fi
+
+    #setup server specific information
+    # echo "export SERVER_INTERNAL_IP=${SERVER_INTERNAL_IP}" >> ${application_config_path}
+    # echo "export SERVER_EXTERNAL_IP=${SERVER_EXTERNAL_IP}" >> ${application_config_path}
+    # echo "export SERVER_EXTERNAL_URL=${SERVER_EXTERNAL_URL}" >> ${application_config_path}
+    # echo "export APPLICATION_NAME=${{parameters.application_name}}" >> ${application_config_path}
+    # echo "export ENVIRONMENT=${{parameters.environment}}" >> ${application_config_path}
+    # echo "export SPRING_CONFIG_SERVER_URI=${CONFIG_SERVER_URI}" >> ${application_config_path}
+    
+    #copy jar files
+    jarpath=`ls ${application_package_target_dir}/*-bootable.jar | head -n 1`
+    jarname=`basename $jarpath`
+    cp ${jarpath} ${application_package_build_dir}/
+    
+    echo "application_jar_name=${jarname}"
+    application_jar_name=${jarname}
+    echo "##vso[task.setvariable variable=application_jar_name]${jarname}"
+
+
+    #copy configurations
+    cp -r ${config_dir}/* ${application_config_dir}/
+
+    #cp -r ${admin_dir}/* ${application_package_build_dir}/
+    #tar -C ${application_package_build_dir}/../ -cvzf ${application_package_publish_path} ${{parameters.application_name}}
+    cd ${application_package_build_dir}/
+    zip -r ${application_package_publish_path} *
+    ls -la ${application_package_publish_path}
+    unzip -l ${application_package_publish_path}
+
+  displayName: "Create application package" 
+ 
