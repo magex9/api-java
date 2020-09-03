@@ -64,19 +64,21 @@ public class BasicOptionPolicy implements CrmOptionPolicy {
 	@Override
 	public boolean canEnableOption(OptionIdentifier optionId) {
 		/* can enable a specific option if it exists */
-		if (options.findOption(optionId) == null) {
+		Option option = options.findOption(optionId);
+		if (option == null) {
 			throw new ItemNotFoundException("Option ID '" + optionId + "'");
 		}
-		return true;
+		return !option.getStatus().equals(Status.ACTIVE);
 	}
 
 	@Override
 	public boolean canDisableOption(OptionIdentifier optionId) {
 		/* can disable a specific option if it exists */
-		if (options.findOption(optionId) == null) {
+		Option option = options.findOption(optionId);
+		if (option == null) {
 			throw new ItemNotFoundException("Option ID '" + optionId + "'");
 		}
-		return true;
+		return option.getStatus().equals(Status.ACTIVE);
 	}
 
 }

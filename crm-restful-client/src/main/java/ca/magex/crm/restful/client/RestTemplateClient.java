@@ -180,7 +180,11 @@ public class RestTemplateClient {
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
 			JsonObject json = new JsonObject(e.getResponseBodyAsString());
-			throw new ItemNotFoundException(json.getString("reason"));
+			if (json.contains("reason")) {
+				throw new ItemNotFoundException(json.getString("reason"));
+			} else {
+				throw new RuntimeException("Path not found: " + url);
+			}
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
@@ -203,7 +207,11 @@ public class RestTemplateClient {
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
 			JsonObject json = new JsonObject(e.getResponseBodyAsString());
-			throw new ItemNotFoundException(json.getString("reason"));
+			if (json.contains("reason")) {
+				throw new ItemNotFoundException(json.getString("reason"));
+			} else {
+				throw new RuntimeException("Path not found: " + url);
+			}
 		} catch (HttpClientErrorException.Forbidden e) {
 			JsonObject json = new JsonObject(e.getResponseBodyAsString());
 			throw new PermissionDeniedException(json.getString("reason"));
@@ -227,7 +235,11 @@ public class RestTemplateClient {
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
 			JsonObject json = new JsonObject(e.getResponseBodyAsString());
-			throw new ItemNotFoundException(json.getString("reason"));
+			if (json.contains("reason")) {
+				throw new ItemNotFoundException(json.getString("reason"));
+			} else {
+				throw new RuntimeException("Path not found: " + url);
+			}
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {
@@ -250,7 +262,11 @@ public class RestTemplateClient {
 			return (T)JsonParser.parse(response.getBody());
 		} catch (HttpClientErrorException.NotFound e) {
 			JsonObject json = new JsonObject(e.getResponseBodyAsString());
-			throw new ItemNotFoundException(json.getString("reason"));
+			if (json.contains("reason")) {
+				throw new ItemNotFoundException(json.getString("reason"));
+			} else {
+				throw new RuntimeException("Path not found: " + url);
+			}
 		} catch (HttpClientErrorException.Forbidden e) {
 			throw new PermissionDeniedException(url);
 		} catch (HttpClientErrorException.BadRequest e) {

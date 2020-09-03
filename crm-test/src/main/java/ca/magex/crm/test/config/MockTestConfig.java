@@ -4,6 +4,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import ca.magex.crm.api.authentication.CrmPasswordService;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
@@ -36,5 +37,10 @@ public class MockTestConfig {
 	@Bean
 	public CrmUserService mockUserService() {
 		return Mockito.mock(CrmUserService.class);
+	}
+	
+	@Bean
+	public CrmPasswordService mockPasswordService() {
+		return Mockito.mock(CrmPasswordService.class);
 	}
 }

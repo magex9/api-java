@@ -26,7 +26,7 @@ import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.json.model.JsonObject;
 
 @Controller
-public class JunitController extends AbstractRestfulController {
+public class RestfulJunitController extends AbstractRestfulController {
 
 	@PostMapping("/rest/junit/identifier/{key}")
 	public void getIdentifier(HttpServletRequest req, HttpServletResponse res, 

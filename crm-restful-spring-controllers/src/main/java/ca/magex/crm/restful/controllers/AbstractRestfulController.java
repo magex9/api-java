@@ -178,7 +178,7 @@ public abstract class AbstractRestfulController {
 		return "application/json";
 	}
 
-	protected <T> JsonObject createPage(Page<T> page, Transformer<T, JsonElement> transfomer, Locale locale) {
+	protected <T> JsonObject createPage(Page<T> page, RestfulActionHandler<T> actionHandler, Transformer<T, JsonElement> transfomer, Locale locale) {
 		return new JsonObject()
 			.with("@context", locale == null ? Crm.SCHEMA_BASE + "/system/Page" : null)
 			.with("page", page.getNumber())
@@ -186,16 +186,18 @@ public abstract class AbstractRestfulController {
 			.with("total", page.getTotalElements())
 			.with("hasNext", page.hasNext())
 			.with("hasPrevious", page.hasPrevious())
-			.with("content", new JsonArray(page.getContent().stream().map(i -> transfomer.format(i, locale)).collect(Collectors.toList())));
+			.with("content", new JsonArray(page.getContent().stream()
+				.map(i -> ((JsonObject)transfomer.format(i, locale)).with("actions", actionHandler.transformAction(i, crm, locale)))
+				.collect(Collectors.toList())));
 	}
 	
-	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transformer, Locale locale) {
+	protected <T> JsonElement createList(List<T> list, Transformer<T, JsonElement> transformer, Locale locale) {
 		return new JsonObject()
 			.with("total", list.size())
 			.with("content", new JsonArray(list.stream().map(i -> transformer.format(i, locale)).collect(Collectors.toList())));
 	}
 	
-	protected <T> JsonObject createList(List<T> list, Transformer<T, JsonElement> transformer, Locale locale, Comparator<T> comparator) {
+	protected <T> JsonElement createList(List<T> list, Transformer<T, JsonElement> transformer, Locale locale, Comparator<T> comparator) {
 		return new JsonObject()
 			.with("total", list.size())
 			.with("content", new JsonArray(list.stream().sorted(comparator).map(i -> transformer.format(i, locale)).collect(Collectors.toList())));
@@ -267,15 +269,6 @@ public abstract class AbstractRestfulController {
 		if (req.getParameter("order") != null)
 			paging = paging.withSort(Sort.by(direction, req.getParameter("order")));
 		return paging;
-	}
-	
-	public JsonObject action(String name, String title, String method, String href) {
-		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		pairs.add(new JsonPair("name", name));
-		pairs.add(new JsonPair("title", title));
-		pairs.add(new JsonPair("method", method));
-		pairs.add(new JsonPair("href", href));
-		return new JsonObject(pairs);
 	}
 	
 }

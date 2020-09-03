@@ -53,38 +53,21 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
 
 		/* activate already active organization */
-		johnnuy = execute(
-				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
+		try {
+			johnnuy = execute(
+				"enableOrganization",
+				"mutation { enableOrganization(organizationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
-				johnnuyId,
-				"active");
-		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
-		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
-		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainLocation"));
-		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainContact"));
-		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
-		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Système", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("french"));
-		Assert.assertEquals("ORG", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("code"));
-		Assert.assertEquals("Organization", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Organisation", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("french"));
-		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
-		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
-		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
-		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
+				johnnuyId);
+			Assert.fail("Already active");
+		} catch (ApiException e) { }
 
 		/* inactivate active organization */
 		johnnuy = execute(
-				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
+				"disableOrganization",
+				"mutation { disableOrganization(organizationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
-				johnnuyId,
-				"inactive");
+				johnnuyId);
 		Assert.assertEquals("INACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
 		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainLocation"));
@@ -105,38 +88,21 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
 
 		/* inactivate already inactive organization */
-		johnnuy = execute(
-				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
+		try {
+			johnnuy = execute(
+				"disableOrganization",
+				"mutation { disableOrganization(organizationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
-				johnnuyId,
-				"inactive");
-		Assert.assertEquals("INACTIVE", johnnuy.get("status"));
-		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
-		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainLocation"));
-		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainContact"));
-		Assert.assertEquals(2, johnnuy.getJSONArray("authenticationGroups").length());
-		Assert.assertEquals("SYS", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("System", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Système", johnnuy.getJSONArray("authenticationGroups").getJSONObject(0).getJSONObject("name").getString("french"));
-		Assert.assertEquals("ORG", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("code"));
-		Assert.assertEquals("Organization", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Organisation", johnnuy.getJSONArray("authenticationGroups").getJSONObject(1).getJSONObject("name").getString("french"));
-		Assert.assertEquals(2, johnnuy.getJSONArray("businessGroups").length());
-		Assert.assertEquals("IMIT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("IM/IT", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("GI / TI", johnnuy.getJSONArray("businessGroups").getJSONObject(0).getJSONObject("name").getString("french"));
-		Assert.assertEquals("IMIT/DEV", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("code"));
-		Assert.assertEquals("Application Development", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Développement d'applications", johnnuy.getJSONArray("businessGroups").getJSONObject(1).getJSONObject("name").getString("french"));
+				johnnuyId);
+			Assert.fail("Already inactive");
+		} catch (ApiException e) { }
 
 		/* activate inactive organization */
 		johnnuy = execute(
-				"updateOrganization",
-				"mutation { updateOrganization(organizationId: %s, status: %s) { " +
+				"enableOrganization",
+				"mutation { enableOrganization(organizationId: %s) { " +
 						"organizationId status displayName mainLocation { locationId } mainContact { personId } authenticationGroups { name { code english french } } businessGroups { name { code english french } } } }",
-				johnnuyId,
-				"active");
+				johnnuyId);
 		Assert.assertEquals("ACTIVE", johnnuy.get("status"));
 		Assert.assertEquals("Johnnuy", johnnuy.get("displayName"));
 		Assert.assertEquals(JSONObject.NULL, johnnuy.get("mainLocation"));
@@ -166,7 +132,7 @@ public class OrganizationDataFetcherTests extends AbstractDataFetcherTests {
 					"suspended");
 			Assert.fail("Should have failed on bad status");
 		} catch (ApiException api) {
-			Assert.assertEquals("Errors encountered during updateOrganization - Invalid status 'SUSPENDED', one of {ACTIVE, INACTIVE} expected", api.getMessage());
+			Assert.assertEquals("Errors encountered during updateOrganization - Validation error of type UnknownArgument: Unknown field argument status @ 'updateOrganization'", api.getMessage());
 		}
 
 		/* update display name */

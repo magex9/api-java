@@ -18,7 +18,7 @@ public class AuthenticatedPolicies extends CrmPoliciesAdapter implements CrmPoli
 			new AuthenticatedOrganizationPolicy(auth, services),
 			new AuthenticatedLocationPolicy(auth, services, services),
 			new AuthenticatedPersonPolicy(auth, services, services),
-			new AuthenticatedUserPolicy(auth, services, services)
+			new AuthenticatedUserPolicy(auth, services, services, services)
 		);
 	}
 	
@@ -34,7 +34,7 @@ public class AuthenticatedPolicies extends CrmPoliciesAdapter implements CrmPoli
 			new AuthenticatedOrganizationPolicy(auth, organizations),
 			new AuthenticatedLocationPolicy(auth, organizations, locations),
 			new AuthenticatedPersonPolicy(auth, organizations, persons),
-			new AuthenticatedUserPolicy(auth, persons, users)
+			new AuthenticatedUserPolicy(auth, organizations, persons, users)
 		);
 	}
 

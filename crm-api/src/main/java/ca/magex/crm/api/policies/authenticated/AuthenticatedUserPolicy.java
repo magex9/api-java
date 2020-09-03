@@ -8,6 +8,7 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.policies.CrmUserPolicy;
 import ca.magex.crm.api.policies.basic.BasicUserPolicy;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -32,12 +33,13 @@ public class AuthenticatedUserPolicy implements CrmUserPolicy {
 	 */
 	public AuthenticatedUserPolicy(
 			CrmAuthenticationService auth,
+			CrmOrganizationService organizations,
 			CrmPersonService persons,
 			CrmUserService users) {
 		this.auth = auth;
 		this.persons = persons;
 		this.users = users;
-		this.delegate = new BasicUserPolicy(persons, users);
+		this.delegate = new BasicUserPolicy(organizations, persons, users);
 	}
 
 	@Override

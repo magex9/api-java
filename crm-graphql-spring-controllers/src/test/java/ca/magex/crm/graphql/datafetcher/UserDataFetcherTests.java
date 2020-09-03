@@ -77,32 +77,21 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		
 		
 		/* activate active user */
-		user = execute(
-				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { " + 
+		try {
+			user = execute(
+				"enableUser",
+				"mutation { enableUser(userId: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
-				userId,
-				"active");
-		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
-		Assert.assertEquals("jbigford", user.getString("username"));
-		Assert.assertEquals("ACTIVE", user.getString("status"));
-		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
-		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
-		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
-		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
-		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
+				userId);
+			Assert.fail("Already active");
+		} catch (ApiException e) { }
 		
 		/* inactivate active user */
 		user = execute(
-				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { " + 
+				"disableUser",
+				"mutation { disableUser(userId: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
-				userId,
-				"inactive");
+				userId);
 		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("INACTIVE", user.getString("status"));
@@ -117,32 +106,21 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
 	
 		/* inactivate inactive user */
-		user = execute(
-				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { " + 
+		try {
+			user = execute(
+				"disableUser",
+				"mutation { disableUser(userId: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
-				userId,
-				"inactive");
-		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
-		Assert.assertEquals("jbigford", user.getString("username"));
-		Assert.assertEquals("INACTIVE", user.getString("status"));
-		Assert.assertEquals("Jonny Bigford", user.getJSONObject("person").getString("displayName"));
-		Assert.assertEquals("jonny.bigford@johnnuy.org", user.getJSONObject("person").getJSONObject("communication").getString("email"));
-		Assert.assertEquals(2, user.getJSONArray("authenticationRoles").length());
-		Assert.assertEquals("SYS/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("System Administrator", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Adminstrator du système", user.getJSONArray("authenticationRoles").getJSONObject(0).getJSONObject("name").getString("french"));
-		Assert.assertEquals("CRM/ADMIN", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("code"));
-		Assert.assertEquals("CRM Admin", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Administrateur GRC", user.getJSONArray("authenticationRoles").getJSONObject(1).getJSONObject("name").getString("french"));
+				userId);
+			Assert.fail("Already inactive");
+		} catch (ApiException e) { }
 		
 		/* activate inactive user */
 		user = execute(
-				"updateUser",
-				"mutation { updateUser(userId: %s, status: %s) { " + 
+				"enableUser",
+				"mutation { enableUser(userId: %s) { " + 
 						"userId username status person { displayName communication { email } } organization { organizationId } authenticationRoles { name { code english french } } } }",
-				userId,
-				"active");
+				userId);
 		Assert.assertEquals(orgId.toString(), user.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("jbigford", user.getString("username"));
 		Assert.assertEquals("ACTIVE", user.getString("status"));
@@ -166,7 +144,7 @@ public class UserDataFetcherTests extends AbstractDataFetcherTests {
 					"suspended");
 			Assert.fail("Should have failed on bad status");
 		} catch (ApiException api) {
-			Assert.assertEquals("Errors encountered during updateUser - Invalid status 'SUSPENDED', one of {ACTIVE, INACTIVE} expected", api.getMessage());
+			Assert.assertEquals("Errors encountered during updateUser - Validation error of type UnknownArgument: Unknown field argument status @ 'updateUser'", api.getMessage());
 		}
 		
 		/* update roles - no change */

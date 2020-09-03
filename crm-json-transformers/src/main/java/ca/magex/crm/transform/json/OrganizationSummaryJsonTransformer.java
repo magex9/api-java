@@ -34,7 +34,7 @@ public class OrganizationSummaryJsonTransformer extends AbstractJsonTransformer<
 		formatIdentifier(pairs, "organizationId", organization, OrganizationIdentifier.class, locale);
 		formatStatus(pairs, "status", organization, locale);
 		formatText(pairs, "displayName", organization);
-		formatLong(pairs, "lastModified", organization);
+		formatLastModified(pairs, organization);
 		return new JsonObject(pairs);
 	}
 
@@ -43,7 +43,7 @@ public class OrganizationSummaryJsonTransformer extends AbstractJsonTransformer<
 		OrganizationIdentifier organizationId = parseIdentifier("organizationId", json, OrganizationIdentifier.class, locale);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		String displayName = parseText("displayName", json);
-		Long lastModified = parseLong("lastModified", json);
+		Long lastModified = parseLastModified(json);
 		return new OrganizationSummary(organizationId, status, displayName, lastModified);
 	}
 

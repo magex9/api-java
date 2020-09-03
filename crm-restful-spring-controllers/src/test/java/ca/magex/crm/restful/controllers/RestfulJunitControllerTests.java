@@ -27,7 +27,7 @@ import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
-public class JunitControllerTests extends AbstractControllerTests {
+public class RestfulJunitControllerTests extends AbstractControllerTests {
 	
 	@Before
 	public void setup() {
@@ -85,7 +85,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testExtractBodyIOException() throws Exception {
-		JunitController controller = new JunitController();
+		RestfulJunitController controller = new RestfulJunitController();
 		HttpServletRequest req = new MockHttpServletRequest() {
 			@Override
 			public ServletInputStream getInputStream() {
@@ -130,7 +130,7 @@ public class JunitControllerTests extends AbstractControllerTests {
 	
 	@Test
 	public void testExtractLocale() throws Exception {
-		JunitController controller = new JunitController();
+		RestfulJunitController controller = new RestfulJunitController();
 		assertEquals(Lang.ROOT, controller.extractLocale(buildRequest(null, "application/json")));
 		assertEquals(Lang.ENGLISH, controller.extractLocale(buildRequest(Lang.ENGLISH, "application/json")));
 		assertEquals(Lang.FRENCH, controller.extractLocale(buildRequest(Lang.FRENCH, "application/json")));
@@ -206,14 +206,6 @@ public class JunitControllerTests extends AbstractControllerTests {
 //		JsonArray json = post("/junit/object/status", Lang.ENGLISH, HttpStatus.BAD_REQUEST, new JsonObject());
 //		assertSingleJsonMessage(json, null, "Error", "status", "Field is required");
 //	}
-	
-	@Test
-	public void testBuildingActions() throws Exception {
-		JsonObject json = new JunitController().action("name", "title", "method", "href");
-		assertEquals(List.of("name", "title", "method", "href"), json.keys());
-		assertEquals("name", json.getString("name"));
-		assertEquals("title", json.getString("title"));
-		assertEquals("method", json.getString("method"));
-		assertEquals("href", json.getString("href"));	}
+
 	
 }

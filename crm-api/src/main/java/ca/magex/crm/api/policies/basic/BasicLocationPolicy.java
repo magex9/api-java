@@ -63,7 +63,8 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 		if (summary == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		}
-		return true;
+		return !summary.getStatus().equals(Status.ACTIVE) &&
+			organizations.findOrganizationDetails(summary.getOrganizationId()).getStatus().equals(Status.ACTIVE);
 	}
 
 	@Override
@@ -73,6 +74,9 @@ public class BasicLocationPolicy implements CrmLocationPolicy {
 		if (summary == null) {
 			throw new ItemNotFoundException("Location ID '" + locationId + "'");
 		}
-		return true;
+		return summary.getStatus().equals(Status.ACTIVE) && (
+			organizations.findOrganizationDetails(summary.getOrganizationId()).getMainLocationId() == null ||
+			!organizations.findOrganizationDetails(summary.getOrganizationId()).getMainLocationId().equals(locationId)
+		);
 	}
 }

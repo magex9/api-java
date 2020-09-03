@@ -1,0 +1,227 @@
+<html>
+<body>
+<h1>CRM Restful API Usage</h1>
+<p>The following documentation will explain how to create a new organization and some of the options available for the system to use.</p>
+<p>Note that the url used in this example will need to be updated to the instance that you have already setup instead of (http://api.magex.ca/crm/rest) system and will use "admin" for both the username and password of the system administrator that was setup.
+<p>Although this is being done via "curl", you can use java, python, nodejs or any other tools to do the same thing.
+<h2>Primary Actions</h2>
+<p>In order to get a list of what the application has available to the current user, a list of actions can be retrieved form the root url</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest/actions \
+    -H "Content-Type: application/json" \
+    -H "Locale: en"</pre><pre style="margin: 0; color: #9f9">Status: 401
+
+</pre></div>
+<p>Since no JWT token was passed in the user gets a 401 unauthenticated status.  In order to get the token you need to call the authentication server which will give you to token that is valid for a certian amount of time (defaults to 5 hours).
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl -X POST http://api.magex.ca/crm/authenticate \
+    -H "Content-Type: application/json" \
+    --data '{"username":"admin","password":"admin"}'</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{"token":"eyJhbGciOi....."}</pre></div>
+<p>Once you have logged in and pass the Bearer token in, you will get access to the resources.</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest/actions \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{"actions": [{
+  "action": "organizations",
+  "label": "ORGANIZATIONS",
+  "method": "get",
+  "link": "http://api.magex.ca/crm/rest/rest/organizations"
+}]}</pre></div>
+<p>A user can follow these root links to get more information about the system such as requesting the list of organizations</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest/organizations \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json" \
+    -H "Locale: en"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "page": 1,
+  "limit": 10,
+  "total": 1,
+  "hasNext": false,
+  "hasPrevious": false,
+  "content": [{
+    "organizationId": "rXmUuvbjZr",
+    "status": "Active",
+    "displayName": "System",
+    "lastModified": "2020-09-03T09:12:23.612-04:00",
+    "actions": [
+      {
+        "action": "view",
+        "label": "View",
+        "method": "get",
+        "link": "http://api.magex.ca/crm/rest/organizations/rXmUuvbjZr"
+      },
+      {
+        "action": "update",
+        "label": "Edit",
+        "method": "patch",
+        "link": "http://api.magex.ca/crm/rest/organizations/rXmUuvbjZr/details"
+      },
+      {
+        "action": "disable",
+        "label": "Inactivate",
+        "method": "put",
+        "link": "http://api.magex.ca/crm/rest/organizations/rXmUuvbjZr/disable"
+      }
+    ]
+  }]
+}</pre></div>
+<p>Since this is a new application, there is only a single organization which we can get a summary or all of the details about.  Most objects use this paradigm so not all information needs to be retrieved for large objects.</p>
+<p>We can get the summary of the object by following the view link from the list</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest//organizations/rXmUuvbjZr \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "organizationId": "rXmUuvbjZr",
+  "status": "ACTIVE",
+  "displayName": "System",
+  "lastModified": "2020-09-03T09:12:23.612-04:00"
+}</pre></div>
+<p>If you want to see all of the details about an object, you can get all of the information by putting /details after the resource you want.  In some cases this may take more time and bandwidth but it gives everything to do with an object.</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest//organizations/rXmUuvbjZr/details \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "organizationId": "rXmUuvbjZr",
+  "status": "ACTIVE",
+  "displayName": "System",
+  "mainLocationId": "Ym5MfbvrSj",
+  "mainContactId": "cs41b9iNsF",
+  "authenticationGroupIds": [
+    "SYS",
+    "CRM"
+  ],
+  "businessGroupIds": ["IMIT"],
+  "lastModified": "2020-09-03T09:12:23.612-04:00"
+}</pre></div>
+<p>The same resource can be retireved but with the information all in the local of their choice, in French for this example.</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest//organizations/rXmUuvbjZr/details \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json" \
+    -H "Locale: fr"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "organizationId": "rXmUuvbjZr",
+  "status": "Actif",
+  "displayName": "System",
+  "mainLocationId": "Ym5MfbvrSj",
+  "mainContactId": "cs41b9iNsF",
+  "authenticationGroupIds": [
+    "Système",
+    "Gestion de la relation client"
+  ],
+  "businessGroupIds": ["GI / TI"],
+  "lastModified": "2020-09-03T09:12:23.612-04:00"
+}</pre></div>
+<p>Linked data can also be captured so you know what each the context of object in the response by adding the correct content type.  This will extends each of the linked element to have full url's to the information, access to the schema context along with the database, English and French values.</p>
+<p>This may seem like a lot of data, but it allows a user to have all the information they need to completely recreate the object in their programming language.</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest//organizations/rXmUuvbjZr/details \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json+ld"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/organization/OrganizationDetails",
+  "organizationId": "http://api.magex.ca/crm/rest/organizations/rXmUuvbjZr",
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@value": "ACTIVE",
+    "@en": "Active",
+    "@fr": "Actif"
+  },
+  "displayName": "System",
+  "mainLocationId": "http://api.magex.ca/crm/rest/locations/Ym5MfbvrSj",
+  "mainContactId": "http://api.magex.ca/crm/rest/persons/cs41b9iNsF",
+  "authenticationGroupIds": [
+    {
+      "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
+      "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/sys",
+      "@value": "SYS",
+      "@en": "System",
+      "@fr": "Système"
+    },
+    {
+      "@context": "http://api.magex.ca/crm/schema/options/AuthenticationGroups",
+      "@id": "http://api.magex.ca/crm/rest/options/authentication-groups/crm",
+      "@value": "CRM",
+      "@en": "Customer Relationship Management",
+      "@fr": "Gestion de la relation client"
+    }
+  ],
+  "businessGroupIds": [{
+    "@context": "http://api.magex.ca/crm/schema/options/BusinessGroups",
+    "@id": "http://api.magex.ca/crm/rest/options/business-groups/imit",
+    "@value": "IMIT",
+    "@en": "IM/IT",
+    "@fr": "GI / TI"
+  }],
+  "lastModified": "2020-09-03T09:12:23.612-04:00"
+}</pre></div>
+<p>With the linked data, you can gather more information about each of the referenced resources by following the @id JSON-LD attribute.</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest/options/statuses/active \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json+ld"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "@context": "http://api.magex.ca/crm/rest/schema/system/Option",
+  "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+  "optionId": "http://api.magex.ca/crm/rest/options/statuses/ACTIVE",
+  "type": {
+    "@context": "http://magex.ca/crm/Types",
+    "@value": "STATUSES",
+    "@en": "Statuses",
+    "@fr": "Statuts"
+  },
+  "status": {
+    "@context": "http://api.magex.ca/crm/schema/options/Statuses",
+    "@id": "http://api.magex.ca/crm/rest/options/statuses/active",
+    "@value": "ACTIVE",
+    "@en": "Active",
+    "@fr": "Actif"
+  },
+  "mutable": false,
+  "name": {
+    "@context": "http://api.magex.ca/crm/rest/schema/system/Localized",
+    "@id": "http://api.magex.ca/crm/rest/dictionary/ACTIVE",
+    "@value": "ACTIVE",
+    "@en": "Active",
+    "@fr": "Actif"
+  },
+  "lastModified": "2020-09-03T09:12:23.599-04:00"
+}</pre></div>
+<p>Sub groups of linked data can also be retrieved so you can get information about different parent group ids, even though the option has the same value.</p>
+<p>Newfoundland is a province inside of Canada with the ISO code of NL that can be referenced from the ISO country of CA</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest/options/provinces/ca/nl \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json" \
+    -H "Locale: en"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "optionId": "CA/NL",
+  "parentId": "CA",
+  "type": "Provinces",
+  "status": "Active",
+  "mutable": true,
+  "name": "Newfoundland and Labrador",
+  "lastModified": "2020-09-03T09:12:23.6-04:00"
+}</pre></div>
+<p>Nevuo Leon is a province inside of Mexico with the ISO code of NL as well that can be referenced from the ISO country of MX</p>
+<div style="border: 2px solid #ccc; border-radius: 5px; padding: 5px; background-color: #333; color: #eee; font-weight: bold; overflow: auto;"><pre style="margin: 0 0 15px 0; color: #eee">$ curl http://api.magex.ca/crm/rest/options/provinces/mx/nl \
+    -H "Authorization: Bearer eyJhbGciOi....." \
+    -H "Content-Type: application/json" \
+    -H "Locale: en"</pre><pre style="margin: 0; color: #9f9">Status: 200
+
+{
+  "optionId": "MX/NL",
+  "parentId": "MX",
+  "type": "Provinces",
+  "status": "Active",
+  "mutable": true,
+  "name": "Nuevo Leon",
+  "lastModified": "2020-09-03T09:12:23.607-04:00"
+}</pre></div>
+</body>
+</html>

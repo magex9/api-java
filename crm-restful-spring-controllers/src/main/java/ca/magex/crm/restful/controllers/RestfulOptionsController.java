@@ -29,7 +29,7 @@ import ca.magex.json.model.JsonText;
 
 @Controller
 @CrossOrigin
-public class RestfulOptionController extends AbstractRestfulController {
+public class RestfulOptionsController extends AbstractRestfulController {
 	
 	@GetMapping("/rest/types")
 	public void findTypes(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -40,12 +40,13 @@ public class RestfulOptionController extends AbstractRestfulController {
 
 	@GetMapping("/rest/options")
 	public void findOptions(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		RestfulOptionsActionHandler<Option> actionHandler = new RestfulOptionsActionHandler<>();
 		handle(req, res, Option.class, (messages, transformer, locale) -> { 
 			return createPage(
 				crm.findOptions(
 					extractOptionsFilter(locale, req), 
 					extractPaging(OptionsFilter.getDefaultPaging(), req)
-				), transformer, locale);
+				), actionHandler, transformer, locale);
 		});
 	}
 	

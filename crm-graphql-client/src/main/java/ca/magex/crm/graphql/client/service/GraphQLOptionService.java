@@ -11,7 +11,6 @@ import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.FilteredPage;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.graphql.client.GraphQLClient;
@@ -85,11 +84,10 @@ public class GraphQLOptionService implements CrmOptionService {
 	public Option enableOption(OptionIdentifier optionId) {
 		return ModelBinder.toOption(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOption",
-						"updateOption",
+						"enableOption",
+						"enableOption",
 						new MapBuilder()
 								.withEntry("optionId", optionId.toString())
-								.withEntry("status", Status.ACTIVE)
 								.build()));
 	}
 
@@ -97,11 +95,10 @@ public class GraphQLOptionService implements CrmOptionService {
 	public Option disableOption(OptionIdentifier optionId) {
 		return ModelBinder.toOption(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOption",
-						"updateOption",
+						"disableOption",
+						"disableOption",
 						new MapBuilder()
 								.withEntry("optionId", optionId.toString())
-								.withEntry("status", Status.INACTIVE)
 								.build()));
 	}
 

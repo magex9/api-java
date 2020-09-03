@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -13,11 +12,10 @@ import org.springframework.stereotype.Component;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OptionsFilter;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Option;
-import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.IdentifierFactory;
 import ca.magex.crm.api.system.id.OptionIdentifier;
 import ca.magex.crm.graphql.controller.GraphQLController;
 import graphql.schema.DataFetcher;
@@ -109,7 +107,7 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findOptionActions@" + OptionDataFetcher.class.getSimpleName());
 			Option source = environment.getSource();
 			return Map.of(
-					"modify", crm.canUpdateOption(source.getOptionId()),
+					"update", crm.canUpdateOption(source.getOptionId()),
 					"enable", crm.canEnableOption(source.getOptionId()),
 					"disable", crm.canDisableOption(source.getOptionId()));
 		};
@@ -131,24 +129,6 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering updateOption@" + OptionDataFetcher.class.getSimpleName());
 			OptionIdentifier optionId = extractOptionIdentifier(environment, "optionId");
 			Option option = crm.findOption(optionId);
-			/* always do status first because the others depend on status for validation */
-			if (environment.getArgument("status") != null) {
-				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch (status) {
-				case "ACTIVE":
-					if (option.getStatus() != Status.ACTIVE) {
-						option = crm.enableOption(optionId);
-					}
-					break;
-				case "INACTIVE":
-					if (option.getStatus() != Status.INACTIVE) {
-						option = crm.disableOption(optionId);
-					}
-					break;
-				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
-				}
-			}
 			Localized newName = option.getName();
 			if (environment.getArgument("english") != null) {
 				newName = newName.withEnglishName(environment.getArgument("english"));
@@ -160,6 +140,22 @@ public class OptionDataFetcher extends AbstractDataFetcher {
 				option = crm.updateOptionName(optionId, newName);
 			}
 			return option;
+		};
+	}
+	
+	public DataFetcher<Option> enableOption() {
+		return (environment) -> {
+			logger.info("Entering enableOption@" + OptionDataFetcher.class.getSimpleName());
+			OptionIdentifier optionId = IdentifierFactory.forOptionId((String) environment.getArgument("optionId"));
+			return crm.findOption(crm.enableOption(optionId).getOptionId());
+		};
+	}
+	
+	public DataFetcher<Option> disableOption() {
+		return (environment) -> {
+			logger.info("Entering disableOption@" + OptionDataFetcher.class.getSimpleName());
+			OptionIdentifier optionId = IdentifierFactory.forOptionId((String) environment.getArgument("optionId"));
+			return crm.findOption(crm.disableOption(optionId).getOptionId());
 		};
 	}
 }

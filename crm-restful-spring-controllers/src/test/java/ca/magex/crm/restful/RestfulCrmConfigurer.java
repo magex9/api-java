@@ -19,6 +19,7 @@ import ca.magex.crm.api.services.basic.BasicConfigurationService;
 import ca.magex.crm.api.services.basic.BasicServices;
 import ca.magex.crm.api.store.basic.BasicPasswordStore;
 import ca.magex.crm.api.store.basic.BasicStore;
+import ca.magex.crm.restful.models.RestfulJsonTransformerFactory;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
 @Configuration
@@ -31,7 +32,7 @@ public class RestfulCrmConfigurer implements CrmConfigurer {
 	
 	@Bean 
 	public JsonTransformerFactory jsonTransformerFactory() {
-		return new JsonTransformerFactory(services());
+		return new RestfulJsonTransformerFactory(services());
 	}
 	
 	@Bean 

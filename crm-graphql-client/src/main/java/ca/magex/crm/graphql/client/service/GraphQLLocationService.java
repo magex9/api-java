@@ -12,7 +12,6 @@ import ca.magex.crm.api.filters.LocationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.graphql.client.GraphQLClient;
@@ -62,11 +61,10 @@ public class GraphQLLocationService implements CrmLocationService {
 	public LocationSummary enableLocation(LocationIdentifier locationId) {
 		return ModelBinder.toLocationSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateLocationStatus",
-						"updateLocation",
+						"enableLocation",
+						"enableLocation",
 						new MapBuilder()
 								.withEntry("locationId", locationId.toString())
-								.withEntry("status", Status.ACTIVE)
 								.build()));
 	}
 
@@ -74,11 +72,10 @@ public class GraphQLLocationService implements CrmLocationService {
 	public LocationSummary disableLocation(LocationIdentifier locationId) {
 		return ModelBinder.toLocationSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateLocationStatus",
-						"updateLocation",
+						"disableLocation",
+						"disableLocation",
 						new MapBuilder()
 								.withEntry("locationId", locationId.toString())
-								.withEntry("status", Status.INACTIVE)
 								.build()));
 	}
 

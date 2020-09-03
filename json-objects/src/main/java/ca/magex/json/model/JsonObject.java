@@ -1,8 +1,7 @@
 package ca.magex.json.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -255,7 +254,7 @@ public final class JsonObject extends JsonElement {
 	}
 	
 	public LocalDate getDate(String key) {
-		return LocalDate.parse(((JsonText)get(key)).value(), DateTimeFormatter.ISO_DATE);
+		return parseDate(((JsonText)get(key)).value());
 	}
 	
 	public LocalDate getDate(String key, LocalDate defaultValue) {
@@ -266,11 +265,11 @@ public final class JsonObject extends JsonElement {
 		}
 	}
 	
-	public LocalDateTime getDateTime(String key) {
-		return LocalDateTime.parse(((JsonText)get(key)).value(), DateTimeFormatter.ISO_DATE_TIME);
+	public ZonedDateTime getDateTime(String key) {
+		return parseDateTime(((JsonText)get(key)).value());
 	}
 	
-	public LocalDateTime getDateTime(String key, LocalDateTime defaultValue) {
+	public ZonedDateTime getDateTime(String key, ZonedDateTime defaultValue) {
 		try {
 			return getDateTime(key);
 		} catch (NoSuchElementException e) {

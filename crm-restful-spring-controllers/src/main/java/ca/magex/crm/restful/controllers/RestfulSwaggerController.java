@@ -21,6 +21,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -42,16 +43,18 @@ import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
+import ca.magex.crm.restful.models.RestfulAction;
 import ca.magex.json.model.JsonArray;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 import ca.magex.json.model.JsonText;
 
 @Controller
-public class RestfulSwaggerController {
+public class RestfulSwaggerController extends AbstractRestfulController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RestfulSwaggerController.class);
 
@@ -91,6 +94,15 @@ public class RestfulSwaggerController {
 		}
 	}
 	
+	@GetMapping("/rest/actions")
+	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
+			List<RestfulAction> actions = new ArrayList<>();
+			actions.add(new RestfulAction("organizations", new Localized("ORGANIZATIONS", "Organizations", "Organizations"), "get", Crm.REST_BASE + "/rest/organizations"));
+			return new JsonObject().with("actions", new JsonArray(actions.stream().map(a -> RestfulActionHandler.transformAction(a, crm, locale)).collect(Collectors.toList())));
+		});
+	}
+	
 	public JsonObject buildApiConfig() throws Exception {
 		return new JsonObject()
 			.with("openapi", "3.0.0")
@@ -116,11 +128,11 @@ public class RestfulSwaggerController {
 	
 	public JsonObject buildApiPaths() throws Exception {
 		JsonObject paths = new JsonObject();
-		paths = appendPaths(RestfulOrganizationController.class, CrmOrganizationService.class, "Organizations", paths);
-		paths = appendPaths(RestfulLocationController.class, CrmLocationService.class, "Locations", paths);
-		paths = appendPaths(RestfulPersonController.class, CrmPersonService.class, "Persons", paths);
-		paths = appendPaths(RestfulUserController.class, CrmUserService.class, "Users", paths);
-		paths = appendPaths(RestfulOptionController.class, CrmOptionService.class, "Options", paths);
+		paths = appendPaths(RestfulOrganizationsController.class, CrmOrganizationService.class, "Organizations", paths);
+		paths = appendPaths(RestfulLocationsController.class, CrmLocationService.class, "Locations", paths);
+		paths = appendPaths(RestfulPersonsController.class, CrmPersonService.class, "Persons", paths);
+		paths = appendPaths(RestfulUsersController.class, CrmUserService.class, "Users", paths);
+		paths = appendPaths(RestfulOptionsController.class, CrmOptionService.class, "Options", paths);
 		return paths;
 	}
 	

@@ -52,7 +52,7 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 		if (summary == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
-		return true;
+		return !summary.getStatus().equals(Status.ACTIVE);
 	}
 
 	@Override
@@ -62,6 +62,6 @@ public class BasicOrganizationPolicy implements CrmOrganizationPolicy {
 		if (summary == null) {
 			throw new ItemNotFoundException("Organization ID '" + organizationId + "'");
 		}
-		return true;
+		return summary.getStatus().equals(Status.ACTIVE);
 	}
 }

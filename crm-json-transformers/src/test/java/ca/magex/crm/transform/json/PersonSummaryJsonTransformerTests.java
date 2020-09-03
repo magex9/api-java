@@ -24,6 +24,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -50,7 +51,7 @@ public class PersonSummaryJsonTransformerTests {
 		transformer = new PersonSummaryJsonTransformer(crm);
 		personId = new PersonIdentifier("TkNj8jzNGC");
 		organizationId = new OrganizationIdentifier("DSbVnvGGyf");
-		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_DISPLAY_NAME, 100L);
+		person = new PersonSummary(personId, organizationId, Status.ACTIVE, PERSON_DISPLAY_NAME, CrmAsserts.YEAR_2000_EPOCH_MILLIS);
 	}
 	
 	@Test
@@ -81,7 +82,7 @@ public class PersonSummaryJsonTransformerTests {
 		assertEquals("Active", linked.getObject("status").getString("@en"));
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));
 		assertEquals("Bacon, Chris P", linked.getString("displayName"));
-		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, linked.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(linked, null));
 	}
 	
@@ -94,7 +95,7 @@ public class PersonSummaryJsonTransformerTests {
 		assertEquals(organizationId.getCode(), root.getString("organizationId"));
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("Bacon, Chris P", root.getString("displayName"));
-		assertEquals(100L, root.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, root.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -107,7 +108,7 @@ public class PersonSummaryJsonTransformerTests {
 		assertEquals(organizationId.getCode(), english.getString("organizationId"));
 		assertEquals("Active", english.getString("status"));
 		assertEquals("Bacon, Chris P", english.getString("displayName"));
-		assertEquals(100L, english.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, english.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -120,7 +121,7 @@ public class PersonSummaryJsonTransformerTests {
 		assertEquals(organizationId.getCode(), french.getString("organizationId"));
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("Bacon, Chris P", french.getString("displayName"));
-		assertEquals(100L, french.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, french.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(french, Lang.FRENCH));
 	}
 	

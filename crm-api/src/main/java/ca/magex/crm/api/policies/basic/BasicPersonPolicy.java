@@ -59,19 +59,25 @@ public class BasicPersonPolicy implements CrmPersonPolicy {
 
 	@Override
 	public boolean canEnablePerson(PersonIdentifier personId) {
-		//* can view a person if the person exists */
-		if (persons.findPersonSummary(personId) == null) {
+		/* can only update an organization if it exists, and is active */
+		PersonSummary summary = persons.findPersonSummary(personId);
+		if (summary == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		}
-		return true;
+		return !summary.getStatus().equals(Status.ACTIVE) &&
+			organizations.findOrganizationDetails(summary.getOrganizationId()).getStatus().equals(Status.ACTIVE);
 	}
 
 	@Override
 	public boolean canDisablePerson(PersonIdentifier personId) {
 		/* can view a person if the person exists */
-		if (persons.findPersonSummary(personId) == null) {
+		PersonSummary summary = persons.findPersonSummary(personId);
+		if (summary == null) {
 			throw new ItemNotFoundException("Person ID '" + personId + "'");
 		}
-		return true;
+		return summary.getStatus().equals(Status.ACTIVE) && (
+			organizations.findOrganizationDetails(summary.getOrganizationId()).getMainContactId() == null ||
+			!organizations.findOrganizationDetails(summary.getOrganizationId()).getMainContactId().equals(personId)
+		);
 	}
 }

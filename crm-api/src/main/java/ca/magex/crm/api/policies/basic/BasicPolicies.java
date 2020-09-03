@@ -17,7 +17,7 @@ public class BasicPolicies extends CrmPoliciesAdapter implements CrmPolicies {
 			new BasicOrganizationPolicy(services),
 			new BasicLocationPolicy(services, services),
 			new BasicPersonPolicy(services, services),
-			new BasicUserPolicy(services, services)
+			new BasicUserPolicy(services, services, services)
 		);
 	}
 	
@@ -32,7 +32,7 @@ public class BasicPolicies extends CrmPoliciesAdapter implements CrmPolicies {
 			new BasicOrganizationPolicy(organizations),
 			new BasicLocationPolicy(organizations, locations),
 			new BasicPersonPolicy(organizations, persons),
-			new BasicUserPolicy(persons, users)
+			new BasicUserPolicy(organizations, persons, users)
 		);
 	}
 	

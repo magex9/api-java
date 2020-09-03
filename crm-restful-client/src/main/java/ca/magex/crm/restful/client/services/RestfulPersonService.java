@@ -36,43 +36,43 @@ public class RestfulPersonService implements CrmPersonService {
 	
 	@Override
 	public PersonSummary enablePerson(PersonIdentifier personId) {
-		JsonObject json = client.put(personId + "/enable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(personId + "/actions/enable", new JsonObject().with("confirm", true));
 		return client.parse(json, PersonSummary.class);	
 	}
 
 	@Override
 	public PersonSummary disablePerson(PersonIdentifier personId) {
-		JsonObject json = client.put(personId + "/disable", new JsonObject().with("confirm", true));
+		JsonObject json = client.put(personId + "/actions/disable", new JsonObject().with("confirm", true));
 		return client.parse(json, PersonSummary.class);	
 	}
 
 	@Override
 	public PersonDetails updatePersonDisplayName(PersonIdentifier personId, String displayName) {
-		JsonObject json = client.patch(personId, new JsonObject().with("displayName", displayName));
+		JsonObject json = client.patch(personId + "/details", new JsonObject().with("displayName", displayName));
 		return client.parse(json, PersonDetails.class);
 	}
 
 	@Override
 	public PersonDetails updatePersonLegalName(PersonIdentifier personId, PersonName legalName) {
-		JsonObject json = client.patch(personId, new JsonObject().with("legalName", client.format(legalName, PersonName.class)));
+		JsonObject json = client.patch(personId + "/details", new JsonObject().with("legalName", client.format(legalName, PersonName.class)));
 		return client.parse(json, PersonDetails.class);
 	}
 
 	@Override
 	public PersonDetails updatePersonCommunication(PersonIdentifier personId, Communication communication) {
-		JsonObject json = client.patch(personId, new JsonObject().with("communication", client.format(communication, Communication.class)));
+		JsonObject json = client.patch(personId + "/details", new JsonObject().with("communication", client.format(communication, Communication.class)));
 		return client.parse(json, PersonDetails.class);
 	}
 
 	@Override
 	public PersonDetails updatePersonAddress(PersonIdentifier personId, MailingAddress address) {
-		JsonObject json = client.patch(personId, new JsonObject().with("address", client.format(address, MailingAddress.class)));
+		JsonObject json = client.patch(personId + "/details", new JsonObject().with("address", client.format(address, MailingAddress.class)));
 		return client.parse(json, PersonDetails.class);
 	}
 	
 	@Override
 	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
-		JsonObject json = client.patch(personId, new JsonObject().with("businessRoleIds", client.formatOptions(businessRoleIds)));
+		JsonObject json = client.patch(personId + "/details", new JsonObject().with("businessRoleIds", client.formatOptions(businessRoleIds)));
 		return client.parse(json, PersonDetails.class);
 	}
 

@@ -29,6 +29,7 @@ import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.DuplicateItemFoundException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.UsersFilter;
 import ca.magex.crm.api.services.CrmConfigurationService;
@@ -145,7 +146,10 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, users().findUserDetailsByUsername(u1.getUsername()));
 		Assert.assertEquals(u1, users().findUserDetails(u1.getUserId()));
-		Assert.assertEquals(u1.asSummary(), users().disableUser(u1.getUserId()));
+		try {
+			Assert.assertEquals(u1.asSummary(), users().disableUser(u1.getUserId()));
+			Assert.fail("Already disabled");
+		} catch (PermissionDeniedException e) { }
 
 		/* enable user */
 		u1 = users().findUserDetails(users().enableUser(u1.getUserId()).getUserId());
@@ -155,7 +159,10 @@ public abstract class AbstractUserServiceTests {
 		Assert.assertEquals("adam21", u1.getUsername());
 		Assert.assertEquals(u1, users().findUserDetailsByUsername(u1.getUsername()));
 		Assert.assertEquals(u1, users().findUserDetails(u1.getUserId()));
-		Assert.assertEquals(u1.asSummary(), users().enableUser(u1.getUserId()));
+		try {
+			Assert.assertEquals(u1.asSummary(), users().enableUser(u1.getUserId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 
 		/* count users */
 		Assert.assertEquals(4, users().countUsers(new UsersFilter(null, null, null, null, null)));

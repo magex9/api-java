@@ -310,10 +310,10 @@ public class Crm extends CrmPoliciesAdapter implements CrmServices, CrmPolicies 
 	}
 	
 	@Override
-	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> roleIds) {
+	public PersonDetails updatePersonBusinessRoles(PersonIdentifier personId, List<BusinessRoleIdentifier> businessRoleIds) {
 		if (!canUpdatePerson(personId))
 			throw new PermissionDeniedException("updatePersonBusinessPosition: " + personId);
-		return personService.updatePersonBusinessRoles(personId, validate(findPersonDetails(personId).withBusinessRoleIds(roleIds)).getBusinessRoleIds());
+		return personService.updatePersonBusinessRoles(personId, validate(findPersonDetails(personId).withBusinessRoleIds(businessRoleIds)).getBusinessRoleIds());
 	}
 
 	public PersonSummary enablePerson(PersonIdentifier personId) {

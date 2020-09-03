@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
+import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.CountryIdentifier;
 import ca.magex.crm.api.system.id.OptionIdentifier;
@@ -33,27 +34,21 @@ public class OptionDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Pètorie", petoria.getJSONObject("name").getString("french"));
 
 		/* activate already active option */
-		petoria = execute(
-				"updateOption",
-				"mutation { updateOption(optionId: %s, status: %s) { " +
+		try {
+			petoria = execute(
+				"enableOption",
+				"mutation { enableOption(optionId: %s) { " +
 						"optionId parent { optionId } type status mutable name { code english french } } }",
-				petoriaId,
-				"active");
-		Assert.assertEquals(JSONObject.NULL, petoria.get("parent"));
-		Assert.assertEquals(Type.COUNTRY.getCode(), petoria.getString("type"));
-		Assert.assertEquals("ACTIVE", petoria.getString("status"));
-		Assert.assertTrue(petoria.getBoolean("mutable"));
-		Assert.assertEquals("PT", petoria.getJSONObject("name").getString("code"));
-		Assert.assertEquals("Petoria", petoria.getJSONObject("name").getString("english"));
-		Assert.assertEquals("Pètorie", petoria.getJSONObject("name").getString("french"));
+				petoriaId);
+			Assert.fail("Already active");
+		} catch (ApiException e) { }
 
 		/* inactivate active option */
 		petoria = execute(
-				"updateOption",
-				"mutation { updateOption(optionId: %s, status: %s) { " +
+				"disableOption",
+				"mutation { disableOption(optionId: %s) { " +
 						"optionId parent { optionId } type status mutable name { code english french } } }",
-				petoriaId,
-				"inactive");
+				petoriaId);
 		Assert.assertEquals(JSONObject.NULL, petoria.get("parent"));
 		Assert.assertEquals(Type.COUNTRY.getCode(), petoria.getString("type"));
 		Assert.assertEquals("INACTIVE", petoria.getString("status"));
@@ -63,27 +58,21 @@ public class OptionDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Pètorie", petoria.getJSONObject("name").getString("french"));
 
 		/* inactivate already inactive option */
-		petoria = execute(
-				"updateOption",
-				"mutation { updateOption(optionId: %s, status: %s) { " +
+		try {
+			petoria = execute(
+				"disableOption",
+				"mutation { disableOption(optionId: %s) { " +
 						"optionId parent { optionId } type status mutable name { code english french } } }",
-				petoriaId,
-				"inactive");
-		Assert.assertEquals(JSONObject.NULL, petoria.get("parent"));
-		Assert.assertEquals(Type.COUNTRY.getCode(), petoria.getString("type"));
-		Assert.assertEquals("INACTIVE", petoria.getString("status"));
-		Assert.assertTrue(petoria.getBoolean("mutable"));
-		Assert.assertEquals("PT", petoria.getJSONObject("name").getString("code"));
-		Assert.assertEquals("Petoria", petoria.getJSONObject("name").getString("english"));
-		Assert.assertEquals("Pètorie", petoria.getJSONObject("name").getString("french"));
+				petoriaId);
+			Assert.fail("Already inactive");
+		} catch (ApiException e) { }
 
 		/* activate inactive option */
 		petoria = execute(
-				"updateOption",
-				"mutation { updateOption(optionId: %s, status: %s) { " +
+				"enableOption",
+				"mutation { enableOption(optionId: %s) { " +
 						"optionId parent { optionId } type status mutable name { code english french } } }",
-				petoriaId,
-				"active");
+				petoriaId);
 		Assert.assertEquals(JSONObject.NULL, petoria.get("parent"));
 		Assert.assertEquals(Type.COUNTRY.getCode(), petoria.getString("type"));
 		Assert.assertEquals("ACTIVE", petoria.getString("status"));

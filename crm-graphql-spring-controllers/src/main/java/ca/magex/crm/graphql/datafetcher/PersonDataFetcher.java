@@ -15,9 +15,7 @@ import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.PersonsFilter;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -61,7 +59,7 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findPersonActions@" + PersonDataFetcher.class.getSimpleName());
 			PersonDetails source = environment.getSource();
 			return Map.of(
-					"modify", crm.canUpdatePerson(source.getPersonId()),
+					"update", crm.canUpdatePerson(source.getPersonId()),
 					"enable", crm.canEnablePerson(source.getPersonId()),
 					"disable", crm.canDisablePerson(source.getPersonId()),
 					"createUser", crm.canCreateUserForPerson(source.getPersonId()));
@@ -107,24 +105,6 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering updatePerson@" + PersonDataFetcher.class.getSimpleName());
 			PersonIdentifier personId = new PersonIdentifier((String) environment.getArgument("personId"));
 			PersonDetails person = crm.findPersonDetails(personId);
-			/* always do status first because the others depend on status for validation */
-			if (environment.getArgument("status") != null) {
-				String status = StringUtils.upperCase(environment.getArgument("status"));
-				switch (status) {
-				case "ACTIVE":
-					if (person.getStatus() != Status.ACTIVE) {
-						person = person.withStatus(Status.ACTIVE).withLastModified(crm.enablePerson(personId).getLastModified());
-					}
-					break;
-				case "INACTIVE":
-					if (person.getStatus() != Status.INACTIVE) {
-						person = person.withStatus(Status.INACTIVE).withLastModified(crm.disablePerson(personId).getLastModified());
-					}
-					break;
-				default:
-					throw new ApiException("Invalid status '" + status + "', one of {ACTIVE, INACTIVE} expected");
-				}
-			}
 			if (environment.getArgument("displayName") != null) {
 				String displayName = environment.getArgument("displayName");
 				if (!StringUtils.equals(person.getDisplayName(), displayName)) {
@@ -156,6 +136,22 @@ public class PersonDataFetcher extends AbstractDataFetcher {
 				}
 			}
 			return person;
+		};
+	}
+	
+	public DataFetcher<PersonDetails> enablePerson() {
+		return (environment) -> {
+			logger.info("Entering enablePerson@" + PersonDataFetcher.class.getSimpleName());
+			PersonIdentifier personId = new PersonIdentifier((String) environment.getArgument("personId"));
+			return crm.findPersonDetails(crm.enablePerson(personId).getPersonId());
+		};
+	}
+	
+	public DataFetcher<PersonDetails> disablePerson() {
+		return (environment) -> {
+			logger.info("Entering disablePerson@" + PersonDataFetcher.class.getSimpleName());
+			PersonIdentifier personId = new PersonIdentifier((String) environment.getArgument("personId"));
+			return crm.findPersonDetails(crm.disablePerson(personId).getPersonId());
 		};
 	}
 }

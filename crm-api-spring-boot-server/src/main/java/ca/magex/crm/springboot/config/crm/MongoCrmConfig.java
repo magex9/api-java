@@ -47,6 +47,7 @@ import ca.magex.crm.mongodb.event.MongoOptionsDocumentChangeListener;
 import ca.magex.crm.mongodb.event.MongoOrganizationsDocumentChangeListener;
 import ca.magex.crm.mongodb.repository.MongoPasswordRepository;
 import ca.magex.crm.mongodb.repository.MongoRepositories;
+import ca.magex.crm.restful.models.RestfulJsonTransformerFactory;
 import ca.magex.crm.spring.security.auth.SpringSecurityAuthenticationService;
 import ca.magex.crm.transform.json.JsonTransformerFactory;
 
@@ -79,7 +80,7 @@ public class MongoCrmConfig implements CrmConfigurer {
 
 	@Bean
 	public JsonTransformerFactory jsonTransformerFactory() {
-		return new JsonTransformerFactory(services());
+		return new RestfulJsonTransformerFactory(services());
 	}
 
 	@Bean
