@@ -74,5 +74,15 @@ public abstract class AbstractMongoRepository {
 		if (logger.isDebugEnabled()) {
 			logger.debug(messageSupplier.get());
 		}
+	}	
+	
+	/**
+	 * logger helper
+	 * @param messageSupplier
+	 */
+	protected void info(Supplier<String> messageSupplier) {
+		if (logger.isInfoEnabled()) {
+			logger.info(messageSupplier.get());
+		}
 	}
 }

@@ -1,0 +1,18 @@
+# Source: crm-api-spring-boot-server/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: portainer-ingress
+  labels:
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+    - host: "portainer.466356a5ffaf4931ba8e.canadacentral.aksapp.io"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: portainer
+              servicePort: 9000
+---
