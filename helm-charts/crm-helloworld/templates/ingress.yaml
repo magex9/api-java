@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.application.name }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+spec:
+  rules:
+  - host: {{ .Values.application.name }}.466356a5ffaf4931ba8e.canadacentral.aksapp.io
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Values.application.name }}
+          servicePort: {{ .Values.service.port }}
+        path: /

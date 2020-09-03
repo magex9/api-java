@@ -2,52 +2,47 @@ package ca.magex.crm.api.common;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.lang.Nullable;
 
-import ca.magex.crm.api.services.Crm;
+import ca.magex.crm.api.Crm;
+import ca.magex.crm.api.system.Choice;
+import ca.magex.crm.api.system.id.SalutationIdentifier;
 
 public class PersonName implements Serializable {
 
 	private static final long serialVersionUID = Crm.SERIAL_UID_VERSION;
 	
-	private String salutation;
+	@Nullable
+	private Choice<SalutationIdentifier> salutation;
 
+	@NotNull
 	private String firstName;
 
+	@Nullable
 	private String middleName;
 
+	@NotNull
 	private String lastName;
 
-	private String displayName;
-
-	public PersonName(String salutation, String firstName, String middleName, String lastName) {
+	public PersonName(Choice<SalutationIdentifier> salutation, String firstName, String middleName, String lastName) {
 		super();
 		this.salutation = salutation;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
-		this.displayName = "";
-		if (StringUtils.isNotBlank(lastName))
-			displayName += lastName;
-		if (StringUtils.isNotBlank(firstName) && displayName.length() > 0)
-			displayName += ", ";
-		if (StringUtils.isNotBlank(firstName))
-			displayName += firstName;
-		if (StringUtils.isNotBlank(middleName) && displayName.length() > 0)
-			displayName += " ";
-		if (StringUtils.isNotBlank(middleName))
-			displayName += middleName;
 	}
 
-	public String getSalutation() {
+	public Choice<SalutationIdentifier> getSalutation() {
 		return salutation;
 	}
 	
-	public PersonName withSalutation(String salutation) {
+	public PersonName withSalutation(Choice<SalutationIdentifier> salutation) {
 		return new PersonName(salutation, firstName, middleName, lastName);
 	}
 
@@ -73,10 +68,6 @@ public class PersonName implements Serializable {
 	
 	public PersonName withLastName(String lastName) {
 		return new PersonName(salutation, firstName, middleName, lastName);
-	}
-
-	public String getDisplayName() {
-		return displayName;
 	}
 
 	@Override

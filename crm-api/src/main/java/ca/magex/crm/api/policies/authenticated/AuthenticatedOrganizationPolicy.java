@@ -1,22 +1,14 @@
 package ca.magex.crm.api.policies.authenticated;
 
-import static ca.magex.crm.api.services.CrmAuthenticationService.CRM_ADMIN;
-import static ca.magex.crm.api.services.CrmAuthenticationService.ORG_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.CRM_ADMIN;
+import static ca.magex.crm.api.authentication.CrmAuthenticationService.ORG_ADMIN;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.policies.CrmOrganizationPolicy;
 import ca.magex.crm.api.policies.basic.BasicOrganizationPolicy;
-import ca.magex.crm.api.services.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmOrganizationService;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_AUTH)
 public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 	
 	private CrmAuthenticationService auth;
@@ -48,7 +40,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canViewOrganization(Identifier organizationId) {
+	public boolean canViewOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canViewOrganization(organizationId)) {
 			return false;
 		}
@@ -57,11 +49,11 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 			return true;
 		}
 		/* return true if the person is associated with the organization */
-		return auth.getOrganizationId().equals(organizationId);
+		return auth.getAuthenticatedOrganizationId().equals(organizationId);
 	}
 
 	@Override
-	public boolean canUpdateOrganization(Identifier organizationId) {
+	public boolean canUpdateOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canUpdateOrganization(organizationId)) {
 			return false;
 		}
@@ -70,7 +62,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 			return true;
 		}
 		/* ensure the current user is associated with the organization, and return true if they are an RE Admin */
-		if (auth.getOrganizationId().equals(organizationId)) {
+		if (auth.getAuthenticatedOrganizationId().equals(organizationId)) {
 			return auth.isUserInRole(ORG_ADMIN);
 		}
 		/* the current user is not associated with the organization */
@@ -78,7 +70,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canEnableOrganization(Identifier organizationId) {
+	public boolean canEnableOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canEnableOrganization(organizationId)) {
 			return false;
 		}
@@ -87,7 +79,7 @@ public class AuthenticatedOrganizationPolicy implements CrmOrganizationPolicy {
 	}
 
 	@Override
-	public boolean canDisableOrganization(Identifier organizationId) {
+	public boolean canDisableOrganization(OrganizationIdentifier organizationId) {
 		if (!delegate.canDisableOrganization(organizationId)) {
 			return false;
 		}

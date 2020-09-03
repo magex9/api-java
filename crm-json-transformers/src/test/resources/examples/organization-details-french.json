@@ -1,0 +1,12 @@
+{
+  "organizationId": "Mc9rbFKPqf",
+  "status": "Actif",
+  "displayName": "Org Name",
+  "mainLocationId": "Z9XCi4sCTk",
+  "mainContactId": "5Z7cuX3K2T",
+  "authenticationGroupIds": [
+    "Gestion de la relation client",
+    "Organisation"
+  ],
+  "businessGroupIds": ["Cadres"]
+}

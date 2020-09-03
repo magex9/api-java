@@ -43,12 +43,17 @@ public class PagingBuilder {
 		}
 		List<Order> ordering = new ArrayList<>();
 		for (int i=0; i<sortFields.size(); i++) {
-			Direction dir = Direction.valueOf(sortDirections.get(i));
-			if (dir == Direction.ASC) {
-				ordering.add(Order.asc(sortFields.get(i)));
+			try {
+				Direction dir = Direction.valueOf(sortDirections.get(i));
+				if (dir == Direction.ASC) {
+					ordering.add(Order.asc(sortFields.get(i)));
+				}
+				else {
+					ordering.add(Order.desc(sortFields.get(i)));
+				}
 			}
-			else {
-				ordering.add(Order.desc(sortFields.get(i)));
+			catch(IllegalArgumentException ia) {
+				throw new ApiException("Invalid sortDirection, one of {" + Direction.ASC + "," + Direction.DESC + "} expected");
 			}
 		}
 		return new Paging(

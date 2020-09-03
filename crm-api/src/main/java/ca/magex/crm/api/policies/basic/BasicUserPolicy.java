@@ -1,22 +1,15 @@
 package ca.magex.crm.api.policies.basic;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-import ca.magex.crm.api.MagexCrmProfiles;
 import ca.magex.crm.api.crm.PersonSummary;
+import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmUserPolicy;
-import ca.magex.crm.api.roles.User;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.api.system.Identifier;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.UserIdentifier;
 
-@Component
-@Primary
-@Profile(MagexCrmProfiles.CRM_NO_AUTH)
 public class BasicUserPolicy implements CrmUserPolicy {
 
 	private CrmPersonService persons;
@@ -35,7 +28,7 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canCreateUserForPerson(Identifier personId) {
+	public boolean canCreateUserForPerson(PersonIdentifier personId) {
 		/* can create a user for a given person if the person exists */
 		PersonSummary summary = persons.findPersonSummary(personId);
 		if (summary == null) {
@@ -43,20 +36,30 @@ public class BasicUserPolicy implements CrmUserPolicy {
 		}		
 		return true;
 	}
+	
+	@Override
+	public boolean canViewUser(String username) {
+		try {
+			/* can view a group if it exists */
+			return users.findUserDetailsByUsername(username)!= null;
+		} catch (ItemNotFoundException e) {
+			throw new ItemNotFoundException("Username '" + username + "'");
+		}
+	}
 
 	@Override
-	public boolean canViewUser(Identifier userId) {
+	public boolean canViewUser(UserIdentifier userId) {
 		/* can view a user if it exists */
-		if (users.findUser(userId) == null) {
+		if (users.findUserDetails(userId) == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean canUpdateUserRole(Identifier userId) {
+	public boolean canUpdateUserRole(UserIdentifier userId) {
 		/* can view a user if it exists and is active */
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
@@ -64,9 +67,9 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canUpdateUserPassword(Identifier userId) {
+	public boolean canUpdateUserPassword(UserIdentifier userId) {
 		/* can view a user password if it exists and is active */
-		User user = users.findUser(userId);
+		UserDetails user = users.findUserDetails(userId);
 		if (user == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
@@ -74,18 +77,18 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	}
 
 	@Override
-	public boolean canEnableUser(Identifier userId) {
+	public boolean canEnableUser(UserIdentifier userId) {
 		/* can enable a user if it exists */
-		if (users.findUser(userId) == null) {
+		if (users.findUserDetails(userId) == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
 		return true;
 	}
 
 	@Override
-	public boolean canDisableUser(Identifier userId) {
+	public boolean canDisableUser(UserIdentifier userId) {
 		/* can disable a user if it exists */
-		if (users.findUser(userId) == null) {
+		if (users.findUserDetails(userId) == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
 		return true;

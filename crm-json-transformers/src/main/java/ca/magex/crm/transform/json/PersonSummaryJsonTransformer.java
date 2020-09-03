@@ -4,26 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.crm.PersonSummary;
-import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class PersonSummaryJsonTransformer extends AbstractJsonTransformer<PersonSummary> {
 
-	private IdentifierJsonTransformer identifierJsonTransformer;
-	
-	private StatusJsonTransformer statusJsonTransformer;
-
-	public PersonSummaryJsonTransformer(CrmServices crm) {
+	public PersonSummaryJsonTransformer(CrmOptionService crm) {
 		super(crm);
-		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
-		this.statusJsonTransformer = new StatusJsonTransformer(crm);
 	}
 
 	@Override
@@ -39,30 +31,23 @@ public class PersonSummaryJsonTransformer extends AbstractJsonTransformer<Person
 	@Override
 	public JsonObject formatLocalized(PersonSummary person, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
-		if (person.getPersonId() != null) {
-			pairs.add(new JsonPair("personId", identifierJsonTransformer
-				.format(person.getPersonId(), locale)));
-		}
-		if (person.getOrganizationId() != null) {
-			pairs.add(new JsonPair("organizationId", identifierJsonTransformer
-				.format(person.getOrganizationId(), locale)));
-		}
-		if (person.getStatus() != null) {
-			pairs.add(new JsonPair("status", statusJsonTransformer
-				.format(person.getStatus(), locale)));
-		}
+		formatType(pairs, locale);
+		formatIdentifier(pairs, "personId", person, PersonIdentifier.class, locale);
+		formatIdentifier(pairs, "organizationId", person, OrganizationIdentifier.class, locale);
+		formatStatus(pairs, "status", person, locale);
 		formatText(pairs, "displayName", person);
+		formatLong(pairs, "lastModified", person);
 		return new JsonObject(pairs);
 	}
 
 	@Override
 	public PersonSummary parseJsonObject(JsonObject json, Locale locale) {
-		Identifier personId = parseObject("personId", json, identifierJsonTransformer, locale);
-		Identifier organizationId = parseObject("organizationId", json, identifierJsonTransformer, locale);
-		Status status = parseObject("status", json, statusJsonTransformer, locale);
+		PersonIdentifier personId = parseIdentifier("personId", json, PersonIdentifier.class, locale);
+		OrganizationIdentifier organizationId = parseIdentifier("organizationId", json, OrganizationIdentifier.class, locale);
+		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		String displayName = parseText("displayName", json);
-		return new PersonSummary(personId, organizationId, status, displayName);
+		Long lastModified = parseLong("lastModified", json);
+		return new PersonSummary(personId, organizationId, status, displayName, lastModified);
 	}
 
 }

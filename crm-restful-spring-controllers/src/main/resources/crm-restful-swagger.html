@@ -1,0 +1,30 @@
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="icon" type="image/ico" href="/crm/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
+  </head>
+
+  <body>
+    <div style="max-width: 1600px; margin: 10px auto">
+      <div id="swagger-ui"></div>
+    </div>
+
+    <script src="./swagger-ui-bundle.js"> </script>
+    <script>
+    window.onload = function() {
+      window.ui = SwaggerUIBundle({
+        url: "${contextPath}/rest/api.json",
+        dom_id: '#swagger-ui',
+        docExpansion: "list",
+        defaultModelsExpandDepth: 1,
+        filter: true,
+        layout: "BaseLayout"
+      })
+    }
+  </script>
+  </body>
+</html>

@@ -4,30 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.stereotype.Component;
-
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.crm.LocationDetails;
-import ca.magex.crm.api.services.CrmServices;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.services.CrmOptionService;
 import ca.magex.crm.api.system.Status;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
-@Component
 public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<LocationDetails> {
 
-	private IdentifierJsonTransformer identifierJsonTransformer;
-	
-	private StatusJsonTransformer statusJsonTransformer;
-	
-	private MailingAddressJsonTransformer mailingAddressJsonTransformer;
-
-	public LocationDetailsJsonTransformer(CrmServices crm) {
+	public LocationDetailsJsonTransformer(CrmOptionService crm) {
 		super(crm);
-		this.identifierJsonTransformer = new IdentifierJsonTransformer(crm);
-		this.statusJsonTransformer = new StatusJsonTransformer(crm);
-		this.mailingAddressJsonTransformer = new MailingAddressJsonTransformer(crm);
 	}
 
 	@Override
@@ -43,37 +32,27 @@ public class LocationDetailsJsonTransformer extends AbstractJsonTransformer<Loca
 	@Override
 	public JsonObject formatLocalized(LocationDetails location, Locale locale) {
 		List<JsonPair> pairs = new ArrayList<JsonPair>();
-		formatType(pairs);
-		if (location.getLocationId() != null) {
-			pairs.add(new JsonPair("locationId",identifierJsonTransformer
-				.format(location.getLocationId(), locale)));
-		}
-		if (location.getOrganizationId() != null) {
-			pairs.add(new JsonPair("organizationId", identifierJsonTransformer
-				.format(location.getOrganizationId(), locale)));
-		}
-		if (location.getStatus() != null) {
-			pairs.add(new JsonPair("status", statusJsonTransformer
-				.format(location.getStatus(), locale)));
-		}
+		formatType(pairs, locale);
+		formatIdentifier(pairs, "locationId", location, LocationIdentifier.class, locale);
+		formatIdentifier(pairs, "organizationId", location, OrganizationIdentifier.class, locale);
+		formatStatus(pairs, "status", location, locale);
 		formatText(pairs, "reference", location);
 		formatText(pairs, "displayName", location);
-		if (location.getAddress() != null) {
-			pairs.add(new JsonPair("address", mailingAddressJsonTransformer
-				.format(location.getAddress(), locale)));
-		}
+		formatTransformer(pairs, "address", location, new MailingAddressJsonTransformer(crm), locale);
+		formatLong(pairs, "lastModified", location);
 		return new JsonObject(pairs);
 	}
 
 	@Override
 	public LocationDetails parseJsonObject(JsonObject json, Locale locale) {
-		Identifier locationId = parseObject("locationId", json, identifierJsonTransformer, locale);
-		Identifier organizationId = parseObject("organizationId", json, identifierJsonTransformer, locale);
-		Status status = parseObject("status", json, statusJsonTransformer, locale);
+		LocationIdentifier locationId = parseIdentifier("locationId", json, LocationIdentifier.class, locale);
+		OrganizationIdentifier organizationId = parseIdentifier("organizationId", json, OrganizationIdentifier.class, locale);
+		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		String reference = parseText("reference", json);
-		String displayName = parseText("displayName", json);
-		MailingAddress address = parseObject("address", json, mailingAddressJsonTransformer, locale);
-		return new LocationDetails(locationId, organizationId, status, reference, displayName, address);
+		String displayName = parseText("displayName", json);		
+		MailingAddress address = parseObject("address", json, new MailingAddressJsonTransformer(crm), locale);
+		Long lastModified = parseLong("lastModified", json);
+		return new LocationDetails(locationId, organizationId, status, reference, displayName, address, lastModified);
 	}
 
 }

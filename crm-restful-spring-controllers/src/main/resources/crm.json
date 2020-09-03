@@ -6,11 +6,11 @@
   },
   "security": [{"bearerAuth": []}],
   "servers": [{
-    "url": "http://${serverAddress}:${serverPort}${contextPath}",
+    "url": "${server}",
     "description": "Local development (uses test data)"
   }],
   "paths": {
-    "/organizations": {
+    "/rest/organizations": {
       "get": {
         "summary": "List all organizations",
         "operationId": "findOrganizations",
@@ -157,7 +157,7 @@
         }
       }
     },
-    "/organizations/count": {
+    "/rest/organizations/count": {
       "get": {
         "summary": "Get a count of organizations",
         "operationId": "countOrganizations",
@@ -199,7 +199,7 @@
         }
       }
     },
-    "/organizations/{organizationId}": {
+    "/rest/organizations/{organizationId}": {
       "get": {
         "summary": "Get information about a specific organization",
         "operationId": "findOrganization",
@@ -298,7 +298,7 @@
         }
       }
     },
-    "/organizations/{organizationId}/summary": {
+    "/rest/organizations/{organizationId}/summary": {
       "get": {
         "summary": "Get the summary for an organization",
         "operationId": "getOrganizationSummary",
@@ -350,7 +350,7 @@
         }
       }
     },
-    "/organizations/{organizationId}/mainLocation": {
+    "/rest/organizations/{organizationId}/mainLocation": {
       "get": {
         "summary": "Get the main location for an organization",
         "operationId": "getOrganizationMainLocation",
@@ -394,7 +394,7 @@
         }
       }
     },
-    "/organizations/{organizationId}/enable": {
+    "/rest/organizations/{organizationId}/enable": {
       "put": {
         "summary": "Activate the given organization if they are inactive",
         "operationId": "enableOrganization",
@@ -438,7 +438,7 @@
         }
       }
     },
-    "/organizations/{organizationId}/disable": {
+    "/rest/organizations/{organizationId}/disable": {
       "put": {
         "summary": "Inactivate the given organization if they are active",
         "operationId": "disableOrganization",
@@ -482,7 +482,7 @@
         }
       }
     },
-    "/locations": {
+    "/rest/locations": {
       "get": {
         "summary": "List all locations",
         "operationId": "findLocationSummaries",
@@ -652,7 +652,7 @@
         }
       }
     },
-    "/locations/count": {
+    "/rest/locations/count": {
       "get": {
         "summary": "Get a count of organizations",
         "operationId": "countLocations",
@@ -701,7 +701,7 @@
         }
       }
     },
-    "/locations/{locationId}": {
+    "/rest/locations/{locationId}": {
       "get": {
         "summary": "Get information about a specific location",
         "operationId": "findLocation",
@@ -799,7 +799,7 @@
         }
       }
     },
-    "/locations/{locationId}/summary": {
+    "/rest/locations/{locationId}/summary": {
       "get": {
         "summary": "Get the summary information about a location",
         "operationId": "getLocationSummary",
@@ -843,7 +843,7 @@
         }
       }
     },
-    "/locations/{locationId}/enable": {
+    "/rest/locations/{locationId}/enable": {
       "put": {
         "summary": "Activate the given location if they are inactive",
         "operationId": "enableLocation",
@@ -887,7 +887,7 @@
         }
       }
     },
-    "/locations/{locationId}/disable": {
+    "/rest/locations/{locationId}/disable": {
       "put": {
         "summary": "Inactivate the given locations if they are active",
         "operationId": "disableLocation",
@@ -931,7 +931,7 @@
         }
       }
     },
-    "/persons": {
+    "/rest/persons": {
       "get": {
         "summary": "List all people",
         "operationId": "findPersonSummaries",
@@ -1096,7 +1096,7 @@
         }
       }
     },
-    "/persons/count": {
+    "/rest/persons/count": {
       "get": {
         "summary": "Get the count of people in the filter",
         "operationId": "countPersons",
@@ -1145,7 +1145,7 @@
         }
       }
     },
-    "/persons/{personId}": {
+    "/rest/persons/{personId}": {
       "get": {
         "summary": "Get information about a specific person",
         "operationId": "findPerson",
@@ -1246,7 +1246,7 @@
         }
       }
     },
-    "/persons/{personId}/summary": {
+    "/rest/persons/{personId}/summary": {
       "get": {
         "summary": "Get the summary information about the person",
         "operationId": "getPersonSummary",
@@ -1290,7 +1290,7 @@
         }
       }
     },
-    "/persons/{personId}/legalName": {
+    "/rest/persons/{personId}/legalName": {
       "get": {
         "summary": "Get the legal name of the person",
         "operationId": "getPersonName",
@@ -1334,7 +1334,7 @@
         }
       }
     },
-    "/persons/{personId}/address": {
+    "/rest/persons/{personId}/address": {
       "get": {
         "summary": "Get the address of the person",
         "operationId": "getPersonAddress",
@@ -1378,7 +1378,7 @@
         }
       }
     },
-    "/persons/{personId}/communication": {
+    "/rest/persons/{personId}/communication": {
       "get": {
         "summary": "Get the communication information for the user",
         "operationId": "getPersonCommunication",
@@ -1422,7 +1422,7 @@
         }
       }
     },
-    "/persons/{personId}/position": {
+    "/rest/persons/{personId}/position": {
       "get": {
         "summary": "Get the position of the person",
         "operationId": "getPersonPosition",
@@ -1466,7 +1466,7 @@
         }
       }
     },
-    "/persons/{personId}/user": {
+    "/rest/persons/{personId}/user": {
       "get": {
         "summary": "Get the user information of the person",
         "operationId": "getPersonUser",
@@ -1518,7 +1518,7 @@
         }
       }
     },
-    "/persons/{personId}/enable": {
+    "/rest/persons/{personId}/enable": {
       "put": {
         "summary": "Activate the given person if they are inactive",
         "operationId": "enablePerson",
@@ -1562,7 +1562,7 @@
         }
       }
     },
-    "/persons/{personId}/disable": {
+    "/rest/persons/{personId}/disable": {
       "put": {
         "summary": "Inactivate the given person if they are active",
         "operationId": "disablePerson",
@@ -1609,7 +1609,7 @@
         }
       }
     },
-    "/persons/{personId}/roles": {
+    "/rest/persons/{personId}/roles": {
       "get": {
         "summary": "Get a set of user roles for a person",
         "operationId": "getUserRoles",
@@ -1722,7 +1722,7 @@
         }
       }
     },
-    "/persons/{personId}/roles/{roleId}": {
+    "/rest/persons/{personId}/roles/{roleId}": {
       "put": {
         "summary": "Grant a user role to a person",
         "operationId": "addUserRole",
@@ -1840,7 +1840,7 @@
         }
       }
     },
-    "/lookups/{lookupId}/{locale}": {
+    "/rest/lookups/{lookupId}/{locale}": {
       "get": {
         "summary": "Get a list of lookup values",
         "operationId": "getLookup",

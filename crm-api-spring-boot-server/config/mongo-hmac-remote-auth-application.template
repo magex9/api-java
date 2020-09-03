@@ -1,0 +1,40 @@
+# Giver our server a name
+spring.application.name=crm-mongo-resource-server
+
+# Disable Mongo Auto configuration
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+
+# Mongo Configuration
+mongo.db.name=magex
+mongo.db.url=
+mongo.db.username=
+mongo.db.password=
+
+# Authentication Profile
+spring.profiles.active=AuthRemoteHmac,Mongo
+
+# Caching layer 
+crm.caching.services.enabled=true
+
+# local server
+server.servlet.context-path=/crm
+server.port=9002
+server.external.address=localhost
+
+# Remote Authentication Server for validating tokens
+jwt.auth.host=localhost
+jwt.auth.port=9012
+jwt.auth.username=<user>
+jwt.auth.password=<password>
+jwt.auth.context=/auth
+
+# actuator will be accessible on http://localhost:9003/actuator (including remote shutdown)
+management.endpoints.web.exposure.include=*
+management.endpoints.web.base-path=/actuator
+management.endpoint.shutdown.enabled=true
+management.server.port=9003
+endpoints.shutdown.enabled=true
+
+# set specific log levels
+logging.level.ca.magex.crm.caching=INFO
+logging.level.org.springframework.security=INFO

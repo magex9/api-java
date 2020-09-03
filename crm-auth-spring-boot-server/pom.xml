@@ -11,6 +11,7 @@
 	</parent>
 
 	<dependencies>
+		<!-- Run Spring Boot using Jetty Web Server -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -27,45 +28,75 @@
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 
+		<!-- Include JWT Security Support -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>crm-spring-security</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<!-- Include Narayana JTA Transactions -->
+		<dependency>
+			<groupId>me.snowdrop</groupId>
+			<artifactId>narayana-spring-boot-starter</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-	
+
+		<!-- Include Caffeine caching support -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-amnesia-service</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-hazelcast-service</artifactId>
+			<artifactId>crm-spring-caching</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<!-- Include Actuator Support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<!-- Include Devtools for running locally from eclipse -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
 
+		<!-- Mongo Repository -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>crm-spring-security</artifactId>
+			<artifactId>crm-mongodb-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		
+		<!-- Cloud Deployments -->
 		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
 		</dependency>
 
 		<!-- Test Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -77,19 +108,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 
 	<build>

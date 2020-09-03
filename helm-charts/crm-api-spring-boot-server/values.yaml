@@ -1,0 +1,120 @@
+# Default values for crm-api-spring-boot-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+application:
+  name: "crm-api-spring-boot-server"
+  port: 80
+  group: crm
+  context: /crm
+  version: 1.0.0-SNAPSHOT
+  env:
+    - name: SPRING_CONFIG_SERVER_URI
+      value: "http://centralized-configuration-service"
+    - name: MONGODB_DBNAME
+      value: "magex2"
+    - name: MONGODB_URL
+      value: "cluster0.oofhz.azure.mongodb.net/?retryWrites=true&w=majority"
+    - name : MONGODB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: mongo-username
+          key: "mongo.db.username"
+    - name : MONGODB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mongo-password
+          key: "mongo.db.password"
+    - name : AUTH_PROFILE
+      value: AuthRemoteRsa
+    - name: REPOSITORY_PROFILE
+      value: Mongo
+    - name: JWT_RSA_CERT
+      value: file:/application/certs/crm-auth-spring-boot-server.cer
+
+replicaCount: 1
+
+#image url consists of {image.repository}/{application.group}/{application.name}:{application.version}
+image:
+  repository: w2020.azurecr.io
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+#Secrets volume mounts
+secrets:
+  - name: crm-auth-spring-boot-server-cert
+    readOnly: true
+    mountPath: "/application/certs"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  omitClusterIP: true
+
+ingress:
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: addon-http-application-routing
+    # kubernetes.io/tls-acme: "true"
+  #hosts:
+    #if host is empty , then the hostname will be : {app_name}-{namespace}.{domain}
+  #  - host: crm-api-spring-boot-server.466356a5ffaf4931ba8e.canadacentral.aksapp.io
+  host:
+    domain: 466356a5ffaf4931ba8e.canadacentral.aksapp.io
+    paths:
+      - path: /
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: {}
+
+affinity: {}

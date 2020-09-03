@@ -1,0 +1,14 @@
+applicationName: "crm-helloworld"
+applicationVersion: "1.0.1-SNAPSHOT"
+applicationDescription: "this is a basic helloworld application to R&D"
+application:
+  name: "crm-helloworld"
+  version: "1.0.1-SNAPSHOT"
+  description: "this is a basic helloworld application to R&D"
+  port: 80
+replicaCount: 1
+service:
+  type: ClusterIP
+  port: 80
+ingress:
+  class: addon-http-application-routing

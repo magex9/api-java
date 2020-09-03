@@ -1,0 +1,21 @@
+body {
+	padding-top: 5rem;
+}
+
+.error-text {
+	color: red;
+}
+
+.error-indicator {
+	margin-right: 3px;
+	margin-bottom: 3px;
+}
+
+.field-label {
+	margin-left: 3px;
+	margin-top: .25rem;
+}
+
+.field-required {
+	color: red;
+}

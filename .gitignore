@@ -20,11 +20,12 @@ hs_err_pid*
 ##############################
 **/.factorypath
 
-
 ##############################
 ## Maven
 ##############################
 target/
+generated/
+jsondoc/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup

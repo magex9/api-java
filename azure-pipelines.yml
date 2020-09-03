@@ -11,6 +11,23 @@ pool:
 #                         To use it in bash , it must be referred as ${APPLICATION_NAME}
 variables:
 - group: ut-server-info
+- name: application_name
+  value: crm-helloworld
+- name: application_version
+  value: 1.0.0-SNAPSHOT
+- name: aks_service_connection_name
+  value: 'appdev aks'
+- name: application_group
+  value: api-java
+- name:  artifacts_knownHostsEntry
+  value: 'ssh.dev.azure.com,40.82.190.38 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7Hr1oTWqNqOlzGJOfGJ4NakVyIzf1rXYd4d7wo6jBlkLvCA4odBlL0mDUyZ0/QUfTTqeu+tm22gOsv+VrVTMk6vwRU75gY/y9ut5Mb3bR5BV58dKXyq9A9UeB5Cakehn5Zgm6x1mKoVyf+FFn26iYqXJRgzIZZcZ5V6hrE0Qg39kZm4az48o0AUbf6Sp4SLdvnuMa2sVNwHBboS7EJkm57XQPVU3/QpyNLHbWDdzwtrlS+ez30S3AdYhLKEOxAG8weOnyrtLJAUen9mTkol8oII1edf7mWWbWVf0nBmly21+nZcmCTISQBtdcyPaEno7fFQMDD26/s0lfKob4Kw8H'
+- name:  artifacts_sshPublicKey
+  value: 'ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEA3E8vI/k5tiMsIWDw2gKgiQPC9lla637uR6ZZVZRUwxKVoTMnmQxMKEg77YHtKysTo9buo2XWrSW8MjLebvj9o7em4m+fSRRS2I8OptwAy87qXEPTNNKSfYcUmhi5nZSCsDJnQK1RfkGncJ0Ruu4C044087Ots/z8892BpUJHDEQ3GaH9UtSZViRlwO6BGz9JRH2ltchBvU1eyt7M1SBs+7H6LohL2i8d8r8ElPV+EahA+xWBI7DNxOgaaZQmPiAKSJU0H+o8SbTyl3FESOJQH44zPi4rRGzNscKD5urIL0VSR+HF9JnDdaAghMntGWimGeSIOqXclSWJJt80bC/hlw== imported-openssh-key'
+- name:  artifacts_sshPassphrase
+  value: 'fintraccanafe'
+- name:  artifacts_sshKeySecureFile
+  value: 'azure-git.key'
+
 
 resources:
   repositories:
@@ -22,61 +39,94 @@ resources:
 
 trigger:
       - azure
+      - dev
 #test
 #Stages Configuration (to be ran sequentially)
 stages:
-- stage: Build
+- stage: CI
+  displayName: Continuous Integration (CI) Build
   jobs:
-  - job: Build
+  - job: Build_apps
+    displayName: Build Applications
     steps:
-            
-    - task: Maven@3
+    - task: DownloadSecureFile@1
+      name: gitazurekey
       inputs:
-        goals: 'install'
-        mavenPomFile: 'pom.xml'
-        options: '-Dmaven.test.failure.ignore=true'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.11'
-        mavenVersionOption: 'Default'
-        mavenOptions: '-Xmx3072m'
+        secureFile: 'azure.key'
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-graphql-spring-boot-server/target/
-      artifact: crm-graphql-spring-boot-server
+    - task: CmdLine@2
+      inputs:
+        script: |
+          ls -la *
+          cp $(gitazurekey.secureFilePath) azure-git.key
+          ls -la *
 
-    - publish: $(System.DefaultWorkingDirectory)/crm-helloworld/target/
-      artifact: crm-helloworld
+       
+    #Build Docker container and push to azure container registry
+    - template: azure-build-docker-containers.yml
+      parameters:
+        environment: 'ut'
+        application_group: crm
+        application_name: crm-api-spring-boot-server
+        application_version: $(application_version)
+        dockerfile: ./Dockerfile 
+   #Build Docker container and push to azure container registry
+    - template: azure-build-docker-containers.yml
+      parameters:
+        environment: 'ut'
+        application_group: crm
+        application_name: crm-auth-spring-boot-server
+        application_version: $(application_version)
+        dockerfile: ./Dockerfile 
 
-- stage: deployApplications
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/azure'))
+
+- stage: Continuous_Deployment
+  displayName: Continuous Deployment to UT
+  #deploy only if branch is beta,azure or dev ... 
+  #TODO: we need to find a convention for branch names and just apply a generic filter like feature-* , release-* , etc...
+  condition: and(succeeded(), in(variables['Build.SourceBranchName'],'beta','azure','dev'))
   jobs:
 
     - deployment: Deploy
-      displayName: "Deploy Application"
+      displayName: "Deploy Application to UT"
       environment: 'ut'
       strategy:
       # default deployment strategy, more coming...
         runOnce:
           deploy:
             steps: 
-            - checkout: "ADLC"  # self represents the repo where the initial Pipelines YAML file was found
-              clean: true  # whether to fetch clean each time
-              fetchDepth: 1  # the depth of commits to ask Git to fetch
-              lfs: false  # whether to download Git-LFS files
-              submodules: false  # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
-              path: adlc  # path to check out source code, relative to the agent's build directory (e.g. \_work\1)
-              persistCredentials: false  # set to 'true' to leave the OAuth token in the Git config after the initial fetch
-      
-            - template: azure-deploy.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-graphql-spring-boot-server
-                application_version: 1.0.0-SNAPSHOT
-                sshEndpoint: 'ssh - RD3'
-            - template: azure-deploy.yml
-              parameters:
-                environment: 'ut'
-                application_name: crm-helloworld
-                application_version: 1.0.0-SNAPSHOT
-                sshEndpoint: 'ssh - RD3'    
+            - task: HelmInstaller@1
+              inputs:
+                helmVersionToInstall: 'latest'
+            - task: HelmDeploy@0
+              displayName: "Deploy crm-api"
+              inputs:
+                connectionType: 'Azure Resource Manager'
+                azureSubscription: 'appdev aks connection'
+                azureResourceGroup: 'AppDev_Kubernetes'
+                kubernetesCluster: 'appdev-cluster'
+                namespace: $(Build.SourceBranchName)
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '$(Pipeline.Workspace)/helm-charts/crm-api-spring-boot-server'
+                releaseName: 'crm-api-spring-boot-server'
+                force: false
+                failOnStderr: false
+                overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
+                #recreate: true
+            - task: HelmDeploy@0
+              displayName: "Deploy crm-auth"
+              inputs:
+                connectionType: 'Azure Resource Manager'
+                azureSubscription: 'appdev aks connection'
+                azureResourceGroup: 'AppDev_Kubernetes'
+                kubernetesCluster: 'appdev-cluster'
+                namespace: $(Build.SourceBranchName)
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '$(Pipeline.Workspace)/helm-charts/crm-auth-spring-boot-server'
+                releaseName: 'crm-auth-spring-boot-server'
+                force: false
+                failOnStderr: false
+                overrideValues: 'application.version=$(application_version)-$(Build.BuildID)'
+                #recreate: true#

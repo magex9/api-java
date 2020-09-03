@@ -1,26 +1,20 @@
 package ca.magex.crm.test;
 
-import static ca.magex.crm.test.CrmAsserts.*;
-import static ca.magex.crm.test.CrmAsserts.CANADA;
-import static ca.magex.crm.test.CrmAsserts.WORK_COMMUNICATIONS;
-import static ca.magex.crm.test.CrmAsserts.GROUP;
-import static ca.magex.crm.test.CrmAsserts.MAILING_ADDRESS;
-import static ca.magex.crm.test.CrmAsserts.ONTARIO;
-import static ca.magex.crm.test.CrmAsserts.PERSON_NAME;
-import static ca.magex.crm.test.CrmAsserts.QUEBEC;
-import static ca.magex.crm.test.CrmAsserts.assertBadRequestMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
+import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
 import ca.magex.crm.api.crm.OrganizationDetails;
@@ -29,217 +23,253 @@ import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
-import ca.magex.crm.api.services.Crm;
-import ca.magex.crm.api.system.Identifier;
+import ca.magex.crm.api.services.CrmConfigurationService;
+import ca.magex.crm.api.services.CrmOrganizationService;
+import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.system.Choice;
 import ca.magex.crm.api.system.Localized;
 import ca.magex.crm.api.system.Message;
 import ca.magex.crm.api.system.Status;
-import ca.magex.crm.api.validation.CrmValidation;
+import ca.magex.crm.api.system.Type;
+import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
+import ca.magex.crm.api.system.id.LocationIdentifier;
+import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.api.system.id.PersonIdentifier;
+import ca.magex.crm.api.system.id.PhraseIdentifier;
 
+@Transactional
 public abstract class AbstractOrganizationServiceTests {
 
-	protected Crm crm;
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmConfigurationService config();
 	
-	protected AbstractOrganizationServiceTests() {}
+	/**
+	 * Configuration Service used to setup the system for testing
+	 * @return
+	 */
+	protected abstract CrmServices crm();
 	
-	public AbstractOrganizationServiceTests(Crm crm) {
-		this.crm = crm;
-	}
+	/**
+	 * Authentication service used to allow an authenticated test
+	 * @return
+	 */
+	protected abstract CrmAuthenticationService auth();
+	
+	/**
+	 * The CRM Services to be tested
+	 * @return
+	 */
+	protected abstract CrmOrganizationService organizations();
 	
 	@Before
 	public void setup() {
-		crm.reset();
-		crm.initializeSystem("Magex", CrmAsserts.PERSON_NAME, "admin@magex.ca", "admin", "admin");
-		crm.createGroup(new Localized("NHL", "NHL", "LNH"));
-		crm.createGroup(new Localized("PLAYOFFS", "Playoffs", "Playoffs"));
-		crm.createGroup(new Localized("ONTARIO", "Ontario", "Ontario"));
-		crm.createGroup(new Localized("QUEBEC", "Quebec", "Québec"));
+		config().reset();
+		config().initializeSystem(CrmAsserts.SYSTEM_ORG, CrmAsserts.SYSTEM_PERSON, CrmAsserts.SYSTEM_EMAIL, "admin", "admin");		
+		auth().login("admin", "admin");
+	}
+	
+	@After
+	public void cleanup() {
+		auth().logout();
 	}
 
 	@Test
-	public void testOrganizations() {
+	public void testOrganizations() {		
+		AuthenticationGroupIdentifier NHL = crm().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("NHL", "National Hockey League", "Ligue nationale de hockey")).getOptionId();
+		AuthenticationGroupIdentifier PLAYOFFS = crm().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("PLAYOFFS", "Playoffs", "Playoffs")).getOptionId();
+		AuthenticationGroupIdentifier ONTARIO = crm().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("ONTARIO", "Ontario", "Ontario")).getOptionId();		
+		AuthenticationGroupIdentifier QUEBEC = crm().createOption(NHL, Type.AUTHENTICATION_GROUP, new Localized("QUEBEC", "Quebec", "Québec")).getOptionId();	
+		
 		/* create */
-		OrganizationDetails o1 = crm.createOrganization("Maple Leafs", List.of("NHL"));
+		OrganizationDetails o1 = organizations().createOrganization("Maple Leafs", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
 		Assert.assertEquals("Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertNull(o1.getMainLocationId());
-		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
-		OrganizationDetails o2 = crm.createOrganization("Senators", List.of("NHL"));
+		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
+		Assert.assertEquals(o1.asSummary(), organizations().findOrganizationSummary(o1.getOrganizationId()));
+		OrganizationDetails o2 = organizations().createOrganization("Senators", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
 		Assert.assertEquals("Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertNull(o2.getMainLocationId());
-		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
-		OrganizationDetails o3 = crm.createOrganization("Canadiens", List.of("NHL"));
+		Assert.assertEquals(o2, organizations().findOrganizationDetails(o2.getOrganizationId()));
+		Assert.assertEquals(o2.asSummary(), organizations().findOrganizationSummary(o2.getOrganizationId()));
+		OrganizationDetails o3 = organizations().createOrganization("Canadiens", List.of(NHL), List.of(BusinessGroupIdentifier.IMIT));
 		Assert.assertEquals("Canadiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertNull(o3.getMainLocationId());
-		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
+		Assert.assertEquals(o3, organizations().findOrganizationDetails(o3.getOrganizationId()));
+		Assert.assertEquals(o3.asSummary(), organizations().findOrganizationSummary(o3.getOrganizationId()));
 
 		/* update display name */
-		o1 = crm.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
+		o1 = organizations().updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertNull(o1.getMainLocationId());
-		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
-		o1 = crm.updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
-		o2 = crm.updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
+		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
+		o1 = organizations().updateOrganizationDisplayName(o1.getOrganizationId(), "Toronto Maple Leafs");
+		o2 = organizations().updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertNull(o2.getMainLocationId());
-		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
-		o2 = crm.updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
-		o3 = crm.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
+		Assert.assertEquals(o2, organizations().findOrganizationDetails(o2.getOrganizationId()));
+		o2 = organizations().updateOrganizationDisplayName(o2.getOrganizationId(), "Ottawa Senators");
+		o3 = organizations().updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertNull(o3.getMainLocationId());
-		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
-		o3 = crm.updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
+		Assert.assertEquals(o3, organizations().findOrganizationDetails(o3.getOrganizationId()));
+		o3 = organizations().updateOrganizationDisplayName(o3.getOrganizationId(), "Montreal Candiens");
 
 		/* update main location */
-		Identifier torontoId = crm.createLocation(
+		LocationIdentifier torontoId = crm().createLocation(
 				o1.getOrganizationId(),
-				"Toronto",
 				"TORONTO",
-				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2")).getLocationId();
-		o1 = crm.updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
+				"Toronto",
+				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2")).getLocationId();
+		o1 = organizations().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertEquals(torontoId, o1.getMainLocationId());
-		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
-		o1 = crm.updateOrganizationMainLocation(o1.getOrganizationId(), torontoId); // set to duplicate value
+		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
+		o1 = organizations().updateOrganizationMainLocation(o1.getOrganizationId(), torontoId); // set to duplicate value
 
-		Identifier ottawaId = crm.createLocation(
+		LocationIdentifier ottawaId = crm().createLocation(
 				o2.getOrganizationId(),
-				"Ottawa",
 				"OTTAWA",
-				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5")).getLocationId();
-		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
+				"Ottawa",
+				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "K2V 1A5")).getLocationId();
+		o2 = organizations().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertEquals(ottawaId, o2.getMainLocationId());
-		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
-		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
-		o2 = crm.updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
+		Assert.assertEquals(o2, organizations().findOrganizationDetails(o2.getOrganizationId()));
+		o2 = organizations().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
+		o2 = organizations().updateOrganizationMainLocation(o2.getOrganizationId(), ottawaId);
 
-		Identifier montrealId = crm.createLocation(
+		LocationIdentifier montrealId = crm().createLocation(
 				o3.getOrganizationId(),
-				"Montreal",
 				"MONTREAL",
-				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", QUEBEC.getCode(), CANADA.getCode(), "H4B 5G0")).getLocationId();
-		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
+				"Montreal",
+				new MailingAddress("1909 Avenue des Canadiens-de-Montréal", "Montreal", CrmAsserts.QUEBEC, CrmAsserts.CANADA, "H4B 5G0")).getLocationId();
+		o3 = organizations().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertEquals(montrealId, o3.getMainLocationId());
-		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
-		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
-		o3 = crm.updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
+		Assert.assertEquals(o3, organizations().findOrganizationDetails(o3.getOrganizationId()));
+		o3 = organizations().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
+		o3 = organizations().updateOrganizationMainLocation(o3.getOrganizationId(), montrealId);
 
 		/* update main contact */
-		Identifier freddyId = crm.createPerson(
-				o1.getOrganizationId(),
-				new PersonName("1", "Freddy", "R", "Davis"),
-				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"),
-				WORK_COMMUNICATIONS,
-				BUSINESS_POSITION).getPersonId();
-		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
+		PersonIdentifier freddyId = crm().createPerson(
+				o1.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
+				new PersonName(CrmAsserts.MR, "Freddy", "R", "Davis"),
+				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
+				CrmAsserts.WORK_COMMUNICATIONS,
+				List.of(new BusinessRoleIdentifier("CEO"))).getPersonId();
+		o1 = organizations().updateOrganizationMainContact(o1.getOrganizationId(), freddyId);
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(1, o1.getGroups().size());
+		Assert.assertEquals(1, o1.getAuthenticationGroupIds().size());
 		Assert.assertEquals(freddyId, o1.getMainContactId());
-		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
-		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // set to duplicate value
-		o1 = crm.updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // reset to original value
+		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
+		o1 = organizations().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // set to duplicate value
+		o1 = organizations().updateOrganizationMainContact(o1.getOrganizationId(), freddyId); // reset to original value
 
-		Identifier craigId = crm.createPerson(
-				o2.getOrganizationId(),
-				new PersonName("3", "Craig", null, "Phillips"),
-				new MailingAddress("1000 Palladium Dr", "Ottawa", ONTARIO.getCode(), CANADA.getCode(), "K2V 1A5"),
-				WORK_COMMUNICATIONS,
-				BUSINESS_POSITION).getPersonId();
-		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
+		PersonIdentifier craigId = crm().createPerson(
+				o2.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
+				new PersonName(CrmAsserts.MR, "Craig", null, "Phillips"),
+				new MailingAddress("1000 Palladium Dr", "Ottawa", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "K2V 1A5"),
+				CrmAsserts.WORK_COMMUNICATIONS,
+				List.of(new BusinessRoleIdentifier("CEO"))).getPersonId();
+		o2 = organizations().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(1, o2.getGroups().size());
+		Assert.assertEquals(1, o2.getAuthenticationGroupIds().size());
 		Assert.assertEquals(craigId, o2.getMainContactId());
-		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
-		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
-		o2 = crm.updateOrganizationMainContact(o2.getOrganizationId(), craigId);
+		Assert.assertEquals(o2, organizations().findOrganizationDetails(o2.getOrganizationId()));
+		o2 = organizations().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
+		o2 = organizations().updateOrganizationMainContact(o2.getOrganizationId(), craigId);
 
-		Identifier careyId = crm.createPerson(
-				o3.getOrganizationId(),
+		PersonIdentifier careyId = crm().createPerson(
+				o3.getOrganizationId(), CrmAsserts.PERSON_DISPLAY_NAME,
 				new PersonName(null, "Carey", null, "Thomas"),
-				new MailingAddress("40 Bay St", "Toronto", ONTARIO.getCode(), CANADA.getCode(), "M5J 2X2"),
-				WORK_COMMUNICATIONS,
-				BUSINESS_POSITION).getPersonId();
-		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
+				new MailingAddress("40 Bay St", "Toronto", CrmAsserts.ONTARIO, CrmAsserts.CANADA, "M5J 2X2"),
+				CrmAsserts.WORK_COMMUNICATIONS,
+				List.of(new BusinessRoleIdentifier("CEO"))).getPersonId();
+		o3 = organizations().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(1, o3.getGroups().size());
+		Assert.assertEquals(1, o3.getAuthenticationGroupIds().size());
 		Assert.assertEquals(careyId, o3.getMainContactId());
-		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
-		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
-		o3 = crm.updateOrganizationMainContact(o3.getOrganizationId(), careyId);
+		Assert.assertEquals(o3, organizations().findOrganizationDetails(o3.getOrganizationId()));
+		o3 = organizations().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
+		o3 = organizations().updateOrganizationMainContact(o3.getOrganizationId(), careyId);
 
 		/* update groups */
-		o1 = crm.updateOrganizationGroups(o1.getOrganizationId(), List.of("NHL", "PLAYOFFS", "ONTARIO"));
+		o1 = organizations().updateOrganizationAuthenticationGroups(o1.getOrganizationId(), List.of(NHL, PLAYOFFS, ONTARIO));
 		Assert.assertEquals("Toronto Maple Leafs", o1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o1.getStatus());
-		Assert.assertEquals(List.of("NHL", "PLAYOFFS", "ONTARIO"), o1.getGroups());
+		Assert.assertEquals(List.of(NHL, PLAYOFFS, ONTARIO), o1.getAuthenticationGroupIds());
 		Assert.assertEquals(freddyId, o1.getMainContactId());
-		Assert.assertEquals(o1, crm.findOrganizationDetails(o1.getOrganizationId()));
-		Assert.assertEquals(o1, crm.updateOrganizationGroups(o1.getOrganizationId(), List.of("NHL", "PLAYOFFS", "ONTARIO")));
-		o1 = crm.updateOrganizationGroups(o1.getOrganizationId(), List.of("NHL", "ONTARIO"));
-		Assert.assertEquals(List.of("NHL", "ONTARIO"), o1.getGroups());
-		o1 = crm.updateOrganizationGroups(o1.getOrganizationId(), List.of("NHL", "PLAYOFFS", "ONTARIO"));
-		Assert.assertEquals(List.of("NHL", "PLAYOFFS", "ONTARIO"), o1.getGroups());
+		Assert.assertEquals(o1, organizations().findOrganizationDetails(o1.getOrganizationId()));
+		Assert.assertEquals(o1, organizations().updateOrganizationAuthenticationGroups(o1.getOrganizationId(), List.of(NHL, PLAYOFFS, ONTARIO)));
+		o1 = organizations().updateOrganizationAuthenticationGroups(o1.getOrganizationId(), List.of(NHL, ONTARIO));
+		Assert.assertEquals(List.of(NHL, ONTARIO), o1.getAuthenticationGroupIds());
+		o1 = organizations().updateOrganizationAuthenticationGroups(o1.getOrganizationId(), List.of(NHL, PLAYOFFS, ONTARIO));
+		Assert.assertEquals(List.of(NHL, PLAYOFFS, ONTARIO), o1.getAuthenticationGroupIds());
 
-		o2 = crm.updateOrganizationGroups(o2.getOrganizationId(), List.of("NHL", "ONTARIO"));
+		o2 = organizations().updateOrganizationAuthenticationGroups(o2.getOrganizationId(), List.of(NHL, ONTARIO));
 		Assert.assertEquals("Ottawa Senators", o2.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o2.getStatus());
-		Assert.assertEquals(List.of("NHL", "ONTARIO"), o2.getGroups());
+		Assert.assertEquals(List.of(NHL, ONTARIO), o2.getAuthenticationGroupIds());
 		Assert.assertEquals(craigId, o2.getMainContactId());
-		Assert.assertEquals(o2, crm.findOrganizationDetails(o2.getOrganizationId()));
+		Assert.assertEquals(o2, organizations().findOrganizationDetails(o2.getOrganizationId()));
 
-		o3 = crm.updateOrganizationGroups(o3.getOrganizationId(), List.of("NHL", "QUEBEC"));
+		o3 = organizations().updateOrganizationAuthenticationGroups(o3.getOrganizationId(), List.of(NHL, QUEBEC));
 		Assert.assertEquals("Montreal Candiens", o3.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, o3.getStatus());
-		Assert.assertEquals(List.of("NHL", "QUEBEC"), o3.getGroups());
+		Assert.assertEquals(List.of(NHL, QUEBEC), o3.getAuthenticationGroupIds());
 		Assert.assertEquals(careyId, o3.getMainContactId());
-		Assert.assertEquals(o3, crm.findOrganizationDetails(o3.getOrganizationId()));
+		Assert.assertEquals(o3, organizations().findOrganizationDetails(o3.getOrganizationId()));
 
 		/* disable */
-		OrganizationSummary os1 = crm.disableOrganization(o1.getOrganizationId());
+		OrganizationSummary os1 = organizations().disableOrganization(o1.getOrganizationId());
 		Assert.assertEquals("Toronto Maple Leafs", os1.getDisplayName());
 		Assert.assertEquals(Status.INACTIVE, os1.getStatus());
-		Assert.assertEquals(os1, crm.disableOrganization(os1.getOrganizationId()));
-		Assert.assertEquals(os1, crm.findOrganizationSummary(os1.getOrganizationId()));
+		Assert.assertEquals(os1, organizations().disableOrganization(os1.getOrganizationId()));
+		Assert.assertEquals(os1, organizations().findOrganizationSummary(os1.getOrganizationId()));
 
 		/* enable */
-		os1 = crm.enableOrganization(o1.getOrganizationId());
+		os1 = organizations().enableOrganization(o1.getOrganizationId());
 		Assert.assertEquals("Toronto Maple Leafs", os1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, os1.getStatus());
-		Assert.assertEquals(os1, crm.enableOrganization(os1.getOrganizationId()));
-		Assert.assertEquals(os1, crm.findOrganizationSummary(os1.getOrganizationId()));
+		Assert.assertEquals(os1, organizations().enableOrganization(os1.getOrganizationId()));
+		Assert.assertEquals(os1, organizations().findOrganizationSummary(os1.getOrganizationId()));
 
 		/* count organizations */
-		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, "NHL")));
-		Assert.assertEquals(4, crm.countOrganizations(new OrganizationsFilter(null, Status.ACTIVE, null)));
-		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter(null, Status.INACTIVE, null)));
-		Assert.assertEquals(0, crm.countOrganizations(new OrganizationsFilter("Edmonton Oilers", null, null)));
-		Assert.assertEquals(1, crm.countOrganizations(new OrganizationsFilter("Ottawa Senators", null, null)));
+		Assert.assertEquals(1, organizations().countOrganizations(new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, NHL, null)));
+		Assert.assertEquals(4, organizations().countOrganizations(new OrganizationsFilter(null, Status.ACTIVE, null, null)));
+		Assert.assertEquals(0, organizations().countOrganizations(new OrganizationsFilter(null, Status.INACTIVE, null, null)));
+		Assert.assertEquals(0, organizations().countOrganizations(new OrganizationsFilter("Edmonton Oilers", null, null, null)));
+		Assert.assertEquals(1, organizations().countOrganizations(new OrganizationsFilter("Ottawa Senators", null, null, null)));
 
 		/* find pages of organization details */
-		Page<OrganizationDetails> detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null),
+		Page<OrganizationDetails> detailsPage = organizations().findOrganizationDetails(
+				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null, null),
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(5, detailsPage.getSize());
@@ -247,8 +277,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalPages());
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 
-		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter(null, Status.ACTIVE, null),
+		detailsPage = organizations().findOrganizationDetails(
+				new OrganizationsFilter(null, Status.ACTIVE, null, null),
 				new Paging(1, 2, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(2, detailsPage.getSize());
@@ -256,8 +286,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(2, detailsPage.getTotalPages());
 		Assert.assertEquals(4, detailsPage.getTotalElements());
 
-		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter(null, Status.INACTIVE, null),
+		detailsPage = organizations().findOrganizationDetails(
+				new OrganizationsFilter(null, Status.INACTIVE, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -265,8 +295,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalPages());
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 
-		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Edmonton Oilers", null, null),
+		detailsPage = organizations().findOrganizationDetails(
+				new OrganizationsFilter("Edmonton Oilers", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -274,8 +304,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, detailsPage.getTotalPages());
 		Assert.assertEquals(0, detailsPage.getTotalElements());
 
-		detailsPage = crm.findOrganizationDetails(
-				new OrganizationsFilter("Ottawa Senators", null, null),
+		detailsPage = organizations().findOrganizationDetails(
+				new OrganizationsFilter("Ottawa Senators", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, detailsPage.getNumber());
 		Assert.assertEquals(10, detailsPage.getSize());
@@ -283,8 +313,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, detailsPage.getTotalPages());
 		Assert.assertEquals(1, detailsPage.getTotalElements());
 
-		Page<OrganizationSummary> summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null),
+		Page<OrganizationSummary> summariesPage = organizations().findOrganizationSummaries(
+				new OrganizationsFilter("Toronto Maple Leafs", Status.ACTIVE, null, null),
 				new Paging(1, 5, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(5, summariesPage.getSize());
@@ -292,8 +322,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(1, summariesPage.getTotalPages());
 		Assert.assertEquals(1, summariesPage.getTotalElements());
 
-		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter(null, Status.ACTIVE, null),
+		summariesPage = organizations().findOrganizationSummaries(
+				new OrganizationsFilter(null, Status.ACTIVE, null, null),
 				new Paging(1, 2, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(2, summariesPage.getSize());
@@ -301,8 +331,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(2, summariesPage.getTotalPages());
 		Assert.assertEquals(4, summariesPage.getTotalElements());
 
-		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter(null, Status.INACTIVE, null),
+		summariesPage = organizations().findOrganizationSummaries(
+				new OrganizationsFilter(null, Status.INACTIVE, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -310,8 +340,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalPages());
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 
-		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Edmonton Oilers", null, null),
+		summariesPage = organizations().findOrganizationSummaries(
+				new OrganizationsFilter("Edmonton Oilers", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -319,8 +349,8 @@ public abstract class AbstractOrganizationServiceTests {
 		Assert.assertEquals(0, summariesPage.getTotalPages());
 		Assert.assertEquals(0, summariesPage.getTotalElements());
 
-		summariesPage = crm.findOrganizationSummaries(
-				new OrganizationsFilter("Ottawa Senators", null, null),
+		summariesPage = organizations().findOrganizationSummaries(
+				new OrganizationsFilter("Ottawa Senators", null, null, null),
 				new Paging(1, 10, Sort.by("displayName")));
 		Assert.assertEquals(1, summariesPage.getNumber());
 		Assert.assertEquals(10, summariesPage.getSize());
@@ -332,220 +362,180 @@ public abstract class AbstractOrganizationServiceTests {
 	@Test
 	public void testInvalidOrgId() {
 		try {
-			crm.findOrganizationDetails(new Identifier("abc"));
+			organizations().findOrganizationDetails(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.findOrganizationSummary(new Identifier("abc"));
+			organizations().findOrganizationSummary(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.updateOrganizationDisplayName(new Identifier("abc"), "Oilers");
+			organizations().updateOrganizationDisplayName(new OrganizationIdentifier("abc"), "Oilers");
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.updateOrganizationMainLocation(new Identifier("abc"), new Identifier("Edmonton"));
+			organizations().updateOrganizationMainLocation(new OrganizationIdentifier("abc"), new LocationIdentifier("Edmonton"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.updateOrganizationMainContact(new Identifier("abc"), new Identifier("Mikko"));
+			organizations().updateOrganizationMainContact(new OrganizationIdentifier("abc"), new PersonIdentifier("Mikko"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.updateOrganizationGroups(new Identifier("abc"), Collections.emptyList());
+			organizations().updateOrganizationAuthenticationGroups(new OrganizationIdentifier("abc"), Collections.emptyList());
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.disableOrganization(new Identifier("abc"));
+			organizations().disableOrganization(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 
 		try {
-			crm.enableOrganization(new Identifier("abc"));
+			organizations().enableOrganization(new OrganizationIdentifier("abc"));
 			Assert.fail("should fail if we get here");
 		} catch (ItemNotFoundException e) {
-			Assert.assertEquals("Item not found: Organization ID 'abc'", e.getMessage());
-		}
-	}
-
-	@Test
-	public void testWrongIdentifiers() throws Exception {
-		Identifier groupId = crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("Org Name", List.of("GRP")).getOrganizationId();
-
-		assertEquals("Org Name", crm.findOrganizationDetails(organizationId).getDisplayName());
-		assertEquals("Org Name", crm.findOrganizationSummary(organizationId).getDisplayName());
-		assertEquals("Org Name", crm.findOrganizationByDisplayName("Org Name").getDisplayName());
-		try {
-			crm.findOrganizationDetails(groupId);
-			fail("Not a valid identifier");
-		} catch (ItemNotFoundException e) {
+			Assert.assertEquals("Item not found: Organization ID '/organizations/abc'", e.getMessage());
 		}
 	}
 
 	@Test
 	public void testCreateOrgWithMissingGroup() throws Exception {
-		Identifier groupId = crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		assertEquals(crm.findGroup(groupId).getCode(), crm.findOrganizationDetails(organizationId).getGroups().get(0));
 		try {
-			crm.createOrganization("INVALID", List.of("MISSING"));
+			organizations().createOrganization("INVALID", List.of(new AuthenticationGroupIdentifier("MISSING")), List.of(BusinessGroupIdentifier.EXTERNAL));
 			fail("Should have gotten bad request");
 		} catch (BadRequestException e) {
-			assertEquals("Bad Request: Organization has validation errors", e.getMessage());
-			assertBadRequestMessage(e, null, "error", "groups[0]", "Group does not exist: MISSING");
-		}
-	}
-
-	@Test
-	public void testFindByIdentifierOtherType() throws Exception {
-		Identifier groupId = crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		assertEquals("ORG", crm.findOrganizationDetails(organizationId).getDisplayName());
-		try {
-			crm.findOrganizationDetails(groupId);
-			fail("Requested the wrong type");
-		} catch (ItemNotFoundException expected) {
+			assertEquals("Bad Request: Validation Errors", e.getMessage());
+			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "authenticationGroupIds[0]", new Choice<>(PhraseIdentifier.VALIDATION_OPTION_INVALID));
 		}
 	}
 
 	@Test
 	public void testOrgWithNoName() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
 		try {
-			crm.createOrganization("", List.of("GRP")).getOrganizationId();
+			organizations().createOrganization("", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.EXTERNAL));
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "displayName", "Display name is mandatory for an organization");
+			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 		}
 	}
 
 	@Test
 	public void testOrgWithLongName() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
 		try {
-			crm.createOrganization("The organization can only have a name with a maximum or 60 characters", List.of("GRP")).getOrganizationId();
+			organizations().createOrganization("The organization can only have a name with a maximum or 60 characters", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.EXTERNAL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "displayName", "Display name must be 60 characters or less");
+			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "displayName", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_MAXLENGTH));
 		}
 	}
 
 	@Test
 	public void testOrgWithNoGroup() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
 		try {
-			crm.createOrganization("Org", List.of()).getOrganizationId();
+			organizations().createOrganization("Org", List.of(), List.of(BusinessGroupIdentifier.EXTERNAL)).getOrganizationId();
 			fail("Requested the wrong type");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, null, "error", "groups", "Organizations must have a permission group assigned to them");
+			CrmAsserts.assertBadRequestMessage(e, null, "/options/message-types/ERROR", "authenticationGroupIds", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 		}
 	}
 
 	@Test
-	public void testCannotUpdateDisabledGroup() throws Exception {
-		Identifier groupId = crm.createGroup(new Localized("A", "A", "A")).getGroupId();
-		crm.createGroup(new Localized("B", "B", "B")).getGroupId();
-		Identifier organizationId = crm.createOrganization("ORG", List.of("A")).getOrganizationId();
-
-		crm.updateOrganizationGroups(organizationId, List.of("B"));
-		crm.disableGroup(groupId);
+	public void testCannotUpdateDisabledGroup() throws Exception {		
+		AuthenticationGroupIdentifier authGroupA = (AuthenticationGroupIdentifier) crm().createOption(null, Type.AUTHENTICATION_GROUP, new Localized("A", "A", "A")).getOptionId();
+		crm().disableOption(authGroupA);
+		
+		OrganizationDetails organization = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT));
 
 		try {
-			crm.updateOrganizationGroups(organizationId, List.of("A"));
+			organizations().updateOrganizationAuthenticationGroups(organization.getOrganizationId(), List.of(authGroupA));
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationId, "error", "groups[0]", "Group is not active: A");
+			CrmAsserts.assertBadRequestMessage(e, organization.getOrganizationId(), "/options/message-types/ERROR", "authenticationGroupIds[0]", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 		}
 	}
 
 	@Test
 	public void testCannotUpdateDisabledMainLocation() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier locationId = crm.createLocation(organizationId, "Location", "LOC", CrmAsserts.MAILING_ADDRESS).getLocationId();
-		crm.disableLocation(locationId);
+		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		LocationIdentifier locationId = crm().createLocation(organizationId, "LOC", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		crm().disableLocation(locationId);
 
 		try {
-			crm.updateOrganizationMainLocation(organizationId, locationId);
+			organizations().updateOrganizationMainLocation(organizationId, locationId);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationId, "error", "mainLocationId", "Main location must be active");
+			CrmAsserts.assertBadRequestMessage(e, organizationId, "/options/message-types/ERROR", "mainLocationId", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 		}
 	}
 
 	@Test
 	public void testCannotUpdateDisabledMainContact() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
-		Identifier organizationId = crm.createOrganization("ORG", List.of("GRP")).getOrganizationId();
-		Identifier personId = crm.createPerson(organizationId, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
-		crm.disablePerson(personId);
+		OrganizationIdentifier organizationId = organizations().createOrganization("ORG", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		PersonIdentifier personId = crm().createPerson(organizationId,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
+		crm().disablePerson(personId);
 
 		try {
-			crm.updateOrganizationMainContact(organizationId, personId);
+			organizations().updateOrganizationMainContact(organizationId, personId);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationId, "error", "mainContactId", "Main contact must be active");
+			CrmAsserts.assertBadRequestMessage(e, organizationId, "/options/message-types/ERROR", "mainContactId", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INACTIVE));
 		}
 	}
 
 	@Test
 	public void testCreatingOrgWithMainContactFromOtherOrg() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
-		Identifier organizationA = crm.createOrganization("A", List.of("GRP")).getOrganizationId();
-		Identifier organizationB = crm.createOrganization("B", List.of("GRP")).getOrganizationId();
-		Identifier personB = crm.createPerson(organizationB, PERSON_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, BUSINESS_POSITION).getPersonId();
+		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		PersonIdentifier personB = crm().createPerson(organizationB,  CrmAsserts.PERSON_DISPLAY_NAME,CrmAsserts.PERSON_LEGAL_NAME, CrmAsserts.MAILING_ADDRESS, CrmAsserts.WORK_COMMUNICATIONS, List.of(new BusinessRoleIdentifier("IMIT/MANAGER"))).getPersonId();
 
 		try {
-			crm.updateOrganizationMainContact(organizationA, personB);
+			organizations().updateOrganizationMainContact(organizationA, personB);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationA, "error", "mainContactId", "Main contact organization has invalid referential integrity");
+			CrmAsserts.assertBadRequestMessage(e, organizationA, "/options/message-types/ERROR", "mainContactId", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INVALID));
 		}
 	}
 
 	@Test
 	public void testCreatingOrgWithMainLocationFromOtherOrg() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
-		Identifier organizationA = crm.createOrganization("A", List.of("GRP")).getOrganizationId();
-		Identifier organizationB = crm.createOrganization("B", List.of("GRP")).getOrganizationId();
-		Identifier locationB = crm.createLocation(organizationB, "Location", "B", CrmAsserts.MAILING_ADDRESS).getLocationId();
+		OrganizationIdentifier organizationA = organizations().createOrganization("A", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		OrganizationIdentifier organizationB = organizations().createOrganization("B", List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT)).getOrganizationId();
+		LocationIdentifier locationB = crm().createLocation(organizationB, "B", "Location", CrmAsserts.MAILING_ADDRESS).getLocationId();
 
 		try {
-			crm.updateOrganizationMainLocation(organizationA, locationB);
+			organizations().updateOrganizationMainLocation(organizationA, locationB);
 			fail("Unable to assign disabled references");
 		} catch (BadRequestException e) {
-			assertBadRequestMessage(e, organizationA, "error", "mainLocationId", "Main location organization has invalid referential integrity");
+			CrmAsserts.assertBadRequestMessage(e, organizationA, "/options/message-types/ERROR", "mainLocationId", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_INVALID));
 		}
 	}
 
 	@Test
 	public void testCreatingOrgsWithInvalidStatuses() throws Exception {
-		crm.createGroup(GROUP).getGroupId();
-		CrmValidation validation = new CrmValidation(crm);
-		List<Message> messages = validation.validate(new OrganizationDetails(new Identifier("org"), null, "org name", null, null, List.of("GRP")));
+		List<Message> messages = CrmOrganizationService.validateOrganizationDetails(
+				crm(), 
+				new OrganizationDetails(new OrganizationIdentifier("org"), null, "org name", null, null, List.of(AuthenticationGroupIdentifier.SYS), List.of(BusinessGroupIdentifier.IMIT), null));
 		assertEquals(1, messages.size());
-		assertMessage(messages.get(0), new Identifier("org"), "error", "status", "Status is mandatory for an organization");
+		CrmAsserts.assertMessage(messages.get(0), new OrganizationIdentifier("org"), "/options/message-types/ERROR", "status", new Choice<>(PhraseIdentifier.VALIDATION_FIELD_REQUIRED));
 	}
-
 }

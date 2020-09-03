@@ -4,6 +4,17 @@ schema {
 }
 
 # Complex Input
+input ChoiceInput {
+	identifier: String
+	other: String
+}
+
+input LocalizedInput {
+	code: String!
+	english: String!
+	french: String!
+}
+
 input PagingInput {
 	pageNumber: Int!
 	pageSize: Int!
@@ -12,39 +23,35 @@ input PagingInput {
 }
 
 input MailingAddressInput {
-	street: String!
-	city: String!
-	province: String!
-	countryCode: String!
-	postalCode: String!
+	street: String
+	city: String
+	province: ChoiceInput
+	country: ChoiceInput
+	postalCode: String
 }
 
 input NameInput {
 	firstName: String
 	middleName: String
 	lastName: String
-	salutation: String
+	salutation: ChoiceInput
 }
 
 input CommunicationInput {
 	jobTitle: String
-	language: String
+	language: ChoiceInput
 	email: String
 	phoneNumber: String
 	phoneExtension: String
 	faxNumber: String
 }
 
-input BusinessPositionInput {
-	sector: String
-	unit: String
-	classification: String
-}
-
 # Filtering Criteria Input
 input OrganizationFilter {
 	displayName: String
 	status: String
+	authenticationGroupId: String
+	businessGroupId: String
 }
 
 input LocationFilter {
@@ -65,33 +72,27 @@ input UserFilter {
 	personId: String
 	username: String
 	status: String
-	role: String	
+	authenticationRoleId: String	
 }
 
-input GroupFilter {
-	code: String
-	englishName: String
-	frenchName: String
+input OptionFilter {
+	parentId: String
+	type: String
 	status: String
-}
-
-input RoleFilter {
-	groupId: String
 	code: String
-	englishName: String
-	frenchName: String
-	status: String
+	english: String
+	french: String
 }
 
 type Query {
-	# Group Queries	
-	findGroup(groupId: String!): Group
-	findGroups(filter: GroupFilter!, paging: PagingInput!): GroupPage
+	# Context queries
+	context: Context
+
+	# Option Queries
+	findOption(optionId: String!): Option
+	countOptions(filter: OptionFilter!): Int!
+	findOptions(filter: OptionFilter!, paging: PagingInput!): OptionPage!
 	
-	# Role Queries	
-	findRole(roleId: String!): Role
-	findRoles(filter: RoleFilter!, paging: PagingInput!): RolePage
-		
 	# Organization Queries 
 	findOrganization(organizationId: String!): Organization	
 	countOrganizations(filter: OrganizationFilter!): Int!
@@ -111,55 +112,37 @@ type Query {
 	findUser(userId: String!): User
 	countUsers(filter: UserFilter!): Int!
 	findUsers(filter: UserFilter!, paging: PagingInput!): UserPage!
-	
-	# Lookup Queries
-	findCodeLookups(category: String!, qualifier: String, code: String): [CodeLookup]
 }
 
 type Mutation {
-	# Group Maintenance
-	createGroup(code: String!, englishName: String!, frenchName: String!): Group
-	updateGroup(groupId: String!, englishName: String, frenchName: String, status: String): Group
-	
-	# Role Maintenance	
-	createRole(groupId: String!, code: String!, englishName: String!, frenchName: String!): Role
-	updateRole(roleId: String!, englishName: String, frenchName: String, status: String): Role
+	# Option Maintenance
+	createOption(type: String!, parentId: String, name: LocalizedInput!): Option
+	updateOption(optionId: String!, status: String, english: String, french: String): Option
 	
 	# Organization Maintenance 
-	createOrganization(displayName: String!, groups: [String]!): Organization
-	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, groups: [String]): Organization
+	createOrganization(displayName: String!, authenticationGroupIds: [String]!, businessGroupIds: [String]!): Organization
+	updateOrganization(organizationId: String!, displayName: String, mainLocationId: String, mainContactId: String, status: String, authenticationGroupIds: [String], businessGroupIds: [String]): Organization
 	
 	# Location Maintenance
-	createLocation(organizationId: String!, locationName: String!, locationReference: String!, locationAddress: MailingAddressInput!): Location
-	updateLocation(locationId: String!, locationName: String, locationAddress: MailingAddressInput, status: String): Location
+	createLocation(organizationId: String!, reference: String!, displayName: String!, address: MailingAddressInput!): Location
+	updateLocation(locationId: String!, displayName: String, address: MailingAddressInput, status: String): Location
 	
 	# Person Maintenance
-	createPerson(organizationId: String!, name: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, position: BusinessPositionInput!): Person
-	updatePerson(personId: String!, name: NameInput, address: MailingAddressInput, communication: CommunicationInput, position: BusinessPositionInput, status: String): Person
+	createPerson(organizationId: String!, displayName: String!, legalName: NameInput!, address: MailingAddressInput!, communication: CommunicationInput!, businessRoleIds: [String]!): Person
+	updatePerson(personId: String!, displayName:String, legalName: NameInput, address: MailingAddressInput, communication: CommunicationInput, businessRoleIds: [String], status: String): Person
 		
 	# User Maintenance
-	createUser(personId: String!, username: String!, roles: [String]): User
-	updateUser(userId: String!, status: String, roles: [String]): User
+	createUser(personId: String!, username: String!, authenticationRoleIds: [String]!): User
+	updateUser(userId: String!, status: String, authenticationRoleIds: [String]): User
 	resetUserPassword(userId: String!): String
-	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean	
+	changeUserPassword(userId: String!, currentPassword: String!, newPassword: String!): Boolean
 }
 
 # Main Types
-type Group {
-	groupId: String!
-	code: String!
-	status: String!
-	englishName: String!
-	frenchName: String!
-}
-
-type Role {
-	roleId: String!
-	groupId: String!
-	code: String!
-	status: String!
-	englishName: String!
-	frenchName: String!
+type Context {
+	currentUser: User
+	createOrganization: Boolean!
+	createOption: [String]!
 }
 
 type Organization {
@@ -168,41 +151,62 @@ type Organization {
 	displayName: String!
 	mainLocation: Location
 	mainContact: Person
-	groups: [Group]
+	authenticationGroups: [Option]!
+	businessGroups: [Option]!
+	lastModified: Long
+	actions: OrganizationActions!
 }
 
 type Location {
 	locationId: String!
-	organizationId: String!
+	organization: Organization!
 	status: String!
 	reference: String
 	displayName: String
-	address: MailingAddress	
+	address: MailingAddress
+	lastModified: Long
+	actions: LocationActions!	
 }
 
 type Person {
 	personId: String!
-	organizationId: String!
+	organization: Organization!
 	status: String!
 	displayName: String
 	legalName: PersonName
 	address: MailingAddress
 	communication: Communication
-	position: BusinessPosition
+	businessRoles: [Option]!
+	lastModified: Long
+	actions: PersonActions!
 }
 
 type User {
 	userId: String!
-	username: String!
-	status: String!
+	organization: Organization!
 	person: Person!
-	roles: [Role]!
+	username: String!
+	status: String!	
+	authenticationRoles: [Option]!
+	lastModified: Long
+	actions: UserActions!
+}
+
+type Option {
+	optionId: String!
+	parent: Option
+	type: String!
+	status: String!
+	mutable: String!
+	name: Localized!
+	lastModified: Long
+	actions: OptionActions!
 }
 
 # Complex Subtypes
 type Communication {
 	jobTitle: String
-	language: String
+	language: Choice
 	email: String
 	homePhone: Telephone
 	faxNumber: String
@@ -212,42 +216,18 @@ type PersonName {
 	firstName: String
 	middleName: String
 	lastName: String
-	salutation: String
-}
-
-type BusinessPosition {
-	sector: String
-	unit: String
-	classification: String
+	salutation: Choice
 }
 
 type MailingAddress {
 	street: String
 	city: String
-	province: String
-	country: String
+	province: Choice
+	country: Choice
 	postalCode: String
 }
 
 # Pagination Types
-type GroupPage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [Group]
-}
-
-type RolePage {
-	number: Int!
-	numberOfElements: Int!
-	size: Int!
-	totalPages: Int!
-	totalElements: Int!	
-	content: [Role]
-}
-
 type OrganizationPage {
 	number: Int!
 	numberOfElements: Int!
@@ -284,15 +264,62 @@ type UserPage {
 	content: [User]
 }
 
+type OptionPage {
+	number: Int!
+	numberOfElements: Int!
+	size: Int!
+	totalPages: Int!
+	totalElements: Int!	
+	content: [Option]
+}
+
 # Simple Types
 type Telephone {
 	number: String
 	extension: String
 }
 
-type CodeLookup {
-	parent: CodeLookup
+type Localized {
 	code: String
-	englishName: String
-	frenchName: String
+	english: String
+	french: String
+}
+
+type Choice {
+	identifier: String
+	other: String
+}
+
+type OptionActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+}
+
+type OrganizationActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+	createLocation: Boolean!
+	createPerson: Boolean!
+}
+
+type LocationActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+}
+
+type PersonActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+	createUser: Boolean!
+}
+
+type UserActions {
+	modify: Boolean!
+	enable: Boolean!
+	disable: Boolean!
+	changePassword: Boolean!
 }
