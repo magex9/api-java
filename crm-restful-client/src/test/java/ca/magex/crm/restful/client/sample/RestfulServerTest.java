@@ -1,4 +1,4 @@
-package ca.magex.crm.restful.client;
+package ca.magex.crm.restful.client.sample;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.services.CrmServices;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
+import ca.magex.crm.restful.client.RestTemplateClient;
 
 public class RestfulServerTest {
 

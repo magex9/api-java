@@ -1,4 +1,4 @@
-package ca.magex.crm.restful.client;
+package ca.magex.crm.restful.client.services;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -14,9 +14,11 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmConfigurationService;
-import ca.magex.crm.api.services.CrmUserService;
-import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.api.services.CrmUserService;
+import ca.magex.crm.restful.client.RestTemplateClient;
+import ca.magex.crm.restful.client.config.RestfulClientTestConfig;
+import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.crm.test.AbstractUserServiceTests;
 
 @RunWith(SpringRunner.class)

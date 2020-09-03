@@ -1,4 +1,4 @@
-package ca.magex.crm.restful.client;
+package ca.magex.crm.restful.client.services;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -14,10 +14,12 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.authentication.CrmAuthenticationService;
 import ca.magex.crm.api.services.CrmConfigurationService;
-import ca.magex.crm.api.services.CrmPersonService;
+import ca.magex.crm.api.services.CrmLocationService;
 import ca.magex.crm.api.services.CrmServices;
+import ca.magex.crm.restful.client.RestTemplateClient;
+import ca.magex.crm.restful.client.config.RestfulClientTestConfig;
 import ca.magex.crm.spring.security.auth.AuthProfiles;
-import ca.magex.crm.test.AbstractPersonServiceTests;
+import ca.magex.crm.test.AbstractLocationServiceTests;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RestfulClientTestConfig.class })
@@ -26,7 +28,7 @@ import ca.magex.crm.test.AbstractPersonServiceTests;
 		CrmProfiles.BASIC_NO_AUTH,
 		CrmProfiles.DEV
 })
-public class RestfulPersonServiceTests extends AbstractPersonServiceTests {
+public class RestfulLocationServiceTests extends AbstractLocationServiceTests {
 
 	@LocalServerPort private int randomPort;
 	
@@ -38,7 +40,7 @@ public class RestfulPersonServiceTests extends AbstractPersonServiceTests {
 	
 	@Autowired Crm crm;
 		
-	private CrmPersonService remoteServicesAdapter = null;	
+	private CrmLocationService remoteServicesAdapter = null;
 	
 	@Override
 	protected CrmConfigurationService config() {
@@ -56,7 +58,7 @@ public class RestfulPersonServiceTests extends AbstractPersonServiceTests {
 	}
 	
 	@Override
-	protected CrmPersonService persons() {
+	protected CrmLocationService locations() {
 		return remoteServicesAdapter;
 	}
 		

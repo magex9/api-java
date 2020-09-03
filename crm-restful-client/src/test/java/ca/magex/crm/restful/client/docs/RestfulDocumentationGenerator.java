@@ -1,4 +1,4 @@
-package ca.magex.crm.restful.client;
+package ca.magex.crm.restful.client.docs;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +22,7 @@ import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
 import ca.magex.crm.api.system.Lang;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
+import ca.magex.crm.restful.client.config.RestfulClientTestConfig;
 import ca.magex.crm.spring.security.auth.AuthProfiles;
 import ca.magex.json.model.JsonFormatter;
 import ca.magex.json.model.JsonObject;
@@ -34,17 +35,9 @@ import ca.magex.json.util.FormattedStringBuilder;
 		CrmProfiles.BASIC,
 		CrmProfiles.DEV
 })
-public class RestfulSampleTest {
+public class RestfulDocumentationGenerator {
 	
 	@LocalServerPort private int randomPort;
-	
-//	@Test
-//	public void testSomething() throws Exception {
-//		CrmServices crm = new RestTemplateClient("http://localhost:" + randomPort + "/crm", null, "admin", "admin").getServices();
-//		crm.findOrganizationDetails(new OrganizationsFilter()).getContent().forEach(o -> System.out.println(o.getDisplayName() + " (" + o.getOrganizationId() + ")"));
-//		OrganizationDetails org = crm.createOrganization("Scotts Org", List.of(AuthenticationGroupIdentifier.ORG), List.of(BusinessGroupIdentifier.EXTERNAL));
-//		System.out.println(org.getDisplayName() + " (" + org.getOrganizationId() + ")");
-//	}
 	
 	@Test
 	public void testBuildExamples() throws Exception {
@@ -112,7 +105,7 @@ public class RestfulSampleTest {
 		
 		File output = new File("src/main/resources/docs/example.html");
 		FileUtils.writeStringToFile(output, sb.toString(), StandardCharsets.UTF_8);
-		Logger.getLogger(RestfulSampleTest.class).info("Writing: " + output.getAbsolutePath());
+		Logger.getLogger(RestfulDocumentationGenerator.class).info("Writing: " + output.getAbsolutePath());
 	}
 	
 	public JsonObject jsonGet(String endpoint, String token) throws Exception {
