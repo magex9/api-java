@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.CrmProfiles;
@@ -28,6 +29,8 @@ import ca.magex.crm.test.AbstractOrganizationServiceTests;
 public class RestfulOrganizationServiceTests extends AbstractOrganizationServiceTests {
 
 	@LocalServerPort private int randomPort;
+	
+	@MockBean PlatformTransactionManager txManager;
 	
 	@MockBean CrmAuthenticationService auth;
 	

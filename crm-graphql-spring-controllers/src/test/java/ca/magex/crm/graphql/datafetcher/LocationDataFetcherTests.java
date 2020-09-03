@@ -58,29 +58,21 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* activate already active location */
-		hq = execute(
-				"updateLocation",
-				"mutation { updateLocation(locationId: %s, status: %s) { " +
+		try {
+			hq = execute(
+				"enableLocation",
+				"mutation { enableLocation(locationId: %s) { " +
 						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
-				headQuartersId,
-				"active");
-		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
-		Assert.assertEquals("ACTIVE", hq.getString("status"));
-		Assert.assertEquals("HQ", hq.getString("reference"));
-		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
-		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
-		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
-		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
+				headQuartersId);
+			Assert.fail("Already active");
+		} catch (ApiException e) { }
 
 		/* inactivate active location */
 		hq = execute(
-				"updateLocation",
-				"mutation { updateLocation(locationId: %s, status: %s) { " +
+				"disableLocation",
+				"mutation { disableLocation(locationId: %s) { " +
 						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
-				headQuartersId,
-				"inactive");
+				headQuartersId);
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("INACTIVE", hq.getString("status"));
 		Assert.assertEquals("HQ", hq.getString("reference"));
@@ -92,29 +84,21 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
 
 		/* inactivate inactive location */
-		hq = execute(
-				"updateLocation",
-				"mutation { updateLocation(locationId: %s, status: %s) { " +
+		try {
+			hq = execute(
+				"disableLocation",
+				"mutation { disableLocation(locationId: %s) { " +
 						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
-				headQuartersId,
-				"inactive");
-		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
-		Assert.assertEquals("INACTIVE", hq.getString("status"));
-		Assert.assertEquals("HQ", hq.getString("reference"));
-		Assert.assertEquals("Head Quarters", hq.getString("displayName"));
-		Assert.assertEquals("123 Frank St", hq.getJSONObject("address").getString("street"));
-		Assert.assertEquals("Ottawa", hq.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", hq.getJSONObject("address").getJSONObject("province").getString("identifier"));
-		Assert.assertEquals("CA", hq.getJSONObject("address").getJSONObject("country").getString("identifier"));
-		Assert.assertEquals("K5J9F4", hq.getJSONObject("address").getString("postalCode"));
+				headQuartersId);
+			Assert.fail("Already inactive");
+		} catch (ApiException e) { }
 
 		/* activate inactive location */
 		hq = execute(
-				"updateLocation",
-				"mutation { updateLocation(locationId: %s, status: %s) { " +
+				"enableLocation",
+				"mutation { enableLocation(locationId: %s) { " +
 						"locationId organization { organizationId } status reference displayName address { street city province { identifier } country { identifier } postalCode } } }",
-				headQuartersId,
-				"active");
+				headQuartersId);
 		Assert.assertEquals(orgId.toString(), hq.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("ACTIVE", hq.getString("status"));
 		Assert.assertEquals("HQ", hq.getString("reference"));
@@ -134,7 +118,7 @@ public class LocationDataFetcherTests extends AbstractDataFetcherTests {
 					"suspended");
 			Assert.fail("Should have failed on bad status");
 		} catch (ApiException api) {
-			Assert.assertEquals("Errors encountered during updateLocation - Invalid status 'SUSPENDED', one of {ACTIVE, INACTIVE} expected", api.getMessage());
+			Assert.assertEquals("Errors encountered during updateLocation - Validation error of type UnknownArgument: Unknown field argument status @ 'updateLocation'", api.getMessage());
 		}
 
 		/* update location name with change */

@@ -12,7 +12,6 @@ import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -58,11 +57,10 @@ public class GraphQLOrganizationService implements CrmOrganizationService {
 	public OrganizationSummary enableOrganization(OrganizationIdentifier organizationId) {
 		return ModelBinder.toOrganizationSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOrganizationStatus",
-						"updateOrganization",
+						"enableOrganization",
+						"enableOrganization",
 						new MapBuilder()
 								.withEntry("organizationId", organizationId.toString())
-								.withEntry("status", Status.ACTIVE)
 								.build()));
 	}
 
@@ -70,11 +68,10 @@ public class GraphQLOrganizationService implements CrmOrganizationService {
 	public OrganizationSummary disableOrganization(OrganizationIdentifier organizationId) {
 		return ModelBinder.toOrganizationSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updateOrganizationStatus",
-						"updateOrganization",
+						"disableOrganization",
+						"disableOrganization",
 						new MapBuilder()
 								.withEntry("organizationId", organizationId.toString())
-								.withEntry("status", Status.INACTIVE)
 								.build()));
 	}
 

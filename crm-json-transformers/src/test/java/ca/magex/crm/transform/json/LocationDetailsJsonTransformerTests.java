@@ -24,6 +24,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonAsserts;
 import ca.magex.json.model.JsonElement;
@@ -51,7 +52,7 @@ public class LocationDetailsJsonTransformerTests {
 		transformer = new LocationDetailsJsonTransformer(crm);
 		locationId = new LocationIdentifier("bN2ifcbtzA");
 		organizationId = new OrganizationIdentifier("EEtP6HwXMo");
-		location = new LocationDetails(locationId, organizationId, Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS, 100L);
+		location = new LocationDetails(locationId, organizationId, Status.ACTIVE, "REF", "Location Name", MAILING_ADDRESS, CrmAsserts.YEAR_2000_EPOCH_MILLIS);
 	}
 	
 	@Test
@@ -100,7 +101,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@en"));
 		assertEquals("Canada", linked.getObject("address").getObject("country").getString("@fr"));
 		assertEquals("K1K1K1", linked.getObject("address").getString("postalCode"));
-		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, linked.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(linked, null));		
 	}
 	
@@ -120,7 +121,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("CA/QC", root.getObject("address").getString("province"));
 		assertEquals("CA", root.getObject("address").getString("country"));
 		assertEquals("K1K1K1", root.getObject("address").getString("postalCode"));
-		assertEquals(100L, root.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, root.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -140,7 +141,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("Quebec", english.getObject("address").getString("province"));
 		assertEquals("Canada", english.getObject("address").getString("country"));
 		assertEquals("K1K1K1", english.getObject("address").getString("postalCode"));
-		assertEquals(100L, english.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, english.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -160,7 +161,7 @@ public class LocationDetailsJsonTransformerTests {
 		assertEquals("Québec", french.getObject("address").getString("province"));
 		assertEquals("Canada", french.getObject("address").getString("country"));
 		assertEquals("K1K1K1", french.getObject("address").getString("postalCode"));
-		assertEquals(100L, french.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, french.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(french, Lang.FRENCH));
 	}
 	

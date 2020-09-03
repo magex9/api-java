@@ -43,7 +43,7 @@ public class UserDetailsJsonTransformer extends AbstractJsonTransformer<UserDeta
 		formatText(pairs, "username", user);
 		formatStatus(pairs, "status", user, locale);
 		formatOptions(pairs, "authenticationRoleIds", user, Type.AUTHENTICATION_ROLE, locale, user.getUserId(), messages);
-		formatLong(pairs, "lastModified", user);
+		formatLastModified(pairs, user);
 		validate(messages);
 		return new JsonObject(pairs);
 	}
@@ -56,7 +56,7 @@ public class UserDetailsJsonTransformer extends AbstractJsonTransformer<UserDeta
 		String username = parseText("username", json);
 		Status status = parseObject("status", json, new StatusJsonTransformer(crm), locale);
 		List<AuthenticationRoleIdentifier> roleIds = parseOptions("authenticationRoleIds", json, AuthenticationRoleIdentifier.class, locale);
-		Long lastModified = parseLong("lastModified", json);
+		Long lastModified = parseLastModified(json);
 		return new UserDetails(userId, organizationId, personId, username, status, roleIds, lastModified);
 	}
 

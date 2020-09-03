@@ -2,6 +2,9 @@ package ca.magex.crm.api.system;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.AssertFalse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -46,7 +49,7 @@ public class Choice<I extends OptionIdentifier> implements Serializable {
 	}
 	
 	public boolean isOther() {
-		return other != null;
+		return StringUtils.isNotBlank(other);
 	}
 	
 	public boolean isEmpty() {

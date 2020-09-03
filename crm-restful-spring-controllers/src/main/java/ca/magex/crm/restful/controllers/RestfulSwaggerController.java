@@ -21,6 +21,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ca.magex.crm.api.Crm;
 import ca.magex.crm.api.common.Communication;
 import ca.magex.crm.api.common.MailingAddress;
 import ca.magex.crm.api.common.PersonName;
@@ -97,8 +98,8 @@ public class RestfulSwaggerController extends AbstractRestfulController {
 	public void listOrganizationActions(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		handle(req, res, RestfulAction.class, (messages, transformer, locale) -> {
 			List<RestfulAction> actions = new ArrayList<>();
-			actions.add(new RestfulAction("organizations", new Localized("ORGANIZATIONS", "Organizations", "Organizations"), "get", "/rest/organizations"));
-			return new JsonObject().with("actions", actions);
+			actions.add(new RestfulAction("organizations", new Localized("ORGANIZATIONS", "Organizations", "Organizations"), "get", Crm.REST_BASE + "/rest/organizations"));
+			return new JsonObject().with("actions", new JsonArray(actions.stream().map(a -> RestfulActionHandler.transformAction(a, crm, locale)).collect(Collectors.toList())));
 		});
 	}
 	

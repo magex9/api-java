@@ -15,7 +15,6 @@ import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.filters.PersonsFilter;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.system.FilteredPage;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
@@ -54,8 +53,8 @@ public class GraphQLPersonService implements CrmPersonService {
 								.withEntry("firstName", name.getFirstName())
 								.withEntry("middleName", name.getMiddleName())
 								.withEntry("lastName", name.getLastName())
-								.withOptionalEntry("salutationIdentifier", Optional.ofNullable(name.getSalutation().getIdentifier()))
-								.withOptionalEntry("salutationOther", Optional.ofNullable(name.getSalutation().getOther()))
+								.withOptionalEntry("salutationIdentifier", Optional.ofNullable(name.getSalutation() == null ? null : name.getSalutation().getIdentifier()))
+								.withOptionalEntry("salutationOther", Optional.ofNullable(name.getSalutation() == null ? null : name.getSalutation().getOther()))
 								.withEntry("street", address.getStreet())
 								.withEntry("city", address.getCity())
 								.withOptionalEntry("provinceIdentifier", Optional.ofNullable(address.getProvince().getIdentifier()))
@@ -78,11 +77,10 @@ public class GraphQLPersonService implements CrmPersonService {
 	public PersonSummary enablePerson(PersonIdentifier personId) {
 		return ModelBinder.toPersonSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updatePersonStatus",
-						"updatePerson",
+						"enablePerson",
+						"enablePerson",
 						new MapBuilder()
 								.withEntry("personId", personId.getCode())
-								.withEntry("status", Status.ACTIVE)
 								.build()));
 	}
 
@@ -90,11 +88,10 @@ public class GraphQLPersonService implements CrmPersonService {
 	public PersonSummary disablePerson(PersonIdentifier personId) {
 		return ModelBinder.toPersonSummary(graphQLClient
 				.performGraphQLQueryWithVariables(
-						"updatePersonStatus",
-						"updatePerson",
+						"disablePerson",
+						"disablePerson",
 						new MapBuilder()
 								.withEntry("personId", personId.getCode())
-								.withEntry("status", Status.INACTIVE)
 								.build()));
 	}
 

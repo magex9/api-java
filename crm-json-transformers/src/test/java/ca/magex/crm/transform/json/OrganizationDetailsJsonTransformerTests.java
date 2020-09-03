@@ -25,6 +25,7 @@ import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -58,7 +59,7 @@ public class OrganizationDetailsJsonTransformerTests {
 			mainLocationId, mainContactId, List.of(
 			crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "CRM").getOptionId(),
 			crm.findOptionByCode(Type.AUTHENTICATION_GROUP, "ORG").getOptionId()
-		), List.of(crm.findOptionByCode(Type.BUSINESS_GROUP,  "EXECS").getOptionId()), 100L);
+		), List.of(crm.findOptionByCode(Type.BUSINESS_GROUP,  "EXECS").getOptionId()), CrmAsserts.YEAR_2000_EPOCH_MILLIS);
 	}
 	
 	@Test
@@ -110,7 +111,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("EXECS", linked.getArray("businessGroupIds").getObject(0).getString("@value"));
 		assertEquals("Executives", linked.getArray("businessGroupIds").getObject(0).getString("@en"));
 		assertEquals("Cadres", linked.getArray("businessGroupIds").getObject(0).getString("@fr"));		
-		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, linked.getDateTime("lastModified"));
 		assertEquals(organization, transformer.parse(linked, null));
 	}
 	
@@ -129,7 +130,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("ORG", root.getArray("authenticationGroupIds").getString(1));
 		assertEquals(1, root.getArray("businessGroupIds").size());
 		assertEquals("EXECS", root.getArray("businessGroupIds").getString(0));
-		assertEquals(100L, root.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, root.getDateTime("lastModified"));
 		assertEquals(organization, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -148,7 +149,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("Organization", english.getArray("authenticationGroupIds").getString(1));
 		assertEquals(1, english.getArray("businessGroupIds").size());
 		assertEquals("Executives", english.getArray("businessGroupIds").getString(0));
-		assertEquals(100L, english.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, english.getDateTime("lastModified"));
 		assertEquals(organization, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -167,7 +168,7 @@ public class OrganizationDetailsJsonTransformerTests {
 		assertEquals("Organisation", french.getArray("authenticationGroupIds").getString(1));
 		assertEquals(1, french.getArray("businessGroupIds").size());
 		assertEquals("Cadres", french.getArray("businessGroupIds").getString(0));
-		assertEquals(100L, french.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, french.getDateTime("lastModified"));
 		assertEquals(organization, transformer.parse(french, Lang.FRENCH));
 	}
 	

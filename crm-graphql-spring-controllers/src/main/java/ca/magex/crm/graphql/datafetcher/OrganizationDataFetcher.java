@@ -13,9 +13,7 @@ import ca.magex.crm.api.crm.LocationDetails;
 import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.PersonDetails;
 import ca.magex.crm.api.crm.UserDetails;
-import ca.magex.crm.api.exceptions.ApiException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
-import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
 import ca.magex.crm.api.system.id.BusinessGroupIdentifier;
 import ca.magex.crm.api.system.id.LocationIdentifier;
@@ -76,7 +74,7 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering findOrganizationActions@" + OrganizationDataFetcher.class.getSimpleName());
 			OrganizationDetails source = environment.getSource();
 			return Map.of(
-					"modify", crm.canUpdateOrganization(source.getOrganizationId()),
+					"update", crm.canUpdateOrganization(source.getOrganizationId()),
 					"enable", crm.canEnableOrganization(source.getOrganizationId()),
 					"disable", crm.canDisableOrganization(source.getOrganizationId()),
 					"createLocation", crm.canCreateLocationForOrganization(source.getOrganizationId()),
@@ -105,24 +103,6 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			logger.info("Entering updateOrganization@" + OrganizationDataFetcher.class.getSimpleName());
 			OrganizationIdentifier organizationId = new OrganizationIdentifier((String) environment.getArgument("organizationId"));
 			OrganizationDetails org = crm.findOrganizationDetails(organizationId);
-			/* update status first because the other updates have validation based on status */
-			if (environment.getArgument("status") != null) {
-				String newStatus = StringUtils.upperCase(environment.getArgument("status"));
-				switch (newStatus) {
-				case "ACTIVE":
-					if (org.getStatus() != Status.ACTIVE) {
-						org = org.withStatus(Status.ACTIVE).withLastModified(crm.enableOrganization(organizationId).getLastModified());
-					}
-					break;
-				case "INACTIVE":
-					if (org.getStatus() != Status.INACTIVE) {
-						org = org.withStatus(Status.INACTIVE).withLastModified(crm.disableOrganization(organizationId).getLastModified());
-					}
-					break;
-				default:
-					throw new ApiException("Invalid status '" + newStatus + "', one of {ACTIVE, INACTIVE} expected");
-				}
-			}
 			if (environment.getArgument("displayName") != null) {
 				String newDisplayName = environment.getArgument("displayName");
 				if (!StringUtils.equals(org.getDisplayName(), newDisplayName)) {
@@ -155,6 +135,22 @@ public class OrganizationDataFetcher extends AbstractDataFetcher {
 			}
 
 			return org;
+		};
+	}
+	
+	public DataFetcher<OrganizationDetails> enableOrganization() {
+		return (environment) -> {
+			logger.info("Entering enableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			OrganizationIdentifier organizationId = new OrganizationIdentifier((String) environment.getArgument("organizationId"));
+			return crm.findOrganizationDetails(crm.enableOrganization(organizationId).getOrganizationId());
+		};
+	}
+	
+	public DataFetcher<OrganizationDetails> disableOrganization() {
+		return (environment) -> {
+			logger.info("Entering disableOrganization@" + OrganizationDataFetcher.class.getSimpleName());
+			OrganizationIdentifier organizationId = new OrganizationIdentifier((String) environment.getArgument("organizationId"));
+			return crm.findOrganizationDetails(crm.disableOrganization(organizationId).getOrganizationId());
 		};
 	}
 }

@@ -1,7 +1,9 @@
 package ca.magex.json.model;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,8 +52,8 @@ public class JsonElement {
 			return new JsonBoolean((Boolean) el);
 		} else if (el instanceof LocalDate) {
 			return new JsonText(((LocalDate) el).format(DateTimeFormatter.ISO_DATE));
-		} else if (el instanceof LocalDateTime) {
-			return new JsonText(((LocalDateTime) el).format(DateTimeFormatter.ISO_DATE_TIME));
+		} else if (el instanceof ZonedDateTime) {
+			return new JsonText(((ZonedDateTime) el).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 		}
 		throw new IllegalArgumentException("Unsupported type of element to convert to a data element: " + el.getClass());
 	}
@@ -73,6 +75,34 @@ public class JsonElement {
 		if (obj == null)
 			return "";
 		return DigestUtils.md5Hex(obj.toString());
+	}
+	
+	public static LocalDate parseDate(String date) {
+		return LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+	}
+	
+	public static String formatDate(LocalDate date) {
+		return date.format(DateTimeFormatter.ISO_DATE);
+	}
+	
+	public static Long secondsSinceEpoch(ZonedDateTime zdt) {
+		return zdt.toEpochSecond();
+	}
+	
+	public static String formatDateTime(ZonedDateTime zdt) {
+		return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	}
+	
+	public static String formatDateTime(Long millisSinceEpoch) {
+		return formatDateTime(parseDateTime(millisSinceEpoch));
+	}
+	
+	public static ZonedDateTime parseDateTime(String zdt) {
+		return ZonedDateTime.parse(zdt, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	}
+	
+	public static ZonedDateTime parseDateTime(Long secondsSinceEpoch) {
+		return ZonedDateTime.ofInstant(Instant.ofEpochMilli(secondsSinceEpoch), ZoneId.systemDefault());
 	}
 
 	@Override

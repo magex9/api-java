@@ -74,42 +74,21 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Gestionnaire", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("french"));
 		
 		/* activate already active person */
-		person = execute(
-				"updatePerson",
-				"mutation { updatePerson(personId: %s, status: %s) { " + 
+		try {
+			person = execute(
+				"enablePerson",
+				"mutation { enablePerson(personId: %s) { " + 
 						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
-				personId,
-				"active");
-		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
-		Assert.assertEquals("ACTIVE", person.getString("status"));
-		Assert.assertEquals("Jonny Bigford", person.getString("displayName"));
-		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
-		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
-		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
-		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
-		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
-		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
-		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
-		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
-		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
-		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
-		Assert.assertEquals("613-555-1213", person.getJSONObject("communication").getString("faxNumber"));
-		Assert.assertEquals(1, person.getJSONArray("businessRoles").length());
-		Assert.assertEquals("IMIT/DEV/MANAGER", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("Manager", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Gestionnaire", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+				personId);
+			Assert.fail("Already active");
+		} catch (ApiException e) { }
 		
 		/* inactivate active person */
 		person = execute(
-				"updatePerson",
-				"mutation { updatePerson(personId: %s, status: %s) { " + 
+				"disablePerson",
+				"mutation { disablePerson(personId: %s) { " + 
 						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
-				personId,
-				"inactive");
+				personId);
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("INACTIVE", person.getString("status"));
 		Assert.assertEquals("Jonny Bigford", person.getString("displayName"));
@@ -134,42 +113,21 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 		Assert.assertEquals("Gestionnaire", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("french"));
 		
 		/* inactivate inactive person */
-		person = execute(
-				"updatePerson",
-				"mutation { updatePerson(personId: %s, status: %s) { " + 
+		try {
+			person = execute(
+				"disablePerson",
+				"mutation { disablePerson(personId: %s) { " + 
 						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
-				personId,
-				"inactive");
-		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
-		Assert.assertEquals("INACTIVE", person.getString("status"));
-		Assert.assertEquals("Jonny Bigford", person.getString("displayName"));
-		Assert.assertEquals("Jonny", person.getJSONObject("legalName").getString("firstName"));
-		Assert.assertEquals("Michael", person.getJSONObject("legalName").getString("middleName"));
-		Assert.assertEquals("Bigford", person.getJSONObject("legalName").getString("lastName"));		
-		Assert.assertEquals("MR", person.getJSONObject("legalName").getJSONObject("salutation").getString("identifier"));
-		Assert.assertEquals("99 Blue Jays Way", person.getJSONObject("address").getString("street"));
-		Assert.assertEquals("Toronto", person.getJSONObject("address").getString("city"));
-		Assert.assertEquals("CA/ON", person.getJSONObject("address").getJSONObject("province").getString("identifier"));
-		Assert.assertEquals("CA", person.getJSONObject("address").getJSONObject("country").getString("identifier"));
-		Assert.assertEquals("L9K5I9", person.getJSONObject("address").getString("postalCode"));
-		Assert.assertEquals("Developer", person.getJSONObject("communication").getString("jobTitle"));
-		Assert.assertEquals("EN", person.getJSONObject("communication").getJSONObject("language").getString("identifier"));
-		Assert.assertEquals("jonny.bigford@johnnuy.org", person.getJSONObject("communication").getString("email"));
-		Assert.assertEquals("6135551212", person.getJSONObject("communication").getJSONObject("homePhone").getString("number"));
-		Assert.assertEquals("97", person.getJSONObject("communication").getJSONObject("homePhone").getString("extension"));
-		Assert.assertEquals("613-555-1213", person.getJSONObject("communication").getString("faxNumber"));
-		Assert.assertEquals(1, person.getJSONArray("businessRoles").length());
-		Assert.assertEquals("IMIT/DEV/MANAGER", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("code"));
-		Assert.assertEquals("Manager", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("english"));
-		Assert.assertEquals("Gestionnaire", person.getJSONArray("businessRoles").getJSONObject(0).getJSONObject("name").getString("french"));
+				personId);
+			Assert.fail("Already inactive");
+		} catch (ApiException e) { }
 		
 		/* activate inactive person */
 		person = execute(
-				"updatePerson",
-				"mutation { updatePerson(personId: %s, status: %s) { " + 
+				"enablePerson",
+				"mutation { enablePerson(personId: %s) { " + 
 						"personId organization { organizationId } status displayName legalName { firstName middleName lastName salutation { identifier } } address { street city province { identifier } country { identifier } postalCode } communication { jobTitle language { identifier } email homePhone { number extension } faxNumber } businessRoles { name { code english french } } } }",
-				personId,
-				"active");
+				personId);
 		Assert.assertEquals(orgId.toString(), person.getJSONObject("organization").getString("organizationId"));
 		Assert.assertEquals("ACTIVE", person.getString("status"));
 		Assert.assertEquals("Jonny Bigford", person.getString("displayName"));
@@ -202,7 +160,7 @@ public class PersonDataFetcherTests extends AbstractDataFetcherTests {
 					"suspended");
 			Assert.fail("Should have failed on bad status");
 		} catch (ApiException api) {
-			Assert.assertEquals("Errors encountered during updatePerson - Invalid status 'SUSPENDED', one of {ACTIVE, INACTIVE} expected", api.getMessage());
+			Assert.assertEquals("Errors encountered during updatePerson - Validation error of type UnknownArgument: Unknown field argument status @ 'updatePerson'", api.getMessage());
 		}
 		
 		/* update legal name with change */

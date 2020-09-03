@@ -17,7 +17,7 @@ public class RestfulOrganizationsActionHandler<T extends OrganizationSummary> im
 		if (crm.canViewOrganization(organizationId))
 			actions.add(buildAction("view", new Localized("VIEW", "View", "Vue"), "get", organizationId));
 		if (crm.canUpdateOrganization(organizationId))
-			actions.add(buildAction("edit", new Localized("EDIT", "Edit", "Éditer"), "patch", organizationId));
+			actions.add(buildAction("update", new Localized("UPDATE", "Edit", "Éditer"), "patch", organizationId + "/details"));
 		if (crm.canDisableOrganization(organizationId))
 			actions.add(buildAction("disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", organizationId + "/disable"));
 		if (crm.canEnableOrganization(organizationId))

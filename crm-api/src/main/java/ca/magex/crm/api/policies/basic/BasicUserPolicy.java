@@ -4,6 +4,7 @@ import ca.magex.crm.api.crm.PersonSummary;
 import ca.magex.crm.api.crm.UserDetails;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
 import ca.magex.crm.api.policies.CrmUserPolicy;
+import ca.magex.crm.api.services.CrmOrganizationService;
 import ca.magex.crm.api.services.CrmPersonService;
 import ca.magex.crm.api.services.CrmUserService;
 import ca.magex.crm.api.system.Status;
@@ -11,6 +12,8 @@ import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 
 public class BasicUserPolicy implements CrmUserPolicy {
+
+	private CrmOrganizationService organizations;
 
 	private CrmPersonService persons;
 
@@ -22,9 +25,10 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	 * @param users
 	 * @param persons
 	 */
-	public BasicUserPolicy(CrmPersonService persons, CrmUserService users) {
-		this.users = users;
+	public BasicUserPolicy(CrmOrganizationService organizations, CrmPersonService persons, CrmUserService users) {
+		this.organizations = organizations;
 		this.persons = persons;
+		this.users = users;
 	}
 
 	@Override
@@ -79,18 +83,21 @@ public class BasicUserPolicy implements CrmUserPolicy {
 	@Override
 	public boolean canEnableUser(UserIdentifier userId) {
 		/* can enable a user if it exists */
-		if (users.findUserDetails(userId) == null) {
+		UserDetails details = users.findUserDetails(userId);
+		if (details == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
-		return true;
+		return !details.getStatus().equals(Status.ACTIVE) && 
+			organizations.findOrganizationDetails(details.getOrganizationId()).getStatus().equals(Status.ACTIVE);
 	}
 
 	@Override
 	public boolean canDisableUser(UserIdentifier userId) {
 		/* can disable a user if it exists */
-		if (users.findUserDetails(userId) == null) {
+		UserDetails details = users.findUserDetails(userId);
+		if (details == null) {
 			throw new ItemNotFoundException("User ID '" + userId + "'");
 		}
-		return true;
+		return details.getStatus().equals(Status.ACTIVE);
 	}
 }

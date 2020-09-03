@@ -87,7 +87,7 @@ public enum Type {
 	/**
 	 *  The core list of provinces within the system, each one associated with a Country Identfier
 	 */
-	PROVINCE("PROVINCES", "Canadian Provinces", "Provinces canadiennes", COUNTRY, false, true, true, ProvinceIdentifier.class),
+	PROVINCE("PROVINCES", "Provinces", "Provinces", COUNTRY, false, true, true, ProvinceIdentifier.class),
 	
 	/**
 	 *  The list of business groups an organization can be assigned

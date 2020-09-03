@@ -21,6 +21,7 @@ import ca.magex.crm.api.crm.OrganizationDetails;
 import ca.magex.crm.api.crm.OrganizationSummary;
 import ca.magex.crm.api.exceptions.BadRequestException;
 import ca.magex.crm.api.exceptions.ItemNotFoundException;
+import ca.magex.crm.api.exceptions.PermissionDeniedException;
 import ca.magex.crm.api.filters.OrganizationsFilter;
 import ca.magex.crm.api.filters.Paging;
 import ca.magex.crm.api.services.CrmConfigurationService;
@@ -250,14 +251,20 @@ public abstract class AbstractOrganizationServiceTests {
 		OrganizationSummary os1 = organizations().disableOrganization(o1.getOrganizationId());
 		Assert.assertEquals("Toronto Maple Leafs", os1.getDisplayName());
 		Assert.assertEquals(Status.INACTIVE, os1.getStatus());
-		Assert.assertEquals(os1, organizations().disableOrganization(os1.getOrganizationId()));
+		try {
+			Assert.assertEquals(os1, organizations().disableOrganization(os1.getOrganizationId()));
+			Assert.fail("Already disabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(os1, organizations().findOrganizationSummary(os1.getOrganizationId()));
 
 		/* enable */
 		os1 = organizations().enableOrganization(o1.getOrganizationId());
 		Assert.assertEquals("Toronto Maple Leafs", os1.getDisplayName());
 		Assert.assertEquals(Status.ACTIVE, os1.getStatus());
-		Assert.assertEquals(os1, organizations().enableOrganization(os1.getOrganizationId()));
+		try {
+			Assert.assertEquals(os1, organizations().enableOrganization(os1.getOrganizationId()));
+			Assert.fail("Already enabled");
+		} catch (PermissionDeniedException e) { }
 		Assert.assertEquals(os1, organizations().findOrganizationSummary(os1.getOrganizationId()));
 
 		/* count organizations */

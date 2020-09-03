@@ -21,6 +21,10 @@ public class Lang {
 		FRENCH, new Localized("FR", "French", "Français")
 	);
 	
+	public static String lang2(Locale locale) {
+		return isEnglish(locale) ? "en" : "fr";
+	}
+	
 	public static boolean isEnglish(Locale locale) {
 		if (locale == null)
 			throw new IllegalArgumentException("Locale is null");

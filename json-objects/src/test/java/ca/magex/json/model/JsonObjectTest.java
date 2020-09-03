@@ -1,9 +1,13 @@
 package ca.magex.json.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -250,7 +254,7 @@ public class JsonObjectTest {
 	@Test
 	public void testGetDate() throws Exception {
 		LocalDate date = LocalDate.of(2020, 03, 02);
-		LocalDateTime datetime = LocalDateTime.of(2020, 03, 02, 12, 22, 11);
+		ZonedDateTime datetime = ZonedDateTime.of(2020, 03, 02, 12, 22, 11, 0, ZoneId.systemDefault());
 		JsonObject data = new JsonObject()
 			.with("name", "a")
 			.with("type", 3)
@@ -260,7 +264,7 @@ public class JsonObjectTest {
 			.with("undef", JsonElement.UNDEFINED)
 			.with("list", new JsonArray().with("a", "b", "c"))
 			.with("obj", new JsonObject().with("id", 42));
-		assertEquals(date, data.getDate("date"));
+		assertEquals(JsonElement.formatDate(date).toString(), data.getDate("date").toString());
 		try {
 			data.getDate("active");
 			fail("Not a date");
@@ -278,7 +282,7 @@ public class JsonObjectTest {
 	@Test
 	public void testGetDateTime() throws Exception {
 		LocalDate date = LocalDate.of(2020, 03, 02);
-		LocalDateTime datetime = LocalDateTime.of(2020, 03, 02, 12, 22, 11);
+		ZonedDateTime datetime = ZonedDateTime.of(2020, 03, 02, 12, 22, 11, 0, ZoneId.systemDefault());
 		JsonObject data = new JsonObject()
 			.with("name", "a")
 			.with("type", 3)
@@ -288,7 +292,7 @@ public class JsonObjectTest {
 			.with("undef", JsonElement.UNDEFINED)
 			.with("list", new JsonArray().with("a", "b", "c"))
 			.with("obj", new JsonObject().with("id", 42));
-		assertEquals(datetime, data.getDateTime("datetime"));
+		assertEquals(JsonElement.formatDateTime(datetime).toString(), data.getDateTime("datetime").toString());
 		try {
 			data.getDateTime("active");
 			fail("Not a date");
