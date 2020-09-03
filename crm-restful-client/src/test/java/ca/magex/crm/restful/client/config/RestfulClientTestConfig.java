@@ -1,4 +1,4 @@
-package ca.magex.crm.restful.client;
+package ca.magex.crm.restful.client.config;
 
 import javax.transaction.TransactionManager;
 
