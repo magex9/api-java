@@ -17,7 +17,7 @@ public class RestfulLocationsActionHandler<T extends LocationSummary> implements
 		if (crm.canViewLocation(locationId))
 			actions.add(buildAction("view", new Localized("VIEW", "View", "Vue"), "get", locationId));
 		if (crm.canUpdateLocation(locationId))
-			actions.add(buildAction("edit", new Localized("EDIT", "Edit", "Éditer"), "patch", locationId));
+			actions.add(buildAction("update", new Localized("UPDATE", "Edit", "Éditer"), "patch", locationId + "/details"));
 		if (crm.canDisableLocation(locationId))
 			actions.add(buildAction("disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", locationId + "/disable"));
 		if (crm.canEnableLocation(locationId))

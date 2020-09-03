@@ -354,6 +354,8 @@ public abstract class AbstractLocationServiceTests {
 		
 		// Make the location a main location which cannot be disabled.
 		crm().updateOrganizationMainLocation(organizationId, locationId);
+		System.out.println("Updated " + organizationId + " to have main location " + locationId);
+		assertEquals(locationId, crm().findOrganizationDetails(organizationId).getMainLocationId());
 		try {
 			locations().disableLocation(locationId).getStatus();
 			Assert.fail("Cannot disable main location");

@@ -17,7 +17,7 @@ public class RestfulOptionsActionHandler<T extends Option> implements RestfulAct
 		if (crm.canViewOption(optionId))
 			actions.add(buildAction("view", new Localized("VIEW", "View", "Vue"), "get", optionId));
 		if (crm.canUpdateOption(optionId))
-			actions.add(buildAction("edit", new Localized("EDIT", "Edit", "Éditer"), "patch", optionId));
+			actions.add(buildAction("update", new Localized("UPDATE", "Edit", "Éditer"), "patch", optionId));
 		return actions;
 	}
 	

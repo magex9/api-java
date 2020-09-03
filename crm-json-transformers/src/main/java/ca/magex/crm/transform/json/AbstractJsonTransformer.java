@@ -179,6 +179,14 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 			parent.add(new JsonPair(key, new JsonNumber(value)));
 	}
 	
+	public void formatLastModified(List<JsonPair> parent, Object obj) {
+		if (obj == null)
+			return;
+		Long value = getProperty(obj, "lastModified", Long.class);
+		if (value != null)
+			parent.add(new JsonPair("lastModified", new JsonText(JsonObject.formatDateTime(value))));
+	}
+	
 	public <O extends OptionIdentifier> void formatChoice(List<JsonPair> parent, String key, Object obj, Class<O> cls, Locale locale) {
 		if (obj == null)
 			return;
@@ -344,6 +352,10 @@ public abstract class AbstractJsonTransformer<T> implements Transformer<T, JsonE
 	
 	public Long parseLong(String key, JsonObject json) {
 		return json.contains(key) ? json.getLong(key) : null;
+	}
+	
+	public Long parseLastModified(JsonObject json) {
+		return json.contains("lastModified") ? json.getDateTime("lastModified").toEpochSecond() * 1000 : null;
 	}
 	
 	public Boolean parseBoolean(String key, JsonObject json) {

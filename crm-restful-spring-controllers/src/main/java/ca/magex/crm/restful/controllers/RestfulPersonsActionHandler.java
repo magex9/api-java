@@ -17,7 +17,7 @@ public class RestfulPersonsActionHandler<T extends PersonSummary> implements Res
 		if (crm.canViewPerson(personId))
 			actions.add(buildAction("view", new Localized("VIEW", "View", "Vue"), "get", personId));
 		if (crm.canUpdatePerson(personId))
-			actions.add(buildAction("edit", new Localized("EDIT", "Edit", "Éditer"), "patch", personId));
+			actions.add(buildAction("update", new Localized("UPDATE", "Edit", "Éditer"), "patch", personId + "/details"));
 		if (crm.canDisablePerson(personId))
 			actions.add(buildAction("disable", new Localized("INACTIVATE", "Inactivate", "Inactivate"), "put", personId + "/disable"));
 		if (crm.canEnablePerson(personId))

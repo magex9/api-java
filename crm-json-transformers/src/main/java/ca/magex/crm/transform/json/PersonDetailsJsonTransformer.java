@@ -47,7 +47,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		formatTransformer(pairs, "address", person, new MailingAddressJsonTransformer(crm), locale);
 		formatTransformer(pairs, "communication", person, new CommunicationJsonTransformer(crm), locale);
 		formatOptions(pairs, "businessRoleIds", person, Type.BUSINESS_ROLE, locale, person.getPersonId(), messages);
-		formatLong(pairs, "lastModified", person);
+		formatLastModified(pairs, person);
 		validate(messages);
 		return new JsonObject(pairs);
 	}
@@ -62,7 +62,7 @@ public class PersonDetailsJsonTransformer extends AbstractJsonTransformer<Person
 		MailingAddress address = parseObject("address", json, new MailingAddressJsonTransformer(crm), locale);
 		Communication communication = parseObject("communication", json, new CommunicationJsonTransformer(crm), locale);
 		List<BusinessRoleIdentifier> roles = parseOptions("businessRoleIds", json, BusinessRoleIdentifier.class, locale);
-		Long lastModified = parseLong("lastModified", json);
+		Long lastModified = parseLastModified(json);
 		return new PersonDetails(personId, organizationId, status, displayName, legalName, address, communication, roles, lastModified);
 	}
 

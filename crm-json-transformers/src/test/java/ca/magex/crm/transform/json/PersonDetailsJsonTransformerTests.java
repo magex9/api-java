@@ -29,6 +29,7 @@ import ca.magex.crm.api.system.id.BusinessRoleIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -59,7 +60,7 @@ public class PersonDetailsJsonTransformerTests {
 			crm.findOptionByCode(Type.BUSINESS_ROLE, "IMIT/DEV/APPS/DEV").getOptionId()
 		);
 		person = new PersonDetails(personId, organizationId, Status.ACTIVE, 
-				PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds, 100L);
+				PERSON_DISPLAY_NAME, PERSON_LEGAL_NAME, MAILING_ADDRESS, WORK_COMMUNICATIONS, roleIds, CrmAsserts.YEAR_2000_EPOCH_MILLIS);
 	}
 	
 	@Test
@@ -140,7 +141,7 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("IMIT/DEV/APPS/DEV", linked.getArray("businessRoleIds").getObject(0).getString("@value"));
 		assertEquals("Developer", linked.getArray("businessRoleIds").getObject(0).getString("@en"));
 		assertEquals("Développeur", linked.getArray("businessRoleIds").getObject(0).getString("@fr"));
-		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, linked.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(linked, null));
 	}
 	
@@ -174,7 +175,7 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("8881234567", root.getObject("communication").getString("faxNumber"));
 		assertEquals(1, root.getArray("businessRoleIds").size());
 		assertEquals("IMIT/DEV/APPS/DEV", root.getArray("businessRoleIds").getString(0));
-		assertEquals(100L, root.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, root.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -208,7 +209,7 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("8881234567", english.getObject("communication").getString("faxNumber"));
 		assertEquals(1, english.getArray("businessRoleIds").size());
 		assertEquals("Developer", english.getArray("businessRoleIds").getString(0));
-		assertEquals(100L, english.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, english.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -242,7 +243,7 @@ public class PersonDetailsJsonTransformerTests {
 		assertEquals("8881234567", french.getObject("communication").getString("faxNumber"));
 		assertEquals(1, french.getArray("businessRoleIds").size());
 		assertEquals("Développeur", french.getArray("businessRoleIds").getString(0));
-		assertEquals(100L, french.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, french.getDateTime("lastModified"));
 		assertEquals(person, transformer.parse(french, Lang.FRENCH));
 	}
 	

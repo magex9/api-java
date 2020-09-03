@@ -4,7 +4,10 @@ import static ca.magex.crm.test.CrmAsserts.GROUP;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,7 +21,9 @@ import ca.magex.crm.api.system.Option;
 import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.Type;
 import ca.magex.crm.api.system.id.AuthenticationGroupIdentifier;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
+import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonPair;
 
 @RunWith(SpringRunner.class)
@@ -40,6 +45,28 @@ public class CommonJsonTransformerTests {
 		Option option = new Option(new AuthenticationGroupIdentifier("o"), 
 				new AuthenticationGroupIdentifier("p"), Type.AUTHENTICATION_GROUP, Status.ACTIVE, false, GROUP, 100L);
 		transformer.formatText(pairs, "code", option);
+	}
+	
+	@Test
+	public void testDataToStringAndBack() throws Exception {
+		Long millenium = CrmAsserts.YEAR_2000_EPOCH_MILLIS;
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(millenium);
+		assertEquals("Sat Jan 01 00:00:00 EST 2000", cal.getTime().toString());
+		
+		ZonedDateTime zdt = JsonObject.parseDateTime(millenium);
+		assertEquals(2000, zdt.getYear());
+		assertEquals(1, zdt.getMonthValue());
+		assertEquals(1, zdt.getDayOfMonth());
+		assertEquals(0, zdt.getHour());
+		assertEquals(0, zdt.getMinute());
+		assertEquals(0, zdt.getSecond());
+		assertEquals(ZoneId.systemDefault(), zdt.getZone());
+		
+		assertEquals("2000-01-01T00:00:00-05:00", JsonObject.formatDateTime(zdt));
+		
+		ZonedDateTime parsed = JsonObject.parseDateTime(JsonObject.formatDateTime(zdt));
+		assertEquals(millenium.longValue(), parsed.toEpochSecond() * 1000);
 	}
 	
 	@Test

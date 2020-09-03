@@ -26,6 +26,7 @@ public class CrmAuthenticatedWebSecurityConfig extends WebSecurityConfigurerAdap
 			"/rest/init**",
 			"/rest/locations**",
 			"/rest/lookups**",
+			"/rest/actions**",
 			"/rest/organizations**",
 			"/rest/types**",
 			"/rest/options**",

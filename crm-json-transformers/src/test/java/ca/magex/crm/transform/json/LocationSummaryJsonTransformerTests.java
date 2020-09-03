@@ -23,6 +23,7 @@ import ca.magex.crm.api.system.Status;
 import ca.magex.crm.api.system.id.LocationIdentifier;
 import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -49,7 +50,7 @@ public class LocationSummaryJsonTransformerTests {
 		transformer = new LocationSummaryJsonTransformer(crm);
 		locationId = new LocationIdentifier("YnkAfZQnsk");
 		organizationId = new OrganizationIdentifier("s6rf61eooZ");
-		location = new LocationSummary(locationId, organizationId, Status.ACTIVE, "SUM_REF", "Summary Name", 100L);
+		location = new LocationSummary(locationId, organizationId, Status.ACTIVE, "SUM_REF", "Summary Name", CrmAsserts.YEAR_2000_EPOCH_MILLIS);
 	}
 	
 	@Test
@@ -81,7 +82,7 @@ public class LocationSummaryJsonTransformerTests {
 		assertEquals("Actif", linked.getObject("status").getString("@fr"));
 		assertEquals("SUM_REF", linked.getString("reference"));
 		assertEquals("Summary Name", linked.getString("displayName"));
-		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, linked.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(linked, null));
 	}
 	
@@ -95,7 +96,7 @@ public class LocationSummaryJsonTransformerTests {
 		assertEquals("ACTIVE", root.getString("status"));
 		assertEquals("SUM_REF", root.getString("reference"));
 		assertEquals("Summary Name", root.getString("displayName"));
-		assertEquals(100L, root.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, root.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -109,7 +110,7 @@ public class LocationSummaryJsonTransformerTests {
 		assertEquals("Active", english.getString("status"));
 		assertEquals("SUM_REF", english.getString("reference"));
 		assertEquals("Summary Name", english.getString("displayName"));
-		assertEquals(100L, english.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, english.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -123,7 +124,7 @@ public class LocationSummaryJsonTransformerTests {
 		assertEquals("Actif", french.getString("status"));
 		assertEquals("SUM_REF", french.getString("reference"));
 		assertEquals("Summary Name", french.getString("displayName"));
-		assertEquals(100L, french.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, french.getDateTime("lastModified"));
 		assertEquals(location, transformer.parse(french, Lang.FRENCH));
 	}
 	

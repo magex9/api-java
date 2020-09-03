@@ -25,6 +25,7 @@ import ca.magex.crm.api.system.id.OrganizationIdentifier;
 import ca.magex.crm.api.system.id.PersonIdentifier;
 import ca.magex.crm.api.system.id.UserIdentifier;
 import ca.magex.crm.api.transform.Transformer;
+import ca.magex.crm.test.CrmAsserts;
 import ca.magex.crm.test.config.BasicTestConfig;
 import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
@@ -57,7 +58,7 @@ public class UserJsonTransformerTests {
 		user = new UserDetails(userId, organizationId, personId, "admin", Status.ACTIVE, List.of(
 			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "CRM/ADMIN").getOptionId(),
 			crm.findOptionByCode(Type.AUTHENTICATION_ROLE, "ORG/ADMIN").getOptionId()
-		), 100L);
+		), CrmAsserts.YEAR_2000_EPOCH_MILLIS);
 	}
 	
 	@Test
@@ -102,7 +103,7 @@ public class UserJsonTransformerTests {
 		assertEquals("ORG/ADMIN", linked.getArray("authenticationRoleIds").getObject(1).getString("@value"));
 		assertEquals("Organization Admin", linked.getArray("authenticationRoleIds").getObject(1).getString("@en"));
 		assertEquals("Administrateur de l'organisation", linked.getArray("authenticationRoleIds").getObject(1).getString("@fr"));
-		assertEquals(100L, linked.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, linked.getDateTime("lastModified"));
 		assertEquals(user, transformer.parse(linked, null));
 	}
 	
@@ -119,7 +120,7 @@ public class UserJsonTransformerTests {
 		assertEquals(2, root.getArray("authenticationRoleIds").size());
 		assertEquals("CRM/ADMIN", root.getArray("authenticationRoleIds").getString(0));
 		assertEquals("ORG/ADMIN", root.getArray("authenticationRoleIds").getString(1));
-		assertEquals(100L, root.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, root.getDateTime("lastModified"));
 		assertEquals(user, transformer.parse(root, Lang.ROOT));
 	}
 	
@@ -136,7 +137,7 @@ public class UserJsonTransformerTests {
 		assertEquals(2, english.getArray("authenticationRoleIds").size());
 		assertEquals("CRM Admin", english.getArray("authenticationRoleIds").getString(0));
 		assertEquals("Organization Admin", english.getArray("authenticationRoleIds").getString(1));
-		assertEquals(100L, english.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, english.getDateTime("lastModified"));
 		assertEquals(user, transformer.parse(english, Lang.ENGLISH));
 	}
 	
@@ -153,7 +154,7 @@ public class UserJsonTransformerTests {
 		assertEquals(2, french.getArray("authenticationRoleIds").size());
 		assertEquals("Administrateur GRC", french.getArray("authenticationRoleIds").getString(0));
 		assertEquals("Administrateur de l'organisation", french.getArray("authenticationRoleIds").getString(1));
-		assertEquals(100L, french.getNumber("lastModified"));
+		assertEquals(CrmAsserts.YEAR_2000_DATETIME, french.getDateTime("lastModified"));
 		assertEquals(user, transformer.parse(french, Lang.FRENCH));
 	}
 	

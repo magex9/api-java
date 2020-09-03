@@ -3,6 +3,7 @@ package ca.magex.crm.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,7 @@ import ca.magex.crm.api.system.id.PhraseIdentifier;
 import ca.magex.crm.api.system.id.ProvinceIdentifier;
 import ca.magex.crm.api.system.id.SalutationIdentifier;
 import ca.magex.json.model.JsonArray;
+import ca.magex.json.model.JsonElement;
 import ca.magex.json.model.JsonObject;
 import ca.magex.json.model.JsonText;
 
@@ -185,6 +187,12 @@ public class CrmAsserts {
 	public static final PersonName ELAINE = new PersonName(MRS, "Elaine", "M", "McKay");
 
 	public static final PersonName FRANCOIS = new PersonName(MR, "François", null, "Mátyás");
+	
+	public static final ZonedDateTime YEAR_2000_DATETIME = JsonElement.parseDateTime("2000-01-01T00:00:00-05:00");
+	
+	public static final String YEAR_2000_TEXT = JsonElement.formatDateTime(YEAR_2000_DATETIME);
+
+	public static final Long YEAR_2000_EPOCH_MILLIS = YEAR_2000_DATETIME.toEpochSecond() * 1000;
 
 	public static final List<Localized> LOCALIZED_SORTING_OPTIONS = List.of(
 			new Localized("A", "A", "A"),
